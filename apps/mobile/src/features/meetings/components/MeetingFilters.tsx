@@ -7,7 +7,12 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Button } from '../../../design-system/components/Button';
-import type { MeetingFilters as MeetingFiltersType, DayOfWeek, TimeOfDay, MeetingType } from '../types/meeting';
+import type {
+  MeetingFilters as MeetingFiltersType,
+  DayOfWeek,
+  TimeOfDay,
+  MeetingType,
+} from '../types/meeting';
 import { getMeetingTypeLabel } from '../types/meeting';
 
 export interface MeetingFiltersProps {
@@ -53,15 +58,9 @@ export function MeetingFilters({
 }: MeetingFiltersProps): React.ReactElement {
   const theme = useTheme();
 
-  const [selectedDay, setSelectedDay] = useState<DayOfWeek | null>(
-    currentFilters.day_of_week
-  );
-  const [selectedTime, setSelectedTime] = useState<TimeOfDay | null>(
-    currentFilters.time_of_day
-  );
-  const [selectedTypes, setSelectedTypes] = useState<MeetingType[]>(
-    currentFilters.meeting_types
-  );
+  const [selectedDay, setSelectedDay] = useState<DayOfWeek | null>(currentFilters.day_of_week);
+  const [selectedTime, setSelectedTime] = useState<TimeOfDay | null>(currentFilters.time_of_day);
+  const [selectedTypes, setSelectedTypes] = useState<MeetingType[]>(currentFilters.meeting_types);
 
   const handleApply = (): void => {
     onApplyFilters({
@@ -80,24 +79,15 @@ export function MeetingFilters({
 
   const toggleMeetingType = (type: MeetingType): void => {
     setSelectedTypes((prev) =>
-      prev.includes(type)
-        ? prev.filter((t) => t !== type)
-        : [...prev, type]
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
   const hasActiveFilters =
-    selectedDay !== null ||
-    selectedTime !== null ||
-    selectedTypes.length > 0;
+    selectedDay !== null || selectedTime !== null || selectedTypes.length > 0;
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -105,9 +95,7 @@ export function MeetingFilters({
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[theme.typography.h2, { color: theme.colors.text }]}>
-            Filter Meetings
-          </Text>
+          <Text style={[theme.typography.h2, { color: theme.colors.text }]}>Filter Meetings</Text>
           {hasActiveFilters && (
             <Pressable
               onPress={handleClear}
@@ -115,12 +103,7 @@ export function MeetingFilters({
               accessibilityLabel="Clear all filters"
               accessibilityHint="Removes all active filters"
             >
-              <Text
-                style={[
-                  theme.typography.body,
-                  { color: theme.colors.primary },
-                ]}
-              >
+              <Text style={[theme.typography.body, { color: theme.colors.primary }]}>
                 Clear All
               </Text>
             </Pressable>
@@ -129,28 +112,19 @@ export function MeetingFilters({
 
         {/* Day of Week */}
         <View style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: 12 },
-            ]}
-          >
+          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
             Day of Week
           </Text>
           <View style={styles.chipContainer}>
             {DAYS_OF_WEEK.map((day) => (
               <Pressable
                 key={day.value}
-                onPress={() =>
-                  setSelectedDay(selectedDay === day.value ? null : day.value)
-                }
+                onPress={() => setSelectedDay(selectedDay === day.value ? null : day.value)}
                 style={({ pressed }) => [
                   styles.chip,
                   {
                     backgroundColor:
-                      selectedDay === day.value
-                        ? theme.colors.primary
-                        : theme.colors.surface,
+                      selectedDay === day.value ? theme.colors.primary : theme.colors.surface,
                     borderColor: theme.colors.border,
                   },
                   pressed && { opacity: 0.6 },
@@ -163,10 +137,7 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color:
-                        selectedDay === day.value
-                          ? '#FFFFFF'
-                          : theme.colors.text,
+                      color: selectedDay === day.value ? '#FFFFFF' : theme.colors.text,
                     },
                   ]}
                 >
@@ -179,30 +150,19 @@ export function MeetingFilters({
 
         {/* Time of Day */}
         <View style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: 12 },
-            ]}
-          >
+          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
             Time of Day
           </Text>
           <View style={styles.chipContainer}>
             {TIMES_OF_DAY.map((time) => (
               <Pressable
                 key={time.value}
-                onPress={() =>
-                  setSelectedTime(
-                    selectedTime === time.value ? null : time.value
-                  )
-                }
+                onPress={() => setSelectedTime(selectedTime === time.value ? null : time.value)}
                 style={({ pressed }) => [
                   styles.chip,
                   {
                     backgroundColor:
-                      selectedTime === time.value
-                        ? theme.colors.primary
-                        : theme.colors.surface,
+                      selectedTime === time.value ? theme.colors.primary : theme.colors.surface,
                     borderColor: theme.colors.border,
                   },
                   pressed && { opacity: 0.6 },
@@ -215,10 +175,7 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color:
-                        selectedTime === time.value
-                          ? '#FFFFFF'
-                          : theme.colors.text,
+                      color: selectedTime === time.value ? '#FFFFFF' : theme.colors.text,
                     },
                   ]}
                 >
@@ -231,12 +188,7 @@ export function MeetingFilters({
 
         {/* Meeting Types */}
         <View style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: 12 },
-            ]}
-          >
+          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
             Meeting Type
           </Text>
           <View style={styles.chipContainer}>
@@ -262,9 +214,7 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedTypes.includes(type)
-                        ? '#FFFFFF'
-                        : theme.colors.text,
+                      color: selectedTypes.includes(type) ? '#FFFFFF' : theme.colors.text,
                     },
                   ]}
                 >

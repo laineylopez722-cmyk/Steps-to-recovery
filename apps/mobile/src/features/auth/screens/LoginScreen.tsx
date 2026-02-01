@@ -64,7 +64,10 @@ export function LoginScreen({ navigation }: Props) {
       if (error && typeof error === 'object' && 'message' in error) {
         const errorMessage = String(error.message);
         // Provide user-friendly error messages
-        if (errorMessage.includes('Invalid login credentials') || errorMessage.includes('Invalid email or password')) {
+        if (
+          errorMessage.includes('Invalid login credentials') ||
+          errorMessage.includes('Invalid email or password')
+        ) {
           message = 'Invalid email or password. Please check your credentials and try again.';
         } else if (errorMessage.includes('Email not confirmed')) {
           message = 'Please check your email and confirm your account before signing in.';
@@ -82,7 +85,10 @@ export function LoginScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         behavior={keyboardConfig.behavior}
         style={styles.container}
@@ -94,10 +100,17 @@ export function LoginScreen({ navigation }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.header, { marginBottom: theme.spacing.xl }]}>
-            <Text style={[theme.typography.h1, { color: theme.colors.text, marginBottom: theme.spacing.sm }]}>
+            <Text
+              style={[
+                theme.typography.h1,
+                { color: theme.colors.text, marginBottom: theme.spacing.sm },
+              ]}
+            >
               Welcome Back
             </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}>
+            <Text
+              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}
+            >
               Your recovery journey continues here
             </Text>
           </View>
@@ -108,7 +121,7 @@ export function LoginScreen({ navigation }: Props) {
               value={email}
               onChangeText={(text) => {
                 setEmail(text);
-                if (errors.email) setErrors(prev => ({ ...prev, email: undefined }));
+                if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }));
               }}
               placeholder="your.email@example.com"
               autoCapitalize="none"
@@ -126,7 +139,7 @@ export function LoginScreen({ navigation }: Props) {
               value={password}
               onChangeText={(text) => {
                 setPassword(text);
-                if (errors.password) setErrors(prev => ({ ...prev, password: undefined }));
+                if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }));
               }}
               placeholder="Enter your password"
               secureTextEntry
@@ -142,10 +155,18 @@ export function LoginScreen({ navigation }: Props) {
               <View
                 style={[
                   styles.errorContainer,
-                  { backgroundColor: theme.colors.dangerLight || '#FFE5E5', borderColor: theme.colors.danger },
+                  {
+                    backgroundColor: theme.colors.dangerLight || '#FFE5E5',
+                    borderColor: theme.colors.danger,
+                  },
                 ]}
               >
-                <Text style={[theme.typography.bodySmall, { color: theme.colors.danger, textAlign: 'center' }]}>
+                <Text
+                  style={[
+                    theme.typography.bodySmall,
+                    { color: theme.colors.danger, textAlign: 'center' },
+                  ]}
+                >
                   {formError}
                 </Text>
               </View>
@@ -170,7 +191,12 @@ export function LoginScreen({ navigation }: Props) {
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.footer, { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md }]}>
+          <View
+            style={[
+              styles.footer,
+              { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md },
+            ]}
+          >
             <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
               Don't have an account?{' '}
             </Text>
@@ -179,7 +205,9 @@ export function LoginScreen({ navigation }: Props) {
               accessibilityRole="link"
               accessibilityLabel="Navigate to sign up"
             >
-              <Text style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}>
+              <Text
+                style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}
+              >
                 Sign Up
               </Text>
             </TouchableOpacity>

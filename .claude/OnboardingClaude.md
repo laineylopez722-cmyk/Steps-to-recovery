@@ -1,9 +1,11 @@
 # Onboarding & Authentication - Claude Prompt
 
 ## Objective
+
 Implement user onboarding flows, including Sign Up/Sign In screens and initial user profile setup with Supabase Auth.
 
 ## Target Files
+
 - `apps/mobile/src/features/auth/screens/LoginScreen.tsx`
 - `apps/mobile/src/features/auth/screens/SignUpScreen.tsx`
 - `apps/mobile/src/features/auth/screens/OnboardingScreen.tsx`
@@ -13,6 +15,7 @@ Implement user onboarding flows, including Sign Up/Sign In screens and initial u
 ## Requirements
 
 ### Authentication Screens
+
 1. **Login Screen**
    - Email/password input with validation
    - Password reset link
@@ -32,18 +35,21 @@ Implement user onboarding flows, including Sign Up/Sign In screens and initial u
    - Generate and store encryption key in SecureStore
 
 ### Supabase Integration
+
 - Use Supabase Auth SDK for email/password authentication
 - Store session in SecureStore for persistence
 - Handle auth state changes
 - Row-Level Security awareness
 
 ### Security
+
 - Never log passwords or sensitive data
 - Validate input to prevent injection
 - Use SecureStore for all sensitive storage
 - Generate unique encryption key per user
 
 ## User Experience
+
 - Supportive, non-judgmental copy
 - Clear privacy messaging
 - Simple, focused forms

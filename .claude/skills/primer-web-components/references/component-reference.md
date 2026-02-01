@@ -82,14 +82,10 @@ Declarative container for automatically rendering filtered payment methods.
 
 ```html
 <!-- Show only digital wallets -->
-<primer-payment-method-container
-  include="APPLE_PAY,GOOGLE_PAY"
-></primer-payment-method-container>
+<primer-payment-method-container include="APPLE_PAY,GOOGLE_PAY"></primer-payment-method-container>
 
 <!-- Show everything except cards -->
-<primer-payment-method-container
-  exclude="PAYMENT_CARD"
-></primer-payment-method-container>
+<primer-payment-method-container exclude="PAYMENT_CARD"></primer-payment-method-container>
 ```
 
 ## Card Form Components
@@ -317,8 +313,7 @@ checkout.addEventListener('primer:ready', (event) => {
 
 ```javascript
 checkout.addEventListener('primer:state-change', (event) => {
-  const { isProcessing, isSuccessful, primerJsError, paymentFailure } =
-    event.detail;
+  const { isProcessing, isSuccessful, primerJsError, paymentFailure } = event.detail;
   if (primerJsError) {
     console.error('SDK error:', primerJsError);
   }
@@ -365,9 +360,7 @@ checkout.addEventListener('primer:methods-update', (event) => {
 checkout.addEventListener('primer:payment-success', (event) => {
   const { paymentSummary, paymentMethodType, timestamp } = event.detail;
   console.log(`✅ Payment successful via ${paymentMethodType}`);
-  console.log(
-    `Card: ${paymentSummary.network} ending in ${paymentSummary.last4Digits}`,
-  );
+  console.log(`Card: ${paymentSummary.network} ending in ${paymentSummary.last4Digits}`);
   // Navigate to success page
 });
 ```
@@ -404,9 +397,7 @@ checkout.addEventListener('primer:vault:methods-update', (event) => {
   console.log(`${vaultedPayments.size()} saved payment methods`);
 
   vaultedPayments.toArray().forEach((method) => {
-    console.log(
-      `${method.paymentInstrumentType}: ${method.paymentInstrumentData.last4Digits}`,
-    );
+    console.log(`${method.paymentInstrumentType}: ${method.paymentInstrumentData.last4Digits}`);
   });
 });
 ```
@@ -475,14 +466,7 @@ interface SDKOptions {
 
   // Apple Pay Options
   applePay?: {
-    buttonType?:
-      | 'buy'
-      | 'donate'
-      | 'plain'
-      | 'checkout'
-      | 'set-up'
-      | 'book'
-      | 'subscribe';
+    buttonType?: 'buy' | 'donate' | 'plain' | 'checkout' | 'set-up' | 'book' | 'subscribe';
     buttonStyle?: 'black' | 'white' | 'white-outline';
     billingOptions?: {
       requiredBillingContactFields?: (

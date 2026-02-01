@@ -4,7 +4,11 @@
  */
 
 export { useUserLocation } from './useUserLocation';
-export type { UseUserLocationReturn, LocationPermissionStatus, LocationState } from './useUserLocation';
+export type {
+  UseUserLocationReturn,
+  LocationPermissionStatus,
+  LocationState,
+} from './useUserLocation';
 
 export { useMeetingSearch } from './useMeetingSearch';
 export type { UseMeetingSearchReturn, UseMeetingSearchOptions } from './useMeetingSearch';

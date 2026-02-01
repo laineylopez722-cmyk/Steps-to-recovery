@@ -31,7 +31,7 @@ export function SimpleTrendChart({
       .filter((d) => d.isCheckedIn)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       .slice(-30);
-    
+
     return filtered.map((d) => ({
       date: new Date(d.date),
       value: dataKey === 'mood' ? d.mood : d.cravingLevel,
@@ -41,20 +41,20 @@ export function SimpleTrendChart({
   // Calculate chart dimensions
   const chartWidth = Dimensions.get('window').width - 64; // Account for padding
   const chartHeight = height - 40; // Leave room for labels
-  
+
   // Calculate stats
   const stats = useMemo(() => {
     if (chartData.length === 0) return null;
-    
+
     const values = chartData.map((d) => d.value);
     const avg = values.reduce((a, b) => a + b, 0) / values.length;
     const min = Math.min(...values);
     const max = Math.max(...values);
-    
+
     // Get trend (comparing recent week to previous)
     const recentValues = values.slice(-7);
     const previousValues = values.slice(-14, -7);
-    
+
     let trend: 'up' | 'down' | 'stable' = 'stable';
     if (recentValues.length > 0 && previousValues.length > 0) {
       const recentAvg = recentValues.reduce((a, b) => a + b, 0) / recentValues.length;
@@ -62,7 +62,7 @@ export function SimpleTrendChart({
       if (recentAvg > previousAvg + 0.5) trend = 'up';
       else if (recentAvg < previousAvg - 0.5) trend = 'down';
     }
-    
+
     return { avg, min, max, trend };
   }, [chartData]);
 
@@ -73,10 +73,7 @@ export function SimpleTrendChart({
         <Text className="text-base font-semibold text-surface-900 dark:text-surface-100 mb-2">
           {title}
         </Text>
-        <View 
-          style={{ height }} 
-          className="items-center justify-center"
-        >
+        <View style={{ height }} className="items-center justify-center">
           <Text className="text-surface-400 text-center">
             Check in for a few days to see your trend
           </Text>
@@ -88,7 +85,7 @@ export function SimpleTrendChart({
   // Calculate bar positions
   const barWidth = Math.max(4, Math.min(12, (chartWidth - 20) / chartData.length - 2));
   const maxValue = 10; // Mood/craving scale is 0-10
-  
+
   // Get trend emoji
   const getTrendEmoji = () => {
     if (!stats) return '➡️';
@@ -102,7 +99,7 @@ export function SimpleTrendChart({
   };
 
   return (
-    <View 
+    <View
       className={`bg-surface-100 dark:bg-surface-800 rounded-xl p-4 ${className}`}
       accessibilityLabel={`${title}: average ${stats?.avg.toFixed(1)} out of 10`}
     >
@@ -113,22 +110,17 @@ export function SimpleTrendChart({
         </Text>
         <View className="flex-row items-center gap-2">
           <Text className="text-lg">{getTrendEmoji()}</Text>
-          <Text className="text-sm text-surface-500">
-            avg: {stats?.avg.toFixed(1)}
-          </Text>
+          <Text className="text-sm text-surface-500">avg: {stats?.avg.toFixed(1)}</Text>
         </View>
       </View>
 
       {/* Chart */}
-      <View 
-        style={{ height: chartHeight }}
-        className="flex-row items-end justify-center gap-0.5"
-      >
+      <View style={{ height: chartHeight }} className="flex-row items-end justify-center gap-0.5">
         {chartData.map((point, index) => {
           const barHeight = (point.value / maxValue) * chartHeight;
           const isRecent = index >= chartData.length - 7;
           const opacity = isRecent ? 1 : 0.5;
-          
+
           return (
             <View
               key={index}
@@ -147,36 +139,32 @@ export function SimpleTrendChart({
 
       {/* Labels */}
       <View className="flex-row justify-between mt-2">
-        <Text className="text-xs text-surface-400">
-          {chartData.length} days ago
-        </Text>
-        <Text className="text-xs text-surface-400">
-          Today
-        </Text>
+        <Text className="text-xs text-surface-400">{chartData.length} days ago</Text>
+        <Text className="text-xs text-surface-400">Today</Text>
       </View>
 
       {/* Legend */}
       <View className="flex-row justify-center items-center gap-4 mt-2 pt-2 border-t border-surface-200 dark:border-surface-700">
         <View className="flex-row items-center gap-1">
-          <View 
-            style={{ 
-              width: 8, 
-              height: 8, 
-              borderRadius: 4, 
-              backgroundColor: color, 
-              opacity: 0.5 
-            }} 
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: color,
+              opacity: 0.5,
+            }}
           />
           <Text className="text-xs text-surface-400">Older</Text>
         </View>
         <View className="flex-row items-center gap-1">
-          <View 
-            style={{ 
-              width: 8, 
-              height: 8, 
-              borderRadius: 4, 
-              backgroundColor: color 
-            }} 
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: color,
+            }}
           />
           <Text className="text-xs text-surface-400">Last 7 days</Text>
         </View>
@@ -186,4 +174,3 @@ export function SimpleTrendChart({
 }
 
 export default SimpleTrendChart;
-

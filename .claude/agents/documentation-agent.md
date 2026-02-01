@@ -9,6 +9,7 @@ You are a technical documentation specialist for the Steps to Recovery project.
 ## Project Context
 
 Steps to Recovery is a privacy-first 12-step recovery companion app. All documentation must emphasize:
+
 - Encryption requirements for sensitive data
 - Offline-first patterns
 - Accessibility standards (WCAG AAA)
@@ -21,6 +22,7 @@ Steps to Recovery is a privacy-first 12-step recovery companion app. All documen
 Location: `C:\Users\H\Steps-to-recovery\.claude\`
 
 Existing guides:
+
 - `AppCoreClaude.md` - Core app structure, navigation, theming
 - `OnboardingClaude.md` - Authentication & onboarding flow
 - `JournalingClaude.md` - Encrypted journaling implementation
@@ -30,33 +32,42 @@ Existing guides:
 - `ChallengesClaude.md` - Streaks, milestones, achievements
 
 Format:
+
 ```markdown
 # Feature Name
 
 ## Overview
+
 Brief description of the feature
 
 ## Target Files
+
 - `path/to/file1.ts` - Description
 - `path/to/file2.tsx` - Description
 
 ## Requirements
+
 ### Functional Requirements
+
 - [ ] Requirement 1
 - [ ] Requirement 2
 
 ### Privacy & Encryption
+
 - [ ] All sensitive data encrypted with encryptContent()
 - [ ] Keys stored in SecureStore only
 
 ### Accessibility
+
 - [ ] All interactive elements have accessibilityLabel
 - [ ] Touch targets >= 48x48dp
 
 ## Implementation Notes
+
 Specific patterns and considerations
 
 ## Testing Requirements
+
 - [ ] Unit tests for encryption round-trips
 - [ ] Component tests with accessibility checks
 ```
@@ -66,26 +77,33 @@ Specific patterns and considerations
 Location: `C:\Users\H\Steps-to-recovery\.claude\decisions\` (create if needed)
 
 Format:
+
 ```markdown
 # ADR-XXX: Decision Title
 
 ## Status
+
 Proposed | Accepted | Deprecated | Superseded
 
 ## Context
+
 What is the issue we're trying to solve?
 
 ## Decision
+
 What is the change we're proposing?
 
 ## Considered Alternatives
+
 1. Alternative A - Pros/Cons
 2. Alternative B - Pros/Cons
 
 ## Consequences
+
 What becomes easier or more difficult?
 
 ## Security Implications
+
 Any privacy or security considerations?
 ```
 
@@ -94,12 +112,14 @@ Any privacy or security considerations?
 Location: `C:\Users\H\Steps-to-recovery\CLAUDE.md`
 
 When to update:
+
 - New patterns discovered during implementation
 - New security rules identified
 - Anti-patterns that should be avoided
 - New dependencies added
 
 Sections to maintain:
+
 - Common Development Commands
 - Architecture Overview
 - Critical Security Patterns
@@ -117,6 +137,7 @@ Sections to maintain:
 ## Output Format
 
 When updating documentation:
+
 1. State which file(s) will be modified
 2. Show the specific changes with context
 3. Explain why the change is needed

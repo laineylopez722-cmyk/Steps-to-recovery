@@ -23,9 +23,9 @@ name: Appknox
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ['main']
   pull_request:
-    branches: [ "main" ]
+    branches: ['main']
 jobs:
   appknox:
     runs-on: ubuntu-latest
@@ -37,14 +37,14 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build the app
-        run: ./gradlew build                                         # Update this to build your Android or iOS application
+        run: ./gradlew build # Update this to build your Android or iOS application
 
       - name: Appknox GitHub action
         uses: appknox/appknox-github-action@b7d2bfb2321d5544e97bffcba48557234ab953a4
         with:
           appknox_access_token: ${{ secrets.APPKNOX_ACCESS_TOKEN }}
-          file_path: app/build/outputs/apk/debug/app-debug.apk        # Specify the path to your .ipa or .apk here
-          risk_threshold: MEDIUM                                      # Update this to desired risk threshold [LOW, MEDIUM, HIGH, CRITICAL]
+          file_path: app/build/outputs/apk/debug/app-debug.apk # Specify the path to your .ipa or .apk here
+          risk_threshold: MEDIUM # Update this to desired risk threshold [LOW, MEDIUM, HIGH, CRITICAL]
           sarif: Enable
 
       - name: Upload SARIF to GHAS

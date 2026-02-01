@@ -1,16 +1,16 @@
 /**
  * Theme Configuration
- * 
+ *
  * Centralized theme configuration providing consistent design tokens
  * across the entire app. Follows privacy-first, calming design principles
  * suitable for a recovery companion app.
- * 
+ *
  * **Design Philosophy**:
  * - Calm blues for trust and serenity
  * - Soft greens for growth and hope
  * - Neutral grays for readability
  * - Accessible color contrast (WCAG AAA)
- * 
+ *
  * @module utils/theme
  */
 

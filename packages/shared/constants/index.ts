@@ -1,6 +1,6 @@
 /**
  * Constants Exports
- * 
+ *
  * Central export point for all application constants including:
  * - Achievement definitions
  * - Milestone configurations
@@ -9,7 +9,7 @@
  * - Meeting topics
  * - Crisis resources
  * - And more...
- * 
+ *
  * @module constants
  */
 
@@ -41,4 +41,3 @@ export type { AchievementDefinition } from './achievements';
 export * from './readings';
 export * from './slogans';
 export * from './promises';
-

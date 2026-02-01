@@ -78,9 +78,10 @@
       "Bash(npm ls:*)",
       "Bash(npm explain:*)",
       "Bash(pwsh.exe -Command \"cd ''C:\\\\Users\\\\h\\\\Documents\\\\GitHub\\\\Steps-to-recovery\\\\apps\\\\mobile''; npx tsc --noEmit\")",
-      "Bash(/c/Program Files/nodejs/npx.cmd tsc --noEmit)"
+      "Bash(/c/Program Files/nodejs/npx.cmd tsc --noEmit)",
+      "Bash(npm ci)"
     ]
   },
   "outputStyle": "default",
-  "spinnerTipsEnabled": false
+  "spinnerTipsEnabled": true
 }

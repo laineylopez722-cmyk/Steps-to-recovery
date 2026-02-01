@@ -14,10 +14,12 @@ interface VaultState {
   isLoading: boolean;
   isVaultUnlocked: boolean;
   error: string | null;
-  
+
   // Actions
   loadItems: () => Promise<void>;
-  addItem: (item: Omit<VaultItem, 'id' | 'createdAt' | 'updatedAt' | 'viewCount' | 'lastViewedAt'>) => Promise<VaultItem>;
+  addItem: (
+    item: Omit<VaultItem, 'id' | 'createdAt' | 'updatedAt' | 'viewCount' | 'lastViewedAt'>,
+  ) => Promise<VaultItem>;
   updateItem: (id: string, updates: Partial<Omit<VaultItem, 'id' | 'createdAt'>>) => Promise<void>;
   deleteItem: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => Promise<void>;
@@ -67,7 +69,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     try {
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbVaultItem>(
-        'SELECT * FROM motivation_vault ORDER BY is_favorite DESC, created_at DESC'
+        'SELECT * FROM motivation_vault ORDER BY is_favorite DESC, created_at DESC',
       );
 
       const items: VaultItem[] = [];
@@ -90,15 +92,24 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   addItem: async (item) => {
     const id = generateId();
     const now = new Date().toISOString();
-    
+
     try {
       const encryptedContent = await encryptContent(item.content);
       const db = await getDatabase();
-      
+
       await db.runAsync(
         `INSERT INTO motivation_vault (id, type, title, content, media_uri, is_favorite, view_count, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, 0, ?, ?)`,
-        [id, item.type, item.title, encryptedContent, item.mediaUri || null, item.isFavorite ? 1 : 0, now, now]
+        [
+          id,
+          item.type,
+          item.title,
+          encryptedContent,
+          item.mediaUri || null,
+          item.isFavorite ? 1 : 0,
+          now,
+          now,
+        ],
       );
 
       const newItem: VaultItem = {
@@ -126,16 +137,16 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   updateItem: async (id, updates) => {
     const now = new Date().toISOString();
-    
+
     try {
       const db = await getDatabase();
       const currentItem = get().items.find((i) => i.id === id);
       if (!currentItem) return;
 
-      const encryptedContent = updates.content 
-        ? await encryptContent(updates.content) 
+      const encryptedContent = updates.content
+        ? await encryptContent(updates.content)
         : await encryptContent(currentItem.content);
-      
+
       await db.runAsync(
         `UPDATE motivation_vault SET 
          type = ?, title = ?, content = ?, media_uri = ?, is_favorite = ?, updated_at = ?
@@ -148,7 +159,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
           (updates.isFavorite !== undefined ? updates.isFavorite : currentItem.isFavorite) ? 1 : 0,
           now,
           id,
-        ]
+        ],
       );
 
       set((state) => ({
@@ -159,7 +170,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
                 ...updates,
                 updatedAt: new Date(now),
               }
-            : item
+            : item,
         ),
       }));
     } catch (error) {
@@ -172,7 +183,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
     try {
       const db = await getDatabase();
       await db.runAsync('DELETE FROM motivation_vault WHERE id = ?', [id]);
-      
+
       set((state) => ({
         items: state.items.filter((item) => item.id !== id),
       }));
@@ -191,12 +202,12 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   recordView: async (id) => {
     const now = new Date().toISOString();
-    
+
     try {
       const db = await getDatabase();
       await db.runAsync(
         `UPDATE motivation_vault SET view_count = view_count + 1, last_viewed_at = ? WHERE id = ?`,
-        [now, id]
+        [now, id],
       );
 
       set((state) => ({
@@ -207,7 +218,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
                 viewCount: item.viewCount + 1,
                 lastViewedAt: new Date(now),
               }
-            : item
+            : item,
         ),
       }));
     } catch (error) {
@@ -217,13 +228,12 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
   getItemById: async (id) => {
     const db = await getDatabase();
-    const row = await db.getFirstAsync<DbVaultItem>(
-      'SELECT * FROM motivation_vault WHERE id = ?',
-      [id]
-    );
-    
+    const row = await db.getFirstAsync<DbVaultItem>('SELECT * FROM motivation_vault WHERE id = ?', [
+      id,
+    ]);
+
     if (!row) return null;
-    
+
     const decryptedContent = await decryptContent(row.content);
     return dbToVaultItem(row, decryptedContent);
   },
@@ -231,11 +241,11 @@ export const useVaultStore = create<VaultState>((set, get) => ({
   getRandomMotivation: async () => {
     const items = get().items;
     if (items.length === 0) return null;
-    
+
     // Prefer favorites
     const favorites = items.filter((i) => i.isFavorite);
     const pool = favorites.length > 0 ? favorites : items;
-    
+
     const randomIndex = Math.floor(Math.random() * pool.length);
     return pool[randomIndex];
   },

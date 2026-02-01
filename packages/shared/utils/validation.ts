@@ -127,7 +127,11 @@ export function validateSearchParams(params: {
   if (params.maxMood !== undefined && (params.maxMood < 1 || params.maxMood > 10)) {
     errors.push('Maximum mood must be between 1 and 10');
   }
-  if (params.minMood !== undefined && params.maxMood !== undefined && params.minMood > params.maxMood) {
+  if (
+    params.minMood !== undefined &&
+    params.maxMood !== undefined &&
+    params.minMood > params.maxMood
+  ) {
     errors.push('Minimum mood cannot be greater than maximum mood');
   }
 

@@ -1,14 +1,14 @@
 /**
  * Navigation Helper
- * 
+ *
  * Bridges expo-router-style paths to React Navigation screen names.
  * Provides backward compatibility for components written with expo-router
  * syntax while the app uses React Navigation.
- * 
+ *
  * **Context**: Components were initially written with expo-router syntax,
  * but the app uses React Navigation. This helper provides backward
  * compatibility during migration.
- * 
+ *
  * @module utils/navigationHelper
  */
 
@@ -19,10 +19,10 @@ import { logger } from './logger';
 
 /**
  * Navigate using expo-router-style paths
- * 
+ *
  * Maps expo-router-style paths to React Navigation screens.
  * Handles both static routes and dynamic routes (e.g., `/journal/123`).
- * 
+ *
  * @param path - expo-router style path (e.g., '/journal', '/(tabs)/emergency')
  * @param params - Optional navigation parameters
  * @example
@@ -146,10 +146,10 @@ export function navigateToPath(path: string, params?: Record<string, unknown>): 
 
 /**
  * Hook that provides expo-router compatible navigation
- * 
+ *
  * Returns a router-like object compatible with expo-router's `useRouter()` hook.
  * Use this instead of expo-router's `useRouter()` when using React Navigation.
- * 
+ *
  * @returns Router-like object with push, replace, back, and canGoBack methods
  * @example
  * ```ts
@@ -173,10 +173,10 @@ export function useRouterCompat() {
 
 /**
  * Hook that provides expo-router compatible segments
- * 
+ *
  * Tracks the current navigation route and returns it as path segments,
  * compatible with expo-router's `useSegments()` hook.
- * 
+ *
  * @returns Array of path segments (e.g., ['home'], ['journal', 'edit'])
  * @example
  * ```ts
@@ -196,7 +196,9 @@ export function useSegmentsCompat(): string[] {
     // Traverse the navigation state tree to build segments
     while (currentState) {
       const idx: number = currentState.index ?? 0;
-      const route: Route<string> | undefined = currentState.routes[idx] as Route<string> | undefined;
+      const route: Route<string> | undefined = currentState.routes[idx] as
+        | Route<string>
+        | undefined;
 
       if (!route) break;
 

@@ -38,7 +38,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadSession = async (): Promise<void> => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await supabase.auth.getSession();
 
         // Initialize secure storage with session token (web only)
         if (session?.access_token && session?.user?.id) {
@@ -52,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Set Sentry user context for error tracking
         setSentryUser(session?.user?.id ?? null);
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           session: session ?? prev.session,
           user: session?.user ?? prev.user ?? null,
@@ -61,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: error ?? null,
         }));
       } catch (error) {
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           loading: false,
           initialized: true,
@@ -89,7 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Update Sentry user context
         setSentryUser(session?.user?.id ?? null);
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           session,
           user: session?.user ?? null,
@@ -102,11 +105,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const clearError = useCallback(() => {
-    setState(prev => ({ ...prev, error: null }));
+    setState((prev) => ({ ...prev, error: null }));
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -116,13 +119,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (data?.session?.access_token && data?.session?.user?.id) {
         try {
-          await secureStorage.initializeWithSession(data.session.user.id, data.session.access_token);
+          await secureStorage.initializeWithSession(
+            data.session.user.id,
+            data.session.access_token,
+          );
         } catch (storageError) {
           logger.warn('Secure storage init failed during sign-in', storageError);
         }
 
         setSentryUser(data.session.user.id);
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           session: data.session,
           user: data.session.user,
@@ -131,15 +137,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }));
       }
     } catch (error) {
-      setState(prev => ({ ...prev, error: error as AuthError }));
+      setState((prev) => ({ ...prev, error: error as AuthError }));
       throw error;
     } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      setState((prev) => ({ ...prev, loading: false }));
     }
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -156,7 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         setSentryUser(session.user.id);
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           session: session,
           user: session.user,
@@ -165,39 +171,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }));
       }
     } catch (error) {
-      setState(prev => ({ ...prev, error: error as AuthError }));
+      setState((prev) => ({ ...prev, error: error as AuthError }));
       throw error;
     } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      setState((prev) => ({ ...prev, loading: false }));
     }
   }, []);
 
   const signOut = useCallback(async () => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       // Perform complete logout cleanup (encryption keys + session + local data)
-      await performLogoutCleanup({ db: isReady ? db ?? undefined : undefined });
+      await performLogoutCleanup({ db: isReady ? (db ?? undefined) : undefined });
 
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (error) {
-      setState(prev => ({ ...prev, error: error as AuthError }));
+      setState((prev) => ({ ...prev, error: error as AuthError }));
       throw error;
     } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      setState((prev) => ({ ...prev, loading: false }));
     }
   }, [db, isReady]);
 
   const resetPassword = useCallback(async (email: string) => {
-    setState(prev => ({ ...prev, loading: true, error: null }));
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email);
       if (error) throw error;
     } catch (error) {
-      setState(prev => ({ ...prev, error: error as AuthError }));
+      setState((prev) => ({ ...prev, error: error as AuthError }));
       throw error;
     } finally {
-      setState(prev => ({ ...prev, loading: false }));
+      setState((prev) => ({ ...prev, loading: false }));
     }
   }, []);
 

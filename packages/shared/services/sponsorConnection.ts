@@ -157,9 +157,11 @@ export async function generateSponsorCode(): Promise<ConnectionCode> {
 }
 
 function getSecureRandomIndex(max: number): number {
-  const cryptoObj = (globalThis as {
-    crypto?: { getRandomValues?: (array: Uint32Array) => Uint32Array };
-  }).crypto;
+  const cryptoObj = (
+    globalThis as {
+      crypto?: { getRandomValues?: (array: Uint32Array) => Uint32Array };
+    }
+  ).crypto;
   if (cryptoObj?.getRandomValues) {
     const array = new Uint32Array(1);
     cryptoObj.getRandomValues(array);
@@ -169,7 +171,9 @@ function getSecureRandomIndex(max: number): number {
 }
 
 function assertWebCryptoAvailable(): void {
-  const cryptoObj = globalThis.crypto as { subtle?: SubtleCrypto; getRandomValues?: (array: Uint8Array) => Uint8Array } | undefined;
+  const cryptoObj = globalThis.crypto as
+    | { subtle?: SubtleCrypto; getRandomValues?: (array: Uint8Array) => Uint8Array }
+    | undefined;
   if (!cryptoObj?.subtle || !cryptoObj.getRandomValues) {
     throw new Error('WebCrypto is unavailable. Ensure expo-standard-web-crypto is loaded.');
   }
@@ -214,7 +218,7 @@ async function importPrivateKey(privateKeyBase64: string): Promise<CryptoKey> {
     toArrayBuffer(keyBytes),
     { name: 'ECDH', namedCurve: 'P-256' },
     false,
-    ['deriveBits']
+    ['deriveBits'],
   );
 }
 
@@ -226,17 +230,15 @@ async function importPublicKey(publicKeyBase64: string): Promise<CryptoKey> {
     toArrayBuffer(keyBytes),
     { name: 'ECDH', namedCurve: 'P-256' },
     false,
-    []
+    [],
   );
 }
 
 export async function generateSponsorKeyPair(): Promise<SponsorKeyPair> {
   assertWebCryptoAvailable();
-  const keyPair = await crypto.subtle.generateKey(
-    { name: 'ECDH', namedCurve: 'P-256' },
-    true,
-    ['deriveBits']
-  );
+  const keyPair = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, [
+    'deriveBits',
+  ]);
 
   const publicKeyRaw = await crypto.subtle.exportKey('raw', keyPair.publicKey);
   const privateKeyRaw = await crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
@@ -249,7 +251,7 @@ export async function generateSponsorKeyPair(): Promise<SponsorKeyPair> {
 
 export async function deriveSharedKeyBase64(
   privateKeyBase64: string,
-  peerPublicKeyBase64: string
+  peerPublicKeyBase64: string,
 ): Promise<string> {
   assertWebCryptoAvailable();
   const privateKey = await importPrivateKey(privateKeyBase64);
@@ -257,14 +259,14 @@ export async function deriveSharedKeyBase64(
   const sharedBits = await crypto.subtle.deriveBits(
     { name: 'ECDH', public: publicKey },
     privateKey,
-    256
+    256,
   );
   return bytesToBase64(new Uint8Array(sharedBits));
 }
 
 export async function encryptWithSharedKey(
   sharedKeyBase64: string,
-  plaintext: string
+  plaintext: string,
 ): Promise<EncryptedPayload> {
   assertWebCryptoAvailable();
   const keyBytes = base64ToBytes(sharedKeyBase64);
@@ -273,13 +275,13 @@ export async function encryptWithSharedKey(
     toArrayBuffer(keyBytes),
     { name: 'AES-GCM', length: 256 },
     false,
-    ['encrypt']
+    ['encrypt'],
   );
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ciphertext = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv: toArrayBuffer(iv) },
     cryptoKey,
-    toArrayBuffer(stringToBytes(plaintext))
+    toArrayBuffer(stringToBytes(plaintext)),
   );
   return {
     iv: bytesToBase64(iv),
@@ -289,7 +291,7 @@ export async function encryptWithSharedKey(
 
 export async function decryptWithSharedKey(
   sharedKeyBase64: string,
-  encrypted: EncryptedPayload
+  encrypted: EncryptedPayload,
 ): Promise<string> {
   assertWebCryptoAvailable();
   const keyBytes = base64ToBytes(sharedKeyBase64);
@@ -298,14 +300,14 @@ export async function decryptWithSharedKey(
     toArrayBuffer(keyBytes),
     { name: 'AES-GCM', length: 256 },
     false,
-    ['decrypt']
+    ['decrypt'],
   );
   const iv = base64ToBytes(encrypted.iv);
   const ciphertext = base64ToBytes(encrypted.ciphertext);
   const decrypted = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: toArrayBuffer(iv) },
     cryptoKey,
-    toArrayBuffer(ciphertext)
+    toArrayBuffer(ciphertext),
   );
   return bytesToString(new Uint8Array(decrypted));
 }
@@ -407,10 +409,7 @@ export async function revokeSponsorCode(): Promise<void> {
 /**
  * Store a sponsee connection (for sponsors tracking their sponsees)
  */
-export async function addSponseeConnection(
-  code: string,
-  name: string
-): Promise<SponseeConnection> {
+export async function addSponseeConnection(code: string, name: string): Promise<SponseeConnection> {
   const connection: SponseeConnection = {
     id: uuidv4(),
     code,
@@ -440,7 +439,7 @@ export async function getSponseeConnections(): Promise<SponseeConnection[]> {
     if (!connectionsStr) return [];
 
     const connections: SponseeConnection[] = JSON.parse(connectionsStr);
-    return connections.map(c => ({
+    return connections.map((c) => ({
       ...c,
       connectedAt: new Date(c.connectedAt),
       lastSyncAt: c.lastSyncAt ? new Date(c.lastSyncAt) : undefined,
@@ -465,7 +464,7 @@ export async function getSponseeConnectionById(id: string): Promise<SponseeConne
 export async function updateSponseeConnectionName(id: string, name: string): Promise<void> {
   const connections = await getSponseeConnections();
   const updated = connections.map((connection) =>
-    connection.id === id ? { ...connection, name } : connection
+    connection.id === id ? { ...connection, name } : connection,
   );
   await SecureStore.setItemAsync(SPONSEE_CODES_KEY, JSON.stringify(updated));
 }
@@ -475,7 +474,7 @@ export async function updateSponseeConnectionName(id: string, name: string): Pro
  */
 export async function removeSponseeConnection(id: string): Promise<void> {
   const connections = await getSponseeConnections();
-  const filtered = connections.filter(c => c.id !== id);
+  const filtered = connections.filter((c) => c.id !== id);
   await SecureStore.setItemAsync(SPONSEE_CODES_KEY, JSON.stringify(filtered));
 }
 
@@ -497,7 +496,7 @@ export async function generateShareData(
     lastMeetingDate?: Date;
     averageMoodLast7Days?: number;
     averageCravingLast7Days?: number;
-  }
+  },
 ): Promise<SponsorShareData> {
   return {
     displayName: profile.displayName,

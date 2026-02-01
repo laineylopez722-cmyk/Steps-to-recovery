@@ -10,7 +10,12 @@ export type EncryptedString = string;
 export type ProgramType = '12-step-aa' | '12-step-na' | 'smart' | 'custom';
 
 // Journal entry types
-export type JournalType = 'freeform' | 'step-work' | 'meeting-reflection' | 'daily-checkin' | 'voice';
+export type JournalType =
+  | 'freeform'
+  | 'step-work'
+  | 'meeting-reflection'
+  | 'daily-checkin'
+  | 'voice';
 
 // Milestone types
 export type MilestoneType = 'time-based' | 'step-completion' | 'personal' | 'meeting';
@@ -416,18 +421,9 @@ export type AchievementCategory =
   | 'service'
   | 'daily_practice';
 
-export type AchievementStatus =
-  | 'locked'
-  | 'available'
-  | 'in_progress'
-  | 'unlocked';
+export type AchievementStatus = 'locked' | 'available' | 'in_progress' | 'unlocked';
 
-export type AchievementUnlockType =
-  | 'self_check'
-  | 'automatic'
-  | 'progressive'
-  | 'count'
-  | 'streak';
+export type AchievementUnlockType = 'self_check' | 'automatic' | 'progressive' | 'count' | 'streak';
 
 /**
  * Achievement definitions and progress

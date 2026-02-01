@@ -33,37 +33,19 @@ function ListItem({
   const theme = useTheme();
 
   const content = (
-    <View
-      style={[
-        styles.listItem,
-        { opacity: disabled ? 0.6 : 1 },
-      ]}
-    >
+    <View style={[styles.listItem, { opacity: disabled ? 0.6 : 1 }]}>
       <View style={[styles.listItemIcon, { marginRight: theme.spacing.md }]}>
-        <MaterialCommunityIcons
-          name={icon}
-          size={24}
-          color={iconColor || theme.colors.primary}
-        />
+        <MaterialCommunityIcons name={icon} size={24} color={iconColor || theme.colors.primary} />
       </View>
       <View style={styles.listItemContent}>
-        <Text style={[theme.typography.label, { color: theme.colors.text }]}>
-          {title}
-        </Text>
+        <Text style={[theme.typography.label, { color: theme.colors.text }]}>{title}</Text>
         <Text
-          style={[
-            theme.typography.bodySmall,
-            { color: theme.colors.textSecondary, marginTop: 2 },
-          ]}
+          style={[theme.typography.bodySmall, { color: theme.colors.textSecondary, marginTop: 2 }]}
         >
           {description}
         </Text>
       </View>
-      <MaterialCommunityIcons
-        name="chevron-right"
-        size={20}
-        color={theme.colors.textSecondary}
-      />
+      <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textSecondary} />
     </View>
   );
 
@@ -127,10 +109,7 @@ export function ProfileScreen(): React.ReactElement {
       >
         <ScrollView
           style={styles.scrollView}
-          contentContainerStyle={[
-            styles.contentContainer,
-            { paddingHorizontal: theme.spacing.md },
-          ]}
+          contentContainerStyle={[styles.contentContainer, { paddingHorizontal: theme.spacing.md }]}
           showsVerticalScrollIndicator={false}
         >
           {/* User Profile Card */}
@@ -261,11 +240,7 @@ export function ProfileScreen(): React.ReactElement {
                   },
                 ]}
               >
-                <MaterialCommunityIcons
-                  name="lock"
-                  size={28}
-                  color={theme.colors.success}
-                />
+                <MaterialCommunityIcons name="lock" size={28} color={theme.colors.success} />
               </View>
               <Text
                 style={[
@@ -289,7 +264,8 @@ export function ProfileScreen(): React.ReactElement {
                   },
                 ]}
               >
-                All your journal entries and step work are encrypted with AES-256 encryption before being stored. Only you can decrypt and read your data.
+                All your journal entries and step work are encrypted with AES-256 encryption before
+                being stored. Only you can decrypt and read your data.
               </Text>
             </View>
           </Card>

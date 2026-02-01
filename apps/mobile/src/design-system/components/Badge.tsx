@@ -10,7 +10,14 @@ import { useTheme } from '../hooks/useTheme';
 export interface BadgeProps {
   children: string | React.ReactNode;
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'muted' | 'category';
-  category?: 'gratitude' | 'reflection' | 'action' | 'connection' | 'self-care' | 'sponsor' | 'meeting';
+  category?:
+    | 'gratitude'
+    | 'reflection'
+    | 'action'
+    | 'connection'
+    | 'self-care'
+    | 'sponsor'
+    | 'meeting';
   size?: 'small' | 'medium' | 'large';
   style?: ViewStyle;
   textStyle?: TextStyle;
@@ -105,14 +112,7 @@ export function Badge({
       accessibilityHint={accessibilityHint}
     >
       {typeof children === 'string' ? (
-        <Text
-          style={[
-            sizeStyles.textStyle,
-            { color: colors.text },
-            textStyle,
-          ]}
-          numberOfLines={1}
-        >
+        <Text style={[sizeStyles.textStyle, { color: colors.text }, textStyle]} numberOfLines={1}>
           {children}
         </Text>
       ) : (

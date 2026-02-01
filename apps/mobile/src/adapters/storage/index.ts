@@ -10,7 +10,9 @@
  */
 
 import { Platform } from 'react-native';
+import type { SQLiteDatabase } from 'expo-sqlite';
 import type { StorageAdapter } from './types';
+
 import { logger } from '../../utils/logger';
 
 // Export types
@@ -63,20 +65,27 @@ export async function createStorageAdapter(nativeDb?: unknown): Promise<StorageA
       return new IndexedDBAdapter();
     } else {
       // Mobile: Validate and use provided SQLite database
-      if (!nativeDb || typeof nativeDb !== 'object') {
+      // Check for core SQLiteDatabase methods to ensure proper type before assertion
+      const db = nativeDb as Record<string, unknown>;
+      if (
+        !nativeDb ||
+        typeof db.execAsync !== 'function' ||
+        typeof db.runAsync !== 'function' ||
+        typeof db.getAllAsync !== 'function' ||
+        typeof db.getFirstAsync !== 'function'
+      ) {
         throw new Error(
-          'SQLite database instance required for mobile platform. ' +
-          'Ensure SQLiteProvider is properly configured and database is initialized.'
+          'Invalid SQLite database instance for mobile platform. ' +
+            'Expected expo-sqlite database with execAsync, runAsync, getAllAsync, and getFirstAsync methods. ' +
+            'Ensure SQLiteProvider is properly configured and database is initialized.',
         );
       }
 
       logger.info('Creating SQLite adapter for mobile platform');
       const { SQLiteAdapter } = await import('./sqlite');
 
-      // Type assertion with runtime validation - expo-sqlite database object
-      // has required methods. Using 'as any' to handle version differences in
-      // expo-sqlite types while maintaining runtime safety.
-      const adapter = new SQLiteAdapter(nativeDb as any);
+      // Runtime validation above ensures nativeDb has all required SQLiteDatabase methods.
+      const adapter = new SQLiteAdapter(nativeDb as SQLiteDatabase);
       return adapter;
     }
   } catch (error) {

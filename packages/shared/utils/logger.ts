@@ -23,7 +23,8 @@
  * ```
  */
 
-const isDevelopment = process?.env?.EXPO_PUBLIC_ENV === 'development' || process?.env?.NODE_ENV === 'development';
+const isDevelopment =
+  process?.env?.EXPO_PUBLIC_ENV === 'development' || process?.env?.NODE_ENV === 'development';
 
 /**
  * List of sensitive field names that should be redacted from logs
@@ -101,7 +102,7 @@ function sanitizeData(data: unknown, depth: number = 0): unknown {
 
   // Arrays
   if (Array.isArray(data)) {
-    return data.map(item => sanitizeData(item, depth + 1));
+    return data.map((item) => sanitizeData(item, depth + 1));
   }
 
   // Objects
@@ -121,8 +122,12 @@ function sanitizeData(data: unknown, depth: number = 0): unknown {
 
       // Check if key contains sensitive keywords
       const lowerKey = key.toLowerCase();
-      if (lowerKey.includes('encrypted') || lowerKey.includes('password') ||
-          lowerKey.includes('token') || lowerKey.includes('secret')) {
+      if (
+        lowerKey.includes('encrypted') ||
+        lowerKey.includes('password') ||
+        lowerKey.includes('token') ||
+        lowerKey.includes('secret')
+      ) {
         sanitized[key] = '[REDACTED]';
         continue;
       }
@@ -162,12 +167,13 @@ function sanitizeError(error: unknown): unknown {
     ...(isDevelopment && {
       stack: error.stack
         ?.split('\n')
-        .map(line => {
+        .map((line) => {
           // Redact file paths that might contain usernames
-          return line.replace(/\/Users\/[^/]+/g, '/Users/[USER]')
-                    .replace(/C:\\Users\\[^\\]+/g, 'C:\\Users\\[USER]');
+          return line
+            .replace(/\/Users\/[^/]+/g, '/Users/[USER]')
+            .replace(/C:\\Users\\[^\\]+/g, 'C:\\Users\\[USER]');
         })
-        .join('\n')
+        .join('\n'),
     }),
   };
 }

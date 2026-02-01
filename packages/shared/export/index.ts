@@ -1,13 +1,13 @@
 /**
  * Data Export Utility
- * 
+ *
  * Exports all user data to a JSON file for privacy compliance (GDPR, CCPA, etc.).
  * All encrypted content is decrypted before export so users have access to
  * their complete data.
- * 
+ *
  * **Privacy Note**: Exported data contains decrypted sensitive information.
  * Users should handle exported files with care and store them securely.
- * 
+ *
  * @module export
  */
 import * as ExpoFileSystem from 'expo-file-system';
@@ -68,10 +68,10 @@ export interface ExportData {
 
 /**
  * Export all user data to a JSON file
- * 
+ *
  * Fetches all user data from the database, decrypts encrypted content,
  * and writes it to a JSON file. Returns the file path for sharing.
- * 
+ *
  * @returns Promise resolving to file path of exported JSON file
  * @throws May throw if database access fails or decryption errors occur
  * @example
@@ -82,7 +82,7 @@ export interface ExportData {
  */
 export async function exportAllData(): Promise<string> {
   const db = await getDatabase();
-  
+
   // Fetch all data from database
   const [
     profileRow,
@@ -102,19 +102,23 @@ export async function exportAllData(): Promise<string> {
     db.getAllAsync<DbMeetingLog>('SELECT * FROM meeting_logs ORDER BY attended_at DESC'),
     db.getAllAsync<DbVaultItem>('SELECT * FROM motivation_vault ORDER BY created_at DESC'),
     db.getAllAsync<DbTimeCapsule>('SELECT * FROM time_capsules ORDER BY unlock_date ASC'),
-    db.getAllAsync<DbScenarioPractice>('SELECT * FROM scenario_practices ORDER BY completed_at DESC'),
+    db.getAllAsync<DbScenarioPractice>(
+      'SELECT * FROM scenario_practices ORDER BY completed_at DESC',
+    ),
     db.getFirstAsync<DbAppSettings>('SELECT * FROM app_settings LIMIT 1'),
   ]);
 
   // Transform and decrypt profile
-  const profile: SobrietyProfile | null = profileRow ? {
-    id: profileRow.id,
-    sobrietyDate: new Date(profileRow.sobriety_date),
-    programType: profileRow.program_type as ProgramType,
-    displayName: profileRow.display_name || undefined,
-    createdAt: new Date(profileRow.created_at),
-    updatedAt: new Date(profileRow.updated_at),
-  } : null;
+  const profile: SobrietyProfile | null = profileRow
+    ? {
+        id: profileRow.id,
+        sobrietyDate: new Date(profileRow.sobriety_date),
+        programType: profileRow.program_type as ProgramType,
+        displayName: profileRow.display_name || undefined,
+        createdAt: new Date(profileRow.created_at),
+        updatedAt: new Date(profileRow.updated_at),
+      }
+    : null;
 
   // Transform and decrypt journal entries
   const journalEntries = await Promise.all(
@@ -125,7 +129,7 @@ export async function exportAllData(): Promise<string> {
       } catch {
         decryptedContent = '[Unable to decrypt content]';
       }
-      
+
       return {
         id: row.id,
         type: row.type as JournalType,
@@ -141,7 +145,7 @@ export async function exportAllData(): Promise<string> {
         createdAt: new Date(row.created_at),
         updatedAt: new Date(row.updated_at),
       };
-    })
+    }),
   );
 
   // Transform and decrypt check-ins
@@ -155,7 +159,7 @@ export async function exportAllData(): Promise<string> {
           decryptedGratitude = '[Unable to decrypt]';
         }
       }
-      
+
       return {
         id: row.id,
         date: new Date(row.date),
@@ -165,7 +169,7 @@ export async function exportAllData(): Promise<string> {
         isCheckedIn: row.is_checked_in === 1,
         createdAt: new Date(row.created_at),
       };
-    })
+    }),
   );
 
   // Transform and decrypt milestones
@@ -179,7 +183,7 @@ export async function exportAllData(): Promise<string> {
           decryptedReflection = '[Unable to decrypt]';
         }
       }
-      
+
       return {
         id: row.id,
         type: row.type as MilestoneType,
@@ -190,7 +194,7 @@ export async function exportAllData(): Promise<string> {
         metadata: JSON.parse(row.metadata || '{}'),
         createdAt: new Date(row.created_at),
       };
-    })
+    }),
   );
 
   // Transform and decrypt meeting logs
@@ -202,7 +206,7 @@ export async function exportAllData(): Promise<string> {
       } catch {
         decryptedTakeaways = '[Unable to decrypt]';
       }
-      
+
       return {
         id: row.id,
         name: row.name || undefined,
@@ -215,7 +219,7 @@ export async function exportAllData(): Promise<string> {
         attendedAt: new Date(row.attended_at),
         createdAt: new Date(row.created_at),
       };
-    })
+    }),
   );
 
   // Transform and decrypt vault items
@@ -227,7 +231,7 @@ export async function exportAllData(): Promise<string> {
       } catch {
         decryptedContent = '[Unable to decrypt]';
       }
-      
+
       return {
         id: row.id,
         type: row.type as VaultItemType,
@@ -240,7 +244,7 @@ export async function exportAllData(): Promise<string> {
         createdAt: new Date(row.created_at),
         updatedAt: new Date(row.updated_at),
       };
-    })
+    }),
   );
 
   // Transform and decrypt time capsules
@@ -253,7 +257,7 @@ export async function exportAllData(): Promise<string> {
       } catch {
         decryptedContent = '[Unable to decrypt]';
       }
-      
+
       return {
         id: row.id,
         title: row.title,
@@ -263,7 +267,7 @@ export async function exportAllData(): Promise<string> {
         unlockedAt: row.unlocked_at ? new Date(row.unlocked_at) : undefined,
         createdAt: new Date(row.created_at),
       };
-    })
+    }),
   );
 
   // Transform and decrypt scenario practices
@@ -277,7 +281,7 @@ export async function exportAllData(): Promise<string> {
           decryptedReflection = '[Unable to decrypt]';
         }
       }
-      
+
       return {
         id: row.id,
         scenarioId: row.scenario_id,
@@ -285,21 +289,23 @@ export async function exportAllData(): Promise<string> {
         reflection: decryptedReflection,
         completedAt: new Date(row.completed_at),
       };
-    })
+    }),
   );
 
   // Transform settings
-  const settings: AppSettings | null = settingsRow ? {
-    id: settingsRow.id,
-    checkInTime: settingsRow.check_in_time,
-    autoLockMinutes: settingsRow.auto_lock_minutes,
-    biometricEnabled: settingsRow.biometric_enabled === 1,
-    themeMode: settingsRow.theme_mode as ThemeMode,
-    notificationsEnabled: settingsRow.notifications_enabled === 1,
-    crisisRegion: (settingsRow.crisis_region as CrisisRegion) || 'global',
-    createdAt: new Date(settingsRow.created_at),
-    updatedAt: new Date(settingsRow.updated_at),
-  } : null;
+  const settings: AppSettings | null = settingsRow
+    ? {
+        id: settingsRow.id,
+        checkInTime: settingsRow.check_in_time,
+        autoLockMinutes: settingsRow.auto_lock_minutes,
+        biometricEnabled: settingsRow.biometric_enabled === 1,
+        themeMode: settingsRow.theme_mode as ThemeMode,
+        notificationsEnabled: settingsRow.notifications_enabled === 1,
+        crisisRegion: (settingsRow.crisis_region as CrisisRegion) || 'global',
+        createdAt: new Date(settingsRow.created_at),
+        updatedAt: new Date(settingsRow.updated_at),
+      }
+    : null;
 
   // Build export object
   const exportData: ExportData = {
@@ -310,7 +316,7 @@ export async function exportAllData(): Promise<string> {
     journalEntries,
     dailyCheckins,
     milestones,
-    meetingLogs: meetingLogs.map(log => ({
+    meetingLogs: meetingLogs.map((log) => ({
       ...log,
       didShare: false,
     })),
@@ -326,20 +332,17 @@ export async function exportAllData(): Promise<string> {
   const filePath = `${FileSystem.documentDirectory}${filename}`;
 
   // Write to file
-  await FileSystem.writeAsStringAsync(
-    filePath,
-    JSON.stringify(exportData, null, 2)
-  );
+  await FileSystem.writeAsStringAsync(filePath, JSON.stringify(exportData, null, 2));
 
   return filePath;
 }
 
 /**
  * Export data and share via system share sheet
- * 
+ *
  * Exports all data and immediately opens the system share sheet
  * so users can share the exported file via email, cloud storage, etc.
- * 
+ *
  * @returns Promise resolving to true if sharing succeeded
  * @throws Error if sharing is not available or export fails
  * @example
@@ -388,10 +391,10 @@ export async function exportAndShare(): Promise<boolean> {
 
 /**
  * Get export statistics
- * 
+ *
  * Returns counts of all data types that would be included in an export.
  * Useful for showing users what will be exported before they proceed.
- * 
+ *
  * @returns Promise resolving to object with counts for each data type
  * @example
  * ```ts
@@ -408,7 +411,7 @@ export async function getExportStats(): Promise<{
   capsuleCount: number;
 }> {
   const db = await getDatabase();
-  
+
   const [journals, checkins, milestones, meetings, vault, capsules] = await Promise.all([
     db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM journal_entries'),
     db.getFirstAsync<{ count: number }>('SELECT COUNT(*) as count FROM daily_checkins'),
@@ -427,4 +430,3 @@ export async function getExportStats(): Promise<{
     capsuleCount: capsules?.count || 0,
   };
 }
-

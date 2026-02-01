@@ -58,30 +58,43 @@ function splitPayloads(raw: string): string[] {
 export function useSponsorSharedEntries(userId: string) {
   const { db, isReady } = useDatabase();
 
-  const getConnectionById = useCallback(async (connectionId: string): Promise<SponsorConnectionRow | null> => {
-    if (!db || !isReady) return null;
-    return await db.getFirstAsync<SponsorConnectionRow>(
-      `SELECT id, invite_code, shared_key FROM sponsor_connections WHERE id = ? AND user_id = ?`,
-      [connectionId, userId]
-    );
-  }, [db, isReady, userId]);
+  const getConnectionById = useCallback(
+    async (connectionId: string): Promise<SponsorConnectionRow | null> => {
+      if (!db || !isReady) return null;
+      return await db.getFirstAsync<SponsorConnectionRow>(
+        `SELECT id, invite_code, shared_key FROM sponsor_connections WHERE id = ? AND user_id = ?`,
+        [connectionId, userId],
+      );
+    },
+    [db, isReady, userId],
+  );
 
-  const getConnectionByCode = useCallback(async (code: string): Promise<SponsorConnectionRow | null> => {
-    if (!db || !isReady) return null;
-    return await db.getFirstAsync<SponsorConnectionRow>(
-      `SELECT id, invite_code, shared_key FROM sponsor_connections WHERE user_id = ? AND invite_code = ?`,
-      [userId, code]
-    );
-  }, [db, isReady, userId]);
+  const getConnectionByCode = useCallback(
+    async (code: string): Promise<SponsorConnectionRow | null> => {
+      if (!db || !isReady) return null;
+      return await db.getFirstAsync<SponsorConnectionRow>(
+        `SELECT id, invite_code, shared_key FROM sponsor_connections WHERE user_id = ? AND invite_code = ?`,
+        [userId, code],
+      );
+    },
+    [db, isReady, userId],
+  );
 
-  const getSharedKeyForConnection = useCallback(async (connectionId: string): Promise<string | null> => {
-    const connection = await getConnectionById(connectionId);
-    if (!connection?.shared_key) return null;
-    return await decryptContent(connection.shared_key);
-  }, [getConnectionById]);
+  const getSharedKeyForConnection = useCallback(
+    async (connectionId: string): Promise<string | null> => {
+      const connection = await getConnectionById(connectionId);
+      if (!connection?.shared_key) return null;
+      return await decryptContent(connection.shared_key);
+    },
+    [getConnectionById],
+  );
 
   const shareEntries = useCallback(
-    async (connectionId: string, entries: JournalEntryDecrypted[], senderName?: string): Promise<string[]> => {
+    async (
+      connectionId: string,
+      entries: JournalEntryDecrypted[],
+      senderName?: string,
+    ): Promise<string[]> => {
       if (!db || !isReady || !userId) {
         throw new Error('Database not ready');
       }
@@ -120,7 +133,7 @@ export function useSponsorSharedEntries(userId: string) {
           `INSERT INTO sponsor_shared_entries (
             id, user_id, connection_id, direction, journal_entry_id, payload, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [generateId('share'), userId, connectionId, 'outgoing', entry.id, payload, now, now]
+          [generateId('share'), userId, connectionId, 'outgoing', entry.id, payload, now, now],
         );
 
         payloads.push(payload);
@@ -128,7 +141,7 @@ export function useSponsorSharedEntries(userId: string) {
 
       return payloads;
     },
-    [db, isReady, userId, getConnectionById]
+    [db, isReady, userId, getConnectionById],
   );
 
   const shareComment = useCallback(
@@ -136,7 +149,7 @@ export function useSponsorSharedEntries(userId: string) {
       connectionId: string,
       entryId: string,
       comment: string,
-      senderName?: string
+      senderName?: string,
     ): Promise<string> => {
       if (!db || !isReady || !userId) {
         throw new Error('Database not ready');
@@ -151,7 +164,7 @@ export function useSponsorSharedEntries(userId: string) {
       const now = new Date().toISOString();
       const encrypted = await encryptWithSharedKey(
         sharedKey,
-        JSON.stringify({ comment, createdAt: now })
+        JSON.stringify({ comment, createdAt: now }),
       );
       const payload = createCommentSharePayload({
         version: 1,
@@ -166,16 +179,18 @@ export function useSponsorSharedEntries(userId: string) {
         `INSERT INTO sponsor_shared_entries (
           id, user_id, connection_id, direction, journal_entry_id, payload, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [generateId('comment'), userId, connectionId, 'comment', entryId, payload, now, now]
+        [generateId('comment'), userId, connectionId, 'comment', entryId, payload, now, now],
       );
 
       return payload;
     },
-    [db, isReady, userId, getConnectionById]
+    [db, isReady, userId, getConnectionById],
   );
 
   const importPayloads = useCallback(
-    async (payloadText: string): Promise<{ entries: number; comments: number; skipped: number }> => {
+    async (
+      payloadText: string,
+    ): Promise<{ entries: number; comments: number; skipped: number }> => {
       if (!db || !isReady || !userId) {
         throw new Error('Database not ready');
       }
@@ -213,7 +228,7 @@ export function useSponsorSharedEntries(userId: string) {
 
         const existing = await db.getFirstAsync<{ id: string }>(
           `SELECT id FROM sponsor_shared_entries WHERE user_id = ? AND connection_id = ? AND payload = ?`,
-          [userId, connection.id, payload]
+          [userId, connection.id, payload],
         );
         if (existing) {
           skipped += 1;
@@ -235,7 +250,7 @@ export function useSponsorSharedEntries(userId: string) {
             payload,
             now,
             now,
-          ]
+          ],
         );
 
         if (entryPayload) {
@@ -247,7 +262,7 @@ export function useSponsorSharedEntries(userId: string) {
 
       return { entries, comments, skipped };
     },
-    [db, isReady, userId, getConnectionByCode]
+    [db, isReady, userId, getConnectionByCode],
   );
 
   const loadIncomingEntries = useCallback(
@@ -267,7 +282,7 @@ export function useSponsorSharedEntries(userId: string) {
          FROM sponsor_shared_entries
          WHERE user_id = ? AND connection_id = ? AND direction = 'incoming'
          ORDER BY created_at DESC`,
-        [userId, connectionId]
+        [userId, connectionId],
       );
 
       const entries: SharedEntryView[] = [];
@@ -296,7 +311,7 @@ export function useSponsorSharedEntries(userId: string) {
 
       return entries;
     },
-    [db, isReady, userId, getSharedKeyForConnection]
+    [db, isReady, userId, getSharedKeyForConnection],
   );
 
   const loadCommentsForEntry = useCallback(
@@ -313,7 +328,7 @@ export function useSponsorSharedEntries(userId: string) {
          FROM sponsor_shared_entries
          WHERE user_id = ? AND journal_entry_id = ? AND direction = 'comment'
          ORDER BY created_at DESC`,
-        [userId, entryId]
+        [userId, entryId],
       );
 
       const comments: SharedCommentView[] = [];
@@ -340,7 +355,7 @@ export function useSponsorSharedEntries(userId: string) {
 
       return comments;
     },
-    [db, isReady, userId, getSharedKeyForConnection]
+    [db, isReady, userId, getSharedKeyForConnection],
   );
 
   return {

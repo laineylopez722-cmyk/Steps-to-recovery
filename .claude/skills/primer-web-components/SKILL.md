@@ -226,10 +226,7 @@ checkout.options = {
   locale: 'en-US', // Force UI locale
   merchantDomain: 'merchant.example.com', // For Apple Pay validation
   disabledPayments: false, // Disable all payment methods
-  enabledPaymentMethods: [
-    PaymentMethodType.PAYMENT_CARD,
-    PaymentMethodType.PAYPAL,
-  ],
+  enabledPaymentMethods: [PaymentMethodType.PAYMENT_CARD, PaymentMethodType.PAYPAL],
 };
 ```
 
@@ -393,10 +390,7 @@ import { PaymentMethodType } from '@primer-io/primer-js';
 
 checkout.options = {
   sdkCore: true, // Default, required for PayPal
-  enabledPaymentMethods: [
-    PaymentMethodType.PAYMENT_CARD,
-    PaymentMethodType.PAYPAL,
-  ],
+  enabledPaymentMethods: [PaymentMethodType.PAYMENT_CARD, PaymentMethodType.PAYPAL],
   paypal: {
     style: {
       layout: 'vertical',
@@ -517,10 +511,7 @@ paypal: {
 ```javascript
 checkout.options = {
   sdkCore: true,
-  enabledPaymentMethods: [
-    PaymentMethodType.PAYMENT_CARD,
-    PaymentMethodType.PAYPAL,
-  ],
+  enabledPaymentMethods: [PaymentMethodType.PAYMENT_CARD, PaymentMethodType.PAYPAL],
   paypal: {
     // Button styling
     style: {
@@ -609,8 +600,7 @@ Dispatched whenever the checkout state changes (processing, success, error, etc.
 
 ```javascript
 checkout.addEventListener('primer:state-change', (event) => {
-  const { isProcessing, isSuccessful, primerJsError, paymentFailure } =
-    event.detail;
+  const { isProcessing, isSuccessful, primerJsError, paymentFailure } = event.detail;
 
   if (isProcessing) {
     console.log('⏳ Processing payment...');
@@ -619,8 +609,7 @@ checkout.addEventListener('primer:state-change', (event) => {
     console.log('✅ Payment successful!');
     hideLoadingSpinner();
   } else if (primerJsError || paymentFailure) {
-    const errorMessage =
-      primerJsError?.message || paymentFailure?.message || 'An error occurred';
+    const errorMessage = primerJsError?.message || paymentFailure?.message || 'An error occurred';
     console.error('❌ Payment failed:', errorMessage);
 
     // Log error code for debugging
@@ -939,8 +928,7 @@ Dispatched when the card network (Visa, Mastercard, etc.) is detected or changes
 
 ```javascript
 checkout.addEventListener('primer:card-network-change', (event) => {
-  const { detectedCardNetwork, selectableCardNetworks, isLoading } =
-    event.detail;
+  const { detectedCardNetwork, selectableCardNetworks, isLoading } = event.detail;
 
   if (isLoading) {
     console.log('🔍 Detecting card network...');
@@ -1577,10 +1565,7 @@ These are HTML attributes set via `setAttribute()`:
 ```javascript
 checkout.setAttribute('client-token', 'your-token');
 checkout.setAttribute('loader-disabled', 'true');
-checkout.setAttribute(
-  'custom-styles',
-  JSON.stringify({ primerColorBrand: '#4a6cf7' }),
-);
+checkout.setAttribute('custom-styles', JSON.stringify({ primerColorBrand: '#4a6cf7' }));
 ```
 
 ### SDK Options (use property assignment)
@@ -1730,8 +1715,7 @@ This provides a complete checkout experience with all available payment methods.
   </primer-payment-method-container>
 
   <!-- Show everything except cards -->
-  <primer-payment-method-container exclude="PAYMENT_CARD">
-  </primer-payment-method-container>
+  <primer-payment-method-container exclude="PAYMENT_CARD"> </primer-payment-method-container>
 </div>
 ```
 

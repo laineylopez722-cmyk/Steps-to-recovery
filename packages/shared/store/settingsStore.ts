@@ -16,10 +16,12 @@ interface SettingsStore {
   settings: AppSettings | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   loadSettings: () => Promise<void>;
-  updateSettings: (updates: Partial<Omit<AppSettings, 'id' | 'createdAt' | 'updatedAt'>>) => Promise<void>;
+  updateSettings: (
+    updates: Partial<Omit<AppSettings, 'id' | 'createdAt' | 'updatedAt'>>,
+  ) => Promise<void>;
   setCheckInTime: (time: string) => Promise<void>;
   setAutoLockMinutes: (minutes: number) => Promise<void>;
   setBiometricEnabled: (enabled: boolean) => Promise<void>;
@@ -37,7 +39,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       let settings = await getAppSettings();
-      
+
       // Create default settings if none exist
       if (!settings) {
         settings = await createOrUpdateAppSettings({
@@ -48,7 +50,7 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
           notificationsEnabled: true,
         });
       }
-      
+
       set({ settings, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to load settings', isLoading: false });
@@ -108,4 +110,3 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
     await get().updateSettings({ crisisRegion: region });
   },
 }));
-

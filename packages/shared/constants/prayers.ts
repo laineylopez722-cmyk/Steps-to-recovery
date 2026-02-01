@@ -1,9 +1,9 @@
 /**
  * Prayer Library
- * 
+ *
  * Common recovery prayers from 12-step programs.
  * These prayers support spiritual growth and daily practice in recovery.
- * 
+ *
  * @module constants/prayers
  */
 
@@ -103,7 +103,7 @@ Amen.`,
   },
   {
     id: 'eleventh-step',
-    title: "St. Francis Prayer (11th Step)",
+    title: 'St. Francis Prayer (11th Step)',
     content: `Lord, make me a channel of thy peace;
 that where there is hatred, I may bring love;
 that where there is wrong, I may bring the spirit of forgiveness;
@@ -316,7 +316,7 @@ as others were of service to me.`,
 
 /**
  * Get prayers by category
- * 
+ *
  * @param category - Prayer category to filter by
  * @returns Array of prayers in the specified category
  * @example
@@ -330,7 +330,7 @@ export function getPrayersByCategory(category: Prayer['category']): readonly Pra
 
 /**
  * Get prayers associated with a specific step
- * 
+ *
  * @param stepNumber - Step number (1-12)
  * @returns Array of prayers associated with the step
  * @example
@@ -347,7 +347,7 @@ export function getPrayersForStep(stepNumber: number): readonly Prayer[] {
 
 /**
  * Get prayer by ID
- * 
+ *
  * @param id - Prayer ID to look up
  * @returns Prayer object if found, undefined otherwise
  * @example
@@ -364,7 +364,7 @@ export function getPrayerById(id: string): Prayer | undefined {
 
 /**
  * Check if a prayer ID is valid
- * 
+ *
  * @param id - Prayer ID to validate
  * @returns True if prayer exists
  */
@@ -381,4 +381,3 @@ export const PRAYER_CATEGORIES: { key: Prayer['category']; label: string; icon: 
   { key: 'daily', label: 'Daily Practice', icon: '☀️' },
   { key: 'situational', label: 'Situational', icon: '⚡' },
 ];
-

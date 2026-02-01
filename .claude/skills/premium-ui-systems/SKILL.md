@@ -38,25 +38,25 @@ Are you building UI? → Start here ↓
 
 ### Foundation Checklist
 
-| Area | Quick Check | Common Fix |
-|------|-------------|------------|
-| **Hierarchy** | One dominant element per screen? | Strengthen primary with size/weight/placement |
-| **Spacing** | Consistent padding/margins? | Adopt 4/8/12/16/24/32px scale |
-| **Typography** | Clear size hierarchy (3-4 sizes)? | Define scale once, use everywhere |
-| **Radii** | Same border-radius throughout? | Pick 2 values: cards (16px), inputs (8px) |
-| **Colors** | Too many competing colors? | 1 brand accent + neutral gray scale |
-| **Alignment** | Everything on a grid? | 8px grid alignment |
-| **Consistency** | Same component behaves differently? | Standardize button/card/input patterns |
+| Area            | Quick Check                         | Common Fix                                    |
+| --------------- | ----------------------------------- | --------------------------------------------- |
+| **Hierarchy**   | One dominant element per screen?    | Strengthen primary with size/weight/placement |
+| **Spacing**     | Consistent padding/margins?         | Adopt 4/8/12/16/24/32px scale                 |
+| **Typography**  | Clear size hierarchy (3-4 sizes)?   | Define scale once, use everywhere             |
+| **Radii**       | Same border-radius throughout?      | Pick 2 values: cards (16px), inputs (8px)     |
+| **Colors**      | Too many competing colors?          | 1 brand accent + neutral gray scale           |
+| **Alignment**   | Everything on a grid?               | 8px grid alignment                            |
+| **Consistency** | Same component behaves differently? | Standardize button/card/input patterns        |
 
 ### Symptoms Diagnostic
 
-| Symptom | Root Cause | Fix |
-|---------|------------|-----|
-| "Looks like a template" | Inconsistent tokens | Audit radii/spacing/shadows—standardize |
-| "Too busy/noisy" | Weak hierarchy | Grayscale test → strengthen scale/weight |
-| "Feels cheap" | Low contrast on effects | Test worst-case backgrounds → go solid |
-| "Demo reel energy" | Motion without purpose | Cut to 2-4 meaningful transitions |
-| "Doesn't feel cohesive" | Mixed conventions | One button hierarchy, one modal pattern |
+| Symptom                 | Root Cause              | Fix                                      |
+| ----------------------- | ----------------------- | ---------------------------------------- |
+| "Looks like a template" | Inconsistent tokens     | Audit radii/spacing/shadows—standardize  |
+| "Too busy/noisy"        | Weak hierarchy          | Grayscale test → strengthen scale/weight |
+| "Feels cheap"           | Low contrast on effects | Test worst-case backgrounds → go solid   |
+| "Demo reel energy"      | Motion without purpose  | Cut to 2-4 meaningful transitions        |
+| "Doesn't feel cohesive" | Mixed conventions       | One button hierarchy, one modal pattern  |
 
 **Failed the audit?** → Fix foundation first. Effects won't save weak structure.
 
@@ -164,14 +164,18 @@ Define once, use everywhere:
 
 ```css
 /* Spacing scale */
---space-1: 4px;   --space-2: 8px;   --space-3: 12px;
---space-4: 16px;  --space-5: 24px;  --space-6: 32px;
+--space-1: 4px;
+--space-2: 8px;
+--space-3: 12px;
+--space-4: 16px;
+--space-5: 24px;
+--space-6: 32px;
 
 /* Radii */
---radius-sm: 8px;   /* inputs */
---radius-md: 12px;  /* buttons */
---radius-lg: 16px;  /* cards */
---radius-xl: 24px;  /* modals */
+--radius-sm: 8px; /* inputs */
+--radius-md: 12px; /* buttons */
+--radius-lg: 16px; /* cards */
+--radius-xl: 24px; /* modals */
 
 /* Motion */
 --duration-fast: 150ms;
@@ -183,21 +187,21 @@ Define once, use everywhere:
 
 Only use where it clarifies layering:
 
-| Surface | Glass OK? | Notes |
-|---------|-----------|-------|
-| Navigation | ✅ Yes | Sticky nav feels premium |
-| Filters/toolbars | ✅ Yes | Chrome element |
-| Modals/sheets | ✅ Yes | Glass shell, solid insets |
-| Data tables | ❌ No | Readability critical |
-| Forms | ❌ No | Keep on solid |
-| KPI cards | ⚠️ Careful | Only if background controlled |
+| Surface          | Glass OK?  | Notes                         |
+| ---------------- | ---------- | ----------------------------- |
+| Navigation       | ✅ Yes     | Sticky nav feels premium      |
+| Filters/toolbars | ✅ Yes     | Chrome element                |
+| Modals/sheets    | ✅ Yes     | Glass shell, solid insets     |
+| Data tables      | ❌ No      | Readability critical          |
+| Forms            | ❌ No      | Keep on solid                 |
+| KPI cards        | ⚠️ Careful | Only if background controlled |
 
 ```tsx
 // Chrome glass (nav, toolbars)
-className="backdrop-blur-md bg-white/70 border border-white/20"
+className = 'backdrop-blur-md bg-white/70 border border-white/20';
 
 // Overlay glass (modals)
-className="backdrop-blur-lg bg-white/80 border border-white/30"
+className = 'backdrop-blur-lg bg-white/80 border border-white/30';
 ```
 
 ### Motion Budget
@@ -210,9 +214,13 @@ Pick 2-4 transitions and reuse:
 4. **Page transitions** — Route changes (if any)
 
 Always include:
+
 ```css
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition-duration: 0.01ms !important; }
+  * {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 ```
 
@@ -241,6 +249,7 @@ Before coding, commit to a direction:
 - **Differentiation**: What's the ONE thing users will remember?
 
 **Aesthetic Directions** (examples, not exhaustive):
+
 - Brutally minimal (Vercel)
 - Editorial luxury (Stripe)
 - Technical precision (Linear)
@@ -255,6 +264,7 @@ Before coding, commit to a direction:
 **Avoid**: Inter, Roboto, Arial, system fonts (overused AI defaults)
 
 **Prefer**: Distinctive pairings that match your tone
+
 - Display font (headlines) + Refined body font
 - Unexpected but appropriate character
 - Generous size hierarchy (marketing can go bigger)
@@ -263,7 +273,8 @@ Before coding, commit to a direction:
 
 **Avoid**: Purple gradients on white, generic SaaS palettes
 
-**Prefer**: 
+**Prefer**:
+
 - One dominant brand accent
 - Atmospheric backgrounds (gradients, noise, mesh)
 - High contrast for CTAs
@@ -274,6 +285,7 @@ Before coding, commit to a direction:
 **Avoid**: Centered everything, predictable grid
 
 **Prefer**:
+
 - Asymmetry with purpose
 - Overlap and layering
 - Diagonal flow
@@ -293,11 +305,11 @@ Systematic component patterns to maintain consistency:
 
 ```tsx
 // Primary (ONE per section)
-<button className="px-4 py-2 rounded-lg bg-gray-900 text-white 
+<button className="px-4 py-2 rounded-lg bg-gray-900 text-white
                    hover:bg-gray-800 transition-colors">
 
 // Secondary
-<button className="px-4 py-2 rounded-lg border border-gray-300 
+<button className="px-4 py-2 rounded-lg border border-gray-300
                    hover:bg-gray-50 transition-colors">
 
 // Ghost
@@ -312,16 +324,18 @@ Systematic component patterns to maintain consistency:
                hover:shadow-md hover:-translate-y-0.5 transition-all">
 
 // Glass card (chrome only)
-<div className="p-6 rounded-2xl border border-white/20 
+<div className="p-6 rounded-2xl border border-white/20
                backdrop-blur-md bg-white/70 shadow-sm">
 ```
 
 ### Input Standards
 
 ```tsx
-<input className="w-full px-3 py-2 rounded-lg border border-gray-300 
+<input
+  className="w-full px-3 py-2 rounded-lg border border-gray-300 
                   focus:border-gray-900 focus:ring-1 focus:ring-gray-900 
-                  transition-colors" />
+                  transition-colors"
+/>
 ```
 
 **Full component guide**: [references/component-library.md](references/component-library.md)
@@ -332,12 +346,12 @@ Systematic component patterns to maintain consistency:
 
 Learn from premium products:
 
-| Brand | Signature | Steal This |
-|-------|-----------|------------|
-| **Linear** | Spacing discipline + subtle lighting | 8px grid, muted colors |
-| **Stripe** | Editorial typography + gradients | Large headlines, atmospheric BG |
-| **Vercel** | Technical clarity + high contrast | Black/white, sharp CTAs |
-| **Framer** | Motion-forward + gallery | Smooth transitions, showcases |
+| Brand      | Signature                            | Steal This                      |
+| ---------- | ------------------------------------ | ------------------------------- |
+| **Linear** | Spacing discipline + subtle lighting | 8px grid, muted colors          |
+| **Stripe** | Editorial typography + gradients     | Large headlines, atmospheric BG |
+| **Vercel** | Technical clarity + high contrast    | Black/white, sharp CTAs         |
+| **Framer** | Motion-forward + gallery             | Smooth transitions, showcases   |
 
 **Key insight**: Premium = recognizable system. Everything obeys the same rules.
 
@@ -347,13 +361,13 @@ Learn from premium products:
 
 ### When to Read References
 
-| Reference | When to Use |
-|-----------|-------------|
-| [Foundation First](references/foundation-first.md) | Building product features from scratch |
-| [Creative Direction](references/creative-direction.md) | Want bold, distinctive aesthetics |
-| [Component Library](references/component-library.md) | Standardizing components across app |
-| [Dashboard Patterns](references/dashboard-patterns.md) | Building KPI layouts, charts, tables |
-| [Marketing Patterns](references/marketing-patterns.md) | Heroes, pricing, feature sections |
+| Reference                                              | When to Use                            |
+| ------------------------------------------------------ | -------------------------------------- |
+| [Foundation First](references/foundation-first.md)     | Building product features from scratch |
+| [Creative Direction](references/creative-direction.md) | Want bold, distinctive aesthetics      |
+| [Component Library](references/component-library.md)   | Standardizing components across app    |
+| [Dashboard Patterns](references/dashboard-patterns.md) | Building KPI layouts, charts, tables   |
+| [Marketing Patterns](references/marketing-patterns.md) | Heroes, pricing, feature sections      |
 
 ---
 

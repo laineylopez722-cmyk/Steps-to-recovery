@@ -3,6 +3,7 @@
 ## Project Overview
 
 A privacy-first 12-Step Recovery Companion app built with:
+
 - **Mobile**: React Native + Expo (TypeScript)
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
 - **Architecture**: Monorepo with Turborepo
@@ -47,6 +48,7 @@ apps/mobile/src/
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js >= 18
 - npm or yarn
 - Expo CLI (`npm install -g expo-cli`)
@@ -55,6 +57,7 @@ apps/mobile/src/
 ### Installation
 
 1. **Install dependencies**
+
    ```bash
    npm install
    ```
@@ -69,11 +72,13 @@ apps/mobile/src/
      ```
 
 3. **Navigate to mobile app**
+
    ```bash
    cd apps/mobile
    ```
 
 4. **Start Expo development server**
+
    ```bash
    npm start
    ```
@@ -88,6 +93,7 @@ apps/mobile/src/
 Following a BMAD (Build-Measure-Analyze-Decide) approach:
 
 ### Phase 0: Setup & Scaffolding ✅ (Current)
+
 - [x] Monorepo structure
 - [x] Expo app initialization
 - [x] Shared package setup
@@ -97,6 +103,7 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 - [ ] Supabase integration
 
 ### Phase 1: Core Architecture & User Auth
+
 - [ ] Supabase Auth integration
 - [ ] Login/SignUp screens
 - [ ] Onboarding flow
@@ -104,24 +111,28 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 - [ ] Auth context
 
 ### Phase 2: Journaling & Step Work
+
 - [ ] Encrypted journaling
 - [ ] SQLite setup with encryption
 - [ ] Offline sync mechanism
 - [ ] Step work UI and data models
 
 ### Phase 3: Sponsor Connection & Sharing
+
 - [ ] Sponsor invite flow
 - [ ] Sponsorship management
 - [ ] Selective entry sharing
 - [ ] RLS policies
 
 ### Phase 4: Notifications, Geofencing & Streaks
+
 - [ ] Daily reminders
 - [ ] Geofencing for meetings
 - [ ] Sobriety streak counter
 - [ ] Milestones & achievements
 
 ### Phase 5: Polish
+
 - [ ] Accessibility improvements
 - [ ] UX refinements
 - [ ] Testing
@@ -130,6 +141,7 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 ## Claude Code Prompts
 
 The `.claude/` directory contains feature-specific prompts:
+
 - `AppCoreClaude.md` - Core app structure
 - `OnboardingClaude.md` - Auth & onboarding
 - `JournalingClaude.md` - Encrypted journaling
@@ -206,7 +218,7 @@ eas secret:list
 - **User tracking**: User ID (not email) is tracked via `setSentryUser()` in `AuthContext`
 - **Error capture**: Errors are automatically captured via `Sentry.wrap()` on the root component
 - **Logger integration**: `logger.error()` automatically sends errors to Sentry in production
-- **Data sanitization**: All sensitive fields (encrypted_*, journal, etc.) are automatically redacted
+- **Data sanitization**: All sensitive fields (encrypted\_\*, journal, etc.) are automatically redacted
 - **Privacy-first**: Only runs in production builds (`__DEV__ = false`)
 
 ### Testing Sentry

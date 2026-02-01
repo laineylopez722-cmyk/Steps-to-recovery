@@ -51,16 +51,16 @@ Use this checklist when generating or reviewing tests for Dify frontend componen
 
 ### Conditional Sections (Add When Feature Present)
 
-| Feature | Add Tests For |
-|---------|---------------|
-| `useState` | Initial state, transitions, cleanup |
-| `useEffect` | Execution, dependencies, cleanup |
-| Event handlers | onClick, onChange, onSubmit, keyboard |
-| API calls | Loading, success, error states |
-| Routing | Navigation, params, query strings |
-| `useCallback`/`useMemo` | Referential equality |
-| Context | Provider values, consumer behavior |
-| Forms | Validation, submission, error display |
+| Feature                 | Add Tests For                         |
+| ----------------------- | ------------------------------------- |
+| `useState`              | Initial state, transitions, cleanup   |
+| `useEffect`             | Execution, dependencies, cleanup      |
+| Event handlers          | onClick, onChange, onSubmit, keyboard |
+| API calls               | Loading, success, error states        |
+| Routing                 | Navigation, params, query strings     |
+| `useCallback`/`useMemo` | Referential equality                  |
+| Context                 | Provider values, consumer behavior    |
+| Forms                   | Validation, submission, error display |
 
 ## Code Quality Checklist
 
@@ -107,8 +107,8 @@ For the current file being tested:
 
 - [ ] 100% function coverage
 - [ ] 100% statement coverage
-- [ ] >95% branch coverage
-- [ ] >95% line coverage
+- [ ] > 95% branch coverage
+- [ ] > 95% line coverage
 
 ## Post-Generation (Per File)
 
@@ -144,13 +144,13 @@ vi.mock('./Component', () => ({ isOpen }: any) =>
 
 ```typescript
 // ❌ Shared state not reset
-let mockState = false
-vi.mock('./useHook', () => () => mockState)
+let mockState = false;
+vi.mock('./useHook', () => () => mockState);
 
 // ✅ Reset in beforeEach
 beforeEach(() => {
-  mockState = false
-})
+  mockState = false;
+});
 ```
 
 ### Async Race Conditions

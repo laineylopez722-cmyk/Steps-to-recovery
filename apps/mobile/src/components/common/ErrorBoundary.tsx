@@ -64,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
       // Default error UI - Dark Navy Theme
       return (
         <SafeAreaView className="flex-1 bg-navy-950">
-          <ScrollView 
+          <ScrollView
             className="flex-1"
             contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
           >
@@ -75,7 +75,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </View>
 
               {/* Error Message */}
-              <Text 
+              <Text
                 className="text-2xl font-bold text-white text-center mb-2"
                 accessibilityRole="header"
               >
@@ -100,9 +100,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 accessibilityLabel="Try again"
               >
                 <Feather name="refresh-cw" size={20} color="#fff" />
-                <Text className="text-white font-semibold text-lg">
-                  Try Again
-                </Text>
+                <Text className="text-white font-semibold text-lg">Try Again</Text>
               </TouchableOpacity>
 
               {/* Emergency Access */}
@@ -122,9 +120,7 @@ export class ErrorBoundary extends Component<Props, State> {
             {/* Debug info (only in development) */}
             {__DEV__ && this.state.error && (
               <View className="mt-8 p-4 bg-navy-800/50 rounded-xl border border-surface-700/30">
-                <Text className="text-surface-500 text-xs font-mono mb-2">
-                  Debug Info:
-                </Text>
+                <Text className="text-surface-500 text-xs font-mono mb-2">Debug Info:</Text>
                 <Text className="text-danger-400 text-xs font-mono">
                   {this.state.error.toString()}
                 </Text>
@@ -147,19 +143,17 @@ export class ErrorBoundary extends Component<Props, State> {
 /**
  * Lightweight error fallback for specific sections
  */
-export function SectionErrorFallback({ 
-  onRetry, 
-  message = "This section couldn't load" 
-}: { 
+export function SectionErrorFallback({
+  onRetry,
+  message = "This section couldn't load",
+}: {
   onRetry?: () => void;
   message?: string;
 }) {
   return (
     <View className="p-4 bg-amber-500/10 rounded-xl items-center border border-amber-500/20">
       <Feather name="alert-circle" size={24} color="#fbbf24" />
-      <Text className="text-amber-300 text-center mt-2 mb-3">
-        {message}
-      </Text>
+      <Text className="text-amber-300 text-center mt-2 mb-3">{message}</Text>
       {onRetry && (
         <TouchableOpacity
           onPress={onRetry}
@@ -167,9 +161,7 @@ export function SectionErrorFallback({
           accessibilityRole="button"
           accessibilityLabel="Retry loading"
         >
-          <Text className="text-amber-300 font-medium">
-            Tap to retry
-          </Text>
+          <Text className="text-amber-300 font-medium">Tap to retry</Text>
         </TouchableOpacity>
       )}
     </View>

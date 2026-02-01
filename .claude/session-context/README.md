@@ -4,8 +4,8 @@ This folder contains markdown files that preserve context between Claude Code se
 
 ## Current Sessions
 
-| File | Purpose | Status |
-|------|---------|--------|
+| File                              | Purpose                       | Status      |
+| --------------------------------- | ----------------------------- | ----------- |
 | `android-production-readiness.md` | Android/Expo production fixes | In Progress |
 
 ## How to Use
@@ -26,6 +26,7 @@ This folder contains markdown files that preserve context between Claude Code se
 `<feature-or-task-name>.md`
 
 Examples:
+
 - `android-production-readiness.md`
 - `encryption-refactor.md`
 - `sync-service-v2.md`

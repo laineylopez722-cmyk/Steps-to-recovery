@@ -47,10 +47,7 @@ function HomeStackNavigator(): React.ReactElement {
 
   return (
     <HomeStack.Navigator>
-      <HomeStack.Screen
-        name="HomeMain"
-        options={{ headerShown: false }}
-      >
+      <HomeStack.Screen name="HomeMain" options={{ headerShown: false }}>
         {() => <HomeScreen userId={userId} />}
       </HomeStack.Screen>
       <HomeStack.Screen
@@ -93,10 +90,7 @@ function JournalStackNavigator(): React.ReactElement {
 
   return (
     <JournalStack.Navigator>
-      <JournalStack.Screen
-        name="JournalList"
-        options={{ title: 'Journal' }}
-      >
+      <JournalStack.Screen name="JournalList" options={{ title: 'Journal' }}>
         {() => <JournalListScreen userId={userId} />}
       </JournalStack.Screen>
       <JournalStack.Screen
@@ -115,10 +109,7 @@ function StepsStackNavigator(): React.ReactElement {
 
   return (
     <StepsStack.Navigator>
-      <StepsStack.Screen
-        name="StepsOverview"
-        options={{ title: '12 Steps' }}
-      >
+      <StepsStack.Screen name="StepsOverview" options={{ title: '12 Steps' }}>
         {() => <StepsOverviewScreen userId={userId} />}
       </StepsStack.Screen>
       <StepsStack.Screen

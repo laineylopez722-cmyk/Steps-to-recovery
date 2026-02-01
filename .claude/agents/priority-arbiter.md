@@ -60,17 +60,21 @@ Structure your recommendations as:
 [Feature name]: [Clear rationale tied to critical path, dependencies, or MVP definition]
 
 **RECOMMENDED SEQUENCE**
+
 1. [Feature] - [Why now]
 2. [Feature] - [Why next]
 3. [Feature] - [Reasoning]
 
 **PARALLEL WORK OPPORTUNITIES**
+
 - [Feature A] + [Feature B] can be developed simultaneously because [reason]
 
 **BLOCKERS & DEPENDENCIES**
+
 - [Feature X] blocks [Feature Y] - [Recommendation for resolution]
 
 **CUT CANDIDATES** (if timeline is at risk)
+
 - [Feature]: [Why it can be deferred]
 - [Feature]: [Post-launch viability]
 
@@ -88,6 +92,7 @@ Structure your recommendations as:
 **Self-Verification:**
 
 Before finalizing recommendations, verify:
+
 - Have I identified all blocking dependencies?
 - Does my sequencing respect technical constraints?
 - Are cut recommendations truly non-critical to MVP?

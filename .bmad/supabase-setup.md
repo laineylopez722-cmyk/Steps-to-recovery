@@ -28,11 +28,13 @@ When you start Claude Code, the Supabase MCP will prompt you to authenticate via
 2. **Set the environment variable:**
 
    **For PowerShell:**
+
    ```powershell
    $env:SUPABASE_ACCESS_TOKEN = "your-access-token-here"
    ```
 
    **For Command Prompt:**
+
    ```cmd
    set SUPABASE_ACCESS_TOKEN=your-access-token-here
    ```
@@ -53,6 +55,7 @@ When you start Claude Code, the Supabase MCP will prompt you to authenticate via
 Once authenticated, you'll have access to these Supabase MCP tools:
 
 ### Database Operations
+
 - `list_organizations` - List your Supabase organizations
 - `get_organization` - Get org details and subscription plan
 - `list_projects` - List all your Supabase projects
@@ -61,6 +64,7 @@ Once authenticated, you'll have access to these Supabase MCP tools:
 - `pause_project` / `restore_project` - Manage project state
 
 ### Database Schema
+
 - `list_tables` - View all tables and schemas
 - `list_extensions` - See installed Postgres extensions
 - `list_migrations` - View migration history
@@ -68,6 +72,7 @@ Once authenticated, you'll have access to these Supabase MCP tools:
 - `execute_sql` - Run SQL queries
 
 ### Development Branches
+
 - `create_branch` - Create dev branches for testing
 - `list_branches` - View all branches
 - `merge_branch` - Merge changes to production
@@ -75,11 +80,13 @@ Once authenticated, you'll have access to these Supabase MCP tools:
 - `delete_branch` - Remove branches
 
 ### Edge Functions
+
 - `list_edge_functions` - View deployed functions
 - `get_edge_function` - Read function code
 - `deploy_edge_function` - Deploy new functions
 
 ### Monitoring & Security
+
 - `get_logs` - Fetch logs by service (api, postgres, auth, etc.)
 - `get_advisors` - Security and performance recommendations
 - `generate_typescript_types` - Auto-generate TypeScript types from DB
@@ -90,10 +97,12 @@ Once authenticated, you'll have access to these Supabase MCP tools:
 ## Integration with Your Project
 
 Your Steps to Recovery app uses:
+
 - **Local-first SQLite** - Primary data storage
 - **Supabase** - Cloud backup and sync
 
 With the Supabase MCP enabled, Claude Code can:
+
 1. ✅ Create/modify database tables and RLS policies
 2. ✅ Test SQL queries before implementing
 3. ✅ Generate TypeScript types from your schema
@@ -112,6 +121,7 @@ claude mcp list
 ```
 
 You should see:
+
 ```
 plugin:supabase:supabase: https://mcp.supabase.com/mcp (HTTP) - ✓ Connected
 ```
@@ -121,14 +131,17 @@ plugin:supabase:supabase: https://mcp.supabase.com/mcp (HTTP) - ✓ Connected
 ## Troubleshooting
 
 ### "401 Unauthorized" Error
+
 - Your access token may have expired
 - Regenerate token at https://supabase.com/dashboard
 
 ### "Failed to connect" Error
+
 - Check your internet connection
 - Verify the project reference is correct: `tbiunmmvfbakwlzykpwq`
 
 ### OAuth Redirect Issues
+
 - Make sure port 45454 is not blocked by firewall
 - Try manual access token method instead
 

@@ -22,7 +22,7 @@ function main() {
     'com',
     'reactcommunity',
     'rndatetimepicker',
-    'Common.java'
+    'Common.java',
   );
 
   if (!fs.existsSync(targetFile)) {
@@ -52,8 +52,9 @@ function main() {
   const next = src.replace(anchor, insertion);
 
   fs.writeFileSync(targetFile, next, 'utf8');
-  console.log(`[postinstall] patched datetimepicker Common.java (added ${missing.length} import(s))`);
+  console.log(
+    `[postinstall] patched datetimepicker Common.java (added ${missing.length} import(s))`,
+  );
 }
 
 main();
-

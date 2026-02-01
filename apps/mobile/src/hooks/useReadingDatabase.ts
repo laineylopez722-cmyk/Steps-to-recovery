@@ -1,7 +1,7 @@
 /**
  * Reading Store with Database Operations
  * Custom hook that provides database-connected reading functionality
- * 
+ *
  * This hook bridges the Zustand store with the database context,
  * enabling full database operations for daily readings and reflections.
  */
@@ -37,13 +37,13 @@ export function useReadingDatabase() {
   // Initialize readings in database
   const initializeReadings = useCallback(async () => {
     if (!db || !isReady) return;
-    
+
     try {
       // Check if readings are already initialized
       const existingCount = await db.getFirstAsync<{ count: number }>(
-        'SELECT COUNT(*) as count FROM daily_readings'
+        'SELECT COUNT(*) as count FROM daily_readings',
       );
-      
+
       if (existingCount && existingCount.count > 0) {
         logger.info('Daily readings already initialized', { count: existingCount.count });
         return;
@@ -51,12 +51,12 @@ export function useReadingDatabase() {
 
       // Generate all readings for the year
       const allReadings = generateFullYearReadings();
-      
+
       // Insert readings in batches
       const batchSize = 50;
       for (let i = 0; i < allReadings.length; i += batchSize) {
         const batch = allReadings.slice(i, i + batchSize);
-        
+
         for (const reading of batch) {
           await db.runAsync(
             `INSERT OR REPLACE INTO daily_readings 
@@ -71,12 +71,12 @@ export function useReadingDatabase() {
               reading.content,
               reading.source,
               reading.reflection_prompt,
-              new Date().toISOString()
-            ]
+              new Date().toISOString(),
+            ],
           );
         }
       }
-      
+
       logger.info('Daily readings initialized successfully', { count: allReadings.length });
     } catch (error) {
       logger.error('Failed to initialize daily readings', error);
@@ -90,11 +90,11 @@ export function useReadingDatabase() {
     try {
       const today = new Date();
       const dayOfYear = getDayOfYear(today);
-      
+
       const reading = await db.getFirstAsync<DailyReading>(
         `SELECT id, day_of_year as dayOfYear, month, day, title, content, source, reflection_prompt
          FROM daily_readings WHERE day_of_year = ?`,
-        [dayOfYear]
+        [dayOfYear],
       );
 
       if (reading) {
@@ -105,16 +105,16 @@ export function useReadingDatabase() {
           title: reading.title,
           content: reading.content,
           source: reading.source,
-          reflection_prompt: reading.reflection_prompt
+          reflection_prompt: reading.reflection_prompt,
         };
-        
+
         useReadingStore.setState({ todayReading: formattedReading });
-        
+
         // Also load today's reflection if it exists
         await loadTodayReflection();
       }
     } catch (error) {
-      logger.error('Failed to load today\'s reading', error);
+      logger.error("Failed to load today's reading", error);
       // Error is logged, store state remains unchanged
     }
   }, [db, isReady]);
@@ -126,86 +126,86 @@ export function useReadingDatabase() {
     try {
       const today = new Date();
       const dateKey = formatDateKey(today);
-      
+
       const reflection = await db.getFirstAsync<DailyReadingReflection>(
         `SELECT * FROM reading_reflections WHERE reading_date = ? ORDER BY created_at DESC LIMIT 1`,
-        [dateKey]
+        [dateKey],
       );
 
       useReadingStore.setState({ todayReflection: reflection || null });
     } catch (error) {
-      logger.error('Failed to load today\'s reflection', error);
+      logger.error("Failed to load today's reflection", error);
     }
   }, [db, isReady]);
 
   // Save reflection to database
-  const saveReflection = useCallback(async (
-    reflectionText: string,
-    userId: string
-  ): Promise<DailyReadingReflection | null> => {
-    if (!db || !isReady || !store.todayReading) return null;
+  const saveReflection = useCallback(
+    async (reflectionText: string, userId: string): Promise<DailyReadingReflection | null> => {
+      if (!db || !isReady || !store.todayReading) return null;
 
-    try {
-      const { todayReading } = store;
-      const now = new Date();
-      const dateKey = formatDateKey(now);
-      
-      // Encrypt the reflection content
-      const { encryptContent } = await import('../utils/encryption');
-      const encryptedReflection = await encryptContent(reflectionText);
-      
-      const reflectionId = generateId('reflection');
-      
-      const reflection: DailyReadingReflection = {
-        id: reflectionId,
-        reading_id: todayReading!.id,
-        readingDate: dateKey,
-        user_id: userId,
-        encrypted_reflection: encryptedReflection,
-        reflection: reflectionText, // Keep in memory for immediate use
-        created_at: now.toISOString(),
-      };
+      try {
+        const { todayReading } = store;
+        const now = new Date();
+        const dateKey = formatDateKey(now);
 
-      // Insert into database
-      await db.runAsync(
-        `INSERT OR REPLACE INTO reading_reflections 
+        // Encrypt the reflection content
+        const { encryptContent } = await import('../utils/encryption');
+        const encryptedReflection = await encryptContent(reflectionText);
+
+        const reflectionId = generateId('reflection');
+
+        const reflection: DailyReadingReflection = {
+          id: reflectionId,
+          reading_id: todayReading!.id,
+          readingDate: dateKey,
+          user_id: userId,
+          encrypted_reflection: encryptedReflection,
+          reflection: reflectionText, // Keep in memory for immediate use
+          created_at: now.toISOString(),
+        };
+
+        // Insert into database
+        await db.runAsync(
+          `INSERT OR REPLACE INTO reading_reflections 
          (id, user_id, reading_id, reading_date, encrypted_reflection, word_count, created_at, updated_at, sync_status)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
+          [
+            reflectionId,
+            userId,
+            todayReading!.id,
+            dateKey,
+            encryptedReflection,
+            reflectionText.split(/\s+/).length, // word count
+            now.toISOString(),
+            now.toISOString(),
+            'pending',
+          ],
+        );
+
+        // Add to sync queue
+        await addToSyncQueue(db, 'reading_reflections', reflectionId, 'insert');
+
+        // Update store
+        useReadingStore.setState({ todayReflection: reflection });
+
+        // Recalculate streak
+        const newStreak = await calculateStreak();
+        useReadingStore.setState({ readingStreak: newStreak });
+
+        logger.info('Reflection saved successfully', {
           reflectionId,
-          userId,
-          todayReading!.id,
-          dateKey,
-          encryptedReflection,
-          reflectionText.split(/\s+/).length, // word count
-          now.toISOString(),
-          now.toISOString(),
-          'pending'
-        ]
-      );
+          wordCount: reflectionText.split(/\s+/).length,
+        });
 
-      // Add to sync queue
-      await addToSyncQueue(db, 'reading_reflections', reflectionId, 'insert');
-
-      // Update store
-      useReadingStore.setState({ todayReflection: reflection });
-      
-      // Recalculate streak
-      const newStreak = await calculateStreak();
-      useReadingStore.setState({ readingStreak: newStreak });
-
-      logger.info('Reflection saved successfully', { 
-        reflectionId, 
-        wordCount: reflectionText.split(/\s+/).length 
-      });
-
-      return reflection;
-    } catch (error) {
-      logger.error('Failed to save reflection', error);
-      // Error is logged, store state remains unchanged
-      return null;
-    }
-  }, [db, isReady]);
+        return reflection;
+      } catch (error) {
+        logger.error('Failed to save reflection', error);
+        // Error is logged, store state remains unchanged
+        return null;
+      }
+    },
+    [db, isReady],
+  );
 
   // Calculate reading streak
   const calculateStreak = useCallback(async (): Promise<number> => {
@@ -214,24 +214,25 @@ export function useReadingDatabase() {
     try {
       let streak = 0;
       const today = new Date();
-      
-      for (let i = 0; i < 365; i++) { // Check up to 365 days back
+
+      for (let i = 0; i < 365; i++) {
+        // Check up to 365 days back
         const checkDate = new Date(today);
         checkDate.setDate(today.getDate() - i);
         const dateKey = formatDateKey(checkDate);
-        
+
         const reflection = await db.getFirstAsync<{ id: string }>(
           'SELECT id FROM reading_reflections WHERE reading_date = ? LIMIT 1',
-          [dateKey]
+          [dateKey],
         );
-        
+
         if (reflection) {
           streak++;
         } else {
           break; // Streak broken
         }
       }
-      
+
       return streak;
     } catch (error) {
       logger.error('Failed to calculate reading streak', error);
@@ -240,23 +241,26 @@ export function useReadingDatabase() {
   }, [db, isReady]);
 
   // Get reflection for specific date
-  const getReflectionForDate = useCallback(async (date: Date): Promise<DailyReadingReflection | null> => {
-    if (!db || !isReady) return null;
+  const getReflectionForDate = useCallback(
+    async (date: Date): Promise<DailyReadingReflection | null> => {
+      if (!db || !isReady) return null;
 
-    try {
-      const dateKey = formatDateKey(date);
-      
-      const reflection = await db.getFirstAsync<DailyReadingReflection>(
-        'SELECT * FROM reading_reflections WHERE reading_date = ? ORDER BY created_at DESC LIMIT 1',
-        [dateKey]
-      );
+      try {
+        const dateKey = formatDateKey(date);
 
-      return reflection || null;
-    } catch (error) {
-      logger.error('Failed to get reflection for date', error);
-      return null;
-    }
-  }, [db, isReady]);
+        const reflection = await db.getFirstAsync<DailyReadingReflection>(
+          'SELECT * FROM reading_reflections WHERE reading_date = ? ORDER BY created_at DESC LIMIT 1',
+          [dateKey],
+        );
+
+        return reflection || null;
+      } catch (error) {
+        logger.error('Failed to get reflection for date', error);
+        return null;
+      }
+    },
+    [db, isReady],
+  );
 
   // Initialize on mount
   useEffect(() => {
@@ -273,7 +277,7 @@ export function useReadingDatabase() {
     saveReflection,
     calculateStreak,
     getReflectionForDate,
-    
+
     // Store state
     todayReading: store.todayReading,
     todayReflection: store.todayReflection,
@@ -281,14 +285,14 @@ export function useReadingDatabase() {
     readingStreak: store.readingStreak,
     isLoading: store.isLoading,
     error: store.error,
-    
+
     // Store actions (non-database dependent)
     decryptReflectionContent: store.decryptReflectionContent,
     hasReflectedToday: store.hasReflectedToday,
     markAsRead: store.markAsRead,
     getReadingForDate: store.getReadingForDate,
-    
+
     // Database status
-    isReady
+    isReady,
   };
 }

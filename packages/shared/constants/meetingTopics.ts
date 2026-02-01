@@ -28,9 +28,6 @@ export const MEETING_TOPICS: MeetingTopic[] = [
 ];
 
 export const getTopicEmoji = (topicName: string): string => {
-  const topic = MEETING_TOPICS.find(
-    (t) => t.name.toLowerCase() === topicName.toLowerCase()
-  );
+  const topic = MEETING_TOPICS.find((t) => t.name.toLowerCase() === topicName.toLowerCase());
   return topic?.emoji || '📍';
 };
-

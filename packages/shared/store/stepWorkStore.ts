@@ -8,13 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import { STEP_PROMPTS } from '../constants/stepPrompts';
-import type {
-  StepProgress,
-  StepAnswer,
-  DbStepProgress,
-  DbStepAnswer,
-  StepStatus,
-} from '../types';
+import type { StepProgress, StepAnswer, DbStepProgress, DbStepAnswer, StepStatus } from '../types';
 
 interface StepWorkState {
   progress: StepProgress[];
@@ -51,7 +45,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
     for (const step of STEP_PROMPTS) {
       const existing = await db.getFirstAsync<DbStepProgress>(
         'SELECT * FROM step_progress WHERE step_number = ?',
-        [step.step]
+        [step.step],
       );
 
       if (!existing) {
@@ -64,7 +58,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
             id, step_number, questions_answered, total_questions,
             status, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-          [id, step.step, 0, step.prompts.length, status, now, now]
+          [id, step.step, 0, step.prompts.length, status, now, now],
         );
       }
     }
@@ -82,7 +76,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
     try {
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbStepProgress>(
-        'SELECT * FROM step_progress ORDER BY step_number'
+        'SELECT * FROM step_progress ORDER BY step_number',
       );
 
       const progress: StepProgress[] = rows.map((row) => ({
@@ -119,7 +113,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbStepAnswer>(
         'SELECT * FROM step_answers WHERE step_number = ? ORDER BY question_index',
-        [stepNumber]
+        [stepNumber],
       );
 
       const stepAnswers: StepAnswer[] = rows.map((row) => ({
@@ -133,10 +127,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
 
       // Merge with existing answers from other steps
       set((state) => ({
-        answers: [
-          ...state.answers.filter((a) => a.stepNumber !== stepNumber),
-          ...stepAnswers,
-        ],
+        answers: [...state.answers.filter((a) => a.stepNumber !== stepNumber), ...stepAnswers],
       }));
     } catch (error) {
       console.error('Failed to load step answers:', error);
@@ -155,21 +146,20 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
       // Check if answer already exists
       const existing = await db.getFirstAsync<DbStepAnswer>(
         'SELECT * FROM step_answers WHERE step_number = ? AND question_index = ?',
-        [stepNumber, questionIndex]
+        [stepNumber, questionIndex],
       );
 
       if (existing) {
         // Update existing answer
-        await db.runAsync(
-          'UPDATE step_answers SET answer = ?, updated_at = ? WHERE id = ?',
-          [encryptedAnswer, now, existing.id]
-        );
+        await db.runAsync('UPDATE step_answers SET answer = ?, updated_at = ? WHERE id = ?', [
+          encryptedAnswer,
+          now,
+          existing.id,
+        ]);
 
         set((state) => ({
           answers: state.answers.map((a) =>
-            a.id === existing.id
-              ? { ...a, answer: encryptedAnswer, updatedAt: new Date(now) }
-              : a
+            a.id === existing.id ? { ...a, answer: encryptedAnswer, updatedAt: new Date(now) } : a,
           ),
         }));
       } else {
@@ -179,7 +169,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
           `INSERT INTO step_answers (
             id, step_number, question_index, answer, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?)`,
-          [id, stepNumber, questionIndex, encryptedAnswer, now, now]
+          [id, stepNumber, questionIndex, encryptedAnswer, now, now],
         );
 
         const newAnswer: StepAnswer = {
@@ -218,7 +208,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
       // Check if started_at is already set
       const existing = await db.getFirstAsync<DbStepProgress>(
         'SELECT started_at FROM step_progress WHERE step_number = ?',
-        [stepNumber]
+        [stepNumber],
       );
       if (!existing?.started_at) {
         updates.started_at = now;
@@ -227,13 +217,13 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
 
     if (status === 'completed') {
       updates.completed_at = now;
-      
+
       // Unlock next step
       if (stepNumber < 12) {
         await db.runAsync(
           `UPDATE step_progress SET status = 'available', updated_at = ? 
            WHERE step_number = ? AND status = 'locked'`,
-          [now, stepNumber + 1]
+          [now, stepNumber + 1],
         );
       }
     }
@@ -243,10 +233,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
       .join(', ');
     const values = [...Object.values(updates), stepNumber];
 
-    await db.runAsync(
-      `UPDATE step_progress SET ${setClauses} WHERE step_number = ?`,
-      values
-    );
+    await db.runAsync(`UPDATE step_progress SET ${setClauses} WHERE step_number = ?`, values);
 
     // Reload progress
     await get().loadProgress();
@@ -262,7 +249,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
     await db.runAsync(
       `UPDATE step_progress SET status = 'discussed', discussed_at = ?, updated_at = ? 
        WHERE step_number = ?`,
-      [now, now, stepNumber]
+      [now, now, stepNumber],
     );
 
     // Reload progress
@@ -281,7 +268,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
    */
   getAnswer: (stepNumber: number, questionIndex: number) => {
     return get().answers.find(
-      (a) => a.stepNumber === stepNumber && a.questionIndex === questionIndex
+      (a) => a.stepNumber === stepNumber && a.questionIndex === questionIndex,
     );
   },
 
@@ -310,7 +297,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
     // Count answered questions
     const result = await db.getFirstAsync<{ count: number }>(
       'SELECT COUNT(*) as count FROM step_answers WHERE step_number = ?',
-      [stepNumber]
+      [stepNumber],
     );
     const answeredCount = result?.count || 0;
 
@@ -340,7 +327,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
         ${newStatus === 'started' && currentStatus !== 'started' ? ", started_at = '" + now + "'" : ''}
         ${newStatus === 'completed' && currentStatus !== 'completed' && currentStatus !== 'discussed' ? ", completed_at = '" + now + "'" : ''}
        WHERE step_number = ?`,
-      [answeredCount, newStatus, now, stepNumber]
+      [answeredCount, newStatus, now, stepNumber],
     );
 
     // Unlock next step if completed
@@ -348,7 +335,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
       await db.runAsync(
         `UPDATE step_progress SET status = 'available', updated_at = ? 
          WHERE step_number = ? AND status = 'locked'`,
-        [now, stepNumber + 1]
+        [now, stepNumber + 1],
       );
     }
 
@@ -356,4 +343,3 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
     await get().loadProgress();
   },
 }));
-

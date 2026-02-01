@@ -42,9 +42,11 @@ export function useCheckin() {
 
     if (recentWeek.length === 0 || previousWeek.length === 0) return 'neutral';
 
-    const recentAvg = recentWeek.reduce((sum: number, c: DailyCheckin) => sum + c.mood, 0) / recentWeek.length;
-    const previousAvg = previousWeek.reduce((sum: number, c: DailyCheckin) => sum + c.mood, 0) / previousWeek.length;
-    
+    const recentAvg =
+      recentWeek.reduce((sum: number, c: DailyCheckin) => sum + c.mood, 0) / recentWeek.length;
+    const previousAvg =
+      previousWeek.reduce((sum: number, c: DailyCheckin) => sum + c.mood, 0) / previousWeek.length;
+
     if (recentAvg > previousAvg + 0.5) return 'positive';
     if (recentAvg < previousAvg - 0.5) return 'negative';
     return 'neutral';
@@ -53,15 +55,16 @@ export function useCheckin() {
   // Get craving trend
   const cravingTrend = useMemo(() => {
     if (history.length < 7) return 'neutral';
-    
+
     const recentWeek = history.slice(0, 7).filter((c) => c.isCheckedIn);
     const previousWeek = history.slice(7, 14).filter((c) => c.isCheckedIn);
-    
+
     if (recentWeek.length === 0 || previousWeek.length === 0) return 'neutral';
-    
+
     const recentAvg = recentWeek.reduce((sum, c) => sum + c.cravingLevel, 0) / recentWeek.length;
-    const previousAvg = previousWeek.reduce((sum, c) => sum + c.cravingLevel, 0) / previousWeek.length;
-    
+    const previousAvg =
+      previousWeek.reduce((sum, c) => sum + c.cravingLevel, 0) / previousWeek.length;
+
     // Lower cravings is positive
     if (recentAvg < previousAvg - 0.5) return 'positive';
     if (recentAvg > previousAvg + 0.5) return 'negative';
@@ -91,4 +94,3 @@ export function useCheckin() {
     loadHistory,
   };
 }
-

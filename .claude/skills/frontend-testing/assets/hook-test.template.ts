@@ -7,7 +7,7 @@
  * 3. Add/remove test sections based on hook features
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react'
+import { renderHook, act, waitFor } from '@testing-library/react';
 // import { useHookName } from './use-hook-name'
 
 // ============================================================================
@@ -38,8 +38,8 @@ import { renderHook, act, waitFor } from '@testing-library/react'
 
 describe('useHookName', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   // --------------------------------------------------------------------------
   // Initial State
@@ -50,14 +50,14 @@ describe('useHookName', () => {
       //
       // expect(result.current.value).toBe(initialValue)
       // expect(result.current.isLoading).toBe(false)
-    })
+    });
 
     it('should accept initial value from props', () => {
       // const { result } = renderHook(() => useHookName({ initialValue: 'custom' }))
       //
       // expect(result.current.value).toBe('custom')
-    })
-  })
+    });
+  });
 
   // --------------------------------------------------------------------------
   // State Updates
@@ -71,7 +71,7 @@ describe('useHookName', () => {
       // })
       //
       // expect(result.current.value).toBe('new value')
-    })
+    });
 
     it('should reset to initial value', () => {
       // const { result } = renderHook(() => useHookName({ initialValue: 'initial' }))
@@ -85,8 +85,8 @@ describe('useHookName', () => {
       //   result.current.reset()
       // })
       // expect(result.current.value).toBe('initial')
-    })
-  })
+    });
+  });
 
   // --------------------------------------------------------------------------
   // Async Operations
@@ -106,7 +106,7 @@ describe('useHookName', () => {
       // })
       //
       // expect(result.current.data).toEqual({ data: 'test' })
-    })
+    });
 
     it('should handle fetch error', async () => {
       // mockedApi.fetchData.mockRejectedValue(new Error('Network error'))
@@ -118,7 +118,7 @@ describe('useHookName', () => {
       // })
       //
       // expect(result.current.error?.message).toBe('Network error')
-    })
+    });
 
     it('should refetch when dependency changes', async () => {
       // mockedApi.fetchData.mockResolvedValue({ data: 'test' })
@@ -137,8 +137,8 @@ describe('useHookName', () => {
       // await waitFor(() => {
       //   expect(mockedApi.fetchData).toHaveBeenCalledWith('2')
       // })
-    })
-  })
+    });
+  });
 
   // --------------------------------------------------------------------------
   // Side Effects
@@ -153,7 +153,7 @@ describe('useHookName', () => {
       // })
       //
       // expect(callback).toHaveBeenCalledWith('new value')
-    })
+    });
 
     it('should cleanup on unmount', () => {
       // const cleanup = vi.fn()
@@ -167,8 +167,8 @@ describe('useHookName', () => {
       // unmount()
       //
       // expect(window.removeEventListener).toHaveBeenCalled()
-    })
-  })
+    });
+  });
 
   // --------------------------------------------------------------------------
   // Edge Cases
@@ -178,7 +178,7 @@ describe('useHookName', () => {
       // const { result } = renderHook(() => useHookName(null))
       //
       // expect(result.current.value).toBeNull()
-    })
+    });
 
     it('should handle rapid updates', () => {
       // const { result } = renderHook(() => useHookName())
@@ -190,8 +190,8 @@ describe('useHookName', () => {
       // })
       //
       // expect(result.current.value).toBe('3')
-    })
-  })
+    });
+  });
 
   // --------------------------------------------------------------------------
   // With Context (if hook uses context)
@@ -202,6 +202,6 @@ describe('useHookName', () => {
       // const { result } = renderHook(() => useHookName(), { wrapper })
       //
       // expect(result.current.contextValue).toBe('context-value')
-    })
-  })
-})
+    });
+  });
+});

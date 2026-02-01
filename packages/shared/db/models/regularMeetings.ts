@@ -6,11 +6,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../client';
 import { encryptContent, decryptContent } from '../../encryption';
-import type {
-  RegularMeeting,
-  DbRegularMeeting,
-  RegularMeetingType,
-} from '../../types';
+import type { RegularMeeting, DbRegularMeeting, RegularMeetingType } from '../../types';
 
 // ============================================
 // CREATE
@@ -27,7 +23,7 @@ export async function createRegularMeeting(
     reminderEnabled?: boolean;
     reminderMinutesBefore?: number;
     notes?: string;
-  }
+  },
 ): Promise<RegularMeeting> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -35,9 +31,7 @@ export async function createRegularMeeting(
 
   // If setting as home group, unset any existing home group first
   if (options?.isHomeGroup) {
-    await db.runAsync(
-      'UPDATE regular_meetings SET is_home_group = 0 WHERE is_home_group = 1'
-    );
+    await db.runAsync('UPDATE regular_meetings SET is_home_group = 0 WHERE is_home_group = 1');
   }
 
   // Encrypt notes if provided
@@ -61,7 +55,7 @@ export async function createRegularMeeting(
       options?.reminderMinutesBefore ?? 60,
       encryptedNotes,
       now,
-    ]
+    ],
   );
 
   return {
@@ -86,7 +80,7 @@ export async function createRegularMeeting(
 export async function getRegularMeetings(): Promise<RegularMeeting[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbRegularMeeting>(
-    'SELECT * FROM regular_meetings ORDER BY day_of_week, time'
+    'SELECT * FROM regular_meetings ORDER BY day_of_week, time',
   );
 
   return rows.map((row: DbRegularMeeting) => ({
@@ -108,7 +102,7 @@ export async function getRegularMeetingById(id: string): Promise<RegularMeeting 
   const db = await getDatabase();
   const row = await db.getFirstAsync<DbRegularMeeting>(
     'SELECT * FROM regular_meetings WHERE id = ?',
-    [id]
+    [id],
   );
 
   if (!row) return null;
@@ -131,7 +125,7 @@ export async function getRegularMeetingById(id: string): Promise<RegularMeeting 
 export async function getHomeGroup(): Promise<RegularMeeting | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<DbRegularMeeting>(
-    'SELECT * FROM regular_meetings WHERE is_home_group = 1 LIMIT 1'
+    'SELECT * FROM regular_meetings WHERE is_home_group = 1 LIMIT 1',
   );
 
   if (!row) return null;
@@ -155,7 +149,7 @@ export async function getMeetingsByDay(dayOfWeek: number): Promise<RegularMeetin
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbRegularMeeting>(
     'SELECT * FROM regular_meetings WHERE day_of_week = ? ORDER BY time',
-    [dayOfWeek]
+    [dayOfWeek],
   );
 
   return rows.map((row) => ({
@@ -188,18 +182,18 @@ export async function getUpcomingMeetings(days: number = 7): Promise<RegularMeet
     .map((meeting) => {
       let daysUntil = meeting.dayOfWeek - todayDay;
       if (daysUntil < 0) daysUntil += 7;
-      
+
       // If it's today, check if the time has passed
       if (daysUntil === 0) {
         const [hours, minutes] = meeting.time.split(':').map(Number);
         const meetingTime = new Date(today);
         meetingTime.setHours(hours, minutes, 0, 0);
-        
+
         if (meetingTime < today) {
           daysUntil = 7; // Next week
         }
       }
-      
+
       return { ...meeting, daysUntil };
     })
     .filter((m) => m.daysUntil < days)
@@ -230,7 +224,7 @@ export async function updateRegularMeeting(
     reminderEnabled: boolean;
     reminderMinutesBefore: number;
     notes: string;
-  }>
+  }>,
 ): Promise<void> {
   const db = await getDatabase();
 
@@ -238,7 +232,7 @@ export async function updateRegularMeeting(
   if (updates.isHomeGroup) {
     await db.runAsync(
       'UPDATE regular_meetings SET is_home_group = 0 WHERE is_home_group = 1 AND id != ?',
-      [id]
+      [id],
     );
   }
 
@@ -285,31 +279,25 @@ export async function updateRegularMeeting(
   if (updateFields.length === 0) return;
 
   values.push(id);
-  await db.runAsync(
-    `UPDATE regular_meetings SET ${updateFields.join(', ')} WHERE id = ?`,
-    values
-  );
+  await db.runAsync(`UPDATE regular_meetings SET ${updateFields.join(', ')} WHERE id = ?`, values);
 }
 
 export async function toggleMeetingReminder(id: string, enabled: boolean): Promise<void> {
   const db = await getDatabase();
-  await db.runAsync(
-    'UPDATE regular_meetings SET reminder_enabled = ? WHERE id = ?',
-    [enabled ? 1 : 0, id]
-  );
+  await db.runAsync('UPDATE regular_meetings SET reminder_enabled = ? WHERE id = ?', [
+    enabled ? 1 : 0,
+    id,
+  ]);
 }
 
 export async function setHomeGroup(id: string): Promise<void> {
   const db = await getDatabase();
-  
+
   // Unset all home groups first
   await db.runAsync('UPDATE regular_meetings SET is_home_group = 0');
-  
+
   // Set the new home group
-  await db.runAsync(
-    'UPDATE regular_meetings SET is_home_group = 1 WHERE id = ?',
-    [id]
-  );
+  await db.runAsync('UPDATE regular_meetings SET is_home_group = 1 WHERE id = ?', [id]);
 }
 
 // ============================================
@@ -364,4 +352,3 @@ export function getMeetingTypeIcon(type: RegularMeetingType): string {
       return '📍';
   }
 }
-

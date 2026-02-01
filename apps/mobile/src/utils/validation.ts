@@ -1,14 +1,14 @@
 /**
  * Validation Utilities
- * 
+ *
  * Provides validation functions for user input and data formatting.
- * 
+ *
  * @module utils/validation
  */
 
 /**
  * Validate email format using regex
- * 
+ *
  * @param email - Email address to validate
  * @returns True if email format is valid
  * @example
@@ -54,13 +54,13 @@ export function validateEmail(email: string): boolean {
 
 /**
  * Validate password strength
- * 
+ *
  * Checks password against security requirements:
  * - Minimum 8 characters
  * - At least one uppercase letter
  * - At least one lowercase letter
  * - At least one number
- * 
+ *
  * @param password - Password to validate
  * @returns Object with isValid flag and array of error messages
  * @example
@@ -104,7 +104,7 @@ export function validatePassword(password: string): {
 
 /**
  * Format date as YYYY-MM-DD for database storage
- * 
+ *
  * @param date - Date object to format
  * @returns ISO date string (YYYY-MM-DD)
  * @example
@@ -121,10 +121,10 @@ export function formatDate(date: Date): string {
 
 /**
  * Calculate days sober from start date
- * 
+ *
  * Calculates the number of full days between the sobriety start date
  * and the current date/time.
- * 
+ *
  * @param startDate - Sobriety start date
  * @returns Number of days (0 if startDate is in the future)
  * @example

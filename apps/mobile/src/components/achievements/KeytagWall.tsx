@@ -34,11 +34,7 @@ export const KeytagWall = memo(function KeytagWall({
 
       <View className="flex-row flex-wrap justify-center gap-3">
         {keytags.map((keytag) => (
-          <KeytagItem
-            key={keytag.id}
-            keytag={keytag}
-            onPress={() => onKeytagPress?.(keytag)}
-          />
+          <KeytagItem key={keytag.id} keytag={keytag} onPress={() => onKeytagPress?.(keytag)} />
         ))}
       </View>
     </Card>
@@ -72,29 +68,20 @@ export const KeytagItem = memo(function KeytagItem({
 
   // Special handling for white keytag visibility
   const isWhite = keytag.color === 'white';
-  const borderStyle = isWhite && isEarned
-    ? { borderWidth: 2, borderColor: '#E5E7EB' }
-    : undefined;
+  const borderStyle = isWhite && isEarned ? { borderWidth: 2, borderColor: '#E5E7EB' } : undefined;
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      className="items-center"
-    >
+    <TouchableOpacity onPress={onPress} activeOpacity={0.7} className="items-center">
       {/* Keytag circle */}
       <View
         className={`${sizeClasses[size]} rounded-full items-center justify-center ${
           !isEarned ? 'opacity-30' : ''
         }`}
-        style={[
-          { backgroundColor: isEarned ? hexColor : '#9CA3AF' },
-          borderStyle,
-        ]}
+        style={[{ backgroundColor: isEarned ? hexColor : '#9CA3AF' }, borderStyle]}
       >
         {/* Keytag hole */}
         <View className="absolute top-1 w-2 h-2 rounded-full bg-surface-100 dark:bg-surface-800" />
-        
+
         {/* Days text */}
         <Text
           className={`font-bold ${textSizes[size]} ${
@@ -150,7 +137,7 @@ export const FeaturedKeytag = memo(function FeaturedKeytag({
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
       <Card variant="elevated" className="items-center py-4">
         <Text className="text-sm text-surface-500 mb-2">Current Keytag</Text>
-        
+
         <KeytagItem keytag={current} size="large" />
 
         {next && (
@@ -177,4 +164,3 @@ function formatDays(days: number): string {
   if (days >= 30) return `${Math.floor(days / 30)}M`;
   return `${days}`;
 }
-

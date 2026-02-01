@@ -101,7 +101,10 @@ export function SponsorScreen(): React.ReactElement {
 
     try {
       setConnectLoading(true);
-      const confirmation = await connectAsSponsor(connectPayload.trim(), connectName.trim() || undefined);
+      const confirmation = await connectAsSponsor(
+        connectPayload.trim(),
+        connectName.trim() || undefined,
+      );
       setConfirmPayload(confirmation);
       setConnectModalVisible(false);
       showToast('Connection ready. Send confirmation back.', 'success');
@@ -159,7 +162,7 @@ export function SponsorScreen(): React.ReactElement {
       setCommentLoading(true);
       const connection = await db.getFirstAsync<{ id: string }>(
         `SELECT id FROM sponsor_connections WHERE user_id = ? AND invite_code = ?`,
-        [userId, payload.code]
+        [userId, payload.code],
       );
 
       if (!connection?.id) {
@@ -182,7 +185,7 @@ export function SponsorScreen(): React.ReactElement {
           commentPayloadInput.trim(),
           now,
           now,
-        ]
+        ],
       );
 
       setCommentPayloadInput('');
@@ -377,7 +380,11 @@ export function SponsorScreen(): React.ReactElement {
                 My Sponsees ({mySponsees.length})
               </Text>
               {mySponsees.map((sponsee) => (
-                <Card key={sponsee.id} variant="interactive" style={{ marginBottom: theme.spacing.sm }}>
+                <Card
+                  key={sponsee.id}
+                  variant="interactive"
+                  style={{ marginBottom: theme.spacing.sm }}
+                >
                   <View style={styles.cardHeader}>
                     <MaterialCommunityIcons
                       name="account-check"
@@ -444,7 +451,12 @@ export function SponsorScreen(): React.ReactElement {
             <Text style={[theme.typography.label, { color: theme.colors.textSecondary }]}>
               Invite Code: {inviteCode}
             </Text>
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary, marginTop: 8 }]}>
+            <Text
+              style={[
+                theme.typography.caption,
+                { color: theme.colors.textSecondary, marginTop: 8 },
+              ]}
+            >
               Share this payload with your sponsor:
             </Text>
             <Text style={[theme.typography.bodySmall, { color: theme.colors.text, marginTop: 8 }]}>

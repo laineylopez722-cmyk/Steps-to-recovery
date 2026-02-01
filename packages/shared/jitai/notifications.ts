@@ -10,9 +10,7 @@ const JITAI_NOTIFICATION_PREFIX = 'jitai-';
 /**
  * Schedule a JITAI intervention notification
  */
-export async function scheduleJitaiNotification(
-  intervention: JitaiIntervention
-): Promise<void> {
+export async function scheduleJitaiNotification(intervention: JitaiIntervention): Promise<void> {
   try {
     // Cancel any existing notification for this trigger
     await cancelJitaiNotification(intervention.triggerId);
@@ -50,7 +48,7 @@ export async function scheduleJitaiNotification(
 export async function cancelJitaiNotification(triggerId: string): Promise<void> {
   try {
     await Notifications.cancelScheduledNotificationAsync(
-      `${JITAI_NOTIFICATION_PREFIX}${triggerId}`
+      `${JITAI_NOTIFICATION_PREFIX}${triggerId}`,
     );
   } catch (error) {
     // Notification might not exist, that's okay
@@ -63,8 +61,8 @@ export async function cancelJitaiNotification(triggerId: string): Promise<void> 
 export async function cancelAllJitaiNotifications(): Promise<void> {
   try {
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    const jitaiNotifications = scheduled.filter(n => 
-      n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX)
+    const jitaiNotifications = scheduled.filter((n) =>
+      n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX),
     );
 
     for (const notification of jitaiNotifications) {
@@ -78,8 +76,9 @@ export async function cancelAllJitaiNotifications(): Promise<void> {
 /**
  * Get all scheduled JITAI notifications
  */
-export async function getScheduledJitaiNotifications(): Promise<Notifications.NotificationRequest[]> {
+export async function getScheduledJitaiNotifications(): Promise<
+  Notifications.NotificationRequest[]
+> {
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  return scheduled.filter(n => n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX));
+  return scheduled.filter((n) => n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX));
 }
-

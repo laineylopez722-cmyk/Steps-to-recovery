@@ -13,10 +13,12 @@
 ### Files Changed
 
 **NEW:**
+
 - `apps/mobile/src/types/notifications.ts` - Type definitions
 - `apps/mobile/src/navigation/__tests__/navigationRef.test.ts` - Unit tests
 
 **MODIFIED:**
+
 - `apps/mobile/src/navigation/navigationRef.ts` - Enhanced navigation logic
 - `apps/mobile/src/contexts/NotificationContext.tsx` - Cold start handler
 - `apps/mobile/src/services/notificationService.ts` - Updated payloads
@@ -29,12 +31,14 @@
 ### Prerequisites
 
 1. Start the development server:
+
 ```bash
 cd apps/mobile
 npm start
 ```
 
 2. Launch on device/emulator:
+
 ```bash
 # iOS
 npm run ios
@@ -50,6 +54,7 @@ npm run android
 **Expected Behavior:** Tapping notification navigates to MorningIntentionScreen
 
 **Steps:**
+
 1. Open app
 2. Navigate to: Profile → Notification Settings
 3. Enable "Morning Check-In" notifications
@@ -59,6 +64,7 @@ npm run android
 7. **Tap the notification**
 
 **✅ Success Criteria:**
+
 - App opens to MorningIntentionScreen (not just Home tab)
 - User can immediately start their morning check-in
 
@@ -69,6 +75,7 @@ npm run android
 **Expected Behavior:** Tapping notification navigates to EveningPulseScreen
 
 **Steps:**
+
 1. Open app
 2. Navigate to: Profile → Notification Settings
 3. Enable "Evening Check-In" notifications
@@ -78,6 +85,7 @@ npm run android
 7. **Tap the notification**
 
 **✅ Success Criteria:**
+
 - App opens to EveningPulseScreen (not just Home tab)
 - User can immediately start their evening reflection
 
@@ -88,6 +96,7 @@ npm run android
 **Expected Behavior:** Tapping notification navigates to HomeScreen with celebration
 
 **Steps:**
+
 1. Open app
 2. Check your current clean time in Profile
 3. If you're close to a milestone (1, 7, 14, 30 days), wait for automatic notification
@@ -95,6 +104,7 @@ npm run android
 5. **Tap the notification**
 
 **✅ Success Criteria:**
+
 - App opens to HomeScreen
 - User sees their clean time tracker prominently
 
@@ -105,6 +115,7 @@ npm run android
 **Expected Behavior:** App launches and navigates to correct screen when tapped from notification
 
 **Steps:**
+
 1. Open app
 2. Schedule a morning or evening notification for 1 minute from now
 3. **Close app completely** (swipe away from recent apps)
@@ -112,6 +123,7 @@ npm run android
 5. **Tap the notification from lock screen**
 
 **✅ Success Criteria:**
+
 - App launches (cold start)
 - After ~1 second, navigates to MorningIntention or EveningPulse screen
 - No crash, no stuck on splash screen
@@ -123,6 +135,7 @@ npm run android
 **Expected Behavior:** App returns to foreground and navigates to correct screen
 
 **Steps:**
+
 1. Open app
 2. Schedule notification for 1 minute from now
 3. **Press home button** (don't close app, just background it)
@@ -130,6 +143,7 @@ npm run android
 5. **Tap the notification**
 
 **✅ Success Criteria:**
+
 - App returns to foreground
 - Navigates to correct screen
 - Smooth transition, no delays
@@ -141,10 +155,12 @@ npm run android
 **Expected Behavior:** App falls back to Home tab gracefully
 
 **Steps:**
+
 1. Use developer tools to send notification with invalid screen name
 2. Tap notification
 
 **✅ Success Criteria:**
+
 - App doesn't crash
 - Falls back to Home tab
 - Error is logged but not shown to user
@@ -156,10 +172,12 @@ npm run android
 **Expected Behavior:** Old string-based notifications still work
 
 **Steps:**
+
 1. If you have old notifications scheduled (before this update)
 2. Tap them
 
 **✅ Success Criteria:**
+
 - Old notifications navigate correctly
 - No errors or crashes
 - Smooth migration to new format
@@ -241,12 +259,14 @@ When notifications work correctly, you should see logs like:
 ```
 
 For cold start:
+
 ```
 [INFO] App launched from notification { title: "Good Morning!" }
 [INFO] Navigated from notification { screen: "Home.MorningIntention", params: {} }
 ```
 
 For errors:
+
 ```
 [WARN] Navigation not ready, cannot handle notification
 [ERROR] Error navigating from notification { error: ..., screen: "InvalidScreen" }
@@ -257,21 +277,25 @@ For errors:
 ## Troubleshooting
 
 **Notifications not appearing?**
+
 - Check notification permissions in device settings
 - Verify notifications are enabled in app settings
 - Check if Do Not Disturb is enabled
 
 **Navigation not working?**
+
 - Check logs for navigation errors
 - Verify screen names match exactly (case-sensitive)
 - Ensure navigation is ready (should wait ~1 second after cold start)
 
 **App crashes?**
+
 - Check logs for stack traces
 - Verify notification payload structure
 - Check TypeScript errors with `npx tsc --noEmit`
 
 **Cold start not working?**
+
 - Increase wait time in NotificationContext (currently 1 second)
 - Check if getLastNotificationResponse() returns data
 - Verify app permissions
@@ -311,8 +335,8 @@ For errors:
 
 ---
 
-**Testing completed by:** ____________
+**Testing completed by:** ****\_\_\_\_****
 
-**Date:** ____________
+**Date:** ****\_\_\_\_****
 
-**Results:** ____________
+**Results:** ****\_\_\_\_****

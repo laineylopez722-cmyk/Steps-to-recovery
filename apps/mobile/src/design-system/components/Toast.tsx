@@ -4,18 +4,15 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Animated,
-  ViewStyle,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, Animated, ViewStyle, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
+
+/** Valid icon names for MaterialIcons used in Toast */
+type ToastIconName = ComponentProps<typeof MaterialIcons>['name'];
 
 export interface ToastProps {
   visible: boolean;
@@ -87,7 +84,7 @@ export function Toast({
 
   const getVariantConfig = (): {
     backgroundColor: string;
-    icon: string;
+    icon: ToastIconName;
     iconColor: string;
   } => {
     switch (variant) {
@@ -139,10 +136,8 @@ export function Toast({
       accessibilityRole="alert"
       accessible={true}
     >
-      <MaterialIcons name={config.icon as any} size={20} color={config.iconColor} />
-      <Text style={[styles.message, theme.typography.body, { color: '#ffffff' }]}>
-        {message}
-      </Text>
+      <MaterialIcons name={config.icon} size={20} color={config.iconColor} />
+      <Text style={[styles.message, theme.typography.body, { color: '#ffffff' }]}>{message}</Text>
     </Animated.View>
   );
 }

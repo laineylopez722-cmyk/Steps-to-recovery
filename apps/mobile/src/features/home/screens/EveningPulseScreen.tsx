@@ -16,7 +16,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useCreateCheckIn, useTodayCheckIns } from '../hooks/useCheckIns';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { TextArea, Button, Card, Toast, AnimatedCheckmark } from '../../../design-system/components';
+import {
+  TextArea,
+  Button,
+  Card,
+  Toast,
+  AnimatedCheckmark,
+} from '../../../design-system/components';
 import { Slider } from '../../../components/Slider';
 import { hapticSuccess, hapticSelection, hapticError, hapticWarning } from '../../../utils/haptics';
 
@@ -40,24 +46,30 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Handle mood slider change with haptic feedback
-  const handleMoodChange = useCallback((value: number) => {
-    if (value !== mood) {
-      hapticSelection();
-    }
-    setMood(value);
-  }, [mood]);
+  const handleMoodChange = useCallback(
+    (value: number) => {
+      if (value !== mood) {
+        hapticSelection();
+      }
+      setMood(value);
+    },
+    [mood],
+  );
 
   // Handle craving slider change with haptic feedback
-  const handleCravingChange = useCallback((value: number) => {
-    if (value !== craving) {
-      hapticSelection();
-      // Warning haptic for high craving
-      if (value > 6 && craving <= 6) {
-        hapticWarning();
+  const handleCravingChange = useCallback(
+    (value: number) => {
+      if (value !== craving) {
+        hapticSelection();
+        // Warning haptic for high craving
+        if (value > 6 && craving <= 6) {
+          hapticWarning();
+        }
       }
-    }
-    setCraving(value);
-  }, [craving]);
+      setCraving(value);
+    },
+    [craving],
+  );
 
   // Handle successful completion animation
   const handleSuccessAnimationComplete = useCallback(() => {
@@ -119,19 +131,11 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
         <Animated.View entering={FadeInDown.delay(100).springify()}>
           <Card variant="flat" style={styles.headerCard}>
             <Text
-              style={[
-                theme.typography.largeTitle,
-                { color: theme.colors.text, marginBottom: 4 },
-              ]}
+              style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 4 }]}
             >
               Good Evening
             </Text>
-            <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
+            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
               Reflect on your day
             </Text>
           </Card>
@@ -142,24 +146,15 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
           <Animated.View entering={FadeInDown.delay(150).springify()}>
             <Card
               variant="flat"
-              style={[
-                styles.intentionCard,
-                { backgroundColor: theme.colors.primaryLight },
-              ]}
+              style={[styles.intentionCard, { backgroundColor: theme.colors.primaryLight }]}
             >
               <Text
-                style={[
-                  theme.typography.caption,
-                  { color: theme.colors.primary, marginBottom: 4 },
-                ]}
+                style={[theme.typography.caption, { color: theme.colors.primary, marginBottom: 4 }]}
               >
                 This morning's intention:
               </Text>
               <Text
-                style={[
-                  theme.typography.body,
-                  { color: theme.colors.text, fontStyle: 'italic' },
-                ]}
+                style={[theme.typography.body, { color: theme.colors.text, fontStyle: 'italic' }]}
               >
                 "{morning.intention}"
               </Text>
@@ -186,21 +181,11 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
         <Animated.View entering={FadeInDown.delay(250).springify()}>
           <Card
             variant="flat"
-            style={[
-              styles.gratitudeCard,
-              { backgroundColor: theme.colors.successLight },
-            ]}
+            style={[styles.gratitudeCard, { backgroundColor: theme.colors.successLight }]}
           >
             <View style={styles.gratitudeHeader}>
               <Text style={styles.gratitudeEmoji}>🙏</Text>
-              <Text
-                style={[
-                  theme.typography.title3,
-                  { color: theme.colors.text },
-                ]}
-              >
-                Gratitude
-              </Text>
+              <Text style={[theme.typography.title3, { color: theme.colors.text }]}>Gratitude</Text>
             </View>
             <Text
               style={[
@@ -228,12 +213,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
         {/* Mood Section */}
         <Animated.View entering={FadeInDown.delay(300).springify()}>
           <Card variant="flat" style={styles.sectionCard}>
-            <Text
-              style={[
-                theme.typography.title3,
-                { color: theme.colors.text, marginBottom: 4 },
-              ]}
-            >
+            <Text style={[theme.typography.title3, { color: theme.colors.text, marginBottom: 4 }]}>
               How are you feeling now?
             </Text>
             <Text
@@ -246,10 +226,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
             </Text>
 
             {/* Mood Emoji Display */}
-            <Animated.View
-              style={styles.emojiContainer}
-              key={mood}
-            >
+            <Animated.View style={styles.emojiContainer} key={mood}>
               <Animated.Text
                 entering={FadeInUp.springify().damping(8)}
                 exiting={FadeOut.duration(100)}
@@ -278,12 +255,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
         {/* Craving Level Section */}
         <Animated.View entering={FadeInDown.delay(400).springify()}>
           <Card variant="flat" style={styles.sectionCard}>
-            <Text
-              style={[
-                theme.typography.title3,
-                { color: theme.colors.text, marginBottom: 4 },
-              ]}
-            >
+            <Text style={[theme.typography.title3, { color: theme.colors.text, marginBottom: 4 }]}>
               Craving level
             </Text>
             <Text
@@ -296,16 +268,10 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
             </Text>
 
             {/* Craving Value Display */}
-            <Animated.View
-              style={styles.emojiContainer}
-              key={`craving-${craving}`}
-            >
+            <Animated.View style={styles.emojiContainer} key={`craving-${craving}`}>
               <Animated.Text
                 entering={FadeInUp.springify().damping(8)}
-                style={[
-                  styles.cravingValue,
-                  { color: getCravingColor(craving) },
-                ]}
+                style={[styles.cravingValue, { color: getCravingColor(craving) }]}
               >
                 {craving}
               </Animated.Text>
@@ -329,18 +295,11 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
             {craving > 6 && (
               <Animated.View
                 entering={FadeIn.duration(300)}
-                style={[
-                  styles.warningContainer,
-                  { backgroundColor: theme.colors.dangerLight },
-                ]}
+                style={[styles.warningContainer, { backgroundColor: theme.colors.dangerLight }]}
               >
-                <Text
-                  style={[
-                    theme.typography.caption,
-                    { color: theme.colors.danger },
-                  ]}
-                >
-                  Consider reaching out to your sponsor or attending a meeting if cravings are strong.
+                <Text style={[theme.typography.caption, { color: theme.colors.danger }]}>
+                  Consider reaching out to your sponsor or attending a meeting if cravings are
+                  strong.
                 </Text>
               </Animated.View>
             )}
@@ -365,12 +324,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
       </ScrollView>
 
       {/* Success Modal */}
-      <Modal
-        visible={showSuccessModal}
-        transparent
-        animationType="fade"
-        statusBarTranslucent
-      >
+      <Modal visible={showSuccessModal} transparent animationType="fade" statusBarTranslucent>
         <View style={styles.successModalOverlay}>
           <Animated.View
             entering={FadeIn.duration(200)}

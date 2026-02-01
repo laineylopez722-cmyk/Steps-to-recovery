@@ -83,11 +83,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 </Text>
               </View>
             )}
-            <TouchableOpacity
-              style={styles.button}
-              onPress={this.handleReset}
-              activeOpacity={0.7}
-            >
+            <TouchableOpacity style={styles.button} onPress={this.handleReset} activeOpacity={0.7}>
               <Text style={styles.buttonText}>Try Again</Text>
             </TouchableOpacity>
           </View>

@@ -8,6 +8,21 @@
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test-project.supabase.co';
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key-for-jest';
 
+// Mock react-native-css-interop (NativeWind)
+jest.mock('react-native-css-interop/jsx-runtime', () => ({
+  jsx: jest.fn((type, props) => require('react').createElement(type, props)),
+  jsxs: jest.fn((type, props) => require('react').createElement(type, props)),
+  Fragment: require('react').Fragment,
+}));
+
+jest.mock('react-native-css-interop', () => ({
+  cssInterop: jest.fn((component) => component),
+  remapProps: jest.fn(),
+  StyleSheet: {
+    create: (styles) => styles,
+  },
+}));
+
 // Mock expo-secure-store
 jest.mock('expo-secure-store', () => ({
   getItemAsync: jest.fn(() => Promise.resolve(null)),
@@ -40,7 +55,7 @@ jest.mock('expo-sqlite', () => ({
       getFirstAsync: jest.fn(() => Promise.resolve(null)),
       getAllAsync: jest.fn(() => Promise.resolve([])),
       closeAsync: jest.fn(() => Promise.resolve()),
-    })
+    }),
   ),
 }));
 
@@ -48,9 +63,7 @@ jest.mock('expo-sqlite', () => ({
 jest.mock('expo-local-authentication', () => ({
   hasHardwareAsync: jest.fn(() => Promise.resolve(true)),
   isEnrolledAsync: jest.fn(() => Promise.resolve(true)),
-  authenticateAsync: jest.fn(() =>
-    Promise.resolve({ success: true, error: null })
-  ),
+  authenticateAsync: jest.fn(() => Promise.resolve({ success: true, error: null })),
   AuthenticationType: {
     FINGERPRINT: 1,
     FACIAL_RECOGNITION: 2,
@@ -65,12 +78,8 @@ jest.mock('expo-local-authentication', () => ({
 
 // Mock expo-notifications
 jest.mock('expo-notifications', () => ({
-  getPermissionsAsync: jest.fn(() =>
-    Promise.resolve({ status: 'granted', canAskAgain: true })
-  ),
-  requestPermissionsAsync: jest.fn(() =>
-    Promise.resolve({ status: 'granted', canAskAgain: true })
-  ),
+  getPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', canAskAgain: true })),
+  requestPermissionsAsync: jest.fn(() => Promise.resolve({ status: 'granted', canAskAgain: true })),
   scheduleNotificationAsync: jest.fn(() => Promise.resolve('notification-id')),
   cancelScheduledNotificationAsync: jest.fn(() => Promise.resolve()),
   cancelAllScheduledNotificationsAsync: jest.fn(() => Promise.resolve()),
@@ -86,9 +95,7 @@ jest.mock('expo-file-system', () => ({
   writeAsStringAsync: jest.fn(() => Promise.resolve()),
   readAsStringAsync: jest.fn(() => Promise.resolve('')),
   deleteAsync: jest.fn(() => Promise.resolve()),
-  getInfoAsync: jest.fn(() =>
-    Promise.resolve({ exists: false, isDirectory: false, size: 0 })
-  ),
+  getInfoAsync: jest.fn(() => Promise.resolve({ exists: false, isDirectory: false, size: 0 })),
   makeDirectoryAsync: jest.fn(() => Promise.resolve()),
   EncodingType: {
     UTF8: 'utf8',
@@ -150,7 +157,7 @@ jest.mock('expo-audio', () => {
     })),
     AudioModule: {
       requestRecordingPermissionsAsync: jest.fn(() =>
-        Promise.resolve({ granted: true, canAskAgain: true })
+        Promise.resolve({ granted: true, canAskAgain: true }),
       ),
     },
     setAudioModeAsync: jest.fn(() => Promise.resolve()),
@@ -189,7 +196,7 @@ jest.mock('react-native/Libraries/Linking/Linking', () => ({
 
 // Mock AsyncStorage if needed
 jest.mock('@react-native-async-storage/async-storage', () =>
-  require('@react-native-async-storage/async-storage/jest/async-storage-mock')
+  require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
 // Mock uuid
@@ -217,7 +224,7 @@ globalThis.testUtils = {
    * Wait for all promises to resolve
    */
   flushPromises: () => new Promise((resolve) => setImmediate(resolve)),
-  
+
   /**
    * Create a mock date for testing
    */
@@ -272,4 +279,3 @@ if (typeof crypto === 'undefined' || !crypto.subtle) {
     }),
   };
 }
-

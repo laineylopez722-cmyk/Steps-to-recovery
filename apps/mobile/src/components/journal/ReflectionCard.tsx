@@ -33,10 +33,10 @@ export function ReflectionCard({ daysAgo = 30, className = '' }: ReflectionCardP
     // Calculate target date range (within 2 days of the target)
     const targetDate = new Date();
     targetDate.setDate(targetDate.getDate() - daysAgo);
-    
+
     const rangeStart = new Date(targetDate);
     rangeStart.setDate(rangeStart.getDate() - 2);
-    
+
     const rangeEnd = new Date(targetDate);
     rangeEnd.setDate(rangeEnd.getDate() + 2);
 
@@ -55,9 +55,7 @@ export function ReflectionCard({ daysAgo = 30, className = '' }: ReflectionCardP
       try {
         const decrypted = await decryptContent(entry.content);
         // Get first 100 characters
-        const truncated = decrypted.length > 100 
-          ? decrypted.substring(0, 100) + '...' 
-          : decrypted;
+        const truncated = decrypted.length > 100 ? decrypted.substring(0, 100) + '...' : decrypted;
         setExcerpt(truncated);
       } catch {
         setExcerpt('(Encrypted content)');
@@ -76,28 +74,28 @@ export function ReflectionCard({ daysAgo = 30, className = '' }: ReflectionCardP
 
   const entryDate = new Date(pastEntry.createdAt);
   const actualDaysAgo = Math.floor(
-    (new Date().getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24)
+    (new Date().getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24),
   );
 
   return (
-    <Card variant="outlined" className={`border-secondary-200 dark:border-secondary-800 ${className}`}>
+    <Card
+      variant="outlined"
+      className={`border-secondary-200 dark:border-secondary-800 ${className}`}
+    >
       <View className="flex-row items-start gap-3">
         <View className="w-10 h-10 rounded-full bg-secondary-100 dark:bg-secondary-900/30 items-center justify-center">
           <Text className="text-lg">📖</Text>
         </View>
-        
+
         <View className="flex-1">
           <Text className="text-sm text-secondary-600 dark:text-secondary-400 mb-1">
             Look Back • {actualDaysAgo} days ago
           </Text>
-          
-          <Text 
-            className="text-surface-700 dark:text-surface-300 text-sm mb-2"
-            numberOfLines={2}
-          >
+
+          <Text className="text-surface-700 dark:text-surface-300 text-sm mb-2" numberOfLines={2}>
             "{excerpt}"
           </Text>
-          
+
           <TouchableOpacity
             onPress={() => router.push(`/journal/${pastEntry.id}`)}
             className="self-start"
@@ -111,4 +109,3 @@ export function ReflectionCard({ daysAgo = 30, className = '' }: ReflectionCardP
     </Card>
   );
 }
-

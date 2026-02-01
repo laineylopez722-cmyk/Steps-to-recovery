@@ -1,17 +1,17 @@
 /**
  * Encryption Utilities
- * 
+ *
  * Provides AES-256-CBC encryption for sensitive user data (journal entries,
  * step work, check-ins, etc.). All encryption keys are stored securely using
  * platform-specific secure storage (Keychain on iOS, Keystore on Android).
- * 
+ *
  * **Security Features**:
  * - AES-256-CBC encryption with unique IV per encryption
  * - HMAC-SHA256 authentication tag (encrypt-then-MAC)
  * - PBKDF2 key derivation (100,000 iterations)
  * - Keys stored in SecureStore (never in AsyncStorage or database)
  * - Platform-agnostic implementation (works on mobile and web)
- * 
+ *
  * @module utils/encryption
  */
 
@@ -27,9 +27,9 @@ const KEY_DERIVATION_ITERATIONS = 100000;
 
 /**
  * Get random bytes in a platform-agnostic way
- * 
+ *
  * Uses crypto.getRandomValues on web and expo-crypto on mobile.
- * 
+ *
  * @param length - Number of random bytes to generate
  * @returns Promise resolving to Uint8Array of random bytes
  * @internal
@@ -46,9 +46,9 @@ async function getRandomBytes(length: number): Promise<Uint8Array> {
 
 /**
  * Generate random UUID in a platform-agnostic way
- * 
+ *
  * Uses crypto.randomUUID on web and expo-crypto on mobile.
- * 
+ *
  * @returns Promise resolving to UUID string
  * @internal
  */
@@ -64,13 +64,13 @@ async function generateUUID(): Promise<string> {
 
 /**
  * Generate a new encryption key
- * 
+ *
  * Creates a cryptographically secure encryption key using PBKDF2 key derivation.
  * The key is stored securely in platform-specific secure storage.
- * 
+ *
  * **Important**: This should only be called during onboarding. If a key already
  * exists, use `getEncryptionKey()` instead.
- * 
+ *
  * @returns Promise resolving to the generated encryption key (hex string)
  * @throws Error if key generation or storage fails
  * @example
@@ -82,11 +82,16 @@ async function generateUUID(): Promise<string> {
  */
 export async function generateEncryptionKey(): Promise<string> {
   const randomBytes = await getRandomBytes(32);
-  const randomString = Array.from(randomBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  const randomString = Array.from(randomBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
   // Generate a unique encryption key using PBKDF2 for key stretching
   // Note: We use a random salt per key generation, but the derived key itself is stored
   const salt = await generateUUID();
-  const derivedKey = CryptoJS.PBKDF2(randomString, salt, { keySize: 256 / 32, iterations: KEY_DERIVATION_ITERATIONS }).toString();
+  const derivedKey = CryptoJS.PBKDF2(randomString, salt, {
+    keySize: 256 / 32,
+    iterations: KEY_DERIVATION_ITERATIONS,
+  }).toString();
   // Store only the derived key - salt is not needed for future operations
   await secureStorage.setItemAsync(ENCRYPTION_KEY_NAME, derivedKey);
   return derivedKey;
@@ -94,9 +99,9 @@ export async function generateEncryptionKey(): Promise<string> {
 
 /**
  * Get the current encryption key
- * 
+ *
  * Retrieves the encryption key from secure storage. Returns null if no key exists.
- * 
+ *
  * @returns Promise resolving to encryption key or null if not found
  * @example
  * ```ts
@@ -112,14 +117,14 @@ export async function getEncryptionKey(): Promise<string | null> {
 
 /**
  * Encrypt content using AES-256-CBC + HMAC-SHA256
- * 
+ *
  * Encrypts sensitive content (journal entries, step work answers, etc.) using
  * AES-256-CBC with a unique IV for each encryption. An HMAC tag is appended
  * to prevent undetected tampering.
- * 
+ *
  * **Format**: `{iv}:{ciphertext}:{mac}`
  * **Security**: Each encryption uses a unique IV and a MAC for integrity.
- * 
+ *
  * @param content - Plaintext content to encrypt
  * @returns Promise resolving to encrypted string in format `{iv}:{ciphertext}:{mac}`
  * @throws Error if encryption key is not found
@@ -133,10 +138,16 @@ export async function encryptContent(content: string): Promise<string> {
   const key = await getEncryptionKey();
   if (!key) throw new Error('Encryption key not found');
   const ivBytes = await getRandomBytes(16);
-  const iv = Array.from(ivBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+  const iv = Array.from(ivBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
   const ivWordArray = CryptoJS.enc.Hex.parse(iv);
   const keyWordArray = CryptoJS.enc.Hex.parse(key);
-  const encrypted = CryptoJS.AES.encrypt(content, keyWordArray, { iv: ivWordArray, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+  const encrypted = CryptoJS.AES.encrypt(content, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
   const payload = `${iv}:${encrypted.toString()}`;
   const macKey = CryptoJS.SHA256(keyWordArray);
   const mac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
@@ -145,11 +156,11 @@ export async function encryptContent(content: string): Promise<string> {
 
 /**
  * Decrypt content encrypted with encryptContent()
- * 
+ *
  * Decrypts content that was encrypted using `encryptContent()`. Extracts the
  * IV from the encrypted string and uses it along with the stored encryption key.
  * If a MAC is present, it is verified before decryption.
- * 
+ *
  * @param encrypted - Encrypted string in format `{iv}:{ciphertext}` or `{iv}:{ciphertext}:{mac}`
  * @returns Promise resolving to decrypted plaintext
  * @throws Error if encryption key is not found, format is invalid, or decryption fails
@@ -184,7 +195,11 @@ export async function decryptContent(encrypted: string): Promise<string> {
   }
   const ivWordArray = CryptoJS.enc.Hex.parse(iv);
   const keyWordArray = CryptoJS.enc.Hex.parse(key);
-  const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, { iv: ivWordArray, mode: CryptoJS.mode.CBC, padding: CryptoJS.pad.Pkcs7 });
+  const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
   const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
   if (!plaintext) throw new Error('Decryption failed');
   return plaintext;
@@ -192,10 +207,10 @@ export async function decryptContent(encrypted: string): Promise<string> {
 
 /**
  * Delete the encryption key
- * 
+ *
  * **Warning**: This will make all encrypted data permanently inaccessible!
  * Only call this during account deletion or complete data wipe.
- * 
+ *
  * @returns Promise that resolves when key is deleted
  * @example
  * ```ts
@@ -210,7 +225,7 @@ export async function deleteEncryptionKey(): Promise<void> {
 
 /**
  * Check if an encryption key exists
- * 
+ *
  * @returns Promise resolving to true if encryption key exists, false otherwise
  * @example
  * ```ts

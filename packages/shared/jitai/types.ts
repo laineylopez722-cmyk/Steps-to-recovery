@@ -9,31 +9,31 @@ export interface JitaiContext {
   // Time context
   currentHour: number;
   currentDayOfWeek: number; // 0 = Sunday
-  
+
   // Sobriety context
   soberDays: number;
-  
+
   // Check-in context
   hasSetIntentionToday: boolean;
   hasCompletedInventoryToday: boolean;
   daysSinceLastCheckin: number;
   lastMoodReported: number | null;
   lastCravingReported: number | null;
-  
+
   // Mood/craving trends
   moodTrend: 'rising' | 'stable' | 'declining';
   cravingTrend: 'rising' | 'stable' | 'declining';
   averageMood7Days: number;
   averageCraving7Days: number;
-  
+
   // Meeting context
   daysSinceLastMeeting: number;
   meetingsThisWeek: number;
-  
+
   // Support network context
   hasSponsor: boolean;
   daysSinceLastSponsorContact: number;
-  
+
   // Step work context
   currentStep: number;
   daysSinceLastStepWork: number;
@@ -52,11 +52,11 @@ export type TriggerType = 'time' | 'pattern' | 'milestone' | 'event';
 /**
  * Intervention categories
  */
-export type InterventionCategory = 
-  | 'encouragement' 
-  | 'support' 
-  | 'connection' 
-  | 'crisis' 
+export type InterventionCategory =
+  | 'encouragement'
+  | 'support'
+  | 'connection'
+  | 'crisis'
   | 'celebration';
 
 /**
@@ -86,9 +86,8 @@ export interface JitaiIntervention {
 /**
  * Action to take when intervention is tapped
  */
-export type JitaiAction = 
+export type JitaiAction =
   | { type: 'navigate'; screen: string }
   | { type: 'call'; contactId: string }
   | { type: 'tool'; toolId: string }
   | { type: 'dismiss' };
-

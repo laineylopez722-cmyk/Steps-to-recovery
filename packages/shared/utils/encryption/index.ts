@@ -1,7 +1,7 @@
 /**
  * Encryption utilities for secure data storage
  * All sensitive journal content is encrypted before storage
- * 
+ *
  * Uses AES-256-GCM for production-grade encryption
  */
 
@@ -25,7 +25,7 @@ function assertWebCryptoAvailable() {
   const cryptoObj = globalThis.crypto as CryptoWithSubtle | undefined;
   if (!cryptoObj?.subtle) {
     throw new Error(
-      'WebCrypto is unavailable. Ensure polyfills.ts/js loads expo-standard-web-crypto before app initialization.'
+      'WebCrypto is unavailable. Ensure polyfills.ts/js loads expo-standard-web-crypto before app initialization.',
     );
   }
 }
@@ -133,13 +133,10 @@ function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
 async function importKey(keyHex: string): Promise<CryptoKey> {
   assertWebCryptoAvailable();
   const keyBytes = hexToBytes(keyHex);
-  return await crypto.subtle.importKey(
-    'raw',
-    toArrayBuffer(keyBytes),
-    { name: 'AES-GCM' },
-    false,
-    ['encrypt', 'decrypt']
-  );
+  return await crypto.subtle.importKey('raw', toArrayBuffer(keyBytes), { name: 'AES-GCM' }, false, [
+    'encrypt',
+    'decrypt',
+  ]);
 }
 
 /**
@@ -167,7 +164,7 @@ async function aesGcmEncrypt(plaintext: string, keyHex: string): Promise<string>
       tagLength: AUTH_TAG_LENGTH * 8, // bits
     },
     cryptoKey,
-    plaintextBuffer
+    plaintextBuffer,
   );
 
   // Combine: version (1 byte) + iv (12 bytes) + ciphertext + authTag
@@ -209,7 +206,7 @@ async function aesGcmDecrypt(ciphertext: string, keyHex: string): Promise<string
       tagLength: AUTH_TAG_LENGTH * 8,
     },
     cryptoKey,
-    toArrayBuffer(encryptedData)
+    toArrayBuffer(encryptedData),
   );
 
   return bytesToString(new Uint8Array(decrypted));

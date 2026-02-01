@@ -16,11 +16,7 @@ import {
   isCacheStale,
   generateCacheRegionKey,
 } from '../services/meetingCacheService';
-import type {
-  CachedMeeting,
-  MeetingSearchParams,
-  CacheRegion,
-} from '../types/meeting';
+import type { CachedMeeting, MeetingSearchParams, CacheRegion } from '../types/meeting';
 
 export interface UseMeetingSearchOptions {
   enabled?: boolean; // Whether to auto-fetch (default: false)
@@ -40,9 +36,7 @@ export interface UseMeetingSearchReturn {
  * @param options Configuration options
  * @returns Meeting search state and control functions
  */
-export function useMeetingSearch(
-  options: UseMeetingSearchOptions = {}
-): UseMeetingSearchReturn {
+export function useMeetingSearch(options: UseMeetingSearchOptions = {}): UseMeetingSearchReturn {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
@@ -132,7 +126,7 @@ export function useMeetingSearch(
         throw error;
       }
     },
-    [db]
+    [db],
   );
 
   /**

@@ -77,7 +77,7 @@ export function useReading() {
       }
       return await saveReflection(reflection.trim());
     },
-    [saveReflection]
+    [saveReflection],
   );
 
   // Get reading for specific date
@@ -85,7 +85,7 @@ export function useReading() {
     async (date: Date): Promise<DailyReading | null> => {
       return await getReadingForDate(date);
     },
-    [getReadingForDate]
+    [getReadingForDate],
   );
 
   // Get reflection for specific date (async)
@@ -93,7 +93,7 @@ export function useReading() {
     async (date: Date): Promise<DailyReadingReflection | null> => {
       return await getReflectionForDate(date);
     },
-    [getReflectionForDate]
+    [getReflectionForDate],
   );
 
   // Decrypt reflection content
@@ -101,7 +101,7 @@ export function useReading() {
     async (reflection: DailyReadingReflection): Promise<string> => {
       return await decryptReflectionContent(reflection);
     },
-    [decryptReflectionContent]
+    [decryptReflectionContent],
   );
 
   // Format reading source
@@ -124,10 +124,10 @@ export function useReading() {
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
       const dateKey = `${month}-${day}`;
-      
+
       return reflections.some((r) => r.readingDate === dateKey);
     },
-    [reflections]
+    [reflections],
   );
 
   return {
@@ -159,4 +159,3 @@ export function useReading() {
     hasReflectionForDate,
   };
 }
-

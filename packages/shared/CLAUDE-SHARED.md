@@ -36,38 +36,33 @@ packages/shared/
 
 ### Available Constants
 
-| File | Purpose | Example |
-|------|---------|---------|
-| `achievements.ts` | Achievement definitions | Milestone badges |
-| `emotions.ts` | Emotion options | Mood tracking |
-| `milestones.ts` | Sobriety milestones | 1, 7, 30, 90, 365 days |
-| `slogans.ts` | Recovery slogans | "One day at a time" |
-| `stepPrompts.ts` | 12-step guided questions | Step 1-12 prompts |
-| `prayers.ts` | Recovery prayers | Serenity Prayer |
-| `readings.ts` | Daily readings | Meditation content |
-| `keytags.ts` | NA/AA keytag definitions | Color, meaning |
-| `promises.ts` | 12 Promises | Promise list |
-| `crisisResources.ts` | Emergency contacts | Hotlines, resources |
-| `triggerScenarios.ts` | Common trigger scenarios | For JITAI |
-| `meetingTopics.ts` | Meeting topic suggestions | Discussion starters |
-| `dailyReadings.ts` | Daily reading content | By date |
-| `designTokens.ts` | Design system tokens | Colors, spacing |
+| File                  | Purpose                   | Example                |
+| --------------------- | ------------------------- | ---------------------- |
+| `achievements.ts`     | Achievement definitions   | Milestone badges       |
+| `emotions.ts`         | Emotion options           | Mood tracking          |
+| `milestones.ts`       | Sobriety milestones       | 1, 7, 30, 90, 365 days |
+| `slogans.ts`          | Recovery slogans          | "One day at a time"    |
+| `stepPrompts.ts`      | 12-step guided questions  | Step 1-12 prompts      |
+| `prayers.ts`          | Recovery prayers          | Serenity Prayer        |
+| `readings.ts`         | Daily readings            | Meditation content     |
+| `keytags.ts`          | NA/AA keytag definitions  | Color, meaning         |
+| `promises.ts`         | 12 Promises               | Promise list           |
+| `crisisResources.ts`  | Emergency contacts        | Hotlines, resources    |
+| `triggerScenarios.ts` | Common trigger scenarios  | For JITAI              |
+| `meetingTopics.ts`    | Meeting topic suggestions | Discussion starters    |
+| `dailyReadings.ts`    | Daily reading content     | By date                |
+| `designTokens.ts`     | Design system tokens      | Colors, spacing        |
 
 ### Usage
 
 ```typescript
-import {
-  MILESTONES,
-  EMOTIONS,
-  SLOGANS,
-  STEP_PROMPTS
-} from '@recovery/shared/constants';
+import { MILESTONES, EMOTIONS, SLOGANS, STEP_PROMPTS } from '@recovery/shared/constants';
 
 // Milestones
-const nextMilestone = MILESTONES.find(m => m.days > currentDays);
+const nextMilestone = MILESTONES.find((m) => m.days > currentDays);
 
 // Emotions for mood tracking
-const moodOptions = EMOTIONS.map(e => e.label);
+const moodOptions = EMOTIONS.map((e) => e.label);
 
 // Step prompts
 const step1Questions = STEP_PROMPTS[1];
@@ -96,29 +91,29 @@ export const MILESTONES = [
 
 ### Available Stores
 
-| Store | Purpose | Key State |
-|-------|---------|-----------|
-| `journalStore.ts` | Journal entry state | entries, createEntry, updateEntry |
-| `checkinStore.ts` | Daily check-in state | morningCheckin, eveningCheckin |
-| `meetingStore.ts` | Meeting finder state | meetings, favorites |
-| `stepWorkStore.ts` | 12-step work state | stepProgress, responses |
-| `achievementStore.ts` | Achievement tracking | earnedBadges, milestones |
-| `profileStore.ts` | User profile state | sobrietyDate, settings |
-| `settingsStore.ts` | App settings | darkMode, notifications |
-| `contactStore.ts` | Support contacts | sponsor, emergencyContacts |
-| `authStore.ts` | Auth state | user, session |
-| `readingStore.ts` | Daily readings | todaysReading, history |
-| `regularMeetingStore.ts` | Regular meetings | weeklyMeetings |
-| `vaultStore.ts` | Secure vault | encryptedNotes |
-| `rhythmStore.ts` | Recovery rhythm | streaks, habits |
-| `scenarioStore.ts` | Trigger scenarios | userScenarios |
-| `amendsStore.ts` | Steps 8-9 amends | amendsList |
-| `fourthStepStore.ts` | Step 4 inventory | resentments, fears |
-| `tenthStepStore.ts` | Step 10 daily inventory | dailyReview |
-| `capsuleStore.ts` | Time capsule | letters, unlockDates |
-| `sharePrepStore.ts` | Meeting share prep | shareNotes |
-| `literatureStore.ts` | Recovery literature | bookmarks |
-| `phoneStore.ts` | Phone list | numbers, callHistory |
+| Store                    | Purpose                 | Key State                         |
+| ------------------------ | ----------------------- | --------------------------------- |
+| `journalStore.ts`        | Journal entry state     | entries, createEntry, updateEntry |
+| `checkinStore.ts`        | Daily check-in state    | morningCheckin, eveningCheckin    |
+| `meetingStore.ts`        | Meeting finder state    | meetings, favorites               |
+| `stepWorkStore.ts`       | 12-step work state      | stepProgress, responses           |
+| `achievementStore.ts`    | Achievement tracking    | earnedBadges, milestones          |
+| `profileStore.ts`        | User profile state      | sobrietyDate, settings            |
+| `settingsStore.ts`       | App settings            | darkMode, notifications           |
+| `contactStore.ts`        | Support contacts        | sponsor, emergencyContacts        |
+| `authStore.ts`           | Auth state              | user, session                     |
+| `readingStore.ts`        | Daily readings          | todaysReading, history            |
+| `regularMeetingStore.ts` | Regular meetings        | weeklyMeetings                    |
+| `vaultStore.ts`          | Secure vault            | encryptedNotes                    |
+| `rhythmStore.ts`         | Recovery rhythm         | streaks, habits                   |
+| `scenarioStore.ts`       | Trigger scenarios       | userScenarios                     |
+| `amendsStore.ts`         | Steps 8-9 amends        | amendsList                        |
+| `fourthStepStore.ts`     | Step 4 inventory        | resentments, fears                |
+| `tenthStepStore.ts`      | Step 10 daily inventory | dailyReview                       |
+| `capsuleStore.ts`        | Time capsule            | letters, unlockDates              |
+| `sharePrepStore.ts`      | Meeting share prep      | shareNotes                        |
+| `literatureStore.ts`     | Recovery literature     | bookmarks                         |
+| `phoneStore.ts`          | Phone list              | numbers, callHistory              |
 
 ### Store Pattern
 
@@ -139,23 +134,24 @@ export const useJournalStore = create<JournalState>()(
     (set, get) => ({
       entries: [],
       isLoading: false,
-      addEntry: (entry) => set((state) => ({
-        entries: [entry, ...state.entries],
-      })),
-      updateEntry: (id, updates) => set((state) => ({
-        entries: state.entries.map((e) =>
-          e.id === id ? { ...e, ...updates } : e
-        ),
-      })),
-      deleteEntry: (id) => set((state) => ({
-        entries: state.entries.filter((e) => e.id !== id),
-      })),
+      addEntry: (entry) =>
+        set((state) => ({
+          entries: [entry, ...state.entries],
+        })),
+      updateEntry: (id, updates) =>
+        set((state) => ({
+          entries: state.entries.map((e) => (e.id === id ? { ...e, ...updates } : e)),
+        })),
+      deleteEntry: (id) =>
+        set((state) => ({
+          entries: state.entries.filter((e) => e.id !== id),
+        })),
     }),
     {
       name: 'journal-storage',
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );
 ```
 
@@ -191,9 +187,9 @@ function JournalScreen() {
 export interface JournalEntry {
   id: string;
   userId: string;
-  title: string;         // Encrypted
-  content: string;       // Encrypted
-  mood?: number;         // 1-5
+  title: string; // Encrypted
+  content: string; // Encrypted
+  mood?: number; // 1-5
   tags?: string[];
   isShared: boolean;
   sharedWith?: string[]; // Sponsor IDs
@@ -205,7 +201,7 @@ export interface DailyCheckIn {
   id: string;
   userId: string;
   checkInType: 'morning' | 'evening';
-  checkInDate: string;   // YYYY-MM-DD
+  checkInDate: string; // YYYY-MM-DD
   encryptedIntention?: string;
   encryptedReflection?: string;
   encryptedMood?: string;
@@ -216,8 +212,8 @@ export interface DailyCheckIn {
 export interface StepWork {
   id: string;
   userId: string;
-  stepNumber: number;    // 1-12
-  content: string;       // Encrypted
+  stepNumber: number; // 1-12
+  content: string; // Encrypted
   isCompleted: boolean;
   createdAt: string;
   updatedAt: string;
@@ -289,7 +285,7 @@ try {
 import {
   sendSponsorRequest,
   acceptSponsorRequest,
-  shareEntryWithSponsor
+  shareEntryWithSponsor,
 } from '@recovery/shared/services/sponsorConnection';
 ```
 
@@ -314,11 +310,11 @@ Just-In-Time Adaptive Intervention - proactive support based on user patterns.
 
 ### Components
 
-| File | Purpose |
-|------|---------|
-| `engine.ts` | Core JITAI decision engine |
-| `types.ts` | Intervention types |
-| `notifications.ts` | Notification templates |
+| File               | Purpose                    |
+| ------------------ | -------------------------- |
+| `engine.ts`        | Core JITAI decision engine |
+| `types.ts`         | Intervention types         |
+| `notifications.ts` | Notification templates     |
 
 ### How It Works
 
@@ -342,12 +338,12 @@ const intervention = engine.evaluate({
 
 ### Intervention Types
 
-| Type | Trigger | Example |
-|------|---------|---------|
-| `reminder` | Missed check-in | "Don't forget your morning intention" |
-| `encouragement` | Approaching milestone | "You're 2 days from 30!" |
-| `support` | High craving reported | "Try a breathing exercise" |
-| `celebration` | Milestone reached | "Congratulations on 90 days!" |
+| Type            | Trigger               | Example                               |
+| --------------- | --------------------- | ------------------------------------- |
+| `reminder`      | Missed check-in       | "Don't forget your morning intention" |
+| `encouragement` | Approaching milestone | "You're 2 days from 30!"              |
+| `support`       | High craving reported | "Try a breathing exercise"            |
+| `celebration`   | Milestone reached     | "Congratulations on 90 days!"         |
 
 ---
 
@@ -356,11 +352,7 @@ const intervention = engine.evaluate({
 **Location**: `packages/shared/encryption/`
 
 ```typescript
-import {
-  encryptContent,
-  decryptContent,
-  generateKey
-} from '@recovery/shared/encryption';
+import { encryptContent, decryptContent, generateKey } from '@recovery/shared/encryption';
 
 // Encrypt sensitive data
 const encrypted = await encryptContent(plaintext, key);
@@ -388,7 +380,7 @@ await scheduleMeetingReminder({
   meetingId: 'abc123',
   meetingName: 'Monday Night Group',
   time: new Date('2024-01-15T19:00:00'),
-  reminderMinutes: 30,  // Remind 30 min before
+  reminderMinutes: 30, // Remind 30 min before
 });
 ```
 
@@ -409,8 +401,8 @@ import { RegularMeeting } from '@recovery/shared/db/models';
 interface RegularMeeting {
   id: string;
   name: string;
-  dayOfWeek: number;  // 0-6
-  time: string;       // HH:mm
+  dayOfWeek: number; // 0-6
+  time: string; // HH:mm
   location: string;
   reminderEnabled: boolean;
 }
@@ -422,11 +414,11 @@ interface RegularMeeting {
 
 **Location**: `packages/shared/utils/`
 
-| File | Purpose |
-|------|---------|
+| File             | Purpose                |
+| ---------------- | ---------------------- |
 | `performance.ts` | Performance monitoring |
-| `sms.ts` | SMS deep linking |
-| `index.ts` | Utility exports |
+| `sms.ts`         | SMS deep linking       |
+| `index.ts`       | Utility exports        |
 
 ### Performance Monitoring
 

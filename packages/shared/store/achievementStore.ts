@@ -248,10 +248,7 @@ export const useAchievementStore = create<AchievementState & AchievementActions>
 /**
  * Check if an achievement's conditions are met
  */
-function checkAchievementCondition(
-  achievement: Achievement,
-  context: AchievementContext
-): boolean {
+function checkAchievementCondition(achievement: Achievement, context: AchievementContext): boolean {
   const { id, unlockType, target, requiresDaysClean, requiresAchievements } = achievement;
 
   // Check days clean requirement
@@ -386,9 +383,8 @@ function getProgressiveProgress(id: string, context: AchievementContext): number
 
   if (!stepData) return 0;
 
-  const percentage = stepData.total > 0
-    ? Math.round((stepData.answered / stepData.total) * 100)
-    : 0;
+  const percentage =
+    stepData.total > 0 ? Math.round((stepData.answered / stepData.total) * 100) : 0;
 
   // "started" achievements unlock at 50%, "completed" at 100%
   if (type === 'started') {
@@ -403,7 +399,7 @@ function getProgressiveProgress(id: string, context: AchievementContext): number
  */
 function getAchievementProgress(
   achievement: Achievement,
-  context: AchievementContext
+  context: AchievementContext,
 ): number | null {
   const { id, unlockType, target } = achievement;
 
@@ -473,4 +469,3 @@ function getStreakProgress(id: string, context: AchievementContext): number {
       return 0;
   }
 }
-

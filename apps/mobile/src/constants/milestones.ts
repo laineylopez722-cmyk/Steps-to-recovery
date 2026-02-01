@@ -5,7 +5,7 @@
 
 export const MILESTONE_DAYS = [1, 7, 14, 30, 60, 90, 180, 365] as const;
 
-export type MilestoneDays = typeof MILESTONE_DAYS[number];
+export type MilestoneDays = (typeof MILESTONE_DAYS)[number];
 
 export interface Milestone {
   days: number;

@@ -19,7 +19,7 @@ export class SecureStorageError extends Error {
     message: string,
     public readonly operation: 'get' | 'set' | 'delete',
     public readonly key: string,
-    public readonly cause?: unknown
+    public readonly cause?: unknown,
   ) {
     super(message);
     this.name = 'SecureStorageError';
@@ -67,7 +67,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
         `Failed to store secure data: ${error instanceof Error ? error.message : 'Unknown error'}`,
         'set',
         key,
-        error
+        error,
       );
     }
   }
@@ -85,15 +85,12 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
 
       // Only throw if it's a critical Keystore error
       const errorMessage = error instanceof Error ? error.message : String(error);
-      if (
-        errorMessage.includes('Keystore') ||
-        errorMessage.includes('KeyStoreException')
-      ) {
+      if (errorMessage.includes('Keystore') || errorMessage.includes('KeyStoreException')) {
         throw new SecureStorageError(
           `Failed to delete secure data: ${errorMessage}`,
           'delete',
           key,
-          error
+          error,
         );
       }
     }

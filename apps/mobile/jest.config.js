@@ -5,13 +5,10 @@
 
 const config = {
   preset: 'jest-expo',
-  
+
   // Setup files to run before tests
-  setupFilesAfterEnv: [
-    '@testing-library/jest-native/extend-expect',
-    '<rootDir>/jest.setup.js',
-  ],
-  
+  setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect', '<rootDir>/jest.setup.js'],
+
   // Transform settings - handle pnpm's .pnpm folder structure and React Native 0.83+
   // pnpm creates: node_modules/.pnpm/package@version/node_modules/package/
   // We need to NOT ignore packages that need transformation
@@ -20,11 +17,11 @@ const config = {
     // This pattern handles both regular npm/yarn and pnpm structures
     'node_modules/(?!(.pnpm|' +
       '(jest-)?react-native|' +
-      'react-native-.*|' +     // All react-native-* packages (url-polyfill, css-interop, etc.)
+      'react-native-.*|' + // All react-native-* packages (url-polyfill, css-interop, etc.)
       '@react-native(-community)?|' +
       '@react-native/js-polyfills|' +
       'expo|' +
-      'expo-.*|' +             // All expo-* packages (expo-modules-core, expo-constants, etc.)
+      'expo-.*|' + // All expo-* packages (expo-modules-core, expo-constants, etc.)
       '@expo|' +
       '@expo-google-fonts|' +
       'react-navigation|' +
@@ -34,30 +31,33 @@ const config = {
       'sentry-expo|' +
       'native-base|' +
       'nativewind|' +
-      '@supabase|' +           // Supabase client
+      '@supabase|' + // Supabase client
       'uuid' +
-    ')/)',
+      ')/)',
   ],
-  
+
   // Module name mappings
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // Mock NativeWind css-interop for Jest - prevents JSX runtime errors
+    '^react-native-css-interop/jsx-runtime$':
+      '<rootDir>/__mocks__/react-native-css-interop-jsx-runtime.js',
+    '^react-native-css-interop$': '<rootDir>/__mocks__/react-native-css-interop.js',
   },
-  
+
+  // Use separate tsconfig for tests with skipLibCheck to avoid React 19 type issues
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/tsconfig.test.json',
+    },
+  },
+
   // Test file patterns
-  testMatch: [
-    '**/__tests__/**/*.(spec|test).[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
-  ],
-  
+  testMatch: ['**/__tests__/**/*.(spec|test).[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+
   // Files to ignore
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/android/',
-    '/ios/',
-    '/.expo/',
-  ],
-  
+  testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/', '/.expo/'],
+
   // Coverage configuration
   collectCoverageFrom: [
     'lib/**/*.{js,jsx,ts,tsx}',
@@ -70,7 +70,7 @@ const config = {
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
-  
+
   // Coverage thresholds - Gradually increase as test coverage improves
   // For critical utils (encryption, database, sync), aim for 80%+
   coverageThreshold: {
@@ -107,13 +107,13 @@ const config = {
       lines: 70,
     },
   },
-  
+
   // Clear mocks between tests
   clearMocks: true,
-  
+
   // Verbose output
   verbose: true,
-  
+
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };

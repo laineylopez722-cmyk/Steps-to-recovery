@@ -51,7 +51,7 @@ interface RegularMeetingActions {
       reminderEnabled?: boolean;
       reminderMinutesBefore?: number;
       notes?: string;
-    }
+    },
   ) => Promise<RegularMeeting>;
   updateMeeting: (
     id: string,
@@ -65,7 +65,7 @@ interface RegularMeetingActions {
       reminderEnabled: boolean;
       reminderMinutesBefore: number;
       notes: string;
-    }>
+    }>,
   ) => Promise<void>;
   removeMeeting: (id: string) => Promise<void>;
   getMeetingById: (id: string) => Promise<RegularMeeting | null>;
@@ -155,7 +155,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
 
         set((state) => {
           const updatedMeetings = state.meetings.map((m) =>
-            m.id === id ? { ...m, ...updates } : m
+            m.id === id ? { ...m, ...updates } : m,
           );
 
           // If home group status changed
@@ -254,7 +254,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
 
         set((state) => ({
           meetings: state.meetings.map((m) =>
-            m.id === id ? { ...m, reminderEnabled: enabled } : m
+            m.id === id ? { ...m, reminderEnabled: enabled } : m,
           ),
         }));
 
@@ -309,6 +309,5 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
     getShortDayName: (dayOfWeek) => getShortDayName(dayOfWeek),
     formatTime: (time) => formatMeetingTime(time),
     getTypeIcon: (type) => getMeetingTypeIcon(type),
-  })
+  }),
 );
-

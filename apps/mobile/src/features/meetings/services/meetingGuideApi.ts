@@ -5,11 +5,7 @@
  */
 
 import { logger } from '../../../utils/logger';
-import type {
-  MeetingGuideResponse,
-  CachedMeeting,
-  MeetingSearchParams,
-} from '../types/meeting';
+import type { MeetingGuideResponse, CachedMeeting, MeetingSearchParams } from '../types/meeting';
 
 /**
  * Meeting Guide API base URL
@@ -30,9 +26,7 @@ const REQUEST_TIMEOUT_MS = 15000;
  * @returns Array of cached meetings
  * @throws Error if API call fails after retries
  */
-export async function searchMeetings(
-  params: MeetingSearchParams
-): Promise<CachedMeeting[]> {
+export async function searchMeetings(params: MeetingSearchParams): Promise<CachedMeeting[]> {
   const { latitude, longitude, radius_miles } = params;
 
   logger.info('Searching for meetings', {
@@ -48,7 +42,7 @@ export async function searchMeetings(
     try {
       const response = await fetchWithTimeout(
         `${MEETING_GUIDE_API_BASE}?lat=${latitude}&lng=${longitude}&distance=${radius_miles}`,
-        REQUEST_TIMEOUT_MS
+        REQUEST_TIMEOUT_MS,
       );
 
       if (!response.ok) {
@@ -116,9 +110,7 @@ export async function searchMeetings(
  * @param meeting Meeting Guide API response
  * @returns CachedMeeting for local storage
  */
-function transformMeetingGuideToInternal(
-  meeting: MeetingGuideResponse
-): CachedMeeting {
+function transformMeetingGuideToInternal(meeting: MeetingGuideResponse): CachedMeeting {
   const now = new Date().toISOString();
 
   return {
@@ -150,10 +142,7 @@ function transformMeetingGuideToInternal(
  * @returns Response
  * @throws Error if timeout or network error
  */
-async function fetchWithTimeout(
-  url: string,
-  timeoutMs: number
-): Promise<Response> {
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -189,10 +178,7 @@ function sleep(ms: number): Promise<void> {
  * @param longitude Longitude (-180 to 180)
  * @returns true if valid
  */
-export function validateCoordinates(
-  latitude: number,
-  longitude: number
-): boolean {
+export function validateCoordinates(latitude: number, longitude: number): boolean {
   return (
     typeof latitude === 'number' &&
     typeof longitude === 'number' &&

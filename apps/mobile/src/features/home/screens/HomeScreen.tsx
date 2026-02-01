@@ -19,7 +19,14 @@ interface HomeScreenProps {
 export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const navigation = useNavigation();
   const theme = useTheme();
-  const { days, hours, minutes, seconds, nextMilestone, isLoading: cleanTimeLoading } = useCleanTime(userId);
+  const {
+    days,
+    hours,
+    minutes,
+    seconds,
+    nextMilestone,
+    isLoading: cleanTimeLoading,
+  } = useCleanTime(userId);
   const { morning, evening, isLoading: checkInsLoading } = useTodayCheckIns(userId);
 
   const handleEmergency = (): void => {
@@ -28,7 +35,10 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
   return (
     <>
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['top']}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={['top']}
+      >
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.contentContainer}

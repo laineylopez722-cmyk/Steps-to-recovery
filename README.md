@@ -9,12 +9,14 @@ To provide a secure, supportive digital companion for individuals in recovery, e
 ## ✨ Core Features
 
 ### Privacy-First Design
+
 - **End-to-end encryption** for all journal entries
 - **Offline-first** architecture with SQLite
 - **No third-party trackers** or analytics without consent
 - **Row-Level Security** on all cloud data
 
 ### Recovery Tools
+
 - 📔 **Encrypted Personal Journal** - Daily reflections with mood tracking
 - 📝 **12-Step Work Tracker** - Guided forms for each step
 - 🤝 **Sponsor Connection** - Secure sharing with your sponsor
@@ -23,6 +25,7 @@ To provide a secure, supportive digital companion for individuals in recovery, e
 - 🔔 **Smart Notifications** - Just-in-time support and reminders
 
 ### User Experience
+
 - **Mobile-first** design for iOS and Android
 - **Calming, empathetic** UI with supportive messaging
 - **Gamification** for motivation (without pressure)

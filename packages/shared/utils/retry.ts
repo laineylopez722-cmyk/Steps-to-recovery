@@ -28,12 +28,14 @@ const DEFAULT_RETRY_OPTIONS: Required<RetryOptions> = {
     // Retry on network errors, timeouts, and database locks
     if (error instanceof Error) {
       const message = error.message.toLowerCase();
-      return message.includes('network') ||
-             message.includes('timeout') ||
-             message.includes('database is locked') ||
-             message.includes('busy') ||
-             message.includes('connection') ||
-             message.includes('temporary');
+      return (
+        message.includes('network') ||
+        message.includes('timeout') ||
+        message.includes('database is locked') ||
+        message.includes('busy') ||
+        message.includes('connection') ||
+        message.includes('temporary')
+      );
     }
     return false;
   },
@@ -51,7 +53,7 @@ function calculateDelay(attempt: number, options: Required<RetryOptions>): numbe
  * Sleep for specified milliseconds
  */
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -72,7 +74,7 @@ function sleep(ms: number): Promise<void> {
  */
 export async function withRetry<T>(
   operation: () => Promise<T>,
-  options: RetryOptions = {}
+  options: RetryOptions = {},
 ): Promise<T> {
   const config = { ...DEFAULT_RETRY_OPTIONS, ...options };
   let lastError: unknown;
@@ -114,10 +116,7 @@ export async function withRetry<T>(
  * );
  * ```
  */
-export async function withTimeout<T>(
-  operation: () => Promise<T>,
-  timeoutMs: number
-): Promise<T> {
+export async function withTimeout<T>(operation: () => Promise<T>, timeoutMs: number): Promise<T> {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
       reject(new TimeoutError(`Operation timed out after ${timeoutMs}ms`));
@@ -151,10 +150,7 @@ export class TimeoutError extends Error {
 export async function withRetryAndTimeout<T>(
   operation: () => Promise<T>,
   retryOptions: RetryOptions = {},
-  timeoutMs: number = 10000
+  timeoutMs: number = 10000,
 ): Promise<T> {
-  return withRetry(
-    () => withTimeout(operation, timeoutMs),
-    retryOptions
-  );
+  return withRetry(() => withTimeout(operation, timeoutMs), retryOptions);
 }

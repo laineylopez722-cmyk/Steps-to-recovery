@@ -1,8 +1,8 @@
 /**
  * Design Tokens for Recovery Companion V2
- * 
+ *
  * Dark Navy Theme - Inspired by reference site design
- * 
+ *
  * Design Philosophy:
  * 1. Dark Navy Background — Calming, focused environment
  * 2. Blue Primary Accents — Trust, calm, recovery
@@ -18,12 +18,12 @@
 export const COLORS = {
   // Background colors
   background: {
-    primary: '#0a0f1c',    // Main app background
-    secondary: '#162540',  // Slightly lighter sections
+    primary: '#0a0f1c', // Main app background
+    secondary: '#162540', // Slightly lighter sections
     card: 'rgba(30, 41, 59, 0.6)', // Semi-transparent cards
     elevated: 'rgba(30, 41, 59, 0.8)', // More opaque elevated elements
   },
-  
+
   // Primary Blue
   primary: {
     50: '#eff6ff',
@@ -37,7 +37,7 @@ export const COLORS = {
     800: '#1e40af',
     900: '#1e3a8a',
   },
-  
+
   // Secondary Teal
   secondary: {
     50: '#f0fdfa',
@@ -51,7 +51,7 @@ export const COLORS = {
     800: '#115e59',
     900: '#134e4a',
   },
-  
+
   // Success Green
   success: {
     light: '#dcfce7',
@@ -59,36 +59,36 @@ export const COLORS = {
     dark: '#166534',
     badge: '#22c55e', // Streak intact badge
   },
-  
+
   // Warning Orange
   warning: {
     light: '#fef3c7',
     main: '#f97316',
     dark: '#92400e',
   },
-  
+
   // Danger Red
   danger: {
     light: '#fee2e2',
     main: '#ef4444',
     dark: '#991b1b',
   },
-  
+
   // Text colors
   text: {
-    primary: '#f1f5f9',    // Main text
-    secondary: '#94a3b8',  // Muted text
-    muted: '#64748b',      // Very muted
-    inverse: '#0f172a',    // For light backgrounds
+    primary: '#f1f5f9', // Main text
+    secondary: '#94a3b8', // Muted text
+    muted: '#64748b', // Very muted
+    inverse: '#0f172a', // For light backgrounds
   },
-  
+
   // Border colors
   border: {
     subtle: 'rgba(51, 65, 85, 0.5)',
     default: 'rgba(71, 85, 105, 0.5)',
     strong: 'rgba(100, 116, 139, 0.5)',
   },
-  
+
   // Keytags colors
   keytags: {
     white: '#ffffff',

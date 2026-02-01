@@ -45,10 +45,10 @@ export function Text({
     ? weight === 'normal'
       ? '400'
       : weight === 'medium'
-      ? '500'
-      : weight === 'semibold'
-      ? '600'
-      : '700'
+        ? '500'
+        : weight === 'semibold'
+          ? '600'
+          : '700'
     : undefined;
 
   const weightStyle: TextStyle | undefined = fontWeight ? { fontWeight } : undefined;
@@ -57,13 +57,7 @@ export function Text({
 
   return (
     <RNText
-      style={[
-        typographyStyle,
-        { color: textColor },
-        weightStyle,
-        alignStyle,
-        style,
-      ]}
+      style={[typographyStyle, { color: textColor }, weightStyle, alignStyle, style]}
       {...props}
     >
       {children}

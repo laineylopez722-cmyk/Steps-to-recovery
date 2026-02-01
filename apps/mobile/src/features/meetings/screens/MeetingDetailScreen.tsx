@@ -4,14 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Button } from '../../../design-system/components/Button';
@@ -22,29 +15,18 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useFavoriteMeetings } from '../hooks/useFavoriteMeetings';
 import { getCachedMeetingById } from '../services/meetingCacheService';
 import type { CachedMeeting } from '../types/meeting';
-import {
-  formatMeetingTime,
-  formatDayOfWeek,
-  getMeetingTypeLabel,
-} from '../types/meeting';
+import { formatMeetingTime, formatDayOfWeek, getMeetingTypeLabel } from '../types/meeting';
 import type { MeetingsStackScreenProps } from '../../../navigation/types';
 
 type MeetingDetailScreenProps = MeetingsStackScreenProps<'MeetingDetail'>;
 
-export function MeetingDetailScreen({
-  route,
-}: MeetingDetailScreenProps): React.ReactElement {
+export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.ReactElement {
   const theme = useTheme();
   const { db } = useDatabase();
   const { meetingId } = route.params;
 
-  const {
-    isFavorite,
-    addFavorite,
-    removeFavorite,
-    updateNotes,
-    getFavoriteNotes,
-  } = useFavoriteMeetings();
+  const { isFavorite, addFavorite, removeFavorite, updateNotes, getFavoriteNotes } =
+    useFavoriteMeetings();
 
   const [meeting, setMeeting] = useState<CachedMeeting | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -92,10 +74,7 @@ export function MeetingDetailScreen({
         setIsFavorited(true);
       }
     } catch (error) {
-      Alert.alert(
-        'Error',
-        error instanceof Error ? error.message : 'Failed to update favorite'
-      );
+      Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update favorite');
     }
   }, [isFavorited, meetingId, notes, addFavorite, removeFavorite]);
 
@@ -118,12 +97,7 @@ export function MeetingDetailScreen({
 
   if (isLoading) {
     return (
-      <View
-        style={[
-          styles.centerContainer,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
+      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -131,15 +105,8 @@ export function MeetingDetailScreen({
 
   if (!meeting) {
     return (
-      <View
-        style={[
-          styles.centerContainer,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
-        <Text style={[theme.typography.body, { color: theme.colors.text }]}>
-          Meeting not found
-        </Text>
+      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
+        <Text style={[theme.typography.body, { color: theme.colors.text }]}>Meeting not found</Text>
       </View>
     );
   }
@@ -152,13 +119,8 @@ export function MeetingDetailScreen({
     meetingTypes = [];
   }
 
-  const timeText = meeting.time
-    ? formatMeetingTime(meeting.time)
-    : 'Time varies';
-  const dayText =
-    meeting.day_of_week !== null
-      ? formatDayOfWeek(meeting.day_of_week)
-      : 'Daily';
+  const timeText = meeting.time ? formatMeetingTime(meeting.time) : 'Time varies';
+  const dayText = meeting.day_of_week !== null ? formatDayOfWeek(meeting.day_of_week) : 'Daily';
 
   return (
     <ScrollView
@@ -167,9 +129,7 @@ export function MeetingDetailScreen({
     >
       {/* Meeting Name */}
       <View style={styles.header}>
-        <Text style={[theme.typography.h1, { color: theme.colors.text }]}>
-          {meeting.name}
-        </Text>
+        <Text style={[theme.typography.h1, { color: theme.colors.text }]}>{meeting.name}</Text>
         <Button
           variant={isFavorited ? 'danger' : 'primary'}
           onPress={handleToggleFavorite}
@@ -187,11 +147,7 @@ export function MeetingDetailScreen({
       {/* Time and Day */}
       <Card style={styles.section}>
         <View style={styles.infoRow}>
-          <MaterialIcons
-            name="schedule"
-            size={24}
-            color={theme.colors.primary}
-          />
+          <MaterialIcons name="schedule" size={24} color={theme.colors.primary} />
           <View style={styles.infoText}>
             <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
               When
@@ -206,11 +162,7 @@ export function MeetingDetailScreen({
       {/* Location */}
       <Card style={styles.section}>
         <View style={styles.infoRow}>
-          <MaterialIcons
-            name="place"
-            size={24}
-            color={theme.colors.primary}
-          />
+          <MaterialIcons name="place" size={24} color={theme.colors.primary} />
           <View style={styles.infoText}>
             <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
               Where
@@ -231,12 +183,7 @@ export function MeetingDetailScreen({
       {/* Meeting Types */}
       {meetingTypes.length > 0 && (
         <Card style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: 12 },
-            ]}
-          >
+          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
             Meeting Type
           </Text>
           <View style={styles.typesContainer}>
@@ -252,12 +199,7 @@ export function MeetingDetailScreen({
       {/* Notes */}
       {meeting.notes && (
         <Card style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: 8 },
-            ]}
-          >
+          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 8 }]}>
             Meeting Notes
           </Text>
           <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
@@ -268,12 +210,7 @@ export function MeetingDetailScreen({
 
       {/* Personal Notes */}
       <Card style={styles.section}>
-        <Text
-          style={[
-            theme.typography.h3,
-            { color: theme.colors.text, marginBottom: 12 },
-          ]}
-        >
+        <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
           Personal Notes
         </Text>
         <TextArea

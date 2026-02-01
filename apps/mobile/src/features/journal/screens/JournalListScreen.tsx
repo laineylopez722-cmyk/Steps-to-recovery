@@ -62,7 +62,7 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
       try {
         await deleteEntry?.(entryId);
         hapticSuccess();
-      } catch (error) {
+      } catch (_error) {
         // Error handled by hook
       }
     },
@@ -200,6 +200,11 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
           accessibilityRole="list"
           accessibilityLabel="Journal entries list"
           showsVerticalScrollIndicator={false}
+          // Performance optimizations
+          initialNumToRender={10}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          removeClippedSubviews
         />
       )}
 

@@ -73,10 +73,12 @@ When evaluating architectural decisions:
 Your architectural decisions should be structured as follows:
 
 **Feature Analysis**
+
 - Summary of the feature request
 - Alignment with existing architecture (fit, conflicts, gaps)
 
 **Architectural Recommendations**
+
 - Pattern Decision: [New pattern | Reuse existing pattern | Extend existing pattern] with rationale
 - Cross-Cutting Concerns: List of identified concerns with handling approach
 - Proposed Structure:
@@ -88,16 +90,19 @@ Your architectural decisions should be structured as follows:
   ```
 
 **Dependency Analysis**
+
 - Dependency graph showing relationships
 - Identified risks or coupling concerns
 - Critical dependencies that must be resolved first
 
 **Impact Assessment**
+
 - Breaking changes: [None | List with severity]
 - Migration requirements: [None | Steps needed]
 - Affected systems/components
 
 **Implementation Guidance**
+
 - Recommended implementation order
 - Key architectural constraints to maintain
 - Quality gates or checkpoints
@@ -116,6 +121,7 @@ Your architectural decisions should be structured as follows:
 ## Quality Assurance
 
 Before finalizing recommendations:
+
 - Verify alignment with established project patterns and conventions
 - Ensure all cross-cutting concerns are addressed
 - Confirm dependency graph has no circular dependencies

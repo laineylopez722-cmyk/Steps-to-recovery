@@ -138,19 +138,23 @@ export function AnimatedCheckmark({
         withTiming(1, {
           duration: 300,
           easing: Easing.out(Easing.ease),
-        })
+        }),
       );
 
       pathProgress.value = withDelay(
         delay + 200,
-        withTiming(1, {
-          duration: 400,
-          easing: Easing.out(Easing.ease),
-        }, (finished) => {
-          if (finished) {
-            runOnJS(triggerHaptic)();
-          }
-        })
+        withTiming(
+          1,
+          {
+            duration: 400,
+            easing: Easing.out(Easing.ease),
+          },
+          (finished) => {
+            if (finished) {
+              runOnJS(triggerHaptic)();
+            }
+          },
+        ),
       );
 
       scale.value = withDelay(
@@ -161,8 +165,8 @@ export function AnimatedCheckmark({
             if (finished) {
               runOnJS(handleComplete)();
             }
-          })
-        )
+          }),
+        ),
       );
     } else {
       // No animation - set to final state
@@ -197,12 +201,10 @@ export function AnimatedCheckmark({
   });
 
   return (
-    <Animated.View style={[styles.container, { width: size, height: size }, animatedContainerStyle, style]}>
-      <Svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
-      >
+    <Animated.View
+      style={[styles.container, { width: size, height: size }, animatedContainerStyle, style]}
+    >
+      <Svg width={size} height={size} viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}>
         {/* Background circle */}
         {showBackground && (
           <AnimatedCircle

@@ -37,7 +37,8 @@ interface NotificationContextValue {
 const NotificationContext = createContext<NotificationContextValue | null>(null);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const [permissionStatus, setPermissionStatus] = useState<NotificationPermissionStatus>('undetermined');
+  const [permissionStatus, setPermissionStatus] =
+    useState<NotificationPermissionStatus>('undetermined');
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -155,7 +156,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     async function handleInitialNotification(): Promise<void> {
       try {
         // Wait for navigation to be ready
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         if (!isMounted) return;
 
@@ -192,11 +193,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     setNotificationsEnabled,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 }
 
 /**

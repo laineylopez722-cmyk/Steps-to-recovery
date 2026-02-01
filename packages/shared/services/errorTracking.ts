@@ -1,20 +1,20 @@
 /**
  * Error Tracking Service
- * 
+ *
  * A centralized error tracking service that can be integrated with Sentry
  * or other error monitoring solutions. Provides a consistent API for error
  * reporting across the application.
- * 
+ *
  * **Privacy Note**: This service is designed to respect user privacy and
  * does not send sensitive recovery data (journal entries, step work, etc.)
  * to error tracking services.
- * 
+ *
  * To enable Sentry:
  * 1. Install: `npx expo install @sentry/react-native`
  * 2. Set up Sentry project at https://sentry.io
  * 3. Add `EXPO_PUBLIC_SENTRY_DSN` to your environment variables
  * 4. Uncomment the Sentry initialization below
- * 
+ *
  * @module services/errorTracking
  */
 
@@ -52,10 +52,10 @@ export interface BreadcrumbData {
 
 /**
  * Initialize error tracking service
- * 
+ *
  * Call this once in your app entry point (e.g., `_layout.tsx` or `App.tsx`).
  * If Sentry DSN is not configured, error tracking will be disabled gracefully.
- * 
+ *
  * @example
  * ```ts
  * // In App.tsx or _layout.tsx
@@ -66,7 +66,7 @@ export interface BreadcrumbData {
  */
 export function initializeErrorTracking(): void {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
-  
+
   if (!dsn) {
     if (__DEV__) {
       console.log('[ErrorTracking] Sentry DSN not configured. Error tracking disabled.');
@@ -116,10 +116,10 @@ export function initializeErrorTracking(): void {
 
 /**
  * Capture an exception and send to error tracking service
- * 
+ *
  * Use this to report errors that occur during app execution.
  * The error will be logged and sent to the configured error tracking service.
- * 
+ *
  * @param error - The error object to capture
  * @param context - Optional context about where/why the error occurred
  * @example
@@ -134,10 +134,7 @@ export function initializeErrorTracking(): void {
  * }
  * ```
  */
-export function captureException(
-  error: Error,
-  context?: ErrorContext
-): void {
+export function captureException(error: Error, context?: ErrorContext): void {
   const errorMessage = error instanceof Error ? error.message : String(error);
   console.error('[ErrorTracking] Exception:', errorMessage, context);
 
@@ -158,7 +155,7 @@ export function captureException(
 export function captureMessage(
   message: string,
   level: 'debug' | 'info' | 'warning' | 'error' = 'info',
-  context?: ErrorContext
+  context?: ErrorContext,
 ): void {
   console.log(`[ErrorTracking] ${level.toUpperCase()}: ${message}`, context);
 
@@ -214,10 +211,7 @@ export function setTag(key: string, value: string): void {
 /**
  * Start a performance transaction
  */
-export function startTransaction(
-  name: string,
-  op: string
-): { finish: () => void } {
+export function startTransaction(name: string, op: string): { finish: () => void } {
   // Uncomment when Sentry is installed:
   // const transaction = Sentry.startTransaction({ name, op });
   // return {
@@ -265,7 +259,7 @@ class SimpleErrorBoundary extends React.Component<
 
 export function withErrorBoundary<P extends object>(
   Component: React.ComponentType<P>,
-  fallback?: React.ReactNode
+  fallback?: React.ReactNode,
 ): React.ComponentType<P> {
   // Uncomment when Sentry is installed:
   // return Sentry.withErrorBoundary(Component, {
@@ -277,7 +271,7 @@ export function withErrorBoundary<P extends object>(
     React.createElement(
       SimpleErrorBoundary,
       { fallback: fallback ?? React.createElement(ErrorFallback) },
-      React.createElement(Component, props)
+      React.createElement(Component, props),
     );
 
   WithBoundary.displayName = `WithErrorBoundary(${Component.displayName || Component.name || 'Component'})`;
@@ -293,17 +287,14 @@ export function ErrorFallback(): React.ReactElement {
     'div',
     { style: { padding: 24, textAlign: 'center', color: '#a00' } },
     React.createElement('h2', null, 'Something went wrong.'),
-    React.createElement('p', null, 'An unexpected error has occurred. Please try again later.')
+    React.createElement('p', null, 'An unexpected error has occurred. Please try again later.'),
   );
 }
 
 /**
  * Log navigation events for debugging
  */
-export function logNavigation(
-  routeName: string,
-  params?: Record<string, unknown>
-): void {
+export function logNavigation(routeName: string, params?: Record<string, unknown>): void {
   addBreadcrumb({
     category: 'navigation',
     message: `Navigated to ${routeName}`,
@@ -315,10 +306,7 @@ export function logNavigation(
 /**
  * Log user actions for debugging
  */
-export function logUserAction(
-  action: string,
-  details?: Record<string, unknown>
-): void {
+export function logUserAction(action: string, details?: Record<string, unknown>): void {
   addBreadcrumb({
     category: 'user',
     message: action,
@@ -330,11 +318,7 @@ export function logUserAction(
 /**
  * Log database operations for debugging
  */
-export function logDatabaseOperation(
-  operation: string,
-  table: string,
-  success: boolean
-): void {
+export function logDatabaseOperation(operation: string, table: string, success: boolean): void {
   addBreadcrumb({
     category: 'database',
     message: `${operation} on ${table}`,
@@ -342,4 +326,3 @@ export function logDatabaseOperation(
     data: { operation, table, success },
   });
 }
-

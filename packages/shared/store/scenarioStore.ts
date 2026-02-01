@@ -16,7 +16,9 @@ interface ScenarioState {
 
   // Actions
   loadPractices: () => Promise<void>;
-  addPractice: (practice: Omit<ScenarioPractice, 'id' | 'completedAt'>) => Promise<ScenarioPractice>;
+  addPractice: (
+    practice: Omit<ScenarioPractice, 'id' | 'completedAt'>,
+  ) => Promise<ScenarioPractice>;
   getPracticesByScenario: (scenarioId: string) => ScenarioPractice[];
   getTotalPractices: () => number;
   getRecentPractices: (limit?: number) => ScenarioPractice[];
@@ -47,7 +49,7 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
     try {
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbScenarioPractice>(
-        'SELECT * FROM scenario_practices ORDER BY completed_at DESC'
+        'SELECT * FROM scenario_practices ORDER BY completed_at DESC',
       );
 
       const practices: ScenarioPractice[] = [];
@@ -79,7 +81,7 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
       await db.runAsync(
         `INSERT INTO scenario_practices (id, scenario_id, selected_option_index, reflection, completed_at)
          VALUES (?, ?, ?, ?, ?)`,
-        [id, practice.scenarioId, practice.selectedOptionIndex, encryptedReflection, now]
+        [id, practice.scenarioId, practice.selectedOptionIndex, encryptedReflection, now],
       );
 
       const newPractice: ScenarioPractice = {

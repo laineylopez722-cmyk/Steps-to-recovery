@@ -1,9 +1,11 @@
 # 12-Step Work Tracking - Claude Prompt
 
 ## Objective
+
 Provide UI and data models for working through the 12 steps with guided forms and progress tracking.
 
 ## Target Files
+
 - `apps/mobile/src/features/steps/screens/StepsListScreen.tsx`
 - `apps/mobile/src/features/steps/screens/StepDetailScreen.tsx`
 - `apps/mobile/src/features/steps/components/StepCard.tsx`
@@ -12,12 +14,14 @@ Provide UI and data models for working through the 12 steps with guided forms an
 ## Requirements
 
 ### Steps List Screen
+
 - Display all 12 steps with titles and descriptions
 - Progress indicator for each step
 - Visual completion badges
 - Tap to open step detail
 
 ### Step Detail Screen
+
 - Step number, title, and full description
 - Guided questions/prompts for each step
 - Free-form text input for reflections
@@ -25,6 +29,7 @@ Provide UI and data models for working through the 12 steps with guided forms an
 - Save progress (encrypted)
 
 ### Special Step Implementations
+
 1. **Step 4** - Moral Inventory
    - Structured form for resentments, fears, harms
    - Tabular format or repeated entry form
@@ -40,6 +45,7 @@ Provide UI and data models for working through the 12 steps with guided forms an
    - Track amends completion status
 
 ### Data Storage
+
 - SQLite table for step work entries
 - Encrypted sensitive content
 - Sync to Supabase with RLS
@@ -58,6 +64,7 @@ Provide UI and data models for working through the 12 steps with guided forms an
   ```
 
 ### User Experience
+
 - Supportive, non-judgmental language
 - Celebrate completion of each step
 - Allow revisiting and editing step work

@@ -1,8 +1,8 @@
 /**
  * Custom Hooks Exports
- * 
+ *
  * Central export point for all custom React hooks used throughout the app.
- * 
+ *
  * **Available Hooks**:
  * - Authentication: `useAuth`
  * - Sobriety tracking: `useSobriety`
@@ -16,7 +16,7 @@
  * - JITAI: `useJitai`
  * - Audio: `useVoiceRecorder`
  * - PIN Entry: `usePinEntry`
- * 
+ *
  * @module hooks
  */
 

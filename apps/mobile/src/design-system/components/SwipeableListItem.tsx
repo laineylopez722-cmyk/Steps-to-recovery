@@ -187,28 +187,22 @@ export function SwipeableListItem({
   const rightActionsAnimatedStyle = useAnimatedStyle(() => {
     return {
       width: Math.abs(translateX.value),
-      opacity: interpolate(
-        translateX.value,
-        [-rightActionsWidth, 0],
-        [1, 0],
-        Extrapolation.CLAMP
-      ),
+      opacity: interpolate(translateX.value, [-rightActionsWidth, 0], [1, 0], Extrapolation.CLAMP),
     };
   });
 
   // Animated style for left actions container
   const leftActionsAnimatedStyle = useAnimatedStyle(() => ({
     width: translateX.value > 0 ? translateX.value : 0,
-    opacity: interpolate(
-      translateX.value,
-      [0, leftActionsWidth],
-      [0, 1],
-      Extrapolation.CLAMP
-    ),
+    opacity: interpolate(translateX.value, [0, leftActionsWidth], [0, 1], Extrapolation.CLAMP),
   }));
 
   // Render action button
-  const renderAction = (action: SwipeAction, _index: number, _isRight: boolean): React.ReactElement => {
+  const renderAction = (
+    action: SwipeAction,
+    _index: number,
+    _isRight: boolean,
+  ): React.ReactElement => {
     return (
       <Animated.View
         key={action.key}
@@ -229,9 +223,7 @@ export function SwipeableListItem({
         >
           {action.icon}
           {action.label && (
-            <Text style={[styles.actionLabel, { color: '#FFFFFF' }]}>
-              {action.label}
-            </Text>
+            <Text style={[styles.actionLabel, { color: '#FFFFFF' }]}>{action.label}</Text>
           )}
         </View>
       </Animated.View>
@@ -242,14 +234,18 @@ export function SwipeableListItem({
     <View style={[styles.container, style]} testID={testID}>
       {/* Left Actions (shown when swiping right) */}
       {leftActions.length > 0 && (
-        <Animated.View style={[styles.actionsContainer, styles.leftActions, leftActionsAnimatedStyle]}>
+        <Animated.View
+          style={[styles.actionsContainer, styles.leftActions, leftActionsAnimatedStyle]}
+        >
           {leftActions.map((action, index) => renderAction(action, index, false))}
         </Animated.View>
       )}
 
       {/* Right Actions (shown when swiping left) */}
       {rightActions.length > 0 && (
-        <Animated.View style={[styles.actionsContainer, styles.rightActions, rightActionsAnimatedStyle]}>
+        <Animated.View
+          style={[styles.actionsContainer, styles.rightActions, rightActionsAnimatedStyle]}
+        >
           {rightActions.map((action, index) => renderAction(action, index, true))}
         </Animated.View>
       )}
@@ -257,11 +253,7 @@ export function SwipeableListItem({
       {/* Main Content */}
       <GestureDetector gesture={panGesture}>
         <Animated.View
-          style={[
-            styles.content,
-            { backgroundColor: theme.colors.surface },
-            contentAnimatedStyle,
-          ]}
+          style={[styles.content, { backgroundColor: theme.colors.surface }, contentAnimatedStyle]}
         >
           {children}
         </Animated.View>

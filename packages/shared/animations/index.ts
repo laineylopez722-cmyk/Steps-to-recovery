@@ -1,15 +1,15 @@
 /**
  * Shared Animation Presets
- * 
+ *
  * Reusable animation configurations for consistent motion design across the app.
  * Uses react-native-reanimated for performant, native animations.
- * 
+ *
  * Provides:
  * - Spring configurations for different contexts
  * - Timing presets for various animation speeds
  * - Helper functions for common animation patterns
  * - Entering/exiting presets for layout animations
- * 
+ *
  * @module animations
  */
 
@@ -20,7 +20,6 @@ import {
   withDelay,
   Easing,
   SharedValue,
-
 } from 'react-native-reanimated';
 
 // Spring presets for different contexts
@@ -76,9 +75,9 @@ export const TIMING_CONFIGS = {
 
 /**
  * Animate a shared value for counting up effect
- * 
+ *
  * Useful for animating numbers (e.g., days clean, achievement counts).
- * 
+ *
  * @param sharedValue - The shared value to animate
  * @param targetValue - Target number to count up to
  * @param duration - Animation duration in milliseconds (default: 1500ms)
@@ -91,7 +90,7 @@ export const TIMING_CONFIGS = {
 export function animateCountUp(
   sharedValue: SharedValue<number>,
   targetValue: number,
-  duration: number = 1500
+  duration: number = 1500,
 ): void {
   'worklet';
   sharedValue.value = withTiming(targetValue, {
@@ -103,10 +102,7 @@ export function animateCountUp(
 /**
  * Create a scale press animation
  */
-export function animatePress(
-  scaleValue: SharedValue<number>,
-  pressed: boolean
-) {
+export function animatePress(scaleValue: SharedValue<number>, pressed: boolean) {
   'worklet';
   scaleValue.value = withSpring(pressed ? 0.95 : 1, SPRING_CONFIGS.snappy);
 }
@@ -114,18 +110,15 @@ export function animatePress(
 /**
  * Create a pulse animation for emergency/attention elements
  */
-export function animatePulse(
-  scaleValue: SharedValue<number>,
-  opacityValue: SharedValue<number>
-) {
+export function animatePulse(scaleValue: SharedValue<number>, opacityValue: SharedValue<number>) {
   'worklet';
   scaleValue.value = withSequence(
     withTiming(1.05, { duration: 500, easing: Easing.inOut(Easing.ease) }),
-    withTiming(1, { duration: 500, easing: Easing.inOut(Easing.ease) })
+    withTiming(1, { duration: 500, easing: Easing.inOut(Easing.ease) }),
   );
   opacityValue.value = withSequence(
     withTiming(0.7, { duration: 500 }),
-    withTiming(1, { duration: 500 })
+    withTiming(1, { duration: 500 }),
   );
 }
 
@@ -142,16 +135,16 @@ export function getStaggerDelay(index: number, baseDelay: number = 50): number {
 export function animateFadeInUp(
   opacityValue: SharedValue<number>,
   translateYValue: SharedValue<number>,
-  delay: number = 0
+  delay: number = 0,
 ) {
   'worklet';
   opacityValue.value = withDelay(
     delay,
-    withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) })
+    withTiming(1, { duration: 400, easing: Easing.out(Easing.cubic) }),
   );
   translateYValue.value = withDelay(
     delay,
-    withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) })
+    withTiming(0, { duration: 400, easing: Easing.out(Easing.cubic) }),
   );
 }
 
@@ -164,7 +157,7 @@ export function animateCelebration(scaleValue: SharedValue<number>) {
     withSpring(1.2, SPRING_CONFIGS.bouncy),
     withSpring(0.9, SPRING_CONFIGS.bouncy),
     withSpring(1.05, SPRING_CONFIGS.bouncy),
-    withSpring(1, SPRING_CONFIGS.gentle)
+    withSpring(1, SPRING_CONFIGS.gentle),
   );
 }
 

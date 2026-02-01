@@ -83,10 +83,10 @@ interface LiteratureState {
   // Book progress
   progress: LiteratureProgress[];
   currentBook: Book | null;
-  
+
   // Promises
   promiseExperiences: PromiseExperience[];
-  
+
   // UI state
   isLoading: boolean;
   error: string | null;
@@ -100,7 +100,7 @@ interface LiteratureActions {
   getChapterNotes: (bookId: string, chapterId: string) => Promise<string | null>;
   getBookProgress: (bookId: string) => number;
   setCurrentBook: (book: Book) => void;
-  
+
   // Promises
   loadPromiseExperiences: () => Promise<void>;
   togglePromiseExperienced: (promiseId: string) => Promise<void>;
@@ -122,7 +122,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbLiteratureProgress>(
         'SELECT * FROM literature_progress WHERE book_id = ?',
-        [bookId]
+        [bookId],
       );
 
       const progress: LiteratureProgress[] = rows.map((row) => ({
@@ -146,26 +146,24 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
     try {
       const db = await getDatabase();
       const { progress } = get();
-      
-      const existing = progress.find(
-        (p) => p.bookId === bookId && p.chapterId === chapterId
-      );
+
+      const existing = progress.find((p) => p.bookId === bookId && p.chapterId === chapterId);
 
       if (existing) {
         // Toggle existing
         const newCompleted = !existing.isCompleted;
         const now = newCompleted ? new Date().toISOString() : null;
-        
+
         await db.runAsync(
           'UPDATE literature_progress SET is_completed = ?, completed_at = ? WHERE id = ?',
-          [newCompleted ? 1 : 0, now, existing.id]
+          [newCompleted ? 1 : 0, now, existing.id],
         );
 
         set({
           progress: progress.map((p) =>
             p.id === existing.id
               ? { ...p, isCompleted: newCompleted, completedAt: now ? new Date(now) : undefined }
-              : p
+              : p,
           ),
         });
       } else {
@@ -176,7 +174,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         await db.runAsync(
           `INSERT INTO literature_progress (id, book_id, chapter_id, is_completed, notes, completed_at, created_at)
            VALUES (?, ?, ?, 1, NULL, ?, ?)`,
-          [id, bookId, chapterId, now.toISOString(), now.toISOString()]
+          [id, bookId, chapterId, now.toISOString(), now.toISOString()],
         );
 
         const newProgress: LiteratureProgress = {
@@ -201,19 +199,17 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
       const { progress } = get();
       const encryptedNotes = await encryptContent(notes);
 
-      const existing = progress.find(
-        (p) => p.bookId === bookId && p.chapterId === chapterId
-      );
+      const existing = progress.find((p) => p.bookId === bookId && p.chapterId === chapterId);
 
       if (existing) {
-        await db.runAsync(
-          'UPDATE literature_progress SET notes = ? WHERE id = ?',
-          [encryptedNotes, existing.id]
-        );
+        await db.runAsync('UPDATE literature_progress SET notes = ? WHERE id = ?', [
+          encryptedNotes,
+          existing.id,
+        ]);
 
         set({
           progress: progress.map((p) =>
-            p.id === existing.id ? { ...p, notes: encryptedNotes } : p
+            p.id === existing.id ? { ...p, notes: encryptedNotes } : p,
           ),
         });
       } else {
@@ -223,7 +219,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         await db.runAsync(
           `INSERT INTO literature_progress (id, book_id, chapter_id, is_completed, notes, completed_at, created_at)
            VALUES (?, ?, ?, 0, ?, NULL, ?)`,
-          [id, bookId, chapterId, encryptedNotes, now.toISOString()]
+          [id, bookId, chapterId, encryptedNotes, now.toISOString()],
         );
 
         const newProgress: LiteratureProgress = {
@@ -244,9 +240,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
 
   getChapterNotes: async (bookId: string, chapterId: string) => {
     const { progress } = get();
-    const entry = progress.find(
-      (p) => p.bookId === bookId && p.chapterId === chapterId
-    );
+    const entry = progress.find((p) => p.bookId === bookId && p.chapterId === chapterId);
 
     if (!entry?.notes) return null;
 
@@ -263,9 +257,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
     const book = AVAILABLE_BOOKS.find((b) => b.id === bookId);
     if (!book) return 0;
 
-    const completedCount = progress.filter(
-      (p) => p.bookId === bookId && p.isCompleted
-    ).length;
+    const completedCount = progress.filter((p) => p.bookId === bookId && p.isCompleted).length;
 
     return Math.round((completedCount / book.chapters.length) * 100);
   },
@@ -279,9 +271,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
     set({ isLoading: true, error: null });
     try {
       const db = await getDatabase();
-      const rows = await db.getAllAsync<DbPromiseExperience>(
-        'SELECT * FROM promise_experiences'
-      );
+      const rows = await db.getAllAsync<DbPromiseExperience>('SELECT * FROM promise_experiences');
 
       const promiseExperiences: PromiseExperience[] = rows.map((row) => ({
         promiseId: row.promise_id,
@@ -310,14 +300,18 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
 
         await db.runAsync(
           'UPDATE promise_experiences SET experienced = ?, experienced_at = ? WHERE promise_id = ?',
-          [newExperienced ? 1 : 0, now, promiseId]
+          [newExperienced ? 1 : 0, now, promiseId],
         );
 
         set({
           promiseExperiences: promiseExperiences.map((p) =>
             p.promiseId === promiseId
-              ? { ...p, experienced: newExperienced, experiencedAt: now ? new Date(now) : undefined }
-              : p
+              ? {
+                  ...p,
+                  experienced: newExperienced,
+                  experiencedAt: now ? new Date(now) : undefined,
+                }
+              : p,
           ),
         });
       } else {
@@ -326,7 +320,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         await db.runAsync(
           `INSERT INTO promise_experiences (promise_id, experienced, reflection, experienced_at)
            VALUES (?, 1, NULL, ?)`,
-          [promiseId, now.toISOString()]
+          [promiseId, now.toISOString()],
         );
 
         set({
@@ -354,21 +348,21 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
       const existing = promiseExperiences.find((p) => p.promiseId === promiseId);
 
       if (existing) {
-        await db.runAsync(
-          'UPDATE promise_experiences SET reflection = ? WHERE promise_id = ?',
-          [encryptedReflection, promiseId]
-        );
+        await db.runAsync('UPDATE promise_experiences SET reflection = ? WHERE promise_id = ?', [
+          encryptedReflection,
+          promiseId,
+        ]);
 
         set({
           promiseExperiences: promiseExperiences.map((p) =>
-            p.promiseId === promiseId ? { ...p, reflection: encryptedReflection } : p
+            p.promiseId === promiseId ? { ...p, reflection: encryptedReflection } : p,
           ),
         });
       } else {
         await db.runAsync(
           `INSERT INTO promise_experiences (promise_id, experienced, reflection, experienced_at)
            VALUES (?, 0, ?, NULL)`,
-          [promiseId, encryptedReflection]
+          [promiseId, encryptedReflection],
         );
 
         set({
@@ -406,5 +400,3 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
     return promiseExperiences.filter((p) => p.experienced).length;
   },
 }));
-
-

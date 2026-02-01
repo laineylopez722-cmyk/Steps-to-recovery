@@ -5,7 +5,7 @@ import './polyfills';
 import { initSentry, wrap as sentryWrap } from './src/lib/sentry';
 initSentry();
 
-import React, { Suspense, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { Suspense, useState, useMemo, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -95,7 +95,7 @@ function App(): React.ReactElement {
 
   // Callback to trigger a full app remount (used by ErrorBoundary)
   const handleReset = useCallback(() => {
-    setResetKey((k) => k + 1);
+    setResetKey((k: number) => k + 1);
   }, []);
 
   return (

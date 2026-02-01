@@ -38,9 +38,9 @@ const localStorageShim = {
   getItem(key) {
     return memoryStore.get(key) ?? null;
   },
-  /** 
-   * @param {string} key 
-   * @param {string} value 
+  /**
+   * @param {string} key
+   * @param {string} value
    */
   setItem(key, value) {
     memoryStore.set(key, String(value));
@@ -89,40 +89,62 @@ if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) {
         )
       : {
           encrypt() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.encrypt().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.encrypt().`,
+            );
           },
           decrypt() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.decrypt().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.decrypt().`,
+            );
           },
           deriveKey() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.deriveKey().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.deriveKey().`,
+            );
           },
           deriveBits() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.deriveBits().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.deriveBits().`,
+            );
           },
           generateKey() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.generateKey().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.generateKey().`,
+            );
           },
           importKey() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.importKey().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.importKey().`,
+            );
           },
           exportKey() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.exportKey().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.exportKey().`,
+            );
           },
           wrapKey() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.wrapKey().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.wrapKey().`,
+            );
           },
           unwrapKey() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.unwrapKey().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.unwrapKey().`,
+            );
           },
           sign() {
             throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.sign().`);
           },
           verify() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.verify().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.verify().`,
+            );
           },
           digest() {
-            throw new Error(`${cryptoUnavailableMessage} Attempted to call crypto.subtle.digest().`);
+            throw new Error(
+              `${cryptoUnavailableMessage} Attempted to call crypto.subtle.digest().`,
+            );
           },
         };
 
@@ -134,11 +156,11 @@ if (typeof globalThis.crypto === 'undefined' || !globalThis.crypto.subtle) {
     // Preserve any existing getRandomValues if present; otherwise provide a throwing stub
     getRandomValues:
       existingCrypto.getRandomValues ||
-      (function getRandomValuesThrowing() {
+      function getRandomValuesThrowing() {
         throw new Error(
           `${cryptoUnavailableMessage} Attempted to call crypto.getRandomValues() in a non-crypto environment.`,
         );
-      }),
+      },
     subtle: subtleStub,
   };
 }

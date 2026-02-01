@@ -297,14 +297,8 @@ function CheckoutPage() {
     document.addEventListener('primer:payment-failure', handlePaymentFailure);
 
     return () => {
-      document.removeEventListener(
-        'primer:payment-success',
-        handlePaymentSuccess,
-      );
-      document.removeEventListener(
-        'primer:payment-failure',
-        handlePaymentFailure,
-      );
+      document.removeEventListener('primer:payment-success', handlePaymentSuccess);
+      document.removeEventListener('primer:payment-failure', handlePaymentFailure);
     };
   }, []);
 

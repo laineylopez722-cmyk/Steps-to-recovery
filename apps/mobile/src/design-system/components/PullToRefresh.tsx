@@ -106,7 +106,7 @@ export function PullToRefresh({
       rotation.value = withRepeat(
         withTiming(360, { duration: 1000, easing: Easing.linear }),
         -1, // Infinite
-        false
+        false,
       );
     }
   }, [refreshing]);
@@ -128,7 +128,7 @@ export function PullToRefresh({
           pullDistance.value,
           [0, threshold],
           [0, 360],
-          Extrapolation.CLAMP
+          Extrapolation.CLAMP,
         );
 
         // Haptic when crossing threshold
@@ -165,21 +165,18 @@ export function PullToRefresh({
       pullDistance.value,
       [0, threshold * 0.5, threshold],
       [0.5, 0.8, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     const opacity = interpolate(
       pullDistance.value,
       [0, threshold * 0.3],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     return {
-      transform: [
-        { rotate: `${rotation.value}deg` },
-        { scale },
-      ],
+      transform: [{ rotate: `${rotation.value}deg` }, { scale }],
       opacity,
     };
   });
@@ -193,11 +190,7 @@ export function PullToRefresh({
       {/* Refresh Indicator */}
       <Animated.View style={[styles.indicatorContainer, indicatorContainerStyle]}>
         <Animated.View
-          style={[
-            styles.indicator,
-            { borderColor: activeColor },
-            indicatorAnimatedStyle,
-          ]}
+          style={[styles.indicator, { borderColor: activeColor }, indicatorAnimatedStyle]}
         >
           <View style={[styles.indicatorDot, { backgroundColor: activeColor }]} />
         </Animated.View>
@@ -205,9 +198,7 @@ export function PullToRefresh({
 
       {/* Content */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.content, containerAnimatedStyle]}>
-          {children}
-        </Animated.View>
+        <Animated.View style={[styles.content, containerAnimatedStyle]}>{children}</Animated.View>
       </GestureDetector>
     </View>
   );
@@ -235,7 +226,7 @@ export function RefreshIndicator({
       rotation.value = withRepeat(
         withTiming(360, { duration: 1000, easing: Easing.linear }),
         -1,
-        false
+        false,
       );
     } else {
       cancelAnimation(rotation);

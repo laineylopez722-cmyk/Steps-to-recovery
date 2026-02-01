@@ -22,18 +22,12 @@
       "NSLocationWhenInUseUsageDescription": "We use your location to help you find nearby meetings and save locations for reminders.",
       "NSLocationAlwaysUsageDescription": "We use your location in the background to notify you when you're near saved meeting locations.",
       "NSFaceIDUsageDescription": "Use Face ID to securely access your private recovery data.",
-      "UIBackgroundModes": [
-        "location",
-        "fetch",
-        "processing",
-        "remote-notification"
-      ]
+      "UIBackgroundModes": ["location", "fetch", "processing", "remote-notification"]
     }
   },
   "android": {
     "package": "com.recovery.stepstorecovery",
     "versionCode": 1,
-    "privacyPolicyUrl": "https://stepstorecovery.app/privacy",
     "adaptiveIcon": {
       "foregroundImage": "./assets/adaptive-icon.png",
       "backgroundColor": "#0f172a"
@@ -67,10 +61,7 @@
     "output": "single",
     "build": {
       "babel": {
-        "include": [
-          "sql.js",
-          "idb"
-        ]
+        "include": ["sql.js", "idb"]
       }
     },
     "meta": {
@@ -90,10 +81,7 @@
       "orientation": "portrait",
       "startUrl": "/",
       "scope": "/",
-      "categories": [
-        "health",
-        "lifestyle"
-      ],
+      "categories": ["health", "lifestyle"],
       "icons": [
         {
           "src": "./assets/icon.png",
@@ -156,9 +144,5 @@
   },
   "owner": "ripkdrs-organization",
   "sdkVersion": "54.0.0",
-  "platforms": [
-    "ios",
-    "android",
-    "web"
-  ]
+  "platforms": ["ios", "android", "web"]
 }

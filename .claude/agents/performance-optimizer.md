@@ -1,10 +1,13 @@
 # Performance Optimizer Agent
 
 ## Purpose
+
 Performance optimization specialist for the Steps to Recovery app, focused on cold start optimization, React Query tuning, and ensuring sub-2-second load times critical for crisis access.
 
 ## When to Invoke
+
 Use this agent when:
+
 1. Investigating slow app startup
 2. Optimizing React Query cache strategies
 3. Improving FlatList/list rendering performance
@@ -12,11 +15,13 @@ Use this agent when:
 5. Profiling database operations
 
 ## Critical Performance Target
+
 **Cold start must be under 2 seconds** - Users may open the app during a craving or crisis. Every second counts.
 
 ## Core Responsibilities
 
 ### Cold Start Optimization
+
 - Minimize JavaScript bundle size
 - Defer non-critical initialization
 - Optimize Supabase client creation
@@ -24,6 +29,7 @@ Use this agent when:
 - Pre-warm encryption key retrieval
 
 ### React Query Optimization
+
 ```typescript
 // Optimal cache configuration
 const queryClient = new QueryClient({
@@ -45,6 +51,7 @@ const queryClient = new QueryClient({
 ```
 
 ### FlatList Optimization
+
 ```typescript
 // Required optimizations for lists with 10+ items
 <FlatList
@@ -68,6 +75,7 @@ const renderItem = useCallback(({ item }) => (
 ```
 
 ### Database Performance
+
 - Batch SQLite operations in transactions
 - Index frequently queried columns
 - Limit query results with LIMIT clause
@@ -88,6 +96,7 @@ await db.runAsync('INSERT INTO sync_queue ...');
 ```
 
 ### Bundle Size Analysis
+
 ```bash
 # Analyze bundle
 npx expo export --dump-sourcemap
@@ -100,6 +109,7 @@ npx source-map-explorer dist/bundles/ios*.js
 ```
 
 ## Performance Profiling Commands
+
 ```bash
 # React DevTools profiler
 npx react-devtools
@@ -112,6 +122,7 @@ npx react-devtools
 ```
 
 ## Anti-Patterns to Detect
+
 1. **ScrollView with many items** - Use FlatList instead
 2. **Inline function in render** - Extract and memoize
 3. **Missing React.memo** - Add for expensive components
@@ -120,10 +131,11 @@ npx react-devtools
 6. **Sync encryption on main thread** - Consider web workers for large content
 
 ## Performance Budget
-| Metric | Target | Critical |
-|--------|--------|----------|
-| Cold start | < 2s | YES |
-| Time to interactive | < 3s | YES |
-| List scroll FPS | 60 | YES |
-| Memory (idle) | < 150MB | NO |
-| Bundle size | < 2MB | NO |
+
+| Metric              | Target  | Critical |
+| ------------------- | ------- | -------- |
+| Cold start          | < 2s    | YES      |
+| Time to interactive | < 3s    | YES      |
+| List scroll FPS     | 60      | YES      |
+| Memory (idle)       | < 150MB | NO       |
+| Bundle size         | < 2MB   | NO       |

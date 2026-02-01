@@ -31,9 +31,7 @@ export const EmptyState = memo(function EmptyState({
     return (
       <View className={`items-center py-8 ${className}`}>
         <Text className="text-3xl mb-2">{emoji}</Text>
-        <Text className="text-base text-surface-500 text-center px-6">
-          {message}
-        </Text>
+        <Text className="text-base text-surface-500 text-center px-6">{message}</Text>
         {onAction && actionLabel && (
           <TouchableOpacity
             onPress={onAction}
@@ -58,7 +56,7 @@ export const EmptyState = memo(function EmptyState({
       </View>
 
       {/* Title */}
-      <Text 
+      <Text
         className="text-xl font-semibold text-surface-900 dark:text-surface-100 text-center mb-2"
         accessibilityRole="header"
       >
@@ -66,9 +64,7 @@ export const EmptyState = memo(function EmptyState({
       </Text>
 
       {/* Message */}
-      <Text className="text-surface-500 text-center mb-6 px-4 leading-relaxed">
-        {message}
-      </Text>
+      <Text className="text-surface-500 text-center mb-6 px-4 leading-relaxed">{message}</Text>
 
       {/* Encouraging message for recovery context */}
       {variant === 'encouraging' && (
@@ -87,9 +83,7 @@ export const EmptyState = memo(function EmptyState({
           accessibilityRole="button"
           accessibilityLabel={actionLabel}
         >
-          <Text className="text-white font-semibold text-base">
-            {actionLabel}
-          </Text>
+          <Text className="text-white font-semibold text-base">{actionLabel}</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -107,7 +101,8 @@ export const EMPTY_STATES = {
   vault: {
     emoji: '🔐',
     title: 'Your Motivation Vault',
-    message: 'Save photos, quotes, and reminders of why recovery matters to you. Access them when you need strength.',
+    message:
+      'Save photos, quotes, and reminders of why recovery matters to you. Access them when you need strength.',
     actionLabel: 'Add First Item',
   },
   meetings: {
@@ -119,7 +114,8 @@ export const EMPTY_STATES = {
   capsules: {
     emoji: '💌',
     title: 'Write to Your Future Self',
-    message: 'Create time capsules with messages of hope. They unlock at milestones in your journey.',
+    message:
+      'Create time capsules with messages of hope. They unlock at milestones in your journey.',
     actionLabel: 'Create Time Capsule',
   },
   search: {
@@ -142,10 +138,10 @@ export const EMPTY_STATES = {
   scenarios: {
     emoji: '🎯',
     title: 'Practice Scenarios',
-    message: 'Prepare for challenging situations by practicing healthy responses. Build confidence in your coping skills.',
+    message:
+      'Prepare for challenging situations by practicing healthy responses. Build confidence in your coping skills.',
     actionLabel: 'Start Practice',
   },
 } as const;
 
 export default EmptyState;
-

@@ -1,6 +1,6 @@
 /**
  * Performance Utilities
- * 
+ *
  * Utilities for optimizing app performance including:
  * - Memoization helpers
  * - Debouncing and throttling
@@ -16,7 +16,7 @@ import { useCallback, useRef, useEffect, useState } from 'react';
  */
 export function useDebounce<T extends (...args: unknown[]) => unknown>(
   callback: T,
-  delay: number
+  delay: number,
 ): T {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const callbackRef = useRef(callback);
@@ -35,7 +35,7 @@ export function useDebounce<T extends (...args: unknown[]) => unknown>(
         callbackRef.current(...args);
       }, delay);
     }) as T,
-    [delay]
+    [delay],
   );
 }
 
@@ -45,7 +45,7 @@ export function useDebounce<T extends (...args: unknown[]) => unknown>(
  */
 export function useThrottle<T extends (...args: unknown[]) => unknown>(
   callback: T,
-  limit: number
+  limit: number,
 ): T {
   const lastRan = useRef(Date.now());
   const callbackRef = useRef(callback);
@@ -61,34 +61,31 @@ export function useThrottle<T extends (...args: unknown[]) => unknown>(
         lastRan.current = Date.now();
       }
     }) as T,
-    [limit]
+    [limit],
   );
 }
 
 /**
  * Memoize expensive computations with a simple cache
  */
-export function memoize<T extends (...args: unknown[]) => unknown>(
-  fn: T,
-  maxCacheSize = 100
-): T {
+export function memoize<T extends (...args: unknown[]) => unknown>(fn: T, maxCacheSize = 100): T {
   const cache = new Map<string, ReturnType<T>>();
 
   return ((...args: Parameters<T>) => {
     const key = JSON.stringify(args);
-    
+
     if (cache.has(key)) {
       return cache.get(key);
     }
-    
+
     const result = fn(...args) as ReturnType<T>;
-    
+
     // Evict oldest entry if cache is full
     if (cache.size >= maxCacheSize) {
       const firstKey = cache.keys().next().value;
       if (firstKey) cache.delete(firstKey);
     }
-    
+
     cache.set(key, result);
     return result;
   }) as T;
@@ -100,7 +97,7 @@ export function memoize<T extends (...args: unknown[]) => unknown>(
  */
 export function useLazyLoad<T>(
   loadFn: () => Promise<T>,
-  dependencies: unknown[] = []
+  dependencies: unknown[] = [],
 ): { data: T | null; isLoading: boolean; error: Error | null; reload: () => void } {
   const [data, setData] = useState<T | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -130,10 +127,7 @@ export function useLazyLoad<T>(
  * Calculate optimal batch size for list rendering
  * Based on device memory and screen size
  */
-export function getOptimalBatchSize(
-  itemHeight: number,
-  screenHeight: number
-): number {
+export function getOptimalBatchSize(itemHeight: number, screenHeight: number): number {
   // Render enough items to fill ~2 screens
   const itemsPerScreen = Math.ceil(screenHeight / itemHeight);
   return Math.min(itemsPerScreen * 2, 50); // Cap at 50 for memory
@@ -142,10 +136,7 @@ export function getOptimalBatchSize(
 /**
  * Get window size for FlatList virtualization
  */
-export function getWindowSize(
-  itemHeight: number,
-  screenHeight: number
-): number {
+export function getWindowSize(itemHeight: number, screenHeight: number): number {
   // Keep ~5 screens worth of items in memory
   const itemsPerScreen = Math.ceil(screenHeight / itemHeight);
   return itemsPerScreen * 5;
@@ -156,7 +147,7 @@ export function getWindowSize(
  * Returns a stable key based on item id or index
  */
 export function createKeyExtractor<T extends { id: string }>(
-  idField: keyof T = 'id'
+  idField: keyof T = 'id',
 ): (item: T, index: number) => string {
   return (item: T, index: number) => {
     return (item[idField] as string) || `item-${index}`;
@@ -170,15 +161,15 @@ const dateFormatCache = new Map<string, string>();
 
 export function formatDateCached(
   date: Date | string,
-  format: 'short' | 'long' | 'time' = 'short'
+  format: 'short' | 'long' | 'time' = 'short',
 ): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   const cacheKey = `${dateObj.getTime()}-${format}`;
-  
+
   if (dateFormatCache.has(cacheKey)) {
     return dateFormatCache.get(cacheKey)!;
   }
-  
+
   let formatted: string;
   switch (format) {
     case 'short':
@@ -202,12 +193,12 @@ export function formatDateCached(
       });
       break;
   }
-  
+
   // Limit cache size
   if (dateFormatCache.size > 1000) {
     dateFormatCache.clear();
   }
-  
+
   dateFormatCache.set(cacheKey, formatted);
   return formatted;
 }
@@ -217,16 +208,16 @@ export function formatDateCached(
  */
 export async function batchDatabaseOperations<T>(
   operations: (() => Promise<T>)[],
-  batchSize = 10
+  batchSize = 10,
 ): Promise<T[]> {
   const results: T[] = [];
-  
+
   for (let i = 0; i < operations.length; i += batchSize) {
     const batch = operations.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map(op => op()));
+    const batchResults = await Promise.all(batch.map((op) => op()));
     results.push(...batchResults);
   }
-  
+
   return results;
 }
 
@@ -237,50 +228,44 @@ export async function preloadImages(imageUrls: string[]): Promise<void> {
   // In React Native, we'd use Image.prefetch
   // This is a placeholder for the concept
   await Promise.all(
-    imageUrls.map(url => {
+    imageUrls.map((url) => {
       return new Promise<void>((resolve) => {
         // Image.prefetch(url).then(() => resolve()).catch(() => resolve());
         resolve();
       });
-    })
+    }),
   );
 }
 
 /**
  * Performance monitoring helper
  */
-export function measurePerformance<T>(
-  name: string,
-  fn: () => T
-): T {
+export function measurePerformance<T>(name: string, fn: () => T): T {
   const start = performance.now();
   const result = fn();
   const duration = performance.now() - start;
-  
+
   if (process.env.NODE_ENV === 'development' && duration > 16) {
     // Warn if operation takes longer than one frame (16ms)
     console.warn(`[Performance] ${name} took ${duration.toFixed(2)}ms`);
   }
-  
+
   return result;
 }
 
 /**
  * Async performance monitoring helper
  */
-export async function measurePerformanceAsync<T>(
-  name: string,
-  fn: () => Promise<T>
-): Promise<T> {
+export async function measurePerformanceAsync<T>(name: string, fn: () => Promise<T>): Promise<T> {
   const start = performance.now();
   const result = await fn();
   const duration = performance.now() - start;
-  
+
   if (process.env.NODE_ENV === 'development' && duration > 100) {
     // Warn if async operation takes longer than 100ms
     console.warn(`[Performance] ${name} took ${duration.toFixed(2)}ms`);
   }
-  
+
   return result;
 }
 
@@ -304,4 +289,3 @@ export function getAdaptiveQuality(): 'low' | 'medium' | 'high' {
   // Could add more checks here (device tier, battery level, etc.)
   return 'high';
 }
-

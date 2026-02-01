@@ -27,9 +27,7 @@ function StatItem({ value, label, icon, color = 'primary', onPress }: StatItemPr
   const content = (
     <Card variant="default" className="flex-1 items-center py-3">
       {icon && <Text className="text-lg mb-1">{icon}</Text>}
-      <Text className={`text-2xl font-bold ${colorClasses[color]}`}>
-        {value}
-      </Text>
+      <Text className={`text-2xl font-bold ${colorClasses[color]}`}>{value}</Text>
       <Text className="text-xs text-surface-500 mt-0.5">{label}</Text>
     </Card>
   );
@@ -89,4 +87,3 @@ export function StatsRow({
     </View>
   );
 }
-

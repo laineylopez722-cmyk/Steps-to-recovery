@@ -22,16 +22,27 @@ export function DailyCheckInCard({
   const theme = useTheme();
 
   const handleMorningCheckIn = (): void => {
-    (navigation.navigate as (screen: string, params?: Record<string, unknown>) => void)('MorningIntention', { userId });
+    (navigation.navigate as (screen: string, params?: Record<string, unknown>) => void)(
+      'MorningIntention',
+      { userId },
+    );
   };
 
   const handleEveningCheckIn = (): void => {
-    (navigation.navigate as (screen: string, params?: Record<string, unknown>) => void)('EveningPulse', { userId });
+    (navigation.navigate as (screen: string, params?: Record<string, unknown>) => void)(
+      'EveningPulse',
+      { userId },
+    );
   };
 
   if (isLoading) {
     return (
-      <Card variant="elevated" style={styles.card} accessibilityRole="none" accessibilityLabel="Loading daily check-ins">
+      <Card
+        variant="elevated"
+        style={styles.card}
+        accessibilityRole="none"
+        accessibilityLabel="Loading daily check-ins"
+      >
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={theme.colors.primary} />
         </View>
@@ -40,18 +51,21 @@ export function DailyCheckInCard({
   }
 
   return (
-    <Card variant="elevated" style={styles.card} accessibilityRole="none" accessibilityLabel="Daily check-in card">
-      <Text style={[theme.typography.title2, styles.title]}>
-        Daily Check-In
-      </Text>
+    <Card
+      variant="elevated"
+      style={styles.card}
+      accessibilityRole="none"
+      accessibilityLabel="Daily check-in card"
+    >
+      <Text style={[theme.typography.title2, styles.title]}>Daily Check-In</Text>
 
       <View style={styles.checkInRow}>
         <View style={styles.checkInItem}>
           <View style={styles.checkInHeader}>
-            <Text style={styles.checkInEmoji}>
-              🌅
-            </Text>
-            <Text style={[theme.typography.headline, { fontWeight: '600', color: theme.colors.text }]}>
+            <Text style={styles.checkInEmoji}>🌅</Text>
+            <Text
+              style={[theme.typography.headline, { fontWeight: '600', color: theme.colors.text }]}
+            >
               Morning
             </Text>
           </View>
@@ -81,10 +95,10 @@ export function DailyCheckInCard({
 
         <View style={styles.checkInItem}>
           <View style={styles.checkInHeader}>
-            <Text style={styles.checkInEmoji}>
-              🌙
-            </Text>
-            <Text style={[theme.typography.headline, { fontWeight: '600', color: theme.colors.text }]}>
+            <Text style={styles.checkInEmoji}>🌙</Text>
+            <Text
+              style={[theme.typography.headline, { fontWeight: '600', color: theme.colors.text }]}
+            >
               Evening
             </Text>
           </View>
@@ -115,7 +129,12 @@ export function DailyCheckInCard({
 
       {morningCheckIn && morningCheckIn.intention && (
         <View style={[styles.intentionPreview, { backgroundColor: theme.colors.background }]}>
-          <Text style={[theme.typography.caption1, { color: theme.colors.textSecondary, marginBottom: 4 }]}>
+          <Text
+            style={[
+              theme.typography.caption1,
+              { color: theme.colors.textSecondary, marginBottom: 4 },
+            ]}
+          >
             Today's Intention:
           </Text>
           <Text style={[theme.typography.body, { fontStyle: 'italic', color: theme.colors.text }]}>

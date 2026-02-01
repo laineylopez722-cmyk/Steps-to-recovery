@@ -45,7 +45,7 @@ export const DEFAULT_REMINDERS = {
  * @returns Notification identifier or null if not scheduled
  */
 export async function scheduleMorningReminder(
-  config: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.morning }
+  config: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.morning },
 ): Promise<string | null> {
   try {
     // Cancel existing morning reminder
@@ -95,7 +95,7 @@ export async function scheduleMorningReminder(
  * @returns Notification identifier or null if not scheduled
  */
 export async function scheduleEveningReminder(
-  config: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.evening }
+  config: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.evening },
 ): Promise<string | null> {
   try {
     // Cancel existing evening reminder
@@ -147,7 +147,7 @@ export async function scheduleEveningReminder(
  */
 export async function scheduleDailyReminders(
   morning: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.morning },
-  evening: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.evening }
+  evening: DailyReminderConfig = { enabled: true, ...DEFAULT_REMINDERS.evening },
 ): Promise<{ morning: string | null; evening: string | null }> {
   const [morningId, eveningId] = await Promise.all([
     scheduleMorningReminder(morning),
@@ -189,7 +189,7 @@ export async function cancelDailyReminders(): Promise<void> {
  */
 export async function sendTestNotification(
   title: string = 'Test Notification',
-  body: string = 'This is a test notification from Steps to Recovery.'
+  body: string = 'This is a test notification from Steps to Recovery.',
 ): Promise<void> {
   try {
     await Notifications.scheduleNotificationAsync({
@@ -250,7 +250,7 @@ function getMilestoneMessage(days: MilestoneDay): { title: string; body: string 
     },
     180: {
       title: '🌈 Six Months!',
-      body: 'Half a year of recovery! Look how far you\'ve come. You\'re amazing.',
+      body: "Half a year of recovery! Look how far you've come. You're amazing.",
     },
     365: {
       title: '👑 ONE YEAR!',
@@ -270,7 +270,7 @@ function getMilestoneMessage(days: MilestoneDay): { title: string; body: string 
  */
 export async function scheduleMilestoneNotification(
   days: MilestoneDay,
-  cleanSinceDate: Date
+  cleanSinceDate: Date,
 ): Promise<string | null> {
   try {
     if (!MILESTONE_DAYS.includes(days)) {
@@ -337,14 +337,14 @@ export async function scheduleAllMilestones(cleanSinceDate: Date): Promise<strin
   try {
     const now = new Date();
     const daysSinceClean = Math.floor(
-      (now.getTime() - cleanSinceDate.getTime()) / (1000 * 60 * 60 * 24)
+      (now.getTime() - cleanSinceDate.getTime()) / (1000 * 60 * 60 * 24),
     );
 
     // Only schedule future milestones
-    const futureMilestones = MILESTONE_DAYS.filter(day => day > daysSinceClean);
+    const futureMilestones = MILESTONE_DAYS.filter((day) => day > daysSinceClean);
 
     const scheduledIds = await Promise.all(
-      futureMilestones.map(days => scheduleMilestoneNotification(days, cleanSinceDate))
+      futureMilestones.map((days) => scheduleMilestoneNotification(days, cleanSinceDate)),
     );
 
     const validIds = scheduledIds.filter((id): id is string => id !== null);
@@ -367,9 +367,11 @@ export async function scheduleAllMilestones(cleanSinceDate: Date): Promise<strin
 export async function cancelAllMilestones(): Promise<void> {
   try {
     await Promise.all(
-      MILESTONE_DAYS.map(days =>
-        Notifications.cancelScheduledNotificationAsync(`${NOTIFICATION_IDS.MILESTONE_PREFIX}${days}`)
-      )
+      MILESTONE_DAYS.map((days) =>
+        Notifications.cancelScheduledNotificationAsync(
+          `${NOTIFICATION_IDS.MILESTONE_PREFIX}${days}`,
+        ),
+      ),
     );
 
     logger.info('All milestone notifications cancelled');

@@ -30,7 +30,7 @@ interface RegularMeetingStore {
       reminderEnabled?: boolean;
       reminderMinutesBefore?: number;
       notes?: string;
-    }
+    },
   ) => Promise<RegularMeeting>;
   updateMeeting: (
     id: string,
@@ -44,7 +44,7 @@ interface RegularMeetingStore {
       reminderEnabled: boolean;
       reminderMinutesBefore: number;
       notes: string;
-    }>
+    }>,
   ) => Promise<void>;
   removeMeeting: (id: string) => Promise<void>;
   getMeetingById: (id: string) => Promise<RegularMeeting | null>;
@@ -78,25 +78,25 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
   loadMeetings: async (): Promise<void> => {
     try {
       set({ isLoading: true, error: null });
-      
+
       logger.info('Loading regular meetings');
-      
+
       // This would query the database for user's meetings
       // For now, we'll set empty state but with proper loading flow
-      
-      set({ 
-        meetings: [], 
-        isLoading: false 
+
+      set({
+        meetings: [],
+        isLoading: false,
       });
-      
+
       // Calculate derived state
       get().calculateTodayMeetings();
       get().calculateNextMeeting();
     } catch (error) {
       logger.error('Failed to load meetings', error);
-      set({ 
+      set({
         error: error instanceof Error ? error.message : 'Failed to load meetings',
-        isLoading: false 
+        isLoading: false,
       });
     }
   },
@@ -112,12 +112,12 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
       reminderEnabled?: boolean;
       reminderMinutesBefore?: number;
       notes?: string;
-    }
+    },
   ): Promise<RegularMeeting> => {
     try {
       const meetingId = generateId('meeting');
       const now = new Date().toISOString();
-      
+
       let encryptedNotes: string | undefined;
       if (options?.notes) {
         try {
@@ -128,7 +128,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
           encryptedNotes = undefined;
         }
       }
-      
+
       const newMeeting: RegularMeeting = {
         id: meetingId,
         user_id: '', // Will be set when saving to database
@@ -153,18 +153,18 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
         meetings: [...state.meetings, newMeeting],
         homeGroup: options?.isHomeGroup ? newMeeting : state.homeGroup,
       }));
-      
+
       // Recalculate derived state
       get().calculateTodayMeetings();
       get().calculateNextMeeting();
-      
-      logger.info('Meeting added successfully', { 
-        meetingId, 
-        name, 
-        dayOfWeek, 
-        time, 
+
+      logger.info('Meeting added successfully', {
+        meetingId,
+        name,
+        dayOfWeek,
+        time,
         type,
-        isHomeGroup: options?.isHomeGroup 
+        isHomeGroup: options?.isHomeGroup,
       });
 
       return newMeeting;
@@ -187,7 +187,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
       reminderEnabled: boolean;
       reminderMinutesBefore: number;
       notes: string;
-    }>
+    }>,
   ): Promise<void> => {
     try {
       let encryptedNotes: string | undefined;
@@ -203,7 +203,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
           encryptedNotes = undefined;
         }
       }
-      
+
       set((state) => ({
         meetings: state.meetings.map((m) =>
           m.id === id
@@ -215,25 +215,24 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
                 encrypted_notes: encryptedNotes ?? m.encrypted_notes,
                 notes: updates.notes ?? m.notes,
               }
-            : m
+            : m,
         ),
-        homeGroup: state.homeGroup?.id === id && updates.isHomeGroup === false 
-          ? null 
-          : state.homeGroup,
+        homeGroup:
+          state.homeGroup?.id === id && updates.isHomeGroup === false ? null : state.homeGroup,
       }));
-      
+
       // If setting as home group, update home group reference
       if (updates.isHomeGroup === true) {
-        const updatedMeeting = get().meetings.find(m => m.id === id);
+        const updatedMeeting = get().meetings.find((m) => m.id === id);
         if (updatedMeeting) {
           set({ homeGroup: updatedMeeting });
         }
       }
-      
+
       // Recalculate derived state
       get().calculateTodayMeetings();
       get().calculateNextMeeting();
-      
+
       logger.info('Meeting updated successfully', { meetingId: id, updates });
     } catch (error) {
       logger.error('Failed to update meeting', error);
@@ -247,11 +246,11 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
         meetings: state.meetings.filter((m) => m.id !== id),
         homeGroup: state.homeGroup?.id === id ? null : state.homeGroup,
       }));
-      
+
       // Recalculate derived state
       get().calculateTodayMeetings();
       get().calculateNextMeeting();
-      
+
       logger.info('Meeting removed successfully', { meetingId: id });
     } catch (error) {
       logger.error('Failed to remove meeting', error);
@@ -262,13 +261,13 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
   getMeetingById: async (id: string): Promise<RegularMeeting | null> => {
     const { meetings } = get();
     const meeting = meetings.find((m) => m.id === id) ?? null;
-    
+
     if (meeting) {
       logger.info('Meeting found', { meetingId: id });
     } else {
       logger.warn('Meeting not found', { meetingId: id });
     }
-    
+
     return meeting;
   },
 
@@ -286,7 +285,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
             isHomeGroup: m.id === id,
           })),
         }));
-        
+
         logger.info('Home group set successfully', { meetingId: id, meetingName: meeting.name });
       } else {
         throw new Error(`Meeting not found: ${id}`);
@@ -300,11 +299,9 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
   toggleReminder: async (id: string, enabled: boolean): Promise<void> => {
     try {
       set((state) => ({
-        meetings: state.meetings.map((m) =>
-          m.id === id ? { ...m, reminderEnabled: enabled } : m
-        ),
+        meetings: state.meetings.map((m) => (m.id === id ? { ...m, reminderEnabled: enabled } : m)),
       }));
-      
+
       logger.info('Reminder toggled successfully', { meetingId: id, enabled });
     } catch (error) {
       logger.error('Failed to toggle reminder', error);
@@ -330,7 +327,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
             const [hours, minutes] = m.time.split(':').map(Number);
             const meetingTime = new Date(today);
             meetingTime.setHours(hours, minutes, 0, 0);
-            
+
             if (now > meetingTime) {
               daysUntil = 7; // Next week
             }
@@ -345,10 +342,10 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
           // Same day - sort by time
           const timeA = a.meeting.time.split(':').map(Number);
           const timeB = b.meeting.time.split(':').map(Number);
-          return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+          return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
         })
         .map(({ meeting }) => meeting);
-        
+
       logger.info('Upcoming meetings calculated', { count: upcoming.length, days });
       return upcoming;
     } catch (error) {
@@ -363,53 +360,53 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
       if (meeting.notes) {
         return meeting.notes;
       }
-      
+
       // If encrypted notes exist, decrypt them
       if (meeting.encrypted_notes) {
         const { decryptContent } = await import('../utils/encryption');
         return await decryptContent(meeting.encrypted_notes);
       }
-      
+
       return null;
     } catch (error) {
       logger.error('Failed to decrypt meeting notes', error);
       throw new Error('Failed to decrypt meeting notes');
     }
   },
-  
+
   calculateTodayMeetings: (): void => {
     const { meetings } = get();
     const today = new Date().getDay();
-    
+
     const todayMeetings = meetings
-      .filter(m => m.is_active && m.dayOfWeek === today)
+      .filter((m) => m.is_active && m.dayOfWeek === today)
       .sort((a, b) => {
         const timeA = a.time.split(':').map(Number);
         const timeB = b.time.split(':').map(Number);
-        return (timeA[0] * 60 + timeA[1]) - (timeB[0] * 60 + timeB[1]);
+        return timeA[0] * 60 + timeA[1] - (timeB[0] * 60 + timeB[1]);
       });
-    
+
     set({ todayMeetings });
   },
-  
+
   calculateNextMeeting: (): void => {
     const { meetings } = get();
     const now = new Date();
     const todayDay = now.getDay();
-    
+
     let nextMeeting: RegularMeeting | null = null;
     let shortestWait = Infinity;
-    
-    for (const meeting of meetings.filter(m => m.is_active)) {
+
+    for (const meeting of meetings.filter((m) => m.is_active)) {
       let daysUntil = meeting.dayOfWeek - todayDay;
       if (daysUntil < 0) daysUntil += 7;
-      
+
       if (daysUntil === 0) {
         // Check if today's meeting is still upcoming
         const [hours, minutes] = meeting.time.split(':').map(Number);
         const meetingTime = new Date(now);
         meetingTime.setHours(hours, minutes, 0, 0);
-        
+
         if (now <= meetingTime) {
           // Meeting is today and hasn't started yet
           const minutesUntil = (meetingTime.getTime() - now.getTime()) / (1000 * 60);
@@ -422,7 +419,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
           daysUntil = 7;
         }
       }
-      
+
       if (daysUntil > 0) {
         const totalMinutesUntil = daysUntil * 24 * 60;
         if (totalMinutesUntil < shortestWait) {
@@ -431,7 +428,7 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
         }
       }
     }
-    
+
     set({ nextMeeting });
   },
 

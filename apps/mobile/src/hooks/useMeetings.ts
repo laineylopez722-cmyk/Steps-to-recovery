@@ -29,13 +29,10 @@ export function useMeetings() {
 
   const inPersonMeetings = useMemo(
     () => meetings.filter((m) => m.type === 'in-person'),
-    [meetings]
+    [meetings],
   );
 
-  const onlineMeetings = useMemo(
-    () => meetings.filter((m) => m.type === 'online'),
-    [meetings]
-  );
+  const onlineMeetings = useMemo(() => meetings.filter((m) => m.type === 'online'), [meetings]);
 
   // Calculate streak (consecutive weeks with at least one meeting)
   const meetingStreak = useMemo(() => {
@@ -152,4 +149,3 @@ export function useMeetings() {
     formatMeetingDate,
   };
 }
-

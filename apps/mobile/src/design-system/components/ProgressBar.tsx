@@ -99,7 +99,7 @@ export function ProgressBar({
         },
         style,
       ]}
-      accessibilityRole={accessibilityRole || "progressbar"}
+      accessibilityRole={accessibilityRole || 'progressbar'}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
       accessibilityValue={{

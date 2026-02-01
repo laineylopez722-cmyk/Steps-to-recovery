@@ -115,7 +115,9 @@ function generateReport(issues: AccessibilityIssue[]): void {
   Object.entries(byFile).forEach(([file, fileIssues]) => {
     console.log(`\n📄 ${file.replace(process.cwd(), '')}`);
     fileIssues.forEach((issue) => {
-      console.log(`   Line ${issue.line}: <${issue.component}> missing: ${issue.missingProps.join(', ')}`);
+      console.log(
+        `   Line ${issue.line}: <${issue.component}> missing: ${issue.missingProps.join(', ')}`,
+      );
     });
   });
 

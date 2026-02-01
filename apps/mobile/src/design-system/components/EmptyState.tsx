@@ -4,12 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { useTheme } from '../hooks/useTheme';
@@ -46,17 +41,8 @@ export function EmptyState({
       accessibilityLabel={`${title}. ${description || ''}`}
     >
       {/* Icon */}
-      <View
-        style={[
-          styles.iconContainer,
-          { backgroundColor: theme.colors.surfaceVariant },
-        ]}
-      >
-        <MaterialIcons
-          name={icon}
-          size={48}
-          color={theme.colors.textSecondary}
-        />
+      <View style={[styles.iconContainer, { backgroundColor: theme.colors.surfaceVariant }]}>
+        <MaterialIcons name={icon} size={48} color={theme.colors.textSecondary} />
       </View>
 
       {/* Title */}

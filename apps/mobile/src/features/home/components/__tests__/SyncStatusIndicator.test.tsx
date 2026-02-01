@@ -59,9 +59,7 @@ const mockColors = {
 /**
  * Helper function to create mock sync state
  */
-function createMockSyncState(
-  overrides: Partial<MockSyncState> = {}
-): MockSyncState {
+function createMockSyncState(overrides: Partial<MockSyncState> = {}): MockSyncState {
   return {
     isSyncing: false,
     lastSyncTime: null,
@@ -94,7 +92,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: false,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
       });
 
@@ -115,9 +113,7 @@ describe('SyncStatusIndicator', () => {
 
         const label = getByText('Offline');
         expect(label.props.style).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ color: mockColors.muted }),
-          ])
+          expect.arrayContaining([expect.objectContaining({ color: mockColors.muted })]),
         );
       });
 
@@ -138,7 +134,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
       });
 
@@ -159,9 +155,7 @@ describe('SyncStatusIndicator', () => {
 
         const label = getByText('Syncing...');
         expect(label.props.style).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ color: mockColors.primary }),
-          ])
+          expect.arrayContaining([expect.objectContaining({ color: mockColors.primary })]),
         );
       });
 
@@ -180,7 +174,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
 
         const { getByText } = render(<SyncStatusIndicator />);
@@ -199,7 +193,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
       });
 
@@ -220,9 +214,7 @@ describe('SyncStatusIndicator', () => {
 
         const label = getByText('Sync Error');
         expect(label.props.style).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ color: mockColors.danger }),
-          ])
+          expect.arrayContaining([expect.objectContaining({ color: mockColors.danger })]),
         );
       });
 
@@ -243,7 +235,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
       });
 
@@ -264,9 +256,7 @@ describe('SyncStatusIndicator', () => {
 
         const label = getByText('5 Pending');
         expect(label.props.style).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ color: mockColors.warning }),
-          ])
+          expect.arrayContaining([expect.objectContaining({ color: mockColors.warning })]),
         );
       });
 
@@ -285,7 +275,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
 
         const { getByText } = render(<SyncStatusIndicator />);
@@ -304,7 +294,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
       });
 
@@ -324,9 +314,7 @@ describe('SyncStatusIndicator', () => {
 
         const label = getByText('Synced');
         expect(label.props.style).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ color: mockColors.success }),
-          ])
+          expect.arrayContaining([expect.objectContaining({ color: mockColors.success })]),
         );
       });
 
@@ -351,7 +339,7 @@ describe('SyncStatusIndicator', () => {
             isOnline: true,
             triggerSync: mockTriggerSync,
             clearError: mockClearError,
-          })
+          }),
         );
 
         const { getByText } = render(<SyncStatusIndicator />);
@@ -371,7 +359,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
     };
 
@@ -490,7 +478,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -511,7 +499,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: false,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -532,7 +520,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -553,7 +541,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -574,7 +562,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -597,7 +585,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: false,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -617,7 +605,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -636,7 +624,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -655,7 +643,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -674,7 +662,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -693,7 +681,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByTestId } = render(<SyncStatusIndicator />);
@@ -716,7 +704,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -733,7 +721,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -750,7 +738,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -767,7 +755,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -787,7 +775,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText, rerender } = render(<SyncStatusIndicator />);
@@ -803,7 +791,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       rerender(<SyncStatusIndicator />);
@@ -821,12 +809,10 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
-      const { getByText, rerender, UNSAFE_getByType } = render(
-        <SyncStatusIndicator />
-      );
+      const { getByText, rerender, UNSAFE_getByType } = render(<SyncStatusIndicator />);
       expect(getByText('Synced')).toBeTruthy();
 
       // Update to offline
@@ -839,7 +825,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: false,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       rerender(<SyncStatusIndicator />);
@@ -861,12 +847,10 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
-      const { getByText, rerender, UNSAFE_queryByType } = render(
-        <SyncStatusIndicator />
-      );
+      const { getByText, rerender, UNSAFE_queryByType } = render(<SyncStatusIndicator />);
       expect(getByText('2 Pending')).toBeTruthy();
 
       // Update to syncing
@@ -879,7 +863,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       rerender(<SyncStatusIndicator />);
@@ -898,7 +882,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText, rerender } = render(<SyncStatusIndicator />);
@@ -914,7 +898,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       rerender(<SyncStatusIndicator />);
@@ -936,7 +920,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText, rerender } = render(<SyncStatusIndicator />);
@@ -952,7 +936,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       rerender(<SyncStatusIndicator />);
@@ -973,7 +957,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: false, // Offline takes priority
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -990,7 +974,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -1007,7 +991,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -1024,7 +1008,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);
@@ -1041,7 +1025,7 @@ describe('SyncStatusIndicator', () => {
           isOnline: true,
           triggerSync: mockTriggerSync,
           clearError: mockClearError,
-        })
+        }),
       );
 
       const { getByText } = render(<SyncStatusIndicator />);

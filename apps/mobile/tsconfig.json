@@ -17,48 +17,22 @@
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
     "target": "ES2022",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "incremental": true,
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/contexts/*": [
-        "./src/contexts/*"
-      ],
-      "@/features/*": [
-        "./src/features/*"
-      ],
-      "@/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
-      "@/utils/*": [
-        "./src/utils/*"
-      ],
-      "@/design-system": [
-        "./src/design-system/index.ts"
-      ],
-      "@/design-system/*": [
-        "./src/design-system/*"
-      ],
-      "@recovery/shared": [
-        "../../packages/shared/src/index.ts"
-      ],
-      "@recovery/shared/*": [
-        "../../packages/shared/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/contexts/*": ["./src/contexts/*"],
+      "@/features/*": ["./src/features/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/utils/*": ["./src/utils/*"],
+      "@/design-system": ["./src/design-system/index.ts"],
+      "@/design-system/*": ["./src/design-system/*"],
+      "@recovery/shared": ["../../packages/shared/src/index.ts"],
+      "@recovery/shared/*": ["../../packages/shared/*"]
     }
   },
   "include": [

@@ -36,7 +36,7 @@ interface PhoneActions {
     contactId: string,
     contactName: string,
     duration?: number,
-    notes?: string
+    notes?: string,
   ) => Promise<PhoneCallLog>;
   deleteCall: (id: string) => Promise<void>;
   getCallsByContact: (contactId: string) => Promise<PhoneCallLog[]>;
@@ -58,7 +58,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
       const todayCalls = await getTodayCallLogs();
       set({ todayCalls, isLoading: false });
     } catch (error) {
-      console.error('Failed to load today\'s calls:', error);
+      console.error("Failed to load today's calls:", error);
       set({ error: 'Failed to load calls', isLoading: false });
     }
   },
@@ -79,7 +79,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
   logCall: async (contactId, contactName, duration, notes) => {
     try {
       const call = await createPhoneCallLog(contactId, contactName, duration, notes);
-      
+
       set((state) => ({
         todayCalls: [call, ...state.todayCalls],
         callHistory: [call, ...state.callHistory],
@@ -95,7 +95,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
   deleteCall: async (id) => {
     try {
       await deletePhoneCallLog(id);
-      
+
       set((state) => ({
         todayCalls: state.todayCalls.filter((c) => c.id !== id),
         callHistory: state.callHistory.filter((c) => c.id !== id),
@@ -117,24 +117,19 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
 
   getStats: () => {
     const { todayCalls, callHistory } = get();
-    
+
     // Today's count
     const todayCallCount = todayCalls.length;
-    
+
     // This week's count
     const now = new Date();
     const weekAgo = new Date(now);
     weekAgo.setDate(now.getDate() - 7);
-    const weekCallCount = callHistory.filter(
-      (call) => new Date(call.calledAt) >= weekAgo
-    ).length;
-    
+    const weekCallCount = callHistory.filter((call) => new Date(call.calledAt) >= weekAgo).length;
+
     // Total minutes (from calls with duration recorded)
-    const totalCallMinutes = callHistory.reduce(
-      (sum, call) => sum + (call.duration || 0),
-      0
-    );
-    
+    const totalCallMinutes = callHistory.reduce((sum, call) => sum + (call.duration || 0), 0);
+
     // Goal progress
     const dailyGoal = DEFAULT_DAILY_GOAL;
     const goalProgress = Math.min(1, todayCallCount / dailyGoal);
@@ -158,4 +153,3 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
     }
   },
 }));
-

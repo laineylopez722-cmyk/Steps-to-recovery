@@ -1,12 +1,33 @@
 import { useState, useEffect, useRef } from 'react';
-import { ScrollView, StyleSheet, View, Text, TouchableOpacity, Animated, Platform } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Animated,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { Slider } from '../../../components/Slider';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useCreateJournalEntry, useUpdateJournalEntry, useJournalEntries } from '../hooks/useJournalEntries';
-import { useTheme, Input, Button, Badge, TextArea, Toast, Card, Divider } from '../../../design-system';
+import {
+  useCreateJournalEntry,
+  useUpdateJournalEntry,
+  useJournalEntries,
+} from '../hooks/useJournalEntries';
+import {
+  useTheme,
+  Input,
+  Button,
+  Badge,
+  TextArea,
+  Toast,
+  Card,
+  Divider,
+} from '../../../design-system';
 
 const MOOD_LABELS: Record<number, string> = {
   1: 'Very Sad',
@@ -48,7 +69,9 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
   // Toast state
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info' | 'warning'>('success');
+  const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info' | 'warning'>(
+    'success',
+  );
 
   // Entrance animations
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -74,7 +97,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
 
   useEffect(() => {
     if (isEditMode && entryId) {
-      const entry = entries.find(e => e.id === entryId);
+      const entry = entries.find((e) => e.id === entryId);
       if (entry) {
         setTitle(entry.title || '');
         setBody(entry.body);
@@ -93,7 +116,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
   };
 
   const handleRemoveTag = (tag: string): void => {
-    setTags(tags.filter(t => t !== tag));
+    setTags(tags.filter((t) => t !== tag));
   };
 
   const handleSave = async (): Promise<void> => {
@@ -101,7 +124,13 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
 
     try {
       if (isEditMode && entryId) {
-        await updateEntry(entryId, { title: title.trim() || null, body: body.trim(), mood, craving, tags });
+        await updateEntry(entryId, {
+          title: title.trim() || null,
+          body: body.trim(),
+          mood,
+          craving,
+          tags,
+        });
       } else {
         await createEntry({ title: title.trim() || null, body: body.trim(), mood, craving, tags });
       }
@@ -128,7 +157,10 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
   const isPending = isCreating || isUpdating;
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['bottom']}
+    >
       <Toast
         visible={showToast}
         message={toastMessage}
@@ -149,7 +181,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
         <Card variant="elevated" style={styles.headerCard}>
           <View style={styles.headerContent}>
             <MaterialIcons name="lock" size={20} color={theme.colors.success} />
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary, marginLeft: 8 }]}>
+            <Text
+              style={[
+                theme.typography.caption,
+                { color: theme.colors.textSecondary, marginLeft: 8 },
+              ]}
+            >
               Your entry is encrypted and private
             </Text>
           </View>
@@ -176,7 +213,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
         />
 
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { marginBottom: 12, fontWeight: '600', color: theme.colors.text }]}>
+          <Text
+            style={[
+              theme.typography.h3,
+              { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
+            ]}
+          >
             How are you feeling? {mood !== null && MOOD_EMOJI[mood]}
           </Text>
           <View style={styles.sliderContainer}>
@@ -191,7 +233,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               accessibilityLabel={`Mood: ${mood !== null ? MOOD_LABELS[mood] : 'Not set'}`}
               accessibilityRole="adjustable"
             />
-            <Text style={[theme.typography.caption, { textAlign: 'center', marginTop: 8, color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                theme.typography.caption,
+                { textAlign: 'center', marginTop: 8, color: theme.colors.textSecondary },
+              ]}
+            >
               {mood !== null ? MOOD_LABELS[mood] : 'Not set'}
             </Text>
           </View>
@@ -200,7 +247,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
         <Divider style={styles.divider} />
 
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { marginBottom: 12, fontWeight: '600', color: theme.colors.text }]}>
+          <Text
+            style={[
+              theme.typography.h3,
+              { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
+            ]}
+          >
             Craving level (0-10)
           </Text>
           <View style={styles.sliderContainer}>
@@ -210,21 +262,37 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               minimumValue={0}
               maximumValue={10}
               step={1}
-              minimumTrackTintColor={craving && craving > 5 ? theme.colors.danger : theme.colors.success}
+              minimumTrackTintColor={
+                craving && craving > 5 ? theme.colors.danger : theme.colors.success
+              }
               maximumTrackTintColor={theme.colors.border}
               accessibilityLabel={`Craving level: ${craving || 0} out of 10`}
               accessibilityRole="adjustable"
             />
-            <Text style={[theme.typography.caption, { textAlign: 'center', marginTop: 8, color: theme.colors.textSecondary }]}>
+            <Text
+              style={[
+                theme.typography.caption,
+                { textAlign: 'center', marginTop: 8, color: theme.colors.textSecondary },
+              ]}
+            >
               {craving || 0}/10
             </Text>
           </View>
           {craving !== null && craving >= 7 && (
-            <Card variant="outlined" style={[styles.warningCard, { borderColor: theme.colors.danger }]}>
+            <Card
+              variant="outlined"
+              style={[styles.warningCard, { borderColor: theme.colors.danger }]}
+            >
               <View style={styles.warningContent}>
                 <MaterialIcons name="warning" size={20} color={theme.colors.danger} />
-                <Text style={[theme.typography.caption, { color: theme.colors.danger, marginLeft: 8, flex: 1 }]}>
-                  High craving detected. Consider reaching out to your sponsor or using emergency tools.
+                <Text
+                  style={[
+                    theme.typography.caption,
+                    { color: theme.colors.danger, marginLeft: 8, flex: 1 },
+                  ]}
+                >
+                  High craving detected. Consider reaching out to your sponsor or using emergency
+                  tools.
                 </Text>
               </View>
             </Card>
@@ -232,7 +300,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
         </View>
 
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { marginBottom: 12, fontWeight: '600', color: theme.colors.text }]}>
+          <Text
+            style={[
+              theme.typography.h3,
+              { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
+            ]}
+          >
             Tags
           </Text>
           <View style={styles.tagInputContainer}>
@@ -272,7 +345,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
         </View>
       </Animated.ScrollView>
 
-      <View style={[styles.footer, { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border }]}>
+      <View
+        style={[
+          styles.footer,
+          { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
+        ]}
+      >
         <Button
           title={isEditMode ? 'Update Entry' : 'Save Entry'}
           onPress={handleSave}

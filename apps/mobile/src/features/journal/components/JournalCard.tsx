@@ -43,7 +43,11 @@ const getCravingColor = (craving: number | null, theme: ReturnType<typeof useThe
   return theme.colors.danger;
 };
 
-export function JournalCard({ entry, onPress, accessibilityHint }: JournalCardProps): React.ReactElement {
+export function JournalCard({
+  entry,
+  onPress,
+  accessibilityHint,
+}: JournalCardProps): React.ReactElement {
   const theme = useTheme();
 
   const formatDate = useCallback((dateString: string): string => {
@@ -70,7 +74,13 @@ export function JournalCard({ entry, onPress, accessibilityHint }: JournalCardPr
   }, []);
 
   return (
-    <Card variant="interactive" onPress={onPress} animate style={styles.cardContainer} accessibilityHint={accessibilityHint}>
+    <Card
+      variant="interactive"
+      onPress={onPress}
+      animate
+      style={styles.cardContainer}
+      accessibilityHint={accessibilityHint}
+    >
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           {entry.title && (
@@ -81,7 +91,9 @@ export function JournalCard({ entry, onPress, accessibilityHint }: JournalCardPr
               {entry.title}
             </Text>
           )}
-          <Text style={[theme.typography.caption, { color: theme.colors.textSecondary, marginTop: 2 }]}>
+          <Text
+            style={[theme.typography.caption, { color: theme.colors.textSecondary, marginTop: 2 }]}
+          >
             {formatDate(entry.created_at)}
           </Text>
         </View>
@@ -89,7 +101,10 @@ export function JournalCard({ entry, onPress, accessibilityHint }: JournalCardPr
       </View>
 
       <Text
-        style={[theme.typography.body, { color: theme.colors.text, marginBottom: 12, lineHeight: 20 }]}
+        style={[
+          theme.typography.body,
+          { color: theme.colors.text, marginBottom: 12, lineHeight: 20 },
+        ]}
         numberOfLines={3}
       >
         {truncateBody(entry.body)}
@@ -108,7 +123,10 @@ export function JournalCard({ entry, onPress, accessibilityHint }: JournalCardPr
           )}
           {entry.craving !== null && (
             <View
-              style={[styles.cravingIndicator, { backgroundColor: getCravingColor(entry.craving, theme) }]}
+              style={[
+                styles.cravingIndicator,
+                { backgroundColor: getCravingColor(entry.craving, theme) },
+              ]}
               accessibilityLabel={`Craving level: ${entry.craving} out of 10`}
               accessibilityRole="text"
             >

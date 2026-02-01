@@ -31,13 +31,13 @@ Apply this skill when the user:
 
 ### Tech Stack
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Vitest | 4.0.16 | Test runner |
-| React Testing Library | 16.0 | Component testing |
-| jsdom | - | Test environment |
-| nock | 14.0 | HTTP mocking |
-| TypeScript | 5.x | Type safety |
+| Tool                  | Version | Purpose           |
+| --------------------- | ------- | ----------------- |
+| Vitest                | 4.0.16  | Test runner       |
+| React Testing Library | 16.0    | Component testing |
+| jsdom                 | -       | Test environment  |
+| nock                  | 14.0    | HTTP mocking      |
+| TypeScript            | 5.x     | Type safety       |
 
 ### Key Commands
 
@@ -100,10 +100,10 @@ describe('ComponentName', () => {
     it('should render without crashing', () => {
       // Arrange
       const props = { title: 'Test' }
-      
+
       // Act
       render(<Component {...props} />)
-      
+
       // Assert
       expect(screen.getByText('Test')).toBeInTheDocument()
     })
@@ -122,9 +122,9 @@ describe('ComponentName', () => {
     it('should handle click events', () => {
       const handleClick = vi.fn()
       render(<Component onClick={handleClick} />)
-      
+
       fireEvent.click(screen.getByRole('button'))
-      
+
       expect(handleClick).toHaveBeenCalledTimes(1)
     })
   })
@@ -223,13 +223,13 @@ Every test should clearly separate:
 
 ```typescript
 // ❌ Avoid: hardcoded text assertions
-expect(screen.getByText('Loading...')).toBeInTheDocument()
+expect(screen.getByText('Loading...')).toBeInTheDocument();
 
 // ✅ Better: role-based queries
-expect(screen.getByRole('status')).toBeInTheDocument()
+expect(screen.getByRole('status')).toBeInTheDocument();
 
 // ✅ Better: pattern matching
-expect(screen.getByText(/loading/i)).toBeInTheDocument()
+expect(screen.getByText(/loading/i)).toBeInTheDocument();
 ```
 
 ### 3. Single Behavior Per Test
@@ -257,9 +257,9 @@ it('should handle loading state', () => {
 Use `should <behavior> when <condition>`:
 
 ```typescript
-it('should show error message when validation fails')
-it('should call onSubmit when form is valid')
-it('should disable input when isReadOnly is true')
+it('should show error message when validation fails');
+it('should call onSubmit when form is valid');
+it('should disable input when isReadOnly is true');
 ```
 
 ## Required Test Scenarios
@@ -272,16 +272,16 @@ it('should disable input when isReadOnly is true')
 
 ### Conditional (When Present)
 
-| Feature | Test Focus |
-|---------|-----------|
-| `useState` | Initial state, transitions, cleanup |
-| `useEffect` | Execution, dependencies, cleanup |
-| Event handlers | All onClick, onChange, onSubmit, keyboard |
-| API calls | Loading, success, error states |
-| Routing | Navigation, params, query strings |
-| `useCallback`/`useMemo` | Referential equality |
-| Context | Provider values, consumer behavior |
-| Forms | Validation, submission, error display |
+| Feature                 | Test Focus                                |
+| ----------------------- | ----------------------------------------- |
+| `useState`              | Initial state, transitions, cleanup       |
+| `useEffect`             | Execution, dependencies, cleanup          |
+| Event handlers          | All onClick, onChange, onSubmit, keyboard |
+| API calls               | Loading, success, error states            |
+| Routing                 | Navigation, params, query strings         |
+| `useCallback`/`useMemo` | Referential equality                      |
+| Context                 | Provider values, consumer behavior        |
+| Forms                   | Validation, submission, error display     |
 
 ## Coverage Goals (Per File)
 

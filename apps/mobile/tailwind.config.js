@@ -169,9 +169,26 @@ const config = {
         },
       },
       fontFamily: {
-        display: ['Outfit_400Regular', 'Outfit_500Medium', 'Outfit_600SemiBold', 'Outfit_700Bold', 'sans-serif'],
-        sans: ['PlusJakartaSans_400Regular', 'PlusJakartaSans_500Medium', 'PlusJakartaSans_600SemiBold', 'PlusJakartaSans_700Bold', 'sans-serif'],
-        mono: ['JetBrainsMono_400Regular', 'JetBrainsMono_500Medium', 'JetBrainsMono_700Bold', 'monospace'],
+        display: [
+          'Outfit_400Regular',
+          'Outfit_500Medium',
+          'Outfit_600SemiBold',
+          'Outfit_700Bold',
+          'sans-serif',
+        ],
+        sans: [
+          'PlusJakartaSans_400Regular',
+          'PlusJakartaSans_500Medium',
+          'PlusJakartaSans_600SemiBold',
+          'PlusJakartaSans_700Bold',
+          'sans-serif',
+        ],
+        mono: [
+          'JetBrainsMono_400Regular',
+          'JetBrainsMono_500Medium',
+          'JetBrainsMono_700Bold',
+          'monospace',
+        ],
       },
       borderRadius: {
         '4xl': '2rem',
@@ -182,10 +199,10 @@ const config = {
       },
       // Custom opacity for dark glass effect
       opacity: {
-        '15': '0.15',
-        '25': '0.25',
-        '35': '0.35',
-        '85': '0.85',
+        15: '0.15',
+        25: '0.25',
+        35: '0.35',
+        85: '0.85',
       },
     },
   },

@@ -1,20 +1,20 @@
 /**
  * Authentication Hook
- * 
+ *
  * Manages biometric and PIN authentication for app security.
  * Handles auto-lock based on app state and user settings.
- * 
+ *
  * **Features**:
  * - Biometric authentication (Face ID, Touch ID, fingerprint)
  * - PIN fallback authentication
  * - Auto-lock on app background
  * - Session management
- * 
+ *
  * @returns Authentication state and methods
  * @example
  * ```ts
  * const { isAuthenticated, authenticate, lock } = useAuth();
- * 
+ *
  * if (!isAuthenticated) {
  *   const success = await authenticate();
  *   if (!success) {
@@ -31,10 +31,10 @@ import { useSettingsStore } from '@recovery/shared';
 
 /**
  * Authentication hook
- * 
+ *
  * Provides authentication state and methods for securing the app.
  * Automatically handles app state changes for auto-lock functionality.
- * 
+ *
  * @returns Object with authentication state and methods
  */
 export function useAuth() {
@@ -79,7 +79,7 @@ export function useAuth() {
   const authenticate = useCallback(async (): Promise<boolean> => {
     // First try biometrics if supported
     const biometricSupported = await checkBiometricSupport();
-    
+
     if (biometricSupported && settings?.biometricEnabled) {
       const success = await authenticateWithBiometrics();
       if (success) return true;
@@ -101,4 +101,3 @@ export function useAuth() {
     checkBiometricSupport,
   };
 }
-

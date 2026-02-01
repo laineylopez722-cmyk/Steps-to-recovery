@@ -9,11 +9,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Badge } from '../../../design-system/components/Badge';
 import type { MeetingWithDetails } from '../types/meeting';
-import {
-  formatMeetingTime,
-  formatDayOfWeek,
-  getMeetingTypeLabel,
-} from '../types/meeting';
+import { formatMeetingTime, formatDayOfWeek, getMeetingTypeLabel } from '../types/meeting';
 
 export interface MeetingCardProps {
   meeting: MeetingWithDetails;
@@ -38,20 +34,13 @@ export function MeetingCard({
 
   // Format distance
   const distanceText =
-    meeting.distance_miles !== null
-      ? `${meeting.distance_miles.toFixed(1)} mi`
-      : '';
+    meeting.distance_miles !== null ? `${meeting.distance_miles.toFixed(1)} mi` : '';
 
   // Format time
-  const timeText = meeting.time
-    ? formatMeetingTime(meeting.time)
-    : 'Time varies';
+  const timeText = meeting.time ? formatMeetingTime(meeting.time) : 'Time varies';
 
   // Format day
-  const dayText =
-    meeting.day_of_week !== null
-      ? formatDayOfWeek(meeting.day_of_week)
-      : 'Daily';
+  const dayText = meeting.day_of_week !== null ? formatDayOfWeek(meeting.day_of_week) : 'Daily';
 
   // Get primary meeting type (first in array, usually most relevant)
   const primaryType = meetingTypes.length > 0 ? meetingTypes[0] : null;
@@ -76,11 +65,7 @@ export function MeetingCard({
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text },
-              styles.title,
-            ]}
+            style={[theme.typography.h3, { color: theme.colors.text }, styles.title]}
             numberOfLines={1}
           >
             {meeting.name}
@@ -109,9 +94,7 @@ export function MeetingCard({
           color={theme.colors.textSecondary}
           style={styles.icon}
         />
-        <Text
-          style={[theme.typography.body, { color: theme.colors.textSecondary }]}
-        >
+        <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
           {dayText} • {timeText}
         </Text>
       </View>
@@ -126,19 +109,13 @@ export function MeetingCard({
         />
         <View style={styles.locationText}>
           <Text
-            style={[
-              theme.typography.caption,
-              { color: theme.colors.textSecondary },
-            ]}
+            style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
             numberOfLines={1}
           >
             {meeting.location}
           </Text>
           <Text
-            style={[
-              theme.typography.caption,
-              { color: theme.colors.textSecondary },
-            ]}
+            style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
             numberOfLines={1}
           >
             {meeting.address}, {meeting.city}
@@ -150,22 +127,12 @@ export function MeetingCard({
       {meetingTypes.length > 0 && (
         <View style={styles.typesRow}>
           {meetingTypes.slice(0, 3).map((type, index) => (
-            <Badge
-              key={`${type}-${index}`}
-              variant="primary"
-              size="small"
-              style={styles.typeBadge}
-            >
+            <Badge key={`${type}-${index}`} variant="primary" size="small" style={styles.typeBadge}>
               {getMeetingTypeLabel(type)}
             </Badge>
           ))}
           {meetingTypes.length > 3 && (
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
+            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
               +{meetingTypes.length - 3} more
             </Text>
           )}

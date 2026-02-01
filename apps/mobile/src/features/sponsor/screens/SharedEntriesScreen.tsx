@@ -8,7 +8,6 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, Share } from 'reac
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, Card, Button, EmptyState, TextArea, Modal } from '../../../design-system';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';
@@ -143,10 +142,7 @@ export function SharedEntriesScreen(): React.ReactElement {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text
-            style={[
-              theme.typography.body,
-              { color: theme.colors.textSecondary, marginTop: 12 },
-            ]}
+            style={[theme.typography.body, { color: theme.colors.textSecondary, marginTop: 12 }]}
           >
             Loading shared entries...
           </Text>
@@ -172,10 +168,7 @@ export function SharedEntriesScreen(): React.ReactElement {
               Error
             </Text>
             <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.text, textAlign: 'center' },
-              ]}
+              style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}
             >
               {error}
             </Text>
@@ -230,7 +223,12 @@ export function SharedEntriesScreen(): React.ReactElement {
             style={{ marginTop: theme.spacing.sm }}
           />
           {importSummary && (
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary, marginTop: 6 }]}>
+            <Text
+              style={[
+                theme.typography.caption,
+                { color: theme.colors.textSecondary, marginTop: 6 },
+              ]}
+            >
               {importSummary}
             </Text>
           )}
@@ -256,6 +254,11 @@ export function SharedEntriesScreen(): React.ReactElement {
           showsVerticalScrollIndicator={false}
           accessibilityRole="list"
           accessibilityLabel="Shared journal entries list"
+          // Performance optimizations
+          initialNumToRender={10}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          removeClippedSubviews
         />
       </SafeAreaView>
 

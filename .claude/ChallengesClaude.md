@@ -1,9 +1,11 @@
 # Milestones & Challenges - Claude Prompt
 
 ## Objective
+
 Implement milestone tracking (sobriety streak counter) and recovery challenges for engagement.
 
 ## Target Files
+
 - `apps/mobile/src/features/challenges/screens/DashboardScreen.tsx`
 - `apps/mobile/src/features/challenges/screens/MilestonesScreen.tsx`
 - `apps/mobile/src/features/challenges/screens/ChallengesScreen.tsx`
@@ -13,6 +15,7 @@ Implement milestone tracking (sobriety streak counter) and recovery challenges f
 ## Requirements
 
 ### Sobriety Streak Counter
+
 - Calculate days sober from sobriety start date
 - Display prominently on home/dashboard screen
 - Celebrate milestones: 1, 7, 14, 30, 60, 90, 180, 365 days
@@ -20,6 +23,7 @@ Implement milestone tracking (sobriety streak counter) and recovery challenges f
 - Visual progress toward next milestone
 
 ### Milestone Tracking
+
 - Award badges/tokens for milestones
 - Visual achievement gallery
 - Milestone history log
@@ -27,6 +31,7 @@ Implement milestone tracking (sobriety streak counter) and recovery challenges f
 - Shareable milestone graphics (optional)
 
 ### Challenges System
+
 1. **Meeting Attendance Challenge**
    - "30 meetings in 30 days"
    - "90 meetings in 90 days"
@@ -42,6 +47,7 @@ Implement milestone tracking (sobriety streak counter) and recovery challenges f
    - Time-based step completion goals
 
 ### Streak Calculation
+
 ```typescript
 function calculateStreak(startDate: Date): number {
   const now = new Date();
@@ -52,6 +58,7 @@ function calculateStreak(startDate: Date): number {
 ```
 
 ### Database Schema
+
 ```sql
 CREATE TABLE milestones (
   id TEXT PRIMARY KEY,
@@ -76,6 +83,7 @@ CREATE TABLE challenges (
 ```
 
 ### Gamification Elements
+
 - Progress bars for challenges
 - Badge/achievement system
 - Streak flames or visual indicators
@@ -83,6 +91,7 @@ CREATE TABLE challenges (
 - NO pressure or negative messaging on resets
 
 ### User Experience
+
 - Motivational, not judgmental
 - Allow hiding features if stressful
 - Celebrate progress, no matter how small

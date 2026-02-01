@@ -46,7 +46,8 @@ const STEPS: Step[] = [
   {
     number: 1,
     title: 'Admit powerlessness',
-    description: 'We admitted we were powerless over our addiction - that our lives had become unmanageable.',
+    description:
+      'We admitted we were powerless over our addiction - that our lives had become unmanageable.',
   },
   {
     number: 2,
@@ -56,7 +57,8 @@ const STEPS: Step[] = [
   {
     number: 3,
     title: 'Decide to turn will over',
-    description: 'Made a decision to turn our will and our lives over to the care of God as we understood Him.',
+    description:
+      'Made a decision to turn our will and our lives over to the care of God as we understood Him.',
   },
   {
     number: 4,
@@ -66,7 +68,8 @@ const STEPS: Step[] = [
   {
     number: 5,
     title: 'Admit wrongs',
-    description: 'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.',
+    description:
+      'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.',
   },
   {
     number: 6,
@@ -81,27 +84,32 @@ const STEPS: Step[] = [
   {
     number: 8,
     title: 'Make a list',
-    description: 'Made a list of all persons we had harmed, and became willing to make amends to them all.',
+    description:
+      'Made a list of all persons we had harmed, and became willing to make amends to them all.',
   },
   {
     number: 9,
     title: 'Make amends',
-    description: 'Made direct amends to such people wherever possible, except when to do so would injure them or others.',
+    description:
+      'Made direct amends to such people wherever possible, except when to do so would injure them or others.',
   },
   {
     number: 10,
     title: 'Continue inventory',
-    description: 'Continued to take personal inventory and when we were wrong promptly admitted it.',
+    description:
+      'Continued to take personal inventory and when we were wrong promptly admitted it.',
   },
   {
     number: 11,
     title: 'Seek conscious contact',
-    description: 'Sought through prayer and meditation to improve our conscious contact with God as we understood Him.',
+    description:
+      'Sought through prayer and meditation to improve our conscious contact with God as we understood Him.',
   },
   {
     number: 12,
     title: 'Carry the message',
-    description: 'Having had a spiritual awakening as the result of these steps, we tried to carry this message to addicts.',
+    description:
+      'Having had a spiritual awakening as the result of these steps, we tried to carry this message to addicts.',
   },
 ];
 
@@ -117,18 +125,18 @@ function PulseIndicator({ color }: { color: string }): React.ReactElement {
     pulseScale.value = withRepeat(
       withSequence(
         withTiming(1.3, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
-      false
+      false,
     );
     pulseOpacity.value = withRepeat(
       withSequence(
         withTiming(0.2, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(0.6, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+        withTiming(0.6, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
-      false
+      false,
     );
   }, []);
 
@@ -137,15 +145,7 @@ function PulseIndicator({ color }: { color: string }): React.ReactElement {
     opacity: pulseOpacity.value,
   }));
 
-  return (
-    <Animated.View
-      style={[
-        styles.pulseIndicator,
-        { backgroundColor: color },
-        pulseStyle,
-      ]}
-    />
-  );
+  return <Animated.View style={[styles.pulseIndicator, { backgroundColor: color }, pulseStyle]} />;
 }
 
 export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React.ReactElement {
@@ -155,11 +155,11 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
   const [lockedStep, setLockedStep] = useState<Step | null>(null);
 
   const stepDetailMap = useMemo(() => {
-    return new Map(stepDetails.map(detail => [detail.stepNumber, detail]));
+    return new Map(stepDetails.map((detail) => [detail.stepNumber, detail]));
   }, [stepDetails]);
 
   const stepTotalsFallback = useMemo(() => {
-    return new Map(STEP_PROMPTS.map(step => [step.step, step.prompts.length]));
+    return new Map(STEP_PROMPTS.map((step) => [step.step, step.prompts.length]));
   }, []);
 
   const isStepCompleted = (stepNumber: number): boolean => {
@@ -214,10 +214,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
         </Text>
 
         {/* Circular Progress Display */}
-        <Animated.View
-          entering={FadeIn.duration(600).delay(300)}
-          style={styles.progressContainer}
-        >
+        <Animated.View entering={FadeIn.duration(600).delay(300)} style={styles.progressContainer}>
           <CircularProgress
             progress={overallProgress}
             size={100}
@@ -262,10 +259,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
       {/* Steps List */}
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={[
-          styles.contentContainer,
-          { paddingHorizontal: theme.spacing.md },
-        ]}
+        contentContainerStyle={[styles.contentContainer, { paddingHorizontal: theme.spacing.md }]}
         showsVerticalScrollIndicator={false}
         accessibilityRole="scrollbar"
         accessibilityLabel="12 Steps list"
@@ -273,7 +267,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
         {STEPS.map((step, index) => {
           const detail = stepDetailMap.get(step.number);
           const answeredCount = detail?.answered ?? 0;
-          const totalQuestions = detail?.total ?? (stepTotalsFallback.get(step.number) ?? 0);
+          const totalQuestions = detail?.total ?? stepTotalsFallback.get(step.number) ?? 0;
           const completed = isStepCompleted(step.number);
           const isLocked = step.number > 1;
           const current = !isLocked && isStepCurrent(step.number) && !completed;
@@ -317,9 +311,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                   <View style={styles.stepCard}>
                     {/* Step Number Badge with Pulse for Current */}
                     <View style={styles.badgeContainer}>
-                      {current && !completed && (
-                        <PulseIndicator color={theme.colors.primary} />
-                      )}
+                      {current && !completed && <PulseIndicator color={theme.colors.primary} />}
                       <Animated.View
                         entering={FadeIn.duration(300).delay(getStaggerDelay(index) + 100)}
                         style={[
@@ -328,10 +320,10 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                             backgroundColor: isLocked
                               ? theme.colors.surfaceVariant
                               : completed
-                              ? theme.colors.success
-                              : current
-                              ? theme.colors.primary
-                              : theme.colors.disabled,
+                                ? theme.colors.success
+                                : current
+                                  ? theme.colors.primary
+                                  : theme.colors.disabled,
                             width: 52,
                             height: 52,
                             borderRadius: 26,
@@ -339,13 +331,13 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                         ]}
                       >
                         {isLocked ? (
-                          <MaterialCommunityIcons name="lock" size={22} color={theme.colors.textSecondary} />
-                        ) : completed ? (
                           <MaterialCommunityIcons
-                            name="check"
-                            size={28}
-                            color="#FFFFFF"
+                            name="lock"
+                            size={22}
+                            color={theme.colors.textSecondary}
                           />
+                        ) : completed ? (
+                          <MaterialCommunityIcons name="check" size={28} color="#FFFFFF" />
                         ) : (
                           <Text
                             style={[
@@ -365,10 +357,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                     <View style={[styles.stepContent, { marginLeft: theme.spacing.md }]}>
                       <View style={styles.stepHeader}>
                         <Text
-                          style={[
-                            theme.typography.h3,
-                            { color: theme.colors.text, flex: 1 },
-                          ]}
+                          style={[theme.typography.h3, { color: theme.colors.text, flex: 1 }]}
                           numberOfLines={2}
                         >
                           Step {step.number}: {step.title}
@@ -411,7 +400,9 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                           { color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
                         ]}
                       >
-                        {totalQuestions > 0 ? `${totalQuestions} questions` : 'Question set coming soon'}
+                        {totalQuestions > 0
+                          ? `${totalQuestions} questions`
+                          : 'Question set coming soon'}
                       </Text>
 
                       {/* Step Description */}

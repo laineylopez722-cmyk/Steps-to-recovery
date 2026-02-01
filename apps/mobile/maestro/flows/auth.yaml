@@ -1,0 +1,83 @@
+# Authentication Flow E2E Test
+# Tests login and signup functionality
+
+appId: com.stepstorecovery.app
+---
+# Launch with cleared state
+- launchApp:
+    clearState: true
+
+# Wait for app to load
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Welcome'
+        - 'Sign In'
+        - 'Get Started'
+    timeout: 10000
+
+# Test Sign In flow
+- tapOn:
+    text:
+      anyOf:
+        - 'Sign In'
+        - 'Log In'
+        - 'I have an account'
+
+# Verify sign in form
+- extendedWaitUntil:
+    visible: 'Email'
+    timeout: 5000
+
+# Enter invalid credentials (should show error)
+- inputText:
+    id: 'email-input'
+    text: 'invalid@test.com'
+
+- inputText:
+    id: 'password-input'
+    text: 'wrongpassword'
+
+- tapOn:
+    text:
+      anyOf:
+        - 'Sign In'
+        - 'Log In'
+        - 'Continue'
+
+# Should see error message
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Invalid'
+        - 'Error'
+        - 'incorrect'
+        - 'failed'
+    timeout: 10000
+
+# Go back and test Sign Up
+- tapOn:
+    text:
+      anyOf:
+        - 'Create Account'
+        - 'Sign Up'
+        - 'Register'
+
+# Verify sign up form
+- extendedWaitUntil:
+    visible: 'Create Account'
+    timeout: 5000
+
+# Verify email and password fields exist
+- assertVisible: 'Email'
+- assertVisible: 'Password'
+
+# Test password visibility toggle if present
+- tapOn:
+    id: 'password-toggle'
+    optional: true
+
+# Success!
+- runScript:
+    script: |
+      console.log('✅ Auth flow test completed')

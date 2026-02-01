@@ -40,11 +40,9 @@ export const MilestoneCard = memo(function MilestoneCard({
           <Text className="text-lg font-semibold text-surface-900 dark:text-surface-100">
             {milestone.title}
           </Text>
-          
+
           {isAchieved ? (
-            <Text className="text-sm text-secondary-600 dark:text-secondary-400">
-              ✓ Achieved!
-            </Text>
+            <Text className="text-sm text-secondary-600 dark:text-secondary-400">✓ Achieved!</Text>
           ) : daysUntil !== undefined ? (
             <Text className="text-sm text-surface-500">
               {daysUntil} {daysUntil === 1 ? 'day' : 'days'} to go
@@ -62,9 +60,7 @@ export const MilestoneCard = memo(function MilestoneCard({
               style={{ width: `${Math.min(progress, 100)}%` }}
             />
           </View>
-          <Text className="text-xs text-surface-500 mt-1 text-right">
-            {progress}% complete
-          </Text>
+          <Text className="text-xs text-surface-500 mt-1 text-right">{progress}% complete</Text>
         </View>
       )}
 
@@ -75,4 +71,3 @@ export const MilestoneCard = memo(function MilestoneCard({
     </Card>
   );
 });
-

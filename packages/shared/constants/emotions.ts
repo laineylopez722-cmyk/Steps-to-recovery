@@ -1,9 +1,9 @@
 /**
  * Default Emotion Tags
- * 
+ *
  * Predefined emotions for quick tagging in journal entries and check-ins.
  * Each emotion has a name and associated color for UI display.
- * 
+ *
  * @example
  * ```ts
  * const emotion = DEFAULT_EMOTIONS.find(e => e.name === 'Grateful');

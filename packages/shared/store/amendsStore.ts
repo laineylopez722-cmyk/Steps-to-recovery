@@ -7,12 +7,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
-import type {
-  AmendsEntry,
-  DbAmendsEntry,
-  AmendsType,
-  AmendsStatus,
-} from '../types';
+import type { AmendsEntry, DbAmendsEntry, AmendsType, AmendsStatus } from '../types';
 
 interface DecryptedAmendsEntry extends Omit<AmendsEntry, 'person' | 'harm' | 'notes'> {
   person: string;
@@ -32,7 +27,7 @@ interface AmendsState {
     harm: string,
     amendsType: AmendsType,
     status?: AmendsStatus,
-    notes?: string
+    notes?: string,
   ) => Promise<AmendsEntry>;
   updateEntry: (
     id: string,
@@ -42,7 +37,7 @@ interface AmendsState {
       amendsType: AmendsType;
       status: AmendsStatus;
       notes: string;
-    }>
+    }>,
   ) => Promise<void>;
   markAmendsMade: (id: string) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
@@ -72,7 +67,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
     try {
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbAmendsEntry>(
-        'SELECT * FROM amends_list ORDER BY created_at DESC'
+        'SELECT * FROM amends_list ORDER BY created_at DESC',
       );
 
       const entries: AmendsEntry[] = rows.map((row) => ({
@@ -101,7 +96,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
     harm: string,
     amendsType: AmendsType,
     status: AmendsStatus = 'not_willing',
-    notes?: string
+    notes?: string,
   ) => {
     const db = await getDatabase();
     const id = uuidv4();
@@ -116,7 +111,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
       `INSERT INTO amends_list (
         id, person, harm, amends_type, status, notes, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, encryptedPerson, encryptedHarm, amendsType, status, encryptedNotes, now]
+      [id, encryptedPerson, encryptedHarm, amendsType, status, encryptedNotes, now],
     );
 
     const entry: AmendsEntry = {
@@ -166,10 +161,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
     if (updateFields.length === 0) return;
 
     values.push(id);
-    await db.runAsync(
-      `UPDATE amends_list SET ${updateFields.join(', ')} WHERE id = ?`,
-      values
-    );
+    await db.runAsync(`UPDATE amends_list SET ${updateFields.join(', ')} WHERE id = ?`, values);
 
     // Reload entries
     await get().loadEntries();
@@ -182,14 +174,14 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
     const db = await getDatabase();
     const now = new Date().toISOString();
 
-    await db.runAsync(
-      `UPDATE amends_list SET status = 'made', made_at = ? WHERE id = ?`,
-      [now, id]
-    );
+    await db.runAsync(`UPDATE amends_list SET status = 'made', made_at = ? WHERE id = ?`, [
+      now,
+      id,
+    ]);
 
     set((state) => ({
       entries: state.entries.map((e) =>
-        e.id === id ? { ...e, status: 'made' as AmendsStatus, madeAt: new Date(now) } : e
+        e.id === id ? { ...e, status: 'made' as AmendsStatus, madeAt: new Date(now) } : e,
       ),
     }));
   },
@@ -247,4 +239,3 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
     };
   },
 }));
-

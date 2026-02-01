@@ -28,19 +28,22 @@ export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText
   containerStyle?: ViewStyle;
 }
 
-export const Input = forwardRef<TextInput, InputProps>(function Input({
-  label,
-  value,
-  onChangeText,
-  error,
-  hint,
-  required = false,
-  leftIcon,
-  rightIcon,
-  secureTextEntry,
-  containerStyle,
-  ...textInputProps
-}: InputProps, ref: React.ForwardedRef<TextInput>) {
+export const Input = forwardRef<TextInput, InputProps>(function Input(
+  {
+    label,
+    value,
+    onChangeText,
+    error,
+    hint,
+    required = false,
+    leftIcon,
+    rightIcon,
+    secureTextEntry,
+    containerStyle,
+    ...textInputProps
+  }: InputProps,
+  ref: React.ForwardedRef<TextInput>,
+) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -94,7 +97,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input({
             theme.typography.body,
             { color: theme.colors.text },
             leftIcon ? styles.inputWithLeftIcon : undefined,
-            (rightIcon || hasPasswordToggle) ? styles.inputWithRightIcon : undefined,
+            rightIcon || hasPasswordToggle ? styles.inputWithRightIcon : undefined,
           ].filter(Boolean)}
           placeholderTextColor={theme.colors.textSecondary}
           {...textInputProps}

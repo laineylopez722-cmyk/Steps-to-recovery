@@ -1,0 +1,23 @@
+# Maestro Configuration
+# See https://maestro.mobile.dev/reference/configuration
+
+# App package ID
+appId: com.stepstorecovery.app
+
+# Test execution settings
+executionOrder: sequential
+
+# Include all flow files
+flows:
+  - flows/**/*.yaml
+
+# Default timeout for commands (ms)
+timeout: 30000
+
+# Tags for filtering tests
+tags:
+  smoke:
+    - flows/onboarding.yaml
+    - flows/auth.yaml
+  full:
+    - flows/**/*.yaml

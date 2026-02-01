@@ -29,7 +29,7 @@ const MAX_CACHED_MEETINGS_PER_REGION = 500;
 export async function cacheMeetings(
   db: StorageAdapter,
   meetings: CachedMeeting[],
-  cacheRegion: string
+  cacheRegion: string,
 ): Promise<void> {
   // Limit meetings to cache before transaction (for logging after)
   const meetingsToCache = meetings.slice(0, MAX_CACHED_MEETINGS_PER_REGION);
@@ -42,9 +42,7 @@ export async function cacheMeetings(
 
     await db.withTransactionAsync(async () => {
       // Delete old meetings in this cache region
-      await db.runAsync('DELETE FROM cached_meetings WHERE cache_region = ?', [
-        cacheRegion,
-      ]);
+      await db.runAsync('DELETE FROM cached_meetings WHERE cache_region = ?', [cacheRegion]);
 
       // Insert new meetings
       for (const meeting of meetingsToCache) {
@@ -73,7 +71,7 @@ export async function cacheMeetings(
             cacheRegion,
             meeting.created_at,
             meeting.updated_at,
-          ]
+          ],
         );
       }
     });
@@ -96,12 +94,12 @@ export async function cacheMeetings(
  */
 export async function getCachedMeetings(
   db: StorageAdapter,
-  cacheRegion: string
+  cacheRegion: string,
 ): Promise<CachedMeeting[]> {
   try {
     const meetings = await db.getAllAsync<CachedMeeting>(
       'SELECT * FROM cached_meetings WHERE cache_region = ? ORDER BY name ASC',
-      [cacheRegion]
+      [cacheRegion],
     );
 
     logger.info('Retrieved cached meetings', {
@@ -124,12 +122,12 @@ export async function getCachedMeetings(
  */
 export async function getCachedMeetingById(
   db: StorageAdapter,
-  meetingId: string
+  meetingId: string,
 ): Promise<CachedMeeting | null> {
   try {
     const meeting = await db.getFirstAsync<CachedMeeting>(
       'SELECT * FROM cached_meetings WHERE id = ?',
-      [meetingId]
+      [meetingId],
     );
 
     return meeting;
@@ -145,14 +143,11 @@ export async function getCachedMeetingById(
  * @param cacheRegion Cache region identifier
  * @returns true if cache should be refreshed
  */
-export async function isCacheStale(
-  db: StorageAdapter,
-  cacheRegion: string
-): Promise<boolean> {
+export async function isCacheStale(db: StorageAdapter, cacheRegion: string): Promise<boolean> {
   try {
     const result = await db.getFirstAsync<{ cached_at: string }>(
       'SELECT cached_at FROM cached_meetings WHERE cache_region = ? ORDER BY cached_at DESC LIMIT 1',
-      [cacheRegion]
+      [cacheRegion],
     );
 
     if (!result) {
@@ -162,8 +157,7 @@ export async function isCacheStale(
 
     const cachedDate = new Date(result.cached_at);
     const now = new Date();
-    const daysSinceCached =
-      (now.getTime() - cachedDate.getTime()) / (1000 * 60 * 60 * 24);
+    const daysSinceCached = (now.getTime() - cachedDate.getTime()) / (1000 * 60 * 60 * 24);
 
     return daysSinceCached >= CACHE_TTL_DAYS;
   } catch (error) {
@@ -183,10 +177,9 @@ export async function clearStaleCache(db: StorageAdapter): Promise<void> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - CACHE_TTL_DAYS);
 
-    await db.runAsync(
-      'DELETE FROM cached_meetings WHERE cached_at < ?',
-      [cutoffDate.toISOString()]
-    );
+    await db.runAsync('DELETE FROM cached_meetings WHERE cached_at < ?', [
+      cutoffDate.toISOString(),
+    ]);
 
     logger.info('Cleared stale cache entries', {
       cutoffDate: cutoffDate.toISOString(),
@@ -233,12 +226,10 @@ export function parseCacheRegionKey(cacheRegionKey: string): CacheRegion | null 
  * @param db Storage adapter
  * @returns Array of all cached meetings
  */
-export async function getAllCachedMeetings(
-  db: StorageAdapter
-): Promise<CachedMeeting[]> {
+export async function getAllCachedMeetings(db: StorageAdapter): Promise<CachedMeeting[]> {
   try {
     const meetings = await db.getAllAsync<CachedMeeting>(
-      'SELECT * FROM cached_meetings ORDER BY name ASC'
+      'SELECT * FROM cached_meetings ORDER BY name ASC',
     );
 
     return meetings;

@@ -60,16 +60,17 @@ export function Toggle({
   const theme = useTheme();
 
   const activeTrackColor = trackColor || theme.colors.primary;
-  const inactiveTrackColor = theme.isDark
-    ? 'rgba(142,142,147,0.3)'
-    : 'rgba(142,142,147,0.2)';
+  const inactiveTrackColor = theme.isDark ? 'rgba(142,142,147,0.3)' : 'rgba(142,142,147,0.2)';
 
   const thumbColor = Platform.OS === 'ios' ? '#FFFFFF' : value ? activeTrackColor : '#FFFFFF';
 
-  const handleValueChange = useCallback(async (newValue: boolean): Promise<void> => {
-    await hapticSelection();
-    onValueChange(newValue);
-  }, [onValueChange]);
+  const handleValueChange = useCallback(
+    async (newValue: boolean): Promise<void> => {
+      await hapticSelection();
+      onValueChange(newValue);
+    },
+    [onValueChange],
+  );
 
   return (
     <View style={[styles.container, style]}>

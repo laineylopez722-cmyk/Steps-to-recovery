@@ -217,7 +217,8 @@ export function StepReviewScreen(): React.ReactElement {
   const answeredCount = useMemo(() => {
     return questions.filter((question) => question.answer?.trim()).length;
   }, [questions]);
-  const progressPercent = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
+  const progressPercent =
+    totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
 
   const listItems = useMemo((): ReviewItem[] => {
     if (!stepData) return [];
@@ -262,7 +263,7 @@ export function StepReviewScreen(): React.ReactElement {
     (questionNumber: number) => {
       navigation.navigate('StepDetail', { stepNumber, initialQuestion: questionNumber });
     },
-    [navigation, stepNumber]
+    [navigation, stepNumber],
   );
 
   const handleExportPdf = useCallback(async (): Promise<void> => {
@@ -336,7 +337,11 @@ export function StepReviewScreen(): React.ReactElement {
                 styles.questionNumber,
                 hasAnswer
                   ? { backgroundColor: theme.colors.success }
-                  : { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, borderWidth: 2 },
+                  : {
+                      backgroundColor: theme.colors.surface,
+                      borderColor: theme.colors.border,
+                      borderWidth: 2,
+                    },
               ]}
             >
               {hasAnswer ? (
@@ -391,14 +396,18 @@ export function StepReviewScreen(): React.ReactElement {
         </Card>
       );
     },
-    [answersByNumber, handleEditQuestion, theme.colors, theme.spacing]
+    [answersByNumber, handleEditQuestion, theme.colors, theme.spacing],
   );
 
   if (!stepData) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.centered}>
-          <MaterialCommunityIcons name="alert-circle-outline" size={48} color={theme.colors.danger} />
+          <MaterialCommunityIcons
+            name="alert-circle-outline"
+            size={48}
+            color={theme.colors.danger}
+          />
           <Text variant="h2" style={{ marginTop: theme.spacing.md, color: theme.colors.text }}>
             Step not found
           </Text>
@@ -433,7 +442,10 @@ export function StepReviewScreen(): React.ReactElement {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['bottom']}
+    >
       <Toast
         visible={toastVisible}
         message={toastMessage}
@@ -444,7 +456,9 @@ export function StepReviewScreen(): React.ReactElement {
       <FlatList
         data={listItems}
         keyExtractor={(item, index) =>
-          item.type === 'section' ? `section-${item.title}` : `question-${item.questionNumber}-${index}`
+          item.type === 'section'
+            ? `section-${item.title}`
+            : `question-${item.questionNumber}-${index}`
         }
         renderItem={renderItem}
         contentContainerStyle={[styles.content, { paddingBottom: theme.spacing.xl }]}
@@ -497,6 +511,11 @@ export function StepReviewScreen(): React.ReactElement {
           </View>
         )}
         showsVerticalScrollIndicator={false}
+        // Performance optimizations
+        initialNumToRender={10}
+        maxToRenderPerBatch={5}
+        windowSize={5}
+        removeClippedSubviews
       />
     </SafeAreaView>
   );

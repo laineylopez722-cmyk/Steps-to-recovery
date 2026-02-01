@@ -32,12 +32,15 @@ type SqlJsStatic = Awaited<ReturnType<typeof initSqlJs>>;
  * @returns true if all parameters are valid SQLite types
  * @internal
  */
-function validateSQLiteParams(params: unknown[]): params is (string | number | null | Uint8Array)[] {
-  return params.every(param =>
-    typeof param === 'string' ||
-    typeof param === 'number' ||
-    param === null ||
-    param instanceof Uint8Array
+function validateSQLiteParams(
+  params: unknown[],
+): params is (string | number | null | Uint8Array)[] {
+  return params.every(
+    (param) =>
+      typeof param === 'string' ||
+      typeof param === 'number' ||
+      param === null ||
+      param instanceof Uint8Array,
   );
 }
 
@@ -48,10 +51,7 @@ function validateSQLiteParams(params: unknown[]): params is (string | number | n
  * @returns Promise resolving to the operation result
  * @internal
  */
-async function withErrorHandling<T>(
-  operation: string,
-  fn: () => Promise<T>
-): Promise<T> {
+async function withErrorHandling<T>(operation: string, fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (error) {
@@ -112,7 +112,9 @@ export class IndexedDBAdapter implements StorageAdapter {
       'https://sql.js.org/dist/';
     this.wasmBaseUrl = base.endsWith('/') ? base : `${base}/`;
     if (this.wasmBaseUrl.includes('sql.js.org')) {
-      logger.warn('IndexedDB adapter is using the sql.js CDN. Set EXPO_PUBLIC_SQLJS_WASM_BASE_URL to a local asset for offline-first use.');
+      logger.warn(
+        'IndexedDB adapter is using the sql.js CDN. Set EXPO_PUBLIC_SQLJS_WASM_BASE_URL to a local asset for offline-first use.',
+      );
     }
   }
 
@@ -144,7 +146,10 @@ export class IndexedDBAdapter implements StorageAdapter {
         throw new Error('IndexedDB is not available in this environment');
       }
 
-      logger.info('Initializing IndexedDB adapter', { dbName: DB_NAME, wasmBaseUrl: this.wasmBaseUrl });
+      logger.info('Initializing IndexedDB adapter', {
+        dbName: DB_NAME,
+        wasmBaseUrl: this.wasmBaseUrl,
+      });
 
       // Initialize sql.js WebAssembly
       const SQL: SqlJsStatic = await initSqlJs({
@@ -291,7 +296,9 @@ export class IndexedDBAdapter implements StorageAdapter {
       const db = await this.getReadyDb();
 
       if (params && params.length > 0 && !validateSQLiteParams(params)) {
-        throw new Error('Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.');
+        throw new Error(
+          'Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.',
+        );
       }
 
       const stmt = db.prepare(query);
@@ -323,7 +330,9 @@ export class IndexedDBAdapter implements StorageAdapter {
       const db = await this.getReadyDb();
 
       if (params && params.length > 0 && !validateSQLiteParams(params)) {
-        throw new Error('Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.');
+        throw new Error(
+          'Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.',
+        );
       }
 
       const stmt = db.prepare(query);
@@ -352,7 +361,9 @@ export class IndexedDBAdapter implements StorageAdapter {
       const db = await this.getReadyDb();
 
       if (params && params.length > 0 && !validateSQLiteParams(params)) {
-        throw new Error('Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.');
+        throw new Error(
+          'Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.',
+        );
       }
 
       if (params) db.run(query, params as (string | number | null | Uint8Array)[]);

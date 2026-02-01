@@ -1,9 +1,9 @@
 /**
  * Recovery Slogans
- * 
+ *
  * Common slogans used in 12-step programs with detailed explanations.
  * These slogans provide wisdom and guidance for various situations in recovery.
- * 
+ *
  * @module constants/slogans
  */
 
@@ -146,7 +146,8 @@ A moment of reflection can prevent a lifetime of regret.`,
 This slogan reminds us to focus on our own side of the street. We can't control others—we can only control ourselves. Let other people live their lives while we focus on living ours.
 
 Acceptance is the answer to all our problems. When we stop trying to change others and accept them as they are, we find peace.`,
-    whenToUse: 'When frustrated with others, when trying to control situations, or dealing with resentment.',
+    whenToUse:
+      'When frustrated with others, when trying to control situations, or dealing with resentment.',
     category: 'fellowship',
   },
   {
@@ -157,7 +158,8 @@ Acceptance is the answer to all our problems. When we stop trying to change othe
 But the program is about principles, not personalities. We don't stay clean because we like everyone in the rooms—we stay clean because the principles work.
 
 When conflicts arise, we return to the program's principles: honesty, open-mindedness, willingness, love, service. These never let us down.`,
-    whenToUse: 'When having conflicts with people in the program or when personalities are getting in the way.',
+    whenToUse:
+      'When having conflicts with people in the program or when personalities are getting in the way.',
     category: 'fellowship',
   },
   {
@@ -206,7 +208,7 @@ When we're paralyzed by indecision, this simple question can guide us forward: "
   },
   {
     id: 'feelings-facts',
-    text: 'Feelings Aren\'t Facts',
+    text: "Feelings Aren't Facts",
     explanation: `Just because we feel something doesn't make it true. We might feel hopeless, but hope exists. We might feel worthless, but we have value. We might feel like using is the only option, but it's not.
 
 Our feelings are valid—we don't deny them. But we also don't let them dictate our reality. We can feel afraid and still take action. We can feel sad and still be okay.
@@ -230,7 +232,7 @@ Cultivating gratitude on a daily basis protects our recovery. An addict full of 
 
 /**
  * Get slogans by category
- * 
+ *
  * @param category - Slogan category to filter by
  * @returns Array of slogans in the specified category
  * @example
@@ -244,7 +246,7 @@ export function getSlogansByCategory(category: Slogan['category']): readonly Slo
 
 /**
  * Get slogan by ID
- * 
+ *
  * @param id - Slogan ID to look up
  * @returns Slogan object if found, undefined otherwise
  * @example
@@ -261,9 +263,9 @@ export function getSloganById(id: string): Slogan | undefined {
 
 /**
  * Get random slogan
- * 
+ *
  * Useful for displaying daily inspiration or random encouragement.
- * 
+ *
  * @returns A randomly selected slogan
  * @example
  * ```ts
@@ -279,7 +281,7 @@ export function getRandomSlogan(): Slogan {
 
 /**
  * Check if a slogan ID is valid
- * 
+ *
  * @param id - Slogan ID to validate
  * @returns True if slogan exists
  */
@@ -297,5 +299,3 @@ export const SLOGAN_CATEGORIES: { key: Slogan['category']; label: string; icon: 
   { key: 'growth', label: 'Growth', icon: '🌱' },
   { key: 'fellowship', label: 'Fellowship', icon: '🤝' },
 ];
-
-

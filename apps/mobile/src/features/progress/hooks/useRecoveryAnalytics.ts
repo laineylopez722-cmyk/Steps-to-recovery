@@ -154,13 +154,15 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       insights.push({
         type: 'positive',
         title: 'Mood Improving',
-        description: 'Your mood has been trending upward over the past week. Keep up the great work!',
+        description:
+          'Your mood has been trending upward over the past week. Keep up the great work!',
       });
     } else if (data.moodTrend === 'declining') {
       insights.push({
         type: 'warning',
         title: 'Mood Needs Attention',
-        description: 'Your mood has dipped recently. Consider reaching out to your support network or sponsor.',
+        description:
+          'Your mood has dipped recently. Consider reaching out to your support network or sponsor.',
       });
     }
 
@@ -175,7 +177,8 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       insights.push({
         type: 'warning',
         title: 'Craving Alert',
-        description: 'Your cravings have increased. This is normal in recovery - use your emergency tools if needed.',
+        description:
+          'Your cravings have increased. This is normal in recovery - use your emergency tools if needed.',
       });
     }
 
@@ -201,7 +204,8 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       insights.push({
         type: 'positive',
         title: `Step ${data.totalStepsCompleted} Complete`,
-        description: 'You have completed step work. Each step moves you forward in your recovery journey.',
+        description:
+          'You have completed step work. Each step moves you forward in your recovery journey.',
       });
     }
 
@@ -210,7 +214,8 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       insights.push({
         type: 'warning',
         title: 'High Craving Levels',
-        description: 'Your average craving level is elevated. Consider attending a meeting or calling your sponsor.',
+        description:
+          'Your average craving level is elevated. Consider attending a meeting or calling your sponsor.',
       });
     }
 
@@ -230,7 +235,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
     if (!db || !isReady || !userId) return;
 
     try {
-      setAnalytics(prev => ({ ...prev, isLoading: true, error: null }));
+      setAnalytics((prev) => ({ ...prev, isLoading: true, error: null }));
 
       // Get check-ins for last 30 days
       const thirtyDaysAgo = new Date();
@@ -247,7 +252,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
          FROM daily_checkins
          WHERE user_id = ? AND check_in_date >= ?
          ORDER BY check_in_date ASC`,
-        [userId, thirtyDaysAgoStr]
+        [userId, thirtyDaysAgoStr],
       );
 
       // Process mood data (decrypt and aggregate by date)
@@ -289,12 +294,12 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       // Convert to data points
       const moodData: MoodDataPoint[] = [];
       for (const [date, data] of moodByDate) {
-        const avgMood = data.moods.length > 0
-          ? data.moods.reduce((a, b) => a + b, 0) / data.moods.length
-          : 3;
-        const avgCraving = data.cravings.length > 0
-          ? data.cravings.reduce((a, b) => a + b, 0) / data.cravings.length
-          : 0;
+        const avgMood =
+          data.moods.length > 0 ? data.moods.reduce((a, b) => a + b, 0) / data.moods.length : 3;
+        const avgCraving =
+          data.cravings.length > 0
+            ? data.cravings.reduce((a, b) => a + b, 0) / data.cravings.length
+            : 0;
 
         moodData.push({
           date,
@@ -304,22 +309,24 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       }
 
       // Calculate averages
-      const averageMood = moodData.length > 0
-        ? Math.round((moodData.reduce((sum, d) => sum + d.mood, 0) / moodData.length) * 10) / 10
-        : 0;
-      const averageCraving = moodData.length > 0
-        ? Math.round((moodData.reduce((sum, d) => sum + d.craving, 0) / moodData.length) * 10) / 10
-        : 0;
+      const averageMood =
+        moodData.length > 0
+          ? Math.round((moodData.reduce((sum, d) => sum + d.mood, 0) / moodData.length) * 10) / 10
+          : 0;
+      const averageCraving =
+        moodData.length > 0
+          ? Math.round((moodData.reduce((sum, d) => sum + d.craving, 0) / moodData.length) * 10) /
+            10
+          : 0;
 
       // Get step work progress
       const stepWork = await db.getAllAsync<{
         step_number: number;
         question_number: number;
         is_complete: number;
-      }>(
-        `SELECT step_number, question_number, is_complete FROM step_work WHERE user_id = ?`,
-        [userId]
-      );
+      }>(`SELECT step_number, question_number, is_complete FROM step_work WHERE user_id = ?`, [
+        userId,
+      ]);
 
       const stepProgressMap = new Map<number, { answered: number; complete: boolean }>();
       for (const work of stepWork) {
@@ -344,13 +351,13 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
         });
       }
 
-      const totalStepsStarted = stepProgress.filter(s => s.answeredQuestions > 0).length;
-      const totalStepsCompleted = stepProgress.filter(s => s.isComplete).length;
+      const totalStepsStarted = stepProgress.filter((s) => s.answeredQuestions > 0).length;
+      const totalStepsCompleted = stepProgress.filter((s) => s.isComplete).length;
 
       // Get journal stats
       const journalStats = await db.getFirstAsync<{ count: number }>(
         `SELECT COUNT(*) as count FROM journal_entries WHERE user_id = ?`,
-        [userId]
+        [userId],
       );
       const journalEntryCount = journalStats?.count || 0;
 
@@ -364,7 +371,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
 
         const entry = await db.getFirstAsync<{ id: string }>(
           `SELECT id FROM journal_entries WHERE user_id = ? AND DATE(created_at) = ?`,
-          [userId, dateStr]
+          [userId, dateStr],
         );
 
         if (entry) {
@@ -383,7 +390,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
 
         const checkIn = await db.getFirstAsync<{ id: string }>(
           `SELECT id FROM daily_checkins WHERE user_id = ? AND check_in_date = ?`,
-          [userId, dateStr]
+          [userId, dateStr],
         );
 
         if (checkIn) {
@@ -396,7 +403,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       // Calculate total check-ins
       const checkInTotal = await db.getFirstAsync<{ count: number }>(
         `SELECT COUNT(*) as count FROM daily_checkins WHERE user_id = ?`,
-        [userId]
+        [userId],
       );
       const totalCheckIns = checkInTotal?.count || 0;
 
@@ -437,7 +444,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       logger.info('Recovery analytics loaded', { userId, moodDataPoints: moodData.length });
     } catch (error) {
       logger.error('Failed to load recovery analytics', error);
-      setAnalytics(prev => ({
+      setAnalytics((prev) => ({
         ...prev,
         isLoading: false,
         error: error instanceof Error ? error.message : 'Failed to load analytics',

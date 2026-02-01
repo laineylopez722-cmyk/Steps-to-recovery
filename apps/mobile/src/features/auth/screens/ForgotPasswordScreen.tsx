@@ -48,7 +48,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
       setEmailSent(true);
     } catch (err: unknown) {
       let message = 'Failed to send reset email. Please try again.';
-      
+
       if (err && typeof err === 'object' && 'message' in err) {
         const errorMessage = String(err.message);
         if (errorMessage.includes('User not found')) {
@@ -59,7 +59,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
           message = errorMessage;
         }
       }
-      
+
       setFormError(message);
     } finally {
       setLoading(false);
@@ -68,21 +68,49 @@ export function ForgotPasswordScreen({ navigation }: Props) {
 
   if (emailSent) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'bottom']}>
+      <SafeAreaView
+        style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+        edges={['top', 'bottom']}
+      >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.successContainer}>
             <Text style={styles.successEmoji}>📧</Text>
-            <Text style={[theme.typography.h2, { color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.md }]}>
+            <Text
+              style={[
+                theme.typography.h2,
+                { color: theme.colors.text, textAlign: 'center', marginBottom: theme.spacing.md },
+              ]}
+            >
               Check Your Email
             </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 24, marginBottom: theme.spacing.xl }]}>
+            <Text
+              style={[
+                theme.typography.body,
+                {
+                  color: theme.colors.textSecondary,
+                  textAlign: 'center',
+                  lineHeight: 24,
+                  marginBottom: theme.spacing.xl,
+                },
+              ]}
+            >
               We've sent a password reset link to{'\n'}
               <Text style={{ fontWeight: '600', color: theme.colors.text }}>{email}</Text>
             </Text>
-            <Text style={[theme.typography.bodySmall, { color: theme.colors.textSecondary, textAlign: 'center', lineHeight: 20, marginBottom: theme.spacing.xl }]}>
+            <Text
+              style={[
+                theme.typography.bodySmall,
+                {
+                  color: theme.colors.textSecondary,
+                  textAlign: 'center',
+                  lineHeight: 20,
+                  marginBottom: theme.spacing.xl,
+                },
+              ]}
+            >
               If you don't see the email, check your spam folder. The link will expire in 24 hours.
             </Text>
             <Button
@@ -97,7 +125,10 @@ export function ForgotPasswordScreen({ navigation }: Props) {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         behavior={keyboardConfig.behavior}
         style={styles.container}
@@ -109,10 +140,17 @@ export function ForgotPasswordScreen({ navigation }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.header, { marginBottom: theme.spacing.xl }]}>
-            <Text style={[theme.typography.h1, { color: theme.colors.text, marginBottom: theme.spacing.sm }]}>
+            <Text
+              style={[
+                theme.typography.h1,
+                { color: theme.colors.text, marginBottom: theme.spacing.sm },
+              ]}
+            >
               Reset Password
             </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}>
+            <Text
+              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}
+            >
               Enter your email address and we'll send you a link to reset your password.
             </Text>
           </View>
@@ -146,7 +184,12 @@ export function ForgotPasswordScreen({ navigation }: Props) {
                   },
                 ]}
               >
-                <Text style={[theme.typography.bodySmall, { color: theme.colors.danger, textAlign: 'center' }]}>
+                <Text
+                  style={[
+                    theme.typography.bodySmall,
+                    { color: theme.colors.danger, textAlign: 'center' },
+                  ]}
+                >
                   {formError}
                 </Text>
               </View>
@@ -160,7 +203,12 @@ export function ForgotPasswordScreen({ navigation }: Props) {
             />
           </View>
 
-          <View style={[styles.footer, { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md }]}>
+          <View
+            style={[
+              styles.footer,
+              { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md },
+            ]}
+          >
             <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
               Remember your password?{' '}
             </Text>
@@ -169,7 +217,9 @@ export function ForgotPasswordScreen({ navigation }: Props) {
               accessibilityRole="link"
               accessibilityLabel="Navigate to login"
             >
-              <Text style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}>
+              <Text
+                style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}
+              >
                 Log In
               </Text>
             </TouchableOpacity>

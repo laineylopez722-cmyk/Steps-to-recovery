@@ -67,4 +67,3 @@ export function buildShareMessage(payload: SharedEntryPayload, encoded: string):
     encoded,
   ].join('\n');
 }
-

@@ -5,16 +5,19 @@ This guide covers building and deploying the Steps to Recovery mobile app to pro
 ## 📋 Prerequisites
 
 ### Required Tools
+
 - **Node.js**: >=20.0.0 (verify: `node --version`)
 - **EAS CLI**: Install globally with `npm install -g eas-cli`
 - **Expo Account**: Create at https://expo.dev
 
 ### Required Accounts
+
 - **Expo Account** (for EAS Build)
 - **Apple Developer Account** (for iOS deployment) - $99/year
 - **Google Play Developer Account** (for Android deployment) - $25 one-time
 
 ### Required Environment Variables
+
 ```bash
 # Supabase (required for app functionality)
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
@@ -60,9 +63,11 @@ eas build --profile development --platform ios
 The app has 3 build profiles configured in `eas.json`:
 
 ### 1. **Development** (`development`)
+
 **Purpose**: Internal testing, debugging
 **Distribution**: Internal only
 **Features**:
+
 - Development client enabled
 - Fast builds (no optimization)
 - Full debugging capabilities
@@ -70,14 +75,17 @@ The app has 3 build profiles configured in `eas.json`:
 - Android: APK format
 
 **Build Command**:
+
 ```bash
 eas build --profile development --platform all
 ```
 
 ### 2. **Preview** (`preview`)
+
 **Purpose**: QA testing, beta releases
 **Distribution**: Internal testing channel
 **Features**:
+
 - Production-like environment
 - Optimized builds
 - No debugging tools
@@ -85,20 +93,24 @@ eas build --profile development --platform all
 - Android: APK format
 
 **Build Command**:
+
 ```bash
 eas build --profile preview --platform all
 ```
 
 ### 3. **Production** (`production`)
+
 **Purpose**: App Store / Play Store releases
 **Distribution**: Public app stores
 **Features**:
+
 - Fully optimized
 - Auto-increment version numbers
 - iOS: Medium resource class (faster builds)
 - Android: AAB format (required by Play Store)
 
 **Build Command**:
+
 ```bash
 eas build --profile production --platform all
 ```
@@ -116,6 +128,7 @@ eas build --profile production --platform all
    - Note the ASC App ID
 
 2. **Configure Credentials**
+
    ```bash
    # EAS will guide you through credential setup
    eas credentials
@@ -174,6 +187,7 @@ eas submit --platform ios --latest
    - Package name: `com.recovery.stepstorecovery`
 
 2. **Create Service Account (for automated submission)**
+
    ```bash
    # Follow guide: https://github.com/expo/fyi/blob/main/creating-google-service-account.md
 
@@ -227,6 +241,7 @@ eas submit --platform android --latest
 ### Production Environment Variables
 
 **In Expo Dashboard** (https://expo.dev):
+
 1. Go to your project
 2. Click "Secrets" in left sidebar
 3. Add required secrets:
@@ -234,6 +249,7 @@ eas submit --platform android --latest
    - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
 
 **Local .env File** (for development):
+
 ```bash
 # apps/mobile/.env
 EXPO_PUBLIC_SUPABASE_URL=https://tbiunmmvfbakwlzykpwq.supabase.co
@@ -256,6 +272,7 @@ The app includes Sentry for error tracking:
    - Note the DSN
 
 2. **Configure Sentry DSN**:
+
    ```bash
    # In Expo secrets
    eas secret:create --name SENTRY_DSN --value "your-sentry-dsn"
@@ -282,6 +299,7 @@ The app includes Sentry for error tracking:
 ```
 
 **Why Disabled**:
+
 - Encryption code changes require full review
 - Sensitive data handling changes need app store vetting
 - Better security posture for recovery app
@@ -289,6 +307,7 @@ The app includes Sentry for error tracking:
 ### Release Strategy
 
 Recommended release schedule:
+
 - **Major releases** (1.0.0 → 2.0.0): Every 3-6 months
 - **Minor releases** (1.0.0 → 1.1.0): Monthly feature updates
 - **Patch releases** (1.0.0 → 1.0.1): Hotfixes as needed
@@ -300,12 +319,14 @@ Recommended release schedule:
 Before submitting to app stores:
 
 ### Code Quality
+
 - [ ] All tests passing (`npm test`)
 - [ ] Test coverage >75% (`npm run test:coverage`)
 - [ ] No TypeScript errors (`npx tsc --noEmit`)
 - [ ] No ESLint warnings (`npm run lint`)
 
 ### Functionality
+
 - [ ] Signup/Login works
 - [ ] Journal entry encryption/decryption works
 - [ ] Daily check-ins save correctly
@@ -314,6 +335,7 @@ Before submitting to app stores:
 - [ ] Notifications work (morning/evening reminders)
 
 ### Security
+
 - [ ] Sensitive data encrypted before storage
 - [ ] Encryption keys stored in SecureStore (not AsyncStorage)
 - [ ] No PII logged in console or error logs
@@ -321,6 +343,7 @@ Before submitting to app stores:
 - [ ] HTTPS-only communication verified
 
 ### App Store Requirements
+
 - [ ] Privacy policy created and hosted
 - [ ] Support email/URL provided
 - [ ] App icon created (1024x1024)
@@ -332,6 +355,7 @@ Before submitting to app stores:
 ## 🐛 Troubleshooting
 
 ### "Build failed: Cannot find module 'expo'"
+
 ```bash
 # Solution: Install dependencies
 cd apps/mobile
@@ -339,12 +363,14 @@ npm install
 ```
 
 ### "Credentials not found"
+
 ```bash
 # Solution: Configure credentials
 eas credentials
 ```
 
 ### "Sentry CLI not found" during build
+
 ```bash
 # Solution: This is expected if Sentry CDN is blocked
 # The app will build without Sentry - not critical for testing
@@ -352,6 +378,7 @@ eas credentials
 ```
 
 ### "TestFlight build missing"
+
 ```bash
 # Solution: Manually upload IPA
 eas build:list  # Get build URL
@@ -360,6 +387,7 @@ eas build:list  # Get build URL
 ```
 
 ### "Play Store submission rejected: Missing declarations"
+
 - Go to Play Console → Policy → App content
 - Complete all required declarations:
   - Data safety form
@@ -381,6 +409,7 @@ eas build:list  # Get build URL
 ## 🆘 Support
 
 For build/deployment issues:
+
 - **Expo Forums**: https://forums.expo.dev/
 - **Discord**: https://chat.expo.dev/
 - **GitHub Issues**: https://github.com/RipKDR/Steps-to-recovery/issues

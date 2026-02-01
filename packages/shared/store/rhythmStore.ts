@@ -9,11 +9,11 @@ import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 
 // Context tags for pulse checks
-export type PulseContext = 
-  | 'alone' 
-  | 'with_people' 
-  | 'bored' 
-  | 'stressed' 
+export type PulseContext =
+  | 'alone'
+  | 'with_people'
+  | 'bored'
+  | 'stressed'
   | 'hungry'
   | 'tired'
   | 'anxious'
@@ -56,17 +56,22 @@ interface RhythmStore {
   todayIntention: DailyIntention | null;
   todayPulseChecks: PulseCheck[];
   todayInventory: TinyInventory | null;
-  
+
   // Loading states
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   loadTodayRhythm: () => Promise<void>;
   setIntention: (intention: string, isCustom?: boolean) => Promise<void>;
-  submitPulseCheck: (mood: number, cravingLevel: number, context: PulseContext[], notes?: string) => Promise<void>;
+  submitPulseCheck: (
+    mood: number,
+    cravingLevel: number,
+    context: PulseContext[],
+    notes?: string,
+  ) => Promise<void>;
   submitTinyInventory: (data: Omit<TinyInventory, 'id' | 'date' | 'createdAt'>) => Promise<void>;
-  
+
   // Quick pulse check (from home screen sliders)
   quickPulseCheck: (mood: number, cravingLevel: number) => Promise<void>;
 }
@@ -139,10 +144,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         intention: string;
         is_custom: number;
         created_at: string;
-      }>(
-        'SELECT * FROM daily_intentions WHERE date = ?',
-        [today]
-      );
+      }>('SELECT * FROM daily_intentions WHERE date = ?', [today]);
 
       const todayIntention: DailyIntention | null = intentionRow
         ? {
@@ -163,10 +165,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         context: string;
         notes: string | null;
         created_at: string;
-      }>(
-        'SELECT * FROM pulse_checks WHERE date = ? ORDER BY created_at DESC',
-        [today]
-      );
+      }>('SELECT * FROM pulse_checks WHERE date = ? ORDER BY created_at DESC', [today]);
 
       const todayPulseChecks: PulseCheck[] = await Promise.all(
         pulseRows.map(async (row) => {
@@ -180,7 +179,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
             notes: decryptedNotes || undefined,
             createdAt: new Date(row.created_at),
           };
-        })
+        }),
       );
 
       // Load today's inventory
@@ -193,10 +192,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         contacted_fellowship: number;
         reflection: string | null;
         created_at: string;
-      }>(
-        'SELECT * FROM tiny_inventories WHERE date = ?',
-        [today]
-      );
+      }>('SELECT * FROM tiny_inventories WHERE date = ?', [today]);
 
       const decryptedReflection = inventoryRow?.reflection
         ? await decryptContent(inventoryRow.reflection)
@@ -222,7 +218,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         isLoading: false,
       });
     } catch (error) {
-      console.error('Failed to load today\'s rhythm:', error);
+      console.error("Failed to load today's rhythm:", error);
       set({ error: 'Failed to load daily rhythm', isLoading: false });
     }
   },
@@ -240,7 +236,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
       await db.runAsync(
         `INSERT OR REPLACE INTO daily_intentions (id, date, intention, is_custom, created_at)
          VALUES (?, ?, ?, ?, ?)`,
-        [id, today, intention, isCustom ? 1 : 0, now]
+        [id, today, intention, isCustom ? 1 : 0, now],
       );
 
       const newIntention: DailyIntention = {
@@ -262,7 +258,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
     mood: number,
     cravingLevel: number,
     context: PulseContext[],
-    notes?: string
+    notes?: string,
   ) => {
     set({ isLoading: true, error: null });
     try {
@@ -278,7 +274,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
       await db.runAsync(
         `INSERT INTO pulse_checks (id, date, mood, craving_level, context, notes, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [id, today, mood, cravingLevel, JSON.stringify(context), encryptedNotes, now]
+        [id, today, mood, cravingLevel, JSON.stringify(context), encryptedNotes, now],
       );
 
       const newPulseCheck: PulseCheck = {
@@ -316,9 +312,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
       const now = new Date().toISOString();
 
       // Encrypt reflection if provided
-      const encryptedReflection = data.reflection
-        ? await encryptContent(data.reflection)
-        : null;
+      const encryptedReflection = data.reflection ? await encryptContent(data.reflection) : null;
 
       await db.runAsync(
         `INSERT OR REPLACE INTO tiny_inventories 
@@ -333,7 +327,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
           data.contactedFellowship ? 1 : 0,
           encryptedReflection,
           now,
-        ]
+        ],
       );
 
       const newInventory: TinyInventory = {
@@ -351,4 +345,3 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
     }
   },
 }));
-

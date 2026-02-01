@@ -13,16 +13,16 @@ The `pnpm analyze-component` tool uses SonarJS cognitive complexity metrics:
 
 ### What Increases Complexity
 
-| Pattern | Complexity Impact |
-|---------|-------------------|
-| `if/else` | +1 per branch |
-| Nested conditions | +1 per nesting level |
-| `switch/case` | +1 per case |
-| `for/while/do` | +1 per loop |
-| `&&`/`||` chains | +1 per operator |
-| Nested callbacks | +1 per nesting level |
-| `try/catch` | +1 per catch |
-| Ternary expressions | +1 per nesting |
+| Pattern             | Complexity Impact    |
+| ------------------- | -------------------- | -------- | --------------- |
+| `if/else`           | +1 per branch        |
+| Nested conditions   | +1 per nesting level |
+| `switch/case`       | +1 per case          |
+| `for/while/do`      | +1 per loop          |
+| `&&`/`              |                      | ` chains | +1 per operator |
+| Nested callbacks    | +1 per nesting level |
+| `try/catch`         | +1 per catch         |
+| Ternary expressions | +1 per nesting       |
 
 ## Pattern 1: Replace Conditionals with Lookup Tables
 
@@ -83,10 +83,10 @@ const TEMPLATE_MAP: Record<AppModeEnum, Record<string, FC<TemplateProps>>> = {
 // Clean component logic
 const Template = useMemo(() => {
   if (!appDetail?.mode) return null
-  
+
   const templates = TEMPLATE_MAP[appDetail.mode]
   if (!templates) return null
-  
+
   const TemplateComponent = templates[locale] ?? templates.default
   return <TemplateComponent appDetail={appDetail} />
 }, [appDetail, locale])
@@ -101,17 +101,17 @@ const handleSubmit = () => {
   if (isValid) {
     if (hasChanges) {
       if (isConnected) {
-        submitData()
+        submitData();
       } else {
-        showConnectionError()
+        showConnectionError();
       }
     } else {
-      showNoChangesMessage()
+      showNoChangesMessage();
     }
   } else {
-    showValidationError()
+    showValidationError();
   }
-}
+};
 ```
 
 **After** (complexity: ~4):
@@ -119,22 +119,22 @@ const handleSubmit = () => {
 ```typescript
 const handleSubmit = () => {
   if (!isValid) {
-    showValidationError()
-    return
+    showValidationError();
+    return;
   }
-  
+
   if (!hasChanges) {
-    showNoChangesMessage()
-    return
+    showNoChangesMessage();
+    return;
   }
-  
+
   if (!isConnected) {
-    showConnectionError()
-    return
+    showConnectionError();
+    return;
   }
-  
-  submitData()
-}
+
+  submitData();
+};
 ```
 
 ## Pattern 3: Extract Complex Conditions
@@ -144,36 +144,33 @@ const handleSubmit = () => {
 ```typescript
 const canPublish = (() => {
   if (mode !== AppModeEnum.COMPLETION) {
-    if (!isAdvancedMode)
-      return true
+    if (!isAdvancedMode) return true;
 
     if (modelModeType === ModelModeType.completion) {
-      if (!hasSetBlockStatus.history || !hasSetBlockStatus.query)
-        return false
-      return true
+      if (!hasSetBlockStatus.history || !hasSetBlockStatus.query) return false;
+      return true;
     }
-    return true
+    return true;
   }
-  return !promptEmpty
-})()
+  return !promptEmpty;
+})();
 ```
 
 **After** (complexity: lower):
 
 ```typescript
 // Extract to named functions
-const canPublishInCompletionMode = () => !promptEmpty
+const canPublishInCompletionMode = () => !promptEmpty;
 
 const canPublishInChatMode = () => {
-  if (!isAdvancedMode) return true
-  if (modelModeType !== ModelModeType.completion) return true
-  return hasSetBlockStatus.history && hasSetBlockStatus.query
-}
+  if (!isAdvancedMode) return true;
+  if (modelModeType !== ModelModeType.completion) return true;
+  return hasSetBlockStatus.history && hasSetBlockStatus.query;
+};
 
 // Clean main logic
-const canPublish = mode === AppModeEnum.COMPLETION
-  ? canPublishInCompletionMode()
-  : canPublishInChatMode()
+const canPublish =
+  mode === AppModeEnum.COMPLETION ? canPublishInCompletionMode() : canPublishInChatMode();
 ```
 
 ## Pattern 4: Replace Chained Ternaries
@@ -187,20 +184,20 @@ const statusText = serverActivated
     ? t('status.inactive')
     : appUnpublished
       ? t('status.unpublished')
-      : t('status.notConfigured')
+      : t('status.notConfigured');
 ```
 
 **After** (complexity: ~2):
 
 ```typescript
 const getStatusText = () => {
-  if (serverActivated) return t('status.running')
-  if (serverPublished) return t('status.inactive')
-  if (appUnpublished) return t('status.unpublished')
-  return t('status.notConfigured')
-}
+  if (serverActivated) return t('status.running');
+  if (serverPublished) return t('status.inactive');
+  if (appUnpublished) return t('status.unpublished');
+  return t('status.notConfigured');
+};
 
-const statusText = getStatusText()
+const statusText = getStatusText();
 ```
 
 Or use lookup:
@@ -211,16 +208,16 @@ const STATUS_TEXT_MAP = {
   inactive: 'status.inactive',
   unpublished: 'status.unpublished',
   notConfigured: 'status.notConfigured',
-} as const
+} as const;
 
 const getStatusKey = (): keyof typeof STATUS_TEXT_MAP => {
-  if (serverActivated) return 'running'
-  if (serverPublished) return 'inactive'
-  if (appUnpublished) return 'unpublished'
-  return 'notConfigured'
-}
+  if (serverActivated) return 'running';
+  if (serverPublished) return 'inactive';
+  if (appUnpublished) return 'unpublished';
+  return 'notConfigured';
+};
 
-const statusText = t(STATUS_TEXT_MAP[getStatusKey()])
+const statusText = t(STATUS_TEXT_MAP[getStatusKey()]);
 ```
 
 ## Pattern 5: Flatten Nested Loops
@@ -229,8 +226,8 @@ const statusText = t(STATUS_TEXT_MAP[getStatusKey()])
 
 ```typescript
 const processData = (items: Item[]) => {
-  const results: ProcessedItem[] = []
-  
+  const results: ProcessedItem[] = [];
+
   for (const item of items) {
     if (item.isValid) {
       for (const child of item.children) {
@@ -241,16 +238,16 @@ const processData = (items: Item[]) => {
                 itemId: item.id,
                 childId: child.id,
                 propValue: prop.value,
-              })
+              });
             }
           }
         }
       }
     }
   }
-  
-  return results
-}
+
+  return results;
+};
 ```
 
 **After** (complexity: lower):
@@ -259,21 +256,21 @@ const processData = (items: Item[]) => {
 // Use functional approach
 const processData = (items: Item[]) => {
   return items
-    .filter(item => item.isValid)
-    .flatMap(item =>
+    .filter((item) => item.isValid)
+    .flatMap((item) =>
       item.children
-        .filter(child => child.isActive)
-        .flatMap(child =>
+        .filter((child) => child.isActive)
+        .flatMap((child) =>
           child.properties
-            .filter(prop => prop.value !== null)
-            .map(prop => ({
+            .filter((prop) => prop.value !== null)
+            .map((prop) => ({
               itemId: item.id,
               childId: child.id,
               propValue: prop.value,
-            }))
-        )
-    )
-}
+            })),
+        ),
+    );
+};
 ```
 
 ## Pattern 6: Extract Event Handler Logic
@@ -307,10 +304,10 @@ const Component = () => {
       setDataSets(data)
     }
     hideSelectDataSet()
-    
+
     // 40 more lines of logic...
   }
-  
+
   return <div>...</div>
 }
 ```
@@ -323,7 +320,7 @@ const useDatasetSelection = (dataSets: DataSet[], setDataSets: SetState<DataSet[
   const normalizeSelection = (data: DataSet[]) => {
     const hasUnloadedItem = data.some(item => !item.name)
     if (!hasUnloadedItem) return data
-    
+
     return produce(data, (draft) => {
       data.forEach((item, index) => {
         if (!item.name) {
@@ -333,33 +330,33 @@ const useDatasetSelection = (dataSets: DataSet[], setDataSets: SetState<DataSet[
       })
     })
   }
-  
+
   const hasSelectionChanged = (newData: DataSet[]) => {
     return !isEqual(
       newData.map(item => item.id),
       dataSets.map(item => item.id)
     )
   }
-  
+
   return { normalizeSelection, hasSelectionChanged }
 }
 
 // Component becomes cleaner
 const Component = () => {
   const { normalizeSelection, hasSelectionChanged } = useDatasetSelection(dataSets, setDataSets)
-  
+
   const handleSelect = (data: DataSet[]) => {
     if (!hasSelectionChanged(data)) {
       hideSelectDataSet()
       return
     }
-    
+
     formattingChangedDispatcher()
     const normalized = normalizeSelection(data)
     setDataSets(normalized)
     hideSelectDataSet()
   }
-  
+
   return <div>...</div>
 }
 ```
@@ -369,12 +366,13 @@ const Component = () => {
 **Before** (complexity: ~8):
 
 ```typescript
-const toggleDisabled = hasInsufficientPermissions
-  || appUnpublished
-  || missingStartNode
-  || triggerModeDisabled
-  || (isAdvancedApp && !currentWorkflow?.graph)
-  || (isBasicApp && !basicAppConfig.updated_at)
+const toggleDisabled =
+  hasInsufficientPermissions ||
+  appUnpublished ||
+  missingStartNode ||
+  triggerModeDisabled ||
+  (isAdvancedApp && !currentWorkflow?.graph) ||
+  (isBasicApp && !basicAppConfig.updated_at);
 ```
 
 **After** (complexity: ~3):
@@ -382,23 +380,23 @@ const toggleDisabled = hasInsufficientPermissions
 ```typescript
 // Extract meaningful boolean functions
 const isAppReady = () => {
-  if (isAdvancedApp) return !!currentWorkflow?.graph
-  return !!basicAppConfig.updated_at
-}
+  if (isAdvancedApp) return !!currentWorkflow?.graph;
+  return !!basicAppConfig.updated_at;
+};
 
 const hasRequiredPermissions = () => {
-  return isCurrentWorkspaceEditor && !hasInsufficientPermissions
-}
+  return isCurrentWorkspaceEditor && !hasInsufficientPermissions;
+};
 
 const canToggle = () => {
-  if (!hasRequiredPermissions()) return false
-  if (!isAppReady()) return false
-  if (missingStartNode) return false
-  if (triggerModeDisabled) return false
-  return true
-}
+  if (!hasRequiredPermissions()) return false;
+  if (!isAppReady()) return false;
+  if (missingStartNode) return false;
+  if (triggerModeDisabled) return false;
+  return true;
+};
 
-const toggleDisabled = !canToggle()
+const toggleDisabled = !canToggle();
 ```
 
 ## Pattern 8: Simplify useMemo/useCallback Dependencies
@@ -407,8 +405,8 @@ const toggleDisabled = !canToggle()
 
 ```typescript
 const payload = useMemo(() => {
-  let parameters: Parameter[] = []
-  let outputParameters: OutputParameter[] = []
+  let parameters: Parameter[] = [];
+  let outputParameters: OutputParameter[] = [];
 
   if (!published) {
     parameters = (inputs || []).map((item) => ({
@@ -417,28 +415,27 @@ const payload = useMemo(() => {
       form: 'llm',
       required: item.required,
       type: item.type,
-    }))
+    }));
     outputParameters = (outputs || []).map((item) => ({
       name: item.variable,
       description: '',
       type: item.value_type,
-    }))
-  }
-  else if (detail && detail.tool) {
+    }));
+  } else if (detail && detail.tool) {
     parameters = (inputs || []).map((item) => ({
       // Complex transformation...
-    }))
+    }));
     outputParameters = (outputs || []).map((item) => ({
       // Complex transformation...
-    }))
+    }));
   }
-  
+
   return {
     icon: detail?.icon || icon,
     label: detail?.label || name,
     // ...more fields
-  }
-}, [detail, published, workflowAppId, icon, name, description, inputs, outputs])
+  };
+}, [detail, published, workflowAppId, icon, name, description, inputs, outputs]);
 ```
 
 **After** (complexity: separated concerns):
@@ -448,46 +445,50 @@ const payload = useMemo(() => {
 const useParameterTransform = (inputs: InputVar[], detail?: ToolDetail, published?: boolean) => {
   return useMemo(() => {
     if (!published) {
-      return inputs.map(item => ({
+      return inputs.map((item) => ({
         name: item.variable,
         description: '',
         form: 'llm',
         required: item.required,
         type: item.type,
-      }))
+      }));
     }
-    
-    if (!detail?.tool) return []
-    
-    return inputs.map(item => ({
+
+    if (!detail?.tool) return [];
+
+    return inputs.map((item) => ({
       name: item.variable,
       required: item.required,
       type: item.type === 'paragraph' ? 'string' : item.type,
-      description: detail.tool.parameters.find(p => p.name === item.variable)?.llm_description || '',
-      form: detail.tool.parameters.find(p => p.name === item.variable)?.form || 'llm',
-    }))
-  }, [inputs, detail, published])
-}
+      description:
+        detail.tool.parameters.find((p) => p.name === item.variable)?.llm_description || '',
+      form: detail.tool.parameters.find((p) => p.name === item.variable)?.form || 'llm',
+    }));
+  }, [inputs, detail, published]);
+};
 
 // Component uses hook
-const parameters = useParameterTransform(inputs, detail, published)
-const outputParameters = useOutputTransform(outputs, detail, published)
+const parameters = useParameterTransform(inputs, detail, published);
+const outputParameters = useOutputTransform(outputs, detail, published);
 
-const payload = useMemo(() => ({
-  icon: detail?.icon || icon,
-  label: detail?.label || name,
-  parameters,
-  outputParameters,
-  // ...
-}), [detail, icon, name, parameters, outputParameters])
+const payload = useMemo(
+  () => ({
+    icon: detail?.icon || icon,
+    label: detail?.label || name,
+    parameters,
+    outputParameters,
+    // ...
+  }),
+  [detail, icon, name, parameters, outputParameters],
+);
 ```
 
 ## Target Metrics After Refactoring
 
-| Metric | Target |
-|--------|--------|
-| Total Complexity | < 50 |
-| Max Function Complexity | < 30 |
-| Function Length | < 30 lines |
-| Nesting Depth | ≤ 3 levels |
-| Conditional Chains | ≤ 3 conditions |
+| Metric                  | Target         |
+| ----------------------- | -------------- |
+| Total Complexity        | < 50           |
+| Max Function Complexity | < 30           |
+| Function Length         | < 30 lines     |
+| Nesting Depth           | ≤ 3 levels     |
+| Conditional Chains      | ≤ 3 conditions |

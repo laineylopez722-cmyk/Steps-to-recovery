@@ -5,23 +5,19 @@
 
 import { create } from 'zustand';
 import type { DailyCheckin } from '../types';
-import {
-  createDailyCheckin,
-  getTodayCheckin,
-  getCheckinHistory,
-} from '../db/models';
+import { createDailyCheckin, getTodayCheckin, getCheckinHistory } from '../db/models';
 
 interface CheckinStore {
   todayCheckin: DailyCheckin | null;
   history: DailyCheckin[];
   isLoading: boolean;
   error: string | null;
-  
+
   // Computed values
   checkinStreak: number;
   averageMood: number;
   averageCraving: number;
-  
+
   // Actions
   loadTodayCheckin: () => Promise<void>;
   loadHistory: (days?: number) => Promise<void>;
@@ -44,7 +40,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
       const checkin = await getTodayCheckin();
       set({ todayCheckin: checkin, isLoading: false });
     } catch (error) {
-      set({ error: 'Failed to load today\'s check-in', isLoading: false });
+      set({ error: "Failed to load today's check-in", isLoading: false });
     }
   },
 
@@ -64,7 +60,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
     try {
       const checkin = await createDailyCheckin(mood, cravingLevel, gratitude);
       set({ todayCheckin: checkin, isLoading: false });
-      
+
       // Refresh history to update stats
       await get().loadHistory();
     } catch (error) {
@@ -74,7 +70,7 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
 
   calculateStats: () => {
     const { history } = get();
-    
+
     if (history.length === 0) {
       set({ checkinStreak: 0, averageMood: 0, averageCraving: 0 });
       return;
@@ -84,14 +80,14 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
     let streak = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     for (let i = 0; i < history.length; i++) {
       const checkinDate = new Date(history[i].date);
       checkinDate.setHours(0, 0, 0, 0);
-      
+
       const expectedDate = new Date(today);
       expectedDate.setDate(expectedDate.getDate() - i);
-      
+
       if (checkinDate.getTime() === expectedDate.getTime() && history[i].isCheckedIn) {
         streak++;
       } else {
@@ -101,12 +97,14 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
 
     // Calculate averages
     const checkedInDays = history.filter((c) => c.isCheckedIn);
-    const avgMood = checkedInDays.length > 0
-      ? checkedInDays.reduce((sum, c) => sum + c.mood, 0) / checkedInDays.length
-      : 0;
-    const avgCraving = checkedInDays.length > 0
-      ? checkedInDays.reduce((sum, c) => sum + c.cravingLevel, 0) / checkedInDays.length
-      : 0;
+    const avgMood =
+      checkedInDays.length > 0
+        ? checkedInDays.reduce((sum, c) => sum + c.mood, 0) / checkedInDays.length
+        : 0;
+    const avgCraving =
+      checkedInDays.length > 0
+        ? checkedInDays.reduce((sum, c) => sum + c.cravingLevel, 0) / checkedInDays.length
+        : 0;
 
     set({
       checkinStreak: streak,
@@ -115,4 +113,3 @@ export const useCheckinStore = create<CheckinStore>((set, get) => ({
     });
   },
 }));
-

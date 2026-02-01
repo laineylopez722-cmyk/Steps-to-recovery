@@ -22,7 +22,7 @@ interface SobrietyCounterProps {
 function CircularProgress({
   progress,
   size = 180,
-  strokeWidth = 12
+  strokeWidth = 12,
 }: {
   progress: number;
   size?: number;
@@ -30,7 +30,7 @@ function CircularProgress({
 }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
-  const strokeDashoffset = circumference - (Math.min(progress, 1) * circumference);
+  const strokeDashoffset = circumference - Math.min(progress, 1) * circumference;
 
   return (
     <View style={{ width: size, height: size }}>
@@ -72,7 +72,7 @@ function CircularProgress({
 function StatItem({
   icon,
   value,
-  label
+  label,
 }: {
   icon: React.ComponentProps<typeof Feather>['name'];
   value: string | number;
@@ -112,8 +112,8 @@ export const SobrietyCounter = memo(function SobrietyCounter({
   const progress = useMemo(() => {
     // Progress towards next milestone
     const milestones = [1, 7, 14, 30, 60, 90, 180, 365, 730, 1095];
-    const nextMilestone = milestones.find(m => m > days) || days + 30;
-    const prevMilestone = [...milestones].reverse().find(m => m <= days) || 0;
+    const nextMilestone = milestones.find((m) => m > days) || days + 30;
+    const prevMilestone = [...milestones].reverse().find((m) => m <= days) || 0;
     return (days - prevMilestone) / (nextMilestone - prevMilestone);
   }, [days]);
 
@@ -154,11 +154,7 @@ export const SobrietyCounter = memo(function SobrietyCounter({
       {/* Circular Progress with Days */}
       <View className="items-center py-4">
         <View className="relative items-center justify-center">
-          <CircularProgress
-            progress={progress}
-            size={circleSize}
-            strokeWidth={12}
-          />
+          <CircularProgress progress={progress} size={circleSize} strokeWidth={12} />
           <View className="absolute items-center">
             <Feather name="award" size={24} color="#14b8a6" style={{ marginBottom: 4 }} />
             <Text className="text-white text-5xl font-bold">{days}</Text>
@@ -176,23 +172,11 @@ export const SobrietyCounter = memo(function SobrietyCounter({
 
       {/* Stats Row */}
       <View className="flex-row bg-navy-900/40 rounded-xl p-3 mt-2">
-        <StatItem
-          icon="heart"
-          value={weeks}
-          label="Weeks"
-        />
+        <StatItem icon="heart" value={weeks} label="Weeks" />
         <View className="w-px bg-surface-700/30" />
-        <StatItem
-          icon="crosshair"
-          value={`${months}`}
-          label="Months est."
-        />
+        <StatItem icon="crosshair" value={`${months}`} label="Months est." />
         <View className="w-px bg-surface-700/30" />
-        <StatItem
-          icon="zap"
-          value={days}
-          label="Day streak"
-        />
+        <StatItem icon="zap" value={days} label="Day streak" />
       </View>
     </View>
   );

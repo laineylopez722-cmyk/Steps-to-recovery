@@ -40,7 +40,7 @@ export function ShareEntriesScreen(): React.ReactElement {
 
   const selectedEntries = useMemo(
     () => entries.filter((entry) => selectedIds.has(entry.id)),
-    [entries, selectedIds]
+    [entries, selectedIds],
   );
 
   const toggleSelection = (entryId: string): void => {
@@ -113,7 +113,9 @@ export function ShareEntriesScreen(): React.ReactElement {
       >
         <View style={styles.centerContainer}>
           <MaterialCommunityIcons name="account-alert" size={48} color={theme.colors.muted} />
-          <Text style={[theme.typography.body, { color: theme.colors.textSecondary, marginTop: 12 }]}>
+          <Text
+            style={[theme.typography.body, { color: theme.colors.textSecondary, marginTop: 12 }]}
+          >
             Connect a sponsor to share entries.
           </Text>
         </View>
@@ -140,6 +142,12 @@ export function ShareEntriesScreen(): React.ReactElement {
           }
           accessibilityRole="list"
           accessibilityLabel="Journal entries list for sharing"
+          // Performance optimizations
+          initialNumToRender={10}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          removeClippedSubviews
+          showsVerticalScrollIndicator={false}
         />
 
         <View style={styles.footer}>

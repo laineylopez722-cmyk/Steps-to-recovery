@@ -4,15 +4,15 @@ Frontend documentation for Steps to Recovery - React Native, Expo, UI components
 
 ## Stack Overview
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| Expo SDK | ~54.0.30 | Development framework |
-| React | 19.1.0 | UI library |
-| React Native | 0.81.5 | Mobile framework |
-| TypeScript | ~5.9.2 | Type safety (strict mode) |
-| React Navigation | Latest | Navigation |
-| React Query | ^5.90.15 | Server state |
-| Zustand | ^5.0.9 | Client state |
+| Technology       | Version  | Purpose                   |
+| ---------------- | -------- | ------------------------- |
+| Expo SDK         | ~54.0.30 | Development framework     |
+| React            | 19.1.0   | UI library                |
+| React Native     | 0.81.5   | Mobile framework          |
+| TypeScript       | ~5.9.2   | Type safety (strict mode) |
+| React Navigation | Latest   | Navigation                |
+| React Query      | ^5.90.15 | Server state              |
+| Zustand          | ^5.0.9   | Client state              |
 
 ---
 
@@ -43,6 +43,7 @@ apps/mobile/src/
 ### Feature Structure
 
 Each feature contains:
+
 ```
 features/[feature]/
 ├── screens/           # Screen components
@@ -112,14 +113,14 @@ export type MainTabParamList = {
 
 ### Design Tokens
 
-| Token File | Purpose |
-|------------|---------|
-| `colors.ts` | Semantic color system |
-| `typography.ts` | Text styles |
-| `spacing.ts` | Spacing scale (4px base) |
-| `radius.ts` | Border radius |
-| `shadows.ts` | Shadow presets |
-| `animations.ts` | Animation timing |
+| Token File      | Purpose                  |
+| --------------- | ------------------------ |
+| `colors.ts`     | Semantic color system    |
+| `typography.ts` | Text styles              |
+| `spacing.ts`    | Spacing scale (4px base) |
+| `radius.ts`     | Border radius            |
+| `shadows.ts`    | Shadow presets           |
+| `animations.ts` | Animation timing         |
 
 ### Color Usage
 
@@ -127,13 +128,13 @@ export type MainTabParamList = {
 import { colors } from '../design-system/tokens/colors';
 
 // Semantic colors
-colors.primary       // Action, interactive
-colors.success       // Positive states
-colors.warning       // Caution states
-colors.error         // Error states
-colors.text.primary  // Main text
-colors.text.secondary // Secondary text
-colors.background.primary  // Main background
+colors.primary; // Action, interactive
+colors.success; // Positive states
+colors.warning; // Caution states
+colors.error; // Error states
+colors.text.primary; // Main text
+colors.text.secondary; // Secondary text
+colors.background.primary; // Main background
 ```
 
 ### Typography Usage
@@ -164,14 +165,14 @@ import { spacing } from '../design-system/tokens/spacing';
 
 **Location**: `src/components/`
 
-| Component | Purpose |
-|-----------|---------|
-| `Button` | Primary action button |
-| `Input` | Text input with validation |
-| `Card` | Container card |
-| `LoadingSpinner` | Loading indicator |
-| `Slider` | Range slider (mood, craving) |
-| `Badge` | Status badges |
+| Component        | Purpose                      |
+| ---------------- | ---------------------------- |
+| `Button`         | Primary action button        |
+| `Input`          | Text input with validation   |
+| `Card`           | Container card               |
+| `LoadingSpinner` | Loading indicator            |
+| `Slider`         | Range slider (mood, craving) |
+| `Badge`          | Status badges                |
 
 ### Component Pattern
 
@@ -240,11 +241,11 @@ const styles = StyleSheet.create({
 
 **Required**: 7:1 (AAA standard)
 
-| Element | Required Ratio |
-|---------|----------------|
-| Body text | 7:1 |
-| Large text (18pt+) | 4.5:1 |
-| Icons/Graphics | 3:1 |
+| Element            | Required Ratio |
+| ------------------ | -------------- |
+| Body text          | 7:1            |
+| Large text (18pt+) | 4.5:1          |
+| Icons/Graphics     | 3:1            |
 
 ### Screen Reader Testing
 
@@ -259,6 +260,7 @@ Settings > Accessibility > TalkBack
 ### Font Scaling
 
 Support up to 200% font scaling:
+
 - Use flexible layouts (flex)
 - Avoid fixed heights for text containers
 - Test with system font size at maximum
@@ -281,7 +283,7 @@ export function useJournalEntries() {
     queryKey: ['journal-entries'],
     queryFn: async () => {
       const entries = await db.getAllAsync<JournalEntry>(
-        'SELECT * FROM journal_entries ORDER BY created_at DESC'
+        'SELECT * FROM journal_entries ORDER BY created_at DESC',
       );
       return Promise.all(entries.map(decryptEntry));
     },
@@ -303,13 +305,13 @@ export function useCreateJournalEntry() {
 
 ### Query Keys
 
-| Key | Data |
-|-----|------|
-| `['journal-entries']` | All journal entries |
-| `['journal-entries', id]` | Single entry |
-| `['daily-checkins', date]` | Check-ins by date |
-| `['step-work', stepNumber]` | Step work by step |
-| `['achievements']` | User achievements |
+| Key                         | Data                |
+| --------------------------- | ------------------- |
+| `['journal-entries']`       | All journal entries |
+| `['journal-entries', id]`   | Single entry        |
+| `['daily-checkins', date]`  | Check-ins by date   |
+| `['step-work', stepNumber]` | Step work by step   |
+| `['achievements']`          | User achievements   |
 
 ### Zustand (Client State)
 
@@ -337,10 +339,10 @@ export const useSettingsStore = create<SettingsState>((set) => ({
 
 **Location**: `src/adapters/storage/`
 
-| Platform | Storage | File |
-|----------|---------|------|
-| Mobile | SQLite (expo-sqlite) | `sqlite.ts` |
-| Web | IndexedDB | `indexeddb.ts` |
+| Platform | Storage              | File           |
+| -------- | -------------------- | -------------- |
+| Mobile   | SQLite (expo-sqlite) | `sqlite.ts`    |
+| Web      | IndexedDB            | `indexeddb.ts` |
 
 ### Database Context
 
@@ -353,10 +355,7 @@ const { db } = useDatabase();
 const entries = await db.getAllAsync<Entry>('SELECT * FROM entries');
 
 // Insert
-await db.runAsync(
-  'INSERT INTO entries (id, content) VALUES (?, ?)',
-  [id, encryptedContent]
-);
+await db.runAsync('INSERT INTO entries (id, content) VALUES (?, ?)', [id, encryptedContent]);
 ```
 
 ### Offline Data Flow
@@ -375,10 +374,10 @@ User Action → Encrypt → Store in SQLite → Add to Sync Queue → Sync when 
 
 **Location**: `src/adapters/secureStorage/`
 
-| Platform | Implementation |
-|----------|----------------|
-| Mobile | expo-secure-store (Keychain/Keystore) |
-| Web | IndexedDB (encrypted with session token) |
+| Platform | Implementation                           |
+| -------- | ---------------------------------------- |
+| Mobile   | expo-secure-store (Keychain/Keystore)    |
+| Web      | IndexedDB (encrypted with session token) |
 
 ```typescript
 import { secureStorage } from '../adapters/secureStorage';
@@ -392,10 +391,10 @@ const key = await secureStorage.getItemAsync('encryption_key');
 
 ### Network Detection
 
-| Platform | Method |
-|----------|--------|
-| Mobile | `@react-native-community/netinfo` |
-| Web | `navigator.onLine` + events |
+| Platform | Method                            |
+| -------- | --------------------------------- |
+| Mobile   | `@react-native-community/netinfo` |
+| Web      | `navigator.onLine` + events       |
 
 ---
 
@@ -499,9 +498,7 @@ const handleSave = useCallback(() => {
 }, [dependencies]);
 
 // Expensive computation
-const sortedEntries = useMemo(() =>
-  entries.sort((a, b) => b.createdAt - a.createdAt),
-[entries]);
+const sortedEntries = useMemo(() => entries.sort((a, b) => b.createdAt - a.createdAt), [entries]);
 ```
 
 ---

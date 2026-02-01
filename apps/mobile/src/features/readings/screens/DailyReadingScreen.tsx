@@ -135,7 +135,10 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['bottom']}
+    >
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -227,7 +230,11 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
             {/* Success Message */}
             {showSuccess && (
               <View style={[styles.successMessage, { backgroundColor: theme.colors.successLight }]}>
-                <MaterialCommunityIcons name="check-circle" size={20} color={theme.colors.success} />
+                <MaterialCommunityIcons
+                  name="check-circle"
+                  size={20}
+                  color={theme.colors.success}
+                />
                 <Text style={[styles.successText, { color: theme.colors.success }]}>
                   Reflection saved successfully!
                 </Text>

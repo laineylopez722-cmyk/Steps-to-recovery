@@ -35,7 +35,6 @@ function ContactCardComponent({
   onDelete,
   showActions = true,
 }: ContactCardProps) {
-
   const getDaysSinceContact = useCallback((): string => {
     if (!contact.lastContactedAt) {
       return 'Not contacted yet';
@@ -59,19 +58,17 @@ function ContactCardComponent({
       if (onEdit) buttons.push({ text: 'Edit', onPress: onEdit });
       if (onDelete) buttons.push({ text: 'Delete', onPress: onDelete, style: 'destructive' });
       buttons.push({ text: 'Cancel', style: 'cancel' });
-      
+
       Alert.alert(contact.name, 'What would you like to do?', buttons);
     }
   }, [contact.name, onEdit, onDelete]);
 
   const lastContactColor = useCallback(() => {
     if (!contact.lastContactedAt) return 'text-surface-400';
-    
+
     const now = new Date();
     const lastContact = new Date(contact.lastContactedAt);
-    const diffDays = Math.floor(
-      (now.getTime() - lastContact.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const diffDays = Math.floor((now.getTime() - lastContact.getTime()) / (1000 * 60 * 60 * 24));
 
     if (diffDays <= 7) return 'text-green-600 dark:text-green-400';
     if (diffDays <= 14) return 'text-amber-600 dark:text-amber-400';
@@ -79,11 +76,7 @@ function ContactCardComponent({
   }, [contact.lastContactedAt]);
 
   return (
-    <TouchableOpacity
-      onLongPress={handleLongPress}
-      activeOpacity={0.9}
-      delayLongPress={500}
-    >
+    <TouchableOpacity onLongPress={handleLongPress} activeOpacity={0.9} delayLongPress={500}>
       <Card variant="default">
         <View className="flex-row items-center">
           {/* Avatar/Icon */}
@@ -97,9 +90,7 @@ function ContactCardComponent({
               {contact.name}
             </Text>
             <Text className="text-sm text-surface-500">{contact.phone}</Text>
-            <Text className={`text-xs mt-0.5 ${lastContactColor()}`}>
-              {getDaysSinceContact()}
-            </Text>
+            <Text className={`text-xs mt-0.5 ${lastContactColor()}`}>{getDaysSinceContact()}</Text>
           </View>
 
           {/* Quick Actions */}
@@ -111,11 +102,7 @@ function ContactCardComponent({
                 accessibilityLabel={`Text ${contact.name}`}
                 variant="secondary"
               />
-              <QuickCall
-                icon="📞"
-                onPress={onCall}
-                accessibilityLabel={`Call ${contact.name}`}
-              />
+              <QuickCall icon="📞" onPress={onCall} accessibilityLabel={`Call ${contact.name}`} />
             </View>
           )}
         </View>
@@ -139,4 +126,3 @@ export const ContactCard = memo(ContactCardComponent, (prevProps, nextProps) => 
     prevProps.onDelete === nextProps.onDelete
   );
 });
-

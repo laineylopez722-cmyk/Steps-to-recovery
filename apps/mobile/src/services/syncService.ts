@@ -1,10 +1,10 @@
 /**
  * Sync Service
- * 
+ *
  * Handles background synchronization of local data with Supabase cloud storage.
  * Implements queue-based sync with retry logic, exponential backoff, and
  * conflict resolution.
- * 
+ *
  * **Key Features**:
  * - Queue-based sync (processes pending operations)
  * - Retry logic with exponential backoff (max 3 attempts)
@@ -12,12 +12,12 @@
  * - Mutex to prevent concurrent syncs
  * - Deletes processed before inserts/updates (avoids FK conflicts)
  * - Idempotent operations using supabase_id
- * 
+ *
  * **Sync Order**:
  * 1. Deletes (processed first to avoid foreign key conflicts)
  * 2. Inserts
  * 3. Updates
- * 
+ *
  * @module services/syncService
  */
 
@@ -28,10 +28,10 @@ import { decryptContent } from '../utils/encryption';
 
 /**
  * Mutex to prevent concurrent sync operations
- * 
+ *
  * Ensures only one sync runs at a time to avoid race conditions
  * and data corruption.
- * 
+ *
  * @internal
  */
 class SyncMutex {
@@ -82,10 +82,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs: number, operation: strin
   return Promise.race([
     promise,
     new Promise<T>((_, reject) =>
-      setTimeout(
-        () => reject(new Error(`${operation} timed out after ${timeoutMs}ms`)),
-        timeoutMs
-      )
+      setTimeout(() => reject(new Error(`${operation} timed out after ${timeoutMs}ms`)), timeoutMs),
     ),
   ]);
 }
@@ -215,13 +212,13 @@ function generateUUID(): string {
 export async function syncJournalEntry(
   db: StorageAdapter,
   entryId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Fetch journal entry from local database
     const entry = await db.getFirstAsync<LocalJournalEntry>(
       'SELECT * FROM journal_entries WHERE id = ? AND user_id = ?',
-      [entryId, userId]
+      [entryId, userId],
     );
 
     if (!entry) {
@@ -257,13 +254,13 @@ export async function syncJournalEntry(
 
     // Upsert to Supabase (insert or update) with timeout
     const response = await withTimeout(
-      Promise.resolve(supabase
-        .from('journal_entries')
-        .upsert(supabaseData, {
+      Promise.resolve(
+        supabase.from('journal_entries').upsert(supabaseData, {
           onConflict: 'id',
-        })),
+        }),
+      ),
       NETWORK_TIMEOUT_MS,
-      'Journal entry upsert'
+      'Journal entry upsert',
     );
     const supabaseError = (response as { error: { message: string } | null }).error;
 
@@ -277,7 +274,7 @@ export async function syncJournalEntry(
       `UPDATE journal_entries
        SET supabase_id = ?, sync_status = 'synced', updated_at = ?
        WHERE id = ?`,
-      [supabaseId, new Date().toISOString(), entryId]
+      [supabaseId, new Date().toISOString(), entryId],
     );
 
     logger.info('Journal entry synced successfully', { entryId, supabaseId });
@@ -296,13 +293,13 @@ export async function syncJournalEntry(
 export async function syncStepWork(
   db: StorageAdapter,
   stepWorkId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Fetch step work from local database
     const stepWork = await db.getFirstAsync<LocalStepWork>(
       'SELECT * FROM step_work WHERE id = ? AND user_id = ?',
-      [stepWorkId, userId]
+      [stepWorkId, userId],
     );
 
     if (!stepWork) {
@@ -329,13 +326,13 @@ export async function syncStepWork(
 
     // Upsert to Supabase with timeout
     const response = await withTimeout(
-      Promise.resolve(supabase
-        .from('step_work')
-        .upsert(supabaseData, {
+      Promise.resolve(
+        supabase.from('step_work').upsert(supabaseData, {
           onConflict: 'id',
-        })),
+        }),
+      ),
       NETWORK_TIMEOUT_MS,
-      'Step work upsert'
+      'Step work upsert',
     );
     const supabaseError = (response as { error: { message: string } | null }).error;
 
@@ -349,7 +346,7 @@ export async function syncStepWork(
       `UPDATE step_work
        SET supabase_id = ?, sync_status = 'synced', updated_at = ?
        WHERE id = ?`,
-      [supabaseId, new Date().toISOString(), stepWorkId]
+      [supabaseId, new Date().toISOString(), stepWorkId],
     );
 
     logger.info('Step work synced successfully', { stepWorkId, supabaseId });
@@ -375,13 +372,13 @@ export async function syncStepWork(
 export async function syncDailyCheckIn(
   db: StorageAdapter,
   checkInId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Fetch check-in from local database
     const checkIn = await db.getFirstAsync<LocalDailyCheckIn>(
       'SELECT * FROM daily_checkins WHERE id = ? AND user_id = ?',
-      [checkInId, userId]
+      [checkInId, userId],
     );
 
     if (!checkIn) {
@@ -433,13 +430,13 @@ export async function syncDailyCheckIn(
 
     // Upsert to Supabase (insert or update) with timeout
     const response = await withTimeout(
-      Promise.resolve(supabase
-        .from('daily_checkins')
-        .upsert(supabaseData, {
+      Promise.resolve(
+        supabase.from('daily_checkins').upsert(supabaseData, {
           onConflict: 'id',
-        })),
+        }),
+      ),
       NETWORK_TIMEOUT_MS,
-      'Daily check-in upsert'
+      'Daily check-in upsert',
     );
     const supabaseError = (response as { error: { message: string } | null }).error;
 
@@ -453,10 +450,14 @@ export async function syncDailyCheckIn(
       `UPDATE daily_checkins
        SET supabase_id = ?, sync_status = 'synced', updated_at = ?
        WHERE id = ?`,
-      [supabaseId, new Date().toISOString(), checkInId]
+      [supabaseId, new Date().toISOString(), checkInId],
     );
 
-    logger.info('Daily check-in synced successfully', { checkInId, supabaseId, type: checkIn.check_in_type });
+    logger.info('Daily check-in synced successfully', {
+      checkInId,
+      supabaseId,
+      type: checkIn.check_in_type,
+    });
     return { success: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -472,13 +473,13 @@ export async function syncDailyCheckIn(
 export async function syncFavoriteMeeting(
   db: StorageAdapter,
   favoriteId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Fetch favorite meeting from local database
     const favorite = await db.getFirstAsync<LocalFavoriteMeeting>(
       'SELECT * FROM favorite_meetings WHERE id = ? AND user_id = ?',
-      [favoriteId, userId]
+      [favoriteId, userId],
     );
 
     if (!favorite) {
@@ -501,13 +502,13 @@ export async function syncFavoriteMeeting(
 
     // Upsert to Supabase (insert or update) with timeout
     const response = await withTimeout(
-      Promise.resolve(supabase
-        .from('favorite_meetings')
-        .upsert(supabaseData, {
+      Promise.resolve(
+        supabase.from('favorite_meetings').upsert(supabaseData, {
           onConflict: 'id',
-        })),
+        }),
+      ),
       NETWORK_TIMEOUT_MS,
-      'Favorite meeting upsert'
+      'Favorite meeting upsert',
     );
     const supabaseError = (response as { error: { message: string } | null }).error;
 
@@ -521,7 +522,7 @@ export async function syncFavoriteMeeting(
       `UPDATE favorite_meetings
        SET supabase_id = ?, sync_status = 'synced'
        WHERE id = ?`,
-      [supabaseId, favoriteId]
+      [supabaseId, favoriteId],
     );
 
     logger.info('Favorite meeting synced successfully', { favoriteId, supabaseId });
@@ -540,7 +541,7 @@ export async function syncFavoriteMeeting(
 export async function syncReadingReflection(
   db: StorageAdapter,
   reflectionId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Get the reflection from local database
@@ -548,7 +549,7 @@ export async function syncReadingReflection(
       `SELECT id, user_id, reading_id, reading_date, encrypted_reflection, 
        word_count, created_at, updated_at, sync_status, supabase_id 
        FROM reading_reflections WHERE id = ? AND user_id = ?`,
-      [reflectionId, userId]
+      [reflectionId, userId],
     );
 
     if (!reflection) {
@@ -575,13 +576,13 @@ export async function syncReadingReflection(
 
     // Upsert to Supabase (insert or update) with timeout
     const response = await withTimeout(
-      Promise.resolve(supabase
-        .from('reading_reflections')
-        .upsert(supabaseData, {
+      Promise.resolve(
+        supabase.from('reading_reflections').upsert(supabaseData, {
           onConflict: 'id',
-        })),
+        }),
+      ),
       NETWORK_TIMEOUT_MS,
-      'Reading reflection upsert'
+      'Reading reflection upsert',
     );
     const supabaseError = (response as { error: { message: string } | null }).error;
 
@@ -595,7 +596,7 @@ export async function syncReadingReflection(
       `UPDATE reading_reflections
        SET supabase_id = ?, sync_status = 'synced'
        WHERE id = ?`,
-      [supabaseId, reflectionId]
+      [supabaseId, reflectionId],
     );
 
     logger.info('Reading reflection synced successfully', { reflectionId, supabaseId });
@@ -613,17 +614,13 @@ export async function syncReadingReflection(
 async function deleteFromSupabase(
   tableName: string,
   supabaseId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const response = await withTimeout(
-      Promise.resolve(supabase
-        .from(tableName)
-        .delete()
-        .eq('id', supabaseId)
-        .eq('user_id', userId)),
+      Promise.resolve(supabase.from(tableName).delete().eq('id', supabaseId).eq('user_id', userId)),
       NETWORK_TIMEOUT_MS,
-      `Delete from ${tableName}`
+      `Delete from ${tableName}`,
     );
     const supabaseError = (response as { error: { message: string } | null }).error;
 
@@ -648,7 +645,7 @@ async function deleteFromSupabase(
 async function processSyncItem(
   db: StorageAdapter,
   item: SyncQueueItem,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   // Handle delete operations
   if (item.operation === 'delete') {
@@ -693,7 +690,7 @@ async function handleSyncResult(
   db: StorageAdapter,
   item: SyncQueueItem,
   syncResult: { success: boolean; error?: string },
-  result: SyncResult
+  result: SyncResult,
 ): Promise<void> {
   if (syncResult.success) {
     // Remove from sync queue on success
@@ -715,7 +712,7 @@ async function handleSyncResult(
         `UPDATE sync_queue
          SET retry_count = ?, last_error = ?, failed_at = ?
          WHERE id = ?`,
-        [newRetryCount, syncResult.error || 'Unknown error', new Date().toISOString(), item.id]
+        [newRetryCount, syncResult.error || 'Unknown error', new Date().toISOString(), item.id],
       );
       logger.error('Sync item permanently failed after max retries', {
         queueItemId: item.id,
@@ -731,7 +728,7 @@ async function handleSyncResult(
         `UPDATE sync_queue
          SET retry_count = ?, last_error = ?
          WHERE id = ?`,
-        [newRetryCount, syncResult.error || 'Unknown error', item.id]
+        [newRetryCount, syncResult.error || 'Unknown error', item.id],
       );
       logger.warn('Sync failed, will retry', {
         queueItemId: item.id,
@@ -746,7 +743,7 @@ async function handleSyncResult(
 
     result.failed++;
     result.errors.push(
-      `[${item.operation}] ${item.table_name}/${item.record_id}: ${syncResult.error || 'Unknown error'}`
+      `[${item.operation}] ${item.table_name}/${item.record_id}: ${syncResult.error || 'Unknown error'}`,
     );
   }
 }
@@ -765,7 +762,7 @@ async function handleSyncResult(
 export async function processSyncQueue(
   db: StorageAdapter,
   userId: string,
-  maxBatchSize: number = 50
+  maxBatchSize: number = 50,
 ): Promise<SyncResult> {
   // Prevent concurrent sync operations using mutex
   if (syncMutex.isLocked()) {
@@ -791,7 +788,7 @@ export async function processSyncQueue(
        AND (failed_at IS NULL OR failed_at = '')
        ORDER BY created_at ASC
        LIMIT ?`,
-      [MAX_RETRY_COUNT, maxBatchSize]
+      [MAX_RETRY_COUNT, maxBatchSize],
     );
 
     if (queueItems.length === 0) {
@@ -801,8 +798,8 @@ export async function processSyncQueue(
 
     // Separate deletes from inserts/updates
     // Process deletes FIRST to avoid foreign key conflicts
-    const deleteItems = queueItems.filter(item => item.operation === 'delete');
-    const upsertItems = queueItems.filter(item => item.operation !== 'delete');
+    const deleteItems = queueItems.filter((item) => item.operation === 'delete');
+    const upsertItems = queueItems.filter((item) => item.operation !== 'delete');
 
     logger.info('Processing sync queue', {
       total: queueItems.length,
@@ -827,7 +824,7 @@ export async function processSyncQueue(
         if (item.retry_count > 0) {
           const delayMs = Math.min(
             BASE_BACKOFF_MS * Math.pow(2, item.retry_count - 1),
-            30000 // Cap at 30 seconds
+            30000, // Cap at 30 seconds
           );
           logger.info('Applying exponential backoff before retry', {
             queueItemId: item.id,
@@ -875,7 +872,7 @@ export async function addToSyncQueue(
   tableName: string,
   recordId: string,
   operation: 'insert' | 'update' | 'delete',
-  supabaseId?: string | null
+  supabaseId?: string | null,
 ): Promise<void> {
   try {
     const queueId = `sync_${generateUUID()}`;
@@ -884,10 +881,15 @@ export async function addToSyncQueue(
     await db.runAsync(
       `INSERT OR REPLACE INTO sync_queue (id, table_name, record_id, operation, supabase_id, created_at, retry_count)
        VALUES (?, ?, ?, ?, ?, ?, 0)`,
-      [queueId, tableName, recordId, operation, supabaseId || null, now]
+      [queueId, tableName, recordId, operation, supabaseId || null, now],
     );
 
-    logger.info('Added to sync queue', { tableName, recordId, operation, supabaseId: supabaseId || null });
+    logger.info('Added to sync queue', {
+      tableName,
+      recordId,
+      operation,
+      supabaseId: supabaseId || null,
+    });
   } catch (error) {
     logger.error('Failed to add to sync queue', { tableName, recordId, error });
     throw error;
@@ -907,13 +909,13 @@ export async function addDeleteToSyncQueue(
   db: StorageAdapter,
   tableName: string,
   recordId: string,
-  userId: string
+  userId: string,
 ): Promise<void> {
   try {
     // Fetch the supabase_id before deletion
     const record = await db.getFirstAsync<{ supabase_id: string | null }>(
       `SELECT supabase_id FROM ${tableName} WHERE id = ? AND user_id = ?`,
-      [recordId, userId]
+      [recordId, userId],
     );
 
     const supabaseId = record?.supabase_id || null;

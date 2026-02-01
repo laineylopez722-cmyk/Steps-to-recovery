@@ -3,6 +3,7 @@
 ## Environment Variables
 
 **CRITICAL:** Never commit `.env` files to git. They contain sensitive credentials including:
+
 - Supabase anon key
 - API keys
 - Environment-specific configuration
@@ -10,6 +11,7 @@
 ### Setup for New Developers
 
 1. Copy `.env.example` to `.env`:
+
    ```bash
    cd apps/mobile
    cp .env.example .env
@@ -33,6 +35,7 @@ If Supabase credentials are ever accidentally exposed:
    - Update your local `.env` file
 
 2. **Check git history:**
+
    ```bash
    git log --all --full-history -- apps/mobile/.env
    # Should be empty (file should never have been committed)
@@ -52,6 +55,7 @@ The Supabase `anon` key is **designed to be public** and exposed in client-side 
 3. **Client-Side Encryption**: Sensitive data (journal entries, step work) is encrypted before reaching Supabase
 
 However, you should still:
+
 - ✅ Protect the `.env` file from git commits (convenience, not security)
 - ✅ Rotate keys if they're exposed in unexpected places (e.g., screenshots, support tickets)
 - ❌ **NEVER commit the service_role key** (this bypasses RLS - critical secret!)
@@ -59,6 +63,7 @@ However, you should still:
 ## Encryption Keys
 
 Encryption keys for journal entries and step work are:
+
 - Generated locally on the device
 - Stored in iOS Keychain / Android Keystore (mobile)
 - Stored in encrypted localStorage (web - derived from session token)
@@ -67,6 +72,7 @@ Encryption keys for journal entries and step work are:
 ## Logout Cleanup
 
 When users sign out, the app automatically:
+
 1. Deletes encryption keys from secure storage
 2. Clears the local SQLite database
 3. Clears web session data
@@ -76,6 +82,7 @@ This ensures complete data removal on shared devices.
 ## Reporting Security Issues
 
 If you discover a security vulnerability:
+
 1. **DO NOT** create a public GitHub issue
 2. Email [maintainer email] with details
 3. Wait for acknowledgment before public disclosure

@@ -80,7 +80,7 @@ describe('Sentry Configuration', () => {
             encrypted_body: '[REDACTED]',
             plaintext: '[REDACTED]',
           }),
-        })
+        }),
       );
     });
 
@@ -95,7 +95,7 @@ describe('Sentry Configuration', () => {
         error,
         expect.objectContaining({
           extra: {},
-        })
+        }),
       );
     });
   });
@@ -119,7 +119,7 @@ describe('Sentry Configuration', () => {
     });
 
     it('should not add breadcrumb with sensitive message', () => {
-      const { addBreadcrumb} = require('../sentry');
+      const { addBreadcrumb } = require('../sentry');
 
       addBreadcrumb('journal', 'User created encrypted_body entry');
 

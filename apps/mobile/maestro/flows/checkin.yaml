@@ -1,0 +1,103 @@
+# Daily Check-in Flow E2E Test
+# Tests the morning and evening check-in experience
+# Note: Requires authenticated user state
+
+appId: com.stepstorecovery.app
+---
+# Launch app (assumes user is already logged in)
+- launchApp
+
+# Wait for dashboard
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Home'
+        - 'Dashboard'
+        - 'Clean Time'
+    timeout: 10000
+
+# Look for check-in prompt or navigate to it
+- tapOn:
+    text:
+      anyOf:
+        - 'Check In'
+        - 'Daily Check-in'
+        - 'Morning Check-in'
+        - 'Evening Pulse'
+    optional: true
+
+# If no check-in prompt visible, navigate to Home tab
+- tapOn:
+    text: 'Home'
+    optional: true
+
+# Wait for check-in screen
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'How are you feeling?'
+        - 'Mood'
+        - 'Check-in'
+    timeout: 5000
+    optional: true
+
+# Select mood rating
+- tapOn:
+    text:
+      anyOf:
+        - 'Good'
+        - 'Great'
+        - '4'
+        - '5'
+    optional: true
+
+# Enter gratitude or intention
+- inputText:
+    id: 'intention-input'
+    text: 'E2E test intention - stay focused on recovery'
+    optional: true
+
+- inputText:
+    id: 'gratitude-input'
+    text: 'Grateful for automated testing'
+    optional: true
+
+# Set craving level (evening check-in)
+- tapOn:
+    text: 'Craving Level'
+    optional: true
+
+# Low craving
+- tapOn:
+    text:
+      anyOf:
+        - 'Low'
+        - '1'
+        - '2'
+    optional: true
+
+# Submit check-in
+- tapOn:
+    text:
+      anyOf:
+        - 'Submit'
+        - 'Complete'
+        - 'Done'
+        - 'Save'
+    optional: true
+
+# Verify success
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Check-in complete'
+        - 'Dashboard'
+        - 'Home'
+        - 'Great job'
+    timeout: 10000
+    optional: true
+
+# Success!
+- runScript:
+    script: |
+      console.log('✅ Daily check-in flow completed')

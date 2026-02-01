@@ -25,11 +25,12 @@ type SQLiteParams = (string | number | null | Uint8Array)[];
  * @internal
  */
 function validateSQLiteParams(params: unknown[]): params is SQLiteParams {
-  return params.every(param =>
-    typeof param === 'string' ||
-    typeof param === 'number' ||
-    param === null ||
-    param instanceof Uint8Array
+  return params.every(
+    (param) =>
+      typeof param === 'string' ||
+      typeof param === 'number' ||
+      param === null ||
+      param instanceof Uint8Array,
   );
 }
 
@@ -40,10 +41,7 @@ function validateSQLiteParams(params: unknown[]): params is SQLiteParams {
  * @returns Promise resolving to the operation result
  * @internal
  */
-async function withErrorHandling<T>(
-  operation: string,
-  fn: () => Promise<T>
-): Promise<T> {
+async function withErrorHandling<T>(operation: string, fn: () => Promise<T>): Promise<T> {
   try {
     return await fn();
   } catch (error) {
@@ -81,7 +79,9 @@ export class SQLiteAdapter implements StorageAdapter {
     return withErrorHandling('getAllAsync', async () => {
       if (params && params.length > 0) {
         if (!validateSQLiteParams(params)) {
-          throw new Error('Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.');
+          throw new Error(
+            'Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.',
+          );
         }
         return this.db.getAllAsync<T>(query, params);
       }
@@ -101,7 +101,9 @@ export class SQLiteAdapter implements StorageAdapter {
     return withErrorHandling('getFirstAsync', async () => {
       if (params && params.length > 0) {
         if (!validateSQLiteParams(params)) {
-          throw new Error('Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.');
+          throw new Error(
+            'Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.',
+          );
         }
         return this.db.getFirstAsync<T>(query, params);
       }
@@ -120,7 +122,9 @@ export class SQLiteAdapter implements StorageAdapter {
     return withErrorHandling('runAsync', async () => {
       if (params && params.length > 0) {
         if (!validateSQLiteParams(params)) {
-          throw new Error('Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.');
+          throw new Error(
+            'Invalid parameter types for SQLite query. Parameters must be string, number, null, or Uint8Array.',
+          );
         }
         await this.db.runAsync(query, params);
       } else {

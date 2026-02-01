@@ -65,7 +65,12 @@ export function SobrietyCounter({
   showProgress = true,
 }: SobrietyCounterProps) {
   const theme = useTheme();
-  const [timeElapsed, setTimeElapsed] = useState<TimeDisplay>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [timeElapsed, setTimeElapsed] = useState<TimeDisplay>({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
   const [lastReachedMilestone, setLastReachedMilestone] = useState<number>(-1);
 
   const calculateTimeElapsed = useCallback((): TimeDisplay => {
@@ -99,7 +104,8 @@ export function SobrietyCounter({
     const currentMilestoneIndex = sortedMilestones.findIndex(
       (m, index) =>
         timeElapsed.days >= m.days &&
-        (index === sortedMilestones.length - 1 || timeElapsed.days < sortedMilestones[index + 1].days)
+        (index === sortedMilestones.length - 1 ||
+          timeElapsed.days < sortedMilestones[index + 1].days),
     );
 
     if (currentMilestoneIndex > lastReachedMilestone && currentMilestoneIndex !== -1) {
@@ -112,13 +118,11 @@ export function SobrietyCounter({
   // Find next milestone for progress tracking
   const sortedMilestones = [...milestones].sort((a, b) => a.days - b.days);
   const nextMilestone = sortedMilestones.find((m) => m.days > timeElapsed.days);
-  const previousMilestone = sortedMilestones
-    .reverse()
-    .find((m) => m.days <= timeElapsed.days);
+  const previousMilestone = sortedMilestones.reverse().find((m) => m.days <= timeElapsed.days);
 
   const progressToNextMilestone = nextMilestone
-    ? ((timeElapsed.days - (previousMilestone?.days || 0)) /
-        (nextMilestone.days - (previousMilestone?.days || 0)))
+    ? (timeElapsed.days - (previousMilestone?.days || 0)) /
+      (nextMilestone.days - (previousMilestone?.days || 0))
     : 1;
 
   return (
@@ -158,7 +162,12 @@ export function SobrietyCounter({
               Hours
             </Text>
           </View>
-          <Text style={[theme.typography.h3, { color: theme.colors.textSecondary, marginHorizontal: 8 }]}>
+          <Text
+            style={[
+              theme.typography.h3,
+              { color: theme.colors.textSecondary, marginHorizontal: 8 },
+            ]}
+          >
             :
           </Text>
           <View style={styles.timeUnit}>
@@ -169,7 +178,12 @@ export function SobrietyCounter({
               Minutes
             </Text>
           </View>
-          <Text style={[theme.typography.h3, { color: theme.colors.textSecondary, marginHorizontal: 8 }]}>
+          <Text
+            style={[
+              theme.typography.h3,
+              { color: theme.colors.textSecondary, marginHorizontal: 8 },
+            ]}
+          >
             :
           </Text>
           <View style={styles.timeUnit}>
@@ -189,7 +203,9 @@ export function SobrietyCounter({
             <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
               Next Milestone: {nextMilestone.icon} {nextMilestone.title}
             </Text>
-            <Text style={[theme.typography.caption, { color: theme.colors.primary, fontWeight: '600' }]}>
+            <Text
+              style={[theme.typography.caption, { color: theme.colors.primary, fontWeight: '600' }]}
+            >
               {nextMilestone.days - timeElapsed.days} days to go
             </Text>
           </View>

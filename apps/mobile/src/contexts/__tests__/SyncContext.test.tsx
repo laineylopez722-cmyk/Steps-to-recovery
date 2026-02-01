@@ -248,9 +248,10 @@ describe('SyncContext', () => {
       // Make processSyncQueue slow
       let resolveSync: () => void;
       mockProcessSyncQueue.mockImplementation(
-        () => new Promise<any>((resolve) => {
-          resolveSync = () => resolve({ synced: 1, failed: 0, errors: [] });
-        })
+        () =>
+          new Promise<any>((resolve) => {
+            resolveSync = () => resolve({ synced: 1, failed: 0, errors: [] });
+          }),
       );
 
       const { result } = renderHook(() => useSync(), { wrapper });
@@ -449,7 +450,7 @@ describe('SyncContext', () => {
 
       // Should only log once due to deduplication
       const onlineCalls = mockLogger.info.mock.calls.filter(
-        (call) => call[0] === 'Network state changed'
+        (call) => call[0] === 'Network state changed',
       );
       expect(onlineCalls.length).toBeLessThanOrEqual(1);
     });
@@ -493,7 +494,7 @@ describe('SyncContext', () => {
 
       // Pending count should be updated
       expect(mockDb.getFirstAsync).toHaveBeenCalledWith(
-        'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3'
+        'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3',
       );
     });
   });
@@ -685,7 +686,7 @@ describe('SyncContext', () => {
       await waitFor(() => {
         expect(mockLogger.error).toHaveBeenCalledWith(
           'Failed to clear database on logout',
-          expect.any(Error)
+          expect.any(Error),
         );
       });
     });
@@ -716,7 +717,7 @@ describe('SyncContext', () => {
       await waitFor(() => {
         expect(mockLogger.error).toHaveBeenCalledWith(
           'Failed to update pending count',
-          expect.any(Error)
+          expect.any(Error),
         );
       });
     });

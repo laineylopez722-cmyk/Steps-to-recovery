@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "license": "MIT",
   "main": "index.ts",
+  "overrides": {
+    "react-test-renderer": "19.1.0"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo run:android",

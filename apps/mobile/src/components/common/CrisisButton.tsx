@@ -5,14 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Linking,
-  Modal,
-  Pressable,
-} from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Modal, Pressable } from 'react-native';
 import { useRouterCompat, useSegmentsCompat } from '../../utils/navigationHelper';
 import { Feather } from '@expo/vector-icons';
 import { useSettingsStore } from '@recovery/shared';
@@ -31,16 +24,10 @@ export function CrisisButton() {
 
   // Hide on certain screens
   const currentPath = segments.join('/');
-  const hiddenPaths = [
-    'onboarding',
-    'emergency',
-    '(auth)',
-    'lock',
-    'scenarios',
-  ];
-  
-  const shouldHide = hiddenPaths.some(path => currentPath.includes(path));
-  
+  const hiddenPaths = ['onboarding', 'emergency', '(auth)', 'lock', 'scenarios'];
+
+  const shouldHide = hiddenPaths.some((path) => currentPath.includes(path));
+
   if (shouldHide) return null;
 
   const handlePress = () => {
@@ -79,7 +66,7 @@ export function CrisisButton() {
           <Feather name="alert-circle" size={28} color="#fff" />
         </View>
         {/* Pulse animation indicator */}
-        <View 
+        <View
           className="absolute -top-1 -right-1 bg-white rounded-full w-4 h-4 items-center justify-center"
           style={{
             shadowColor: '#000',
@@ -104,22 +91,18 @@ export function CrisisButton() {
           className="flex-1 bg-black/70 justify-end"
           onPress={() => setShowQuickHelp(false)}
         >
-          <Pressable 
+          <Pressable
             onPress={(e) => e.stopPropagation()}
             className="bg-navy-900 rounded-t-3xl p-6 pb-8 border-t border-surface-700/30"
           >
             {/* Header */}
             <View className="items-center mb-6">
               <View className="w-12 h-1 bg-surface-600 rounded-full mb-4" />
-              <Text className="text-xl font-bold text-white">
-                Need Help Right Now?
-              </Text>
+              <Text className="text-xl font-bold text-white">Need Help Right Now?</Text>
               <Text className="text-surface-400 text-center mt-1">
                 You're not alone. Reach out immediately.
               </Text>
-              <Text className="text-surface-500 text-center text-xs mt-1">
-                📍 {resources.name}
-              </Text>
+              <Text className="text-surface-500 text-center text-xs mt-1">📍 {resources.name}</Text>
             </View>
 
             {/* Quick Actions */}
@@ -134,12 +117,8 @@ export function CrisisButton() {
                 >
                   <Text className="text-2xl">{resource.emoji}</Text>
                   <View className="flex-1">
-                    <Text className="text-white font-bold text-lg">
-                      {resource.title}
-                    </Text>
-                    <Text className="text-white/80">
-                      {resource.subtitle}
-                    </Text>
+                    <Text className="text-white font-bold text-lg">{resource.title}</Text>
+                    <Text className="text-white/80">{resource.subtitle}</Text>
                   </View>
                   <Feather name="arrow-right" size={20} color="#fff" />
                 </TouchableOpacity>
@@ -153,9 +132,7 @@ export function CrisisButton() {
               accessibilityRole="button"
               accessibilityLabel="View all emergency resources"
             >
-              <Text className="text-primary-400 font-medium">
-                View All Resources →
-              </Text>
+              <Text className="text-primary-400 font-medium">View All Resources →</Text>
             </TouchableOpacity>
 
             {/* Close Button */}
@@ -165,15 +142,14 @@ export function CrisisButton() {
               accessibilityRole="button"
               accessibilityLabel="Close this menu"
             >
-              <Text className="text-surface-500">
-                Close
-              </Text>
+              <Text className="text-surface-500">Close</Text>
             </TouchableOpacity>
 
             {/* Safe messaging */}
             <View className="mt-4 p-3 bg-navy-800/50 rounded-lg border border-surface-700/30">
               <Text className="text-xs text-surface-400 text-center">
-                💚 It takes courage to reach out. Whatever you're going through, help is available 24/7.
+                💚 It takes courage to reach out. Whatever you're going through, help is available
+                24/7.
               </Text>
             </View>
           </Pressable>

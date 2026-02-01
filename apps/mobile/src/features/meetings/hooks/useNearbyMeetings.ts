@@ -87,9 +87,7 @@ export function useNearbyMeetings(): UseNearbyMeetingsReturn {
 
         if (!location) {
           // Location denied or failed
-          setSearchError(
-            locationHook.error || 'Unable to get your location'
-          );
+          setSearchError(locationHook.error || 'Unable to get your location');
           setIsSearching(false);
           return;
         }
@@ -127,16 +125,14 @@ export function useNearbyMeetings(): UseNearbyMeetingsReturn {
         setIsSearching(false);
       } catch (error) {
         const errorMessage =
-          error instanceof Error
-            ? error.message
-            : 'Failed to search for nearby meetings';
+          error instanceof Error ? error.message : 'Failed to search for nearby meetings';
 
         setSearchError(errorMessage);
         setIsSearching(false);
         logger.error('Nearby meeting search failed', error);
       }
     },
-    [db, locationHook, searchHook]
+    [db, locationHook, searchHook],
   );
 
   /**
@@ -172,24 +168,17 @@ export function useNearbyMeetings(): UseNearbyMeetingsReturn {
     const { latitude: userLat, longitude: userLng } = locationHook.location;
 
     // Map meetings to MeetingWithDetails
-    const meetingsWithDetails: MeetingWithDetails[] = rawMeetings.map(
-      (meeting) => {
-        const distance = calculateDistance(
-          userLat,
-          userLng,
-          meeting.latitude,
-          meeting.longitude
-        );
+    const meetingsWithDetails: MeetingWithDetails[] = rawMeetings.map((meeting) => {
+      const distance = calculateDistance(userLat, userLng, meeting.latitude, meeting.longitude);
 
-        const isFav = favoritesHook.isFavorite(meeting.id);
+      const isFav = favoritesHook.isFavorite(meeting.id);
 
-        return {
-          ...meeting,
-          is_favorite: isFav,
-          distance_miles: distance,
-        };
-      }
-    );
+      return {
+        ...meeting,
+        is_favorite: isFav,
+        distance_miles: distance,
+      };
+    });
 
     // Apply filters
     let filtered = meetingsWithDetails;
@@ -197,14 +186,11 @@ export function useNearbyMeetings(): UseNearbyMeetingsReturn {
     // Distance filter
     filtered = filtered.filter(
       (meeting) =>
-        meeting.distance_miles !== null &&
-        meeting.distance_miles <= filters.max_distance_miles
+        meeting.distance_miles !== null && meeting.distance_miles <= filters.max_distance_miles,
     );
 
     // Day/time/type filters
-    filtered = filtered.filter((meeting) =>
-      meetingMatchesFilters(meeting, filters)
-    );
+    filtered = filtered.filter((meeting) => meetingMatchesFilters(meeting, filters));
 
     // Sort by distance (nearest first)
     filtered.sort((a, b) => {

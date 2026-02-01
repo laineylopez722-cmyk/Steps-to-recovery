@@ -525,7 +525,7 @@ export const ALL_ACHIEVEMENTS: AchievementDefinition[] = [
 
 /**
  * Get achievement definition by ID
- * 
+ *
  * @param id - The achievement ID to look up
  * @returns The achievement definition if found, undefined otherwise
  * @example
@@ -542,7 +542,7 @@ export function getAchievementDefinition(id: string): AchievementDefinition | un
 
 /**
  * Get achievements by category
- * 
+ *
  * @param category - The achievement category to filter by
  * @returns Array of all achievements in the specified category
  * @example
@@ -550,13 +550,15 @@ export function getAchievementDefinition(id: string): AchievementDefinition | un
  * const stepAchievements = getAchievementsByCategory('step_work');
  * ```
  */
-export function getAchievementsByCategory(category: AchievementCategory): readonly AchievementDefinition[] {
+export function getAchievementsByCategory(
+  category: AchievementCategory,
+): readonly AchievementDefinition[] {
   return ALL_ACHIEVEMENTS.filter((a) => a.category === category);
 }
 
 /**
  * Get total achievements count
- * 
+ *
  * @returns The total number of available achievements
  */
 export function getTotalAchievementsCount(): number {
@@ -565,7 +567,7 @@ export function getTotalAchievementsCount(): number {
 
 /**
  * Check if an achievement ID is valid
- * 
+ *
  * @param id - The achievement ID to validate
  * @returns True if the achievement exists
  */

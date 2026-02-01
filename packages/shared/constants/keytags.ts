@@ -41,7 +41,7 @@ export const KEYTAGS: Keytag[] = [
     title: '30 Days',
     days: 30,
     description: 'One month clean.',
-    message: 'Thirty days! You\'ve proven you can do this. Keep coming back.',
+    message: "Thirty days! You've proven you can do this. Keep coming back.",
   },
   {
     id: 'keytag-60',
@@ -59,7 +59,7 @@ export const KEYTAGS: Keytag[] = [
     title: '90 Days',
     days: 90,
     description: 'Three months clean.',
-    message: 'Ninety days! A cornerstone of recovery. You\'ve built a foundation.',
+    message: "Ninety days! A cornerstone of recovery. You've built a foundation.",
   },
   {
     id: 'keytag-6mo',
@@ -68,7 +68,7 @@ export const KEYTAGS: Keytag[] = [
     title: '6 Months',
     days: 180,
     description: 'Half a year clean.',
-    message: 'Six months of living clean. You\'re becoming who you were meant to be.',
+    message: "Six months of living clean. You're becoming who you were meant to be.",
   },
   {
     id: 'keytag-9mo',
@@ -77,7 +77,7 @@ export const KEYTAGS: Keytag[] = [
     title: '9 Months',
     days: 270,
     description: 'Nine months clean.',
-    message: 'Nine months of growth. You\'ve shown incredible dedication.',
+    message: "Nine months of growth. You've shown incredible dedication.",
   },
   {
     id: 'keytag-1yr',
@@ -95,7 +95,7 @@ export const KEYTAGS: Keytag[] = [
     title: '18 Months',
     days: 547,
     description: 'Eighteen months clean.',
-    message: 'A year and a half of recovery. You\'re an inspiration to newcomers.',
+    message: "A year and a half of recovery. You're an inspiration to newcomers.",
   },
   {
     id: 'keytag-multi',
@@ -129,7 +129,7 @@ export function getNextKeytag(days: number): Keytag | null {
  */
 export function getKeytagsWithStatus(
   days: number,
-  earnedDates?: Record<string, Date>
+  earnedDates?: Record<string, Date>,
 ): KeytagWithStatus[] {
   return KEYTAGS.map((keytag) => {
     const isEarned = days >= keytag.days;
@@ -163,4 +163,3 @@ export function getKeytagsWithStatus(
 export function getEarnedKeytagsCount(days: number): number {
   return KEYTAGS.filter((k) => days >= k.days).length;
 }
-

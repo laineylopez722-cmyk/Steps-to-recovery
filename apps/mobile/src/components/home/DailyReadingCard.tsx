@@ -15,14 +15,8 @@ interface DailyReadingCardProps {
 
 export function DailyReadingCard({ className = '' }: DailyReadingCardProps) {
   const router = useRouterCompat();
-  const {
-    todayReading,
-    hasReflectedToday,
-    readingStreak,
-    shortDate,
-    readingPreview,
-    isLoading,
-  } = useReading();
+  const { todayReading, hasReflectedToday, readingStreak, shortDate, readingPreview, isLoading } =
+    useReading();
 
   if (isLoading || !todayReading) {
     return (
@@ -49,9 +43,7 @@ export function DailyReadingCard({ className = '' }: DailyReadingCardProps) {
         <View className="flex-row items-center justify-between mb-3">
           <View className="flex-row items-center">
             <Text className="text-lg mr-2">📖</Text>
-            <Text className="text-sm font-medium text-surface-500">
-              Today's Reading
-            </Text>
+            <Text className="text-sm font-medium text-surface-500">Today's Reading</Text>
           </View>
           <Text className="text-sm text-surface-400">{shortDate}</Text>
         </View>
@@ -78,22 +70,16 @@ export function DailyReadingCard({ className = '' }: DailyReadingCardProps) {
             {hasReflectedToday ? (
               <View className="flex-row items-center">
                 <Text className="text-green-600 dark:text-green-400 mr-1">✓</Text>
-                <Text className="text-sm text-green-600 dark:text-green-400">
-                  Reflected
-                </Text>
+                <Text className="text-sm text-green-600 dark:text-green-400">Reflected</Text>
               </View>
             ) : (
-              <Text className="text-sm text-surface-500">
-                Tap to read & reflect
-              </Text>
+              <Text className="text-sm text-surface-500">Tap to read & reflect</Text>
             )}
           </View>
           <View className="flex-row items-center">
             {readingStreak > 0 && (
               <View className="flex-row items-center bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full">
-                <Text className="text-amber-600 dark:text-amber-400 text-xs mr-1">
-                  🔥
-                </Text>
+                <Text className="text-amber-600 dark:text-amber-400 text-xs mr-1">🔥</Text>
                 <Text className="text-xs font-medium text-amber-700 dark:text-amber-300">
                   {readingStreak} day{readingStreak !== 1 ? 's' : ''}
                 </Text>
@@ -106,4 +92,3 @@ export function DailyReadingCard({ className = '' }: DailyReadingCardProps) {
     </TouchableOpacity>
   );
 }
-

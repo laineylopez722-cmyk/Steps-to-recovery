@@ -71,4 +71,3 @@ if (typeof globalThis.btoa !== 'function') {
 if (typeof globalThis.crypto === 'undefined') {
   (globalThis as Record<string, unknown>).crypto = {};
 }
-

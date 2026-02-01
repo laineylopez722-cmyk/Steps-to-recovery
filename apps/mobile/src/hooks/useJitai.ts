@@ -7,8 +7,17 @@ import { useEffect, useCallback, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
 import { useSobriety } from './useSobriety';
 import { useCheckin } from './useCheckin';
-import { useContactStore, useMeetingStore, useRhythmStore, useStepWorkStore } from '@recovery/shared';
-import { runJitaiEvaluation, resetCooldowns, getCooldownStatus } from '@recovery/shared/jitai/engine';
+import {
+  useContactStore,
+  useMeetingStore,
+  useRhythmStore,
+  useStepWorkStore,
+} from '@recovery/shared';
+import {
+  runJitaiEvaluation,
+  resetCooldowns,
+  getCooldownStatus,
+} from '@recovery/shared/jitai/engine';
 import type { JitaiContext } from '@recovery/shared/jitai/types';
 import type { MeetingLog } from '@recovery/shared';
 import { logger } from '../utils/logger';
@@ -49,7 +58,7 @@ export function useJitai() {
     if (checkinHistory.length > 0) {
       const lastCheckin = new Date(checkinHistory[0].createdAt);
       daysSinceLastCheckin = Math.floor(
-        (now.getTime() - lastCheckin.getTime()) / (24 * 60 * 60 * 1000)
+        (now.getTime() - lastCheckin.getTime()) / (24 * 60 * 60 * 1000),
       );
     }
 
@@ -58,7 +67,7 @@ export function useJitai() {
     if (meetings.length > 0) {
       const lastMeeting = new Date(meetings[0].attendedAt);
       daysSinceLastMeeting = Math.floor(
-        (now.getTime() - lastMeeting.getTime()) / (24 * 60 * 60 * 1000)
+        (now.getTime() - lastMeeting.getTime()) / (24 * 60 * 60 * 1000),
       );
     }
 
@@ -66,14 +75,14 @@ export function useJitai() {
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     const meetingsThisWeek = meetings.filter(
-      (log: MeetingLog) => new Date(log.attendedAt) >= oneWeekAgo
+      (log: MeetingLog) => new Date(log.attendedAt) >= oneWeekAgo,
     ).length;
 
     // Calculate days since last sponsor contact
     let daysSinceLastSponsorContact = 999;
     if (sponsor?.lastContactedAt) {
       daysSinceLastSponsorContact = Math.floor(
-        (now.getTime() - new Date(sponsor.lastContactedAt).getTime()) / (24 * 60 * 60 * 1000)
+        (now.getTime() - new Date(sponsor.lastContactedAt).getTime()) / (24 * 60 * 60 * 1000),
       );
     }
 
@@ -167,10 +176,7 @@ export function useJitai() {
   // Run evaluation on app state changes (foreground)
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextAppState) => {
-      if (
-        appStateRef.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
+      if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
         // App came to foreground
         evaluate();
       }
@@ -211,4 +217,3 @@ export function useJitai() {
     buildContext,
   };
 }
-

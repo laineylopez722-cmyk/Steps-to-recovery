@@ -10,6 +10,7 @@ Create React Flow node components following established patterns with proper Typ
 ## Quick Start
 
 Copy templates from [assets/](assets/) and replace placeholders:
+
 - `{{NodeName}}` → PascalCase component name (e.g., `VideoNode`)
 - `{{nodeType}}` → kebab-case type identifier (e.g., `video-node`)
 - `{{NodeData}}` → Data interface name (e.g., `VideoNodeData`)
@@ -22,16 +23,10 @@ Copy templates from [assets/](assets/) and replace placeholders:
 ## Node Component Pattern
 
 ```tsx
-export const MyNode = memo(function MyNode({
-  id,
-  data,
-  selected,
-  width,
-  height,
-}: MyNodeProps) {
+export const MyNode = memo(function MyNode({ id, data, selected, width, height }: MyNodeProps) {
   const updateNode = useAppStore((state) => state.updateNode);
   const canvasMode = useAppStore((state) => state.canvasMode);
-  
+
   return (
     <>
       <NodeResizer isVisible={selected && canvasMode === 'editing'} />

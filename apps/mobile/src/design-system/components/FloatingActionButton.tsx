@@ -4,14 +4,7 @@
  */
 
 import React from 'react';
-import {
-  TouchableOpacity,
-  StyleSheet,
-  ViewStyle,
-  Animated,
-  View,
-  Text,
-} from 'react-native';
+import { TouchableOpacity, StyleSheet, ViewStyle, Animated, View, Text } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
 import { hapticImpact } from '../../utils/haptics';
@@ -76,9 +69,7 @@ export function FloatingActionButton({
       >
         <View style={styles.iconContainer}>{icon}</View>
         {label && (
-          <Text style={[styles.label, theme.typography.label, { color: '#FFFFFF' }]}>
-            {label}
-          </Text>
+          <Text style={[styles.label, theme.typography.label, { color: '#FFFFFF' }]}>{label}</Text>
         )}
       </Animated.View>
     </TouchableOpacity>

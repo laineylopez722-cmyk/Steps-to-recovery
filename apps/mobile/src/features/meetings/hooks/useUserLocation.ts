@@ -72,8 +72,7 @@ export function useUserLocation(): UseUserLocationReturn {
 
     try {
       // Check current permission status
-      const { status: currentStatus } =
-        await Location.getForegroundPermissionsAsync();
+      const { status: currentStatus } = await Location.getForegroundPermissionsAsync();
 
       logger.info('Location permission status', { status: currentStatus });
 
@@ -176,8 +175,7 @@ export function useUserLocation(): UseUserLocationReturn {
   const requestBackgroundPermission = useCallback(async (): Promise<boolean> => {
     try {
       // First ensure foreground permission is granted
-      const { status: foregroundStatus } =
-        await Location.getForegroundPermissionsAsync();
+      const { status: foregroundStatus } = await Location.getForegroundPermissionsAsync();
 
       if (foregroundStatus !== Location.PermissionStatus.GRANTED) {
         logger.warn('Background permission requested without foreground permission');
@@ -194,8 +192,7 @@ export function useUserLocation(): UseUserLocationReturn {
       }
 
       // Check current background permission status
-      const { status: currentBackgroundStatus } =
-        await Location.getBackgroundPermissionsAsync();
+      const { status: currentBackgroundStatus } = await Location.getBackgroundPermissionsAsync();
 
       logger.info('Background permission status', { status: currentBackgroundStatus });
 
@@ -212,8 +209,7 @@ export function useUserLocation(): UseUserLocationReturn {
       }
 
       // Request background permission (Android 10+ shows separate dialog)
-      const { status: newStatus, canAskAgain } =
-        await Location.requestBackgroundPermissionsAsync();
+      const { status: newStatus, canAskAgain } = await Location.requestBackgroundPermissionsAsync();
 
       const backgroundGranted = newStatus === Location.PermissionStatus.GRANTED;
 

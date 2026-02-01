@@ -38,7 +38,10 @@ export function ConnectSponsorScreen(): React.ReactElement {
     if (!invitePayload.trim()) return;
     setLoading(true);
     try {
-      const confirmPayload = await connectAsSponsor(invitePayload.trim(), sponsorName.trim() || undefined);
+      const confirmPayload = await connectAsSponsor(
+        invitePayload.trim(),
+        sponsorName.trim() || undefined,
+      );
       setConfirmationPayload(confirmPayload);
       setShowConfirmModal(true);
     } catch (error) {
@@ -69,13 +72,21 @@ export function ConnectSponsorScreen(): React.ReactElement {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
-        <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.header}>
-            <Text style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 8 }]}>
+            <Text
+              style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 8 }]}
+            >
               Connect as Sponsor
             </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 22 }]}>
-              Paste the invite payload from your sponsee. You will receive a confirmation payload to send back.
+            <Text
+              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 22 }]}
+            >
+              Paste the invite payload from your sponsee. You will receive a confirmation payload to
+              send back.
             </Text>
           </View>
 

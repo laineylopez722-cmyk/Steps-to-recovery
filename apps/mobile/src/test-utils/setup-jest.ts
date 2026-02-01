@@ -52,9 +52,7 @@ jest.mock('expo-secure-store', () => ({
 }));
 
 jest.mock('expo-crypto', () => ({
-  getRandomBytesAsync: jest.fn((size: number) =>
-    Promise.resolve(new Uint8Array(size).fill(0))
-  ),
+  getRandomBytesAsync: jest.fn((size: number) => Promise.resolve(new Uint8Array(size).fill(0))),
   randomUUID: jest.fn(() => 'mock-uuid-' + Math.random().toString(36).substring(7)),
   digestStringAsync: jest.fn(),
   CryptoDigestAlgorithm: {
@@ -73,10 +71,12 @@ jest.mock('expo-sqlite', () => ({
 
 jest.mock('@react-native-community/netinfo', () => ({
   addEventListener: jest.fn(() => jest.fn()),
-  fetch: jest.fn(() => Promise.resolve({
-    isConnected: true,
-    isInternetReachable: true,
-  })),
+  fetch: jest.fn(() =>
+    Promise.resolve({
+      isConnected: true,
+      isInternetReachable: true,
+    }),
+  ),
 }));
 
 jest.mock('../lib/supabase', () => ({

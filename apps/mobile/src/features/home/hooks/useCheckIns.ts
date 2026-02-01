@@ -19,12 +19,24 @@ interface DailyCheckInDecryptedWithGratitude extends DailyCheckInDecrypted {
 /**
  * Decrypt a daily check-in from database format to UI format
  */
-async function decryptCheckIn(checkIn: DailyCheckInWithGratitude): Promise<DailyCheckInDecryptedWithGratitude> {
-  const intention = checkIn.encrypted_intention ? await decryptContent(checkIn.encrypted_intention) : null;
-  const reflection = checkIn.encrypted_reflection ? await decryptContent(checkIn.encrypted_reflection) : null;
-  const mood = checkIn.encrypted_mood ? parseInt(await decryptContent(checkIn.encrypted_mood), 10) : null;
-  const craving = checkIn.encrypted_craving ? parseInt(await decryptContent(checkIn.encrypted_craving), 10) : null;
-  const gratitude = checkIn.encrypted_gratitude ? await decryptContent(checkIn.encrypted_gratitude) : null;
+async function decryptCheckIn(
+  checkIn: DailyCheckInWithGratitude,
+): Promise<DailyCheckInDecryptedWithGratitude> {
+  const intention = checkIn.encrypted_intention
+    ? await decryptContent(checkIn.encrypted_intention)
+    : null;
+  const reflection = checkIn.encrypted_reflection
+    ? await decryptContent(checkIn.encrypted_reflection)
+    : null;
+  const mood = checkIn.encrypted_mood
+    ? parseInt(await decryptContent(checkIn.encrypted_mood), 10)
+    : null;
+  const craving = checkIn.encrypted_craving
+    ? parseInt(await decryptContent(checkIn.encrypted_craving), 10)
+    : null;
+  const gratitude = checkIn.encrypted_gratitude
+    ? await decryptContent(checkIn.encrypted_gratitude)
+    : null;
 
   return {
     id: checkIn.id,
@@ -62,12 +74,12 @@ export function useTodayCheckIns(userId: string): {
       try {
         const result = await db.getAllAsync<DailyCheckInWithGratitude>(
           'SELECT * FROM daily_checkins WHERE user_id = ? AND check_in_date = ?',
-          [userId, today]
+          [userId, today],
         );
 
         const decrypted = await Promise.all(result.map(decryptCheckIn));
-        const morning = decrypted.find(c => c.check_in_type === 'morning') || null;
-        const evening = decrypted.find(c => c.check_in_type === 'evening') || null;
+        const morning = decrypted.find((c) => c.check_in_type === 'morning') || null;
+        const evening = decrypted.find((c) => c.check_in_type === 'evening') || null;
 
         return { morning, evening };
       } catch (err) {
@@ -90,14 +102,28 @@ export function useTodayCheckIns(userId: string): {
  * Hook to create a check-in
  */
 export function useCreateCheckIn(userId: string): {
-  createCheckIn: (data: { type: CheckInType; intention?: string; reflection?: string; mood?: number; craving?: number; gratitude?: string }) => Promise<void>;
+  createCheckIn: (data: {
+    type: CheckInType;
+    intention?: string;
+    reflection?: string;
+    mood?: number;
+    craving?: number;
+    gratitude?: string;
+  }) => Promise<void>;
   isPending: boolean;
 } {
   const { db, isReady } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async (data: { type: CheckInType; intention?: string; reflection?: string; mood?: number; craving?: number; gratitude?: string }) => {
+    mutationFn: async (data: {
+      type: CheckInType;
+      intention?: string;
+      reflection?: string;
+      mood?: number;
+      craving?: number;
+      gratitude?: string;
+    }) => {
       if (!db) throw new Error('Database not initialized');
 
       try {
@@ -107,14 +133,28 @@ export function useCreateCheckIn(userId: string): {
 
         const encrypted_intention = data.intention ? await encryptContent(data.intention) : null;
         const encrypted_reflection = data.reflection ? await encryptContent(data.reflection) : null;
-        const encrypted_mood = data.mood !== undefined ? await encryptContent(data.mood.toString()) : null;
-        const encrypted_craving = data.craving !== undefined ? await encryptContent(data.craving.toString()) : null;
+        const encrypted_mood =
+          data.mood !== undefined ? await encryptContent(data.mood.toString()) : null;
+        const encrypted_craving =
+          data.craving !== undefined ? await encryptContent(data.craving.toString()) : null;
         const encrypted_gratitude = data.gratitude ? await encryptContent(data.gratitude) : null;
 
         await db.runAsync(
           `INSERT INTO daily_checkins (id, user_id, check_in_type, check_in_date, encrypted_intention, encrypted_reflection, encrypted_mood, encrypted_craving, encrypted_gratitude, created_at, sync_status)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [id, userId, data.type, today, encrypted_intention, encrypted_reflection, encrypted_mood, encrypted_craving, encrypted_gratitude, now, 'pending']
+          [
+            id,
+            userId,
+            data.type,
+            today,
+            encrypted_intention,
+            encrypted_reflection,
+            encrypted_mood,
+            encrypted_craving,
+            encrypted_gratitude,
+            now,
+            'pending',
+          ],
         );
 
         // Add to sync queue for cloud backup
@@ -142,14 +182,23 @@ export function useCreateCheckIn(userId: string): {
  * Hook to update an existing check-in
  */
 export function useUpdateCheckIn(userId: string): {
-  updateCheckIn: (id: string, data: { intention?: string; reflection?: string; mood?: number; craving?: number }) => Promise<void>;
+  updateCheckIn: (
+    id: string,
+    data: { intention?: string; reflection?: string; mood?: number; craving?: number },
+  ) => Promise<void>;
   isPending: boolean;
 } {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: { intention?: string; reflection?: string; mood?: number; craving?: number } }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { intention?: string; reflection?: string; mood?: number; craving?: number };
+    }) => {
       if (!db) throw new Error('Database not initialized');
 
       try {
@@ -184,7 +233,7 @@ export function useUpdateCheckIn(userId: string): {
 
         await db.runAsync(
           `UPDATE daily_checkins SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
-          values
+          values,
         );
 
         // Add to sync queue for cloud backup
@@ -267,10 +316,10 @@ export function useStreak(userId: string): {
       try {
         const result = await db.getAllAsync<{ check_in_date: string }>(
           'SELECT DISTINCT check_in_date FROM daily_checkins WHERE user_id = ? ORDER BY check_in_date DESC',
-          [userId]
+          [userId],
         );
 
-        const dates = result.map(r => r.check_in_date);
+        const dates = result.map((r) => r.check_in_date);
         let current_streak = 0;
         let longest_streak = 0;
         let temp_streak = 0;
@@ -284,7 +333,7 @@ export function useStreak(userId: string): {
 
           if (dateStr === expectedStr) {
             temp_streak++;
-            if (temp_streak === 1 && dateStr === today || dates.indexOf(dateStr) === 0) {
+            if ((temp_streak === 1 && dateStr === today) || dates.indexOf(dateStr) === 0) {
               current_streak = temp_streak;
             }
             expectedDate.setDate(expectedDate.getDate() - 1);

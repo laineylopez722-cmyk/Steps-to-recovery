@@ -128,15 +128,14 @@ export function Button({
       onPressOut={() => !isDisabled && animatePress(false)}
       disabled={isDisabled}
       activeOpacity={0.9}
-      accessibilityLabel={accessibilityLabel || title || (typeof children === 'string' ? children : undefined)}
-      accessibilityRole={accessibilityRole || "button"}
+      accessibilityLabel={
+        accessibilityLabel || title || (typeof children === 'string' ? children : undefined)
+      }
+      accessibilityRole={accessibilityRole || 'button'}
       accessibilityHint={accessibilityHint}
       accessibilityState={{ ...accessibilityState, disabled: isDisabled, busy: loading }}
       testID={testID}
-      style={[
-        styles.touchable,
-        fullWidth && styles.fullWidth,
-      ]}
+      style={[styles.touchable, fullWidth && styles.fullWidth]}
     >
       <Animated.View
         style={[

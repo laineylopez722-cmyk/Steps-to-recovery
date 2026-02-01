@@ -16,16 +16,22 @@ interface ProfileStore {
   profile: SobrietyProfile | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // Computed values
   soberDays: number;
   soberHours: number;
   soberMinutes: number;
-  
+
   // Actions
   loadProfile: () => Promise<void>;
-  createProfile: (sobrietyDate: Date, programType: ProgramType, displayName?: string) => Promise<void>;
-  updateProfile: (updates: Partial<Pick<SobrietyProfile, 'sobrietyDate' | 'programType' | 'displayName'>>) => Promise<void>;
+  createProfile: (
+    sobrietyDate: Date,
+    programType: ProgramType,
+    displayName?: string,
+  ) => Promise<void>;
+  updateProfile: (
+    updates: Partial<Pick<SobrietyProfile, 'sobrietyDate' | 'programType' | 'displayName'>>,
+  ) => Promise<void>;
   deleteProfile: () => Promise<void>;
   calculateSobriety: () => void;
 }
@@ -104,4 +110,3 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     });
   },
 }));
-

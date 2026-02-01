@@ -110,6 +110,7 @@ Deliver a comprehensive architecture document containing:
    - Consequences (positive and negative)
 
 2. **File Structure Proposal**
+
    ```
    apps/mobile/src/features/[feature-name]/
    ├── components/
@@ -117,7 +118,7 @@ Deliver a comprehensive architecture document containing:
    ├── screens/
    ├── types.ts
    └── index.ts
-   
+
    packages/shared/[shared-concern]/
    ├── types.ts
    ├── utils/
@@ -186,6 +187,7 @@ Before finalizing your architecture document:
 **Escalation Protocol:**
 
 Flag for human review when:
+
 - Major architectural paradigm shifts are proposed
 - Security threat model reveals high-risk scenarios
 - Breaking changes affect a large percentage of the codebase

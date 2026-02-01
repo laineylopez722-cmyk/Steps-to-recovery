@@ -64,12 +64,12 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
 
   // Map colors to theme
   const actionColors = [
-    theme.colors.warning,        // Daily Reading - orange (spiritual)
-    theme.colors.success,        // My Progress - green (growth)
-    theme.colors.primary,        // Journal - blue
+    theme.colors.warning, // Daily Reading - orange (spiritual)
+    theme.colors.success, // My Progress - green (growth)
+    theme.colors.primary, // Journal - blue
     categoryColors['self-care'], // Step Work - purple
-    theme.colors.danger,         // Emergency - red
-    theme.colors.secondary,      // Meetings - teal
+    theme.colors.danger, // Emergency - red
+    theme.colors.secondary, // Meetings - teal
   ];
 
   const QUICK_ACTIONS: QuickAction[] = QUICK_ACTIONS_BASE.map((action, index) => ({
@@ -78,14 +78,19 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
   }));
 
   const handleActionPress = (screen: string): void => {
-    (navigation.navigate as (screen: string, params?: Record<string, unknown>) => void)(screen, { userId });
+    (navigation.navigate as (screen: string, params?: Record<string, unknown>) => void)(screen, {
+      userId,
+    });
   };
 
   return (
-    <Card variant="elevated" style={styles.card} accessibilityRole="menu" accessibilityLabel="Quick actions menu">
-      <Text style={[theme.typography.title2, styles.title]}>
-        Quick Actions
-      </Text>
+    <Card
+      variant="elevated"
+      style={styles.card}
+      accessibilityRole="menu"
+      accessibilityLabel="Quick actions menu"
+    >
+      <Text style={[theme.typography.title2, styles.title]}>Quick Actions</Text>
 
       <View style={styles.actionsGrid}>
         {QUICK_ACTIONS.map((action) => (
@@ -100,7 +105,12 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
             <View style={[styles.iconContainer, { backgroundColor: action.color }]}>
               <MaterialCommunityIcons name={action.icon} size={28} color="#FFFFFF" />
             </View>
-            <Text style={[theme.typography.body, { fontWeight: '600', color: theme.colors.text, textAlign: 'center' }]}>
+            <Text
+              style={[
+                theme.typography.body,
+                { fontWeight: '600', color: theme.colors.text, textAlign: 'center' },
+              ]}
+            >
               {action.title}
             </Text>
           </TouchableOpacity>

@@ -55,7 +55,10 @@ export const secureStorage = {
     if (Platform.OS === 'web') {
       const adapter = await getAdapter();
       // Type guard: check if adapter has initializeWithSession method
-      if ('initializeWithSession' in adapter && typeof adapter.initializeWithSession === 'function') {
+      if (
+        'initializeWithSession' in adapter &&
+        typeof adapter.initializeWithSession === 'function'
+      ) {
         await adapter.initializeWithSession(userId, sessionToken);
       }
     }

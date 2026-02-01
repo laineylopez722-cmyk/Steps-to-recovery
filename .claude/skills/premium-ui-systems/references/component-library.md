@@ -56,6 +56,7 @@ Systematic patterns for consistent, premium components.
 ### Button States
 
 All buttons need these states:
+
 - **Hover**: Visual feedback (bg change, lift)
 - **Active**: Pressed state
 - **Focus**: Keyboard navigation (ring)
@@ -83,9 +84,7 @@ function Button({ loading, disabled, ...props }) {
           <Spinner className="w-4 h-4 animate-spin" />
         </span>
       )}
-      <span className={loading ? 'opacity-0' : ''}>
-        {props.children}
-      </span>
+      <span className={loading ? 'opacity-0' : ''}>{props.children}</span>
     </button>
   );
 }
@@ -168,6 +167,7 @@ function Button({ loading, disabled, ...props }) {
 ```
 
 **Critical**: Glass cards need:
+
 1. Border highlight (`border-white/20`)
 2. Backdrop blur (`backdrop-blur-md`)
 3. Translucent bg (`bg-white/70`)
@@ -231,14 +231,16 @@ function Button({ loading, disabled, ...props }) {
 ### Select / Dropdown
 
 ```tsx
-<select className="
+<select
+  className="
   w-full px-3 py-2 rounded-lg
   border border-gray-300
   bg-white
   text-gray-900
   focus:border-gray-900 focus:ring-1 focus:ring-gray-900
   transition-colors
-">
+"
+>
   <option>Option 1</option>
   <option>Option 2</option>
 </select>
@@ -288,15 +290,9 @@ function Button({ loading, disabled, ...props }) {
   <table className="w-full bg-white">
     <thead className="bg-gray-50 border-b border-gray-200">
       <tr>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-          Name
-        </th>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-          Status
-        </th>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
-          Actions
-        </th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Name</th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
       </tr>
     </thead>
     <tbody className="divide-y divide-gray-200">
@@ -321,12 +317,8 @@ function Button({ loading, disabled, ...props }) {
 ```tsx
 <div className="max-h-96 overflow-auto rounded-lg border border-gray-200">
   <table className="w-full bg-white">
-    <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
-      {/* headers */}
-    </thead>
-    <tbody>
-      {/* rows */}
-    </tbody>
+    <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">{/* headers */}</thead>
+    <tbody>{/* rows */}</tbody>
   </table>
 </div>
 ```
@@ -340,14 +332,16 @@ function Button({ loading, disabled, ...props }) {
 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
   {/* Backdrop */}
   <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-  
+
   {/* Modal Panel */}
-  <div className="
+  <div
+    className="
     relative z-10 w-full max-w-lg
     p-6 rounded-2xl
     bg-white border border-gray-200
     shadow-xl
-  ">
+  "
+  >
     {/* Header */}
     <div className="flex items-start justify-between mb-4">
       <h2 className="text-xl font-semibold">Modal Title</h2>
@@ -355,12 +349,12 @@ function Button({ loading, disabled, ...props }) {
         <XIcon className="w-5 h-5" />
       </button>
     </div>
-    
+
     {/* Content */}
     <div className="mb-6">
       <p className="text-gray-600">Modal content goes here</p>
     </div>
-    
+
     {/* Actions */}
     <div className="flex gap-3 justify-end">
       <button className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50">

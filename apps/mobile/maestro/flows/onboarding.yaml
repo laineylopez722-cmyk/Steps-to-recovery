@@ -1,0 +1,77 @@
+# Onboarding Flow E2E Test
+# Tests the complete onboarding experience for new users
+
+appId: com.stepstorecovery.app
+---
+# Start with a fresh app state
+- launchApp:
+    clearState: true
+
+# Wait for app to load
+- extendedWaitUntil:
+    visible: 'Welcome'
+    timeout: 10000
+
+# Verify welcome screen elements
+- assertVisible: 'Steps to Recovery'
+- assertVisible: 'Get Started'
+
+# Tap get started button
+- tapOn:
+    text: 'Get Started'
+
+# Step 1: Enter sobriety date
+- extendedWaitUntil:
+    visible: 'When did your recovery journey begin?'
+    timeout: 5000
+
+- tapOn:
+    text: 'Select Date'
+
+# Select today's date (for testing)
+- tapOn:
+    text: 'Confirm'
+
+- tapOn:
+    text: 'Continue'
+
+# Step 2: Recovery program selection
+- extendedWaitUntil:
+    visible: 'What program are you following?'
+    timeout: 5000
+
+- tapOn:
+    text: '12-Step (AA/NA)'
+
+- tapOn:
+    text: 'Continue'
+
+# Step 3: Morning reminder
+- extendedWaitUntil:
+    visible: 'Morning Check-in'
+    timeout: 5000
+
+# Skip reminders for now
+- tapOn:
+    text: 'Skip'
+
+# Onboarding complete - should see dashboard
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Home'
+        - 'Clean Time'
+        - 'Dashboard'
+    timeout: 10000
+
+# Verify key dashboard elements
+- assertVisible:
+    anyOf:
+      - 'Day'
+      - 'Days'
+      - 'Hours'
+
+# Success!
+- runScript:
+    script: |
+      console.log('✅ Onboarding flow completed successfully')

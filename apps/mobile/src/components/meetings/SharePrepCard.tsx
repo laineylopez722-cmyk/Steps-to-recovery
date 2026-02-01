@@ -50,9 +50,7 @@ export function SharePrepCard({ className = '', compact = false }: SharePrepCard
             </Text>
           )}
         </View>
-        {hasContent() && (
-          <View className="w-2 h-2 rounded-full bg-green-500" />
-        )}
+        {hasContent() && <View className="w-2 h-2 rounded-full bg-green-500" />}
       </TouchableOpacity>
     );
   }
@@ -77,9 +75,7 @@ export function SharePrepCard({ className = '', compact = false }: SharePrepCard
             </View>
           </View>
           <View className="flex-row items-center">
-            {hasContent() && (
-              <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />
-            )}
+            {hasContent() && <View className="w-2 h-2 rounded-full bg-green-500 mr-2" />}
             <Text className="text-primary-600">→</Text>
           </View>
         </View>
@@ -88,10 +84,7 @@ export function SharePrepCard({ className = '', compact = false }: SharePrepCard
         {hasContent() && notes.topic.trim() && (
           <View className="mt-3 pt-3 border-t border-surface-100 dark:border-surface-700">
             <Text className="text-xs text-surface-500 mb-1">Topic:</Text>
-            <Text
-              className="text-sm text-surface-700 dark:text-surface-300"
-              numberOfLines={2}
-            >
+            <Text className="text-sm text-surface-700 dark:text-surface-300" numberOfLines={2}>
               {notes.topic.trim()}
             </Text>
           </View>
@@ -100,4 +93,3 @@ export function SharePrepCard({ className = '', compact = false }: SharePrepCard
     </TouchableOpacity>
   );
 }
-

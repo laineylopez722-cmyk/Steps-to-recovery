@@ -19,14 +19,8 @@ export function LoadingSpinner({
 }: LoadingSpinnerProps) {
   const content = (
     <>
-      <ActivityIndicator
-        size={size}
-        color={color}
-        accessibilityLabel="Loading"
-      />
-      {message && (
-        <Text style={styles.message}>{message}</Text>
-      )}
+      <ActivityIndicator size={size} color={color} accessibilityLabel="Loading" />
+      {message && <Text style={styles.message}>{message}</Text>}
     </>
   );
 

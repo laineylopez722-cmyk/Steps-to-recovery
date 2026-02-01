@@ -39,41 +39,57 @@ import { logger } from '../utils/logger';
  *
  * @internal
  */
-const ExpoSecureStoreAdapter = Platform.OS === 'web'
-  ? {
-      getItem: async (key: string) => {
-        logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'web', key });
-        return await AsyncStorage.getItem(key);
-      },
-      setItem: async (key: string, value: string) => {
-        logger.debug('Supabase auth storage', { operation: 'setItem', platform: 'web', key, valueLength: value.length });
-        await AsyncStorage.setItem(key, value);
-      },
-      removeItem: async (key: string) => {
-        logger.debug('Supabase auth storage', { operation: 'removeItem', platform: 'web', key });
-        await AsyncStorage.removeItem(key);
-      },
-    }
-  : {
-      getItem: async (key: string) => {
-        logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'native', key });
-        return await SecureStore.getItemAsync(key);
-      },
-      setItem: async (key: string, value: string) => {
-        logger.debug('Supabase auth storage', { operation: 'setItem', platform: 'native', key, valueLength: value.length });
-        await SecureStore.setItemAsync(key, value);
-      },
-      removeItem: async (key: string) => {
-        logger.debug('Supabase auth storage', { operation: 'removeItem', platform: 'native', key });
-        await SecureStore.deleteItemAsync(key);
-      },
-    };
+const ExpoSecureStoreAdapter =
+  Platform.OS === 'web'
+    ? {
+        getItem: async (key: string) => {
+          logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'web', key });
+          return await AsyncStorage.getItem(key);
+        },
+        setItem: async (key: string, value: string) => {
+          logger.debug('Supabase auth storage', {
+            operation: 'setItem',
+            platform: 'web',
+            key,
+            valueLength: value.length,
+          });
+          await AsyncStorage.setItem(key, value);
+        },
+        removeItem: async (key: string) => {
+          logger.debug('Supabase auth storage', { operation: 'removeItem', platform: 'web', key });
+          await AsyncStorage.removeItem(key);
+        },
+      }
+    : {
+        getItem: async (key: string) => {
+          logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'native', key });
+          return await SecureStore.getItemAsync(key);
+        },
+        setItem: async (key: string, value: string) => {
+          logger.debug('Supabase auth storage', {
+            operation: 'setItem',
+            platform: 'native',
+            key,
+            valueLength: value.length,
+          });
+          await SecureStore.setItemAsync(key, value);
+        },
+        removeItem: async (key: string) => {
+          logger.debug('Supabase auth storage', {
+            operation: 'removeItem',
+            platform: 'native',
+            key,
+          });
+          await SecureStore.deleteItemAsync(key);
+        },
+      };
 
 // Log platform detection for debugging
 logger.info('Supabase storage adapter initialized', {
   platform: Platform.OS,
   usingSecureStore: Platform.OS !== 'web',
-  webSecurityNote: Platform.OS === 'web' ? 'Using AsyncStorage (not encrypted)' : 'Using SecureStore (encrypted)'
+  webSecurityNote:
+    Platform.OS === 'web' ? 'Using AsyncStorage (not encrypted)' : 'Using SecureStore (encrypted)',
 });
 
 /** Supabase project URL from environment */
@@ -94,7 +110,8 @@ function validateEnvironmentVariables(): void {
   if (!supabaseAnonKey) missing.push('EXPO_PUBLIC_SUPABASE_ANON_KEY');
 
   if (missing.length > 0) {
-    const errorMessage = `Missing required Supabase environment variables: ${missing.join(', ')}. ` +
+    const errorMessage =
+      `Missing required Supabase environment variables: ${missing.join(', ')}. ` +
       'Please create a .env file in apps/mobile/ with the required variables. ' +
       'See env.example for the expected format.';
 
@@ -105,7 +122,7 @@ function validateEnvironmentVariables(): void {
   logger.info('Supabase environment variables validated', {
     urlPresent: !!supabaseUrl,
     keyPresent: !!supabaseAnonKey,
-    urlPrefix: supabaseUrl?.substring(0, 30) + '...'
+    urlPrefix: supabaseUrl?.substring(0, 30) + '...',
   });
 }
 
@@ -141,7 +158,7 @@ export const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
 logger.info('Supabase client created successfully', {
   url: supabaseUrl?.substring(0, 30) + '...',
   authConfigured: true,
-  platform: Platform.OS
+  platform: Platform.OS,
 });
 
 /**
@@ -159,7 +176,7 @@ logger.info('Supabase client created successfully', {
  * }
  * ```
  */
-export async function testSupabaseConnection(): Promise<{connected: boolean, error?: string}> {
+export async function testSupabaseConnection(): Promise<{ connected: boolean; error?: string }> {
   try {
     logger.debug('Testing Supabase connection');
 
@@ -187,17 +204,20 @@ export async function testSupabaseConnection(): Promise<{connected: boolean, err
  * @returns Promise with session info or null (sensitive data masked for security)
  */
 export async function getSupabaseSessionInfo(): Promise<{
-  session: { 
-    access_token: 'present' | 'missing'; 
-    refresh_token: 'present' | 'missing'; 
-    expires_at?: number; 
-    user: 'present' | 'missing' 
+  session: {
+    access_token: 'present' | 'missing';
+    refresh_token: 'present' | 'missing';
+    expires_at?: number;
+    user: 'present' | 'missing';
   } | null;
   user: { id: string; email?: string; role?: string } | null;
   error?: string;
 }> {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
 
     if (error) {
       logger.debug('Session info retrieval failed', error);
@@ -207,21 +227,25 @@ export async function getSupabaseSessionInfo(): Promise<{
     logger.debug('Session info retrieved', {
       hasSession: !!session,
       hasUser: !!session?.user,
-      expiresAt: session?.expires_at
+      expiresAt: session?.expires_at,
     });
 
     return {
-      session: session ? {
-        access_token: session.access_token ? 'present' : 'missing',
-        refresh_token: session.refresh_token ? 'present' : 'missing',
-        expires_at: session.expires_at,
-        user: session.user ? 'present' : 'missing'
-      } : null,
-      user: session?.user ? {
-        id: session.user.id,
-        email: session.user.email,
-        role: session.user.role
-      } : null
+      session: session
+        ? {
+            access_token: session.access_token ? 'present' : 'missing',
+            refresh_token: session.refresh_token ? 'present' : 'missing',
+            expires_at: session.expires_at,
+            user: session.user ? 'present' : 'missing',
+          }
+        : null,
+      user: session?.user
+        ? {
+            id: session.user.id,
+            email: session.user.email,
+            role: session.user.role,
+          }
+        : null,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -235,7 +259,7 @@ export async function getSupabaseSessionInfo(): Promise<{
  *
  * @returns Promise<{success: boolean, error?: string}>
  */
-export async function refreshSupabaseSession(): Promise<{success: boolean, error?: string}> {
+export async function refreshSupabaseSession(): Promise<{ success: boolean; error?: string }> {
   try {
     logger.debug('Forcing session refresh');
     const { error } = await supabase.auth.refreshSession();
@@ -260,7 +284,7 @@ export async function refreshSupabaseSession(): Promise<{success: boolean, error
  *
  * @returns Promise<{success: boolean, error?: string}>
  */
-export async function clearSupabaseAuthStorage(): Promise<{success: boolean, error?: string}> {
+export async function clearSupabaseAuthStorage(): Promise<{ success: boolean; error?: string }> {
   try {
     logger.warn('Clearing all Supabase auth storage');
 
@@ -274,7 +298,7 @@ export async function clearSupabaseAuthStorage(): Promise<{success: boolean, err
     if (Platform.OS === 'web') {
       // Clear AsyncStorage items that might contain auth data
       const keys = await AsyncStorage.getAllKeys();
-      const authKeys = keys.filter(key => key.includes('supabase') || key.includes('auth'));
+      const authKeys = keys.filter((key) => key.includes('supabase') || key.includes('auth'));
       await AsyncStorage.multiRemove(authKeys);
     } else {
       // For native, rely on the signOut above and SecureStore cleanup
@@ -296,6 +320,6 @@ if (__DEV__) {
     platform: Platform.OS,
     urlConfigured: !!supabaseUrl,
     keyConfigured: !!supabaseAnonKey,
-    storageType: Platform.OS === 'web' ? 'AsyncStorage' : 'SecureStore'
+    storageType: Platform.OS === 'web' ? 'AsyncStorage' : 'SecureStore',
   });
 }

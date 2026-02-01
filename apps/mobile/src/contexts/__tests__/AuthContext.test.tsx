@@ -140,7 +140,7 @@ describe('AuthContext', () => {
       expect(result.current.session).toEqual(mockSession);
       expect(secureStorage.initializeWithSession).toHaveBeenCalledWith(
         mockUser.id,
-        mockSession.access_token
+        mockSession.access_token,
       );
     });
 
@@ -191,7 +191,10 @@ describe('AuthContext', () => {
       // Delay the sign in response
       let resolveSignIn: (value: any) => void;
       (supabase.auth.signInWithPassword as jest.Mock).mockImplementation(
-        () => new Promise((resolve) => { resolveSignIn = resolve; })
+        () =>
+          new Promise((resolve) => {
+            resolveSignIn = resolve;
+          }),
       );
 
       const { result } = renderHook(() => useAuth(), { wrapper });
@@ -233,9 +236,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(act(async () => {
-        await result.current.signIn('test@example.com', 'wrongpassword');
-      })).rejects.toEqual(mockError);
+      await expect(
+        act(async () => {
+          await result.current.signIn('test@example.com', 'wrongpassword');
+        }),
+      ).rejects.toEqual(mockError);
 
       expect(result.current.error).toEqual(mockError);
       expect(result.current.loading).toBe(false);
@@ -279,9 +284,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(act(async () => {
-        await result.current.signUp('existing@example.com', 'password123');
-      })).rejects.toEqual(mockError);
+      await expect(
+        act(async () => {
+          await result.current.signUp('existing@example.com', 'password123');
+        }),
+      ).rejects.toEqual(mockError);
 
       expect(result.current.error).toEqual(mockError);
     });
@@ -344,9 +351,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(act(async () => {
-        await result.current.signOut();
-      })).rejects.toEqual(mockError);
+      await expect(
+        act(async () => {
+          await result.current.signOut();
+        }),
+      ).rejects.toEqual(mockError);
 
       expect(result.current.error).toEqual(mockError);
     });
@@ -386,9 +395,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(act(async () => {
-        await result.current.resetPassword('unknown@example.com');
-      })).rejects.toEqual(mockError);
+      await expect(
+        act(async () => {
+          await result.current.resetPassword('unknown@example.com');
+        }),
+      ).rejects.toEqual(mockError);
 
       expect(result.current.error).toEqual(mockError);
     });
@@ -436,7 +447,7 @@ describe('AuthContext', () => {
       expect(result.current.session).toEqual(mockSession);
       expect(secureStorage.initializeWithSession).toHaveBeenCalledWith(
         mockUser.id,
-        mockSession.access_token
+        mockSession.access_token,
       );
     });
 
@@ -496,7 +507,7 @@ describe('AuthContext', () => {
 
       expect(secureStorage.initializeWithSession).toHaveBeenCalledWith(
         mockUser.id,
-        'new-access-token'
+        'new-access-token',
       );
     });
   });
@@ -541,9 +552,7 @@ describe('AuthContext', () => {
     });
 
     it('should handle exception in getSession', async () => {
-      (supabase.auth.getSession as jest.Mock).mockRejectedValue(
-        new Error('Unexpected error')
-      );
+      (supabase.auth.getSession as jest.Mock).mockRejectedValue(new Error('Unexpected error'));
 
       const { result } = renderHook(() => useAuth(), { wrapper });
 

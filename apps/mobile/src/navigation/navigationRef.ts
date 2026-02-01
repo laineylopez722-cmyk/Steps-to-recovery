@@ -21,7 +21,7 @@ export function navigate(name: string, params?: object) {
       CommonActions.navigate({
         name,
         params,
-      })
+      }),
     );
   }
 }
@@ -39,7 +39,7 @@ export function navigateToTab(tabName: keyof MainTabParamList) {
         params: {
           screen: tabName,
         },
-      })
+      }),
     );
   }
 }
@@ -58,7 +58,7 @@ export function isNavigationReady(): boolean {
  * @param payload - Full notification payload or legacy screen string
  */
 export function navigateFromNotification(
-  payload: NotificationPayload | NotificationScreen | string | undefined
+  payload: NotificationPayload | NotificationScreen | string | undefined,
 ): void {
   if (!payload) {
     navigateToTab('Home');
@@ -95,7 +95,7 @@ export function navigateFromNotification(
               params: params || {},
             },
           },
-        })
+        }),
       );
     } else {
       // Navigate to top-level tab

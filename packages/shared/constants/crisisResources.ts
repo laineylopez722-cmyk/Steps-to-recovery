@@ -1,12 +1,12 @@
 /**
  * Crisis Resources by Region
- * 
+ *
  * Emergency hotlines and support services for recovery organized by region.
  * Provides critical support resources for users in crisis situations.
- * 
+ *
  * **Important**: These resources are for emergency and crisis situations.
  * Always call emergency services (911, 000, etc.) for life-threatening emergencies.
- * 
+ *
  * @module constants/crisisResources
  */
 
@@ -271,7 +271,7 @@ const UNITED_KINGDOM: RegionConfig = {
       id: 'samaritans-uk',
       name: 'Samaritans',
       phone: '116 123',
-      description: 'Free emotional support 24/7, whatever you\'re going through',
+      description: "Free emotional support 24/7, whatever you're going through",
       available: '24/7',
       color: '#3b82f6',
     },
@@ -624,7 +624,7 @@ export const CRISIS_REGIONS: Record<CrisisRegion, RegionConfig> = {
 
 /**
  * Get crisis resources for a specific region
- * 
+ *
  * @param region - Region code (AU, US, UK, CA, NZ, IE, or 'global')
  * @returns Region configuration with hotlines and resources
  * @example
@@ -639,7 +639,7 @@ export function getCrisisResources(region: CrisisRegion): RegionConfig {
 
 /**
  * Get all available regions
- * 
+ *
  * @returns Array of region codes and names
  * @example
  * ```ts
@@ -653,7 +653,7 @@ export function getAvailableRegions(): readonly { code: CrisisRegion; name: stri
 
 /**
  * Get emergency number for a region
- * 
+ *
  * @param region - Region code
  * @returns Emergency services phone number (defaults to "911" if region not found)
  * @example
@@ -668,7 +668,7 @@ export function getEmergencyNumber(region: CrisisRegion): string {
 
 /**
  * Check if a region code is valid
- * 
+ *
  * @param region - Region code to validate
  * @returns True if region exists in CRISIS_REGIONS
  */
@@ -716,4 +716,3 @@ export const COPING_STRATEGIES = [
  * Default region (can be overridden by user preference)
  */
 export const DEFAULT_REGION: CrisisRegion = 'US';
-

@@ -29,11 +29,11 @@ interface ContactActions {
     name: string,
     phone: string,
     role: ContactRole,
-    notes?: string
+    notes?: string,
   ) => Promise<RecoveryContact>;
   updateContact: (
     id: string,
-    updates: Partial<Pick<RecoveryContact, 'name' | 'phone' | 'role' | 'notes'>>
+    updates: Partial<Pick<RecoveryContact, 'name' | 'phone' | 'role' | 'notes'>>,
   ) => Promise<void>;
   removeContact: (id: string) => Promise<void>;
   markContacted: (id: string) => Promise<void>;
@@ -63,7 +63,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
   addContact: async (name, phone, role, notes) => {
     try {
       const contact = await createRecoveryContact(name, phone, role, notes);
-      
+
       set((state) => {
         const newContacts = [...state.contacts, contact];
         // Sort by role priority then name
@@ -80,7 +80,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
           }
           return a.name.localeCompare(b.name);
         });
-        
+
         return {
           contacts: newContacts,
           sponsor: role === 'sponsor' ? contact : state.sponsor,
@@ -97,12 +97,10 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
   updateContact: async (id, updates) => {
     try {
       await updateRecoveryContact(id, updates);
-      
+
       set((state) => {
-        const updatedContacts = state.contacts.map((c) =>
-          c.id === id ? { ...c, ...updates } : c
-        );
-        
+        const updatedContacts = state.contacts.map((c) => (c.id === id ? { ...c, ...updates } : c));
+
         // Update sponsor reference if needed
         let newSponsor = state.sponsor;
         if (updates.role === 'sponsor') {
@@ -111,7 +109,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
           // If updating the sponsor's role to something other than sponsor
           newSponsor = null;
         }
-        
+
         return {
           contacts: updatedContacts,
           sponsor: newSponsor,
@@ -126,7 +124,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
   removeContact: async (id) => {
     try {
       await deleteRecoveryContact(id);
-      
+
       set((state) => ({
         contacts: state.contacts.filter((c) => c.id !== id),
         sponsor: state.sponsor?.id === id ? null : state.sponsor,
@@ -140,10 +138,10 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
   markContacted: async (id) => {
     try {
       await updateContactLastContacted(id);
-      
+
       set((state) => ({
         contacts: state.contacts.map((c) =>
-          c.id === id ? { ...c, lastContactedAt: new Date() } : c
+          c.id === id ? { ...c, lastContactedAt: new Date() } : c,
         ),
         sponsor:
           state.sponsor?.id === id
@@ -184,4 +182,3 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
     }
   },
 }));
-

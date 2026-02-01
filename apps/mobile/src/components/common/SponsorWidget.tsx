@@ -28,8 +28,7 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
   useEffect(() => {
     if (sponsor?.lastContactedAt) {
       const days = Math.floor(
-        (Date.now() - new Date(sponsor.lastContactedAt).getTime()) /
-          (1000 * 60 * 60 * 24)
+        (Date.now() - new Date(sponsor.lastContactedAt).getTime()) / (1000 * 60 * 60 * 24),
       );
       setDaysSinceContact(days);
     } else {
@@ -46,7 +45,7 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
     try {
       // Make the call
       const success = await makePhoneCall(sponsor.phone);
-      
+
       if (success) {
         // Log the call and mark as contacted
         await logCallWithContact(sponsor);
@@ -61,7 +60,7 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
   const handleText = async () => {
     try {
       const success = await openMessagingApp(sponsor.phone);
-      
+
       if (success) {
         // Mark as contacted since they're opening messaging
         await markContacted(sponsor.id);
@@ -74,7 +73,7 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
   const handleSOS = async () => {
     try {
       const result = await sendSOSMessage(sponsor.phone, sponsor.name);
-      
+
       if (result.success) {
         // Log the interaction
         await markContacted(sponsor.id);
@@ -110,9 +109,7 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
               <Text className="font-semibold text-surface-900 dark:text-surface-100">
                 {sponsor.name}
               </Text>
-              <Text className={`text-xs ${getContactUrgencyColor()}`}>
-                {getDaysSinceText()}
-              </Text>
+              <Text className={`text-xs ${getContactUrgencyColor()}`}>{getDaysSinceText()}</Text>
             </View>
           </View>
           <View className="flex-row gap-2">
@@ -152,9 +149,7 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
           <Text className="text-lg font-semibold text-surface-900 dark:text-surface-100">
             {sponsor.name}
           </Text>
-          <Text className={`text-sm ${getContactUrgencyColor()}`}>
-            {getDaysSinceText()}
-          </Text>
+          <Text className={`text-sm ${getContactUrgencyColor()}`}>{getDaysSinceText()}</Text>
         </View>
       </View>
 
@@ -189,16 +184,11 @@ export function SponsorWidget({ className = '', compact = false }: SponsorWidget
         accessibilityLabel="Send SOS message to sponsor"
         accessibilityHint={`Sends the message: ${SOS_MESSAGE}`}
       >
-        <Text className="text-red-700 dark:text-red-300 font-medium">
-          🆘 SOS - I need to talk
-        </Text>
+        <Text className="text-red-700 dark:text-red-300 font-medium">🆘 SOS - I need to talk</Text>
       </TouchableOpacity>
 
       {/* Help text */}
-      <Text className="text-xs text-surface-400 text-center mt-3">
-        SOS sends: "{SOS_MESSAGE}"
-      </Text>
+      <Text className="text-xs text-surface-400 text-center mt-3">SOS sends: "{SOS_MESSAGE}"</Text>
     </Card>
   );
 }
-

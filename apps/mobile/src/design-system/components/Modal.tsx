@@ -65,16 +65,18 @@ export function Modal({
           duration: theme.animations.durations.normal,
           useNativeDriver: true,
         }),
-        variant === 'bottom' ? Animated.spring(slideAnim, {
-          toValue: 0,
-          tension: 65,
-          friction: 11,
-          useNativeDriver: true,
-        }) : Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 0,
-          useNativeDriver: true,
-        }),
+        variant === 'bottom'
+          ? Animated.spring(slideAnim, {
+              toValue: 0,
+              tension: 65,
+              friction: 11,
+              useNativeDriver: true,
+            })
+          : Animated.timing(slideAnim, {
+              toValue: 0,
+              duration: 0,
+              useNativeDriver: true,
+            }),
       ]).start();
     } else {
       // Animate out
@@ -84,15 +86,17 @@ export function Modal({
           duration: theme.animations.durations.fast,
           useNativeDriver: true,
         }),
-        variant === 'bottom' ? Animated.timing(slideAnim, {
-          toValue: SCREEN_HEIGHT,
-          duration: theme.animations.durations.fast,
-          useNativeDriver: true,
-        }) : Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 0,
-          useNativeDriver: true,
-        }),
+        variant === 'bottom'
+          ? Animated.timing(slideAnim, {
+              toValue: SCREEN_HEIGHT,
+              duration: theme.animations.durations.fast,
+              useNativeDriver: true,
+            })
+          : Animated.timing(slideAnim, {
+              toValue: 0,
+              duration: 0,
+              useNativeDriver: true,
+            }),
       ]).start();
     }
   }, [visible, variant, slideAnim, fadeAnim, theme.animations.durations]);
@@ -103,25 +107,25 @@ export function Modal({
     }
   };
 
-  const containerStyle: ViewStyle = variant === 'center'
-    ? styles.centerContainer
-    : styles.bottomContainer;
+  const containerStyle: ViewStyle =
+    variant === 'center' ? styles.centerContainer : styles.bottomContainer;
 
-  const contentStyle: Animated.AnimatedProps<ViewStyle> = variant === 'center'
-    ? {
-        ...styles.centerContent,
-        backgroundColor: theme.colors.surface,
-        borderRadius: theme.radius.modal,
-        ...(!theme.isDark ? theme.shadows.lg : theme.shadows.lgDark),
-      }
-    : {
-        ...styles.bottomContent,
-        backgroundColor: theme.colors.surface,
-        borderTopLeftRadius: theme.radius.modal,
-        borderTopRightRadius: theme.radius.modal,
-        ...(!theme.isDark ? theme.shadows.xl : theme.shadows.xlDark),
-        transform: [{ translateY: slideAnim }],
-      };
+  const contentStyle: Animated.AnimatedProps<ViewStyle> =
+    variant === 'center'
+      ? {
+          ...styles.centerContent,
+          backgroundColor: theme.colors.surface,
+          borderRadius: theme.radius.modal,
+          ...(!theme.isDark ? theme.shadows.lg : theme.shadows.lgDark),
+        }
+      : {
+          ...styles.bottomContent,
+          backgroundColor: theme.colors.surface,
+          borderTopLeftRadius: theme.radius.modal,
+          borderTopRightRadius: theme.radius.modal,
+          ...(!theme.isDark ? theme.shadows.xl : theme.shadows.xlDark),
+          transform: [{ translateY: slideAnim }],
+        };
 
   return (
     <RNModal
@@ -148,10 +152,7 @@ export function Modal({
               {title && (
                 <View style={styles.header}>
                   <Text
-                    style={[
-                      theme.typography.h3,
-                      { color: theme.colors.text, textAlign: 'center' },
-                    ]}
+                    style={[theme.typography.h3, { color: theme.colors.text, textAlign: 'center' }]}
                     accessibilityRole="header"
                   >
                     {title}
@@ -182,10 +183,7 @@ export function Modal({
 
               {/* Actions */}
               {actions.length > 0 && (
-                <View style={[
-                  styles.actionsContainer,
-                  actions.length === 2 && styles.actionsRow,
-                ]}>
+                <View style={[styles.actionsContainer, actions.length === 2 && styles.actionsRow]}>
                   {actions.map((action, index) => (
                     <Button
                       key={index}
@@ -199,8 +197,12 @@ export function Modal({
                       fullWidth={actions.length !== 2}
                       style={[
                         actions.length === 2 ? { flex: 1 } : undefined,
-                        index > 0 && actions.length === 2 ? { marginLeft: theme.spacing.sm } : undefined,
-                        index > 0 && actions.length !== 2 ? { marginTop: theme.spacing.sm } : undefined,
+                        index > 0 && actions.length === 2
+                          ? { marginLeft: theme.spacing.sm }
+                          : undefined,
+                        index > 0 && actions.length !== 2
+                          ? { marginTop: theme.spacing.sm }
+                          : undefined,
                       ].filter(Boolean)}
                       accessibilityLabel={action.accessibilityLabel || action.title}
                     />

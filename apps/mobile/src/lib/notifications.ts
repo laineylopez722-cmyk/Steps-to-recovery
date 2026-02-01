@@ -30,7 +30,9 @@ if (Platform.OS !== 'web') {
   } catch (error) {
     // Silently fail in Expo Go - notifications require development build
     // All other app features (journaling, check-ins, step work) work normally
-    logger.warn('Notification handler setup skipped (Expo Go does not support push notifications in SDK 53+)');
+    logger.warn(
+      'Notification handler setup skipped (Expo Go does not support push notifications in SDK 53+)',
+    );
   }
 }
 
@@ -176,7 +178,7 @@ export function registerNotificationHandlers(handlers: NotificationHandlers): ()
   // Handler for notifications received while app is foregrounded
   if (handlers.onNotificationReceived) {
     const subscription = Notifications.addNotificationReceivedListener(
-      handlers.onNotificationReceived
+      handlers.onNotificationReceived,
     );
     subscriptions.push(subscription);
   }
@@ -184,14 +186,14 @@ export function registerNotificationHandlers(handlers: NotificationHandlers): ()
   // Handler for user tapping on notification
   if (handlers.onNotificationResponse) {
     const subscription = Notifications.addNotificationResponseReceivedListener(
-      handlers.onNotificationResponse
+      handlers.onNotificationResponse,
     );
     subscriptions.push(subscription);
   }
 
   // Return cleanup function
   return () => {
-    subscriptions.forEach(sub => sub.remove());
+    subscriptions.forEach((sub) => sub.remove());
   };
 }
 

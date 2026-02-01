@@ -39,7 +39,7 @@ interface JournalStore {
       meetingId?: string;
       audioUri?: string;
       audioDuration?: number;
-    }
+    },
   ) => Promise<JournalEntry>;
   deleteEntry: (id: string) => Promise<void>;
   decryptEntry: (entry: JournalEntry) => Promise<string>;
@@ -131,9 +131,7 @@ export const useJournalStore = create<JournalStore>((set, get) => ({
       const matchesType = entry.type.toLowerCase().includes(lowerQuery);
 
       // Search emotion tags
-      const matchesTags = entry.emotionTags.some((tag) =>
-        tag.toLowerCase().includes(lowerQuery)
-      );
+      const matchesTags = entry.emotionTags.some((tag) => tag.toLowerCase().includes(lowerQuery));
 
       // Note: content is encrypted, so standard search fails on it.
       // We only search plaintext metadata for privacy/performance.
@@ -145,4 +143,3 @@ export const useJournalStore = create<JournalStore>((set, get) => ({
     set({ currentEntry: null, decryptedContent: null });
   },
 }));
-

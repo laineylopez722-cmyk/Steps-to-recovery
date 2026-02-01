@@ -1,11 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useDatabase } from '../../../contexts/DatabaseContext';
@@ -58,15 +52,13 @@ export function OnboardingScreen() {
       await generateEncryptionKey();
 
       // Save profile to Supabase
-      const { error: supabaseError } = await supabase
-        .from('profiles')
-        .insert({
-          id: user.id,
-          email: user.email,
-          sobriety_start_date: formatDate(sobrietyDate),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        });
+      const { error: supabaseError } = await supabase.from('profiles').insert({
+        id: user.id,
+        email: user.email,
+        sobriety_start_date: formatDate(sobrietyDate),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
 
       if (supabaseError) throw supabaseError;
 
@@ -81,7 +73,7 @@ export function OnboardingScreen() {
           formatDate(sobrietyDate),
           new Date().toISOString(),
           new Date().toISOString(),
-        ]
+        ],
       );
 
       // Navigation will be handled by RootNavigator detecting profile exists
@@ -117,27 +109,43 @@ export function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'bottom']}>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'bottom']}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.header} accessibilityRole="header">
-          <Text style={styles.welcomeEmoji} accessibilityLabel="Welcome emoji">🌱</Text>
-          <Text style={[styles.title, { color: theme.colors.text }]} accessibilityRole="header" accessibilityLabel="Welcome to Your Recovery Journey">
+          <Text style={styles.welcomeEmoji} accessibilityLabel="Welcome emoji">
+            🌱
+          </Text>
+          <Text
+            style={[styles.title, { color: theme.colors.text }]}
+            accessibilityRole="header"
+            accessibilityLabel="Welcome to Your Recovery Journey"
+          >
             Welcome to Your{'\n'}Recovery Journey
           </Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]} accessibilityLabel="App description">
-            This app is your private, secure companion for recovery. All your
-            data is encrypted and stays on your device unless you choose to share.
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+            accessibilityLabel="App description"
+          >
+            This app is your private, secure companion for recovery. All your data is encrypted and
+            stays on your device unless you choose to share.
           </Text>
         </View>
 
         <View style={styles.dateSection}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]} accessibilityRole="header" accessibilityLabel="Sobriety start date question">
+          <Text
+            style={[styles.sectionTitle, { color: theme.colors.text }]}
+            accessibilityRole="header"
+            accessibilityLabel="Sobriety start date question"
+          >
             When did your sobriety begin?
           </Text>
-          <Text style={[styles.sectionHint, { color: theme.colors.textSecondary }]} accessibilityLabel="Why we ask for this date">
+          <Text
+            style={[styles.sectionHint, { color: theme.colors.textSecondary }]}
+            accessibilityLabel="Why we ask for this date"
+          >
             This helps us celebrate your milestones with you
           </Text>
 
@@ -154,17 +162,22 @@ export function OnboardingScreen() {
             <View
               style={[styles.streakCard, { backgroundColor: theme.colors.primary }]}
               accessibilityRole="text"
-              accessibilityLabel={`Congratulations! ${daysSober} ${daysSober === 1 ? 'day' : 'days'} of recovery. ${daysSober < 7 ? "Every day counts. You're doing great!" : daysSober < 30 ? "Amazing progress! Keep going!" : "Incredible dedication. You're an inspiration!"}`}
+              accessibilityLabel={`Congratulations! ${daysSober} ${daysSober === 1 ? 'day' : 'days'} of recovery. ${daysSober < 7 ? "Every day counts. You're doing great!" : daysSober < 30 ? 'Amazing progress! Keep going!' : "Incredible dedication. You're an inspiration!"}`}
             >
-              <Text style={styles.streakNumber} accessibilityLabel={`${daysSober} days sober`}>{daysSober}</Text>
-              <Text style={styles.streakLabel} accessibilityLabel={`${daysSober === 1 ? 'day' : 'days'} of recovery`}>
+              <Text style={styles.streakNumber} accessibilityLabel={`${daysSober} days sober`}>
+                {daysSober}
+              </Text>
+              <Text
+                style={styles.streakLabel}
+                accessibilityLabel={`${daysSober === 1 ? 'day' : 'days'} of recovery`}
+              >
                 {daysSober === 1 ? 'day' : 'days'} of recovery
               </Text>
               <Text style={styles.streakMessage} accessibilityLabel="Encouraging message">
                 {daysSober < 7
                   ? "Every day counts. You're doing great!"
                   : daysSober < 30
-                    ? "Amazing progress! Keep going!"
+                    ? 'Amazing progress! Keep going!'
                     : "Incredible dedication. You're an inspiration!"}
               </Text>
             </View>
@@ -201,10 +214,18 @@ export function OnboardingScreen() {
         )}
 
         <View
-          style={[styles.features, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]}
+          style={[
+            styles.features,
+            { backgroundColor: theme.colors.surface, borderColor: theme.colors.border },
+          ]}
           accessibilityLabel="App features section"
         >
-          <Text style={[styles.featuresTitle, { color: theme.colors.text }]} accessibilityRole="header">What you can do:</Text>
+          <Text
+            style={[styles.featuresTitle, { color: theme.colors.text }]}
+            accessibilityRole="header"
+          >
+            What you can do:
+          </Text>
           <FeatureItem
             emoji="📓"
             title="Private Journaling"
@@ -244,7 +265,12 @@ export function OnboardingScreen() {
             accessibilityLabel="Error message"
             accessibilityLiveRegion="assertive"
           >
-            <Text style={[theme.typography.bodySmall, { color: theme.colors.danger, textAlign: 'center' }]}>
+            <Text
+              style={[
+                theme.typography.bodySmall,
+                { color: theme.colors.danger, textAlign: 'center' },
+              ]}
+            >
               {formError}
             </Text>
           </View>
@@ -258,7 +284,11 @@ export function OnboardingScreen() {
             size="large"
             testID="complete-setup-button"
             accessibilityLabel="Complete setup"
-            accessibilityHint={loading ? "Setting up your account, please wait" : "Complete the onboarding process and start your recovery journey"}
+            accessibilityHint={
+              loading
+                ? 'Setting up your account, please wait'
+                : 'Complete the onboarding process and start your recovery journey'
+            }
             accessibilityState={{ disabled: loading }}
           />
         </View>
@@ -276,11 +306,24 @@ interface FeatureItemProps {
 
 function FeatureItem({ emoji, title, description, theme }: FeatureItemProps) {
   return (
-    <View style={styles.featureItem} accessibilityRole="text" accessibilityLabel={`${title}: ${description}`}>
-      <Text style={styles.featureEmoji} accessibilityLabel={`${title} icon`}>{emoji}</Text>
+    <View
+      style={styles.featureItem}
+      accessibilityRole="text"
+      accessibilityLabel={`${title}: ${description}`}
+    >
+      <Text style={styles.featureEmoji} accessibilityLabel={`${title} icon`}>
+        {emoji}
+      </Text>
       <View style={styles.featureText}>
-        <Text style={[styles.featureTitle, { color: theme.colors.text }]} accessibilityRole="header">{title}</Text>
-        <Text style={[styles.featureDescription, { color: theme.colors.textSecondary }]}>{description}</Text>
+        <Text
+          style={[styles.featureTitle, { color: theme.colors.text }]}
+          accessibilityRole="header"
+        >
+          {title}
+        </Text>
+        <Text style={[styles.featureDescription, { color: theme.colors.textSecondary }]}>
+          {description}
+        </Text>
       </View>
     </View>
   );

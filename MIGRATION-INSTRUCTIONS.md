@@ -9,6 +9,7 @@
 ### What This Fixes
 
 Daily check-ins (morning intentions and evening pulses) are currently:
+
 - ✅ Saving to local SQLite/IndexedDB successfully
 - ✅ Being queued in the sync queue
 - ❌ **FAILING to sync to Supabase** (table doesn't exist)
@@ -36,6 +37,7 @@ Daily check-ins (morning intentions and evening pulses) are currently:
 ### Step 3: Verify Success
 
 You should see output like:
+
 ```
 CREATE TABLE
 CREATE INDEX
@@ -60,6 +62,7 @@ ORDER BY ordinal_position;
 ```
 
 **Expected Result**: Should show 9 columns:
+
 - id (uuid)
 - user_id (uuid)
 - checkin_type (text)
@@ -82,6 +85,7 @@ WHERE tablename = 'daily_checkins';
 ```
 
 **Expected Result**: Should show 4 policies:
+
 - Users can view own check-ins (SELECT)
 - Users can insert own check-ins (INSERT)
 - Users can update own check-ins (UPDATE)
@@ -105,6 +109,7 @@ WHERE tablename = 'daily_checkins';
 4. You should see the encrypted check-in data
 
 **Expected Data**:
+
 - `checkin_type`: "morning" or "evening"
 - `intention`: (encrypted string for morning)
 - `notes`: (encrypted string for evening)
@@ -142,9 +147,9 @@ DROP TABLE IF EXISTS daily_checkins;
 
 ## Migration History
 
-| Date       | Migration                       | Status   | Applied By |
-|------------|---------------------------------|----------|------------|
-| 2026-01-02 | Add daily_checkins table        | Pending  | -          |
+| Date       | Migration                | Status  | Applied By |
+| ---------- | ------------------------ | ------- | ---------- |
+| 2026-01-02 | Add daily_checkins table | Pending | -          |
 
 ---
 

@@ -23,20 +23,20 @@ function getMeetingNotificationId(meetingId: string): string {
 function calculateMeetingTrigger(
   dayOfWeek: number,
   time: string,
-  reminderMinutesBefore: number
+  reminderMinutesBefore: number,
 ): Notifications.WeeklyTriggerInput {
   const [hours, minutes] = time.split(':').map(Number);
-  
+
   // Calculate reminder time
   let reminderHours = hours;
   let reminderMinutes = minutes - reminderMinutesBefore;
-  
+
   // Handle negative minutes (goes to previous hour)
   while (reminderMinutes < 0) {
     reminderMinutes += 60;
     reminderHours -= 1;
   }
-  
+
   // Handle hour underflow (goes to previous day)
   let reminderDay = dayOfWeek;
   if (reminderHours < 0) {
@@ -58,7 +58,7 @@ function calculateMeetingTrigger(
 function getMeetingReminderContent(meeting: RegularMeeting, minutesBefore: number) {
   const timeDisplay = formatTime12Hour(meeting.time);
   const locationText = meeting.location ? ` at ${meeting.location}` : '';
-  
+
   const messages = [
     {
       title: `📅 Meeting in ${minutesBefore} minutes`,
@@ -90,9 +90,7 @@ function formatTime12Hour(time: string): string {
 /**
  * Schedule a reminder notification for a regular meeting
  */
-export async function scheduleRegularMeetingReminder(
-  meeting: RegularMeeting
-): Promise<void> {
+export async function scheduleRegularMeetingReminder(meeting: RegularMeeting): Promise<void> {
   if (!meeting.reminderEnabled) return;
 
   // Cancel existing reminder first
@@ -102,7 +100,7 @@ export async function scheduleRegularMeetingReminder(
     const trigger = calculateMeetingTrigger(
       meeting.dayOfWeek,
       meeting.time,
-      meeting.reminderMinutesBefore
+      meeting.reminderMinutesBefore,
     );
 
     const content = getMeetingReminderContent(meeting, meeting.reminderMinutesBefore);
@@ -124,7 +122,7 @@ export async function scheduleRegularMeetingReminder(
     });
 
     console.log(
-      `Scheduled meeting reminder for "${meeting.name}" on day ${meeting.dayOfWeek} at ${meeting.time}`
+      `Scheduled meeting reminder for "${meeting.name}" on day ${meeting.dayOfWeek} at ${meeting.time}`,
     );
   } catch (error) {
     console.error('Failed to schedule meeting reminder:', error);
@@ -136,9 +134,7 @@ export async function scheduleRegularMeetingReminder(
  */
 export async function cancelRegularMeetingReminder(meetingId: string): Promise<void> {
   try {
-    await Notifications.cancelScheduledNotificationAsync(
-      getMeetingNotificationId(meetingId)
-    );
+    await Notifications.cancelScheduledNotificationAsync(getMeetingNotificationId(meetingId));
   } catch (error) {
     console.error('Failed to cancel meeting reminder:', error);
   }
@@ -147,9 +143,7 @@ export async function cancelRegularMeetingReminder(meetingId: string): Promise<v
 /**
  * Schedule reminders for all meetings with reminders enabled
  */
-export async function scheduleAllMeetingReminders(
-  meetings: RegularMeeting[]
-): Promise<void> {
+export async function scheduleAllMeetingReminders(meetings: RegularMeeting[]): Promise<void> {
   const meetingsWithReminders = meetings.filter((m) => m.reminderEnabled);
 
   for (const meeting of meetingsWithReminders) {
@@ -210,8 +204,5 @@ export async function createMeetingNotificationChannel(): Promise<void> {
  */
 export async function getScheduledMeetingReminders(): Promise<Notifications.NotificationRequest[]> {
   const allNotifications = await Notifications.getAllScheduledNotificationsAsync();
-  return allNotifications.filter((n) =>
-    n.identifier.startsWith(REGULAR_MEETING_REMINDER_PREFIX)
-  );
+  return allNotifications.filter((n) => n.identifier.startsWith(REGULAR_MEETING_REMINDER_PREFIX));
 }
-

@@ -12,14 +12,14 @@ Backend documentation for Steps to Recovery - Supabase, database, sync, and encr
 
 ### Core Tables
 
-| Table | Purpose | Encryption |
-|-------|---------|------------|
-| `profiles` | User metadata (extends auth.users) | No |
-| `journal_entries` | Journal entries with mood/tags | `content` encrypted |
-| `step_work` | 12-step work progress | `content` encrypted |
-| `sponsorships` | Sponsor-sponsee relationships | No |
-| `daily_checkins` | Morning/evening check-ins | `encrypted_intention`, `encrypted_reflection`, `encrypted_mood`, `encrypted_craving` |
-| `favorite_meetings` | User's saved meetings | No |
+| Table               | Purpose                            | Encryption                                                                           |
+| ------------------- | ---------------------------------- | ------------------------------------------------------------------------------------ |
+| `profiles`          | User metadata (extends auth.users) | No                                                                                   |
+| `journal_entries`   | Journal entries with mood/tags     | `content` encrypted                                                                  |
+| `step_work`         | 12-step work progress              | `content` encrypted                                                                  |
+| `sponsorships`      | Sponsor-sponsee relationships      | No                                                                                   |
+| `daily_checkins`    | Morning/evening check-ins          | `encrypted_intention`, `encrypted_reflection`, `encrypted_mood`, `encrypted_craving` |
+| `favorite_meetings` | User's saved meetings              | No                                                                                   |
 
 ### Table Schemas
 
@@ -160,7 +160,7 @@ export async function addToSyncQueue(
   db: StorageAdapter,
   tableName: string,
   recordId: string,
-  operation: 'insert' | 'update'
+  operation: 'insert' | 'update',
 ): Promise<void>;
 
 // Add delete to queue (captures supabase_id before deletion)
@@ -168,7 +168,7 @@ export async function addDeleteToSyncQueue(
   db: StorageAdapter,
   tableName: string,
   recordId: string,
-  userId: string
+  userId: string,
 ): Promise<void>;
 
 // Process pending queue items
@@ -177,11 +177,11 @@ export async function processSyncQueue(db: StorageAdapter): Promise<SyncResult>;
 
 ### Sync Constants
 
-| Constant | Value | Purpose |
-|----------|-------|---------|
-| `NETWORK_TIMEOUT_MS` | 30000 | Max wait for Supabase response |
-| `MAX_RETRY_COUNT` | 3 | Attempts before marking failed |
-| `BASE_BACKOFF_MS` | 1000 | Base delay for exponential backoff |
+| Constant             | Value | Purpose                            |
+| -------------------- | ----- | ---------------------------------- |
+| `NETWORK_TIMEOUT_MS` | 30000 | Max wait for Supabase response     |
+| `MAX_RETRY_COUNT`    | 3     | Attempts before marking failed     |
+| `BASE_BACKOFF_MS`    | 1000  | Base delay for exponential backoff |
 
 ### Sync Triggers
 
@@ -210,20 +210,20 @@ const plaintext = await decryptContent(encryptedBody);
 
 ### Encryption Details
 
-| Aspect | Value |
-|--------|-------|
-| Algorithm | AES-256-CBC |
-| Key Derivation | PBKDF2 |
-| IV | Unique per encryption (prevents pattern analysis) |
-| Key Storage | SecureStore (device Keychain/Keystore) |
+| Aspect         | Value                                             |
+| -------------- | ------------------------------------------------- |
+| Algorithm      | AES-256-CBC                                       |
+| Key Derivation | PBKDF2                                            |
+| IV             | Unique per encryption (prevents pattern analysis) |
+| Key Storage    | SecureStore (device Keychain/Keystore)            |
 
 ### What's Encrypted
 
-| Table | Encrypted Fields |
-|-------|------------------|
-| `journal_entries` | `title`, `content` |
-| `step_work` | `content` |
-| `daily_checkins` | `encrypted_intention`, `encrypted_reflection`, `encrypted_mood`, `encrypted_craving` |
+| Table             | Encrypted Fields                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------ |
+| `journal_entries` | `title`, `content`                                                                   |
+| `step_work`       | `content`                                                                            |
+| `daily_checkins`  | `encrypted_intention`, `encrypted_reflection`, `encrypted_mood`, `encrypted_craving` |
 
 ### Never Store in Supabase
 
@@ -244,12 +244,12 @@ const plaintext = await decryptContent(encryptedBody);
 
 ### Migration Files
 
-| File | Purpose | Required |
-|------|---------|----------|
-| `supabase-schema.sql` | Base schema (profiles, journal, step_work, sponsorships) | Yes |
-| `supabase-migration-daily-checkins.sql` | Check-in sync support | **CRITICAL** |
-| `supabase-migration-favorite-meetings.sql` | Favorite meetings | Optional |
-| `supabase-schema-enhanced.sql` | Extended features | Optional |
+| File                                       | Purpose                                                  | Required     |
+| ------------------------------------------ | -------------------------------------------------------- | ------------ |
+| `supabase-schema.sql`                      | Base schema (profiles, journal, step_work, sponsorships) | Yes          |
+| `supabase-migration-daily-checkins.sql`    | Check-in sync support                                    | **CRITICAL** |
+| `supabase-migration-favorite-meetings.sql` | Favorite meetings                                        | Optional     |
+| `supabase-schema-enhanced.sql`             | Extended features                                        | Optional     |
 
 ### Migration Checklist
 
@@ -276,15 +276,16 @@ const { data, error } = await supabase
 ### Upsert Pattern (Sync)
 
 ```typescript
-const { error } = await supabase
-  .from('journal_entries')
-  .upsert({
+const { error } = await supabase.from('journal_entries').upsert(
+  {
     id: localId,
     user_id: userId,
     title: encryptedTitle,
     content: encryptedContent,
     // ...
-  }, { onConflict: 'id' });
+  },
+  { onConflict: 'id' },
+);
 ```
 
 ### Check Sync Queue Status
@@ -318,7 +319,7 @@ const { data, error } = await supabase
 const { data: otherData } = await supabase
   .from('journal_entries')
   .select('*')
-  .eq('user_id', 'other-user-id');  // RLS blocks this
+  .eq('user_id', 'other-user-id'); // RLS blocks this
 ```
 
 ### Sync Testing

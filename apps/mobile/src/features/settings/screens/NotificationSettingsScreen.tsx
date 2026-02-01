@@ -160,7 +160,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
     try {
       await sendTestNotification(
         '🔔 Test Notification',
-        'This is how your check-in reminders will look!'
+        'This is how your check-in reminders will look!',
       );
       showToast('Test notification sent.', 'success');
     } catch (error) {
@@ -249,7 +249,10 @@ export function NotificationSettingsScreen(): React.ReactElement {
         accessibilityRole="scrollbar"
         accessibilityLabel="Notification settings"
       >
-        <Text variant="title2" style={{ marginTop: theme.spacing.sm, marginBottom: theme.spacing.md }}>
+        <Text
+          variant="title2"
+          style={{ marginTop: theme.spacing.sm, marginBottom: theme.spacing.md }}
+        >
           Notifications
         </Text>
 
@@ -267,11 +270,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
             <Text variant="body" color="text">
               Notifications are disabled in your device settings.
             </Text>
-            <Text
-              variant="bodySmall"
-              color="textSecondary"
-              style={{ marginTop: theme.spacing.xs }}
-            >
+            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>
               Enable them to receive check-in reminders and milestone celebrations.
             </Text>
           </Card>
@@ -304,11 +303,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
               <View style={styles.row}>
                 <View style={styles.grow}>
                   <Text variant="labelLarge">Morning check-in</Text>
-                  <Text
-                    variant="caption"
-                    color="primary"
-                    style={{ marginTop: theme.spacing.xs }}
-                  >
+                  <Text variant="caption" color="primary" style={{ marginTop: theme.spacing.xs }}>
                     {formatTime(morningHour, morningMinute)}
                   </Text>
                 </View>
@@ -364,11 +359,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
               <View style={styles.row}>
                 <View style={styles.grow}>
                   <Text variant="labelLarge">Evening check-in</Text>
-                  <Text
-                    variant="caption"
-                    color="primary"
-                    style={{ marginTop: theme.spacing.xs }}
-                  >
+                  <Text variant="caption" color="primary" style={{ marginTop: theme.spacing.xs }}>
                     {formatTime(eveningHour, eveningMinute)}
                   </Text>
                 </View>
@@ -464,11 +455,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
         {!permissionGranted && permissionStatus === 'undetermined' && (
           <Card variant="elevated" style={{ marginTop: theme.spacing.md }}>
             <Text variant="labelLarge">Enable notifications</Text>
-            <Text
-              variant="bodySmall"
-              color="textSecondary"
-              style={{ marginTop: theme.spacing.xs }}
-            >
+            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>
               Allow notifications to receive daily reminders.
             </Text>
             <View style={{ marginTop: theme.spacing.md }}>
@@ -489,12 +476,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
             style={{ marginTop: theme.spacing.md, backgroundColor: theme.colors.surface }}
           >
             <Text variant="labelLarge">Enable notifications in Settings</Text>
-            <Text
-              variant="bodySmall"
-              color="textSecondary"
-              style={{ marginTop: theme.spacing.xs }}
-            >
-              iOS blocks prompts after denying permission. Open system settings to enable notifications.
+            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>
+              iOS blocks prompts after denying permission. Open system settings to enable
+              notifications.
             </Text>
           </Card>
         )}

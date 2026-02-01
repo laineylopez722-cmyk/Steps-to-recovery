@@ -48,11 +48,11 @@ export function useJournal() {
         emotionTags?: string[];
         stepNumber?: number;
         meetingId?: string;
-      }
+      },
     ) => {
       return await createEntry(type, content, options);
     },
-    [createEntry]
+    [createEntry],
   );
 
   // Get entry type display name
@@ -100,4 +100,3 @@ export function useJournal() {
     formatDuration,
   };
 }
-

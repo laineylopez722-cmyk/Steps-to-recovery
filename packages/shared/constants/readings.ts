@@ -289,5 +289,3 @@ export const READING_CATEGORIES: { key: Reading['category']; label: string; icon
   { key: 'step', label: 'Step Readings', icon: '👣' },
   { key: 'tradition', label: 'Traditions', icon: '⚖️' },
 ];
-
-

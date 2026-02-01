@@ -7,6 +7,7 @@ labels: bug
 ## Description
 
 ## Steps to Reproduce
+
 1.
 2.
 3.
@@ -18,6 +19,7 @@ labels: bug
 ## Screenshots / Logs
 
 ## Environment
+
 - OS:
 - Device:
 - App version:

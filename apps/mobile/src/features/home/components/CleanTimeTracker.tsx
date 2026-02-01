@@ -73,7 +73,12 @@ export function CleanTimeTracker({
 
   if (isLoading) {
     return (
-      <Card variant="elevated" style={styles.card} accessibilityRole="progressbar" accessibilityLabel="Loading clean time">
+      <Card
+        variant="elevated"
+        style={styles.card}
+        accessibilityRole="progressbar"
+        accessibilityLabel="Loading clean time"
+      >
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
@@ -146,12 +151,12 @@ export function CleanTimeTracker({
             style={[styles.motivationalText, { color: theme.colors.textSecondary }]}
           >
             {days < 7
-              ? "Great start! Keep going!"
+              ? 'Great start! Keep going!'
               : days < 30
-              ? "Another week stronger. Keep going!"
-              : days < 90
-              ? "Amazing progress! You're doing it!"
-              : "Incredible! You're an inspiration!"}
+                ? 'Another week stronger. Keep going!'
+                : days < 90
+                  ? "Amazing progress! You're doing it!"
+                  : "Incredible! You're an inspiration!"}
           </Animated.Text>
         )}
 
@@ -172,7 +177,9 @@ export function CleanTimeTracker({
               <Text style={{ fontSize: 20 }}>🤝</Text>
             </View>
             <Text style={[styles.statNumber, { color: theme.colors.text }]}>0</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>SPONSOR EST</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+              SPONSOR EST
+            </Text>
           </View>
 
           <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
@@ -182,7 +189,9 @@ export function CleanTimeTracker({
               <Text style={{ fontSize: 20 }}>📅</Text>
             </View>
             <Text style={[styles.statNumber, { color: theme.colors.text }]}>{days}</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>DAY STREAK</Text>
+            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+              DAY STREAK
+            </Text>
           </View>
         </Animated.View>
 
@@ -194,9 +203,7 @@ export function CleanTimeTracker({
           >
             <View style={styles.milestoneHeader}>
               <View style={styles.milestoneLeft}>
-                <Text style={styles.milestoneEmoji}>
-                  {nextMilestone.icon}
-                </Text>
+                <Text style={styles.milestoneEmoji}>{nextMilestone.icon}</Text>
                 <View style={styles.milestoneTextContainer}>
                   <Text style={[styles.milestoneTitle, { color: theme.colors.text }]}>
                     Next Milestone
@@ -219,10 +226,7 @@ export function CleanTimeTracker({
         )}
 
         {/* Time breakdown */}
-        <Animated.View
-          entering={FadeInUp.delay(500).springify()}
-          style={styles.timeBreakdown}
-        >
+        <Animated.View entering={FadeInUp.delay(500).springify()} style={styles.timeBreakdown}>
           <View style={styles.timeItem}>
             <Text style={[styles.timeNumber, { color: theme.colors.text }]}>{hours}</Text>
             <Text style={[styles.timeLabel, { color: theme.colors.textSecondary }]}>Hours</Text>

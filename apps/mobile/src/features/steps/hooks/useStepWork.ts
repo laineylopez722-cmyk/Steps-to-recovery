@@ -32,7 +32,10 @@ async function decryptStepWork(stepWork: StepWork): Promise<StepWorkDecrypted> {
 /**
  * Hook to get all step work for a specific step
  */
-export function useStepWork(userId: string, stepNumber: number): {
+export function useStepWork(
+  userId: string,
+  stepNumber: number,
+): {
   questions: StepWorkDecrypted[];
   progress: number;
   isLoading: boolean;
@@ -49,11 +52,11 @@ export function useStepWork(userId: string, stepNumber: number): {
       try {
         const result = await db.getAllAsync<StepWork>(
           'SELECT * FROM step_work WHERE user_id = ? AND step_number = ? ORDER BY question_number ASC',
-          [userId, stepNumber]
+          [userId, stepNumber],
         );
 
         const decrypted = await Promise.all(result.map(decryptStepWork));
-        const completed = decrypted.filter(q => q.is_complete).length;
+        const completed = decrypted.filter((q) => q.is_complete).length;
         const total = decrypted.length;
         const progress = total > 0 ? (completed / total) * 100 : 0;
 
@@ -78,14 +81,29 @@ export function useStepWork(userId: string, stepNumber: number): {
  * Hook to save answer to a step question
  */
 export function useSaveStepAnswer(userId: string): {
-  saveAnswer: (stepNumber: number, questionNumber: number, answer: string, isComplete: boolean) => Promise<void>;
+  saveAnswer: (
+    stepNumber: number,
+    questionNumber: number,
+    answer: string,
+    isComplete: boolean,
+  ) => Promise<void>;
   isPending: boolean;
 } {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: async ({ stepNumber, questionNumber, answer, isComplete }: { stepNumber: number; questionNumber: number; answer: string; isComplete: boolean }) => {
+    mutationFn: async ({
+      stepNumber,
+      questionNumber,
+      answer,
+      isComplete,
+    }: {
+      stepNumber: number;
+      questionNumber: number;
+      answer: string;
+      isComplete: boolean;
+    }) => {
       if (!db) throw new Error('Database not initialized');
 
       try {
@@ -95,14 +113,23 @@ export function useSaveStepAnswer(userId: string): {
         // Check if answer already exists
         const existing = await db.getFirstAsync<{ id: string }>(
           'SELECT id FROM step_work WHERE user_id = ? AND step_number = ? AND question_number = ?',
-          [userId, stepNumber, questionNumber]
+          [userId, stepNumber, questionNumber],
         );
 
         if (existing) {
           // Update existing answer
           await db.runAsync(
             'UPDATE step_work SET encrypted_answer = ?, is_complete = ?, completed_at = ?, updated_at = ?, sync_status = ? WHERE user_id = ? AND step_number = ? AND question_number = ?',
-            [encrypted_answer, isComplete ? 1 : 0, isComplete ? now : null, now, 'pending', userId, stepNumber, questionNumber]
+            [
+              encrypted_answer,
+              isComplete ? 1 : 0,
+              isComplete ? now : null,
+              now,
+              'pending',
+              userId,
+              stepNumber,
+              questionNumber,
+            ],
           );
 
           // Add to sync queue for cloud backup
@@ -112,7 +139,18 @@ export function useSaveStepAnswer(userId: string): {
           const id = generateId('step');
           await db.runAsync(
             'INSERT INTO step_work (id, user_id, step_number, question_number, encrypted_answer, is_complete, completed_at, created_at, updated_at, sync_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-            [id, userId, stepNumber, questionNumber, encrypted_answer, isComplete ? 1 : 0, isComplete ? now : null, now, now, 'pending']
+            [
+              id,
+              userId,
+              stepNumber,
+              questionNumber,
+              encrypted_answer,
+              isComplete ? 1 : 0,
+              isComplete ? now : null,
+              now,
+              now,
+              'pending',
+            ],
           );
 
           // Add to sync queue for cloud backup
@@ -162,14 +200,14 @@ export function useStepProgress(userId: string): {
            FROM step_work
            WHERE user_id = ?
            GROUP BY step_number`,
-          [userId]
+          [userId],
         );
 
         const answeredMap = new Map<number, number>(
-          result.map(row => [row.step_number, row.answered || 0])
+          result.map((row) => [row.step_number, row.answered || 0]),
         );
 
-        const stepDetails = STEP_PROMPTS.map(step => {
+        const stepDetails = STEP_PROMPTS.map((step) => {
           const answered = answeredMap.get(step.step) ?? 0;
           const total = step.prompts.length;
           const percent = total > 0 ? Math.round((answered / total) * 100) : 0;
@@ -182,11 +220,11 @@ export function useStepProgress(userId: string): {
         });
 
         const stepsCompleted = stepDetails
-          .filter(detail => detail.total > 0 && detail.answered >= detail.total)
-          .map(detail => detail.stepNumber);
+          .filter((detail) => detail.total > 0 && detail.answered >= detail.total)
+          .map((detail) => detail.stepNumber);
 
         const currentStep =
-          stepDetails.find(detail => detail.answered < detail.total)?.stepNumber ?? 1;
+          stepDetails.find((detail) => detail.answered < detail.total)?.stepNumber ?? 1;
         const overallProgress = (stepsCompleted.length / 12) * 100;
 
         return { stepsCompleted, currentStep, overallProgress, stepDetails };

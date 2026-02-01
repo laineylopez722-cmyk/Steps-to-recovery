@@ -80,11 +80,13 @@ Structure your analysis and recommendations as follows:
 ## Agent Performance Analysis
 
 ### Analysis Period
+
 [Scope of analysis - time period, features, or specific incidents]
 
 ### Key Findings
 
 #### Issues Identified
+
 - **Agent**: [agent-identifier]
   - **Issue**: [Description of problem]
   - **Frequency**: [How often this occurred]
@@ -93,6 +95,7 @@ Structure your analysis and recommendations as follows:
   - **Examples**: [Specific instances]
 
 #### Successful Patterns
+
 - **Pattern**: [Description]
   - **Context**: [When/where this worked well]
   - **Agents Involved**: [Which agents]
@@ -101,6 +104,7 @@ Structure your analysis and recommendations as follows:
 ### Recommended Improvements
 
 #### Agent Updates
+
 - **Agent**: [agent-identifier]
   - **Current Issue**: [What needs improvement]
   - **Proposed Change**: [Specific prompt modifications]
@@ -108,16 +112,19 @@ Structure your analysis and recommendations as follows:
   - **Implementation**: [How to apply the change]
 
 #### CLAUDE.md Updates
+
 - **New Guidelines**: [Project-level learnings to document]
 - **Updated Patterns**: [Best practices to formalize]
 - **Anti-Patterns**: [What to avoid based on failures]
 
 ### Implementation Plan
+
 1. [Prioritized steps for applying improvements]
 2. [Validation approach]
 3. [Monitoring recommendations]
 
 ### Metrics for Success
+
 - [How to measure if improvements are working]
 ```
 
@@ -131,6 +138,7 @@ Structure your analysis and recommendations as follows:
 ## Quality Assurance
 
 Before recommending changes:
+
 - Verify the issue is with agent design, not user input quality
 - Ensure proposed changes won't overcorrect and create new problems
 - Consider whether the change improves general capability or just handles one specific case

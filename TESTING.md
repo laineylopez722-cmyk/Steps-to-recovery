@@ -8,13 +8,13 @@ This guide covers the testing strategy, how to run tests, and how to write new t
 
 ### Coverage by Module
 
-| Module | Tests | Pass Rate | Notes |
-|--------|-------|-----------|-------|
-| **Encryption Utils** | 55 | 89% | Critical security code |
-| **Sync Service** | 25 | ~85% | Cloud backup functionality |
-| **UI Components** | 30 | ~95% | SyncStatus, ErrorBoundary |
-| **Navigation** | 10 | 100% | Navigation references |
-| **Integration** | 7 | ~70% | End-to-end flows |
+| Module               | Tests | Pass Rate | Notes                      |
+| -------------------- | ----- | --------- | -------------------------- |
+| **Encryption Utils** | 55    | 89%       | Critical security code     |
+| **Sync Service**     | 25    | ~85%      | Cloud backup functionality |
+| **UI Components**    | 30    | ~95%      | SyncStatus, ErrorBoundary  |
+| **Navigation**       | 10    | 100%      | Navigation references      |
+| **Integration**      | 7     | ~70%      | End-to-end flows           |
 
 ### Coverage Thresholds (jest.config.js)
 
@@ -79,6 +79,7 @@ npm test -- --testPathPattern=sync
 ### Continuous Integration
 
 Tests run automatically on:
+
 - Every push to feature branches
 - Pull request creation/updates
 - Before merging to main branch
@@ -406,25 +407,27 @@ it('should not log sensitive data in errors', () => {
 ### What to Test
 
 **✅ DO test**:
+
 - **Critical security code**: Encryption, authentication, RLS
 - **Business logic**: Journal creation, sync logic, milestone calculations
 - **User-facing features**: Navigation, form validation, error states
 - **Error handling**: Network failures, invalid data, missing keys
 
 **❌ DON'T test**:
+
 - **Third-party libraries**: Trust `crypto-js`, `@tanstack/react-query`
 - **Expo SDK internals**: Trust `expo-sqlite`, `expo-secure-store`
 - **Implementation details**: Internal state, private methods
 
 ### Coverage Goals by File Type
 
-| File Type | Target Coverage | Priority |
-|-----------|----------------|----------|
-| `utils/encryption.ts` | 90%+ | **Critical** |
-| `services/syncService.ts` | 70%+ | **High** |
-| `hooks/use*.ts` | 75%+ | **High** |
-| `components/*.tsx` | 60%+ | **Medium** |
-| `screens/*.tsx` | 40%+ | **Low** |
+| File Type                 | Target Coverage | Priority     |
+| ------------------------- | --------------- | ------------ |
+| `utils/encryption.ts`     | 90%+            | **Critical** |
+| `services/syncService.ts` | 70%+            | **High**     |
+| `hooks/use*.ts`           | 75%+            | **High**     |
+| `components/*.tsx`        | 60%+            | **Medium**   |
+| `screens/*.tsx`           | 40%+            | **Low**      |
 
 ---
 
@@ -459,6 +462,7 @@ Add to `.vscode/launch.json`:
 ### Common Test Failures
 
 **"Cannot read properties of undefined (reading 'OS')"**
+
 ```typescript
 // Solution: Mock Platform in test file
 jest.mock('react-native', () => ({
@@ -467,6 +471,7 @@ jest.mock('react-native', () => ({
 ```
 
 **"A dynamic import callback was invoked without --experimental-vm-modules"**
+
 ```typescript
 // Solution: Mock Platform.OS to use web path (avoids dynamic imports)
 jest.mock('react-native', () => ({
@@ -475,6 +480,7 @@ jest.mock('react-native', () => ({
 ```
 
 **"No instances found with node type: 'TouchableOpacity'"**
+
 ```typescript
 // Solution: Use testID instead of type
 <TouchableOpacity testID="submit-button">...</TouchableOpacity>
@@ -492,6 +498,7 @@ fireEvent.press(getByTestId('submit-button'));
 **Monthly Goal**: Increase coverage by 5% per month until reaching 85%+
 
 **Process**:
+
 1. Run `npm run test:coverage` to generate coverage report
 2. Open `coverage/lcov-report/index.html` in browser
 3. Identify files with <60% coverage
@@ -511,6 +518,7 @@ For new features, write tests FIRST:
 4. **Repeat** for next requirement
 
 **Example**:
+
 ```typescript
 // 1. Write test first (RED)
 it('should validate email format', () => {

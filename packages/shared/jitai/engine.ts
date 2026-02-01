@@ -1,7 +1,7 @@
 /**
  * JITAI Engine (Just-In-Time Adaptive Intervention)
  * Rule-based intervention system that provides timely support based on user context
- * 
+ *
  * This is a privacy-first, local-only implementation that analyzes patterns
  * in the user's data to provide helpful nudges and interventions.
  */
@@ -38,7 +38,7 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
     priority: 'medium',
     cooldownHours: 24,
   },
-  
+
   // Pattern-based triggers
   {
     id: 'missed-checkins',
@@ -70,7 +70,7 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
   {
     id: 'meeting-gap',
     name: 'Meeting Attendance Gap',
-    description: 'User hasn\'t logged a meeting in over a week',
+    description: "User hasn't logged a meeting in over a week",
     type: 'pattern',
     condition: (ctx) => ctx.daysSinceLastMeeting >= 7,
     priority: 'medium',
@@ -79,13 +79,13 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
   {
     id: 'sponsor-contact-gap',
     name: 'Sponsor Contact Gap',
-    description: 'User hasn\'t contacted sponsor in over a week',
+    description: "User hasn't contacted sponsor in over a week",
     type: 'pattern',
     condition: (ctx) => ctx.hasSponsor && ctx.daysSinceLastSponsorContact >= 7,
     priority: 'medium',
     cooldownHours: 72,
   },
-  
+
   // Milestone-based triggers
   {
     id: 'approaching-milestone',
@@ -94,7 +94,7 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
     type: 'milestone',
     condition: (ctx) => {
       const milestones = [30, 60, 90, 180, 365];
-      return milestones.some(m => ctx.soberDays >= m - 3 && ctx.soberDays < m);
+      return milestones.some((m) => ctx.soberDays >= m - 3 && ctx.soberDays < m);
     },
     priority: 'low',
     cooldownHours: 168, // 1 week
@@ -113,7 +113,7 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
     priority: 'medium',
     cooldownHours: 24,
   },
-  
+
   // Early recovery triggers
   {
     id: 'early-recovery-support',
@@ -138,12 +138,15 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
 /**
  * Get intervention message for a trigger
  */
-export function getInterventionForTrigger(trigger: JitaiTrigger, ctx: JitaiContext): JitaiIntervention {
+export function getInterventionForTrigger(
+  trigger: JitaiTrigger,
+  ctx: JitaiContext,
+): JitaiIntervention {
   const interventions: Record<string, JitaiIntervention> = {
     'morning-checkin': {
       triggerId: trigger.id,
       title: '🌅 Set Your Intention',
-      message: 'Good morning! Take a moment to set your intention for today. What\'s your focus?',
+      message: "Good morning! Take a moment to set your intention for today. What's your focus?",
       action: { type: 'navigate', screen: '/(tabs)' },
       category: 'encouragement',
     },
@@ -163,15 +166,17 @@ export function getInterventionForTrigger(trigger: JitaiTrigger, ctx: JitaiConte
     },
     'declining-mood': {
       triggerId: trigger.id,
-      title: '💙 We Notice You\'re Struggling',
-      message: 'Your mood has been lower lately. Would you like to talk to someone or try a coping tool?',
+      title: "💙 We Notice You're Struggling",
+      message:
+        'Your mood has been lower lately. Would you like to talk to someone or try a coping tool?',
       action: { type: 'navigate', screen: '/(tabs)/emergency' },
       category: 'support',
     },
     'rising-cravings': {
       triggerId: trigger.id,
       title: '⚠️ Craving Support',
-      message: 'We noticed your cravings have been higher. Remember, cravings pass. Would you like some tools to help?',
+      message:
+        'We noticed your cravings have been higher. Remember, cravings pass. Would you like some tools to help?',
       action: { type: 'navigate', screen: '/coping' },
       category: 'crisis',
     },
@@ -185,7 +190,8 @@ export function getInterventionForTrigger(trigger: JitaiTrigger, ctx: JitaiConte
     'sponsor-contact-gap': {
       triggerId: trigger.id,
       title: '📞 Call Your Sponsor',
-      message: 'It\'s been a while since you connected with your sponsor. A quick call can make a big difference.',
+      message:
+        "It's been a while since you connected with your sponsor. A quick call can make a big difference.",
       action: { type: 'navigate', screen: '/contacts' },
       category: 'connection',
     },
@@ -199,7 +205,8 @@ export function getInterventionForTrigger(trigger: JitaiTrigger, ctx: JitaiConte
     'high-risk-day': {
       triggerId: trigger.id,
       title: '💪 Weekend Check-in',
-      message: 'Weekends can be challenging. Do you have a plan? Remember your tools and support network.',
+      message:
+        'Weekends can be challenging. Do you have a plan? Remember your tools and support network.',
       action: { type: 'navigate', screen: '/scenarios' },
       category: 'support',
     },
@@ -213,19 +220,22 @@ export function getInterventionForTrigger(trigger: JitaiTrigger, ctx: JitaiConte
     'halt-check': {
       triggerId: trigger.id,
       title: '🔍 HALT Check',
-      message: 'When you\'re feeling low, check: Are you Hungry, Angry, Lonely, or Tired? Address the basics first.',
+      message:
+        "When you're feeling low, check: Are you Hungry, Angry, Lonely, or Tired? Address the basics first.",
       action: { type: 'navigate', screen: '/coping' },
       category: 'support',
     },
   };
 
-  return interventions[trigger.id] || {
-    triggerId: trigger.id,
-    title: '💙 Recovery Check-in',
-    message: 'Just checking in. How are you doing today?',
-    action: { type: 'navigate', screen: '/(tabs)' },
-    category: 'encouragement',
-  };
+  return (
+    interventions[trigger.id] || {
+      triggerId: trigger.id,
+      title: '💙 Recovery Check-in',
+      message: 'Just checking in. How are you doing today?',
+      action: { type: 'navigate', screen: '/(tabs)' },
+      category: 'encouragement',
+    }
+  );
 }
 
 /**
@@ -233,7 +243,7 @@ export function getInterventionForTrigger(trigger: JitaiTrigger, ctx: JitaiConte
  */
 function getNextMilestone(currentDays: number): number {
   const milestones = [30, 60, 90, 180, 365, 730, 1095];
-  return milestones.find(m => m > currentDays) || currentDays + 365;
+  return milestones.find((m) => m > currentDays) || currentDays + 365;
 }
 
 /**
@@ -262,7 +272,7 @@ const triggerCooldowns: Map<string, Date> = new Map();
 function isOnCooldown(trigger: JitaiTrigger): boolean {
   const lastTriggered = triggerCooldowns.get(trigger.id);
   if (!lastTriggered) return false;
-  
+
   const cooldownMs = trigger.cooldownHours * 60 * 60 * 1000;
   return Date.now() - lastTriggered.getTime() < cooldownMs;
 }
@@ -279,11 +289,11 @@ function markTriggered(triggerId: string): void {
  */
 export function evaluateTriggers(context: JitaiContext): JitaiIntervention[] {
   const interventions: JitaiIntervention[] = [];
-  
+
   for (const trigger of JITAI_TRIGGERS) {
     // Skip if on cooldown
     if (isOnCooldown(trigger)) continue;
-    
+
     // Check condition
     try {
       if (trigger.condition(context)) {
@@ -295,17 +305,17 @@ export function evaluateTriggers(context: JitaiContext): JitaiIntervention[] {
       console.error(`Error evaluating trigger ${trigger.id}:`, error);
     }
   }
-  
+
   // Sort by priority
   const priorityOrder: Record<TriggerPriority, number> = { urgent: 0, high: 1, medium: 2, low: 3 };
   interventions.sort((a, b) => {
-    const triggerA = JITAI_TRIGGERS.find(t => t.id === a.triggerId);
-    const triggerB = JITAI_TRIGGERS.find(t => t.id === b.triggerId);
+    const triggerA = JITAI_TRIGGERS.find((t) => t.id === a.triggerId);
+    const triggerB = JITAI_TRIGGERS.find((t) => t.id === b.triggerId);
     const priorityA: TriggerPriority = triggerA?.priority || 'low';
     const priorityB: TriggerPriority = triggerB?.priority || 'low';
     return priorityOrder[priorityA] - priorityOrder[priorityB];
   });
-  
+
   // Return only the highest priority intervention to avoid overwhelming user
   return interventions.slice(0, 1);
 }
@@ -315,7 +325,7 @@ export function evaluateTriggers(context: JitaiContext): JitaiIntervention[] {
  */
 export async function runJitaiEvaluation(context: JitaiContext): Promise<void> {
   const interventions = evaluateTriggers(context);
-  
+
   for (const intervention of interventions) {
     await scheduleJitaiNotification(intervention);
   }
@@ -331,23 +341,25 @@ export function resetCooldowns(): void {
 /**
  * Get current cooldown status (for debugging)
  */
-export function getCooldownStatus(): Record<string, { lastTriggered: Date; remainingHours: number }> {
+export function getCooldownStatus(): Record<
+  string,
+  { lastTriggered: Date; remainingHours: number }
+> {
   const status: Record<string, { lastTriggered: Date; remainingHours: number }> = {};
-  
+
   for (const trigger of JITAI_TRIGGERS) {
     const lastTriggered = triggerCooldowns.get(trigger.id);
     if (lastTriggered) {
       const elapsedMs = Date.now() - lastTriggered.getTime();
       const cooldownMs = trigger.cooldownHours * 60 * 60 * 1000;
       const remainingMs = Math.max(0, cooldownMs - elapsedMs);
-      
+
       status[trigger.id] = {
         lastTriggered,
-        remainingHours: Math.round(remainingMs / (60 * 60 * 1000) * 10) / 10,
+        remainingHours: Math.round((remainingMs / (60 * 60 * 1000)) * 10) / 10,
       };
     }
   }
-  
+
   return status;
 }
-

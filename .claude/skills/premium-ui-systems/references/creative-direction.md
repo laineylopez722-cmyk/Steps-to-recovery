@@ -5,6 +5,7 @@ Build distinctive interfaces that avoid generic AI-generated aesthetics.
 ## The Generic AI Problem
 
 AI-generated UIs tend to converge on safe, overused patterns:
+
 - **Typography**: Inter, Roboto, system fonts everywhere
 - **Colors**: Purple gradients on white backgrounds
 - **Layouts**: Centered everything, predictable grids
@@ -32,17 +33,17 @@ Pick an extreme and execute it well. Halfway = forgettable.
 
 **Aesthetic Archetypes** (examples, not exhaustive):
 
-| Direction | Characteristics | Good For |
-|-----------|----------------|----------|
-| **Brutally Minimal** | High contrast, stark B&W, generous space | Technical products (Vercel) |
-| **Editorial Luxury** | Large typography, atmospheric gradients | Premium SaaS (Stripe) |
-| **Technical Precision** | Grids, muted colors, subtle lighting | Productivity tools (Linear) |
-| **Motion-Forward** | Smooth transitions, interactive showcases | Creative tools (Framer) |
-| **Organic/Natural** | Warm tones, soft shapes, texture | Wellness, lifestyle |
-| **Retro-Futuristic** | Neon accents, geometric shapes, metallic | Gaming, crypto, experimental |
-| **Industrial/Utilitarian** | Raw materials, function-first, monospace | Dev tools, infrastructure |
-| **Art Deco/Geometric** | Bold geometry, gold accents, symmetry | Luxury, finance |
-| **Soft/Pastel** | Gentle colors, rounded corners, light | Consumer apps, social |
+| Direction                  | Characteristics                           | Good For                     |
+| -------------------------- | ----------------------------------------- | ---------------------------- |
+| **Brutally Minimal**       | High contrast, stark B&W, generous space  | Technical products (Vercel)  |
+| **Editorial Luxury**       | Large typography, atmospheric gradients   | Premium SaaS (Stripe)        |
+| **Technical Precision**    | Grids, muted colors, subtle lighting      | Productivity tools (Linear)  |
+| **Motion-Forward**         | Smooth transitions, interactive showcases | Creative tools (Framer)      |
+| **Organic/Natural**        | Warm tones, soft shapes, texture          | Wellness, lifestyle          |
+| **Retro-Futuristic**       | Neon accents, geometric shapes, metallic  | Gaming, crypto, experimental |
+| **Industrial/Utilitarian** | Raw materials, function-first, monospace  | Dev tools, infrastructure    |
+| **Art Deco/Geometric**     | Bold geometry, gold accents, symmetry     | Luxury, finance              |
+| **Soft/Pastel**            | Gentle colors, rounded corners, light     | Consumer apps, social        |
 
 **Critical**: Both minimalism and maximalism work when executed with precision. The key is intentionality, not intensity.
 
@@ -53,6 +54,7 @@ Pick an extreme and execute it well. Halfway = forgettable.
 ### Avoid Generic Defaults
 
 **Overused AI Defaults** (avoid unless intentional):
+
 - Inter (most common AI default)
 - Roboto
 - Arial / Helvetica
@@ -64,11 +66,13 @@ Pick an extreme and execute it well. Halfway = forgettable.
 **Formula**: Display font (headlines) + Refined body font
 
 **Display Font Characteristics**:
+
 - Strong character and personality
 - Appropriate for your tone
 - Used sparingly (headlines, CTAs only)
 
 **Body Font Characteristics**:
+
 - Excellent readability
 - Neutral enough to support display
 - Strong hinting for screens
@@ -118,6 +122,7 @@ Marketing can be MUCH bolder than product UI:
 ### Avoid Generic Palettes
 
 **Overused AI Defaults**:
+
 - Purple gradient on white
 - Blue-purple-pink gradients
 - Pastel everything with no hierarchy
@@ -160,22 +165,30 @@ Marketing can be MUCH bolder than product UI:
 Don't default to solid white. Create depth:
 
 **Gradient Meshes**:
+
 ```css
-background: radial-gradient(at 0% 0%, rgba(255,119,0,0.15) 0%, transparent 50%),
-            radial-gradient(at 100% 100%, rgba(147,51,234,0.15) 0%, transparent 50%);
+background:
+  radial-gradient(at 0% 0%, rgba(255, 119, 0, 0.15) 0%, transparent 50%),
+  radial-gradient(at 100% 100%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);
 ```
 
 **Noise Texture** (adds richness):
+
 ```css
 background: #fff;
-background-image: 
-  url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
 ```
 
 **Geometric Patterns**:
+
 ```css
-background-image: 
-  repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.02) 10px, rgba(0,0,0,0.02) 20px);
+background-image: repeating-linear-gradient(
+  45deg,
+  transparent,
+  transparent 10px,
+  rgba(0, 0, 0, 0.02) 10px,
+  rgba(0, 0, 0, 0.02) 20px
+);
 ```
 
 ---
@@ -185,6 +198,7 @@ background-image:
 ### Avoid Predictable Grids
 
 **Generic AI Default**:
+
 - Everything centered
 - Symmetrical grid
 - Cards all same size
@@ -193,6 +207,7 @@ background-image:
 **Distinctive Approaches**:
 
 **Asymmetry with Purpose**:
+
 ```
 ┌─────────────────┬───────┐
 │                 │       │
@@ -206,6 +221,7 @@ background-image:
 ```
 
 **Overlap and Layering**:
+
 ```
 ┌─────────────────┐
 │   Background    │
@@ -217,6 +233,7 @@ background-image:
 ```
 
 **Diagonal Flow**:
+
 ```css
 .diagonal-section {
   transform: skewY(-2deg);
@@ -227,6 +244,7 @@ background-image:
 ```
 
 **Bento Grids** (varied sizing):
+
 ```css
 .bento {
   display: grid;
@@ -234,9 +252,16 @@ background-image:
   gap: 1rem;
 }
 
-.card-hero { grid-column: span 4; grid-row: span 2; }
-.card-feature { grid-column: span 2; }
-.card-small { grid-column: span 1; }
+.card-hero {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+.card-feature {
+  grid-column: span 2;
+}
+.card-small {
+  grid-column: span 1;
+}
 ```
 
 ---
@@ -250,6 +275,7 @@ background-image:
 **Do**: Make an intentional choice
 
 **Generous Space** (luxury, editorial):
+
 ```css
 .hero {
   padding: 15vw 0;
@@ -259,6 +285,7 @@ background-image:
 ```
 
 **Controlled Density** (data, productivity):
+
 ```css
 .dashboard {
   display: grid;
@@ -318,6 +345,7 @@ Don't trap everything in the grid. Strategic breakouts create interest:
 Instead of micro-animations everywhere, create ONE memorable moment:
 
 **Page Load Orchestration**:
+
 ```css
 .hero-title {
   animation: fadeSlideUp 0.8s var(--ease-luxe) 0.2s both;
@@ -342,17 +370,15 @@ Instead of micro-animations everywhere, create ONE memorable moment:
 ```
 
 **Scroll-Triggered Reveals**:
+
 ```jsx
 // Use intersection observer
 const { ref, inView } = useInView({
   threshold: 0.1,
-  triggerOnce: true
+  triggerOnce: true,
 });
 
-<section 
-  ref={ref}
-  className={inView ? 'animate-in' : 'opacity-0'}
-/>
+<section ref={ref} className={inView ? 'animate-in' : 'opacity-0'} />;
 ```
 
 ---
@@ -364,6 +390,7 @@ const { ref, inView } = useInView({
 ### Minimalist/Refined Design
 
 Requires restraint and precision:
+
 - Careful spacing ratios
 - Perfect alignment
 - Subtle, meaningful transitions
@@ -371,13 +398,15 @@ Requires restraint and precision:
 
 ```tsx
 // Minimalist button (deceptively simple)
-<button className="
+<button
+  className="
   px-8 py-4
   text-sm font-medium tracking-wide
   border border-gray-900
   hover:bg-gray-900 hover:text-white
   transition-all duration-200
-">
+"
+>
   Get Started
 </button>
 ```
@@ -385,6 +414,7 @@ Requires restraint and precision:
 ### Maximalist/Rich Design
 
 Requires elaborate implementation:
+
 - Layered backgrounds
 - Complex animations
 - Rich interactions
@@ -392,7 +422,8 @@ Requires elaborate implementation:
 
 ```tsx
 // Maximalist button (elaborate)
-<button className="
+<button
+  className="
   relative px-8 py-4 overflow-hidden
   bg-gradient-to-r from-purple-600 to-pink-600
   text-white font-bold
@@ -401,11 +432,12 @@ Requires elaborate implementation:
   hover:before:translate-y-0
   after:absolute after:inset-0 after:shadow-lg
   group
-">
+"
+>
   <span className="relative z-10 flex items-center gap-2">
     Get Started
     <svg className="w-5 h-5 transition-transform group-hover:translate-x-1">
-      <path d="M5 12h14M12 5l7 7-7 7"/>
+      <path d="M5 12h14M12 5l7 7-7 7" />
     </svg>
   </span>
 </button>
@@ -418,12 +450,14 @@ Requires elaborate implementation:
 **NEVER**: Generate the same design twice. Vary systematically.
 
 **Vary Between Generations**:
+
 - Light vs dark themes
 - Different font pairings
 - Different aesthetic directions
 - Different layout approaches
 
 **Avoid Convergence**:
+
 - If last design was minimal → try maximalist
 - If last used Inter → try distinctive display font
 - If last was centered → try asymmetric
@@ -436,26 +470,31 @@ Requires elaborate implementation:
 Before calling a design "distinctive":
 
 **Typography Check**:
+
 - [ ] Not using Inter/Roboto/Arial without intention
 - [ ] Font pairing has clear character
 - [ ] Type scale supports hierarchy
 
 **Color Check**:
+
 - [ ] Not using purple gradient on white
 - [ ] Color choices match tone/purpose
 - [ ] Atmospheric backgrounds create depth
 
 **Layout Check**:
+
 - [ ] Not defaulting to centered symmetry
 - [ ] Intentional use of space (generous OR dense)
 - [ ] Grid-breaking where appropriate
 
 **Motion Check**:
+
 - [ ] Easing matches brand character
 - [ ] One memorable moment (not scattered micro-animations)
 - [ ] Reduced motion support
 
 **Differentiation Check**:
+
 - [ ] Users will remember ONE thing about this UI
 - [ ] Design feels appropriate for context
 - [ ] Would pass the "screenshot test" (recognizable with no logo)

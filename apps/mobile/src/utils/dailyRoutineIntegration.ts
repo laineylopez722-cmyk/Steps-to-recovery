@@ -1,7 +1,7 @@
 /**
  * Daily Routine Integration
  * Connects daily check-ins with daily readings for enhanced daily routine flow
- * 
+ *
  * This module provides functions to integrate the daily readings feature
  * with the existing check-in system, creating a cohesive daily practice.
  */
@@ -38,17 +38,16 @@ const MAX_ROUTINE_SCORE = 100;
 export function calculateRoutineScore(data: Partial<DailyRoutineData>): number {
   let score = 0;
 
-  
   // Check-in completion (50 points)
   if (data.hasCheckedIn) {
     score += 50;
   }
-  
+
   // Reading reflection completion (50 points)
   if (data.hasReflected) {
     score += 50;
   }
-  
+
   return Math.min(score, MAX_ROUTINE_SCORE);
 }
 
@@ -62,35 +61,37 @@ export function getDailyRoutineGuidance(data: DailyRoutineData): {
   encouragement: string;
 } {
   const { hasCheckedIn, hasReflected, routineScore } = data;
-  
+
   if (!hasCheckedIn && !hasReflected) {
     return {
       message: "Good morning! Let's start your day with intention.",
       nextAction: 'checkin',
-      encouragement: "Taking time for your daily check-in helps set a positive tone for the day ahead."
+      encouragement:
+        'Taking time for your daily check-in helps set a positive tone for the day ahead.',
     };
   }
-  
+
   if (hasCheckedIn && !hasReflected) {
     return {
       message: "Great check-in! Now let's explore today's reading.",
       nextAction: 'reading',
-      encouragement: "Today's reading has insights that might resonate with where you are right now."
+      encouragement:
+        "Today's reading has insights that might resonate with where you are right now.",
     };
   }
-  
+
   if (!hasCheckedIn && hasReflected) {
     return {
-      message: "Wonderful reflection! A quick check-in would complete your routine.",
+      message: 'Wonderful reflection! A quick check-in would complete your routine.',
       nextAction: 'checkin',
-      encouragement: "Pairing reflection with check-in creates a more complete daily practice."
+      encouragement: 'Pairing reflection with check-in creates a more complete daily practice.',
     };
   }
-  
+
   return {
     message: "Excellent! You've completed your daily routine.",
     nextAction: 'complete',
-    encouragement: `Your routine score today is ${routineScore}/100. You're building a strong foundation for recovery.`
+    encouragement: `Your routine score today is ${routineScore}/100. You're building a strong foundation for recovery.`,
   };
 }
 
@@ -103,38 +104,38 @@ export function getReadingSuggestions(checkin: DailyCheckin | null): {
 } {
   const focusAreas: string[] = [];
   const reflectionPrompts: string[] = [];
-  
+
   if (!checkin) {
     return {
       focusAreas: ['mindfulness', 'self-compassion', 'daily intention'],
       reflectionPrompts: [
-        "What am I most grateful for today?",
-        "How can I show kindness to myself today?",
-        "What positive intention do I want to set?"
-      ]
+        'What am I most grateful for today?',
+        'How can I show kindness to myself today?',
+        'What positive intention do I want to set?',
+      ],
     };
   }
-  
+
   // Analyze mood from check-in
   if (checkin.encrypted_mood) {
     // Would decrypt and analyze mood here
     focusAreas.push('emotional awareness', 'mood balance');
-    reflectionPrompts.push("How did I handle my emotions today?");
+    reflectionPrompts.push('How did I handle my emotions today?');
   }
-  
+
   // Analyze cravings from check-in
   if (checkin.encrypted_craving) {
     focusAreas.push('craving management', 'healthy coping');
-    reflectionPrompts.push("What healthy alternatives did I choose today?");
+    reflectionPrompts.push('What healthy alternatives did I choose today?');
   }
-  
+
   // Add general reflection prompts
   reflectionPrompts.push(
-    "What did I learn about myself today?",
-    "How did I practice self-care today?",
-    "What am I looking forward to tomorrow?"
+    'What did I learn about myself today?',
+    'How did I practice self-care today?',
+    'What am I looking forward to tomorrow?',
   );
-  
+
   return { focusAreas, reflectionPrompts };
 }
 
@@ -149,43 +150,44 @@ export function createDailySummary(data: DailyRoutineData): {
   celebrateMessage?: string;
 } {
   const { hasCheckedIn, hasReflected, routineScore } = data;
-  
+
   const insights: string[] = [];
-  let title = "Daily Summary";
+  let title = 'Daily Summary';
   let summary = "Here's how your day unfolded:";
-  
+
   if (routineScore === 100) {
-    title = "Complete Day! 🌟";
+    title = 'Complete Day! 🌟';
     summary = "You completed your full daily routine today. That's something to celebrate!";
-    insights.push("Consistency in daily practices builds lasting positive change.");
+    insights.push('Consistency in daily practices builds lasting positive change.');
   } else if (routineScore >= 50) {
-    title = "Good Progress 📈";
-    summary = "You made meaningful progress in your daily routine today.";
+    title = 'Good Progress 📈';
+    summary = 'You made meaningful progress in your daily routine today.';
   } else {
-    title = "Every Step Counts 💙";
-    summary = "Remember, recovery is about progress, not perfection.";
-    insights.push("Even small steps forward are valuable and worth acknowledging.");
+    title = 'Every Step Counts 💙';
+    summary = 'Remember, recovery is about progress, not perfection.';
+    insights.push('Even small steps forward are valuable and worth acknowledging.');
   }
-  
+
   // Add specific insights based on activities completed
   if (hasCheckedIn) {
-    insights.push("Taking time to check in with yourself shows self-awareness and care.");
+    insights.push('Taking time to check in with yourself shows self-awareness and care.');
   }
-  
+
   if (hasReflected) {
-    insights.push("Your reflection today contributes to deeper self-understanding.");
+    insights.push('Your reflection today contributes to deeper self-understanding.');
   }
-  
+
   // Generate celebration message for complete routines
-  const celebrateMessage = routineScore === 100 
-    ? "You've built another day of positive habits. Each day like this strengthens your foundation for lasting recovery."
-    : undefined;
-  
+  const celebrateMessage =
+    routineScore === 100
+      ? "You've built another day of positive habits. Each day like this strengthens your foundation for lasting recovery."
+      : undefined;
+
   return {
     title,
     summary,
     insights,
-    celebrateMessage
+    celebrateMessage,
   };
 }
 
@@ -197,24 +199,25 @@ export function calculateRoutineStreak(routineHistory: DailyRoutineData[]): {
   longestStreak: number;
   completionRate: number;
 } {
-  const sortedHistory = routineHistory.sort((a, b) => 
-    new Date(b.date).getTime() - new Date(a.date).getTime()
+  const sortedHistory = routineHistory.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
-  
+
   // Calculate current streak (working backwards from today)
   let currentStreak = 0;
   for (const day of sortedHistory) {
-    if (day.routineScore >= 50) { // At least 50% completion
+    if (day.routineScore >= 50) {
+      // At least 50% completion
       currentStreak++;
     } else {
       break;
     }
   }
-  
+
   // Calculate longest streak
   let longestStreak = 0;
   let tempStreak = 0;
-  
+
   for (const day of sortedHistory.reverse()) {
     if (day.routineScore >= 50) {
       tempStreak++;
@@ -223,16 +226,16 @@ export function calculateRoutineStreak(routineHistory: DailyRoutineData[]): {
       tempStreak = 0;
     }
   }
-  
+
   // Calculate completion rate
   const totalDays = routineHistory.length;
-  const completedDays = routineHistory.filter(day => day.routineScore >= 50).length;
+  const completedDays = routineHistory.filter((day) => day.routineScore >= 50).length;
   const completionRate = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
-  
+
   return {
     currentStreak,
     longestStreak,
-    completionRate: Math.round(completionRate)
+    completionRate: Math.round(completionRate),
   };
 }
 
@@ -243,24 +246,24 @@ export function getMotivationalMessage(streak: number, completionRate: number): 
   if (streak >= 30) {
     return "Incredible! You've built a solid routine that's become part of who you are. This consistency is transforming your life.";
   }
-  
+
   if (streak >= 7) {
     return "You're building momentum! A week of consistent daily practices shows real commitment to your growth.";
   }
-  
+
   if (streak >= 3) {
-    return "Great start! Three days in a row is the beginning of a powerful new habit.";
+    return 'Great start! Three days in a row is the beginning of a powerful new habit.';
   }
-  
+
   if (completionRate >= 70) {
     return "You're doing well overall! Even with some ups and downs, you're showing up for yourself consistently.";
   }
-  
+
   if (completionRate >= 40) {
     return "Keep going! You're making progress, and each day you practice these routines, you're investing in your wellbeing.";
   }
-  
-  return "Every journey begins with a single step. Today is a perfect day to recommit to the daily practices that support your recovery.";
+
+  return 'Every journey begins with a single step. Today is a perfect day to recommit to the daily practices that support your recovery.';
 }
 
 /**
@@ -273,6 +276,6 @@ export function logRoutineEvent(event: {
   logger.info('Daily routine event', {
     event: event.type,
     ...event.data,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 }

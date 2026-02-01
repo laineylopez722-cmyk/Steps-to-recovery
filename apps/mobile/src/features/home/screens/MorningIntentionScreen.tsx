@@ -16,7 +16,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useCreateCheckIn } from '../hooks/useCheckIns';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { TextArea, Button, Card, Toast, AnimatedCheckmark } from '../../../design-system/components';
+import {
+  TextArea,
+  Button,
+  Card,
+  Toast,
+  AnimatedCheckmark,
+} from '../../../design-system/components';
 import { Slider } from '../../../components/Slider';
 import { hapticSuccess, hapticSelection, hapticError } from '../../../utils/haptics';
 
@@ -24,7 +30,9 @@ interface MorningIntentionScreenProps {
   userId: string;
 }
 
-export function MorningIntentionScreen({ userId }: MorningIntentionScreenProps): React.ReactElement {
+export function MorningIntentionScreen({
+  userId,
+}: MorningIntentionScreenProps): React.ReactElement {
   const navigation = useNavigation();
   const theme = useTheme();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
@@ -37,12 +45,15 @@ export function MorningIntentionScreen({ userId }: MorningIntentionScreenProps):
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Handle mood slider change with haptic feedback
-  const handleMoodChange = useCallback((value: number) => {
-    if (value !== mood) {
-      hapticSelection();
-    }
-    setMood(value);
-  }, [mood]);
+  const handleMoodChange = useCallback(
+    (value: number) => {
+      if (value !== mood) {
+        hapticSelection();
+      }
+      setMood(value);
+    },
+    [mood],
+  );
 
   // Handle successful completion animation
   const handleSuccessAnimationComplete = useCallback(() => {
@@ -88,19 +99,11 @@ export function MorningIntentionScreen({ userId }: MorningIntentionScreenProps):
         <Animated.View entering={FadeInDown.delay(100).springify()}>
           <Card variant="flat" style={styles.headerCard}>
             <Text
-              style={[
-                theme.typography.largeTitle,
-                { color: theme.colors.text, marginBottom: 4 },
-              ]}
+              style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 4 }]}
             >
               Good Morning
             </Text>
-            <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
+            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
               Set your intention for today
             </Text>
           </Card>
@@ -124,12 +127,7 @@ export function MorningIntentionScreen({ userId }: MorningIntentionScreenProps):
         {/* Mood Section */}
         <Animated.View entering={FadeInDown.delay(300).springify()}>
           <Card variant="flat" style={styles.moodCard}>
-            <Text
-              style={[
-                theme.typography.title3,
-                { color: theme.colors.text, marginBottom: 4 },
-              ]}
-            >
+            <Text style={[theme.typography.title3, { color: theme.colors.text, marginBottom: 4 }]}>
               How are you feeling right now?
             </Text>
             <Text
@@ -190,12 +188,7 @@ export function MorningIntentionScreen({ userId }: MorningIntentionScreenProps):
       </ScrollView>
 
       {/* Success Modal */}
-      <Modal
-        visible={showSuccessModal}
-        transparent
-        animationType="fade"
-        statusBarTranslucent
-      >
+      <Modal visible={showSuccessModal} transparent animationType="fade" statusBarTranslucent>
         <View style={styles.successModalOverlay}>
           <Animated.View
             entering={FadeIn.duration(200)}

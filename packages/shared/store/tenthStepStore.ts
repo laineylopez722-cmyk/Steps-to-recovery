@@ -7,10 +7,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
-import type {
-  TenthStepReview,
-  DbTenthStepReview,
-} from '../types';
+import type { TenthStepReview, DbTenthStepReview } from '../types';
 
 interface DecryptedTenthStepReview {
   id: string;
@@ -44,15 +41,18 @@ interface TenthStepState {
     couldDoBetter?: string;
     gratefulFor?: string;
   }) => Promise<TenthStepReview>;
-  updateReview: (id: string, updates: Partial<{
-    wasResentful?: string;
-    wasSelfish?: string;
-    wasDishonest?: string;
-    wasAfraid?: string;
-    oweApology?: string;
-    couldDoBetter?: string;
-    gratefulFor?: string;
-  }>) => Promise<void>;
+  updateReview: (
+    id: string,
+    updates: Partial<{
+      wasResentful?: string;
+      wasSelfish?: string;
+      wasDishonest?: string;
+      wasAfraid?: string;
+      oweApology?: string;
+      couldDoBetter?: string;
+      gratefulFor?: string;
+    }>,
+  ) => Promise<void>;
   deleteReview: (id: string) => Promise<void>;
   getDecryptedReview: (id: string) => Promise<DecryptedTenthStepReview | null>;
   calculateStreak: () => Promise<number>;
@@ -78,7 +78,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
     try {
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbTenthStepReview>(
-        'SELECT * FROM tenth_step_reviews ORDER BY date DESC'
+        'SELECT * FROM tenth_step_reviews ORDER BY date DESC',
       );
 
       const reviews: TenthStepReview[] = rows.map((row) => ({
@@ -112,7 +112,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbTenthStepReview>(
         'SELECT * FROM tenth_step_reviews ORDER BY date DESC LIMIT ?',
-        [limit]
+        [limit],
       );
 
       const reviews: TenthStepReview[] = rows.map((row) => ({
@@ -156,7 +156,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
     // Check if review for today already exists
     const existing = await db.getFirstAsync<DbTenthStepReview>(
       'SELECT * FROM tenth_step_reviews WHERE date = ?',
-      [dateStr]
+      [dateStr],
     );
 
     if (existing) {
@@ -192,7 +192,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
         encryptedData.could_do_better,
         encryptedData.grateful_for,
         now.toISOString(),
-      ]
+      ],
     );
 
     const newReview: TenthStepReview = {
@@ -260,7 +260,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
     values.push(id);
     await db.runAsync(
       `UPDATE tenth_step_reviews SET ${updateFields.join(', ')} WHERE id = ?`,
-      values
+      values,
     );
 
     // Reload reviews
@@ -273,7 +273,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
   deleteReview: async (id: string) => {
     const db = await getDatabase();
     await db.runAsync('DELETE FROM tenth_step_reviews WHERE id = ?', [id]);
-    
+
     const streak = await get().calculateStreak();
     set((state) => ({
       reviews: state.reviews.filter((r) => r.id !== id),
@@ -297,7 +297,9 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
         wasDishonest: review.wasDishonest ? await decryptContent(review.wasDishonest) : undefined,
         wasAfraid: review.wasAfraid ? await decryptContent(review.wasAfraid) : undefined,
         oweApology: review.oweApology ? await decryptContent(review.oweApology) : undefined,
-        couldDoBetter: review.couldDoBetter ? await decryptContent(review.couldDoBetter) : undefined,
+        couldDoBetter: review.couldDoBetter
+          ? await decryptContent(review.couldDoBetter)
+          : undefined,
         gratefulFor: review.gratefulFor ? await decryptContent(review.gratefulFor) : undefined,
         createdAt: review.createdAt,
       };
@@ -313,7 +315,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
   calculateStreak: async () => {
     const db = await getDatabase();
     const rows = await db.getAllAsync<{ date: string }>(
-      'SELECT DISTINCT date FROM tenth_step_reviews ORDER BY date DESC'
+      'SELECT DISTINCT date FROM tenth_step_reviews ORDER BY date DESC',
     );
 
     if (rows.length === 0) return 0;
@@ -355,4 +357,3 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
     return get().getTodayReview() !== undefined;
   },
 }));
-

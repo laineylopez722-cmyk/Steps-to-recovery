@@ -87,7 +87,12 @@ interface CreateMeetingData {
 }
 
 // Encrypted field names for type safety
-type EncryptedFieldName = 'keyTakeaways' | 'whatILearned' | 'quoteHeard' | 'connectionNotes' | 'shareReflection';
+type EncryptedFieldName =
+  | 'keyTakeaways'
+  | 'whatILearned'
+  | 'quoteHeard'
+  | 'connectionNotes'
+  | 'shareReflection';
 type EncryptedFieldMapping = {
   field: EncryptedFieldName;
   dbField: string;
@@ -115,20 +120,27 @@ interface UpdateMeetingData {
 
 interface MeetingActions {
   // Core CRUD operations
-  loadMeetings: (options?: { page?: number; pageSize?: number; refresh?: boolean }) => Promise<void>;
+  loadMeetings: (options?: {
+    page?: number;
+    pageSize?: number;
+    refresh?: boolean;
+  }) => Promise<void>;
   createMeeting: (data: CreateMeetingData) => Promise<MeetingLog>;
   updateMeeting: (id: string, data: UpdateMeetingData) => Promise<void>;
   deleteMeeting: (id: string) => Promise<void>;
   getMeetingById: (id: string) => Promise<MeetingLog | null>;
 
   // Enhanced operations
-  searchMeetings: (query: string, filters?: {
-    startDate?: Date;
-    endDate?: Date;
-    type?: MeetingType;
-    minMood?: number;
-    maxMood?: number;
-  }) => Promise<MeetingLog[]>;
+  searchMeetings: (
+    query: string,
+    filters?: {
+      startDate?: Date;
+      endDate?: Date;
+      type?: MeetingType;
+      minMood?: number;
+      maxMood?: number;
+    },
+  ) => Promise<MeetingLog[]>;
   loadMoreMeetings: () => Promise<void>;
 
   // Utility functions
@@ -176,7 +188,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       return;
     }
 
-    set(state => ({
+    set((state) => ({
       loadingStates: { ...state.loadingStates, loadMeetings: true },
       error: null,
       ...(refresh && { meetings: [], pagination: { ...pagination, page: 1, hasMore: false } }),
@@ -187,7 +199,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
 
       // Get total count for pagination
       const countResult = await db.getFirstAsync<{ count: number }>(
-        'SELECT COUNT(*) as count FROM meeting_logs'
+        'SELECT COUNT(*) as count FROM meeting_logs',
       );
       const total = countResult?.count || 0;
 
@@ -196,7 +208,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
 
       const rows = await db.getAllAsync<DbMeetingLog>(
         'SELECT * FROM meeting_logs ORDER BY attended_at DESC LIMIT ? OFFSET ?',
-        [pageSize, offset]
+        [pageSize, offset],
       );
 
       logger.debug('Loading meetings', {
@@ -204,17 +216,15 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
         pageSize,
         total,
         loaded: rows.length,
-        offset
+        offset,
       });
 
       // Convert database rows to MeetingLog objects with lazy decryption
-      const meetings: MeetingLog[] = await Promise.all(
-        rows.map(row => dbRowToMeetingLog(row))
-      );
+      const meetings: MeetingLog[] = await Promise.all(rows.map((row) => dbRowToMeetingLog(row)));
 
       const hasMore = offset + rows.length < total;
 
-      set(state => ({
+      set((state) => ({
         meetings: refresh ? meetings : [...state.meetings, ...meetings],
         loadingStates: { ...state.loadingStates, loadMeetings: false },
         pagination: {
@@ -231,11 +241,11 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
         count: meetings.length,
         total,
         page,
-        hasMore
+        hasMore,
       });
     } catch (error) {
       logger.error('Failed to load meetings', error);
-      set(state => ({
+      set((state) => ({
         loadingStates: { ...state.loadingStates, loadMeetings: false },
         error: 'Failed to load meetings. Please try again.',
       }));
@@ -251,7 +261,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       throw new Error(errorMessage);
     }
 
-    set(state => ({
+    set((state) => ({
       loadingStates: { ...state.loadingStates, createMeeting: true },
       error: null,
     }));
@@ -264,14 +274,15 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
     try {
       // Encrypt sensitive fields
       encryptedFields = await withRetry(
-        () => encryptMeetingFields({
-          keyTakeaways: data.keyTakeaways,
-          whatILearned: data.whatILearned,
-          quoteHeard: data.quoteHeard,
-          connectionNotes: data.connectionNotes,
-          shareReflection: data.shareReflection,
-        }),
-        { maxAttempts: 2 }
+        () =>
+          encryptMeetingFields({
+            keyTakeaways: data.keyTakeaways,
+            whatILearned: data.whatILearned,
+            quoteHeard: data.quoteHeard,
+            connectionNotes: data.connectionNotes,
+            shareReflection: data.shareReflection,
+          }),
+        { maxAttempts: 2 },
       );
 
       const db = await withRetry(() => getDatabase(), { maxAttempts: 3 });
@@ -301,7 +312,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
           data.didShare ? 1 : 0,
           encryptedFields.encryptedShareReflection,
           data.regularMeetingId || null,
-        ]
+        ],
       );
 
       const meeting: MeetingLog = {
@@ -324,7 +335,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
         regularMeetingId: data.regularMeetingId,
       };
 
-      set(state => ({
+      set((state) => ({
         meetings: [meeting, ...state.meetings],
         loadingStates: { ...state.loadingStates, createMeeting: false },
         pagination: {
@@ -353,7 +364,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       return meeting;
     } catch (error) {
       logger.error('Failed to create meeting', error);
-      set(state => ({
+      set((state) => ({
         loadingStates: { ...state.loadingStates, createMeeting: false },
         error: 'Failed to save meeting. Please try again.',
       }));
@@ -363,7 +374,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
 
   updateMeeting: async (id, data) => {
     // Find existing meeting for validation and rollback
-    const existingMeeting = get().meetings.find(m => m.id === id);
+    const existingMeeting = get().meetings.find((m) => m.id === id);
     if (!existingMeeting) {
       throw new Error('Meeting not found');
     }
@@ -377,7 +388,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       throw new Error(errorMessage);
     }
 
-    set(state => ({
+    set((state) => ({
       loadingStates: { ...state.loadingStates, updateMeeting: true },
       error: null,
     }));
@@ -442,30 +453,28 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
         if (data[field] !== undefined) {
           updates.push(`${dbField} = ?`);
           const value = data[field];
-          const encryptedValue = required || value
-            ? await withRetry(() => encryptContent(value as string), { maxAttempts: 2 })
-            : null;
+          const encryptedValue =
+            required || value
+              ? await withRetry(() => encryptContent(value as string), { maxAttempts: 2 })
+              : null;
           values.push(encryptedValue);
         }
       }
 
       if (updates.length === 0) {
-        set(state => ({
+        set((state) => ({
           loadingStates: { ...state.loadingStates, updateMeeting: false },
         }));
         return;
       }
 
       values.push(id);
-      await db.runAsync(
-        `UPDATE meeting_logs SET ${updates.join(', ')} WHERE id = ?`,
-        values
-      );
+      await db.runAsync(`UPDATE meeting_logs SET ${updates.join(', ')} WHERE id = ?`, values);
 
       // Update local state
       const updatedMeeting = { ...existingMeeting, ...data };
-      set(state => ({
-        meetings: state.meetings.map(m => m.id === id ? updatedMeeting : m),
+      set((state) => ({
+        meetings: state.meetings.map((m) => (m.id === id ? updatedMeeting : m)),
         loadingStates: { ...state.loadingStates, updateMeeting: false },
       }));
 
@@ -474,11 +483,14 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       logger.info('Meeting updated successfully', {
         meetingId: id,
         changes: Object.keys(data),
-        moodImprovement: calculateMoodImprovement(updatedMeeting.moodBefore, updatedMeeting.moodAfter),
+        moodImprovement: calculateMoodImprovement(
+          updatedMeeting.moodBefore,
+          updatedMeeting.moodAfter,
+        ),
       });
     } catch (error) {
       logger.error('Failed to update meeting', error);
-      set(state => ({
+      set((state) => ({
         loadingStates: { ...state.loadingStates, updateMeeting: false },
         error: 'Failed to update meeting. Please try again.',
       }));
@@ -488,12 +500,12 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
 
   deleteMeeting: async (id) => {
     // Find existing meeting for potential rollback
-    const existingMeeting = get().meetings.find(m => m.id === id);
+    const existingMeeting = get().meetings.find((m) => m.id === id);
     if (!existingMeeting) {
       throw new Error('Meeting not found');
     }
 
-    set(state => ({
+    set((state) => ({
       loadingStates: { ...state.loadingStates, deleteMeeting: true },
       error: null,
     }));
@@ -503,8 +515,8 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
 
       await db.runAsync('DELETE FROM meeting_logs WHERE id = ?', [id]);
 
-      set(state => ({
-        meetings: state.meetings.filter(m => m.id !== id),
+      set((state) => ({
+        meetings: state.meetings.filter((m) => m.id !== id),
         loadingStates: { ...state.loadingStates, deleteMeeting: false },
         pagination: {
           ...state.pagination,
@@ -521,7 +533,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       });
     } catch (error) {
       logger.error('Failed to delete meeting', error);
-      set(state => ({
+      set((state) => ({
         loadingStates: { ...state.loadingStates, deleteMeeting: false },
         error: 'Failed to delete meeting. Please try again.',
       }));
@@ -532,27 +544,26 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
   getMeetingById: async (id) => {
     // Check cache first
     const { meetings } = get();
-    const cached = meetings.find(m => m.id === id);
+    const cached = meetings.find((m) => m.id === id);
     if (cached) {
       logger.debug('Meeting found in cache', { meetingId: id });
       return cached;
     }
 
-    set(state => ({
+    set((state) => ({
       loadingStates: { ...state.loadingStates, getMeetingById: true },
       error: null,
     }));
 
     try {
       const db = await withRetry(() => getDatabase(), { maxAttempts: 3 });
-      const row = await db.getFirstAsync<DbMeetingLog>(
-        'SELECT * FROM meeting_logs WHERE id = ?',
-        [id]
-      );
+      const row = await db.getFirstAsync<DbMeetingLog>('SELECT * FROM meeting_logs WHERE id = ?', [
+        id,
+      ]);
 
       if (!row) {
         logger.debug('Meeting not found in database', { meetingId: id });
-        set(state => ({
+        set((state) => ({
           loadingStates: { ...state.loadingStates, getMeetingById: false },
         }));
         return null;
@@ -561,8 +572,8 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       const meeting = await dbRowToMeetingLog(row);
 
       // Add to cache if not already there
-      set(state => ({
-        meetings: state.meetings.some(m => m.id === id)
+      set((state) => ({
+        meetings: state.meetings.some((m) => m.id === id)
           ? state.meetings
           : [...state.meetings, meeting],
         loadingStates: { ...state.loadingStates, getMeetingById: false },
@@ -577,7 +588,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       return meeting;
     } catch (error) {
       logger.error('Failed to get meeting by ID', error);
-      set(state => ({
+      set((state) => ({
         loadingStates: { ...state.loadingStates, getMeetingById: false },
         error: 'Failed to load meeting details.',
       }));
@@ -591,7 +602,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
 
     // Apply filters
     if (filters.startDate || filters.endDate) {
-      results = results.filter(meeting => {
+      results = results.filter((meeting) => {
         const meetingDate = meeting.attendedAt;
         if (filters.startDate && meetingDate < filters.startDate) return false;
         if (filters.endDate && meetingDate > filters.endDate) return false;
@@ -600,11 +611,11 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
     }
 
     if (filters.type) {
-      results = results.filter(meeting => meeting.type === filters.type);
+      results = results.filter((meeting) => meeting.type === filters.type);
     }
 
     if (filters.minMood !== undefined || filters.maxMood !== undefined) {
-      results = results.filter(meeting => {
+      results = results.filter((meeting) => {
         if (filters.minMood !== undefined && meeting.moodAfter < filters.minMood) return false;
         if (filters.maxMood !== undefined && meeting.moodAfter > filters.maxMood) return false;
         return true;
@@ -614,7 +625,7 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
     // Apply search query
     if (query.trim()) {
       const lowercaseQuery = query.toLowerCase();
-      results = results.filter(meeting => {
+      results = results.filter((meeting) => {
         const searchableText = [
           meeting.name,
           meeting.location,
@@ -625,9 +636,9 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
           meeting.shareReflection,
           ...meeting.topicTags,
         ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
+          .filter(Boolean)
+          .join(' ')
+          .toLowerCase();
 
         return searchableText.includes(lowercaseQuery);
       });
@@ -667,16 +678,14 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
     monthAgo.setMonth(now.getMonth() - 1);
 
     // Calculate stats
-    const meetingsThisWeek = meetings.filter(
-      (m) => new Date(m.attendedAt) >= weekAgo
-    ).length;
+    const meetingsThisWeek = meetings.filter((m) => new Date(m.attendedAt) >= weekAgo).length;
 
-    const meetingsThisMonth = meetings.filter(
-      (m) => new Date(m.attendedAt) >= monthAgo
-    ).length;
+    const meetingsThisMonth = meetings.filter((m) => new Date(m.attendedAt) >= monthAgo).length;
 
     // Average mood improvement
-    const moodImprovements = meetings.map((m) => calculateMoodImprovement(m.moodBefore, m.moodAfter));
+    const moodImprovements = meetings.map((m) =>
+      calculateMoodImprovement(m.moodBefore, m.moodAfter),
+    );
     const averageMoodImprovement =
       moodImprovements.length > 0
         ? moodImprovements.reduce((a, b) => a + b, 0) / moodImprovements.length

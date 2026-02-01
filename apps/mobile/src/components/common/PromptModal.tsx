@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, View, Text, TextInput, TouchableOpacity, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  Modal,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 
 type PromptModalProps = {
   visible: boolean;
@@ -37,12 +46,7 @@ export default function PromptModal({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onCancel}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <Pressable
         className="flex-1 bg-black/50"
         onPress={onCancel}
@@ -102,4 +106,3 @@ export default function PromptModal({
     </Modal>
   );
 }
-

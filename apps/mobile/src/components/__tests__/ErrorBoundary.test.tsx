@@ -39,7 +39,7 @@ describe('ErrorBoundary', () => {
     const { getByText } = render(
       <ErrorBoundary>
         <ThrowingChild shouldThrow={false} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // The boundary should render children normally (no fallback UI)
@@ -50,7 +50,7 @@ describe('ErrorBoundary', () => {
     const { getByText } = render(
       <ErrorBoundary>
         <ThrowingChild shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(getByText('Something went wrong')).toBeTruthy();
@@ -64,7 +64,7 @@ describe('ErrorBoundary', () => {
     const { getByText } = render(
       <ErrorBoundary onReset={mockOnReset}>
         <ThrowingChild shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     fireEvent.press(getByText('Try Again'));
@@ -85,7 +85,7 @@ describe('ErrorBoundary', () => {
     const { getByText, queryByText, rerender } = render(
       <ErrorBoundary>
         <ConditionalThrower />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     expect(getByText('Something went wrong')).toBeTruthy();
@@ -100,7 +100,7 @@ describe('ErrorBoundary', () => {
     rerender(
       <ErrorBoundary>
         <ConditionalThrower />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // Fallback should no longer be shown
@@ -113,7 +113,7 @@ describe('ErrorBoundary', () => {
     const { getByText, queryByText } = render(
       <ErrorBoundary>
         <ThrowingChild shouldThrow={true} />
-      </ErrorBoundary>
+      </ErrorBoundary>,
     );
 
     // Should show generic security message, not actual error details

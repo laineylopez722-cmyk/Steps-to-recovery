@@ -29,7 +29,7 @@ interface UseRegularMeetingsReturn {
       reminderEnabled?: boolean;
       reminderMinutesBefore?: number;
       notes?: string;
-    }
+    },
   ) => Promise<RegularMeeting>;
   updateMeeting: (
     id: string,
@@ -43,7 +43,7 @@ interface UseRegularMeetingsReturn {
       reminderEnabled: boolean;
       reminderMinutesBefore: number;
       notes: string;
-    }>
+    }>,
   ) => Promise<void>;
   removeMeeting: (id: string) => Promise<void>;
   getMeetingById: (id: string) => Promise<RegularMeeting | null>;
@@ -76,36 +76,39 @@ export function useRegularMeetings(autoLoad = true): UseRegularMeetingsReturn {
     const today = new Date();
     const todayDay = today.getDay();
     let daysUntil = meeting.dayOfWeek - todayDay;
-    
+
     if (daysUntil < 0) daysUntil += 7;
-    
+
     // If it's today, check if the time has passed
     if (daysUntil === 0) {
       const [hours, minutes] = meeting.time.split(':').map(Number);
       const meetingTime = new Date(today);
       meetingTime.setHours(hours, minutes, 0, 0);
-      
+
       if (meetingTime < today) {
         daysUntil = 7; // Next week
       }
     }
-    
+
     return daysUntil;
   }, []);
 
   // Get the next occurrence date for a meeting
-  const getNextOccurrence = useCallback((meeting: RegularMeeting): Date => {
-    const today = new Date();
-    const daysUntil = getDaysUntil(meeting);
-    
-    const nextDate = new Date(today);
-    nextDate.setDate(today.getDate() + daysUntil);
-    
-    const [hours, minutes] = meeting.time.split(':').map(Number);
-    nextDate.setHours(hours, minutes, 0, 0);
-    
-    return nextDate;
-  }, [getDaysUntil]);
+  const getNextOccurrence = useCallback(
+    (meeting: RegularMeeting): Date => {
+      const today = new Date();
+      const daysUntil = getDaysUntil(meeting);
+
+      const nextDate = new Date(today);
+      nextDate.setDate(today.getDate() + daysUntil);
+
+      const [hours, minutes] = meeting.time.split(':').map(Number);
+      nextDate.setHours(hours, minutes, 0, 0);
+
+      return nextDate;
+    },
+    [getDaysUntil],
+  );
 
   return {
     // State
@@ -136,4 +139,3 @@ export function useRegularMeetings(autoLoad = true): UseRegularMeetingsReturn {
     getNextOccurrence,
   };
 }
-

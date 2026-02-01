@@ -100,7 +100,7 @@ export const opacities = {
  */
 export function createTimingConfig(
   duration: keyof typeof timingDurations = 'normal',
-  easing: keyof typeof easingCurves = 'easeOut'
+  easing: keyof typeof easingCurves = 'easeOut',
 ) {
   return {
     duration: timingDurations[duration],

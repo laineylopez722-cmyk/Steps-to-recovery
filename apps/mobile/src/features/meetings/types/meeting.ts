@@ -162,10 +162,7 @@ export interface CacheRegion {
 /**
  * Helper function to check if a meeting matches filters
  */
-export function meetingMatchesFilters(
-  meeting: CachedMeeting,
-  filters: MeetingFilters
-): boolean {
+export function meetingMatchesFilters(meeting: CachedMeeting, filters: MeetingFilters): boolean {
   // Day filter
   if (filters.day_of_week !== null && meeting.day_of_week !== filters.day_of_week) {
     return false;
@@ -190,7 +187,7 @@ export function meetingMatchesFilters(
     try {
       const meetingTypes = JSON.parse(meeting.types) as string[];
       const hasMatchingType = filters.meeting_types.some((filterType) =>
-        meetingTypes.includes(filterType)
+        meetingTypes.includes(filterType),
       );
       if (!hasMatchingType) {
         return false;
@@ -208,12 +205,7 @@ export function meetingMatchesFilters(
  * Calculate distance between two coordinates using Haversine formula
  * Returns distance in miles
  */
-export function calculateDistance(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
+export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 3959; // Earth's radius in miles
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);

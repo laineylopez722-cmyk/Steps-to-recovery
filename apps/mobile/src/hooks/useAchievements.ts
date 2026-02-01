@@ -8,10 +8,10 @@ import { useAchievementStore, type AchievementContext } from '@recovery/shared';
 import { useSobriety } from './useSobriety';
 import { useCheckin } from './useCheckin';
 import { logger } from '../utils/logger';
-import { 
-  useContactStore, 
-  useMeetingStore, 
-  useRegularMeetingStore, 
+import {
+  useContactStore,
+  useMeetingStore,
+  useRegularMeetingStore,
   useStepWorkStore,
   useTenthStepStore,
   usePhoneStore,
@@ -74,21 +74,21 @@ export function useAchievements() {
   const buildContext = useCallback(async (): Promise<AchievementContext> => {
     // Count contacts
     const contactsCount = contacts.length;
-    const hasSponsor = contacts.some(c => c.role === 'sponsor');
-    
+    const hasSponsor = contacts.some((c) => c.role === 'sponsor');
+
     // Check for home group
-    const hasHomeGroup = regularMeetings.some(m => m.isHomeGroup);
-    
+    const hasHomeGroup = regularMeetings.some((m) => m.isHomeGroup);
+
     // Count meetings
     const meetingsCount = meetings.length;
-    
+
     // Calculate meetings in first 90 days (if applicable)
     let meetingsInFirst90Days = 0;
     if (soberDays >= 90) {
       // Placeholder: assume all logged meetings count until start-date tracking is added
       meetingsInFirst90Days = meetings.length;
     }
-    
+
     // Get reading streak
     let readingStreak = 0;
     try {
@@ -96,7 +96,7 @@ export function useAchievements() {
     } catch (error) {
       logger.error('Failed to get reading streak', error);
     }
-    
+
     // Calculate step progress
     const stepProgressMap: Record<number, { answered: number; total: number }> = {};
     for (let step = 1; step <= 12; step++) {
@@ -106,7 +106,7 @@ export function useAchievements() {
         total: stepEntry?.totalQuestions || 10, // Default to 10 questions per step
       };
     }
-    
+
     // Count phone therapy days (days with 3+ calls)
     // Group call history by date and count days with 3+ calls
     const callsByDate: Record<string, number> = {};
@@ -115,13 +115,13 @@ export function useAchievements() {
       callsByDate[dateStr] = (callsByDate[dateStr] || 0) + 1;
     });
     const phoneTherapyDays = Object.values(callsByDate).filter((count) => count >= 3).length;
-    
+
     // Count meetings with shares
     const meetingsWithShares = meetings.filter((m: MeetingLog) => m.didShare).length;
-    
+
     // Tenth step streak - from the tenth step store
     // (tenthStepStreak is already calculated from store hook above)
-    
+
     // Gratitude streak - check daily checkins that have gratitude entries
     // For now, we'll use the checkin streak as a proxy since check-ins often include gratitude
     const gratitudeStreak = checkinStreak;
@@ -141,14 +141,23 @@ export function useAchievements() {
       stepProgress: stepProgressMap,
       meetingsWithShares,
     };
-  }, [soberDays, contacts, meetings, regularMeetings, checkinStreak, progress, tenthStepStreak, callHistory]);
+  }, [
+    soberDays,
+    contacts,
+    meetings,
+    regularMeetings,
+    checkinStreak,
+    progress,
+    tenthStepStreak,
+    callHistory,
+  ]);
 
   /**
    * Check all automatic achievements
    */
   const checkAchievements = useCallback(async () => {
     if (!isInitialized) return [];
-    
+
     const context = await buildContext();
     return checkAutoAchievements(context);
   }, [isInitialized, buildContext, checkAutoAchievements]);
@@ -164,27 +173,27 @@ export function useAchievements() {
   /**
    * Get unlocked achievements
    */
-  const unlockedAchievements = achievements.filter(a => a.status === 'unlocked');
-  
+  const unlockedAchievements = achievements.filter((a) => a.status === 'unlocked');
+
   /**
    * Get in-progress achievements
    */
-  const inProgressAchievements = achievements.filter(a => a.status === 'in_progress');
-  
+  const inProgressAchievements = achievements.filter((a) => a.status === 'in_progress');
+
   /**
    * Get locked achievements
    */
-  const lockedAchievements = achievements.filter(a => a.status === 'locked');
+  const lockedAchievements = achievements.filter((a) => a.status === 'locked');
 
   /**
    * Get next keytag to earn
    */
-  const nextKeytag = keytags.find(k => !k.isEarned);
+  const nextKeytag = keytags.find((k) => !k.isEarned);
 
   /**
    * Get most recently earned keytag
    */
-  const currentKeytag = [...keytags].reverse().find(k => k.isEarned);
+  const currentKeytag = [...keytags].reverse().find((k) => k.isEarned);
 
   return {
     // State
@@ -198,14 +207,14 @@ export function useAchievements() {
     earnedKeytags,
     recentUnlock,
     categoryProgress,
-    
+
     // Computed
     unlockedAchievements,
     inProgressAchievements,
     lockedAchievements,
     nextKeytag,
     currentKeytag,
-    
+
     // Actions
     loadAchievements,
     checkAchievements,

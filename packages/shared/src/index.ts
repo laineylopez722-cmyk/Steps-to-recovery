@@ -20,7 +20,7 @@ export type {
   SyncQueueItem,
   UserProfile as DbUserProfile,
   DailyCheckIn as DbDailyCheckIn,
-  StepWork as DbStepWork
+  StepWork as DbStepWork,
 } from './types';
 
 // Main application types (camelCase properties)
@@ -31,7 +31,7 @@ export {
   DEFAULT_EMOTIONS,
   type EmotionTag as EmotionTagConstant,
   getEmotionByName,
-  isValidEmotionName
+  isValidEmotionName,
 } from '../constants';
 
 export {
@@ -40,14 +40,14 @@ export {
   getNextMilestone,
   getLatestMilestone,
   getAchievedMilestones,
-  hasAchievedMilestone
+  hasAchievedMilestone,
 } from '../constants';
 
 export {
   ALL_ACHIEVEMENTS,
   type AchievementDefinition,
   getAchievementDefinition,
-  isValidAchievementId
+  isValidAchievementId,
 } from '../constants';
 
 export {
@@ -59,7 +59,7 @@ export {
   getStepQuestionCount,
   getTotalQuestionCount,
   isValidStepNumber,
-  getAllStepNumbers
+  getAllStepNumbers,
 } from '../constants';
 
 export {
@@ -72,7 +72,7 @@ export {
   getCrisisResources,
   getEmergencyNumber,
   getAvailableRegions,
-  isValidRegion
+  isValidRegion,
 } from '../constants';
 
 export {
@@ -80,7 +80,7 @@ export {
   type Prayer,
   getPrayerById,
   getPrayersByCategory,
-  getPrayersForStep
+  getPrayersForStep,
 } from '../constants';
 
 export {
@@ -88,7 +88,7 @@ export {
   type Slogan,
   getSloganById,
   getSlogansByCategory,
-  getRandomSlogan
+  getRandomSlogan,
 } from '../constants';
 
 export {
@@ -98,7 +98,7 @@ export {
   getKeytagForDays,
   getNextKeytag,
   getKeytagsWithStatus,
-  getEarnedKeytagsCount
+  getEarnedKeytagsCount,
 } from '../constants';
 export * from '../db';
 export * from '../store';

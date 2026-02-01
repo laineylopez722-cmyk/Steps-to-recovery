@@ -121,18 +121,12 @@ export function InviteSponsorScreen(): React.ReactElement {
         >
           <View style={styles.header}>
             <Text
-              style={[
-                theme.typography.largeTitle,
-                { color: theme.colors.text, marginBottom: 8 },
-              ]}
+              style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 8 }]}
             >
               Invite a Sponsor
             </Text>
             <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.textSecondary, lineHeight: 22 },
-              ]}
+              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 22 }]}
             >
               Create a private invite payload and share it with your sponsor. They will reply with a
               confirmation payload to complete the connection.
@@ -211,7 +205,9 @@ export function InviteSponsorScreen(): React.ReactElement {
           )}
 
           <Card variant="flat" style={styles.infoCard}>
-            <Text style={[theme.typography.title3, { color: theme.colors.primary, marginBottom: 12 }]}>
+            <Text
+              style={[theme.typography.title3, { color: theme.colors.primary, marginBottom: 12 }]}
+            >
               How it works
             </Text>
             <View style={styles.infoList}>

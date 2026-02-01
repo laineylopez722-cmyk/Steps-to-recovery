@@ -17,7 +17,8 @@ export const DAILY_READINGS: Record<string, DailyReading> = {
 We've been given the gift of a new day, free from the bondage of active addiction. This is not something to take for granted. Many of us never thought we'd see this day, yet here we are.
 
 As we step into this new day, we carry with us the lessons of yesterday but leave behind its burdens. We focus on what we can do today to strengthen our recovery and help others on their journey.`,
-    reflectionPrompt: 'What does a fresh start mean to you today? How can you make the most of this new beginning?',
+    reflectionPrompt:
+      'What does a fresh start mean to you today? How can you make the most of this new beginning?',
     source: 'jft',
   },
   '01-02': {
@@ -29,7 +30,8 @@ As we step into this new day, we carry with us the lessons of yesterday but leav
 Tomorrow will take care of itself. Yesterday is gone. All we have is this present moment, this one day. By breaking our recovery down into manageable pieces, we find that the impossible becomes possible.
 
 When life feels overwhelming, we return to this simple truth: just for today, we can do what would be impossible for a lifetime.`,
-    reflectionPrompt: 'How does focusing on just today help you in your recovery? What challenges become easier when you think one day at a time?',
+    reflectionPrompt:
+      'How does focusing on just today help you in your recovery? What challenges become easier when you think one day at a time?',
     source: 'jft',
   },
   '01-03': {
@@ -41,7 +43,8 @@ When life feels overwhelming, we return to this simple truth: just for today, we
 True surrender came when we finally admitted we were powerless over our addiction. This admission wasn't weakness; it was the first act of strength in our recovery. By letting go of the illusion of control, we opened ourselves to a new way of living.
 
 Today, we continue to practice surrender. We let go of outcomes, trust in a power greater than ourselves, and accept life on life's terms.`,
-    reflectionPrompt: 'What does surrender mean to you? Is there something you\'re still trying to control that you need to let go of?',
+    reflectionPrompt:
+      "What does surrender mean to you? Is there something you're still trying to control that you need to let go of?",
     source: 'jft',
   },
   '01-04': {
@@ -53,7 +56,8 @@ Today, we continue to practice surrender. We let go of outcomes, trust in a powe
 But desperation can be a gift. It was the pain of our bottom that made us willing to try something different. Without that desperation, we might never have become open to recovery.
 
 Today, we can be grateful for the desperation that brought us here. It was the doorway to a new life. Though we wouldn't wish our pain on anyone, we recognize that it served a purpose in leading us to recovery.`,
-    reflectionPrompt: 'How did your desperation lead you to recovery? Can you see the gift in your pain today?',
+    reflectionPrompt:
+      'How did your desperation lead you to recovery? Can you see the gift in your pain today?',
     source: 'jft',
   },
   '01-05': {
@@ -65,7 +69,8 @@ Today, we can be grateful for the desperation that brought us here. It was the d
 Willing to try a new way. Willing to ask for help. Willing to believe that recovery is possible. Willing to take suggestions from those who have walked this path before us.
 
 Our willingness doesn't have to be complete. Even a small amount of willingness, what some call "the willingness to be willing," is enough to begin. As we take action, our willingness grows.`,
-    reflectionPrompt: 'In what areas of your recovery do you need more willingness? What small step can you take today?',
+    reflectionPrompt:
+      'In what areas of your recovery do you need more willingness? What small step can you take today?',
     source: 'jft',
   },
   '01-06': {
@@ -77,7 +82,8 @@ Our willingness doesn't have to be complete. Even a small amount of willingness,
 Recovery demands rigorous honesty. We must be honest about our addiction, honest in our inventory, honest with our sponsor, and honest in our daily lives. Honesty is the foundation upon which we build our new life.
 
 Today, we practice honesty in all our affairs. We've learned that even small lies can lead us back to the big lie—that we can use successfully.`,
-    reflectionPrompt: 'Where in your life do you need to practice more honesty? Is there something you\'ve been avoiding facing truthfully?',
+    reflectionPrompt:
+      "Where in your life do you need to practice more honesty? Is there something you've been avoiding facing truthfully?",
     source: 'jft',
   },
   '01-07': {
@@ -89,7 +95,8 @@ Today, we practice honesty in all our affairs. We've learned that even small lie
 Finding a sponsor can feel intimidating, but it's one of the most important actions we can take in early recovery. We look for someone who has what we want—not material things, but serenity, peace, and a solid program.
 
 We don't need to find the perfect sponsor. We just need someone who is willing to help us and who takes their own recovery seriously.`,
-    reflectionPrompt: 'Do you have a sponsor? If not, what\'s holding you back from finding one? If you do, how has that relationship helped your recovery?',
+    reflectionPrompt:
+      "Do you have a sponsor? If not, what's holding you back from finding one? If you do, how has that relationship helped your recovery?",
     source: 'jft',
   },
 
@@ -103,7 +110,8 @@ We don't need to find the perfect sponsor. We just need someone who is willing t
 In recovery, we learn to focus on what we have rather than what we don't. Even on difficult days, we can find something to be grateful for—our sobriety, a roof over our heads, another chance at life.
 
 Practicing gratitude doesn't mean ignoring our problems. It means recognizing that even in the midst of challenges, there is good in our lives. Gratitude opens the door to hope.`,
-    reflectionPrompt: 'List three things you\'re grateful for today. How does focusing on gratitude change your outlook?',
+    reflectionPrompt:
+      "List three things you're grateful for today. How does focusing on gratitude change your outlook?",
     source: 'jft',
   },
   '02-02': {
@@ -115,7 +123,8 @@ Practicing gratitude doesn't mean ignoring our problems. It means recognizing th
 Regular meeting attendance keeps us connected to recovery. It reminds us where we came from, keeps us humble, and shows us where we can go. Even when we don't feel like going, especially when we don't feel like going, meetings are important.
 
 We get out of meetings what we put into them. When we show up, listen, share honestly, and connect with others, meetings become a lifeline for our recovery.`,
-    reflectionPrompt: 'How have meetings helped your recovery? Is there a meeting you could add to your routine?',
+    reflectionPrompt:
+      'How have meetings helped your recovery? Is there a meeting you could add to your routine?',
     source: 'jft',
   },
   '02-03': {
@@ -127,7 +136,8 @@ We get out of meetings what we put into them. When we show up, listen, share hon
 Service doesn't have to be complicated. It can be as simple as setting up chairs, making coffee, greeting newcomers, or being available when someone needs to talk. What matters is that we're giving back.
 
 As we serve others, we receive far more than we give. Service reminds us that we're part of something bigger than ourselves and that our recovery matters to others.`,
-    reflectionPrompt: 'How are you being of service in your recovery? What new way could you serve your fellowship?',
+    reflectionPrompt:
+      'How are you being of service in your recovery? What new way could you serve your fellowship?',
     source: 'jft',
   },
   '02-14': {
@@ -139,7 +149,8 @@ As we serve others, we receive far more than we give. Service reminds us that we
 Recovery gives us the chance to learn what healthy love looks like. It starts with self-love—treating ourselves with kindness and compassion instead of self-destruction. As we grow in self-love, we become capable of loving others in healthier ways.
 
 Rebuilding relationships takes time. Some relationships may never be restored. But we can learn from the past and build new, healthier connections based on honesty, trust, and mutual respect.`,
-    reflectionPrompt: 'How has your ability to give and receive love changed in recovery? What does healthy love look like to you?',
+    reflectionPrompt:
+      'How has your ability to give and receive love changed in recovery? What does healthy love look like to you?',
     source: 'jft',
   },
 
@@ -153,7 +164,8 @@ Rebuilding relationships takes time. Some relationships may never be restored. B
 Recovery teaches us that progress is what matters. We won't do everything right. We'll make mistakes, have setbacks, and fall short of our ideals. That's okay. What matters is that we keep moving forward.
 
 Every small step in the right direction is a victory. Every day clean is an achievement. We measure ourselves by how far we've come, not by some impossible standard of perfection.`,
-    reflectionPrompt: 'Where in your life are you being too hard on yourself? How can you celebrate your progress today?',
+    reflectionPrompt:
+      'Where in your life are you being too hard on yourself? How can you celebrate your progress today?',
     source: 'jft',
   },
   '03-02': {
@@ -165,7 +177,8 @@ Every small step in the right direction is a victory. Every day clean is an achi
 Acceptance doesn't mean we like everything or that we stop working for change. It means we acknowledge what is, rather than wishing things were different. From this place of acceptance, we can take appropriate action.
 
 Today, we practice accepting life on life's terms. We accept that we're addicts, that recovery takes work, and that we cannot control everything. In acceptance, we find freedom.`,
-    reflectionPrompt: 'What situation in your life are you resisting accepting? How might acceptance bring you peace?',
+    reflectionPrompt:
+      'What situation in your life are you resisting accepting? How might acceptance bring you peace?',
     source: 'jft',
   },
   '03-15': {
@@ -177,7 +190,8 @@ Today, we practice accepting life on life's terms. We accept that we're addicts,
 We've learned strategies for dealing with cravings: calling our sponsor or another recovering addict, going to a meeting, playing the tape forward, remembering our last days of using. The key is to take action rather than sitting alone with the craving.
 
 Every craving we survive without using makes us stronger. Each time we get through a craving, we prove to ourselves that we can do this. The cravings will lessen over time.`,
-    reflectionPrompt: 'What strategies help you when you experience cravings? Who can you call when you\'re struggling?',
+    reflectionPrompt:
+      "What strategies help you when you experience cravings? Who can you call when you're struggling?",
     source: 'jft',
   },
 
@@ -191,7 +205,8 @@ Every craving we survive without using makes us stronger. Each time we get throu
 But recovery offers us freedom from the past. Through the steps, we face what we've done, make amends where possible, and learn to forgive ourselves. We cannot change the past, but we can change how it affects us today.
 
 Letting go doesn't mean forgetting. It means the past no longer controls us. We carry the lessons forward without carrying the pain.`,
-    reflectionPrompt: 'What from your past do you need to let go of? How can working the steps help you find freedom?',
+    reflectionPrompt:
+      'What from your past do you need to let go of? How can working the steps help you find freedom?',
     source: 'jft',
   },
   '04-15': {
@@ -203,7 +218,8 @@ Letting go doesn't mean forgetting. It means the past no longer controls us. We 
 A Higher Power can be anything greater than ourselves—the group, nature, the universe, love, the principles of the program. What matters is that we recognize we're not the center of the universe and that we need help.
 
 Finding a Higher Power is a personal journey. We're free to explore what works for us. Many of us find that our understanding deepens over time as we practice the principles of recovery.`,
-    reflectionPrompt: 'What is your understanding of a Higher Power today? How has it evolved since you began recovery?',
+    reflectionPrompt:
+      'What is your understanding of a Higher Power today? How has it evolved since you began recovery?',
     source: 'jft',
   },
 
@@ -217,7 +233,8 @@ Finding a Higher Power is a personal journey. We're free to explore what works f
 Self-care is not selfish—it's necessary. We can't give what we don't have. When we take care of ourselves, we're better able to work our program and help others. HALT reminds us to check if we're Hungry, Angry, Lonely, or Tired.
 
 Today, we commit to treating ourselves with the same care we would give to someone we love. We eat nourishing food, get enough rest, exercise, and tend to our emotional needs.`,
-    reflectionPrompt: 'How are you taking care of yourself today? What area of self-care needs more attention?',
+    reflectionPrompt:
+      'How are you taking care of yourself today? What area of self-care needs more attention?',
     source: 'jft',
   },
   '05-15': {
@@ -229,7 +246,8 @@ Today, we commit to treating ourselves with the same care we would give to someo
 Building a support network takes effort. We exchange phone numbers at meetings and actually use them. We spend time with others in recovery. We let people get to know us and allow ourselves to be vulnerable.
 
 Our support network is our safety net. When life gets hard, when cravings hit, when we're struggling, we don't have to face it alone. We have people who understand and who want to help.`,
-    reflectionPrompt: 'Who is in your support network? How can you strengthen these connections today?',
+    reflectionPrompt:
+      'Who is in your support network? How can you strengthen these connections today?',
     source: 'jft',
   },
 
@@ -243,7 +261,8 @@ Our support network is our safety net. When life gets hard, when cravings hit, w
 Recovery teaches us to live in the present. When we're fully present, we can respond to life as it happens rather than reacting to fears and memories. We find that the present moment is usually manageable.
 
 Today, we practice presence. We notice when our minds wander and gently bring them back. We engage fully with whatever we're doing. We find peace in the now.`,
-    reflectionPrompt: 'Where does your mind tend to wander? How can you practice being more present today?',
+    reflectionPrompt:
+      'Where does your mind tend to wander? How can you practice being more present today?',
     source: 'jft',
   },
   '06-15': {
@@ -255,7 +274,8 @@ Today, we practice presence. We notice when our minds wander and gently bring th
 We're learning that feelings aren't facts, and they won't kill us. Sadness passes. Anger fades. Even intense emotions are temporary. Our job is to feel them, express them appropriately, and let them go.
 
 We have tools now for handling difficult emotions: talking to someone, writing, meetings, prayer or meditation, physical activity. We don't have to numb out anymore. We can feel and still be okay.`,
-    reflectionPrompt: 'What difficult emotion are you experiencing today? How can you process it in a healthy way?',
+    reflectionPrompt:
+      'What difficult emotion are you experiencing today? How can you process it in a healthy way?',
     source: 'jft',
   },
 
@@ -269,7 +289,8 @@ We have tools now for handling difficult emotions: talking to someone, writing, 
 Recovery has given us our freedom back. Today, we can choose how to live. We can choose to go to meetings, work our program, and stay clean. We have options we never had before.
 
 This freedom is precious and worth protecting. We guard it by continuing to work our program, staying connected to our support network, and never forgetting what it was like before recovery.`,
-    reflectionPrompt: 'What does freedom mean to you in recovery? How are you protecting your freedom today?',
+    reflectionPrompt:
+      'What does freedom mean to you in recovery? How are you protecting your freedom today?',
     source: 'jft',
   },
   '07-04': {
@@ -281,7 +302,8 @@ This freedom is precious and worth protecting. We guard it by continuing to work
 Recovery teaches us healthy interdependence. We're independent enough to take responsibility for our own recovery, yet we recognize we need others. We give and receive support. We maintain our identity while being part of a community.
 
 True strength isn't doing everything alone. It's knowing when to ask for help and being willing to help others in return.`,
-    reflectionPrompt: 'Do you tend toward too much independence or too much dependence? How can you practice healthy interdependence?',
+    reflectionPrompt:
+      'Do you tend toward too much independence or too much dependence? How can you practice healthy interdependence?',
     source: 'jft',
   },
 
@@ -295,7 +317,8 @@ True strength isn't doing everything alone. It's knowing when to ask for help an
 Staying humble doesn't mean thinking poorly of ourselves. It means having an accurate view of who we are—acknowledging both our strengths and our limitations. It means remaining teachable.
 
 When we've been clean for a while, we may be tempted to think we have it figured out. But our disease is patient. Staying humble keeps us vigilant and willing to continue working our program.`,
-    reflectionPrompt: 'In what ways do you practice humility in your recovery? Where might pride be creeping in?',
+    reflectionPrompt:
+      'In what ways do you practice humility in your recovery? Where might pride be creeping in?',
     source: 'jft',
   },
   '08-15': {
@@ -307,7 +330,8 @@ When we've been clean for a while, we may be tempted to think we have it figured
 We cannot demand that others trust us. We can only show them, day after day, that we're different now. We keep our commitments. We tell the truth. We show up. Over time, trust can be rebuilt.
 
 Most importantly, we learn to trust ourselves again. By staying clean and keeping our promises, we prove to ourselves that we can be relied upon. This self-trust is foundational to our recovery.`,
-    reflectionPrompt: 'How are you rebuilding trust with others and with yourself? What action can you take today to demonstrate trustworthiness?',
+    reflectionPrompt:
+      'How are you rebuilding trust with others and with yourself? What action can you take today to demonstrate trustworthiness?',
     source: 'jft',
   },
 
@@ -321,7 +345,8 @@ Most importantly, we learn to trust ourselves again. By staying clean and keepin
 Sometimes we try to overcomplicate recovery. We think we need something more advanced, more sophisticated. But the basics are the basics for a reason—they work. When in doubt, we keep it simple.
 
 Today, we recommit to the fundamental practices of our program. We don't neglect the foundations that keep us clean. We remember that a strong recovery is built on simple, consistent actions.`,
-    reflectionPrompt: 'Are you practicing the basics of your program? What fundamental practice have you been neglecting?',
+    reflectionPrompt:
+      'Are you practicing the basics of your program? What fundamental practice have you been neglecting?',
     source: 'jft',
   },
   '09-15': {
@@ -333,7 +358,8 @@ Today, we recommit to the fundamental practices of our program. We don't neglect
 We don't have to have all the answers to help a newcomer. We just need to share our experience, listen, and offer hope. Sometimes the most powerful thing we can do is simply be there, letting them know they're not alone.
 
 Newcomers bring new energy to our meetings and remind us of the miracle of recovery. Every newcomer is a gift to the fellowship.`,
-    reflectionPrompt: 'How have you helped a newcomer recently? What would you want to tell someone in their first days of recovery?',
+    reflectionPrompt:
+      'How have you helped a newcomer recently? What would you want to tell someone in their first days of recovery?',
     source: 'jft',
   },
 
@@ -347,7 +373,8 @@ Newcomers bring new energy to our meetings and remind us of the miracle of recov
 Daily inventory helps us catch problems before they grow. We review our day: Where were we selfish? Dishonest? Afraid? Do we owe anyone an amends? What did we do well? This honest assessment keeps us on track.
 
 When we find something that needs attention, we don't delay. We address it promptly. By keeping our side of the street clean, we maintain our peace of mind and our recovery.`,
-    reflectionPrompt: 'Take a brief inventory of your day so far. What needs attention? What are you proud of?',
+    reflectionPrompt:
+      'Take a brief inventory of your day so far. What needs attention? What are you proud of?',
     source: 'jft',
   },
   '10-15': {
@@ -359,7 +386,7 @@ When we find something that needs attention, we don't delay. We address it promp
 The steps help us face our fears directly. We examine them in our inventory, share them with our sponsor, and ask our Higher Power for help. We learn that most of what we fear never comes to pass, and what does come, we can handle.
 
 Courage isn't the absence of fear—it's taking action despite the fear. Today, we move forward even when we're afraid, trusting that we won't have to face anything alone.`,
-    reflectionPrompt: 'What fear is holding you back? What would you do if you weren\'t afraid?',
+    reflectionPrompt: "What fear is holding you back? What would you do if you weren't afraid?",
     source: 'jft',
   },
 
@@ -397,7 +424,8 @@ Today, we don't just feel grateful—we express it. We reach out to someone who 
 These promises are not just words—they come true in the lives of those who work the program. We see it in the recovering addicts around us. We feel it in our own lives as we continue on this journey.
 
 The promises don't come all at once. They unfold gradually as we work the steps and live the principles. Some days we experience them fully; other days we're still waiting. But they will materialize if we work for them.`,
-    reflectionPrompt: 'Which promise of recovery has come true in your life? Which one are you still waiting for?',
+    reflectionPrompt:
+      'Which promise of recovery has come true in your life? Which one are you still waiting for?',
     source: 'jft',
   },
 
@@ -411,7 +439,8 @@ The promises don't come all at once. They unfold gradually as we work the steps 
 Preparation means having a plan. We know which meetings we'll attend. We have numbers to call if we're struggling. We know our limits and have exit strategies if situations become unsafe. We put our recovery first.
 
 The holidays can also be a time of joy and connection in recovery. Many of us celebrate with our fellowship family. We create new traditions that support our recovery. The key is being prepared and staying close to our program.`,
-    reflectionPrompt: 'What\'s your plan for staying safe during the holiday season? What support do you need to put in place?',
+    reflectionPrompt:
+      "What's your plan for staying safe during the holiday season? What support do you need to put in place?",
     source: 'jft',
   },
   '12-15': {
@@ -423,7 +452,8 @@ The holidays can also be a time of joy and connection in recovery. Many of us ce
 Looking back helps us see how far we've come. On the hard days, it might not feel like we're making progress. But when we review the year, we can see the changes. We're not where we were this time last year.
 
 We acknowledge what went well and what we want to work on. We set intentions for the coming year. We recognize that every day clean is an achievement worth celebrating.`,
-    reflectionPrompt: 'What are you most proud of from this year? What do you want to focus on in the coming year?',
+    reflectionPrompt:
+      'What are you most proud of from this year? What do you want to focus on in the coming year?',
     source: 'jft',
   },
   '12-25': {
@@ -435,7 +465,8 @@ We acknowledge what went well and what we want to work on. We set intentions for
 This gift wasn't earned—we couldn't have earned it. It was given freely by those who came before us, who shared their experience, strength, and hope. Now we have the privilege of passing it on.
 
 Today, we celebrate the gift of recovery. We honor it by continuing to work our program and by sharing it with others. The gift grows as we give it away.`,
-    reflectionPrompt: 'What does the gift of recovery mean to you? How can you share this gift with others?',
+    reflectionPrompt:
+      'What does the gift of recovery mean to you? How can you share this gift with others?',
     source: 'jft',
   },
   '12-31': {
@@ -447,7 +478,8 @@ Today, we celebrate the gift of recovery. We honor it by continuing to work our 
 Our job now is to carry the message forward. To be there for the addict who still suffers. To share our experience with those who need to hear it. To live as an example of what recovery makes possible.
 
 The new year is full of possibility. We don't know what it will bring, but we know we don't have to face it alone. Together, with our program and our fellowship, we can handle whatever comes. Just for today, we're free.`,
-    reflectionPrompt: 'What message of hope do you want to carry into the new year? How will you share your recovery with others?',
+    reflectionPrompt:
+      'What message of hope do you want to carry into the new year? How will you share your recovery with others?',
     source: 'jft',
   },
 };
@@ -460,7 +492,7 @@ export function getTodayReading(): DailyReading | null {
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
   const dateKey = `${month}-${day}`;
-  
+
   return DAILY_READINGS[dateKey] || getDefaultReading(dateKey);
 }
 
@@ -471,7 +503,7 @@ export function getReadingByDate(date: Date): DailyReading | null {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   const dateKey = `${month}-${day}`;
-  
+
   return DAILY_READINGS[dateKey] || getDefaultReading(dateKey);
 }
 
@@ -500,7 +532,8 @@ Just for today, I will strengthen my mind. I will study. I will learn something 
 There's no shame in struggling. Recovery is hard. What matters is that we keep trying, keep coming back, keep showing up. The miracle of recovery is available to anyone who wants it badly enough.
 
 Today, we keep coming back. We don't give up on ourselves or on recovery. We trust that if we stay the course, the promises will come true in our lives.`,
-      reflectionPrompt: 'What keeps you coming back? How has persistence paid off in your recovery?',
+      reflectionPrompt:
+        'What keeps you coming back? How has persistence paid off in your recovery?',
     },
     {
       title: 'Easy Does It',
@@ -509,7 +542,8 @@ Today, we keep coming back. We don't give up on ourselves or on recovery. We tru
 Easy does it reminds us not to take on too much too fast. We don't have to solve all our problems today. We don't have to be perfect right now. We take small steps, one at a time.
 
 Today, we practice moderation and patience. We let go of urgency and trust in the process. Recovery happens over time, not overnight.`,
-      reflectionPrompt: 'Where in your life do you need to take it easier? How can you be more gentle with yourself today?',
+      reflectionPrompt:
+        'Where in your life do you need to take it easier? How can you be more gentle with yourself today?',
     },
     {
       title: 'First Things First',
@@ -527,7 +561,8 @@ Today, we keep our priorities in order. We don't let other demands crowd out the
 Letting go means releasing our grip on things we can't control anyway. We do our part—work our program, take the next right action—and leave the results to our Higher Power.
 
 Today, we practice letting go. We release our white-knuckle grip on life and trust that things will work out as they're supposed to. We find freedom in surrender.`,
-      reflectionPrompt: 'What are you trying to control that you need to let go of? How can you practice surrender today?',
+      reflectionPrompt:
+        'What are you trying to control that you need to let go of? How can you practice surrender today?',
     },
   ];
 
@@ -550,4 +585,3 @@ Today, we practice letting go. We release our white-knuckle grip on life and tru
 export function getAvailableReadingDates(): string[] {
   return Object.keys(DAILY_READINGS).sort();
 }
-

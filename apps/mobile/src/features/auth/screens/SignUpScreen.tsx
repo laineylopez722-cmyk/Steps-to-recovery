@@ -60,7 +60,7 @@ export function SignUpScreen({ navigation }: Props) {
 
   const clearError = (field: keyof FormErrors) => {
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
@@ -125,7 +125,10 @@ export function SignUpScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.colors.background }]} edges={['top', 'bottom']}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+      edges={['top', 'bottom']}
+    >
       <KeyboardAvoidingView
         behavior={keyboardConfig.behavior}
         style={styles.container}
@@ -137,10 +140,17 @@ export function SignUpScreen({ navigation }: Props) {
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.header, { marginBottom: theme.spacing.xl }]}>
-            <Text style={[theme.typography.h1, { color: theme.colors.text, marginBottom: theme.spacing.sm }]}>
+            <Text
+              style={[
+                theme.typography.h1,
+                { color: theme.colors.text, marginBottom: theme.spacing.sm },
+              ]}
+            >
               Start Your Journey
             </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}>
+            <Text
+              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}
+            >
               A private, secure space for your recovery
             </Text>
           </View>
@@ -189,7 +199,12 @@ export function SignUpScreen({ navigation }: Props) {
 
             {password.length > 0 && (
               <View style={styles.passwordStrength}>
-                <Text style={[theme.typography.caption, { color: passwordStrength.color, fontWeight: '600' }]}>
+                <Text
+                  style={[
+                    theme.typography.caption,
+                    { color: passwordStrength.color, fontWeight: '600' },
+                  ]}
+                >
                   Password Strength: {passwordStrength.label}
                 </Text>
                 <View style={styles.strengthBar}>
@@ -199,7 +214,10 @@ export function SignUpScreen({ navigation }: Props) {
                       style={[
                         styles.strengthSegment,
                         {
-                          backgroundColor: level <= passwordStrength.level ? passwordStrength.color : theme.colors.muted,
+                          backgroundColor:
+                            level <= passwordStrength.level
+                              ? passwordStrength.color
+                              : theme.colors.muted,
                         },
                       ]}
                     />
@@ -238,15 +256,20 @@ export function SignUpScreen({ navigation }: Props) {
                   marginVertical: theme.spacing.sm,
                   borderWidth: 1,
                   borderColor: theme.colors.border,
-                }
+                },
               ]}
               accessibilityRole="text"
               accessibilityLabel="Privacy and security notice"
             >
               <Text style={[styles.privacyIcon, { marginRight: theme.spacing.sm }]}>🔒</Text>
-              <Text style={[theme.typography.caption, { flex: 1, color: theme.colors.textSecondary, lineHeight: 20 }]}>
-                Your data is encrypted and never shared without your permission.
-                We're committed to your privacy and security.
+              <Text
+                style={[
+                  theme.typography.caption,
+                  { flex: 1, color: theme.colors.textSecondary, lineHeight: 20 },
+                ]}
+              >
+                Your data is encrypted and never shared without your permission. We're committed to
+                your privacy and security.
               </Text>
             </View>
 
@@ -254,13 +277,21 @@ export function SignUpScreen({ navigation }: Props) {
               <View
                 style={[
                   styles.errorContainer,
-                  { backgroundColor: theme.colors.dangerLight || '#FFE5E5', borderColor: theme.colors.danger },
+                  {
+                    backgroundColor: theme.colors.dangerLight || '#FFE5E5',
+                    borderColor: theme.colors.danger,
+                  },
                 ]}
                 accessibilityRole="alert"
                 accessibilityLabel="Error message"
                 accessibilityLiveRegion="assertive"
               >
-                <Text style={[theme.typography.bodySmall, { color: theme.colors.danger, textAlign: 'center' }]}>
+                <Text
+                  style={[
+                    theme.typography.bodySmall,
+                    { color: theme.colors.danger, textAlign: 'center' },
+                  ]}
+                >
                   {formError}
                 </Text>
               </View>
@@ -272,12 +303,21 @@ export function SignUpScreen({ navigation }: Props) {
               loading={loading}
               testID="signup-submit-button"
               accessibilityLabel="Create account"
-              accessibilityHint={loading ? "Creating your account, please wait" : "Submit the form to create your account"}
+              accessibilityHint={
+                loading
+                  ? 'Creating your account, please wait'
+                  : 'Submit the form to create your account'
+              }
               accessibilityState={{ disabled: loading }}
             />
           </View>
 
-          <View style={[styles.footer, { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md }]}>
+          <View
+            style={[
+              styles.footer,
+              { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md },
+            ]}
+          >
             <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
               Already have an account?{' '}
             </Text>
@@ -286,7 +326,9 @@ export function SignUpScreen({ navigation }: Props) {
               accessibilityRole="link"
               accessibilityLabel="Navigate to login"
             >
-              <Text style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}>
+              <Text
+                style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}
+              >
                 Log In
               </Text>
             </TouchableOpacity>

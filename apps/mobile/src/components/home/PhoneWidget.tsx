@@ -17,15 +17,9 @@ interface PhoneWidgetProps {
 
 export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
   const router = useRouterCompat();
-  const {
-    todayCalls,
-    stats,
-    loadTodayCalls,
-    formatCallTime,
-    formatDuration,
-    logCallWithContact,
-  } = usePhoneCalls();
-  
+  const { todayCalls, stats, loadTodayCalls, formatCallTime, formatDuration, logCallWithContact } =
+    usePhoneCalls();
+
   const { contacts, sponsor, callContact, loadContacts } = useContacts();
 
   // Load data on mount
@@ -38,10 +32,12 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
 
   // Get suggested contacts to call (haven't called today)
   const suggestedContacts = contacts
-    .filter((c: RecoveryContact) => !todayCalls.some((call: PhoneCallLog) => call.contactId === c.id))
+    .filter(
+      (c: RecoveryContact) => !todayCalls.some((call: PhoneCallLog) => call.contactId === c.id),
+    )
     .slice(0, 3);
 
-  const handleQuickCall = async (contact: typeof contacts[0]) => {
+  const handleQuickCall = async (contact: (typeof contacts)[0]) => {
     callContact(contact);
     // Log the call after initiating
     await logCallWithContact(contact);
@@ -62,18 +58,14 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
           accessibilityRole="button"
           accessibilityLabel="View all contacts"
         >
-          <Text className="text-sm text-primary-600 dark:text-primary-400">
-            All Contacts →
-          </Text>
+          <Text className="text-sm text-primary-600 dark:text-primary-400">All Contacts →</Text>
         </TouchableOpacity>
       </View>
 
       {/* Progress Bar */}
       <View className="mb-4">
         <View className="flex-row items-center justify-between mb-1">
-          <Text className="text-sm text-surface-600 dark:text-surface-400">
-            Today's calls
-          </Text>
+          <Text className="text-sm text-surface-600 dark:text-surface-400">Today's calls</Text>
           <Text className="text-sm font-medium text-surface-900 dark:text-surface-100">
             {todayCallCount}/{dailyGoal}
           </Text>
@@ -84,8 +76,8 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
               goalProgress >= 1
                 ? 'bg-green-500'
                 : goalProgress >= 0.5
-                ? 'bg-amber-500'
-                : 'bg-primary-500'
+                  ? 'bg-amber-500'
+                  : 'bg-primary-500'
             }`}
             style={{ width: `${Math.min(goalProgress * 100, 100)}%` }}
           />
@@ -100,9 +92,7 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
       {/* Today's Calls */}
       {todayCalls.length > 0 && (
         <View className="mb-4">
-          <Text className="text-xs font-medium text-surface-500 uppercase mb-2">
-            Today
-          </Text>
+          <Text className="text-xs font-medium text-surface-500 uppercase mb-2">Today</Text>
           {todayCalls.slice(0, 3).map((call: PhoneCallLog) => (
             <View
               key={call.id}
@@ -140,9 +130,7 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
                 accessibilityRole="button"
                 accessibilityLabel={`Call ${contact.name}`}
               >
-                <Text className="text-lg mb-1">
-                  {contact.role === 'sponsor' ? '⭐' : '📞'}
-                </Text>
+                <Text className="text-lg mb-1">{contact.role === 'sponsor' ? '⭐' : '📞'}</Text>
                 <Text
                   className="text-xs font-medium text-surface-900 dark:text-surface-100 text-center"
                   numberOfLines={1}
@@ -158,9 +146,7 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
       {/* Empty State */}
       {contacts.length === 0 && (
         <View className="py-4 items-center">
-          <Text className="text-surface-500 text-sm mb-2">
-            Add contacts to track your calls
-          </Text>
+          <Text className="text-surface-500 text-sm mb-2">Add contacts to track your calls</Text>
           <TouchableOpacity
             onPress={() => router.push('/contacts/add')}
             className="bg-primary-600 px-4 py-2 rounded-lg"
@@ -188,4 +174,3 @@ export function PhoneWidget({ className = '' }: PhoneWidgetProps) {
     </Card>
   );
 }
-

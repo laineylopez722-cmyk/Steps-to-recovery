@@ -4,17 +4,13 @@
  */
 
 import React, { forwardRef } from 'react';
-import {
-  View,
-  TextInput,
-  Text,
-  StyleSheet,
-  TextInputProps,
-  ViewStyle,
-} from 'react-native';
+import { View, TextInput, Text, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
-export interface TextAreaProps extends Omit<TextInputProps, 'value' | 'onChangeText' | 'multiline'> {
+export interface TextAreaProps extends Omit<
+  TextInputProps,
+  'value' | 'onChangeText' | 'multiline'
+> {
   label: string;
   value: string;
   onChangeText?: (text: string) => void;
@@ -27,19 +23,22 @@ export interface TextAreaProps extends Omit<TextInputProps, 'value' | 'onChangeT
   showCharacterCount?: boolean;
 }
 
-export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea({
-  label,
-  value,
-  onChangeText,
-  error,
-  hint,
-  required = false,
-  containerStyle,
-  minHeight = 120,
-  maxLength,
-  showCharacterCount = false,
-  ...textInputProps
-}: TextAreaProps, ref: React.ForwardedRef<TextInput>) {
+export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
+  {
+    label,
+    value,
+    onChangeText,
+    error,
+    hint,
+    required = false,
+    containerStyle,
+    minHeight = 120,
+    maxLength,
+    showCharacterCount = false,
+    ...textInputProps
+  }: TextAreaProps,
+  ref: React.ForwardedRef<TextInput>,
+) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = React.useState(false);
 
@@ -66,7 +65,8 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea({
         {/* Character Count */}
         {displayCharacterCount && (
           <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-            {characterCount}{maxLength ? `/${maxLength}` : ''}
+            {characterCount}
+            {maxLength ? `/${maxLength}` : ''}
           </Text>
         )}
       </View>
@@ -93,11 +93,7 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea({
           multiline
           textAlignVertical="top"
           maxLength={maxLength}
-          style={[
-            styles.textArea,
-            theme.typography.body,
-            { color: theme.colors.text },
-          ]}
+          style={[styles.textArea, theme.typography.body, { color: theme.colors.text }]}
           placeholderTextColor={theme.colors.textSecondary}
           {...textInputProps}
         />

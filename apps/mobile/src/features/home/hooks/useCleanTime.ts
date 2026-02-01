@@ -11,16 +11,40 @@ import type { MilestoneDefinition as Milestone } from '@recovery/shared/src/type
  * Milestones configuration
  */
 const MILESTONES: Milestone[] = [
-  { key: '24_hours', days: 1, title: 'First 24 Hours', description: 'One day at a time', icon: '🌅' },
+  {
+    key: '24_hours',
+    days: 1,
+    title: 'First 24 Hours',
+    description: 'One day at a time',
+    icon: '🌅',
+  },
   { key: '3_days', days: 3, title: '3 Days Clean', description: 'Building momentum', icon: '💪' },
   { key: '1_week', days: 7, title: 'One Week', description: 'A full week of recovery', icon: '⭐' },
   { key: '2_weeks', days: 14, title: '2 Weeks Clean', description: 'Two weeks strong', icon: '🔥' },
   { key: '30_days', days: 30, title: '30 Days', description: 'One month milestone', icon: '🎉' },
   { key: '60_days', days: 60, title: '60 Days', description: 'Two months of growth', icon: '🌟' },
-  { key: '90_days', days: 90, title: '90 Days', description: 'Three months - a new season', icon: '🏆' },
+  {
+    key: '90_days',
+    days: 90,
+    title: '90 Days',
+    description: 'Three months - a new season',
+    icon: '🏆',
+  },
   { key: '6_months', days: 182, title: '6 Months', description: 'Half a year clean', icon: '💎' },
-  { key: '9_months', days: 274, title: '9 Months', description: 'Three quarters of a year', icon: '🎖️' },
-  { key: '1_year', days: 365, title: 'One Year', description: 'A full year of recovery', icon: '👑' },
+  {
+    key: '9_months',
+    days: 274,
+    title: '9 Months',
+    description: 'Three quarters of a year',
+    icon: '🎖️',
+  },
+  {
+    key: '1_year',
+    days: 365,
+    title: 'One Year',
+    description: 'A full year of recovery',
+    icon: '👑',
+  },
 ];
 
 /**
@@ -73,7 +97,7 @@ export function useCleanTime(userId: string): {
       try {
         const result = await db.getFirstAsync<UserProfile>(
           'SELECT * FROM user_profile WHERE id = ?',
-          [userId]
+          [userId],
         );
 
         if (!result) {
@@ -81,8 +105,8 @@ export function useCleanTime(userId: string): {
         }
 
         const cleanTime = calculateCleanTime(result.sobriety_start_date);
-        const nextMilestone = MILESTONES.find(m => m.days > cleanTime.days) || null;
-        const recentMilestones = MILESTONES.filter(m => m.days <= cleanTime.days).slice(-3);
+        const nextMilestone = MILESTONES.find((m) => m.days > cleanTime.days) || null;
+        const recentMilestones = MILESTONES.filter((m) => m.days <= cleanTime.days).slice(-3);
 
         return {
           ...cleanTime,
@@ -132,7 +156,7 @@ export function useMilestones(userId: string): {
       try {
         const profile = await db.getFirstAsync<UserProfile>(
           'SELECT * FROM user_profile WHERE id = ?',
-          [userId]
+          [userId],
         );
 
         if (!profile?.sobriety_start_date) {
@@ -159,7 +183,7 @@ export function useMilestones(userId: string): {
     try {
       const profile = await db.getFirstAsync<UserProfile>(
         'SELECT * FROM user_profile WHERE id = ?',
-        [userId]
+        [userId],
       );
 
       if (!profile) {
@@ -167,16 +191,16 @@ export function useMilestones(userId: string): {
       }
 
       const cleanTime = calculateCleanTime(profile.sobriety_start_date);
-      const earnedMilestones = MILESTONES.filter(m => m.days <= cleanTime.days);
+      const earnedMilestones = MILESTONES.filter((m) => m.days <= cleanTime.days);
 
       // Check which milestones are already recorded
       const recorded = await db.getAllAsync<{ achievement_key: string }>(
         'SELECT achievement_key FROM achievements WHERE user_id = ? AND achievement_type = ?',
-        [userId, 'milestone']
+        [userId, 'milestone'],
       );
 
-      const recordedKeys = new Set(recorded.map(r => r.achievement_key));
-      const newMilestones = earnedMilestones.filter(m => !recordedKeys.has(m.key));
+      const recordedKeys = new Set(recorded.map((r) => r.achievement_key));
+      const newMilestones = earnedMilestones.filter((m) => !recordedKeys.has(m.key));
 
       // Record new milestones
       for (const milestone of newMilestones) {
@@ -185,7 +209,7 @@ export function useMilestones(userId: string): {
 
         await db.runAsync(
           'INSERT INTO achievements (id, user_id, achievement_key, achievement_type, earned_at, is_viewed) VALUES (?, ?, ?, ?, ?, ?)',
-          [id, userId, milestone.key, 'milestone', now, 0]
+          [id, userId, milestone.key, 'milestone', now, 0],
         );
 
         logger.info('Milestone earned', { key: milestone.key, days: milestone.days });

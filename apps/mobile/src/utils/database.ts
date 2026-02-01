@@ -1,15 +1,15 @@
 /**
  * Database Utilities
- * 
+ *
  * Provides database initialization, schema management, and migration utilities.
  * Works with both SQLite (mobile) and IndexedDB (web) via StorageAdapter abstraction.
- * 
+ *
  * **Features**:
  * - Versioned schema migrations
  * - Idempotent initialization (safe to call multiple times)
  * - Concurrent initialization protection
  * - Automatic index creation for performance
- * 
+ *
  * @module utils/database
  */
 
@@ -18,7 +18,7 @@ import { logger } from './logger';
 
 /**
  * Guard against duplicate/concurrent initialization
- * 
+ *
  * Common in React StrictMode (dev) and fast refresh scenarios.
  * Uses database name instead of object identity for more reliable duplicate detection.
  */
@@ -27,7 +27,7 @@ const initPromises = new Map<string, Promise<void>>();
 
 /**
  * Current database schema version
- * 
+ *
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
@@ -35,10 +35,10 @@ const CURRENT_SCHEMA_VERSION = 8;
 
 /**
  * Initialize database with schema for offline-first storage
- * 
+ *
  * Creates all required tables, indexes, and applies pending migrations.
  * Safe to call multiple times (idempotent).
- * 
+ *
  * **Tables Created**:
  * - user_profile - User metadata
  * - journal_entries - Encrypted journal entries
@@ -48,7 +48,7 @@ const CURRENT_SCHEMA_VERSION = 8;
  * - sync_queue - Pending cloud sync operations
  * - cached_meetings - Public meeting data cache
  * - favorite_meetings - User's favorite meetings
- * 
+ *
  * @param db - Storage adapter instance (SQLite or IndexedDB)
  * @returns Promise that resolves when initialization is complete
  * @throws Error if initialization fails critically
@@ -230,7 +230,7 @@ export async function initDatabase(db: StorageAdapter): Promise<void> {
 
 /**
  * Get current schema version from database
- * 
+ *
  * @param db - Storage adapter instance
  * @returns Promise resolving to current schema version (0 if no migrations applied)
  * @internal
@@ -238,7 +238,7 @@ export async function initDatabase(db: StorageAdapter): Promise<void> {
 async function getCurrentSchemaVersion(db: StorageAdapter): Promise<number> {
   try {
     const result = await db.getFirstAsync<{ version: number }>(
-      'SELECT MAX(version) as version FROM schema_migrations'
+      'SELECT MAX(version) as version FROM schema_migrations',
     );
     return result?.version || 0;
   } catch {
@@ -249,9 +249,9 @@ async function getCurrentSchemaVersion(db: StorageAdapter): Promise<number> {
 
 /**
  * Check if a column exists in a table
- * 
+ *
  * Used during migrations to safely add columns only if they don't exist.
- * 
+ *
  * @param db - Storage adapter instance
  * @param tableName - Name of the table to check
  * @param columnName - Name of the column to check
@@ -261,13 +261,11 @@ async function getCurrentSchemaVersion(db: StorageAdapter): Promise<number> {
 async function columnExists(
   db: StorageAdapter,
   tableName: string,
-  columnName: string
+  columnName: string,
 ): Promise<boolean> {
   try {
     // SQLite pragma to get table info
-    const result = await db.getAllAsync<{ name: string }>(
-      `PRAGMA table_info(${tableName})`
-    );
+    const result = await db.getAllAsync<{ name: string }>(`PRAGMA table_info(${tableName})`);
     return result.some((col) => col.name === columnName);
   } catch {
     // Table might not exist
@@ -277,26 +275,26 @@ async function columnExists(
 
 /**
  * Mark a migration as applied
- * 
+ *
  * Records the migration version in schema_migrations table.
- * 
+ *
  * @param db - Storage adapter instance
  * @param version - Migration version number
  * @internal
  */
 async function recordMigration(db: StorageAdapter, version: number): Promise<void> {
-  await db.runAsync(
-    'INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)',
-    [version, new Date().toISOString()]
-  );
+  await db.runAsync('INSERT INTO schema_migrations (version, applied_at) VALUES (?, ?)', [
+    version,
+    new Date().toISOString(),
+  ]);
 }
 
 /**
  * Run all pending migrations
- * 
+ *
  * Applies migrations sequentially from current version to CURRENT_SCHEMA_VERSION.
  * Each migration is idempotent and can be safely re-run.
- * 
+ *
  * @param db - Storage adapter instance
  * @returns Promise that resolves when all migrations are complete
  * @internal
@@ -317,7 +315,7 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
   // Migration version 1: Initial columns for sync and check-ins
   if (currentVersion < 1) {
     logger.info('Running migration v1: Adding sync tracking columns');
-    
+
     // Only add columns if they don't already exist (base schema may have them)
     if (!(await columnExists(db, 'daily_checkins', 'supabase_id'))) {
       try {
@@ -326,15 +324,17 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
         logger.warn('Migration v1: Failed to add daily_checkins.supabase_id', error);
       }
     }
-    
+
     if (!(await columnExists(db, 'daily_checkins', 'updated_at'))) {
       try {
-        await db.execAsync(`ALTER TABLE daily_checkins ADD COLUMN updated_at TEXT NOT NULL DEFAULT (datetime('now'));`);
+        await db.execAsync(
+          `ALTER TABLE daily_checkins ADD COLUMN updated_at TEXT NOT NULL DEFAULT (datetime('now'));`,
+        );
       } catch (error) {
         logger.warn('Migration v1: Failed to add daily_checkins.updated_at', error);
       }
     }
-    
+
     if (!(await columnExists(db, 'sync_queue', 'supabase_id'))) {
       try {
         await db.execAsync(`ALTER TABLE sync_queue ADD COLUMN supabase_id TEXT;`);
@@ -350,7 +350,7 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
   // Migration version 2: Add failed_at for permanent sync failures
   if (currentVersion < 2) {
     logger.info('Running migration v2: Adding failed_at to sync_queue');
-    
+
     if (!(await columnExists(db, 'sync_queue', 'failed_at'))) {
       try {
         await db.execAsync(`ALTER TABLE sync_queue ADD COLUMN failed_at TEXT;`);
@@ -436,7 +436,7 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
   // Migration version 4: Add supabase_id to step_work for idempotent sync
   if (currentVersion < 4) {
     logger.info('Running migration v4: Adding supabase_id to step_work');
-    
+
     if (!(await columnExists(db, 'step_work', 'supabase_id'))) {
       try {
         await db.execAsync(`ALTER TABLE step_work ADD COLUMN supabase_id TEXT;`);
@@ -447,7 +447,9 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 
     // Index creation is idempotent (IF NOT EXISTS), so safe to run always
     try {
-      await db.execAsync(`CREATE INDEX IF NOT EXISTS idx_step_supabase_id ON step_work(supabase_id);`);
+      await db.execAsync(
+        `CREATE INDEX IF NOT EXISTS idx_step_supabase_id ON step_work(supabase_id);`,
+      );
     } catch (error) {
       logger.warn('Migration v4: Index creation failed', error);
     }
@@ -604,11 +606,11 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 
 /**
  * Clear all local data
- * 
+ *
  * **Warning**: This permanently deletes all user data from the local database!
  * Only call this during logout or account deletion. Encryption keys should
  * be deleted separately using `deleteEncryptionKey()`.
- * 
+ *
  * @param db - Storage adapter instance
  * @returns Promise that resolves when all data is cleared
  * @example

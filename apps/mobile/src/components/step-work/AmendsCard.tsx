@@ -8,11 +8,14 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { LegacyCard as Card } from '../ui';
 import type { AmendsStatus, AmendsType } from '@recovery/shared';
 
-const STATUS_CONFIG: Record<AmendsStatus, {
-  label: string;
-  color: string;
-  bgColor: string;
-}> = {
+const STATUS_CONFIG: Record<
+  AmendsStatus,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+  }
+> = {
   not_willing: {
     label: 'Not Yet Willing',
     color: 'text-red-600',
@@ -70,7 +73,14 @@ export function AmendsCard({
   const statusConfig = STATUS_CONFIG[status];
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`Amends entry for ${person}, status: ${statusConfig.label}, type: ${TYPE_LABELS[amendsType]}`}
+      accessibilityHint={isExpanded ? 'Collapses entry details' : 'Expands entry details'}
+      accessibilityState={{ expanded: isExpanded }}
+    >
       <Card variant="default" className={`mb-3 ${statusConfig.bgColor}`}>
         <View className="flex-row items-start justify-between">
           <View className="flex-1">
@@ -90,9 +100,7 @@ export function AmendsCard({
               </Text>
             )}
           </View>
-          <Text className="text-surface-400 ml-2">
-            {isExpanded ? '▲' : '▼'}
-          </Text>
+          <Text className="text-surface-400 ml-2">{isExpanded ? '▲' : '▼'}</Text>
         </View>
 
         {isExpanded && (
@@ -102,9 +110,7 @@ export function AmendsCard({
                 <Text className="text-xs font-medium text-surface-500 uppercase mb-1">
                   The Harm
                 </Text>
-                <Text className="text-sm text-surface-700 dark:text-surface-300">
-                  {harm}
-                </Text>
+                <Text className="text-sm text-surface-700 dark:text-surface-300">{harm}</Text>
               </View>
             )}
 
@@ -119,23 +125,15 @@ export function AmendsCard({
 
             {notes && (
               <View className="mb-3">
-                <Text className="text-xs font-medium text-surface-500 uppercase mb-1">
-                  Notes
-                </Text>
-                <Text className="text-sm text-surface-700 dark:text-surface-300">
-                  {notes}
-                </Text>
+                <Text className="text-xs font-medium text-surface-500 uppercase mb-1">Notes</Text>
+                <Text className="text-sm text-surface-700 dark:text-surface-300">{notes}</Text>
               </View>
             )}
 
             {madeAt && (
               <View className="mb-3">
-                <Text className="text-xs font-medium text-surface-500 uppercase mb-1">
-                  Made On
-                </Text>
-                <Text className="text-sm text-green-600">
-                  {madeAt.toLocaleDateString()}
-                </Text>
+                <Text className="text-xs font-medium text-surface-500 uppercase mb-1">Made On</Text>
+                <Text className="text-sm text-green-600">{madeAt.toLocaleDateString()}</Text>
               </View>
             )}
           </View>
@@ -144,4 +142,3 @@ export function AmendsCard({
     </TouchableOpacity>
   );
 }
-

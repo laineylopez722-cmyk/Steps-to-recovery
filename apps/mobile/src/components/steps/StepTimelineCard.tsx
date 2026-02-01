@@ -72,6 +72,16 @@ export const StepTimelineCard = memo(function StepTimelineCard({
           disabled={isLocked}
           activeOpacity={0.8}
           className="rounded-2xl overflow-hidden"
+          accessibilityRole="button"
+          accessibilityLabel={`Step ${step.step}: ${step.title}${isCompleted ? ', completed' : isCurrent ? ', current step' : isLocked ? ', locked' : ''}`}
+          accessibilityHint={
+            isLocked
+              ? 'Complete previous steps to unlock'
+              : isCompleted
+                ? 'Review completed step work'
+                : 'Continue working on this step'
+          }
+          accessibilityState={{ disabled: isLocked }}
         >
           <BlurView
             intensity={isCurrent ? 40 : 20}

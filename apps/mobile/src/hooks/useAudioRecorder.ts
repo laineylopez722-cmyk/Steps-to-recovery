@@ -46,8 +46,7 @@ export interface PlaybackState {
 }
 
 // Directory for storing voice journals (use documentDirectory for persistent storage)
-const BASE_DIRECTORY =
-  FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '';
+const BASE_DIRECTORY = FileSystem.documentDirectory ?? FileSystem.cacheDirectory ?? '';
 const VOICE_JOURNAL_DIR = `${BASE_DIRECTORY}voice-journals/`;
 
 const AUDIO_MODE_BASE: Omit<AudioMode, 'allowsRecording'> = {
@@ -85,11 +84,11 @@ export function useVoiceRecorder() {
 
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [playbackSource, setPlaybackSource] = useState<string | null>(null);
-  
+
   // Create audio recorder instance
   const audioRecorder = useExpoAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(audioRecorder);
-  
+
   // Create audio player - source is managed via state
   const audioPlayer = useAudioPlayer(playbackSource);
   const playerState = useAudioPlayerStatus(audioPlayer);
@@ -131,7 +130,13 @@ export function useVoiceRecorder() {
         }));
       }
     }
-  }, [playerState?.playing, playerState?.currentTime, playerState?.duration, playerState?.didJustFinish, playbackSource]);
+  }, [
+    playerState?.playing,
+    playerState?.currentTime,
+    playerState?.duration,
+    playerState?.didJustFinish,
+    playbackSource,
+  ]);
 
   const initializeAudio = async () => {
     try {
@@ -226,7 +231,7 @@ export function useVoiceRecorder() {
     try {
       await audioRecorder.stop();
       const uri = audioRecorder.getStatus().url ?? audioRecorder.uri;
-      
+
       if (!uri) return null;
 
       // Generate unique filename
@@ -287,30 +292,33 @@ export function useVoiceRecorder() {
   }, [audioRecorder, recorderState.isRecording]);
 
   // Play audio file
-  const playAudio = useCallback(async (uri: string): Promise<boolean> => {
-    try {
-      // Stop any existing playback
-      if (playbackSource) {
-        audioPlayer.pause();
-        setPlaybackSource(null);
+  const playAudio = useCallback(
+    async (uri: string): Promise<boolean> => {
+      try {
+        // Stop any existing playback
+        if (playbackSource) {
+          audioPlayer.pause();
+          setPlaybackSource(null);
+        }
+
+        // Configure for playback
+        await setAudioModeAsync(PLAYBACK_AUDIO_MODE);
+
+        // Set the source to trigger player to load
+        setPlaybackSource(uri);
+
+        // Wait a bit for the player to load, then play
+        setTimeout(() => {
+          audioPlayer.play();
+        }, 100);
+        return true;
+      } catch (error) {
+        logger.error('Failed to play audio', error);
+        return false;
       }
-
-      // Configure for playback
-      await setAudioModeAsync(PLAYBACK_AUDIO_MODE);
-
-      // Set the source to trigger player to load
-      setPlaybackSource(uri);
-
-      // Wait a bit for the player to load, then play
-      setTimeout(() => {
-        audioPlayer.play();
-      }, 100);
-      return true;
-    } catch (error) {
-      logger.error('Failed to play audio', error);
-      return false;
-    }
-  }, [audioPlayer, playbackSource]);
+    },
+    [audioPlayer, playbackSource],
+  );
 
   // Pause playback
   const pausePlayback = useCallback(async () => {
@@ -342,11 +350,14 @@ export function useVoiceRecorder() {
   }, [audioPlayer, playbackSource]);
 
   // Seek to position
-  const seekTo = useCallback(async (seconds: number) => {
-    if (playbackSource) {
-      audioPlayer.seekTo(seconds * 1000);
-    }
-  }, [audioPlayer, playbackSource]);
+  const seekTo = useCallback(
+    async (seconds: number) => {
+      if (playbackSource) {
+        audioPlayer.seekTo(seconds * 1000);
+      }
+    },
+    [audioPlayer, playbackSource],
+  );
 
   // Delete audio file
   const deleteAudioFile = useCallback(async (uri: string): Promise<boolean> => {

@@ -17,18 +17,14 @@ import type { MeetingWithDetails } from '../types/meeting';
 import { calculateDistance } from '../types/meeting';
 import { logger } from '../../../utils/logger';
 
-type FavoriteMeetingsScreenProps = NativeStackScreenProps<
-  any,
-  'FavoriteMeetings'
->;
+type FavoriteMeetingsScreenProps = NativeStackScreenProps<any, 'FavoriteMeetings'>;
 
 export function FavoriteMeetingsScreen({
   navigation,
 }: FavoriteMeetingsScreenProps): React.ReactElement {
   const theme = useTheme();
   const { db } = useDatabase();
-  const { favoriteMeetings, isLoading: isFavoritesLoading } =
-    useFavoriteMeetings();
+  const { favoriteMeetings, isLoading: isFavoritesLoading } = useFavoriteMeetings();
   const { location, requestLocation } = useUserLocation();
 
   const [meetings, setMeetings] = useState<MeetingWithDetails[]>([]);
@@ -49,36 +45,32 @@ export function FavoriteMeetingsScreen({
         // Request location for distance calculation (optional)
         const userLocation = location || (await requestLocation());
 
-        const meetingDetailsPromises = favoriteMeetings.map(
-          async (favorite) => {
-            const meeting = await getCachedMeetingById(db, favorite.meeting_id);
-            if (!meeting) return null;
+        const meetingDetailsPromises = favoriteMeetings.map(async (favorite) => {
+          const meeting = await getCachedMeetingById(db, favorite.meeting_id);
+          if (!meeting) return null;
 
-            // Calculate distance if location available
-            let distance: number | null = null;
-            if (userLocation) {
-              distance = calculateDistance(
-                userLocation.latitude,
-                userLocation.longitude,
-                meeting.latitude,
-                meeting.longitude
-              );
-            }
-
-            const meetingWithDetails: MeetingWithDetails = {
-              ...meeting,
-              is_favorite: true,
-              distance_miles: distance,
-            };
-
-            return meetingWithDetails;
+          // Calculate distance if location available
+          let distance: number | null = null;
+          if (userLocation) {
+            distance = calculateDistance(
+              userLocation.latitude,
+              userLocation.longitude,
+              meeting.latitude,
+              meeting.longitude,
+            );
           }
-        );
+
+          const meetingWithDetails: MeetingWithDetails = {
+            ...meeting,
+            is_favorite: true,
+            distance_miles: distance,
+          };
+
+          return meetingWithDetails;
+        });
 
         const meetingDetails = await Promise.all(meetingDetailsPromises);
-        const validMeetings = meetingDetails.filter(
-          (m): m is MeetingWithDetails => m !== null
-        );
+        const validMeetings = meetingDetails.filter((m): m is MeetingWithDetails => m !== null);
 
         // Sort by distance if available, otherwise by name
         validMeetings.sort((a, b) => {
@@ -104,7 +96,7 @@ export function FavoriteMeetingsScreen({
     (meeting: MeetingWithDetails): void => {
       navigation.navigate('MeetingDetail', { meetingId: meeting.id });
     },
-    [navigation]
+    [navigation],
   );
 
   const handleFindMeetings = useCallback((): void => {
@@ -116,12 +108,7 @@ export function FavoriteMeetingsScreen({
   // Loading state
   if (isLoading && meetings.length === 0) {
     return (
-      <View
-        style={[
-          styles.centerContainer,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
+      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -130,12 +117,7 @@ export function FavoriteMeetingsScreen({
   // Empty state
   if (meetings.length === 0) {
     return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
+      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <EmptyState
           icon="favorite-border"
           title="No Favorite Meetings"
@@ -149,9 +131,7 @@ export function FavoriteMeetingsScreen({
 
   // List of favorited meetings
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <FlatList
         data={meetings}
         keyExtractor={(item) => item.id}

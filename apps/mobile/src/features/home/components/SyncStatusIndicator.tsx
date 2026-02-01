@@ -84,6 +84,12 @@ export function SyncStatusIndicator() {
       onPress={handlePress}
       disabled={isSyncing || !isOnline}
       activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`Sync status: ${status.label}. ${status.subtext}`}
+      accessibilityHint={
+        isSyncing ? 'Syncing in progress' : isOnline ? 'Tap to sync now' : 'No internet connection'
+      }
+      accessibilityState={{ disabled: isSyncing || !isOnline, busy: isSyncing }}
     >
       <View style={styles.content}>
         {isSyncing ? (
@@ -92,8 +98,14 @@ export function SyncStatusIndicator() {
           <MaterialCommunityIcons name={status.icon} size={20} color={status.color} />
         )}
         <View style={styles.textContainer}>
-          <Text style={[theme.typography.subheadline, { color: status.color, fontWeight: '600' }]}>{status.label}</Text>
-          <Text style={[theme.typography.caption1, { color: theme.colors.textSecondary, marginTop: 2 }]}>{status.subtext}</Text>
+          <Text style={[theme.typography.subheadline, { color: status.color, fontWeight: '600' }]}>
+            {status.label}
+          </Text>
+          <Text
+            style={[theme.typography.caption1, { color: theme.colors.textSecondary, marginTop: 2 }]}
+          >
+            {status.subtext}
+          </Text>
         </View>
       </View>
     </TouchableOpacity>

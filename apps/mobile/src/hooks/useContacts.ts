@@ -52,9 +52,7 @@ export function useContacts() {
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    return contacts.filter(
-      (c) => c.lastContactedAt && new Date(c.lastContactedAt) >= weekAgo
-    );
+    return contacts.filter((c) => c.lastContactedAt && new Date(c.lastContactedAt) >= weekAgo);
   }, [contacts]);
 
   // Get contacts needing attention (no contact in 2+ weeks)
@@ -72,7 +70,7 @@ export function useContacts() {
   const callContact = useCallback(
     async (contact: RecoveryContact) => {
       const phoneUrl = `tel:${contact.phone.replace(/[^\d+]/g, '')}`;
-      
+
       try {
         const canOpen = await Linking.canOpenURL(phoneUrl);
         if (canOpen) {
@@ -87,7 +85,7 @@ export function useContacts() {
         Alert.alert('Error', 'Failed to initiate call');
       }
     },
-    [markContacted]
+    [markContacted],
   );
 
   // Text a contact
@@ -97,7 +95,7 @@ export function useContacts() {
       const smsUrl = `sms:${contact.phone.replace(/[^\d+]/g, '')}${
         message ? `?body=${encodedMessage}` : ''
       }`;
-      
+
       try {
         const canOpen = await Linking.canOpenURL(smsUrl);
         if (canOpen) {
@@ -111,16 +109,13 @@ export function useContacts() {
         Alert.alert('Error', 'Failed to open messaging');
       }
     },
-    [markContacted]
+    [markContacted],
   );
 
   // Send SOS message to sponsor
   const sendSOSToSponsor = useCallback(async () => {
     if (!sponsor) {
-      Alert.alert(
-        'No Sponsor Set',
-        'Please add a sponsor to your contacts first.'
-      );
+      Alert.alert('No Sponsor Set', 'Please add a sponsor to your contacts first.');
       return;
     }
 
@@ -191,4 +186,3 @@ export function useContacts() {
     getDaysSinceContact,
   };
 }
-

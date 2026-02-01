@@ -7,11 +7,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
-import type {
-  FourthStepEntry,
-  DbFourthStepEntry,
-  FourthStepType,
-} from '../types';
+import type { FourthStepEntry, DbFourthStepEntry, FourthStepType } from '../types';
 
 // The affects options for resentments (Big Book columns)
 export const AFFECTS_OPTIONS = [
@@ -22,7 +18,7 @@ export const AFFECTS_OPTIONS = [
   'Sex Relations',
 ] as const;
 
-export type AffectsOption = typeof AFFECTS_OPTIONS[number];
+export type AffectsOption = (typeof AFFECTS_OPTIONS)[number];
 
 interface DecryptedFourthStepEntry extends Omit<FourthStepEntry, 'who' | 'cause' | 'myPart'> {
   who: string;
@@ -43,7 +39,7 @@ interface FourthStepState {
     who: string,
     cause: string,
     affects: string[],
-    myPart: string
+    myPart: string,
   ) => Promise<FourthStepEntry>;
   updateEntry: (
     id: string,
@@ -52,7 +48,7 @@ interface FourthStepState {
       cause: string;
       affects: string[];
       myPart: string;
-    }>
+    }>,
   ) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
   getEntriesByType: (type: FourthStepType) => FourthStepEntry[];
@@ -74,7 +70,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
     try {
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbFourthStepEntry>(
-        'SELECT * FROM fourth_step_inventory ORDER BY created_at DESC'
+        'SELECT * FROM fourth_step_inventory ORDER BY created_at DESC',
       );
 
       const entries: FourthStepEntry[] = rows.map((row) => ({
@@ -104,7 +100,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbFourthStepEntry>(
         'SELECT * FROM fourth_step_inventory WHERE type = ? ORDER BY created_at DESC',
-        [type]
+        [type],
       );
 
       const typeEntries: FourthStepEntry[] = rows.map((row) => ({
@@ -119,10 +115,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
 
       // Merge with existing entries from other types
       set((state) => ({
-        entries: [
-          ...state.entries.filter((e) => e.type !== type),
-          ...typeEntries,
-        ],
+        entries: [...state.entries.filter((e) => e.type !== type), ...typeEntries],
         isLoading: false,
       }));
     } catch (error) {
@@ -139,7 +132,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
     who: string,
     cause: string,
     affects: string[],
-    myPart: string
+    myPart: string,
   ) => {
     const db = await getDatabase();
     const id = uuidv4();
@@ -154,7 +147,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
       `INSERT INTO fourth_step_inventory (
         id, type, who, cause, affects, my_part, created_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [id, type, encryptedWho, encryptedCause, JSON.stringify(affects), encryptedMyPart, now]
+      [id, type, encryptedWho, encryptedCause, JSON.stringify(affects), encryptedMyPart, now],
     );
 
     const entry: FourthStepEntry = {
@@ -202,7 +195,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
     values.push(id);
     await db.runAsync(
       `UPDATE fourth_step_inventory SET ${updateFields.join(', ')} WHERE id = ?`,
-      values
+      values,
     );
 
     // Reload entries to get updated data
@@ -259,4 +252,3 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
     };
   },
 }));
-

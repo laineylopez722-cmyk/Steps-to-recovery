@@ -209,7 +209,7 @@ describe('navigateFromNotification', () => {
         'Profile.NotificationSettings',
       ];
 
-      screens.forEach(screen => {
+      screens.forEach((screen) => {
         const payload: NotificationPayload = {
           screen,
           type: 'test',

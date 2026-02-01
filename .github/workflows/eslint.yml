@@ -2,11 +2,11 @@ name: ESLint
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
-    branches: ["main"]
+    branches: ['main']
   schedule:
-    - cron: "20 1 * * 5"
+    - cron: '20 1 * * 5'
 
 jobs:
   eslint:
@@ -32,7 +32,7 @@ jobs:
       - name: Run ESLint (SARIF)
         working-directory: apps/mobile
         env:
-          SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
+          SARIF_ESLINT_IGNORE_SUPPRESSED: 'true'
         run: npx eslint src App.tsx --format @microsoft/eslint-formatter-sarif --output-file ../eslint-results.sarif
 
       - name: Upload analysis results to GitHub

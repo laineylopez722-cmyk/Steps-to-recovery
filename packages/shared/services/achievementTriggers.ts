@@ -1,10 +1,10 @@
 /**
  * Achievement Trigger Service
- * 
+ *
  * Automatically triggers achievement checks when relevant actions occur.
  * These functions should be called after user actions to check if any
  * achievements should be unlocked.
- * 
+ *
  * @module services/achievementTriggers
  */
 
@@ -15,10 +15,10 @@ import type { Achievement } from '../types';
 
 /**
  * Trigger achievement check after adding a contact
- * 
+ *
  * Checks for fellowship-related achievements when a new recovery contact
  * is added. Automatically schedules notifications for newly unlocked achievements.
- * 
+ *
  * @returns Promise resolving to array of newly unlocked achievements
  * @example
  * ```ts
@@ -31,11 +31,11 @@ import type { Achievement } from '../types';
  */
 export async function onContactAdded(): Promise<Achievement[]> {
   const store = useAchievementStore.getState();
-  
+
   // Get current contacts count
   const contacts = await getRecoveryContacts();
   const sponsor = await getSponsor();
-  
+
   const context = {
     soberDays: 0, // Will be filled by checkAutoAchievements
     contactsCount: contacts.length,
@@ -50,22 +50,22 @@ export async function onContactAdded(): Promise<Achievement[]> {
     stepProgress: {},
     meetingsWithShares: 0,
   };
-  
+
   const newlyUnlocked = await store.checkAutoAchievements(context);
-  
+
   // Schedule notifications for newly unlocked achievements
   for (const achievement of newlyUnlocked) {
     await scheduleAchievementNotification(achievement);
   }
-  
+
   return newlyUnlocked;
 }
 
 /**
  * Trigger achievement check after logging a meeting
- * 
+ *
  * Checks for service/meeting-related achievements when a meeting is logged.
- * 
+ *
  * @param meetingsCount - Total number of meetings attended
  * @param didShare - Whether the user shared at the meeting
  * @returns Promise resolving to array of newly unlocked achievements
@@ -75,9 +75,12 @@ export async function onContactAdded(): Promise<Achievement[]> {
  * const newAchievements = await onMeetingLogged(totalMeetings, shared);
  * ```
  */
-export async function onMeetingLogged(meetingsCount: number, didShare: boolean): Promise<Achievement[]> {
+export async function onMeetingLogged(
+  meetingsCount: number,
+  didShare: boolean,
+): Promise<Achievement[]> {
   const store = useAchievementStore.getState();
-  
+
   const context = {
     soberDays: 0,
     contactsCount: 0,
@@ -92,21 +95,21 @@ export async function onMeetingLogged(meetingsCount: number, didShare: boolean):
     stepProgress: {},
     meetingsWithShares: didShare ? 1 : 0,
   };
-  
+
   const newlyUnlocked = await store.checkAutoAchievements(context);
-  
+
   for (const achievement of newlyUnlocked) {
     await scheduleAchievementNotification(achievement);
   }
-  
+
   return newlyUnlocked;
 }
 
 /**
  * Trigger achievement check after completing step work
- * 
+ *
  * Checks for step work achievements when step progress is updated.
- * 
+ *
  * @param stepNumber - Step number being worked (1-12)
  * @param answeredQuestions - Number of questions answered
  * @param totalQuestions - Total number of questions for this step
@@ -120,7 +123,7 @@ export async function onMeetingLogged(meetingsCount: number, didShare: boolean):
 export async function onStepWorkUpdated(
   stepNumber: number,
   answeredQuestions: number,
-  totalQuestions: number
+  totalQuestions: number,
 ): Promise<Achievement[]> {
   // Validate inputs
   if (stepNumber < 1 || stepNumber > 12 || !Number.isInteger(stepNumber)) {
@@ -130,11 +133,11 @@ export async function onStepWorkUpdated(
     return [];
   }
   const store = useAchievementStore.getState();
-  
+
   const stepProgress: Record<number, { answered: number; total: number }> = {
     [stepNumber]: { answered: answeredQuestions, total: totalQuestions },
   };
-  
+
   const context = {
     soberDays: 0,
     contactsCount: 0,
@@ -149,21 +152,21 @@ export async function onStepWorkUpdated(
     stepProgress,
     meetingsWithShares: 0,
   };
-  
+
   const newlyUnlocked = await store.checkAutoAchievements(context);
-  
+
   for (const achievement of newlyUnlocked) {
     await scheduleAchievementNotification(achievement);
   }
-  
+
   return newlyUnlocked;
 }
 
 /**
  * Trigger achievement check after daily check-in
- * 
+ *
  * Checks for daily practice achievements when a check-in is completed.
- * 
+ *
  * @param checkinStreak - Current consecutive days of check-ins
  * @returns Promise resolving to array of newly unlocked achievements
  * @example
@@ -177,7 +180,7 @@ export async function onCheckinCompleted(checkinStreak: number): Promise<Achieve
     return [];
   }
   const store = useAchievementStore.getState();
-  
+
   const context = {
     soberDays: 0,
     contactsCount: 0,
@@ -192,21 +195,21 @@ export async function onCheckinCompleted(checkinStreak: number): Promise<Achieve
     stepProgress: {},
     meetingsWithShares: 0,
   };
-  
+
   const newlyUnlocked = await store.checkAutoAchievements(context);
-  
+
   for (const achievement of newlyUnlocked) {
     await scheduleAchievementNotification(achievement);
   }
-  
+
   return newlyUnlocked;
 }
 
 /**
  * Trigger achievement check after reading reflection
- * 
+ *
  * Checks for daily practice achievements when a reading/reflection is completed.
- * 
+ *
  * @param readingStreak - Current consecutive days of readings
  * @returns Promise resolving to array of newly unlocked achievements
  */
@@ -215,7 +218,7 @@ export async function onReadingCompleted(readingStreak: number): Promise<Achieve
     return [];
   }
   const store = useAchievementStore.getState();
-  
+
   const context = {
     soberDays: 0,
     contactsCount: 0,
@@ -230,22 +233,22 @@ export async function onReadingCompleted(readingStreak: number): Promise<Achieve
     stepProgress: {},
     meetingsWithShares: 0,
   };
-  
+
   const newlyUnlocked = await store.checkAutoAchievements(context);
-  
+
   for (const achievement of newlyUnlocked) {
     await scheduleAchievementNotification(achievement);
   }
-  
+
   return newlyUnlocked;
 }
 
 /**
  * Trigger keytag check when sobriety days update
- * 
+ *
  * Updates keytags (milestone chips) when clean time changes.
  * This should be called whenever the user's sobriety date or clean days change.
- * 
+ *
  * @param soberDays - Current number of days of sobriety
  * @example
  * ```ts
@@ -263,11 +266,11 @@ export function onSobrietyDaysUpdated(soberDays: number): void {
 
 /**
  * Trigger full achievement check
- * 
+ *
  * Performs a comprehensive achievement check using the provided context.
  * Call this on app startup or after significant events to ensure all
  * achievements are properly evaluated.
- * 
+ *
  * @param context - Complete achievement context with all relevant data
  * @returns Promise resolving to array of newly unlocked achievements
  * @example
@@ -277,16 +280,15 @@ export function onSobrietyDaysUpdated(soberDays: number): void {
  * ```
  */
 export async function triggerFullAchievementCheck(
-  context: AchievementContext
+  context: AchievementContext,
 ): Promise<Achievement[]> {
   const store = useAchievementStore.getState();
-  
+
   const newlyUnlocked = await store.checkAutoAchievements(context);
-  
+
   for (const achievement of newlyUnlocked) {
     await scheduleAchievementNotification(achievement);
   }
-  
+
   return newlyUnlocked;
 }
-

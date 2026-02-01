@@ -85,13 +85,13 @@ export const useSharePrepStore = create<SharePrepState & SharePrepActions>()(
       getPreviewText: () => {
         const { notes } = get();
         const parts: string[] = [];
-        
+
         if (notes.topic.trim()) parts.push(notes.topic.trim());
         if (notes.gratitude.trim()) parts.push(notes.gratitude.trim());
         if (notes.struggle.trim()) parts.push(notes.struggle.trim());
         if (notes.experience.trim()) parts.push(notes.experience.trim());
         if (notes.other.trim()) parts.push(notes.other.trim());
-        
+
         return parts.join('\n\n');
       },
     }),
@@ -99,7 +99,6 @@ export const useSharePrepStore = create<SharePrepState & SharePrepActions>()(
       name: 'share-prep-storage',
       storage: createJSONStorage(() => secureStorage),
       partialize: (state) => ({ notes: state.notes }),
-    }
-  )
+    },
+  ),
 );
-

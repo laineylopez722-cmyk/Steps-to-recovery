@@ -1,25 +1,25 @@
 /**
  * SQLite Database Client
  * Handles database initialization and migrations
- * 
+ *
  * SECURITY ARCHITECTURE:
  * ---------------------
  * This app uses a DEFENSE-IN-DEPTH approach to data security:
- * 
+ *
  * 1. FIELD-LEVEL ENCRYPTION (Primary Protection):
  *    - All sensitive content (journal entries, reflections, notes) is encrypted
  *      using AES-256-GCM before storage via lib/encryption
  *    - Encryption keys are stored in expo-secure-store with biometric protection
  *    - This ensures data remains encrypted even if database file is accessed
- * 
+ *
  * 2. iOS DATA PROTECTION:
  *    - On iOS, database files automatically benefit from iOS Data Protection
  *    - Files are encrypted when device is locked (NSFileProtectionComplete)
- * 
+ *
  * 3. ANDROID ENCRYPTED FILE SYSTEM:
  *    - Modern Android devices use file-based encryption (FBE)
  *    - Database files in app's private directory are protected
- * 
+ *
  * NOTE ON SQLCipher:
  * -----------------
  * SQLCipher (full database encryption) is NOT currently used because:
@@ -27,7 +27,7 @@
  * - Field-level encryption already protects all sensitive content
  * - Platform-level protections provide additional file security
  * - Performance impact of full-DB encryption is avoided
- * 
+ *
  * If SQLCipher is needed in future (e.g., for compliance), consider:
  * - expo-community-sqlite-storage with SQLCipher support
  * - react-native-quick-sqlite with encryption
@@ -48,10 +48,10 @@ let db: SQLite.SQLiteDatabase | null = null;
 export async function getDatabase(): Promise<SQLite.SQLiteDatabase> {
   if (!db) {
     db = await SQLite.openDatabaseAsync(DATABASE_NAME);
-    
+
     // Enable WAL mode for better performance and reliability
     await db.execAsync('PRAGMA journal_mode = WAL;');
-    
+
     // Enable foreign keys for referential integrity
     await db.execAsync('PRAGMA foreign_keys = ON;');
   }
@@ -434,7 +434,9 @@ const MIGRATIONS: Migration[] = [
     version: 3,
     description: 'Add crisis_region to app_settings',
     up: async (db) => {
-      await db.execAsync(`ALTER TABLE app_settings ADD COLUMN crisis_region TEXT NOT NULL DEFAULT 'US';`);
+      await db.execAsync(
+        `ALTER TABLE app_settings ADD COLUMN crisis_region TEXT NOT NULL DEFAULT 'US';`,
+      );
     },
   },
   {
@@ -452,9 +454,7 @@ const MIGRATIONS: Migration[] = [
       ];
       for (const column of columns) {
         try {
-          await db.execAsync(
-            `ALTER TABLE meeting_logs ADD COLUMN ${column.name} ${column.type};`
-          );
+          await db.execAsync(`ALTER TABLE meeting_logs ADD COLUMN ${column.name} ${column.type};`);
         } catch {
           // Column may already exist from previous partial migration
         }
@@ -479,20 +479,20 @@ async function getSchemaVersion(database: SQLite.SQLiteDatabase): Promise<number
 
     // Get current version
     const result = await database.getFirstAsync<{ version: number }>(
-      'SELECT version FROM schema_versions WHERE id = 1'
+      'SELECT version FROM schema_versions WHERE id = 1',
     );
 
     if (!result) {
       // Initialize version table with 0 for new databases
       // or detect existing unversioned databases
       const hasJournalTable = await database.getFirstAsync<{ name: string }>(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='journal_entries'"
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='journal_entries'",
       );
-      
+
       const initialVersion = hasJournalTable ? 0 : SCHEMA_VERSION;
       await database.runAsync(
         'INSERT INTO schema_versions (id, version, updated_at) VALUES (1, ?, ?)',
-        [initialVersion, new Date().toISOString()]
+        [initialVersion, new Date().toISOString()],
       );
       return initialVersion;
     }
@@ -507,10 +507,10 @@ async function getSchemaVersion(database: SQLite.SQLiteDatabase): Promise<number
  * Update schema version in database
  */
 async function setSchemaVersion(database: SQLite.SQLiteDatabase, version: number): Promise<void> {
-  await database.runAsync(
-    'UPDATE schema_versions SET version = ?, updated_at = ? WHERE id = 1',
-    [version, new Date().toISOString()]
-  );
+  await database.runAsync('UPDATE schema_versions SET version = ?, updated_at = ? WHERE id = 1', [
+    version,
+    new Date().toISOString(),
+  ]);
 }
 
 /**
@@ -519,10 +519,10 @@ async function setSchemaVersion(database: SQLite.SQLiteDatabase, version: number
  */
 async function runMigrations(database: SQLite.SQLiteDatabase): Promise<void> {
   const currentVersion = await getSchemaVersion(database);
-  
+
   // Get migrations that need to run
-  const pendingMigrations = MIGRATIONS.filter(m => m.version > currentVersion);
-  
+  const pendingMigrations = MIGRATIONS.filter((m) => m.version > currentVersion);
+
   if (pendingMigrations.length === 0) {
     // No migrations needed
     return;
@@ -555,7 +555,6 @@ export async function getCurrentSchemaVersion(): Promise<number> {
   return getSchemaVersion(database);
 }
 
-
 /**
  * Close database connection
  */
@@ -572,7 +571,7 @@ export async function closeDatabase(): Promise<void> {
  */
 export async function clearAllData(): Promise<void> {
   const database = await getDatabase();
-  
+
   await database.execAsync(`
     DELETE FROM journal_entries;
     DELETE FROM daily_checkins;
@@ -600,5 +599,3 @@ export async function clearAllData(): Promise<void> {
     DELETE FROM step_answers;
   `);
 }
-
-

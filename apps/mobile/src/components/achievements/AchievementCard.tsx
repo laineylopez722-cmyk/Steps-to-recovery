@@ -134,107 +134,95 @@ export const AchievementCard = memo(function AchievementCard({
       accessibilityRole={isInteractive ? 'button' : 'text'}
       accessibilityHint={isInteractive ? 'Tap to view achievement details' : undefined}
     >
-        <View className="flex-row items-center gap-3">
-          {/* Achievement Icon */}
-          <View
-            className={`w-12 h-12 rounded-full items-center justify-center ${
-              isUnlocked
-                ? 'bg-secondary-100 dark:bg-secondary-900'
-                : 'bg-surface-100 dark:bg-surface-700'
-            }`}
-            accessibilityRole="image"
-            accessibilityLabel={`Achievement icon: ${icon || 'unknown'}`}
-          >
-            <Text className="text-2xl" accessibilityElementsHidden>
-              {icon || '🏆'}
-            </Text>
-          </View>
-
-          {/* Achievement Content */}
-          <View className="flex-1">
-            <Text
-              className={`text-base font-semibold ${
-                isUnlocked
-                  ? 'text-surface-900 dark:text-surface-100'
-                  : 'text-surface-600 dark:text-surface-400'
-              }`}
-              accessibilityRole="header"
-              numberOfLines={2}
-              ellipsizeMode="tail"
-            >
-              {title || 'Unnamed Achievement'}
-            </Text>
-            <Text
-              className="text-sm text-surface-500 dark:text-surface-400"
-              numberOfLines={3}
-              ellipsizeMode="tail"
-            >
-              {description || 'No description available'}
-            </Text>
-          </View>
-
-          {/* Status Indicator */}
-          {isUnlocked && (
-            <View
-              className="items-center"
-              accessibilityRole="text"
-              accessibilityLabel={`Achievement unlocked${unlockedAt ? ` on ${formatDate(unlockedAt)}` : ''}`}
-            >
-              <Text
-                className="text-secondary-500 text-lg"
-                accessibilityElementsHidden
-              >
-                ✓
-              </Text>
-              {unlockedAt && (
-                <Text
-                  className="text-xs text-surface-400"
-                  accessibilityElementsHidden
-                >
-                  {formatDate(unlockedAt)}
-                </Text>
-              )}
-            </View>
-          )}
+      <View className="flex-row items-center gap-3">
+        {/* Achievement Icon */}
+        <View
+          className={`w-12 h-12 rounded-full items-center justify-center ${
+            isUnlocked
+              ? 'bg-secondary-100 dark:bg-secondary-900'
+              : 'bg-surface-100 dark:bg-surface-700'
+          }`}
+          accessibilityRole="image"
+          accessibilityLabel={`Achievement icon: ${icon || 'unknown'}`}
+        >
+          <Text className="text-2xl" accessibilityElementsHidden>
+            {icon || '🏆'}
+          </Text>
         </View>
 
-        {/* Progress Bar for In-Progress Achievements */}
-        {showProgress && isInProgress && target && target > 0 && (
-          <View
-            className="mt-3"
-            accessibilityRole="progressbar"
-            accessibilityValue={{
-              min: 0,
-              max: 100,
-              now: Math.round(progress),
-              text: `${Math.round(progress)}% complete`
-            }}
-            accessibilityLabel={`Achievement progress: ${progressText}, ${Math.round(progress)}% complete`}
+        {/* Achievement Content */}
+        <View className="flex-1">
+          <Text
+            className={`text-base font-semibold ${
+              isUnlocked
+                ? 'text-surface-900 dark:text-surface-100'
+                : 'text-surface-600 dark:text-surface-400'
+            }`}
+            accessibilityRole="header"
+            numberOfLines={2}
+            ellipsizeMode="tail"
           >
-            <View className="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
-              <View
-                className="h-full bg-primary-500 rounded-full transition-all duration-300"
-                style={{ width: `${progress}%` }}
-                accessibilityElementsHidden
-              />
-            </View>
-            <View className="flex-row justify-between mt-1">
-              <Text
-                className="text-xs text-surface-500"
-                accessibilityElementsHidden
-              >
-                {progressText}
+            {title || 'Unnamed Achievement'}
+          </Text>
+          <Text
+            className="text-sm text-surface-500 dark:text-surface-400"
+            numberOfLines={3}
+            ellipsizeMode="tail"
+          >
+            {description || 'No description available'}
+          </Text>
+        </View>
+
+        {/* Status Indicator */}
+        {isUnlocked && (
+          <View
+            className="items-center"
+            accessibilityRole="text"
+            accessibilityLabel={`Achievement unlocked${unlockedAt ? ` on ${formatDate(unlockedAt)}` : ''}`}
+          >
+            <Text className="text-secondary-500 text-lg" accessibilityElementsHidden>
+              ✓
+            </Text>
+            {unlockedAt && (
+              <Text className="text-xs text-surface-400" accessibilityElementsHidden>
+                {formatDate(unlockedAt)}
               </Text>
-              <Text
-                className="text-xs text-surface-500"
-                accessibilityElementsHidden
-              >
-                {Math.round(progress)}%
-              </Text>
-            </View>
+            )}
           </View>
         )}
-      </Card>
+      </View>
+
+      {/* Progress Bar for In-Progress Achievements */}
+      {showProgress && isInProgress && target && target > 0 && (
+        <View
+          className="mt-3"
+          accessibilityRole="progressbar"
+          accessibilityValue={{
+            min: 0,
+            max: 100,
+            now: Math.round(progress),
+            text: `${Math.round(progress)}% complete`,
+          }}
+          accessibilityLabel={`Achievement progress: ${progressText}, ${Math.round(progress)}% complete`}
+        >
+          <View className="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+            <View
+              className="h-full bg-primary-500 rounded-full transition-all duration-300"
+              style={{ width: `${progress}%` }}
+              accessibilityElementsHidden
+            />
+          </View>
+          <View className="flex-row justify-between mt-1">
+            <Text className="text-xs text-surface-500" accessibilityElementsHidden>
+              {progressText}
+            </Text>
+            <Text className="text-xs text-surface-500" accessibilityElementsHidden>
+              {Math.round(progress)}%
+            </Text>
+          </View>
+        </View>
+      )}
+    </Card>
   );
 });
 
@@ -298,10 +286,7 @@ export const AchievementBadge = memo(function AchievementBadge({
         accessibilityRole="image"
         accessibilityLabel={`Achievement icon: ${icon || 'unknown'}`}
       >
-        <Text
-          className="text-2xl"
-          accessibilityElementsHidden
-        >
+        <Text className="text-2xl" accessibilityElementsHidden>
           {icon || '🏆'}
         </Text>
         {isUnlocked && (
@@ -310,10 +295,7 @@ export const AchievementBadge = memo(function AchievementBadge({
             accessibilityRole="text"
             accessibilityLabel="Achievement unlocked"
           >
-            <Text
-              className="text-white text-xs"
-              accessibilityElementsHidden
-            >
+            <Text className="text-white text-xs" accessibilityElementsHidden>
               ✓
             </Text>
           </View>
@@ -357,4 +339,3 @@ function formatDate(date: Date | string | number): string {
     return 'Unknown';
   }
 }
-

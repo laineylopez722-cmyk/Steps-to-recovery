@@ -91,19 +91,18 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   checkAutoLock: (autoLockMinutes: number) => {
     const { lastActiveAt, isLocked } = get();
-    
+
     if (isLocked) return true;
     if (!lastActiveAt) return true;
 
     const now = new Date();
     const diff = (now.getTime() - lastActiveAt.getTime()) / 1000 / 60;
-    
+
     if (diff >= autoLockMinutes) {
       set({ isLocked: true });
       return true;
     }
-    
+
     return false;
   },
 }));
-

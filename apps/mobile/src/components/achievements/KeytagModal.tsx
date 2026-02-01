@@ -84,7 +84,7 @@ export const KeytagModal = memo(function KeytagModal({
               >
                 {/* Keytag hole */}
                 <View className="absolute top-3 w-4 h-4 rounded-full bg-surface-100 dark:bg-surface-800" />
-                
+
                 {/* Days text */}
                 <Text
                   className={`text-3xl font-bold ${
@@ -107,18 +107,14 @@ export const KeytagModal = memo(function KeytagModal({
                 </View>
               ) : (
                 <View className="mt-4 items-center">
-                  <Text className="text-surface-500 text-lg">
-                    {daysUntil} days to go
-                  </Text>
+                  <Text className="text-surface-500 text-lg">{daysUntil} days to go</Text>
                   <View className="w-48 h-2 bg-surface-200 dark:bg-surface-700 rounded-full mt-2 overflow-hidden">
                     <View
                       className="h-full bg-primary-500 rounded-full"
                       style={{ width: keytag.progress ? `${keytag.progress}%` : 0 }}
                     />
                   </View>
-                  <Text className="text-surface-400 text-sm mt-1">
-                    {keytag.progress}% progress
-                  </Text>
+                  <Text className="text-surface-400 text-sm mt-1">{keytag.progress}% progress</Text>
                 </View>
               )}
             </View>
@@ -214,39 +210,29 @@ export const UnlockCelebrationModal = memo(function UnlockCelebrationModal({
   if (!achievement) return null;
 
   return (
-    <Modal
-      visible={visible}
-      animationType="fade"
-      transparent
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
       <View className="flex-1 bg-black/50 items-center justify-center px-6">
         <View className="bg-white dark:bg-surface-800 rounded-2xl p-8 items-center max-w-sm w-full shadow-xl">
           {/* Celebration icon */}
           <Text className="text-6xl mb-4">{achievement.icon}</Text>
-          
+
           {/* Title */}
           <Text className="text-xl font-bold text-surface-900 dark:text-surface-100 text-center mb-2">
             Achievement Unlocked!
           </Text>
-          
+
           {/* Achievement name */}
           <Text className="text-lg text-secondary-600 dark:text-secondary-400 text-center mb-2">
             {achievement.title}
           </Text>
-          
+
           {/* Description */}
           <Text className="text-sm text-surface-500 text-center mb-6">
             {achievement.description}
           </Text>
-          
+
           {/* Close button */}
-          <Button
-            title="Awesome!"
-            variant="default"
-            onPress={onClose}
-            className="w-full"
-          />
+          <Button title="Awesome!" variant="default" onPress={onClose} className="w-full" />
         </View>
       </View>
     </Modal>
@@ -270,17 +256,16 @@ function formatFullDate(date: Date): string {
 
 function getKeytagMeaning(days: number): string {
   const meanings: Record<number, string> = {
-    0: 'You showed up. You admitted you need help. That takes incredible courage. Just for today, you\'re here.',
-    30: 'Thirty days of choosing recovery, one day at a time. Your brain is starting to heal, and you\'re building new patterns.',
-    60: 'Two months of commitment. You\'ve faced challenges and kept going. Your support network is growing.',
-    90: 'The foundation is set. 90 days is a cornerstone of early recovery. You\'ve proven you can do this.',
-    180: 'Half a year of freedom. You\'re becoming comfortable in your own skin. Life is changing.',
-    270: 'Nine months of growth. You\'ve weathered seasons clean. Your recovery is maturing.',
+    0: "You showed up. You admitted you need help. That takes incredible courage. Just for today, you're here.",
+    30: "Thirty days of choosing recovery, one day at a time. Your brain is starting to heal, and you're building new patterns.",
+    60: "Two months of commitment. You've faced challenges and kept going. Your support network is growing.",
+    90: "The foundation is set. 90 days is a cornerstone of early recovery. You've proven you can do this.",
+    180: "Half a year of freedom. You're becoming comfortable in your own skin. Life is changing.",
+    270: "Nine months of growth. You've weathered seasons clean. Your recovery is maturing.",
     365: 'A full year! Every season, every holiday, every challenge - you did it clean. This is a miracle.',
-    547: 'Eighteen months of living in recovery. You\'re not just staying clean, you\'re thriving.',
+    547: "Eighteen months of living in recovery. You're not just staying clean, you're thriving.",
     730: 'Multiple years! You are proof that recovery works. Your experience, strength, and hope help others.',
   };
 
   return meanings[days] || 'Every clean day is a victory worth celebrating.';
 }
-

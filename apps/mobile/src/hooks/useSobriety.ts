@@ -1,16 +1,16 @@
 /**
  * Sobriety Hook
- * 
+ *
  * Provides sobriety calculations, milestone tracking, and automatic
  * milestone celebration notifications.
- * 
+ *
  * **Features**:
  * - Real-time sobriety duration calculation (updates every minute)
  * - Milestone detection and tracking
  * - Progress calculation to next milestone
  * - Automatic milestone celebration notifications
  * - Formatted duration display (days, months, years)
- * 
+ *
  * @returns Sobriety state, calculations, and milestone information
  * @example
  * ```ts
@@ -22,16 +22,20 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useProfileStore } from '@recovery/shared/store/profileStore';
 import { useSettingsStore } from '@recovery/shared/store/settingsStore';
-import { getNextMilestone, getLatestMilestone, getAchievedMilestones } from '@recovery/shared/constants/milestones';
+import {
+  getNextMilestone,
+  getLatestMilestone,
+  getAchievedMilestones,
+} from '@recovery/shared/constants/milestones';
 import { scheduleMilestoneNotification } from '@recovery/shared/notifications';
 import type { AppSettings } from '@recovery/shared/types';
 
 /**
  * Sobriety calculation and milestone tracking hook
- * 
+ *
  * Automatically recalculates sobriety duration every minute and
  * triggers milestone celebrations when new milestones are achieved.
- * 
+ *
  * @returns Object with sobriety state, calculations, and milestones
  */
 export function useSobriety() {
@@ -69,7 +73,7 @@ export function useSobriety() {
     if (!profile || !appSettings?.notificationsEnabled) return;
 
     const achievedCount = getAchievedMilestones(soberDays).length;
-    
+
     // Only trigger if we have a previous count and the count has increased
     if (
       previousMilestoneCountRef.current !== null &&
@@ -141,4 +145,3 @@ export function useSobriety() {
     formattedDuration,
   };
 }
-

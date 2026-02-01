@@ -129,7 +129,7 @@ export function RootNavigator() {
           { event: 'INSERT', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` },
           () => {
             setNeedsOnboarding(false);
-          }
+          },
         )
         .subscribe();
 
@@ -145,28 +145,22 @@ export function RootNavigator() {
 
   return (
     <NavigationContainer ref={navigationRef}>
-      <Stack.Navigator 
-        screenOptions={{ 
+      <Stack.Navigator
+        screenOptions={{
           headerShown: false,
           animation: 'fade',
         }}
       >
         {!user ? (
-          <Stack.Screen 
-            name="Auth" 
+          <Stack.Screen
+            name="Auth"
             component={AuthNavigator}
             options={{ animationTypeForReplace: 'pop' }}
           />
         ) : needsOnboarding ? (
-          <Stack.Screen 
-            name="Onboarding" 
-            component={OnboardingScreen}
-          />
+          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         ) : (
-          <Stack.Screen 
-            name="MainApp" 
-            component={MainNavigator}
-          />
+          <Stack.Screen name="MainApp" component={MainNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

@@ -25,7 +25,7 @@ export async function hapticSuccess(): Promise<void> {
   try {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // Small delay before notification for distinction
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   } catch {
     // Haptics not available on this device
@@ -42,7 +42,7 @@ export async function hapticError(): Promise<void> {
 
   try {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await new Promise(resolve => setTimeout(resolve, 50));
+    await new Promise((resolve) => setTimeout(resolve, 50));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
   } catch {
     // Haptics not available on this device
@@ -84,7 +84,7 @@ export async function hapticSelection(): Promise<void> {
  * Use for: button presses, taps, gestures
  */
 export async function hapticImpact(
-  style: 'light' | 'medium' | 'heavy' | 'soft' | 'rigid' = 'light'
+  style: 'light' | 'medium' | 'heavy' | 'soft' | 'rigid' = 'light',
 ): Promise<void> {
   if (!isHapticsAvailable) return;
 
@@ -114,11 +114,11 @@ export async function hapticCelebration(): Promise<void> {
   try {
     // Staccato celebration pattern
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await new Promise(resolve => setTimeout(resolve, 80));
+    await new Promise((resolve) => setTimeout(resolve, 80));
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await new Promise(resolve => setTimeout(resolve, 80));
+    await new Promise((resolve) => setTimeout(resolve, 80));
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   } catch {
     // Haptics not available on this device

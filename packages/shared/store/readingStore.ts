@@ -47,13 +47,13 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
     try {
       // Get today's reading from constants
       const todayReading = getTodayReading();
-      
+
       // Get today's reflection if exists
       const todayReflection = await getTodayReadingReflection();
-      
+
       // Get reading streak
       const readingStreak = await getReadingStreak();
-      
+
       set({
         todayReading,
         todayReflection,
@@ -61,7 +61,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
         isLoading: false,
       });
     } catch (error) {
-      console.error('Failed to load today\'s reading:', error);
+      console.error("Failed to load today's reading:", error);
       set({ error: 'Failed to load reading', isLoading: false });
     }
   },
@@ -71,7 +71,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
     try {
       const reflections = await getReadingReflections(limit);
       const readingStreak = await getReadingStreak();
-      
+
       set({ reflections, readingStreak, isLoading: false });
     } catch (error) {
       console.error('Failed to load reflections:', error);
@@ -81,25 +81,23 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
 
   saveReflection: async (reflection) => {
     const { todayReading } = get();
-    
+
     if (!todayReading) {
       throw new Error('No reading loaded for today');
     }
 
     try {
-      const savedReflection = await createDailyReadingReflection(
-        todayReading.date,
-        reflection
-      );
-      
+      const savedReflection = await createDailyReadingReflection(todayReading.date, reflection);
+
       // Update streak
       const readingStreak = await getReadingStreak();
-      
+
       set((state) => ({
         todayReflection: savedReflection,
-        reflections: [savedReflection, ...state.reflections.filter(
-          (r) => r.readingDate !== savedReflection.readingDate
-        )],
+        reflections: [
+          savedReflection,
+          ...state.reflections.filter((r) => r.readingDate !== savedReflection.readingDate),
+        ],
         readingStreak,
       }));
 
@@ -118,7 +116,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     const dateKey = `${month}-${day}`;
-    
+
     try {
       return await getDailyReadingReflection(dateKey);
     } catch (error) {
@@ -141,4 +139,3 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
     return todayReflection !== null;
   },
 }));
-

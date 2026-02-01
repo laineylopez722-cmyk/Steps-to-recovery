@@ -1,9 +1,11 @@
 # Encrypted Journaling Feature - Claude Prompt
 
 ## Objective
+
 Implement encrypted personal journal feature with offline-first storage and cloud sync.
 
 ## Target Files
+
 - `apps/mobile/src/features/journal/screens/JournalListScreen.tsx`
 - `apps/mobile/src/features/journal/screens/JournalEntryScreen.tsx`
 - `apps/mobile/src/features/journal/components/JournalCard.tsx`
@@ -13,6 +15,7 @@ Implement encrypted personal journal feature with offline-first storage and clou
 ## Requirements
 
 ### UI Components
+
 1. **Journal List Screen**
    - Display all journal entries (most recent first)
    - Search and filter by date, mood, tags
@@ -29,6 +32,7 @@ Implement encrypted personal journal feature with offline-first storage and clou
    - Timestamp display
 
 ### Encryption Implementation
+
 - Use AES-256-GCM for encryption
 - Symmetric key stored in SecureStore
 - Encrypt content before saving to SQLite
@@ -36,6 +40,7 @@ Implement encrypted personal journal feature with offline-first storage and clou
 - Encryption key never leaves the device unencrypted
 
 ### SQLite Storage
+
 - Local database for offline access
 - Schema:
   ```sql
@@ -55,12 +60,14 @@ Implement encrypted personal journal feature with offline-first storage and clou
   ```
 
 ### Cloud Sync
+
 - Background sync with Supabase when online
 - Conflict resolution (last-write-wins for MVP)
 - Retry mechanism for failed syncs
 - Sync status indicators in UI
 
 ## Privacy Considerations
+
 - All journal content encrypted client-side
 - Server only stores ciphertext
 - Supabase RLS policies: only user can access their entries

@@ -61,12 +61,12 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
 
   /**
    * Get or generate a random salt for key derivation
-   * 
+   *
    * Salt is stored in localStorage alongside encrypted data. While this means
    * an attacker with localStorage access also has the salt, it still provides
    * value by preventing rainbow table attacks and ensuring each user has unique
    * key derivation.
-   * 
+   *
    * NOTE: This is a necessary trade-off for web platform - there is no separate
    * secure storage available in browsers.
    */
@@ -132,19 +132,25 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
 
     const seed = await this.getKeySeed();
     // Convert Uint8Array to ArrayBuffer for importKey
-    const seedBuffer = seed.buffer.slice(seed.byteOffset, seed.byteOffset + seed.byteLength) as ArrayBuffer;
+    const seedBuffer = seed.buffer.slice(
+      seed.byteOffset,
+      seed.byteOffset + seed.byteLength,
+    ) as ArrayBuffer;
     // Import per-user seed as key material
     const keyMaterial = await window.crypto.subtle.importKey(
       'raw',
       seedBuffer,
       { name: 'PBKDF2' },
       false,
-      ['deriveKey']
+      ['deriveKey'],
     );
 
     // Use random salt (generated once per user, then stored)
     const saltArray = await this.getSalt();
-    const salt = saltArray.buffer.slice(saltArray.byteOffset, saltArray.byteOffset + saltArray.byteLength) as ArrayBuffer;
+    const salt = saltArray.buffer.slice(
+      saltArray.byteOffset,
+      saltArray.byteOffset + saltArray.byteLength,
+    ) as ArrayBuffer;
 
     this.masterKey = await window.crypto.subtle.deriveKey(
       {
@@ -156,7 +162,7 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
       keyMaterial,
       { name: CRYPTO_ALGORITHM, length: KEY_LENGTH },
       false,
-      ['encrypt', 'decrypt']
+      ['encrypt', 'decrypt'],
     );
 
     return this.masterKey;
@@ -175,7 +181,7 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
       new TextEncoder().encode(this.sessionToken),
       { name: 'PBKDF2' },
       false,
-      ['deriveKey']
+      ['deriveKey'],
     );
 
     const saltArray = await this.getSalt();
@@ -191,7 +197,7 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
       keyMaterial,
       { name: CRYPTO_ALGORITHM, length: KEY_LENGTH },
       false,
-      ['encrypt', 'decrypt']
+      ['encrypt', 'decrypt'],
     );
   }
 
@@ -210,7 +216,7 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
       const decrypted = await window.crypto.subtle.decrypt(
         { name: CRYPTO_ALGORITHM, iv },
         masterKey,
-        ciphertext.buffer as ArrayBuffer
+        ciphertext.buffer as ArrayBuffer,
       );
 
       return new TextDecoder().decode(decrypted);
@@ -224,7 +230,7 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
           const decrypted = await window.crypto.subtle.decrypt(
             { name: CRYPTO_ALGORITHM, iv },
             legacyKey,
-            ciphertext.buffer as ArrayBuffer
+            ciphertext.buffer as ArrayBuffer,
           );
           const plaintext = new TextDecoder().decode(decrypted);
           // Migrate to new key on successful legacy decrypt
@@ -252,7 +258,7 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
     const encrypted = await window.crypto.subtle.encrypt(
       { name: CRYPTO_ALGORITHM, iv },
       masterKey,
-      new TextEncoder().encode(value)
+      new TextEncoder().encode(value),
     );
 
     // Store as JSON (iv + ciphertext)

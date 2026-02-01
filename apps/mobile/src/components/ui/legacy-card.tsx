@@ -11,7 +11,14 @@ import * as React from 'react';
 import { View, type ViewProps, Pressable, type PressableProps } from 'react-native';
 import { cn } from '@/lib/utils';
 
-type LegacyCardVariant = 'default' | 'elevated' | 'interactive' | 'flat' | 'outlined' | 'glass' | 'glass-heavy';
+type LegacyCardVariant =
+  | 'default'
+  | 'elevated'
+  | 'interactive'
+  | 'flat'
+  | 'outlined'
+  | 'glass'
+  | 'glass-heavy';
 
 interface LegacyCardProps extends ViewProps {
   variant?: LegacyCardVariant;

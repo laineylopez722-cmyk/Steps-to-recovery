@@ -12,7 +12,9 @@ import { join } from 'path';
 const [agentName, worked, slowdown, checklistTweak, unneededDocs] = process.argv.slice(2);
 
 if (!agentName || !worked) {
-  console.log('Usage: node scripts/agent-retro-log.js "Agent Name" "Worked" "Slowdown" "Checklist tweak" "Unneeded docs"');
+  console.log(
+    'Usage: node scripts/agent-retro-log.js "Agent Name" "Worked" "Slowdown" "Checklist tweak" "Unneeded docs"',
+  );
   process.exit(1);
 }
 

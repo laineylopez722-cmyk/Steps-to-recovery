@@ -42,7 +42,7 @@ import type {
 export async function createSobrietyProfile(
   sobrietyDate: Date,
   programType: ProgramType,
-  displayName?: string
+  displayName?: string,
 ): Promise<SobrietyProfile> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -51,7 +51,7 @@ export async function createSobrietyProfile(
   await db.runAsync(
     `INSERT INTO sobriety_profile (id, sobriety_date, program_type, display_name, created_at, updated_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [id, sobrietyDate.toISOString(), programType, displayName || null, now, now]
+    [id, sobrietyDate.toISOString(), programType, displayName || null, now, now],
   );
 
   return {
@@ -66,9 +66,7 @@ export async function createSobrietyProfile(
 
 export async function getSobrietyProfile(): Promise<SobrietyProfile | null> {
   const db = await getDatabase();
-  const row = await db.getFirstAsync<DbSobrietyProfile>(
-    'SELECT * FROM sobriety_profile LIMIT 1'
-  );
+  const row = await db.getFirstAsync<DbSobrietyProfile>('SELECT * FROM sobriety_profile LIMIT 1');
 
   if (!row) return null;
 
@@ -83,12 +81,12 @@ export async function getSobrietyProfile(): Promise<SobrietyProfile | null> {
 }
 
 export async function updateSobrietyProfile(
-  updates: Partial<Pick<SobrietyProfile, 'sobrietyDate' | 'programType' | 'displayName'>>
+  updates: Partial<Pick<SobrietyProfile, 'sobrietyDate' | 'programType' | 'displayName'>>,
 ): Promise<void> {
   const db = await getDatabase();
   const now = new Date().toISOString();
   const profile = await getSobrietyProfile();
-  
+
   if (!profile) return;
 
   await db.runAsync(
@@ -104,7 +102,7 @@ export async function updateSobrietyProfile(
       updates.displayName || profile.displayName || null,
       now,
       profile.id,
-    ]
+    ],
   );
 }
 
@@ -129,7 +127,7 @@ export async function createJournalEntry(
     meetingId?: string;
     audioUri?: string;
     audioDuration?: number;
-  }
+  },
 ): Promise<JournalEntry> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -155,7 +153,7 @@ export async function createJournalEntry(
       options?.audioDuration || null,
       now,
       now,
-    ]
+    ],
   );
 
   return {
@@ -178,18 +176,18 @@ export async function createJournalEntry(
 export async function getJournalEntries(
   limit = 50,
   offset = 0,
-  type?: JournalType
+  type?: JournalType,
 ): Promise<JournalEntry[]> {
   const db = await getDatabase();
-  
+
   let query = 'SELECT * FROM journal_entries';
   const params: (string | number)[] = [];
-  
+
   if (type) {
     query += ' WHERE type = ?';
     params.push(type);
   }
-  
+
   query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
   params.push(limit, offset);
 
@@ -214,10 +212,9 @@ export async function getJournalEntries(
 
 export async function getJournalEntryById(id: string): Promise<JournalEntry | null> {
   const db = await getDatabase();
-  const row = await db.getFirstAsync<DbJournalEntry>(
-    'SELECT * FROM journal_entries WHERE id = ?',
-    [id]
-  );
+  const row = await db.getFirstAsync<DbJournalEntry>('SELECT * FROM journal_entries WHERE id = ?', [
+    id,
+  ]);
 
   if (!row) return null;
 
@@ -254,7 +251,7 @@ export async function deleteJournalEntry(id: string): Promise<void> {
 export async function createDailyCheckin(
   mood: number,
   cravingLevel: number,
-  gratitude?: string
+  gratitude?: string,
 ): Promise<DailyCheckin> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -267,7 +264,7 @@ export async function createDailyCheckin(
   await db.runAsync(
     `INSERT OR REPLACE INTO daily_checkins (id, date, mood, craving_level, gratitude, is_checked_in, created_at)
      VALUES (?, ?, ?, ?, ?, 1, ?)`,
-    [id, dateStr, mood, cravingLevel, encryptedGratitude, now.toISOString()]
+    [id, dateStr, mood, cravingLevel, encryptedGratitude, now.toISOString()],
   );
 
   return {
@@ -284,10 +281,10 @@ export async function createDailyCheckin(
 export async function getTodayCheckin(): Promise<DailyCheckin | null> {
   const db = await getDatabase();
   const today = new Date().toISOString().split('T')[0];
-  
+
   const row = await db.getFirstAsync<DbDailyCheckin>(
     'SELECT * FROM daily_checkins WHERE date = ?',
-    [today]
+    [today],
   );
 
   if (!row) return null;
@@ -310,7 +307,7 @@ export async function getCheckinHistory(days = 30): Promise<DailyCheckin[]> {
 
   const rows = await db.getAllAsync<DbDailyCheckin>(
     'SELECT * FROM daily_checkins WHERE date >= ? ORDER BY date DESC',
-    [startDate.toISOString().split('T')[0]]
+    [startDate.toISOString().split('T')[0]],
   );
 
   return rows.map((row) => ({
@@ -336,16 +333,14 @@ export async function createMilestone(
     description?: string;
     reflection?: string;
     metadata?: Record<string, unknown>;
-  }
+  },
 ): Promise<Milestone> {
   const db = await getDatabase();
   const id = uuidv4();
   const now = new Date().toISOString();
 
   // Encrypt reflection if provided
-  const encryptedReflection = options?.reflection
-    ? await encryptContent(options.reflection)
-    : null;
+  const encryptedReflection = options?.reflection ? await encryptContent(options.reflection) : null;
 
   await db.runAsync(
     `INSERT INTO milestones (id, type, title, description, reflection, achieved_at, metadata, created_at)
@@ -359,7 +354,7 @@ export async function createMilestone(
       achievedAt.toISOString(),
       JSON.stringify(options?.metadata || {}),
       now,
-    ]
+    ],
   );
 
   return {
@@ -377,7 +372,7 @@ export async function createMilestone(
 export async function getMilestones(): Promise<Milestone[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbMilestone>(
-    'SELECT * FROM milestones ORDER BY achieved_at DESC'
+    'SELECT * FROM milestones ORDER BY achieved_at DESC',
   );
 
   return rows.map((row) => ({
@@ -398,9 +393,7 @@ export async function getMilestones(): Promise<Milestone[]> {
 
 export async function getEmotionTags(): Promise<EmotionTag[]> {
   const db = await getDatabase();
-  const rows = await db.getAllAsync<DbEmotionTag>(
-    'SELECT * FROM emotion_tags ORDER BY name'
-  );
+  const rows = await db.getAllAsync<DbEmotionTag>('SELECT * FROM emotion_tags ORDER BY name');
 
   return rows.map((row) => ({
     id: row.id,
@@ -411,10 +404,7 @@ export async function getEmotionTags(): Promise<EmotionTag[]> {
   }));
 }
 
-export async function createEmotionTag(
-  name: string,
-  color: string
-): Promise<EmotionTag> {
+export async function createEmotionTag(name: string, color: string): Promise<EmotionTag> {
   const db = await getDatabase();
   const id = uuidv4();
   const now = new Date().toISOString();
@@ -422,7 +412,7 @@ export async function createEmotionTag(
   await db.runAsync(
     `INSERT INTO emotion_tags (id, name, color, is_custom, created_at)
      VALUES (?, ?, ?, 1, ?)`,
-    [id, name, color, now]
+    [id, name, color, now],
   );
 
   return {
@@ -440,9 +430,7 @@ export async function createEmotionTag(
 
 export async function getAppSettings(): Promise<AppSettings | null> {
   const db = await getDatabase();
-  const row = await db.getFirstAsync<DbAppSettings>(
-    'SELECT * FROM app_settings LIMIT 1'
-  );
+  const row = await db.getFirstAsync<DbAppSettings>('SELECT * FROM app_settings LIMIT 1');
 
   if (!row) return null;
 
@@ -460,7 +448,7 @@ export async function getAppSettings(): Promise<AppSettings | null> {
 }
 
 export async function createOrUpdateAppSettings(
-  settings: Partial<Omit<AppSettings, 'id' | 'createdAt' | 'updatedAt'>>
+  settings: Partial<Omit<AppSettings, 'id' | 'createdAt' | 'updatedAt'>>,
 ): Promise<AppSettings> {
   const db = await getDatabase();
   const existing = await getAppSettings();
@@ -486,7 +474,7 @@ export async function createOrUpdateAppSettings(
         settings.crisisRegion ?? existing.crisisRegion,
         now,
         existing.id,
-      ]
+      ],
     );
 
     return {
@@ -509,7 +497,7 @@ export async function createOrUpdateAppSettings(
         settings.crisisRegion || 'US',
         now,
         now,
-      ]
+      ],
     );
 
     return {
@@ -534,7 +522,7 @@ export async function createRecoveryContact(
   name: string,
   phone: string,
   role: ContactRole,
-  notes?: string
+  notes?: string,
 ): Promise<RecoveryContact> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -546,7 +534,7 @@ export async function createRecoveryContact(
   await db.runAsync(
     `INSERT INTO recovery_contacts (id, name, phone, role, notes, last_contacted_at, created_at)
      VALUES (?, ?, ?, ?, ?, NULL, ?)`,
-    [id, name, phone, role, encryptedNotes, now]
+    [id, name, phone, role, encryptedNotes, now],
   );
 
   return {
@@ -562,7 +550,7 @@ export async function createRecoveryContact(
 export async function getRecoveryContacts(): Promise<RecoveryContact[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbRecoveryContact>(
-    'SELECT * FROM recovery_contacts ORDER BY role, name'
+    'SELECT * FROM recovery_contacts ORDER BY role, name',
   );
 
   return rows.map((row) => ({
@@ -580,7 +568,7 @@ export async function getRecoveryContactById(id: string): Promise<RecoveryContac
   const db = await getDatabase();
   const row = await db.getFirstAsync<DbRecoveryContact>(
     'SELECT * FROM recovery_contacts WHERE id = ?',
-    [id]
+    [id],
   );
 
   if (!row) return null;
@@ -600,7 +588,7 @@ export async function getContactsByRole(role: ContactRole): Promise<RecoveryCont
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbRecoveryContact>(
     'SELECT * FROM recovery_contacts WHERE role = ? ORDER BY name',
-    [role]
+    [role],
   );
 
   return rows.map((row) => ({
@@ -621,7 +609,7 @@ export async function getSponsor(): Promise<RecoveryContact | null> {
 
 export async function updateRecoveryContact(
   id: string,
-  updates: Partial<Pick<RecoveryContact, 'name' | 'phone' | 'role' | 'notes'>>
+  updates: Partial<Pick<RecoveryContact, 'name' | 'phone' | 'role' | 'notes'>>,
 ): Promise<void> {
   const db = await getDatabase();
   const updateFields: string[] = [];
@@ -647,20 +635,14 @@ export async function updateRecoveryContact(
   if (updateFields.length === 0) return;
 
   values.push(id);
-  await db.runAsync(
-    `UPDATE recovery_contacts SET ${updateFields.join(', ')} WHERE id = ?`,
-    values
-  );
+  await db.runAsync(`UPDATE recovery_contacts SET ${updateFields.join(', ')} WHERE id = ?`, values);
 }
 
 export async function updateContactLastContacted(id: string): Promise<void> {
   const db = await getDatabase();
   const now = new Date().toISOString();
 
-  await db.runAsync(
-    'UPDATE recovery_contacts SET last_contacted_at = ? WHERE id = ?',
-    [now, id]
-  );
+  await db.runAsync('UPDATE recovery_contacts SET last_contacted_at = ? WHERE id = ?', [now, id]);
 }
 
 export async function deleteRecoveryContact(id: string): Promise<void> {
@@ -676,7 +658,7 @@ export async function createPhoneCallLog(
   contactId: string,
   contactName: string,
   duration?: number,
-  notes?: string
+  notes?: string,
 ): Promise<PhoneCallLog> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -688,7 +670,7 @@ export async function createPhoneCallLog(
   await db.runAsync(
     `INSERT INTO phone_call_logs (id, contact_id, contact_name, duration, notes, called_at)
      VALUES (?, ?, ?, ?, ?, ?)`,
-    [id, contactId, contactName, duration || null, encryptedNotes, now.toISOString()]
+    [id, contactId, contactName, duration || null, encryptedNotes, now.toISOString()],
   );
 
   // Update the contact's last contacted time
@@ -708,7 +690,7 @@ export async function getPhoneCallLogs(limit = 50): Promise<PhoneCallLog[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbPhoneCallLog>(
     'SELECT * FROM phone_call_logs ORDER BY called_at DESC LIMIT ?',
-    [limit]
+    [limit],
   );
 
   return rows.map((row) => ({
@@ -729,7 +711,7 @@ export async function getTodayCallLogs(): Promise<PhoneCallLog[]> {
     `SELECT * FROM phone_call_logs 
      WHERE date(called_at) = ? 
      ORDER BY called_at DESC`,
-    [today]
+    [today],
   );
 
   return rows.map((row) => ({
@@ -746,7 +728,7 @@ export async function getCallLogsByContact(contactId: string): Promise<PhoneCall
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbPhoneCallLog>(
     'SELECT * FROM phone_call_logs WHERE contact_id = ? ORDER BY called_at DESC',
-    [contactId]
+    [contactId],
   );
 
   return rows.map((row) => ({
@@ -770,7 +752,7 @@ export async function deletePhoneCallLog(id: string): Promise<void> {
 
 export async function createDailyReadingReflection(
   readingDate: string,
-  reflection: string
+  reflection: string,
 ): Promise<DailyReadingReflection> {
   const db = await getDatabase();
   const id = uuidv4();
@@ -783,7 +765,7 @@ export async function createDailyReadingReflection(
   await db.runAsync(
     `INSERT OR REPLACE INTO daily_reading_reflections (id, reading_date, reflection, created_at)
      VALUES (?, ?, ?, ?)`,
-    [id, readingDate, encryptedReflection, now.toISOString()]
+    [id, readingDate, encryptedReflection, now.toISOString()],
   );
 
   return {
@@ -794,11 +776,13 @@ export async function createDailyReadingReflection(
   };
 }
 
-export async function getDailyReadingReflection(readingDate: string): Promise<DailyReadingReflection | null> {
+export async function getDailyReadingReflection(
+  readingDate: string,
+): Promise<DailyReadingReflection | null> {
   const db = await getDatabase();
   const row = await db.getFirstAsync<DbDailyReadingReflection>(
     'SELECT * FROM daily_reading_reflections WHERE reading_date = ?',
-    [readingDate]
+    [readingDate],
   );
 
   if (!row) return null;
@@ -824,7 +808,7 @@ export async function getReadingReflections(limit = 30): Promise<DailyReadingRef
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbDailyReadingReflection>(
     'SELECT * FROM daily_reading_reflections ORDER BY created_at DESC LIMIT ?',
-    [limit]
+    [limit],
   );
 
   return rows.map((row) => ({
@@ -838,7 +822,7 @@ export async function getReadingReflections(limit = 30): Promise<DailyReadingRef
 export async function getReadingStreak(): Promise<number> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbDailyReadingReflection>(
-    'SELECT * FROM daily_reading_reflections ORDER BY created_at DESC LIMIT 365'
+    'SELECT * FROM daily_reading_reflections ORDER BY created_at DESC LIMIT 365',
   );
 
   if (rows.length === 0) return 0;
@@ -889,12 +873,12 @@ import { ALL_ACHIEVEMENTS, type AchievementDefinition } from '../../constants/ac
  */
 export async function initializeAchievements(): Promise<void> {
   const db = await getDatabase();
-  
+
   for (const def of ALL_ACHIEVEMENTS) {
     // Check if achievement already exists
     const existing = await db.getFirstAsync<DbAchievement>(
       'SELECT id FROM achievements WHERE id = ?',
-      [def.id]
+      [def.id],
     );
 
     if (!existing) {
@@ -918,7 +902,7 @@ export async function initializeAchievements(): Promise<void> {
           def.requiresDaysClean || null,
           def.requiresAchievements ? JSON.stringify(def.requiresAchievements) : null,
           null,
-        ]
+        ],
       );
     }
   }
@@ -930,7 +914,7 @@ export async function initializeAchievements(): Promise<void> {
 export async function getAchievements(): Promise<Achievement[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbAchievement>(
-    'SELECT * FROM achievements ORDER BY category, title'
+    'SELECT * FROM achievements ORDER BY category, title',
   );
 
   return rows.map(mapDbAchievementToAchievement);
@@ -941,10 +925,9 @@ export async function getAchievements(): Promise<Achievement[]> {
  */
 export async function getAchievementById(id: string): Promise<Achievement | null> {
   const db = await getDatabase();
-  const row = await db.getFirstAsync<DbAchievement>(
-    'SELECT * FROM achievements WHERE id = ?',
-    [id]
-  );
+  const row = await db.getFirstAsync<DbAchievement>('SELECT * FROM achievements WHERE id = ?', [
+    id,
+  ]);
 
   if (!row) return null;
   return mapDbAchievementToAchievement(row);
@@ -953,11 +936,13 @@ export async function getAchievementById(id: string): Promise<Achievement | null
 /**
  * Get achievements by category
  */
-export async function getAchievementsByCategory(category: AchievementCategory): Promise<Achievement[]> {
+export async function getAchievementsByCategory(
+  category: AchievementCategory,
+): Promise<Achievement[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbAchievement>(
     'SELECT * FROM achievements WHERE category = ? ORDER BY title',
-    [category]
+    [category],
   );
 
   return rows.map(mapDbAchievementToAchievement);
@@ -970,7 +955,7 @@ export async function getUnlockedAchievements(): Promise<Achievement[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbAchievement>(
     'SELECT * FROM achievements WHERE status = ? ORDER BY unlocked_at DESC',
-    ['unlocked']
+    ['unlocked'],
   );
 
   return rows.map(mapDbAchievementToAchievement);
@@ -982,10 +967,10 @@ export async function getUnlockedAchievements(): Promise<Achievement[]> {
 export async function updateAchievementProgress(
   id: string,
   current: number,
-  target?: number
+  target?: number,
 ): Promise<Achievement | null> {
   const db = await getDatabase();
-  
+
   // Get current achievement
   const existing = await getAchievementById(id);
   if (!existing) return null;
@@ -993,7 +978,7 @@ export async function updateAchievementProgress(
   // Determine new status based on progress
   let newStatus: AchievementStatus = existing.status;
   const effectiveTarget = target ?? existing.target ?? 100;
-  
+
   if (current >= effectiveTarget && existing.status !== 'unlocked') {
     newStatus = 'unlocked';
   } else if (current > 0 && existing.status === 'locked') {
@@ -1002,11 +987,14 @@ export async function updateAchievementProgress(
     newStatus = 'in_progress';
   }
 
-  const now = newStatus === 'unlocked' ? new Date().toISOString() : existing.unlockedAt?.toISOString() || null;
+  const now =
+    newStatus === 'unlocked'
+      ? new Date().toISOString()
+      : existing.unlockedAt?.toISOString() || null;
 
   await db.runAsync(
     `UPDATE achievements SET current = ?, status = ?, unlocked_at = ? WHERE id = ?`,
-    [current, newStatus, now, id]
+    [current, newStatus, now, id],
   );
 
   return getAchievementById(id);
@@ -1021,7 +1009,7 @@ export async function unlockAchievement(id: string): Promise<Achievement | null>
 
   await db.runAsync(
     `UPDATE achievements SET status = ?, unlocked_at = ?, current = target WHERE id = ?`,
-    ['unlocked', now, id]
+    ['unlocked', now, id],
   );
 
   return getAchievementById(id);
@@ -1030,33 +1018,27 @@ export async function unlockAchievement(id: string): Promise<Achievement | null>
 /**
  * Set achievement status
  */
-export async function setAchievementStatus(
-  id: string,
-  status: AchievementStatus
-): Promise<void> {
+export async function setAchievementStatus(id: string, status: AchievementStatus): Promise<void> {
   const db = await getDatabase();
   const now = status === 'unlocked' ? new Date().toISOString() : null;
 
   await db.runAsync(
     `UPDATE achievements SET status = ?, unlocked_at = COALESCE(unlocked_at, ?) WHERE id = ?`,
-    [status, now, id]
+    [status, now, id],
   );
 }
 
 /**
  * Save achievement reflection (encrypted)
  */
-export async function saveAchievementReflection(
-  id: string,
-  reflection: string
-): Promise<void> {
+export async function saveAchievementReflection(id: string, reflection: string): Promise<void> {
   const db = await getDatabase();
   const encryptedReflection = await encryptContent(reflection);
 
-  await db.runAsync(
-    `UPDATE achievements SET reflection = ? WHERE id = ?`,
-    [encryptedReflection, id]
-  );
+  await db.runAsync(`UPDATE achievements SET reflection = ? WHERE id = ?`, [
+    encryptedReflection,
+    id,
+  ]);
 }
 
 /**
@@ -1066,7 +1048,7 @@ export async function getAchievementReflection(id: string): Promise<string | nul
   const db = await getDatabase();
   const row = await db.getFirstAsync<{ reflection: string | null }>(
     'SELECT reflection FROM achievements WHERE id = ?',
-    [id]
+    [id],
   );
 
   if (!row?.reflection) return null;
@@ -1080,7 +1062,7 @@ export async function getUnlockedCountByCategory(category: AchievementCategory):
   const db = await getDatabase();
   const result = await db.getFirstAsync<{ count: number }>(
     'SELECT COUNT(*) as count FROM achievements WHERE category = ? AND status = ?',
-    [category, 'unlocked']
+    [category, 'unlocked'],
   );
 
   return result?.count || 0;
@@ -1093,7 +1075,7 @@ export async function getTotalUnlockedCount(): Promise<number> {
   const db = await getDatabase();
   const result = await db.getFirstAsync<{ count: number }>(
     'SELECT COUNT(*) as count FROM achievements WHERE status = ?',
-    ['unlocked']
+    ['unlocked'],
   );
 
   return result?.count || 0;
@@ -1105,7 +1087,7 @@ export async function getTotalUnlockedCount(): Promise<number> {
 export async function resetAllAchievements(): Promise<void> {
   const db = await getDatabase();
   await db.runAsync(
-    `UPDATE achievements SET status = 'locked', current = 0, unlocked_at = NULL, reflection = NULL`
+    `UPDATE achievements SET status = 'locked', current = 0, unlocked_at = NULL, reflection = NULL`,
   );
 }
 
@@ -1131,4 +1113,3 @@ function mapDbAchievementToAchievement(row: DbAchievement): Achievement {
     reflection: row.reflection || undefined,
   };
 }
-

@@ -17,6 +17,7 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 **Goal**: Make one thing dominant per screen. Use scale, weight, spacing, placement.
 
 **Actions**:
+
 1. Identify the primary action/information on each screen
 2. Make it 2-3× larger/heavier/more prominent than secondary elements
 3. Group related elements with consistent proximity
@@ -25,6 +26,7 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 **Test**: Grayscale test—if meaning collapses without color/effects, hierarchy is weak.
 
 **Anti-patterns**:
+
 - Three equally-weighted CTAs
 - No visual grouping (everything same spacing)
 - Random size/weight changes
@@ -37,26 +39,35 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 **Goal**: Systematic density that expresses grouping and priority.
 
 **Actions**:
+
 1. Adopt spacing scale: 4/8/12/16/24/32/48/64px
 2. Apply consistently: cards, modals, tables, forms, sections
 3. Major sections get larger spacing than minor groupings
 4. Dense data (tables) stays compact; atmospheric UI gets breath
 
 **Spacing Rules**:
+
 ```css
 /* Component spacing */
---gap-xs: 4px;   /* inline elements */
---gap-sm: 8px;   /* form field spacing */
---gap-md: 16px;  /* card padding */
---gap-lg: 24px;  /* section spacing */
---gap-xl: 32px;  /* major sections */
+--gap-xs: 4px; /* inline elements */
+--gap-sm: 8px; /* form field spacing */
+--gap-md: 16px; /* card padding */
+--gap-lg: 24px; /* section spacing */
+--gap-xl: 32px; /* major sections */
 
 /* Apply in components */
-.card { padding: var(--gap-md); gap: var(--gap-sm); }
-.section { padding: var(--gap-xl); gap: var(--gap-lg); }
+.card {
+  padding: var(--gap-md);
+  gap: var(--gap-sm);
+}
+.section {
+  padding: var(--gap-xl);
+  gap: var(--gap-lg);
+}
 ```
 
 **Anti-patterns**:
+
 - Random padding values (13px, 19px, 27px)
 - Same spacing for all hierarchy levels
 - Inconsistent gaps in repeated components
@@ -68,6 +79,7 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 **Goal**: Clear size hierarchy with 3-4 sizes maximum.
 
 **Actions**:
+
 1. Define type scale:
    - Display (48-64px) — Hero headlines
    - Heading (24-32px) — Section titles
@@ -78,6 +90,7 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 4. Ensure line-height supports readability (1.5 for body, 1.2 for headings)
 
 **Type Scale Example**:
+
 ```css
 --text-xs: 12px;
 --text-sm: 14px;
@@ -90,6 +103,7 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 ```
 
 **Anti-patterns**:
+
 - Using all 9 sizes in type scale
 - Inconsistent font weights
 - Multiple display fonts
@@ -102,12 +116,14 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 **Goal**: One brand accent, neutral scale, semantic colors.
 
 **Actions**:
+
 1. Define brand accent (primary CTA, links, focus states)
 2. Neutral gray scale (9 shades: 50-900)
 3. Semantic colors (success, warning, error) only when needed
 4. Backgrounds stay neutral or atmospheric (gradients for marketing)
 
 **Color Tokens**:
+
 ```css
 /* Brand */
 --color-primary: #your-brand;
@@ -132,6 +148,7 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 ```
 
 **Anti-patterns**:
+
 - Multiple competing brand colors
 - Random colors for different sections
 - Low-contrast accent colors
@@ -144,30 +161,33 @@ The systematic approach to building premium UI that avoids "vibe-coded" aestheti
 **Goal**: Components behave the same way everywhere.
 
 **Actions**:
+
 1. Define button hierarchy (primary/secondary/tertiary) and stick to it
 2. Standardize component geometry (radii, borders, shadows)
 3. Match interaction patterns (hover/focus/active states)
 4. Follow conventions unless you have measurable reason not to
 
 **Component Standards**:
+
 ```css
 /* Radii */
---radius-sm: 6px;   /* inputs, badges */
---radius-md: 8px;   /* buttons */
---radius-lg: 12px;  /* cards */
---radius-xl: 16px;  /* modals */
+--radius-sm: 6px; /* inputs, badges */
+--radius-md: 8px; /* buttons */
+--radius-lg: 12px; /* cards */
+--radius-xl: 16px; /* modals */
 
 /* Borders */
 --border-width: 1px;
 --border-color: var(--gray-200);
 
 /* Shadows */
---shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
---shadow-md: 0 4px 6px rgba(0,0,0,0.07);
---shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+--shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+--shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 ```
 
 **Anti-patterns**:
+
 - Different radii for same component type
 - Buttons that look clickable but aren't
 - Inconsistent hover states
@@ -189,6 +209,7 @@ Only after Phases 1-5 are complete, add:
 ### One Hero Moment
 
 Marketing pages can have ONE special effect:
+
 - 3D object with cursor tracking
 - Scroll-driven animation chapter
 - Interactive demo/visualization
@@ -202,6 +223,7 @@ Product UI rarely needs hero moments—focus on clarity.
 Before calling UI "done":
 
 **Foundation**:
+
 - [ ] Grayscale test passes (hierarchy clear without color)
 - [ ] Spacing scale applied consistently
 - [ ] Typography scale used throughout (3-4 sizes max)
@@ -209,6 +231,7 @@ Before calling UI "done":
 - [ ] Component patterns standardized
 
 **Accessibility**:
+
 - [ ] Text contrast ≥ 4.5:1 (WCAG AA)
 - [ ] Interactive elements ≥ 3:1
 - [ ] Focus indicators visible
@@ -216,6 +239,7 @@ Before calling UI "done":
 - [ ] Touch targets ≥ 44×44px
 
 **Polish**:
+
 - [ ] Glass only on chrome
 - [ ] Motion budget: 2-4 types max
 - [ ] Effects don't reduce legibility
@@ -226,22 +250,27 @@ Before calling UI "done":
 ## Common Failure Modes
 
 ### Symptom: "Looks like a template"
+
 **Diagnosis**: Inconsistent tokens
 **Fix**: Audit all radii, spacing, shadows—normalize to system
 
 ### Symptom: "Too busy"
+
 **Diagnosis**: Weak hierarchy
 **Fix**: Grayscale test → strengthen primary element scale/weight
 
 ### Symptom: "Feels cheap"
+
 **Diagnosis**: Low contrast on glass effects
 **Fix**: Test over busiest background → increase opacity or go solid
 
 ### Symptom: "Demo reel energy"
+
 **Diagnosis**: Motion without purpose
 **Fix**: Cut to 2-4 meaningful transitions
 
 ### Symptom: "Doesn't feel cohesive"
+
 **Diagnosis**: Mixed conventions
 **Fix**: Standardize: one button hierarchy, one card style, one modal pattern
 

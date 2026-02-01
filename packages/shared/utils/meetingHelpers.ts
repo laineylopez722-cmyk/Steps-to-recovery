@@ -57,19 +57,14 @@ export async function decryptMeetingFields(row: DbMeetingLog): Promise<{
   connectionNotes?: string;
   shareReflection?: string;
 }> {
-  const [
-    keyTakeaways,
-    whatILearned,
-    quoteHeard,
-    connectionNotes,
-    shareReflection,
-  ] = await Promise.all([
-    decryptContent(row.key_takeaways),
-    row.what_i_learned ? decryptContent(row.what_i_learned) : Promise.resolve(undefined),
-    row.quote_heard ? decryptContent(row.quote_heard) : Promise.resolve(undefined),
-    row.connection_notes ? decryptContent(row.connection_notes) : Promise.resolve(undefined),
-    row.share_reflection ? decryptContent(row.share_reflection) : Promise.resolve(undefined),
-  ]);
+  const [keyTakeaways, whatILearned, quoteHeard, connectionNotes, shareReflection] =
+    await Promise.all([
+      decryptContent(row.key_takeaways),
+      row.what_i_learned ? decryptContent(row.what_i_learned) : Promise.resolve(undefined),
+      row.quote_heard ? decryptContent(row.quote_heard) : Promise.resolve(undefined),
+      row.connection_notes ? decryptContent(row.connection_notes) : Promise.resolve(undefined),
+      row.share_reflection ? decryptContent(row.share_reflection) : Promise.resolve(undefined),
+    ]);
 
   return {
     keyTakeaways,
@@ -129,7 +124,7 @@ export function estimateMeetingDuration(meeting: MeetingLog): number {
   // Base duration by type (minutes)
   const baseDuration: Record<MeetingType, number> = {
     'in-person': 60,
-    'online': 60,
+    online: 60,
   };
 
   let duration = baseDuration[meeting.type];
@@ -140,11 +135,12 @@ export function estimateMeetingDuration(meeting: MeetingLog): number {
   }
 
   // Add time based on content length (rough estimate)
-  const contentLength = meeting.keyTakeaways.length +
-                       (meeting.whatILearned?.length || 0) +
-                       (meeting.quoteHeard?.length || 0) +
-                       (meeting.connectionNotes?.length || 0) +
-                       (meeting.shareReflection?.length || 0);
+  const contentLength =
+    meeting.keyTakeaways.length +
+    (meeting.whatILearned?.length || 0) +
+    (meeting.quoteHeard?.length || 0) +
+    (meeting.connectionNotes?.length || 0) +
+    (meeting.shareReflection?.length || 0);
 
   if (contentLength > 1000) {
     duration += 10;
@@ -192,9 +188,10 @@ export function calculateEngagementScore(meeting: MeetingLog): number {
   }
 
   // Content quality (0-30 points)
-  const contentLength = meeting.keyTakeaways.length +
-                       (meeting.whatILearned?.length || 0) +
-                       (meeting.quoteHeard?.length || 0);
+  const contentLength =
+    meeting.keyTakeaways.length +
+    (meeting.whatILearned?.length || 0) +
+    (meeting.quoteHeard?.length || 0);
   if (contentLength > 200) {
     score += 30;
   } else if (contentLength > 100) {
@@ -219,9 +216,9 @@ export function calculateEngagementScore(meeting: MeetingLog): number {
 export function filterMeetingsByDate(
   meetings: MeetingLog[],
   startDate?: Date,
-  endDate?: Date
+  endDate?: Date,
 ): MeetingLog[] {
-  return meetings.filter(meeting => {
+  return meetings.filter((meeting) => {
     const meetingDate = meeting.attendedAt;
     if (startDate && meetingDate < startDate) return false;
     if (endDate && meetingDate > endDate) return false;
@@ -235,9 +232,9 @@ export function filterMeetingsByDate(
 export function filterMeetingsByMood(
   meetings: MeetingLog[],
   minMood?: number,
-  maxMood?: number
+  maxMood?: number,
 ): MeetingLog[] {
-  return meetings.filter(meeting => {
+  return meetings.filter((meeting) => {
     if (minMood !== undefined && meeting.moodAfter < minMood) return false;
     if (maxMood !== undefined && meeting.moodAfter > maxMood) return false;
     return true;
@@ -247,13 +244,10 @@ export function filterMeetingsByMood(
 /**
  * Search meetings by text content
  */
-export function searchMeetings(
-  meetings: MeetingLog[],
-  query: string
-): MeetingLog[] {
+export function searchMeetings(meetings: MeetingLog[], query: string): MeetingLog[] {
   const lowercaseQuery = query.toLowerCase();
 
-  return meetings.filter(meeting => {
+  return meetings.filter((meeting) => {
     const searchableText = [
       meeting.name,
       meeting.location,
@@ -264,9 +258,9 @@ export function searchMeetings(
       meeting.shareReflection,
       ...meeting.topicTags,
     ]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
 
     return searchableText.includes(lowercaseQuery);
   });

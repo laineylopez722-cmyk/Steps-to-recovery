@@ -59,21 +59,21 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
   loadTodayReading: async (): Promise<void> => {
     try {
       set({ isLoading: true, error: null });
-      
+
       // Get database from context - we'll need to pass it in or use a hook
       // For now, we'll handle this in the component that uses the store
       const today = new Date();
       const dayOfYear = getDayOfYear(today);
-      
+
       // This will be implemented when we have access to the database context
-      logger.info('Loading today\'s reading', { dayOfYear });
-      
+      logger.info("Loading today's reading", { dayOfYear });
+
       set({ isLoading: false });
     } catch (error) {
-      logger.error('Failed to load today\'s reading', error);
-      set({ 
+      logger.error("Failed to load today's reading", error);
+      set({
         error: error instanceof Error ? error.message : 'Failed to load reading',
-        isLoading: false 
+        isLoading: false,
       });
     }
   },
@@ -81,15 +81,15 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
   loadReflections: async (): Promise<void> => {
     try {
       set({ isLoading: true, error: null });
-      
+
       logger.info('Loading user reflections');
-      
+
       set({ isLoading: false, reflections: [] });
     } catch (error) {
       logger.error('Failed to load reflections', error);
-      set({ 
+      set({
         error: error instanceof Error ? error.message : 'Failed to load reflections',
-        isLoading: false 
+        isLoading: false,
       });
     }
   },
@@ -103,10 +103,10 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
 
       const now = new Date();
       const dateKey = formatDateKey(now);
-      
+
       // Encrypt the reflection content
       const encryptedReflection = await encryptContent(reflection);
-      
+
       const newReflection: DailyReadingReflection = {
         id: generateId('reflection'),
         reading_id: todayReading.id,
@@ -119,17 +119,17 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
 
       // Update state
       set({ todayReflection: newReflection });
-      
+
       // Calculate new streak
       const newStreak = await get().calculateStreak();
       set({ readingStreak: newStreak });
-      
-      logger.info('Reflection saved', { 
-        readingId: todayReading.id, 
+
+      logger.info('Reflection saved', {
+        readingId: todayReading.id,
         reflectionLength: reflection.length,
-        newStreak 
+        newStreak,
       });
-      
+
       return newReflection;
     } catch (error) {
       logger.error('Failed to save reflection', error);
@@ -152,7 +152,7 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
     try {
       const dayOfYear = getDayOfYear(date);
       logger.info('Getting reading for date', { date: date.toISOString(), dayOfYear });
-      
+
       // Would query database for reading by day_of_year
       return null;
     } catch (error) {
@@ -165,7 +165,7 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
     try {
       const dateKey = formatDateKey(date);
       logger.info('Getting reflection for date', { date: date.toISOString(), dateKey });
-      
+
       // Would query database for reflection by reading_date
       return null;
     } catch (error) {
@@ -180,11 +180,11 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
         // Already decrypted in memory
         return reflection.reflection;
       }
-      
+
       if (reflection.encrypted_reflection) {
         return await decryptContent(reflection.encrypted_reflection);
       }
-      
+
       return '';
     } catch (error) {
       logger.error('Failed to decrypt reflection content', error);
@@ -207,11 +207,12 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
       // Calculate consecutive days with reflections, working backwards from today
       let streak = 0;
       const today = new Date();
-      
-      for (let i = 0; i < 365; i++) { // Check up to 365 days back
+
+      for (let i = 0; i < 365; i++) {
+        // Check up to 365 days back
         const checkDate = new Date(today);
         checkDate.setDate(today.getDate() - i);
-        
+
         const reflection = await get().getReflectionForDate(checkDate);
         if (reflection) {
           streak++;
@@ -219,7 +220,7 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
           break; // Streak broken
         }
       }
-      
+
       logger.info('Calculated reading streak', { streak });
       return streak;
     } catch (error) {
@@ -231,17 +232,17 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
   initializeReadings: async (): Promise<void> => {
     try {
       set({ isLoading: true, error: null });
-      
+
       // This would populate the daily_readings table with 365 readings
       // For now, we'll just log that initialization is needed
       logger.info('Daily readings initialization needed');
-      
+
       set({ isLoading: false });
     } catch (error) {
       logger.error('Failed to initialize readings', error);
-      set({ 
+      set({
         error: error instanceof Error ? error.message : 'Failed to initialize readings',
-        isLoading: false 
+        isLoading: false,
       });
     }
   },

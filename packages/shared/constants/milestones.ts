@@ -1,6 +1,6 @@
 /**
  * Time-Based Milestones
- * 
+ *
  * Recovery milestones based on sobriety duration.
  * These milestones celebrate key recovery anniversaries and provide
  * encouragement at significant time intervals.
@@ -51,7 +51,7 @@ export const TIME_MILESTONES: TimeMilestone[] = [
   {
     days: 60,
     title: '2 Months',
-    message: 'Two months of freedom. You\'re building a new life!',
+    message: "Two months of freedom. You're building a new life!",
     emoji: '🎯',
   },
   {
@@ -87,13 +87,13 @@ export const TIME_MILESTONES: TimeMilestone[] = [
   {
     days: 730,
     title: '2 Years',
-    message: 'Two years! You\'ve proven anything is possible.',
+    message: "Two years! You've proven anything is possible.",
     emoji: '👑',
   },
   {
     days: 1095,
     title: '3 Years',
-    message: 'Three years of freedom! You\'re an inspiration.',
+    message: "Three years of freedom! You're an inspiration.",
     emoji: '🏅',
   },
   {
@@ -112,7 +112,7 @@ export const TIME_MILESTONES: TimeMilestone[] = [
 
 /**
  * Get the next upcoming milestone
- * 
+ *
  * @param soberDays - Current number of days of sobriety
  * @returns The next milestone to achieve, or null if all milestones are achieved
  * @example
@@ -129,7 +129,7 @@ export function getNextMilestone(soberDays: number): TimeMilestone | null {
 
 /**
  * Get all achieved milestones
- * 
+ *
  * @param soberDays - Current number of days of sobriety
  * @returns Array of all milestones that have been achieved
  * @example
@@ -146,7 +146,7 @@ export function getAchievedMilestones(soberDays: number): readonly TimeMilestone
 
 /**
  * Get the most recent achieved milestone
- * 
+ *
  * @param soberDays - Current number of days of sobriety
  * @returns The most recently achieved milestone, or null if none achieved
  * @example
@@ -164,7 +164,7 @@ export function getLatestMilestone(soberDays: number): TimeMilestone | null {
 
 /**
  * Check if a specific milestone has been achieved
- * 
+ *
  * @param soberDays - Current number of days of sobriety
  * @param milestoneDays - The milestone days to check (e.g., 30, 90, 365)
  * @returns True if the milestone has been achieved

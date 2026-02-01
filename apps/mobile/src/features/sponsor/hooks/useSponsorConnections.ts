@@ -46,7 +46,7 @@ export function useSponsorConnections(userId: string) {
     try {
       const rows = await db.getAllAsync<SponsorConnection>(
         `SELECT * FROM sponsor_connections WHERE user_id = ? ORDER BY created_at DESC`,
-        [userId]
+        [userId],
       );
       setConnections(rows);
     } catch (loadError) {
@@ -92,7 +92,7 @@ export function useSponsorConnections(userId: string) {
           encryptedPrivateKey,
           now,
           now,
-        ]
+        ],
       );
 
       const payload = createInvitePayload({
@@ -107,7 +107,7 @@ export function useSponsorConnections(userId: string) {
       await loadConnections();
       return { payload, code: code.code };
     },
-    [db, userId, loadConnections]
+    [db, userId, loadConnections],
   );
 
   const confirmInvite = useCallback(
@@ -123,7 +123,7 @@ export function useSponsorConnections(userId: string) {
 
       const connection = await db.getFirstAsync<SponsorConnection>(
         `SELECT * FROM sponsor_connections WHERE user_id = ? AND role = 'sponsee' AND invite_code = ? AND status = 'pending'`,
-        [userId, payload.code]
+        [userId, payload.code],
       );
 
       if (!connection || !connection.pending_private_key) {
@@ -147,12 +147,12 @@ export function useSponsorConnections(userId: string) {
           payload.sponsorName ?? connection.display_name ?? null,
           now,
           connection.id,
-        ]
+        ],
       );
 
       await loadConnections();
     },
-    [db, userId, loadConnections]
+    [db, userId, loadConnections],
   );
 
   const connectAsSponsor = useCallback(
@@ -191,7 +191,7 @@ export function useSponsorConnections(userId: string) {
           null,
           now,
           now,
-        ]
+        ],
       );
 
       const confirmPayload: SponsorConfirmPayload = {
@@ -205,7 +205,7 @@ export function useSponsorConnections(userId: string) {
       await loadConnections();
       return createConfirmPayload(confirmPayload);
     },
-    [db, userId, loadConnections]
+    [db, userId, loadConnections],
   );
 
   const removeConnection = useCallback(
@@ -215,38 +215,41 @@ export function useSponsorConnections(userId: string) {
         connectionId,
         userId,
       ]);
-      await db.runAsync(`DELETE FROM sponsor_shared_entries WHERE connection_id = ? AND user_id = ?`, [
-        connectionId,
-        userId,
-      ]);
+      await db.runAsync(
+        `DELETE FROM sponsor_shared_entries WHERE connection_id = ? AND user_id = ?`,
+        [connectionId, userId],
+      );
       await loadConnections();
     },
-    [db, userId, loadConnections]
+    [db, userId, loadConnections],
   );
 
-  const getSharedKey = useCallback(async (connectionId: string): Promise<string | null> => {
-    if (!db) return null;
-    const connection = await db.getFirstAsync<SponsorConnection>(
-      `SELECT shared_key FROM sponsor_connections WHERE id = ?`,
-      [connectionId]
-    );
-    if (!connection?.shared_key) return null;
-    return await decryptContent(connection.shared_key);
-  }, [db]);
+  const getSharedKey = useCallback(
+    async (connectionId: string): Promise<string | null> => {
+      if (!db) return null;
+      const connection = await db.getFirstAsync<SponsorConnection>(
+        `SELECT shared_key FROM sponsor_connections WHERE id = ?`,
+        [connectionId],
+      );
+      if (!connection?.shared_key) return null;
+      return await decryptContent(connection.shared_key);
+    },
+    [db],
+  );
 
   const mySponsor = useMemo(
-    () => connections.find(c => c.role === 'sponsee' && c.status === 'connected'),
-    [connections]
+    () => connections.find((c) => c.role === 'sponsee' && c.status === 'connected'),
+    [connections],
   );
 
   const mySponsees = useMemo(
-    () => connections.filter(c => c.role === 'sponsor' && c.status === 'connected'),
-    [connections]
+    () => connections.filter((c) => c.role === 'sponsor' && c.status === 'connected'),
+    [connections],
   );
 
   const pendingInvites = useMemo(
-    () => connections.filter(c => c.role === 'sponsee' && c.status === 'pending'),
-    [connections]
+    () => connections.filter((c) => c.role === 'sponsee' && c.status === 'pending'),
+    [connections],
   );
 
   return {

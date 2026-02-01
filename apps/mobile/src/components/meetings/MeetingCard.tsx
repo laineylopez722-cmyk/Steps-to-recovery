@@ -143,9 +143,7 @@ function MeetingCardComponent({
                   </View>
                 )}
               </View>
-              <Text className="text-sm text-surface-500">
-                {getTypeLabel(meeting.type)}
-              </Text>
+              <Text className="text-sm text-surface-500">{getTypeLabel(meeting.type)}</Text>
             </View>
           </View>
 
@@ -178,13 +176,11 @@ function MeetingCardComponent({
               {DAY_NAMES[meeting.dayOfWeek]} at {formatTime(meeting.time)}
             </Text>
           </View>
-          
+
           {meeting.location && (
             <View className="flex-row items-center">
               <Text className="text-surface-500 w-20">Where</Text>
-              <Text className="text-surface-900 dark:text-surface-100">
-                {meeting.location}
-              </Text>
+              <Text className="text-surface-900 dark:text-surface-100">{meeting.location}</Text>
             </View>
           )}
         </View>

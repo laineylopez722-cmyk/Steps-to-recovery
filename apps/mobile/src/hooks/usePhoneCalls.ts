@@ -53,7 +53,7 @@ export function usePhoneCalls() {
     async (contact: RecoveryContact, duration?: number, notes?: string) => {
       return await logCall(contact.id, contact.name, duration, notes);
     },
-    [logCall]
+    [logCall],
   );
 
   // Get call count for a specific contact
@@ -61,17 +61,14 @@ export function usePhoneCalls() {
     (contactId: string): number => {
       return callHistory.filter((call) => call.contactId === contactId).length;
     },
-    [callHistory]
+    [callHistory],
   );
 
   // Check if called today
   const hasCalledToday = useMemo(() => todayCalls.length > 0, [todayCalls]);
 
   // Check if meeting daily goal
-  const isMeetingGoal = useMemo(
-    () => stats.todayCallCount >= stats.dailyGoal,
-    [stats]
-  );
+  const isMeetingGoal = useMemo(() => stats.todayCallCount >= stats.dailyGoal, [stats]);
 
   // Format call time
   const formatCallTime = useCallback((call: PhoneCallLog): string => {
@@ -118,7 +115,7 @@ export function usePhoneCalls() {
     (call: PhoneCallLog): RecoveryContact | undefined => {
       return contacts.find((c) => c.id === call.contactId);
     },
-    [contacts]
+    [contacts],
   );
 
   // Calls grouped by date
@@ -169,4 +166,3 @@ export function usePhoneCalls() {
     getContactForCall,
   };
 }
-

@@ -51,15 +51,20 @@ export function InventoryEntryCard({
   const colors = TYPE_COLORS[type];
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`${TYPE_LABELS[type]} entry for ${who}${cause ? `, ${cause.slice(0, 50)}` : ''}`}
+      accessibilityHint={isExpanded ? 'Collapses entry details' : 'Expands entry details'}
+      accessibilityState={{ expanded: isExpanded }}
+    >
       <Card variant="default" className={`mb-3 ${colors.bg}`}>
         <View className="flex-row items-start justify-between">
           <View className="flex-1">
             <View className="flex-row items-center gap-2 mb-1">
               <View className={`px-2 py-0.5 rounded ${colors.bg}`}>
-                <Text className={`text-xs font-medium ${colors.text}`}>
-                  {TYPE_LABELS[type]}
-                </Text>
+                <Text className={`text-xs font-medium ${colors.text}`}>{TYPE_LABELS[type]}</Text>
               </View>
             </View>
             <Text className="text-base font-semibold text-surface-900 dark:text-surface-100">
@@ -71,9 +76,7 @@ export function InventoryEntryCard({
               </Text>
             )}
           </View>
-          <Text className="text-surface-400 ml-2">
-            {isExpanded ? '▲' : '▼'}
-          </Text>
+          <Text className="text-surface-400 ml-2">{isExpanded ? '▲' : '▼'}</Text>
         </View>
 
         {isExpanded && (
@@ -83,9 +86,7 @@ export function InventoryEntryCard({
                 <Text className="text-xs font-medium text-surface-500 uppercase mb-1">
                   The Cause
                 </Text>
-                <Text className="text-sm text-surface-700 dark:text-surface-300">
-                  {cause}
-                </Text>
+                <Text className="text-sm text-surface-700 dark:text-surface-300">{cause}</Text>
               </View>
             )}
 
@@ -111,12 +112,8 @@ export function InventoryEntryCard({
 
             {myPart && (
               <View className="mb-3">
-                <Text className="text-xs font-medium text-surface-500 uppercase mb-1">
-                  My Part
-                </Text>
-                <Text className="text-sm text-surface-700 dark:text-surface-300">
-                  {myPart}
-                </Text>
+                <Text className="text-xs font-medium text-surface-500 uppercase mb-1">My Part</Text>
+                <Text className="text-sm text-surface-700 dark:text-surface-300">{myPart}</Text>
               </View>
             )}
           </View>
@@ -125,4 +122,3 @@ export function InventoryEntryCard({
     </TouchableOpacity>
   );
 }
-
