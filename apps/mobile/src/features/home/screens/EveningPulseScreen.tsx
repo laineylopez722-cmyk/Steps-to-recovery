@@ -92,7 +92,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
       // Show success modal with animated checkmark
       setShowSuccessModal(true);
       hapticSuccess();
-    } catch (err) {
+    } catch (_err) {
       hapticError();
       setToastMessage('Failed to save check-in. Please try again.');
       setToastVariant('error');

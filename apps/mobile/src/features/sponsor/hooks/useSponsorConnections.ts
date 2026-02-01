@@ -12,7 +12,6 @@ import {
   parseConfirmPayload,
   parseInvitePayload,
   type SponsorConfirmPayload,
-  type SponsorInvitePayload,
 } from '@recovery/shared/services/sponsorConnection';
 
 export type SponsorRole = 'sponsee' | 'sponsor';
@@ -232,7 +231,7 @@ export function useSponsorConnections(userId: string) {
         [connectionId],
       );
       if (!connection?.shared_key) return null;
-      return await decryptContent(connection.shared_key);
+      return decryptContent(connection.shared_key);
     },
     [db],
   );

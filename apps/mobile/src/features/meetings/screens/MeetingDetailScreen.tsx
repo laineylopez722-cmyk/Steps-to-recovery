@@ -53,7 +53,7 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
             setNotes(savedNotes);
           }
         }
-      } catch (error) {
+      } catch (_error) {
         Alert.alert('Error', 'Failed to load meeting details');
       } finally {
         setIsLoading(false);
@@ -88,7 +88,7 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
     try {
       await updateNotes(meetingId, notes);
       Alert.alert('Success', 'Notes saved');
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to save notes');
     } finally {
       setIsSavingNotes(false);

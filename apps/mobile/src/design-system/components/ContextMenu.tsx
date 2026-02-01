@@ -14,7 +14,7 @@ import {
   Text,
   Dimensions,
   Platform,
-  LayoutRectangle,
+  type LayoutRectangle,
 } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {

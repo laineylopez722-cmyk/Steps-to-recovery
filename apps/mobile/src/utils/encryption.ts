@@ -40,7 +40,7 @@ async function getRandomBytes(length: number): Promise<Uint8Array> {
   } else {
     // Dynamically import expo-crypto only on mobile
     const Crypto = await import('expo-crypto');
-    return await Crypto.getRandomBytesAsync(length);
+    return Crypto.getRandomBytesAsync(length);
   }
 }
 
@@ -112,7 +112,7 @@ export async function generateEncryptionKey(): Promise<string> {
  * ```
  */
 export async function getEncryptionKey(): Promise<string | null> {
-  return await secureStorage.getItemAsync(ENCRYPTION_KEY_NAME);
+  return secureStorage.getItemAsync(ENCRYPTION_KEY_NAME);
 }
 
 /**

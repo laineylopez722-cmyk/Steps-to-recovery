@@ -50,7 +50,7 @@ export function useJournal() {
         meetingId?: string;
       },
     ) => {
-      return await createEntry(type, content, options);
+      return createEntry(type, content, options);
     },
     [createEntry],
   );

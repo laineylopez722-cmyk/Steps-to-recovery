@@ -191,7 +191,7 @@ export function StepDetailScreen(): React.ReactElement {
         setToastMessage('Answer saved successfully');
         setToastVariant('success');
         setShowToast(true);
-      } catch (error) {
+      } catch (_error) {
         setToastMessage('Failed to save answer. Please try again.');
         setToastVariant('error');
         setShowToast(true);
@@ -373,7 +373,7 @@ export function StepDetailScreen(): React.ReactElement {
     [questions, savingQuestion, answers, theme, handleSaveAnswer, totalQuestions],
   );
 
-  const keyExtractor = useCallback((item: ListItem, index: number) => {
+  const keyExtractor = useCallback((item: ListItem, _index: number) => {
     if (item.type === 'section') return `section-${item.title}`;
     if (item.type === 'footer') return 'footer';
     return `question-${item.questionNumber}`;

@@ -147,9 +147,94 @@ DROP TABLE IF EXISTS daily_checkins;
 
 ## Migration History
 
-| Date       | Migration                | Status  | Applied By |
-| ---------- | ------------------------ | ------- | ---------- |
-| 2026-01-02 | Add daily_checkins table | Pending | -          |
+| Date       | Migration                     | Status  | Applied By |
+| ---------- | ----------------------------- | ------- | ---------- |
+| 2026-01-02 | Add daily_checkins table      | Pending | -          |
+| 2026-02-01 | Add reading_reflections table | Pending | -          |
+| 2026-02-01 | Add day_rating column         | Pending | -          |
+| 2026-02-01 | Add favorite_meetings table   | Pending | -          |
+
+---
+
+## Additional Required Migrations
+
+### Migration 2: reading_reflections Table
+
+**File**: `supabase-migration-reading-reflections.sql`
+
+**Purpose**: Enables cloud sync for daily reading reflections feature.
+
+**Run After**: `supabase-migration-daily-checkins.sql`
+
+**Steps**:
+1. Open Supabase SQL Editor
+2. Copy contents of `supabase-migration-reading-reflections.sql`
+3. Paste and Run
+
+**Verify**:
+```sql
+SELECT table_name FROM information_schema.tables 
+WHERE table_name = 'reading_reflections';
+```
+
+---
+
+### Migration 3: day_rating Column
+
+**File**: `supabase-migration-add-day-rating.sql`
+
+**Purpose**: Adds `day_rating` column to `daily_checkins` for evening check-in ratings.
+
+**Run After**: `supabase-migration-daily-checkins.sql`
+
+**Steps**:
+1. Open Supabase SQL Editor
+2. Copy contents of `supabase-migration-add-day-rating.sql`
+3. Paste and Run
+
+**Verify**:
+```sql
+SELECT column_name FROM information_schema.columns 
+WHERE table_name = 'daily_checkins' AND column_name = 'day_rating';
+```
+
+---
+
+### Migration 4: favorite_meetings Table
+
+**File**: `supabase-migration-favorite-meetings.sql`
+
+**Purpose**: Enables cloud sync for user's favorite meetings.
+
+**Run After**: `supabase-schema.sql`
+
+**Steps**:
+1. Open Supabase SQL Editor
+2. Copy contents of `supabase-migration-favorite-meetings.sql`
+3. Paste and Run
+
+**Verify**:
+```sql
+SELECT table_name FROM information_schema.tables 
+WHERE table_name = 'favorite_meetings';
+```
+
+---
+
+## Complete Migration Order
+
+Run these migrations in order for a fresh Supabase setup:
+
+1. `supabase-schema.sql` (base schema)
+2. `supabase-migration-daily-checkins.sql` (check-ins table)
+3. `supabase-migration-add-day-rating.sql` (day_rating column)
+4. `supabase-migration-favorite-meetings.sql` (meetings table)
+5. `supabase-migration-reading-reflections.sql` (reflections table)
+
+For Supabase CLI users, migrations are also available in `supabase/migrations/`:
+```bash
+npx supabase db push
+```
 
 ---
 

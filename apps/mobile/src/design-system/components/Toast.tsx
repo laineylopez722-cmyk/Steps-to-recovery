@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, ViewStyle, Platform } from 'react-native';
+import { View, Text, StyleSheet, Animated, type ViewStyle, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { useTheme } from '../hooks/useTheme';

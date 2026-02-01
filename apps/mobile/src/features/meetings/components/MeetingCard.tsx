@@ -43,7 +43,7 @@ export function MeetingCard({
   const dayText = meeting.day_of_week !== null ? formatDayOfWeek(meeting.day_of_week) : 'Daily';
 
   // Get primary meeting type (first in array, usually most relevant)
-  const primaryType = meetingTypes.length > 0 ? meetingTypes[0] : null;
+  const _primaryType = meetingTypes.length > 0 ? meetingTypes[0] : null;
 
   return (
     <Pressable

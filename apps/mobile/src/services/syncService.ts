@@ -235,7 +235,7 @@ export async function syncJournalEntry(
         // Tags are encrypted as JSON string, we need to keep them encrypted
         // but Supabase expects TEXT[] array, so we'll send as single encrypted item
         tags = [entry.encrypted_tags];
-      } catch (err) {
+      } catch (_err) {
         logger.warn('Failed to parse tags, using empty array');
       }
     }
@@ -546,8 +546,8 @@ export async function syncReadingReflection(
   try {
     // Get the reflection from local database
     const reflection = await db.getFirstAsync<LocalReadingReflection>(
-      `SELECT id, user_id, reading_id, reading_date, encrypted_reflection, 
-       word_count, created_at, updated_at, sync_status, supabase_id 
+      `SELECT id, user_id, reading_id, reading_date, encrypted_reflection,
+       word_count, created_at, updated_at, sync_status, supabase_id
        FROM reading_reflections WHERE id = ? AND user_id = ?`,
       [reflectionId, userId],
     );

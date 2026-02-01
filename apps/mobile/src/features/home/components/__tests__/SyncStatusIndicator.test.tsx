@@ -3,16 +3,16 @@ import { render, fireEvent } from '@testing-library/react-native';
 import { SyncStatusIndicator } from '../SyncStatusIndicator';
 import { useSync } from '../../../../contexts/SyncContext';
 
-// Type definition for mock sync state
-type MockSyncState = {
-  isSyncing: boolean;
-  lastSyncTime: Date | null;
-  pendingCount: number;
-  error: Error | null;
-  isOnline: boolean;
-  triggerSync: jest.Mock;
-  clearError: jest.Mock;
-};
+/**
+ * @typedef {Object} MockSyncState
+ * @property {boolean} isSyncing
+ * @property {Date | null} lastSyncTime
+ * @property {number} pendingCount
+ * @property {Error | null} error
+ * @property {boolean} isOnline
+ * @property {jest.Mock} triggerSync
+ * @property {jest.Mock} clearError
+ */
 
 // Mock the useSync hook
 jest.mock('../../../../contexts/SyncContext', () => ({

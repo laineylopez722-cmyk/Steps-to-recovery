@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import {
-  ScrollView,
   StyleSheet,
   View,
   Text,
@@ -147,7 +146,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
       setTimeout(() => {
         navigation.goBack();
       }, 1000);
-    } catch (err) {
+    } catch (_err) {
       setToastMessage('Failed to save entry. Please try again.');
       setToastVariant('error');
       setShowToast(true);

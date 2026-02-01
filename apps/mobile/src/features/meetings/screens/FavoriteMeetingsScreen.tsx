@@ -17,7 +17,7 @@ import type { MeetingWithDetails } from '../types/meeting';
 import { calculateDistance } from '../types/meeting';
 import { logger } from '../../../utils/logger';
 
-type FavoriteMeetingsScreenProps = NativeStackScreenProps<any, 'FavoriteMeetings'>;
+type FavoriteMeetingsScreenProps = NativeStackScreenProps<Record<string, unknown>, 'FavoriteMeetings'>;
 
 export function FavoriteMeetingsScreen({
   navigation,

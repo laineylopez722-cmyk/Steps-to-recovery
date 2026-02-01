@@ -22,7 +22,6 @@
 
 import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
-import type { Session, User } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -44,7 +43,7 @@ const ExpoSecureStoreAdapter =
     ? {
         getItem: async (key: string) => {
           logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'web', key });
-          return await AsyncStorage.getItem(key);
+          return AsyncStorage.getItem(key);
         },
         setItem: async (key: string, value: string) => {
           logger.debug('Supabase auth storage', {
@@ -63,7 +62,7 @@ const ExpoSecureStoreAdapter =
     : {
         getItem: async (key: string) => {
           logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'native', key });
-          return await SecureStore.getItemAsync(key);
+          return SecureStore.getItemAsync(key);
         },
         setItem: async (key: string, value: string) => {
           logger.debug('Supabase auth storage', {

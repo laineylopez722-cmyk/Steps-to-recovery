@@ -95,7 +95,7 @@ export function useCreateJournalEntry(userId: string): {
   ) => Promise<void>;
   isPending: boolean;
 } {
-  const { db, isReady } = useDatabase();
+  const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -172,7 +172,7 @@ export function useUpdateJournalEntry(userId: string): {
   ) => Promise<void>;
   isPending: boolean;
 } {
-  const { db, isReady } = useDatabase();
+  const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -260,7 +260,7 @@ export function useDeleteJournalEntry(userId: string): {
   deleteEntry: (id: string) => Promise<void>;
   isPending: boolean;
 } {
-  const { db, isReady } = useDatabase();
+  const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({

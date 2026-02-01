@@ -3,7 +3,7 @@
  * Font weights: 'normal' | 'bold' | '500' | '600' | '800'
  */
 
-import { TextStyle } from 'react-native';
+import { type TextStyle } from 'react-native';
 
 export const typography = {
   // Display styles - Extra large text

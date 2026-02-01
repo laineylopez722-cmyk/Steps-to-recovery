@@ -167,7 +167,7 @@ export function useVoiceRecorder() {
       if (playbackSource) {
         setPlaybackSource(null);
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore cleanup errors
     }
   };
@@ -279,7 +279,7 @@ export function useVoiceRecorder() {
           await FileSystem.deleteAsync(uri, { idempotent: true });
         }
       }
-    } catch (error) {
+    } catch (_error) {
       // Ignore errors
     }
 

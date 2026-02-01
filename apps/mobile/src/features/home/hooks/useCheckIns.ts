@@ -112,7 +112,7 @@ export function useCreateCheckIn(userId: string): {
   }) => Promise<void>;
   isPending: boolean;
 } {
-  const { db, isReady } = useDatabase();
+  const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -306,7 +306,7 @@ export function useStreak(userId: string): {
   total_check_ins: number;
   isLoading: boolean;
 } {
-  const { db, isReady } = useDatabase();
+  const { db } = useDatabase();
 
   const { data, isLoading } = useQuery({
     queryKey: ['streak', userId],
@@ -328,7 +328,7 @@ export function useStreak(userId: string): {
         let expectedDate = new Date(today);
 
         for (const dateStr of dates) {
-          const checkDate = new Date(dateStr);
+          const _checkDate = new Date(dateStr);
           const expectedStr = expectedDate.toISOString().split('T')[0];
 
           if (dateStr === expectedStr) {

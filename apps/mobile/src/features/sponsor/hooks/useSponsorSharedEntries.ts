@@ -61,7 +61,7 @@ export function useSponsorSharedEntries(userId: string) {
   const getConnectionById = useCallback(
     async (connectionId: string): Promise<SponsorConnectionRow | null> => {
       if (!db || !isReady) return null;
-      return await db.getFirstAsync<SponsorConnectionRow>(
+      return db.getFirstAsync<SponsorConnectionRow>(
         `SELECT id, invite_code, shared_key FROM sponsor_connections WHERE id = ? AND user_id = ?`,
         [connectionId, userId],
       );
@@ -72,7 +72,7 @@ export function useSponsorSharedEntries(userId: string) {
   const getConnectionByCode = useCallback(
     async (code: string): Promise<SponsorConnectionRow | null> => {
       if (!db || !isReady) return null;
-      return await db.getFirstAsync<SponsorConnectionRow>(
+      return db.getFirstAsync<SponsorConnectionRow>(
         `SELECT id, invite_code, shared_key FROM sponsor_connections WHERE user_id = ? AND invite_code = ?`,
         [userId, code],
       );
@@ -84,7 +84,7 @@ export function useSponsorSharedEntries(userId: string) {
     async (connectionId: string): Promise<string | null> => {
       const connection = await getConnectionById(connectionId);
       if (!connection?.shared_key) return null;
-      return await decryptContent(connection.shared_key);
+      return decryptContent(connection.shared_key);
     },
     [getConnectionById],
   );

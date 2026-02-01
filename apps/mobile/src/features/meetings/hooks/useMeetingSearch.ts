@@ -6,7 +6,7 @@
  */
 
 import { useCallback } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { logger } from '../../../utils/logger';
 import { searchMeetings } from '../services/meetingGuideApi';
@@ -38,7 +38,6 @@ export interface UseMeetingSearchReturn {
  */
 export function useMeetingSearch(options: UseMeetingSearchOptions = {}): UseMeetingSearchReturn {
   const { db } = useDatabase();
-  const queryClient = useQueryClient();
 
   /**
    * Search for meetings (API call + cache update)

@@ -51,7 +51,7 @@ export function usePhoneCalls() {
   // Log a call with a contact
   const logCallWithContact = useCallback(
     async (contact: RecoveryContact, duration?: number, notes?: string) => {
-      return await logCall(contact.id, contact.name, duration, notes);
+      return logCall(contact.id, contact.name, duration, notes);
     },
     [logCall],
   );

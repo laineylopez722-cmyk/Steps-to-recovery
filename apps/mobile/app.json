@@ -1,87 +1,88 @@
 {
-  "name": "Steps to Recovery",
-  "slug": "steps-to-recovery",
-  "version": "1.0.0",
-  "scheme": "stepstorecovery",
-  "orientation": "portrait",
-  "icon": "./assets/icon.png",
-  "userInterfaceStyle": "dark",
-  "jsEngine": "hermes",
-  "newArchEnabled": true,
-  "splash": {
-    "image": "./assets/splash-icon.png",
-    "resizeMode": "contain",
-    "backgroundColor": "#0f172a"
-  },
-  "ios": {
-    "supportsTablet": true,
-    "bundleIdentifier": "com.recovery.stepstorecovery",
-    "buildNumber": "1",
-    "infoPlist": {
-      "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to notify you when you're near saved meeting locations to provide timely support.",
-      "NSLocationWhenInUseUsageDescription": "We use your location to help you find nearby meetings and save locations for reminders.",
-      "NSLocationAlwaysUsageDescription": "We use your location in the background to notify you when you're near saved meeting locations.",
-      "NSFaceIDUsageDescription": "Use Face ID to securely access your private recovery data.",
-      "UIBackgroundModes": ["location", "fetch", "processing", "remote-notification"]
-    }
-  },
-  "android": {
-    "package": "com.recovery.stepstorecovery",
-    "versionCode": 1,
-    "adaptiveIcon": {
-      "foregroundImage": "./assets/adaptive-icon.png",
+  "expo": {
+    "name": "Steps to Recovery",
+    "slug": "steps-to-recovery",
+    "version": "1.0.0",
+    "scheme": "stepstorecovery",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "jsEngine": "hermes",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
       "backgroundColor": "#0f172a"
     },
-    "permissions": [
-      "ACCESS_FINE_LOCATION",
-      "ACCESS_COARSE_LOCATION",
-      "ACCESS_BACKGROUND_LOCATION",
-      "POST_NOTIFICATIONS",
-      "RECEIVE_BOOT_COMPLETED",
-      "SCHEDULE_EXACT_ALARM",
-      "USE_BIOMETRIC",
-      "USE_FINGERPRINT",
-      "VIBRATE",
-      "android.permission.ACCESS_COARSE_LOCATION",
-      "android.permission.ACCESS_FINE_LOCATION",
-      "android.permission.ACCESS_BACKGROUND_LOCATION",
-      "android.permission.FOREGROUND_SERVICE",
-      "android.permission.FOREGROUND_SERVICE_LOCATION"
-    ],
-    "blockedPermissions": [
-      "android.permission.RECORD_AUDIO",
-      "android.permission.READ_EXTERNAL_STORAGE",
-      "android.permission.WRITE_EXTERNAL_STORAGE"
-    ],
-    "edgeToEdgeEnabled": false
-  },
-  "web": {
-    "favicon": "./assets/favicon.png",
-    "bundler": "metro",
-    "output": "single",
-    "build": {
-      "babel": {
-        "include": ["sql.js", "idb"]
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.recovery.stepstorecovery",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to notify you when you're near saved meeting locations to provide timely support.",
+        "NSLocationWhenInUseUsageDescription": "We use your location to help you find nearby meetings and save locations for reminders.",
+        "NSLocationAlwaysUsageDescription": "We use your location in the background to notify you when you're near saved meeting locations.",
+        "NSFaceIDUsageDescription": "Use Face ID to securely access your private recovery data.",
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "processing",
+          "remote-notification"
+        ]
       }
     },
-    "meta": {
-      "name": "Steps to Recovery",
-      "description": "A private, offline-first recovery companion app for 12-step programs",
-      "keywords": "recovery,addiction,sobriety,journal,12-step,AA,NA,privacy",
-      "theme-color": "#0f172a",
-      "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    "android": {
+      "package": "com.recovery.stepstorecovery",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0f172a"
+      },
+      "permissions": [
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT",
+        "android.permission.VIBRATE",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ],
+      "edgeToEdgeEnabled": false
     },
-    "pwa": {
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "build": {
+        "babel": {
+          "include": [
+            "sql.js",
+            "idb"
+          ]
+        }
+      },
       "name": "Steps to Recovery",
       "shortName": "Recovery",
-      "description": "Your private, offline-first recovery companion",
+      "description": "A private, offline-first recovery companion app for 12-step programs",
       "themeColor": "#0f172a",
       "backgroundColor": "#0f172a",
       "display": "standalone",
       "orientation": "portrait",
       "startUrl": "/",
       "scope": "/",
-      "categories": ["health", "lifestyle"],
+      "categories": [
+        "health",
+        "lifestyle"
+      ],
       "icons": [
         {
           "src": "./assets/icon.png",
@@ -90,59 +91,52 @@
           "purpose": "any maskable"
         }
       ]
-    }
-  },
-  "plugins": [
-    "expo-secure-store",
-    "expo-sqlite",
-    [
-      "expo-notifications",
-      {
-        "color": "#8b5cf6",
-        "defaultChannel": "default"
-      }
-    ],
-    [
-      "expo-location",
-      {
-        "locationAlwaysAndWhenInUsePermission": "We use your location to notify you when you're near saved meeting locations to provide timely support.",
-        "locationWhenInUsePermission": "We use your location to help you find nearby meetings and save locations for reminders.",
-        "isAndroidBackgroundLocationEnabled": true
-      }
-    ],
-    [
-      "@sentry/react-native/expo",
-      {
-        "organization": "steps-to-recovery",
-        "project": "mobile"
-      }
-    ],
-    "@react-native-community/datetimepicker",
-    [
-      "expo-router",
-      {
-        "origin": "https://stepstorecovery.app"
-      }
-    ]
-  ],
-  "experiments": {
-    "typedRoutes": true
-  },
-  "updates": {
-    "enabled": true,
-    "fallbackToCacheTimeout": 30000,
-    "checkAutomatically": "ON_LOAD"
-  },
-  "runtimeVersion": "1.0.0",
-  "extra": {
-    "eas": {
-      "projectId": "31a006e3-47da-4995-b63a-ded28567f594"
     },
-    "router": {
-      "origin": "https://stepstorecovery.app"
-    }
-  },
-  "owner": "ripkdrs-organization",
-  "sdkVersion": "54.0.0",
-  "platforms": ["ios", "android", "web"]
+    "plugins": [
+      "expo-system-ui",
+      "expo-secure-store",
+      "expo-sqlite",
+      [
+        "expo-notifications",
+        {
+          "color": "#8b5cf6",
+          "defaultChannel": "default"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "We use your location to notify you when you're near saved meeting locations to provide timely support.",
+          "locationWhenInUsePermission": "We use your location to help you find nearby meetings and save locations for reminders.",
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "steps-to-recovery",
+          "project": "mobile"
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ],
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 30000,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "runtimeVersion": "1.0.0",
+    "extra": {
+      "eas": {
+        "projectId": "31a006e3-47da-4995-b63a-ded28567f594"
+      }
+    },
+    "owner": "ripkdrs-organization",
+    "sdkVersion": "54.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ]
+  }
 }

@@ -7,7 +7,7 @@
 const cssInterop = (component) => component;
 
 // remapProps maps className to style
-const remapProps = (component, mapping) => component;
+const remapProps = (component) => component;
 
 // StyleSheet mock - passes through to React Native StyleSheet
 const { StyleSheet: RNStyleSheet } = require('react-native');

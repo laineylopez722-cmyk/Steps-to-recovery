@@ -9,12 +9,12 @@ import {
   Text,
   StyleSheet,
   ActivityIndicator,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
+  type StyleProp,
+  type ViewStyle,
+  type TextStyle,
   Animated,
   View,
-  AccessibilityRole,
+  type AccessibilityRole,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
@@ -158,9 +158,10 @@ export function Button({
           <ActivityIndicator color={colors.indicator} size="small" />
         ) : (
           <View style={styles.content}>
-            {icon && <View style={styles.iconContainer}>{icon}</View>}
-            {typeof children === 'string' || title ? (
+            {icon ? <View key="icon" style={styles.iconContainer}>{icon}</View> : null}
+            {(typeof children === 'string' || title) ? (
               <Text
+                key="label"
                 style={[
                   {
                     fontSize: textSizes[size],
@@ -173,7 +174,7 @@ export function Button({
                 {children || title}
               </Text>
             ) : (
-              children
+              <React.Fragment key="children">{children}</React.Fragment>
             )}
           </View>
         )}

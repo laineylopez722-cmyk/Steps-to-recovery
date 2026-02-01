@@ -80,7 +80,7 @@ function Divider(): React.ReactElement {
 }
 
 export function ProfileScreen(): React.ReactElement {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const theme = useTheme();
   const { user, signOut, loading } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
@@ -93,7 +93,7 @@ export function ProfileScreen(): React.ReactElement {
     setSigningOut(true);
     try {
       await signOut();
-    } catch (error) {
+    } catch (_error) {
       // Error handled by auth context
     } finally {
       setSigningOut(false);

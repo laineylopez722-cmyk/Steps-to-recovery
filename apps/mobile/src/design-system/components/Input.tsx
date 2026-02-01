@@ -9,8 +9,8 @@ import {
   TextInput,
   Text,
   StyleSheet,
-  TextInputProps,
-  ViewStyle,
+  type TextInputProps,
+  type ViewStyle,
   TouchableOpacity,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -63,10 +63,13 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
     <View style={[styles.container, containerStyle]}>
       {/* Label */}
       <View style={styles.labelContainer}>
-        <Text style={[theme.typography.label, { color: theme.colors.text }]}>
-          {label}
-          {required && <Text style={{ color: theme.colors.danger }}> *</Text>}
-        </Text>
+        {required ? (
+          <Text style={[theme.typography.label, { color: theme.colors.text }]}>
+            {label}<Text style={{ color: theme.colors.danger }}> *</Text>
+          </Text>
+        ) : (
+          <Text style={[theme.typography.label, { color: theme.colors.text }]}>{label}</Text>
+        )}
       </View>
 
       {/* Input Container */}
@@ -81,11 +84,9 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           error && styles.inputError,
         ]}
       >
-        {/* Left Icon */}
-        {leftIcon && <View style={styles.leftIconContainer}>{leftIcon}</View>}
-
-        {/* Text Input */}
+        {leftIcon ? <View key="left-icon" style={styles.leftIconContainer}>{leftIcon}</View> : null}
         <TextInput
+          key="text-input"
           ref={ref}
           value={value}
           onChangeText={onChangeText}
@@ -102,10 +103,9 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           placeholderTextColor={theme.colors.textSecondary}
           {...textInputProps}
         />
-
-        {/* Right Icon or Password Toggle */}
         {hasPasswordToggle ? (
           <TouchableOpacity
+            key="right-action"
             onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             style={styles.rightIconContainer}
             accessibilityRole="button"
@@ -118,17 +118,17 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
             />
           </TouchableOpacity>
         ) : rightIcon ? (
-          <View style={styles.rightIconContainer}>{rightIcon}</View>
+          <View key="right-action" style={styles.rightIconContainer}>{rightIcon}</View>
         ) : null}
       </View>
 
       {/* Error or Hint Text */}
       {error ? (
-        <Text style={[theme.typography.caption, styles.errorText, { color: theme.colors.danger }]}>
+        <Text key="helper-text" style={[theme.typography.caption, styles.errorText, { color: theme.colors.danger }]}>
           {error}
         </Text>
       ) : hint ? (
-        <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+        <Text key="helper-text" style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
           {hint}
         </Text>
       ) : null}

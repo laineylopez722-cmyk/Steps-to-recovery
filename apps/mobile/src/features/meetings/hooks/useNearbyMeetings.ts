@@ -14,9 +14,6 @@ import type {
   CachedMeeting,
   MeetingWithDetails,
   MeetingFilters,
-  DayOfWeek,
-  TimeOfDay,
-  MeetingType,
 } from '../types/meeting';
 import { calculateDistance, meetingMatchesFilters } from '../types/meeting';
 

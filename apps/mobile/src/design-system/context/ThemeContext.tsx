@@ -3,9 +3,9 @@
  * Provides theme tokens and dark mode detection to the entire app
  */
 
-import React, { createContext, ReactNode, useMemo } from 'react';
+import React, { createContext, type ReactNode, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
-import { lightColors, darkColors, categoryColors, ColorPalette } from '../tokens/colors';
+import { lightColors, darkColors, categoryColors, type ColorPalette } from '../tokens/colors';
 import { typography } from '../tokens/typography';
 import { spacing } from '../tokens/spacing';
 import { radius } from '../tokens/radius';

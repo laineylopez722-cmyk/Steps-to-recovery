@@ -93,11 +93,11 @@ export function SyncStatusIndicator() {
     >
       <View style={styles.content}>
         {isSyncing ? (
-          <ActivityIndicator size={20} color={status.color} />
+          <ActivityIndicator key="status-indicator" size={20} color={status.color} />
         ) : (
-          <MaterialCommunityIcons name={status.icon} size={20} color={status.color} />
+          <MaterialCommunityIcons key="status-indicator" name={status.icon} size={20} color={status.color} />
         )}
-        <View style={styles.textContainer}>
+        <View key="text-container" style={styles.textContainer}>
           <Text style={[theme.typography.subheadline, { color: status.color, fontWeight: '600' }]}>
             {status.label}
           </Text>

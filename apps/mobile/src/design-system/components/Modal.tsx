@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
   Animated,
   Dimensions,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { Button } from './Button';

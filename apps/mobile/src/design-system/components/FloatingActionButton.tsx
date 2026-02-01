@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { TouchableOpacity, StyleSheet, ViewStyle, Animated, View, Text } from 'react-native';
+import { TouchableOpacity, StyleSheet, type ViewStyle, Animated, View, Text } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
 import { hapticImpact } from '../../utils/haptics';

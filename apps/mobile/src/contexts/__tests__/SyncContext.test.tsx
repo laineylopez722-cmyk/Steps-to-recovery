@@ -11,41 +11,44 @@
 
 import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import { AppState, Platform } from 'react-native';
+import { AppState } from 'react-native';
 
 // Must mock modules before importing the component
 const mockProcessSyncQueue = jest.fn();
 const mockClearDatabase = jest.fn();
-const mockLogger = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  debug: jest.fn(),
-};
 
 // Mock NetInfo
-let netInfoCallback: ((state: any) => void) | null = null;
+interface NetInfoState {
+  isConnected: boolean | null;
+  isInternetReachable: boolean | null;
+}
+
+let netInfoCallback: ((state: NetInfoState) => void) | null = null;
 const mockNetInfoUnsubscribe = jest.fn();
 
 jest.mock('@react-native-community/netinfo', () => ({
   addEventListener: jest.fn((callback) => {
     netInfoCallback = callback;
-    // Return initial state after a tick
-    setTimeout(() => callback({ isConnected: false, isInternetReachable: false }), 0);
+    // Don't auto-fire - let tests control when network state changes
     return mockNetInfoUnsubscribe;
   }),
 }));
 
 jest.mock('../../services/syncService', () => ({
-  processSyncQueue: (...args: any[]) => mockProcessSyncQueue(...args),
+  processSyncQueue: (...args: unknown[]) => mockProcessSyncQueue(...args),
 }));
 
 jest.mock('../../utils/database', () => ({
-  clearDatabase: (...args: any[]) => mockClearDatabase(...args),
+  clearDatabase: (...args: unknown[]) => mockClearDatabase(...args),
 }));
 
 jest.mock('../../utils/logger', () => ({
-  logger: mockLogger,
+  logger: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+  },
 }));
 
 // Mock the context modules
@@ -63,6 +66,8 @@ jest.mock('../DatabaseContext', () => ({
 // Now import the component
 import { SyncProvider, useSync } from '../SyncContext';
 import NetInfo from '@react-native-community/netinfo';
+// Get reference to the mocked logger for assertions
+import { logger as mockLogger } from '../../utils/logger';
 
 describe('SyncContext', () => {
   // Mock database
@@ -104,7 +109,7 @@ describe('SyncContext', () => {
     mockUseAuth.mockReturnValue({ user: null });
     mockUseDatabase.mockReturnValue({ db: null, isReady: false });
 
-    // Reset NetInfo mock
+    // Reset NetInfo mock - don't auto-fire callback
     (NetInfo.addEventListener as jest.Mock).mockImplementation((callback) => {
       netInfoCallback = callback;
       return mockNetInfoUnsubscribe;
@@ -121,6 +126,7 @@ describe('SyncContext', () => {
   });
 
   afterEach(() => {
+    jest.clearAllTimers();
     jest.useRealTimers();
   });
 
@@ -439,7 +445,7 @@ describe('SyncContext', () => {
     });
 
     it('should deduplicate rapid network state changes', async () => {
-      const { result } = renderHook(() => useSync(), { wrapper });
+      const { result: _result } = renderHook(() => useSync(), { wrapper });
 
       // Rapid state changes (same state)
       act(() => {
@@ -607,6 +613,14 @@ describe('SyncContext', () => {
         expect(result.current.isOnline).toBe(true);
       });
 
+      // Wait for the initial online sync to complete
+      await waitFor(() => {
+        expect(result.current.isSyncing).toBe(false);
+      });
+
+      // Clear logger to isolate the foreground trigger test
+      jest.mocked(mockLogger.info).mockClear();
+
       // Simulate app coming to foreground
       act(() => {
         appStateCallback?.('active');
@@ -637,6 +651,10 @@ describe('SyncContext', () => {
     });
 
     it('should clean up AppState listener on unmount', () => {
+      // Must have user for AppState listener to be set up
+      mockUseAuth.mockReturnValue({ user: mockUser });
+      mockUseDatabase.mockReturnValue({ db: mockDb, isReady: true });
+
       const { unmount } = renderHook(() => useSync(), { wrapper });
 
       unmount();

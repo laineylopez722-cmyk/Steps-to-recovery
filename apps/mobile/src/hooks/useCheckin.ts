@@ -19,7 +19,7 @@ export function useCheckin() {
     loadTodayCheckin,
     loadHistory,
     submitCheckin,
-    calculateStats,
+
   } = useCheckinStore();
 
   // Load data on mount

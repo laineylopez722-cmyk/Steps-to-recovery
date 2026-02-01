@@ -75,7 +75,7 @@ export function useReading() {
       if (!reflection.trim()) {
         throw new Error('Reflection cannot be empty');
       }
-      return await saveReflection(reflection.trim());
+      return saveReflection(reflection.trim());
     },
     [saveReflection],
   );
@@ -83,7 +83,7 @@ export function useReading() {
   // Get reading for specific date
   const getReading = useCallback(
     async (date: Date): Promise<DailyReading | null> => {
-      return await getReadingForDate(date);
+      return getReadingForDate(date);
     },
     [getReadingForDate],
   );
@@ -91,7 +91,7 @@ export function useReading() {
   // Get reflection for specific date (async)
   const getReflection = useCallback(
     async (date: Date): Promise<DailyReadingReflection | null> => {
-      return await getReflectionForDate(date);
+      return getReflectionForDate(date);
     },
     [getReflectionForDate],
   );
@@ -99,7 +99,7 @@ export function useReading() {
   // Decrypt reflection content
   const decryptReflection = useCallback(
     async (reflection: DailyReadingReflection): Promise<string> => {
-      return await decryptReflectionContent(reflection);
+      return decryptReflectionContent(reflection);
     },
     [decryptReflectionContent],
   );

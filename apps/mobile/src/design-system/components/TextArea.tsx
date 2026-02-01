@@ -4,7 +4,7 @@
  */
 
 import React, { forwardRef } from 'react';
-import { View, TextInput, Text, StyleSheet, TextInputProps, ViewStyle } from 'react-native';
+import { View, TextInput, Text, StyleSheet, type TextInputProps, type ViewStyle } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export interface TextAreaProps extends Omit<

@@ -1,4 +1,4 @@
-import type { StorageAdapter } from '../../adapters/storage/types';
+import { type StorageAdapter } from '../../adapters/storage/types';
 import {
   processSyncQueue,
   syncJournalEntry,
@@ -64,7 +64,7 @@ describe('syncService Integration Tests', () => {
       expect(mockDb.runAsync).toHaveBeenCalledWith(
         expect.stringContaining('INSERT OR REPLACE INTO sync_queue'),
         expect.arrayContaining([
-          expect.stringMatching(/^sync_\d+_/),
+          expect.stringMatching(/^sync_[0-9a-f-]+$/), // sync_ followed by UUID
           tableName,
           recordId,
           operation,
@@ -1120,10 +1120,10 @@ describe('syncService Integration Tests', () => {
 
     it('should return error for missing user_id (implicit in sync functions)', async () => {
       // This tests that sync functions require user_id
-      const result = await syncJournalEntry(mockDb, 'entry-1', '');
-
       // Should fail to find entry with empty user_id
       mockDb.getFirstAsync.mockResolvedValueOnce(null);
+
+      await syncJournalEntry(mockDb, 'entry-1', '');
 
       expect(mockDb.getFirstAsync).toHaveBeenCalledWith(expect.any(String), ['entry-1', '']);
     });

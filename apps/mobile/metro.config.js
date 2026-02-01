@@ -14,7 +14,10 @@ const monorepoRoot = resolve(projectRoot, '..', '..');
 const config = getDefaultConfig(projectRoot);
 
 // Allow importing files from the monorepo root (e.g., ../../index.ts) when bundling release.
-config.watchFolders = [monorepoRoot];
+const existingWatchFolders = config.watchFolders ?? [];
+config.watchFolders = existingWatchFolders.includes(monorepoRoot)
+  ? existingWatchFolders
+  : [...existingWatchFolders, monorepoRoot];
 config.resolver.nodeModulesPaths = [
   resolve(projectRoot, 'node_modules'),
   resolve(monorepoRoot, 'node_modules'),

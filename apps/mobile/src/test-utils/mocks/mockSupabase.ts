@@ -3,8 +3,8 @@
  */
 
 export const mockSupabaseQuery = {
-  data: null as any,
-  error: null as any,
+  data: null as unknown,
+  error: null as unknown,
   count: null as number | null,
 };
 

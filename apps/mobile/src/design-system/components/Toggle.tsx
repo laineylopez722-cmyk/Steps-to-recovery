@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Switch, Text, StyleSheet, ViewStyle, Platform } from 'react-native';
+import { View, Switch, Text, StyleSheet, type ViewStyle, Platform } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { hapticSelection } from '../../utils/haptics';
 

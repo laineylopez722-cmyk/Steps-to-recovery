@@ -31,7 +31,7 @@ import { logger } from './logger';
  * navigateToPath('/journal/abc123', { mode: 'edit' });
  * ```
  */
-export function navigateToPath(path: string, params?: Record<string, unknown>): void {
+export function navigateToPath(path: string, _params?: Record<string, unknown>): void {
   if (!navigationRef.isReady()) {
     logger.warn('Navigation not ready, cannot navigate', { path });
     return;

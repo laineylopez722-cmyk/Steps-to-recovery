@@ -25,7 +25,7 @@
  */
 
 import { useCallback, useEffect } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import { AppState, type AppStateStatus } from 'react-native';
 import { useAuthStore } from '@recovery/shared';
 import { useSettingsStore } from '@recovery/shared';
 

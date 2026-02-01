@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet, ViewStyle, AccessibilityRole } from 'react-native';
+import { View, Animated, StyleSheet, type ViewStyle, type AccessibilityRole } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export interface ProgressBarProps {

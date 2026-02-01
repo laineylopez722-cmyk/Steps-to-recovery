@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { Platform } from 'react-native';
-import { createStorageAdapter, StorageAdapter } from '../adapters/storage';
+import { createStorageAdapter, type StorageAdapter } from '../adapters/storage';
 import { initDatabase } from '../utils/database';
 import { logger } from '../utils/logger';
 

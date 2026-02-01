@@ -29,6 +29,7 @@ const config = {
       '@unimodules|' +
       'unimodules|' +
       'sentry-expo|' +
+      '@sentry/react-native|' + // Sentry React Native SDK
       'native-base|' +
       'nativewind|' +
       '@supabase|' + // Supabase client

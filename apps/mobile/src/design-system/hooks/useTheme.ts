@@ -4,7 +4,7 @@
  */
 
 import { useContext } from 'react';
-import { ThemeContext, Theme } from '../context/ThemeContext';
+import { ThemeContext, type Theme } from '../context/ThemeContext';
 
 /**
  * Hook to access theme tokens

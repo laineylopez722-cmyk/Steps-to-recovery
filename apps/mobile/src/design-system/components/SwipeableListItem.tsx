@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, StyleSheet, ViewStyle, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, type ViewStyle, Text, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, {
   useSharedValue,
@@ -23,7 +23,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ACTION_WIDTH = 80;
 const DELETE_THRESHOLD = -ACTION_WIDTH * 0.75;
 // EDIT_THRESHOLD reserved for future right-swipe edit feature
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const _EDIT_THRESHOLD = ACTION_WIDTH * 0.75;
 
 export interface SwipeAction {

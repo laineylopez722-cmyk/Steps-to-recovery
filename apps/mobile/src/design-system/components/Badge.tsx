@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ViewStyle, TextStyle, AccessibilityRole } from 'react-native';
+import { View, Text, StyleSheet, type ViewStyle, type TextStyle, type AccessibilityRole } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export interface BadgeProps {

@@ -53,7 +53,7 @@ const getGentleDelay = (index: number): number => 150 + index * 100;
 
 export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): React.ReactElement {
   const theme = useTheme();
-  const [showBreathingExercise, setShowBreathingExercise] = useState(false);
+  const [_showBreathingExercise, setShowBreathingExercise] = useState(false);
 
   const handleCall = useCallback((number: string): void => {
     hapticSelection();
@@ -65,7 +65,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
     // Optional: track completion for analytics
   }, []);
 
-  const toggleBreathingExercise = useCallback(() => {
+  const _toggleBreathingExercise = useCallback(() => {
     hapticSelection();
     setShowBreathingExercise((prev) => !prev);
   }, []);

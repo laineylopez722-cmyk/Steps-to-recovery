@@ -18,12 +18,6 @@ const mockEncryptContent = jest.fn();
 const mockDecryptContent = jest.fn();
 const mockAddToSyncQueue = jest.fn();
 const mockAddDeleteToSyncQueue = jest.fn();
-const mockLogger = {
-  info: jest.fn(),
-  warn: jest.fn(),
-  error: jest.fn(),
-  debug: jest.fn(),
-};
 
 // Mock database
 const mockDb = {
@@ -43,17 +37,22 @@ jest.mock('../../../../contexts/DatabaseContext', () => ({
 }));
 
 jest.mock('../../../../utils/encryption', () => ({
-  encryptContent: (content: string) => mockEncryptContent(content),
-  decryptContent: (content: string) => mockDecryptContent(content),
+  encryptContent: (content) => mockEncryptContent(content),
+  decryptContent: (content) => mockDecryptContent(content),
 }));
 
 jest.mock('../../../../services/syncService', () => ({
-  addToSyncQueue: (...args: any[]) => mockAddToSyncQueue(...args),
-  addDeleteToSyncQueue: (...args: any[]) => mockAddDeleteToSyncQueue(...args),
+  addToSyncQueue: (...args) => mockAddToSyncQueue(...args),
+  addDeleteToSyncQueue: (...args) => mockAddDeleteToSyncQueue(...args),
 }));
 
 jest.mock('../../../../utils/logger', () => ({
-  logger: mockLogger,
+  logger: {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn(),
+  },
 }));
 
 // Import hooks after mocking
@@ -64,6 +63,8 @@ import {
   useDeleteCheckIn,
   useStreak,
 } from '../useCheckIns';
+// Get reference to the mocked logger for assertions
+import { logger as mockLogger } from '../../../../utils/logger';
 
 describe('useCheckIns', () => {
   const testUserId = 'user-123';
@@ -345,6 +346,9 @@ describe('useCheckIns', () => {
         wrapper: createWrapper(),
       });
 
+      // Clear any previous calls before testing
+      (mockLogger.error as jest.Mock).mockClear();
+
       await expect(
         act(async () => {
           await result.current.createCheckIn({
@@ -355,7 +359,10 @@ describe('useCheckIns', () => {
         }),
       ).rejects.toThrow('Database error');
 
-      expect(mockLogger.error).toHaveBeenCalledWith('Failed to create check-in', expect.any(Error));
+      // Wait for the error to be logged
+      await waitFor(() => {
+        expect(mockLogger.error).toHaveBeenCalledWith('Failed to create check-in', expect.any(Error));
+      });
     });
 
     it('should invalidate queries after successful creation', async () => {
@@ -446,6 +453,9 @@ describe('useCheckIns', () => {
         wrapper: createWrapper(),
       });
 
+      // Clear any previous calls before testing
+      (mockLogger.error as jest.Mock).mockClear();
+
       await expect(
         act(async () => {
           await result.current.updateCheckIn('checkin-123', {
@@ -454,7 +464,10 @@ describe('useCheckIns', () => {
         }),
       ).rejects.toThrow('Update failed');
 
-      expect(mockLogger.error).toHaveBeenCalledWith('Failed to update check-in', expect.any(Error));
+      // Wait for the error to be logged
+      await waitFor(() => {
+        expect(mockLogger.error).toHaveBeenCalledWith('Failed to update check-in', expect.any(Error));
+      });
     });
   });
 
@@ -492,13 +505,19 @@ describe('useCheckIns', () => {
         wrapper: createWrapper(),
       });
 
+      // Clear any previous calls before testing
+      (mockLogger.error as jest.Mock).mockClear();
+
       await expect(
         act(async () => {
           await result.current.deleteCheckIn('checkin-123');
         }),
       ).rejects.toThrow('Delete failed');
 
-      expect(mockLogger.error).toHaveBeenCalledWith('Failed to delete check-in', expect.any(Error));
+      // Wait for the error to be logged
+      await waitFor(() => {
+        expect(mockLogger.error).toHaveBeenCalledWith('Failed to delete check-in', expect.any(Error));
+      });
     });
 
     it('should invalidate streak query after deletion', async () => {

@@ -12,7 +12,7 @@ import { logger } from '../../../utils/logger';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
 import { addToSyncQueue } from '../../../services/syncService';
 import { generateId } from '../../../utils/id';
-import type { FavoriteMeeting, MeetingWithDetails } from '../types/meeting';
+import type { FavoriteMeeting } from '../types/meeting';
 
 export interface UseFavoriteMeetingsReturn {
   favoriteMeetings: FavoriteMeeting[];

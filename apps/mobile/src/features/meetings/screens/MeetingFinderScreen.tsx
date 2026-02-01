@@ -23,7 +23,7 @@ import { MeetingFilters } from '../components/MeetingFilters';
 import { useNearbyMeetings } from '../hooks/useNearbyMeetings';
 import type { MeetingWithDetails } from '../types/meeting';
 
-type MeetingFinderScreenProps = NativeStackScreenProps<any, 'MeetingFinder'>;
+type MeetingFinderScreenProps = NativeStackScreenProps<Record<string, unknown>, 'MeetingFinder'>;
 
 export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): React.ReactElement {
   const theme = useTheme();

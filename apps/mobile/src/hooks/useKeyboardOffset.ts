@@ -5,7 +5,7 @@
  * This hook provides a safe default that works across devices
  */
 
-import { Platform, Dimensions } from 'react-native';
+import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**

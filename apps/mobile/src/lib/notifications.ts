@@ -27,7 +27,7 @@ if (Platform.OS !== 'web') {
         shouldSetBadge: true,
       }),
     });
-  } catch (error) {
+  } catch (_error) {
     // Silently fail in Expo Go - notifications require development build
     // All other app features (journaling, check-ins, step work) work normally
     logger.warn(

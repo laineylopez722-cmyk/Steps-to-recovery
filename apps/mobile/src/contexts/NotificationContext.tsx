@@ -7,7 +7,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
+import type * as Notifications from 'expo-notifications';
 import {
   requestNotificationPermissions,
   getNotificationPermissionStatus,
