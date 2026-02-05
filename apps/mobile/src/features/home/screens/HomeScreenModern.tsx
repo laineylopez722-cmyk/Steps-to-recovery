@@ -26,6 +26,7 @@ import { DailyReadingCard } from '../components/DailyReadingCard';
 import { RiskAlertCard } from '../components/RiskAlertCard';
 import { useAutoRiskDetection } from '../../../hooks/useRiskDetection';
 import { CircularProgressRing } from '../../../components/CircularProgressRing';
+import { QuickMeetingCheckIn } from '../../../components/QuickMeetingCheckIn';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
@@ -153,6 +154,11 @@ export function HomeScreenModern({ userId }: HomeScreenModernProps): React.React
 
           {/* Daily Reading Card */}
           <DailyReadingCard userId={userId} />
+
+          {/* Meeting Check-In Card */}
+          <Animated.View entering={FadeInUp.delay(150).duration(600)}>
+            <QuickMeetingCheckIn userId={userId} />
+          </Animated.View>
 
           {/* Daily Check-in Card */}
           <Animated.View entering={FadeInUp.delay(200).duration(600)}>

@@ -14,6 +14,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
 import { useTheme, Card, Button, BreathingCircle } from '../../../design-system';
 import { hapticSelection } from '../../../utils/haptics';
+import { useNavigation } from '@react-navigation/native';
 
 interface EmergencyScreenProps {
   userId: string;
@@ -53,6 +54,7 @@ const getGentleDelay = (index: number): number => 150 + index * 100;
 
 export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): React.ReactElement {
   const theme = useTheme();
+  const navigation = useNavigation();
   const [_showBreathingExercise, setShowBreathingExercise] = useState(false);
 
   const handleCall = useCallback((number: string): void => {
@@ -182,9 +184,58 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
           ))}
         </Animated.View>
 
-        {/* Box Breathing Section with Interactive Animation */}
+        {/* Before You Use - Crisis Checkpoint */}
         <Animated.View
           entering={FadeInDown.duration(GENTLE_DURATION).delay(800)}
+          style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
+        >
+          <Card variant="elevated" style={{ marginBottom: theme.spacing.md, backgroundColor: 'rgba(239,68,68,0.05)', borderColor: theme.colors.danger, borderWidth: 2 }}>
+            <View style={styles.crisisCheckpointCard}>
+              <View style={styles.crisisCheckpointIcon}>
+                <MaterialCommunityIcons
+                  name="pause-circle"
+                  size={48}
+                  color={theme.colors.danger}
+                />
+              </View>
+              <View style={styles.crisisCheckpointContent}>
+                <Text
+                  style={[
+                    theme.typography.h2,
+                    { color: theme.colors.danger, marginBottom: theme.spacing.xs },
+                  ]}
+                >
+                  Before You Use
+                </Text>
+                <Text
+                  style={[
+                    theme.typography.body,
+                    { color: theme.colors.text, marginBottom: theme.spacing.md },
+                  ]}
+                >
+                  Feeling a craving? Pause here first. We'll walk through this moment together.
+                </Text>
+                <Button
+                  title="Start Checkpoint"
+                  onPress={() => {
+                    hapticSelection();
+                    navigation.navigate('BeforeYouUse' as never);
+                  }}
+                  variant="danger"
+                  size="large"
+                  fullWidth
+                  icon={<MaterialCommunityIcons name="pause-circle" size={20} color="#FFFFFF" />}
+                  accessibilityLabel="Start crisis checkpoint"
+                  accessibilityHint="Opens the Before You Use crisis intervention flow"
+                />
+              </View>
+            </View>
+          </Card>
+        </Animated.View>
+
+        {/* Box Breathing Section with Interactive Animation */}
+        <Animated.View
+          entering={FadeInDown.duration(GENTLE_DURATION).delay(900)}
           style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
         >
           <Text
@@ -437,6 +488,18 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   hotlineContent: {
+    flex: 1,
+  },
+  crisisCheckpointCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  crisisCheckpointIcon: {
+    marginRight: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  crisisCheckpointContent: {
     flex: 1,
   },
   breathingSection: {

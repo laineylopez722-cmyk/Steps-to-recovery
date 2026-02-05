@@ -28,6 +28,7 @@ export type HomeStackParamList = {
   Achievements: undefined;
   DangerZone: undefined;
   SafeDialIntervention: { contactName: string; phoneNumber: string };
+  BeforeYouUse: undefined;
 };
 
 // Journal Stack

@@ -139,18 +139,18 @@ export function CircularProgressRing({
           {/* Day ring gradient */}
           <LinearGradient id="dayGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor={darkAccent.primary} stopOpacity="1" />
-            <Stop offset="100%" stopColor={darkAccent.secondary} stopOpacity="1" />
+            <Stop offset="100%" stopColor={darkAccent.info} stopOpacity="1" />
           </LinearGradient>
           
           {/* Hour ring gradient */}
           <LinearGradient id="hourGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor={darkAccent.secondary} stopOpacity="0.8" />
-            <Stop offset="100%" stopColor={darkAccent.accent} stopOpacity="0.8" />
+            <Stop offset="0%" stopColor={darkAccent.info} stopOpacity="0.8" />
+            <Stop offset="100%" stopColor={darkAccent.success} stopOpacity="0.8" />
           </LinearGradient>
           
           {/* Minute ring gradient */}
           <LinearGradient id="minuteGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor={darkAccent.accent} stopOpacity="0.6" />
+            <Stop offset="0%" stopColor={darkAccent.success} stopOpacity="0.6" />
             <Stop offset="100%" stopColor={darkAccent.primary} stopOpacity="0.6" />
           </LinearGradient>
         </Defs>

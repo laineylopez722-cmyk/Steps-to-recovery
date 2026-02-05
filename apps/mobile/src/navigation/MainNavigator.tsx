@@ -29,6 +29,7 @@ import { DailyReadingScreen } from '../features/readings/screens';
 import { ProgressDashboardScreen } from '../features/progress/screens';
 import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen';
 import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
+import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -112,6 +113,16 @@ function HomeStackNavigator(): React.ReactElement {
           gestureEnabled: false,
         }}
       />
+      <HomeStack.Screen
+        name="BeforeYouUse"
+        options={{ 
+          title: 'Before You Use',
+          headerShown: false,
+          presentation: 'fullScreenModal',
+        }}
+      >
+        {() => <BeforeYouUseScreen userId={userId} />}
+      </HomeStack.Screen>
     </HomeStack.Navigator>
   );
 }

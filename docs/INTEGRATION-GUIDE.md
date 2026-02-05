@@ -1,382 +1,484 @@
-# Integration Guide - New Features
-**Date**: 2026-02-06  
-**Features**: JFT Daily Reading + Meeting Check-ins + Safe Dial  
-**Status**: Ready for Integration
+# Integration Guide - Wiring New Features
+**Status**: Implementation guide for connecting features to navigation  
+**Time Required**: 2-3 hours  
+**Date**: 2026-02-06
 
 ---
 
 ## 🎯 Overview
 
-Three major features completed by sub-agents, ready to integrate:
-
-1. ✅ **JFT Daily Reading** - Spiritual content daily
-2. ✅ **Meeting Check-ins + Achievements** - Gamification
-3. 🤖 **Safe Dial Protection** - Still building (ETA: ~6h)
-
----
-
-## 📋 Integration Checklist
-
-### **Phase 1: Database Migrations** (5 minutes)
-
-Run these migrations in Supabase SQL Editor:
-
-```bash
-# 1. Reading Reflections (JFT)
-supabase-migration-reading-reflections.sql
-
-# 2. Meeting Check-ins
-supabase-migration-meeting-checkins.sql
-
-# 3. Safe Dial (when complete)
-supabase-migration-safe-dial.sql
-```
-
-**Location**: Check `apps/mobile/src/` or docs folder for migration files
+This guide shows how to integrate the 3 new features into the main app:
+1. **Circular Progress Rings** - Already integrated ✅
+2. **Meeting Reflections** - Wire into meeting check-in flow
+3. **Crisis Checkpoint** - Add to navigation and emergency toolkit
 
 ---
 
-### **Phase 2: Navigation Updates** (10 minutes)
+## ✅ 1. Circular Progress Rings (Complete)
 
-#### **A. Update `types.ts`**
+**Status**: Already integrated into `HomeScreenModern.tsx`
 
-Add to `HomeStackParamList`:
+**Location**: Home screen sobriety counter  
+**No additional work needed** ✅
+
+---
+
+## 📋 2. Meeting Reflections Integration
+
+### **A. Create Meeting Check-in Hook**
+
+**File**: `apps/mobile/src/features/meetings/hooks/useMeetingCheckin.ts`
+
 ```typescript
-export type HomeStackParamList = {
-  HomeMain: undefined;
-  MorningIntention: undefined;
-  EveningPulse: undefined;
-  Emergency: undefined;
-  DailyReading: undefined; // ✅ Already exists
-  ProgressDashboard: undefined;
-  MeetingStats: undefined; // 🆕 ADD THIS
-  Achievements: undefined; // 🆕 ADD THIS
-  DangerZone: undefined; // 🆕 ADD THIS (when Safe Dial complete)
-  SafeDialIntervention: { contactName: string; phoneNumber: string }; // 🆕 ADD THIS
+import { useState } from 'react';
+import { createMeetingCheckin } from '../services/meetingCheckinService';
+
+export function useMeetingCheckin(userId: string) {
+  const [isChecking, setIsChecking] = useState(false);
+  const [currentCheckin, setCurrentCheckin] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const checkin = async (meetingName: string, location?: string) => {
+    setIsChecking(true);
+    setError(null);
+
+    try {
+      const result = await createMeetingCheckin(userId, {
+        meeting_name: meetingName,
+        location,
+        meeting_type: 'NA', // or dynamic
+      });
+
+      if (result.success && result.checkin) {
+        setCurrentCheckin(result.checkin);
+        return { success: true, checkin: result.checkin };
+      } else {
+        setError(result.error || 'Failed to check in');
+        return { success: false };
+      }
+    } catch (err) {
+      setError('Unexpected error');
+      return { success: false };
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  return {
+    checkin,
+    currentCheckin,
+    isChecking,
+    error,
+  };
+}
+```
+
+---
+
+### **B. Update Meeting Finder Screen**
+
+**File**: `apps/mobile/src/features/meetings/screens/MeetingFinderScreen.tsx` (or wherever meeting check-in happens)
+
+**Add imports**:
+```typescript
+import { useState } from 'react';
+import { PreMeetingReflectionModal } from '../components/PreMeetingReflectionModal';
+import { PostMeetingReflectionModal } from '../components/PostMeetingReflectionModal';
+import { useMeetingCheckin } from '../hooks/useMeetingCheckin';
+```
+
+**Add state**:
+```typescript
+const [showPreModal, setShowPreModal] = useState(false);
+const [showPostModal, setShowPostModal] = useState(false);
+const { checkin, currentCheckin, isChecking } = useMeetingCheckin(userId);
+```
+
+**Update check-in handler**:
+```typescript
+const handleCheckin = async (meetingName: string, location?: string) => {
+  const result = await checkin(meetingName, location);
+  
+  if (result.success && result.checkin) {
+    // Show pre-meeting reflection modal
+    setShowPreModal(true);
+  }
 };
 ```
 
-Add to `MeetingsStackParamList`:
+**Add modals to JSX** (before closing tag):
 ```typescript
-export type MeetingsStackParamList = {
-  MeetingFinder: undefined;
-  MeetingDetail: { meetingId: string };
-  FavoriteMeetings: undefined;
-  MeetingStats: undefined; // 🆕 ADD THIS (alternative location)
-  Achievements: undefined; // 🆕 ADD THIS (alternative location)
+return (
+  <View>
+    {/* ... existing meeting finder UI ... */}
+    
+    {/* Pre-Meeting Reflection Modal */}
+    {currentCheckin && (
+      <PreMeetingReflectionModal
+        visible={showPreModal}
+        userId={userId}
+        checkinId={currentCheckin.id}
+        meetingName={currentCheckin.meeting_name}
+        onClose={() => setShowPreModal(false)}
+        onComplete={() => {
+          setShowPreModal(false);
+          // Continue to meeting details or home
+          navigation.goBack();
+        }}
+      />
+    )}
+    
+    {/* Post-Meeting Reflection Modal */}
+    {currentCheckin && (
+      <PostMeetingReflectionModal
+        visible={showPostModal}
+        userId={userId}
+        checkinId={currentCheckin.id}
+        meetingName={currentCheckin.meeting_name}
+        preMood={currentCheckin.pre_mood} // If available
+        onClose={() => setShowPostModal(false)}
+        onComplete={() => {
+          setShowPostModal(false);
+          // Check for achievements
+          navigation.navigate('Achievements' as never);
+        }}
+      />
+    )}
+  </View>
+);
+```
+
+---
+
+### **C. Add "End Meeting" Button**
+
+**Option 1: Timer-based** (Auto-show post-modal after 2 hours):
+```typescript
+useEffect(() => {
+  if (currentCheckin && !currentCheckin.completed_at) {
+    const timer = setTimeout(() => {
+      // Show post-meeting modal after 2 hours
+      setShowPostModal(true);
+    }, 2 * 60 * 60 * 1000); // 2 hours
+
+    return () => clearTimeout(timer);
+  }
+}, [currentCheckin]);
+```
+
+**Option 2: Manual button**:
+```typescript
+<GradientButton
+  title="End Meeting"
+  onPress={() => setShowPostModal(true)}
+  accessibilityLabel="End meeting and reflect"
+/>
+```
+
+**Option 3: On next app open** (check for ended meetings):
+```typescript
+// In HomeScreen or App.tsx
+useEffect(() => {
+  checkPendingMeetings();
+}, []);
+
+const checkPendingMeetings = async () => {
+  const meetings = await getActiveMeetingCheckins(userId);
+  
+  for (const meeting of meetings) {
+    const hoursSinceCheckin = 
+      (Date.now() - new Date(meeting.checked_in_at).getTime()) / (1000 * 60 * 60);
+    
+    if (hoursSinceCheckin > 2) {
+      // Show post-meeting modal
+      setPendingMeeting(meeting);
+      setShowPostModal(true);
+      break; // One at a time
+    }
+  }
 };
 ```
 
-#### **B. Update `MainNavigator.tsx`**
+---
 
-Add imports at top:
+## 🚨 3. Crisis Checkpoint Integration
+
+### **A. Add to Navigation**
+
+**File**: `apps/mobile/src/navigation/RootNavigator.tsx` (or similar)
+
+**Add import**:
 ```typescript
-// JFT - Already imported
-import { DailyReadingScreen } from '../features/readings/screens';
-
-// Meeting Check-ins - ADD THESE
-import { MeetingStatsScreen } from '../features/meetings/screens/MeetingStatsScreen';
-import { AchievementsScreen } from '../features/meetings/screens/AchievementsScreen';
-
-// Safe Dial - ADD THESE (when complete)
-import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen';
-import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
+import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 ```
 
-Add screens to `HomeStackNavigator` or `MeetingsStackNavigator`:
+**Add route**:
 ```typescript
-// Option A: In HomeStack (recommended - more prominent)
-<HomeStack.Screen
-  name="MeetingStats"
-  options={{ title: 'Meeting Stats', headerBackTitle: 'Back' }}
->
-  {() => <MeetingStatsScreen userId={userId} />}
-</HomeStack.Screen>
-
-<HomeStack.Screen
-  name="Achievements"
-  options={{ title: 'Achievements', headerBackTitle: 'Back' }}
->
-  {() => <AchievementsScreen userId={userId} />}
-</HomeStack.Screen>
-
-// Safe Dial (when complete)
-<HomeStack.Screen
-  name="DangerZone"
-  options={{ title: 'Trigger Protection', headerBackTitle: 'Back' }}
->
-  {() => <DangerZoneScreen userId={userId} />}
-</HomeStack.Screen>
-
-<HomeStack.Screen
-  name="SafeDialIntervention"
-  component={SafeDialInterventionScreen}
-  options={{ 
-    title: 'Stop', 
+<Stack.Screen 
+  name="BeforeYouUse" 
+  component={BeforeYouUseScreen}
+  options={{
     headerShown: false,
-    presentation: 'fullScreenModal',
-    gestureEnabled: false // Prevent swipe to dismiss
+    presentation: 'modal', // Full-screen modal
   }}
 />
 ```
 
 ---
 
-### **Phase 3: HomeScreenModern Integration** (5 minutes)
+### **B. Add to Emergency Toolkit**
 
-The JFT Daily Reading card is **already integrated** in HomeScreenModern!
+**File**: `apps/mobile/src/features/emergency/screens/EmergencyToolkitScreen.tsx` (or wherever emergency tools are)
 
-**Verify it's working**:
-1. Open `apps/mobile/src/features/home/screens/HomeScreenModern.tsx`
-2. Look for `<DailyReadingCard />` component
-3. Should be placed below clean time counter
-
-**If not present**, add it:
+**Add button**:
 ```typescript
-import { DailyReadingCard } from '../components/DailyReadingCard';
+<Pressable
+  style={styles.crisisButton}
+  onPress={() => navigation.navigate('BeforeYouUse' as never)}
+  accessibilityLabel="Before You Use - Crisis checkpoint"
+  accessibilityRole="button"
+>
+  <View style={styles.crisisIcon}>
+    <MaterialIcons name="pause-circle-filled" size={32} color={darkAccent.error} />
+  </View>
+  <View style={styles.crisisContent}>
+    <Text style={styles.crisisTitle}>Before You Use</Text>
+    <Text style={styles.crisisSubtitle}>
+      Pause and work through this moment
+    </Text>
+  </View>
+  <MaterialIcons name="arrow-forward" size={24} color={darkAccent.text.secondary} />
+</Pressable>
+```
 
-// Inside render, after clean time section:
-<DailyReadingCard
-  userId={userId}
-  onPress={() => navigation.navigate('DailyReading')}
-/>
+**Style**:
+```typescript
+crisisButton: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: spacing[4],
+  backgroundColor: 'rgba(239,68,68,0.1)',
+  borderRadius: radius.lg,
+  borderWidth: 2,
+  borderColor: darkAccent.error,
+  gap: spacing[3],
+},
+crisisIcon: {
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  backgroundColor: 'rgba(239,68,68,0.15)',
+  alignItems: 'center',
+  justifyContent: 'center',
+},
+crisisContent: {
+  flex: 1,
+},
+crisisTitle: {
+  ...typography.h3,
+  color: darkAccent.error,
+  marginBottom: spacing[1],
+},
+crisisSubtitle: {
+  ...typography.body,
+  color: darkAccent.text.secondary,
+},
 ```
 
 ---
 
-### **Phase 4: Meeting Finder Integration** (5 minutes)
+### **C. Add Quick Access Button to Home Screen**
 
-Add check-in button to Meeting Finder screen.
+**File**: `apps/mobile/src/features/home/screens/HomeScreenModern.tsx`
 
-**File**: `apps/mobile/src/features/meetings/screens/MeetingFinderScreenModern.tsx`
-
-**Follow the patch guide**:
-- Location: `MEETING-FINDER-CHECKIN-PATCH.md` (created by sub-agent)
-- Should add a "Check In" button to each meeting card
-- Button triggers check-in modal
-
-**Quick summary**:
+**Add button below sobriety counter**:
 ```typescript
-import { CheckInModal } from '../components/CheckInModal';
+{/* Crisis Checkpoint Quick Access */}
+<Animated.View entering={FadeInUp.delay(200).duration(600)}>
+  <Pressable
+    style={styles.crisisQuickAccess}
+    onPress={() => navigation.navigate('BeforeYouUse' as never)}
+    accessibilityLabel="Before You Use - Crisis help"
+    accessibilityRole="button"
+  >
+    <MaterialIcons name="pause-circle-filled" size={24} color={darkAccent.error} />
+    <Text style={styles.crisisQuickAccessText}>
+      Feeling a craving? Pause here first.
+    </Text>
+    <MaterialIcons name="arrow-forward" size={20} color={darkAccent.error} />
+  </Pressable>
+</Animated.View>
+```
 
-// Add state
-const [checkInMeeting, setCheckInMeeting] = useState(null);
-
-// Add to meeting card
-<Button
-  title="Check In"
-  onPress={() => setCheckInMeeting(meeting)}
-/>
-
-// Add modal
-<CheckInModal
-  visible={!!checkInMeeting}
-  meeting={checkInMeeting}
-  userId={userId}
-  onClose={() => setCheckInMeeting(null)}
-/>
+**Style**:
+```typescript
+crisisQuickAccess: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  padding: spacing[3],
+  backgroundColor: 'rgba(239,68,68,0.1)',
+  borderRadius: radius.lg,
+  borderWidth: 1,
+  borderColor: 'rgba(239,68,68,0.3)',
+  gap: spacing[2],
+  marginBottom: spacing[4],
+},
+crisisQuickAccessText: {
+  ...typography.body,
+  color: darkAccent.error,
+  flex: 1,
+  fontWeight: '600',
+},
 ```
 
 ---
 
-### **Phase 5: Profile/Settings Links** (3 minutes)
+## 🧭 4. Navigation Type Safety
 
-Add navigation links to new features in Profile or Settings screens.
+**File**: `apps/mobile/src/types/navigation.ts` (or similar)
 
-**Recommended locations**:
-
-#### **ProfileScreen** or **SettingsScreen**:
+**Add new screen types**:
 ```typescript
-// Meeting Stats link
-<ListItem
-  title="Meeting Stats"
-  icon="calendar-check"
-  onPress={() => navigation.navigate('MeetingStats')}
-/>
-
-// Achievements link
-<ListItem
-  title="Achievements"
-  icon="trophy"
-  onPress={() => navigation.navigate('Achievements')}
-/>
-
-// Trigger Protection link (when Safe Dial complete)
-<ListItem
-  title="Trigger Protection"
-  icon="shield-check"
-  onPress={() => navigation.navigate('DangerZone')}
-/>
+export type RootStackParamList = {
+  // ... existing screens
+  BeforeYouUse: { userId: string };
+  MeetingReflection: { 
+    checkinId: string;
+    meetingName: string;
+    type: 'pre' | 'post';
+  };
+};
 ```
 
 ---
 
-### **Phase 6: Testing** (30 minutes)
+## 🧪 5. Testing Checklist
 
-#### **JFT Daily Reading**:
-- [ ] Reading card displays on home screen
-- [ ] Tapping "Read More" opens full screen
-- [ ] "Reflect" button opens journal with pre-filled content
-- [ ] Quick reflection saves
-- [ ] Streak increments daily
+### **Meeting Reflections**:
+- [ ] Pre-meeting modal shows on check-in
+- [ ] Mood buttons select correctly (1-5)
+- [ ] Save button disabled until intention filled
+- [ ] Skip button closes without saving
+- [ ] Post-meeting modal shows after 2h (or on manual trigger)
+- [ ] Mood lift calculates correctly
+- [ ] Mood lift hidden when pre-mood missing
+- [ ] Both modals save to database
 
-#### **Meeting Check-ins**:
-- [ ] Can check in to meeting
-- [ ] Check-in appears in history
-- [ ] Streak calculates correctly
-- [ ] Achievements unlock at milestones
-- [ ] Stats dashboard shows correct data
-- [ ] Achievement gallery displays properly
+### **Crisis Checkpoint**:
+- [ ] Accessible from emergency toolkit
+- [ ] Accessible from home screen quick button
+- [ ] Stage 1: Craving intensity slider works
+- [ ] Stage 2: 10-minute timer counts down
+- [ ] Stage 3: Emotion chips multi-select works
+- [ ] Stage 4: Sponsor quick-dial opens phone/messages
+- [ ] "I Resisted" saves outcome correctly
+- [ ] "I used" saves outcome correctly
+- [ ] Back button prompts "Are you sure?"
 
-#### **Safe Dial** (when complete):
-- [ ] Can add risky contacts
-- [ ] Intervention triggers when calling from app
-- [ ] Can call sponsor from intervention
-- [ ] Close calls log correctly
-- [ ] Stats show accurate counts
-
----
-
-## 🚀 Deployment Steps
-
-### **1. Local Testing** (1 hour)
-- Run app on iOS simulator
-- Run app on Android emulator
-- Test all navigation flows
-- Verify database migrations applied
-- Check console for errors
-
-### **2. Device Testing** (1 hour)
-- Test on physical iOS device
-- Test on physical Android device
-- Verify accessibility with screen readers
-- Check offline mode
-- Test sync when back online
-
-### **3. Beta Deployment** (30 minutes)
-- Build for TestFlight (iOS)
-- Build for Play Store Beta (Android)
-- Send to 5-10 beta testers
-- Gather feedback
-
-### **4. Production Release** (when ready)
-- Final QA pass
-- Update app store metadata
-- Submit to App Store & Play Store
-- Monitor crash reports
+### **Navigation**:
+- [ ] All screens accessible via navigation
+- [ ] Modal presentation works (full-screen)
+- [ ] Back navigation doesn't lose state
+- [ ] TypeScript types work (no errors)
 
 ---
 
-## 📊 Expected Impact
+## 📦 6. Missing Dependencies Check
 
-### **User Engagement**:
-- **JFT Reading**: +40% daily active users (spiritual content is sticky)
-- **Meeting Check-ins**: +60% meeting attendance tracking
-- **Achievements**: +35% retention (gamification works)
-- **Safe Dial**: Prevents relapses (immeasurable value)
+Run these commands to check for missing packages:
 
-### **Competitive Advantage**:
-You now have features no other recovery app offers:
-- Daily spiritual readings with reflection
-- 90-in-90 gamification with achievements
-- Crisis intervention for risky contacts
-- Complete sponsor sharing system
+```bash
+cd apps/mobile
+npm list @react-native-community/slider
+npm list react-native-svg
+npm list react-native-reanimated
+```
 
----
+**If missing, install**:
+```bash
+npm install @react-native-community/slider
+npm install react-native-svg
+npm install react-native-reanimated
+```
 
-## ⚠️ Potential Issues & Solutions
-
-### **Issue 1: Database Migration Fails**
-**Solution**: Check Supabase logs, verify table names, rerun migration
-
-### **Issue 2: Navigation TypeScript Errors**
-**Solution**: Ensure all param types match navigation calls
-
-### **Issue 3: JFT Card Not Showing**
-**Solution**: Verify `dailyReadings.ts` exists with content, check imports
-
-### **Issue 4: Achievements Not Unlocking**
-**Solution**: Verify database trigger is installed, check PostgreSQL function
-
-### **Issue 5: Safe Dial Intervention Not Triggering**
-**Solution**: Verify phone number matching logic, check risky contacts table
+**Then rebuild**:
+```bash
+npx expo prebuild --clean
+npx expo run:ios  # or run:android
+```
 
 ---
 
-## 📝 Documentation Locations
+## 🚀 7. Build & Test
 
-All feature documentation created:
+### **Development Build**:
+```bash
+cd apps/mobile
+npx expo start
+```
 
-### **JFT Daily Reading**:
-- `docs/JFT-DAILY-READING-FEATURE.md` - Full technical docs
-- `docs/JFT-QUICK-START.md` - Quick reference
-- `docs/JFT-IMPLEMENTATION-SUMMARY.md` - Overview
-- `docs/JFT-DELIVERABLES-CHECKLIST.md` - Checklist
+### **Physical Device Test**:
+```bash
+# iOS
+npx expo run:ios --device
 
-### **Meeting Check-ins**:
-- `docs/MEETING-CHECKINS-FEATURE.md` - Complete documentation
-- `docs/MEETING-CHECKINS-QUICKSTART.md` - 5-minute setup guide
-- `docs/MEETING-CHECKINS-TESTS.md` - Test plan
-- `docs/MEETING-CHECKINS-ARCHITECTURE.md` - Architecture diagrams
-- `MEETING-CHECKINS-COMPLETE.md` - Summary
+# Android
+npx expo run:android --device
+```
 
-### **Safe Dial** (when complete):
-- Will have similar comprehensive documentation
-
-### **Competitor Analysis**:
-- `docs/COMPETITOR-ANALYSIS.md` - What we learned from 12-step-companion
-
----
-
-## 🎯 Next Steps After Integration
-
-1. **Build Risk Pattern Detection** (6-8h) - From competitor analysis
-   - Detect when user hasn't journaled in 3+ days
-   - Alert when no meeting attendance in 7+ days
-   - Proactive intervention system
-
-2. **Build Mood Analytics Dashboard** (8-10h)
-   - Mood trends over time
-   - Craving pattern analysis
-   - Journal frequency visualization
-
-3. **Visual Clean Time Enhancements** (2h)
-   - Circular progress ring
-   - Next milestone countdown
-   - Streak intact badge
-
-4. **Before You Use Checkpoint** (5-6h)
-   - Crisis intervention flow
-   - Delay tactics
-   - Sponsor emergency call
-
-5. **Meeting Reflection Prompts** (2-3h)
-   - Pre-meeting prep
-   - Post-meeting debrief
+### **Key Things to Test**:
+1. Pre-meeting modal shows and saves
+2. Post-meeting modal shows after meeting
+3. Crisis checkpoint full flow works
+4. Sponsor quick-dial opens phone
+5. Circular rings animate smoothly
+6. No TypeScript errors
+7. No runtime crashes
 
 ---
 
-## ✅ Final Checklist Before Launch
+## 📝 8. Migration Checklist
 
-- [ ] All database migrations applied
-- [ ] All screens added to navigation
-- [ ] All imports correct (no TypeScript errors)
-- [ ] Home screen displays all new features
-- [ ] Profile/Settings links added
-- [ ] Local testing complete (iOS + Android)
-- [ ] Device testing complete
-- [ ] Accessibility tested (VoiceOver/TalkBack)
-- [ ] Offline mode works
-- [ ] Sync works when back online
-- [ ] Documentation reviewed
-- [ ] Beta testers invited
-- [ ] Crash reporting configured (Sentry)
-- [ ] Analytics configured (Expo Insights)
+Before testing, ensure these migrations are run:
+
+- [x] `CONSOLIDATED-MIGRATION-FIXED.sql` (8 tables) ✅ You ran this
+- [ ] `20260206000003_crisis_checkpoints.sql` (crisis table) ⏳ Run this now
+
+**How to verify migrations ran**:
+1. Go to Supabase → Table Editor
+2. Check these tables exist:
+   - `crisis_checkpoints` ✅
+   - `meeting_reflections` ✅
+   - `meeting_checkins` ✅
 
 ---
 
-**Total Integration Time**: ~1-2 hours (not including testing)  
-**Total Testing Time**: ~2-3 hours  
-**Ready for Beta**: ~3-5 hours total
+## ✅ Success Criteria
 
-Let's ship this! 🚀
+**Integration complete when**:
+- [ ] Meeting reflections accessible from meeting check-in
+- [ ] Crisis checkpoint accessible from 2 places (home + emergency)
+- [ ] All TypeScript errors resolved
+- [ ] App builds and runs without crashes
+- [ ] All 3 features tested end-to-end
+- [ ] Database saves work correctly
+
+---
+
+## 🎯 Priority Order
+
+**Do this order for fastest results**:
+
+1. **Crisis checkpoint navigation** (20 min) - Biggest impact, simplest integration
+2. **Meeting reflection wiring** (1h) - More complex, needs check-in flow
+3. **Testing & polish** (1h) - Device testing, bug fixes
+
+---
+
+**Total Time**: 2-3 hours  
+**Difficulty**: Medium  
+**Impact**: Completes MVP! 🚀
+
+---
+
+Let me know when migrations are done and I'll help with the code integration!
