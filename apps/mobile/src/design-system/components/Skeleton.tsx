@@ -1,294 +1,194 @@
-/**
- * Skeleton Component
- * Animated placeholder for loading states with shimmer effect
- *
- * Uses react-native-reanimated for smooth shimmer animation.
- */
-
-import React, { useEffect } from 'react';
-import { View, StyleSheet, type ViewStyle } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
-  Easing,
   interpolate,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useTheme } from '../hooks/useTheme';
+import { darkAccent, radius } from '../tokens/modern';
 
-export interface SkeletonProps {
-  /**
-   * Width of the skeleton
-   * @default '100%'
-   */
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+interface SkeletonProps {
   width?: number | string;
-  /**
-   * Height of the skeleton
-   * @default 16
-   */
   height?: number;
-  /**
-   * Border radius
-   * @default 4
-   */
   borderRadius?: number;
-  /**
-   * Preset variant for common shapes
-   */
-  variant?: 'text' | 'avatar' | 'card' | 'custom';
-  /**
-   * Size preset for avatar variant
-   * @default 48
-   */
-  avatarSize?: number;
-  /**
-   * Whether to animate the shimmer
-   * @default true
-   */
-  animated?: boolean;
-  /**
-   * Animation duration in ms
-   * @default 1500
-   */
-  duration?: number;
-  /**
-   * Custom container style
-   */
-  style?: ViewStyle;
-  /**
-   * Test ID for testing
-   */
-  testID?: string;
-  /**
-   * Accessibility label
-   */
-  accessibilityLabel?: string;
+  style?: any;
 }
-
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 export function Skeleton({
   width = '100%',
   height = 16,
-  borderRadius = 4,
-  variant = 'custom',
-  avatarSize = 48,
-  animated = true,
-  duration = 1500,
+  borderRadius = radius.md,
   style,
-  testID,
-  accessibilityLabel = 'Loading content',
 }: SkeletonProps): React.ReactElement {
-  const theme = useTheme();
+  const translateX = useSharedValue(-SCREEN_WIDTH);
 
-  // Animation value
-  const shimmerPosition = useSharedValue(-1);
+  React.useEffect(() => {
+    translateX.value = withRepeat(
+      withTiming(SCREEN_WIDTH, { duration: 1500 }),
+      -1,
+      false
+    );
+  }, []);
 
-  // Start shimmer animation
-  useEffect(() => {
-    if (animated) {
-      shimmerPosition.value = withRepeat(
-        withTiming(1, {
-          duration,
-          easing: Easing.inOut(Easing.ease),
-        }),
-        -1, // Infinite repeat
-        false, // Don't reverse
-      );
-    }
-  }, [animated, duration, shimmerPosition]);
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
 
-  // Calculate dimensions based on variant
-  const getDimensions = (): { width: number | string; height: number; borderRadius: number } => {
-    switch (variant) {
-      case 'avatar':
-        return {
-          width: avatarSize,
-          height: avatarSize,
-          borderRadius: avatarSize / 2,
-        };
-      case 'text':
-        return {
-          width,
-          height: 14,
-          borderRadius: 4,
-        };
-      case 'card':
-        return {
-          width,
-          height: height || 120,
-          borderRadius: 12,
-        };
-      default:
-        return {
-          width,
-          height,
-          borderRadius,
-        };
-    }
-  };
-
-  const dimensions = getDimensions();
-
-  // Theme-aware colors
-  const baseColor = theme.colors.surfaceVariant;
-  const highlightColor = theme.colors.surface;
-
-  // Animated style for shimmer effect
-  const shimmerStyle = useAnimatedStyle(() => {
-    const translateX = interpolate(shimmerPosition.value, [-1, 1], [-200, 200]);
-
-    return {
-      transform: [{ translateX }],
-    };
-  });
+  const widthStyle = typeof width === 'number' ? { width } : { width: width as string };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          width: dimensions.width as ViewStyle['width'],
-          height: dimensions.height,
-          borderRadius: dimensions.borderRadius,
-          backgroundColor: baseColor,
-          overflow: 'hidden',
-        },
-        style,
-      ]}
-      testID={testID}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole="progressbar"
-      accessibilityState={{ busy: true }}
-    >
-      {animated && (
-        <AnimatedLinearGradient
-          colors={['transparent', highlightColor, 'transparent']}
-          start={{ x: 0, y: 0.5 }}
-          end={{ x: 1, y: 0.5 }}
-          style={[styles.shimmer, { width: 200, height: '100%' }, shimmerStyle]}
+    <View style={[styles.container, { height, borderRadius }, widthStyle, style]}>
+      <View style={[styles.background, { borderRadius }]} />
+      <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
+        <LinearGradient
+          colors={['transparent', 'rgba(255,255,255,0.08)', 'transparent']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={StyleSheet.absoluteFill}
         />
-      )}
+      </Animated.View>
     </View>
   );
 }
 
-/**
- * Skeleton Group - Helper component for common skeleton patterns
- */
-export interface SkeletonGroupProps {
-  /**
-   * Number of skeleton lines to show
-   * @default 3
-   */
-  lines?: number;
-  /**
-   * Gap between lines
-   * @default 12
-   */
-  gap?: number;
-  /**
-   * Whether last line should be shorter
-   * @default true
-   */
-  lastLineShort?: boolean;
-  /**
-   * Custom container style
-   */
-  style?: ViewStyle;
+// Preset skeleton layouts
+export function SkeletonCard(): React.ReactElement {
+  return (
+    <View style={styles.card}>
+      <Skeleton width="60%" height={20} style={styles.mb12} />
+      <Skeleton width="90%" height={14} style={styles.mb8} />
+      <Skeleton width="75%" height={14} />
+    </View>
+  );
 }
 
-export function SkeletonGroup({
-  lines = 3,
-  gap = 12,
-  lastLineShort = true,
-  style,
-}: SkeletonGroupProps): React.ReactElement {
+export function SkeletonListItem(): React.ReactElement {
   return (
-    <View style={[styles.group, { gap }, style]}>
-      {Array.from({ length: lines }).map((_, index) => (
-        <Skeleton
-          key={index}
-          variant="text"
-          width={lastLineShort && index === lines - 1 ? '60%' : '100%'}
-        />
+    <View style={styles.listItem}>
+      <Skeleton width={48} height={48} borderRadius={radius.lg} />
+      <View style={styles.listItemContent}>
+        <Skeleton width="70%" height={16} style={styles.mb8} />
+        <Skeleton width="50%" height={12} />
+      </View>
+    </View>
+  );
+}
+
+export function SkeletonStats(): React.ReactElement {
+  return (
+    <View style={styles.statsRow}>
+      {[1, 2, 3].map((i) => (
+        <View key={i} style={styles.statItem}>
+          <Skeleton width={40} height={32} style={[styles.mb8, { alignSelf: 'center' }]} />
+          <Skeleton width={60} height={12} style={{ alignSelf: 'center' }} />
+        </View>
       ))}
     </View>
   );
 }
 
-/**
- * Profile Skeleton - Preset for profile loading state
- */
-export function ProfileSkeleton(): React.ReactElement {
-  const theme = useTheme();
-
+export function SkeletonHome(): React.ReactElement {
   return (
-    <View style={[styles.profileSkeleton, { gap: theme.spacing.md }]}>
-      <View style={styles.profileCenter}>
-        <Skeleton variant="avatar" avatarSize={80} />
+    <View style={styles.page}>
+      {/* Header */}
+      <Skeleton width={150} height={28} style={styles.mb24} />
+      
+      {/* Counter Card */}
+      <SkeletonCard />
+      
+      {/* Check-in Card */}
+      <View style={styles.card}>
+        <Skeleton width="40%" height={18} style={styles.mb16} />
+        <View style={styles.row}>
+          <Skeleton width="48%" height={60} borderRadius={radius.lg} />
+          <Skeleton width="48%" height={60} borderRadius={radius.lg} />
+        </View>
       </View>
-      <Skeleton variant="text" width="70%" height={16} style={styles.centerSkeleton} />
-      <Skeleton variant="text" width="50%" height={14} style={styles.centerSkeleton} />
+      
+      {/* Action Grid */}
+      <Skeleton width={100} height={20} style={styles.mb16} />
+      <View style={styles.grid}>
+        {[1, 2, 3, 4].map((i) => (
+          <Skeleton key={i} width="47%" height={80} borderRadius={radius.lg} />
+        ))}
+      </View>
     </View>
   );
 }
 
-/**
- * Card Skeleton - Preset for card loading state
- */
-export function CardSkeleton(): React.ReactElement {
-  const theme = useTheme();
-
+export function SkeletonJournalList(): React.ReactElement {
   return (
-    <View
-      style={[
-        styles.cardSkeleton,
-        {
-          backgroundColor: theme.colors.surface,
-          borderRadius: 12,
-          padding: theme.spacing.md,
-          gap: theme.spacing.sm,
-        },
-      ]}
-    >
-      <Skeleton variant="text" width="40%" height={12} />
-      <Skeleton variant="text" width="100%" height={16} />
-      <Skeleton variant="text" width="80%" height={16} />
+    <View style={styles.page}>
+      <Skeleton width={120} height={32} style={styles.mb16} />
+      <Skeleton width="100%" height={48} borderRadius={radius.lg} style={styles.mb16} />
+      <SkeletonStats />
+      {[1, 2, 3, 4, 5].map((i) => (
+        <SkeletonListItem key={i} />
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
+    backgroundColor: darkAccent.surfaceHigh,
+    overflow: 'hidden',
   },
-  shimmer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
+  background: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: darkAccent.surfaceHigh,
   },
-  group: {
-    flexDirection: 'column',
+  page: {
+    padding: 16,
   },
-  profileSkeleton: {
+  card: {
+    backgroundColor: darkAccent.surfaceHigh,
+    borderRadius: radius.lg,
+    padding: 16,
+    marginBottom: 16,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+    marginBottom: 8,
+  },
+  listItemContent: {
+    flex: 1,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 16,
+  },
+  statItem: {
     alignItems: 'center',
   },
-  profileCenter: {
-    alignItems: 'center',
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  centerSkeleton: {
-    alignSelf: 'center',
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
   },
-  cardSkeleton: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  mb8: {
+    marginBottom: 8,
+  },
+  mb12: {
+    marginBottom: 12,
+  },
+  mb16: {
+    marginBottom: 16,
+  },
+  mb24: {
+    marginBottom: 24,
   },
 });
-
-export default Skeleton;

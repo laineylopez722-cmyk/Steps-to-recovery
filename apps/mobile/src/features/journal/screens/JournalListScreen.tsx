@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
-import { FlatList, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import Animated, { FadeInRight, FadeInDown, Layout } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
@@ -189,7 +190,7 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
           <ActivityIndicator size="large" color={theme.colors.primary} />
         </View>
       ) : (
-        <FlatList
+        <FlashList
           data={filteredEntries}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
@@ -200,11 +201,7 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
           accessibilityRole="list"
           accessibilityLabel="Journal entries list"
           showsVerticalScrollIndicator={false}
-          // Performance optimizations
-          initialNumToRender={10}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-          removeClippedSubviews
+          estimatedItemSize={180}
         />
       )}
 
@@ -213,6 +210,9 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
         label="New Entry"
         variant="primary"
         onPress={handleNewEntry}
+        accessibilityLabel="Create new journal entry"
+        accessibilityRole="button"
+        accessibilityHint="Opens the journal editor to create a new entry"
       />
     </SafeAreaView>
   );

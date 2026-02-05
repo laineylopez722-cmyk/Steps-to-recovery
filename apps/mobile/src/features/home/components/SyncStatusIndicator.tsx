@@ -1,12 +1,53 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useIsOnline } from '../../../providers/QueryProvider';
+import { useSyncPendingMutations } from '../../../hooks/useOfflineMutation';
+import { useHasPendingMutations } from '../../../hooks/useOfflineMutation';
 import { useSync } from '../../../contexts/SyncContext';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { logger } from '../../../utils/logger';
 
+/**
+ * SyncStatusIndicator - Enhanced with React Query offline support
+ * 
+ * Shows sync status combining:
+ * - Legacy sync queue status (for backward compatibility)
+ * - React Query pending mutations
+ * - Network connectivity
+ * 
+ * Gradually migrating to React Query for all sync operations
+ */
 export function SyncStatusIndicator() {
-  const { isSyncing, lastSyncTime, pendingCount, error, isOnline, triggerSync } = useSync();
   const theme = useTheme();
+  
+  // Legacy sync context (phasing out)
+  const { isSyncing: isLegacySyncing, lastSyncTime, pendingCount: legacyPendingCount, error: legacyError, triggerSync } = useSync();
+  
+  // New React Query offline status
+  const isOnline = useIsOnline();
+  const hasPendingMutations = useHasPendingMutations();
+  const syncPendingMutations = useSyncPendingMutations();
+
+  // Combined pending count (legacy + React Query)
+  const totalPending = legacyPendingCount + (hasPendingMutations ? 1 : 0);
+  const isSyncing = isLegacySyncing;
+  const hasError = !!legacyError;
+
+  // Handle sync press - triggers both legacy and new sync
+  const handlePress = useCallback(async () => {
+    if (isSyncing || !isOnline) return;
+
+    try {
+      // Trigger legacy sync
+      await triggerSync();
+      
+      // Also sync any React Query pending mutations
+      await syncPendingMutations();
+    } catch (error) {
+      logger.error('Manual sync failed', error);
+    }
+  }, [isSyncing, isOnline, triggerSync, syncPendingMutations]);
 
   // Determine sync status
   const getStatus = () => {
@@ -15,7 +56,9 @@ export function SyncStatusIndicator() {
         icon: 'cloud-off-outline' as const,
         color: theme.colors.muted,
         label: 'Offline',
-        subtext: 'Sync paused',
+        subtext: totalPending > 0 
+          ? `${totalPending} item${totalPending !== 1 ? 's' : ''} queued` 
+          : 'Sync paused',
       };
     }
 
@@ -24,11 +67,13 @@ export function SyncStatusIndicator() {
         icon: 'cloud-sync' as const,
         color: theme.colors.primary,
         label: 'Syncing...',
-        subtext: `${pendingCount} item${pendingCount !== 1 ? 's' : ''}`,
+        subtext: totalPending > 0 
+          ? `${totalPending} item${totalPending !== 1 ? 's' : ''} remaining` 
+          : 'Uploading changes',
       };
     }
 
-    if (error) {
+    if (hasError) {
       return {
         icon: 'cloud-alert' as const,
         color: theme.colors.danger,
@@ -37,12 +82,12 @@ export function SyncStatusIndicator() {
       };
     }
 
-    if (pendingCount > 0) {
+    if (totalPending > 0) {
       return {
         icon: 'cloud-upload-outline' as const,
         color: theme.colors.warning,
-        label: `${pendingCount} Pending`,
-        subtext: 'Tap to sync',
+        label: `${totalPending} Pending`,
+        subtext: 'Tap to sync now',
       };
     }
 
@@ -50,7 +95,7 @@ export function SyncStatusIndicator() {
       icon: 'cloud-check' as const,
       color: theme.colors.success,
       label: 'Synced',
-      subtext: lastSyncTime ? formatSyncTime(lastSyncTime) : 'Never',
+      subtext: lastSyncTime ? formatSyncTime(lastSyncTime) : 'All caught up',
     };
   };
 
@@ -70,12 +115,6 @@ export function SyncStatusIndicator() {
   };
 
   const status = getStatus();
-
-  const handlePress = () => {
-    if (!isSyncing && isOnline) {
-      triggerSync();
-    }
-  };
 
   return (
     <TouchableOpacity

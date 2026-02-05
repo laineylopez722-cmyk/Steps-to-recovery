@@ -5,7 +5,7 @@
  * Provides context for enabling/disabling notifications app-wide.
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 import type * as Notifications from 'expo-notifications';
 import {
@@ -183,15 +183,26 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     };
   }, []);
 
-  const value: NotificationContextValue = {
-    permissionStatus,
-    expoPushToken,
-    isLoading,
-    requestPermissions,
-    checkPermissionStatus,
-    notificationsEnabled,
-    setNotificationsEnabled,
-  };
+  const value = useMemo(
+    () => ({
+      permissionStatus,
+      expoPushToken,
+      isLoading,
+      requestPermissions,
+      checkPermissionStatus,
+      notificationsEnabled,
+      setNotificationsEnabled,
+    }),
+    [
+      permissionStatus,
+      expoPushToken,
+      isLoading,
+      requestPermissions,
+      checkPermissionStatus,
+      notificationsEnabled,
+      setNotificationsEnabled,
+    ]
+  );
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 }

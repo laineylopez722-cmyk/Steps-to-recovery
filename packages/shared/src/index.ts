@@ -44,10 +44,16 @@ export {
 } from '../constants';
 
 export {
-  ALL_ACHIEVEMENTS,
-  type AchievementDefinition,
   getAchievementDefinition,
   isValidAchievementId,
+  MEETING_ACHIEVEMENTS,
+  ACHIEVEMENT_COLORS,
+  ACHIEVEMENT_MESSAGES,
+  getAchievementByKey,
+  getAchievementsByCategory,
+  getRandomAchievementMessage,
+  type Achievement,
+  type AchievementDefinition,
 } from '../constants';
 
 export {

@@ -179,7 +179,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
       >
         <Card variant="elevated" style={styles.headerCard}>
           <View style={styles.headerContent}>
-            <MaterialIcons name="lock" size={20} color={theme.colors.success} />
+            <MaterialIcons name="lock" size={20} color={theme.colors.success} accessible={false} />
             <Text
               style={[
                 theme.typography.caption,
@@ -198,6 +198,8 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
           placeholder="Give your entry a title"
           containerStyle={styles.inputContainer}
           maxLength={100}
+          accessibilityLabel="Journal entry title"
+          accessibilityHint="Optional title for your journal entry"
         />
 
         <TextArea
@@ -209,6 +211,8 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
           minHeight={200}
           maxLength={5000}
           showCharacterCount
+          accessibilityLabel="Journal entry content"
+          accessibilityHint="Write your thoughts and feelings for this journal entry"
         />
 
         <View style={styles.section}>
@@ -217,6 +221,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               theme.typography.h3,
               { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
             ]}
+            accessibilityRole="header"
           >
             How are you feeling? {mood !== null && MOOD_EMOJI[mood]}
           </Text>
@@ -231,6 +236,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               maximumTrackTintColor={theme.colors.border}
               accessibilityLabel={`Mood: ${mood !== null ? MOOD_LABELS[mood] : 'Not set'}`}
               accessibilityRole="adjustable"
+              accessibilityHint="Slide to adjust your mood from 1 to 5"
             />
             <Text
               style={[
@@ -251,6 +257,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               theme.typography.h3,
               { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
             ]}
+            accessibilityRole="header"
           >
             Craving level (0-10)
           </Text>
@@ -267,6 +274,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               maximumTrackTintColor={theme.colors.border}
               accessibilityLabel={`Craving level: ${craving || 0} out of 10`}
               accessibilityRole="adjustable"
+              accessibilityHint="Slide to adjust your craving level from 0 to 10"
             />
             <Text
               style={[
@@ -281,9 +289,11 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
             <Card
               variant="outlined"
               style={[styles.warningCard, { borderColor: theme.colors.danger }]}
+              accessibilityRole="alert"
+              accessibilityLabel="High craving warning"
             >
               <View style={styles.warningContent}>
-                <MaterialIcons name="warning" size={20} color={theme.colors.danger} />
+                <MaterialIcons name="warning" size={20} color={theme.colors.danger} accessible={false} />
                 <Text
                   style={[
                     theme.typography.caption,
@@ -304,6 +314,7 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               theme.typography.h3,
               { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
             ]}
+            accessibilityRole="header"
           >
             Tags
           </Text>
@@ -315,6 +326,8 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               onSubmitEditing={handleAddTag}
               placeholder="Add a tag"
               containerStyle={styles.tagInputField}
+              accessibilityLabel="Tag input"
+              accessibilityHint="Enter a tag and press add"
             />
             <Button
               title="Add"
@@ -322,6 +335,9 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               variant="primary"
               size="medium"
               style={styles.addTagButton}
+              accessibilityLabel="Add tag"
+              accessibilityRole="button"
+              accessibilityHint="Add the tag to this journal entry"
             />
           </View>
           <View style={styles.tagsContainer}>
@@ -357,6 +373,10 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
           loading={isPending}
           variant="primary"
           fullWidth
+          accessibilityLabel={isEditMode ? 'Update journal entry' : 'Save journal entry'}
+          accessibilityRole="button"
+          accessibilityHint={isEditMode ? 'Save changes to this journal entry' : 'Save this new journal entry'}
+          accessibilityState={{ disabled: !body.trim() || isPending }}
         />
       </View>
     </SafeAreaView>

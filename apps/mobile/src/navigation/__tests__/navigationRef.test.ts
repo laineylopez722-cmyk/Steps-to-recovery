@@ -171,7 +171,6 @@ describe('navigateFromNotification', () => {
     it('correctly parses dot notation for nested screens', () => {
       const payload: NotificationPayload = {
         screen: 'Profile.SharedEntries',
-        params: { sponseeId: 'user-123' },
         type: 'test',
       };
 

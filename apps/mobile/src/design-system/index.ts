@@ -24,6 +24,7 @@ export {
 
 // Tokens
 export { lightColors, darkColors, categoryColors } from './tokens/colors';
+export { darkAccent, gradients, modernShadows, glass, timing } from './tokens/modern';
 export type { ColorPalette, CategoryColor } from './tokens/colors';
 
 export { typography } from './tokens/typography';
@@ -74,6 +75,9 @@ export {
   Toggle,
   // Premium UI Components
   AnimatedCheckmark,
+  GlassCard,
+  GradientButton,
+  GlassListItem,
   SwipeableListItem,
   BottomSheet,
   CircularProgress,
@@ -108,6 +112,9 @@ export type {
   ToggleProps,
   // Premium UI Component Types
   AnimatedCheckmarkProps,
+  GlassCardProps,
+  GradientButtonProps,
+  GlassListItemProps,
   SwipeableListItemProps,
   SwipeAction,
   BottomSheetProps,

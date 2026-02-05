@@ -71,3 +71,52 @@ export type { BreathingCircleProps } from './BreathingCircle';
 
 export { Skeleton, SkeletonGroup, ProfileSkeleton, CardSkeleton } from './Skeleton';
 export type { SkeletonProps, SkeletonGroupProps } from './Skeleton';
+
+// Modern 2025 Components
+export { GlassCard } from './GlassCard';
+export type { GlassCardProps } from './GlassCard';
+
+export { GradientButton } from './GradientButton';
+export type { GradientButtonProps } from './GradientButton';
+
+export { GlassListItem } from './GlassListItem';
+export type { GlassListItemProps } from './GlassListItem';
+
+export { Skeleton, SkeletonCard, SkeletonListItem, SkeletonStats, SkeletonHome, SkeletonJournalList } from './Skeleton';
+
+export { BottomSheet, ActionSheetItem, ActionSheetDivider } from './BottomSheet';
+
+export { ConfettiCelebration, MilestoneCelebration } from './ConfettiCelebration';
+
+export { ParallaxHeader, ParallaxScrollView, StickyHeader } from './ParallaxHeader';
+
+export { 
+  AnimatedCheckbox, 
+  AnimatedToggle, 
+  AnimatedRadio, 
+  SuccessCheckmark, 
+  AnimatedCounter,
+  FavoriteButton,
+  BouncingBadge 
+} from './MicroInteractions';
+
+export { ThemeToggle, AnimatedThemeProvider } from './ThemeToggle';
+
+export { AsyncImage, Avatar, ZoomableImage } from './AsyncImage';
+
+export { SearchExperience, FilterChip, SearchResultsHeader, HighlightedText } from './SearchExperience';
+
+export { 
+  ScreenReaderText, 
+  AccessibleButton, 
+  Focusable, 
+  AccessibleField, 
+  AccessibleProgress,
+  LiveRegion,
+  SkipLink,
+  Heading,
+  AccessibleList,
+  AccessibleListItem,
+  announce,
+  isScreenReaderEnabled 
+} from './AccessibilityHelpers';

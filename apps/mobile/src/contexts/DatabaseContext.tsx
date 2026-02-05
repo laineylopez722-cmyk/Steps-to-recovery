@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo, type ReactNode } from 'react';
 import { Platform } from 'react-native';
 import { createStorageAdapter, type StorageAdapter } from '../adapters/storage';
 import { initDatabase } from '../utils/database';
@@ -81,12 +81,14 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
     };
   }, []);
 
+  const errorContextValue = useMemo(() => ({ db: null, isReady: false }), []);
+
   // Show error state if SQLite failed to load
   if (error) {
     logger.error('Mobile: Database initialization failed', error);
     // Return context with null db - consuming code should handle gracefully
     return (
-      <DatabaseContext.Provider value={{ db: null, isReady: false }}>
+      <DatabaseContext.Provider value={errorContextValue}>
         {children}
       </DatabaseContext.Provider>
     );
@@ -98,6 +100,11 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
   }
 
   const SQLiteProviderElement = SQLiteProviderComponent;
+
+  const contextValue = useMemo(
+    () => ({ db: adapter, isReady: adapter !== null }),
+    [adapter]
+  );
 
   return (
     <SQLiteProviderElement
@@ -114,7 +121,7 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
         }
       }}
     >
-      <DatabaseContext.Provider value={{ db: adapter, isReady: adapter !== null }}>
+      <DatabaseContext.Provider value={contextValue}>
         {children}
       </DatabaseContext.Provider>
     </SQLiteProviderElement>
@@ -129,6 +136,8 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     async function setupAdapter() {
       try {
         logger.info('Web: Initializing IndexedDB adapter');
@@ -136,23 +145,36 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
         logger.info('Web: Adapter created, initializing database schema');
         await initDatabase(storageAdapter);
         logger.info('Web: Database initialized successfully');
-        setAdapter(storageAdapter);
+        if (isMounted) {
+          setAdapter(storageAdapter);
+        }
       } catch (err) {
         logger.error('Web: Failed to initialize database', err);
-        setError(err as Error);
-        // Keep adapter as null - consuming code should handle null db gracefully
-        setAdapter(null);
+        if (isMounted) {
+          setError(err as Error);
+          // Keep adapter as null - consuming code should handle null db gracefully
+          setAdapter(null);
+        }
       }
     }
     setupAdapter();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (error) {
     logger.warn('Web: Running with error, database operations may fail');
   }
 
+  const contextValue = useMemo(
+    () => ({ db: adapter, isReady: adapter !== null }),
+    [adapter]
+  );
+
   return (
-    <DatabaseContext.Provider value={{ db: adapter, isReady: adapter !== null }}>
+    <DatabaseContext.Provider value={contextValue}>
       {children}
     </DatabaseContext.Provider>
   );

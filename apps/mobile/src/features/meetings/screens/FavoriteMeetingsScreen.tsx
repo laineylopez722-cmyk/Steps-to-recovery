@@ -16,8 +16,9 @@ import { getCachedMeetingById } from '../services/meetingCacheService';
 import type { MeetingWithDetails } from '../types/meeting';
 import { calculateDistance } from '../types/meeting';
 import { logger } from '../../../utils/logger';
+import type { MeetingsStackParamList } from '../../../navigation/types';
 
-type FavoriteMeetingsScreenProps = NativeStackScreenProps<Record<string, unknown>, 'FavoriteMeetings'>;
+type FavoriteMeetingsScreenProps = NativeStackScreenProps<MeetingsStackParamList, 'FavoriteMeetings'>;
 
 export function FavoriteMeetingsScreen({
   navigation,

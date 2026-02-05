@@ -3,8 +3,21 @@
  * Uses jest-expo preset for React Native/Expo compatibility
  */
 
-const config = {
+module.exports = {
+  // Explicitly pin rootDir so Jest resolves Babel config and module paths from apps/mobile
+  rootDir: __dirname,
   preset: 'jest-expo',
+
+  // Explicit transform ensures TS/TSX + JSX go through babel-jest with our Babel config
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': [
+      'babel-jest',
+      {
+        configFile: require('path').resolve(__dirname, 'babel.config.js'),
+        babelrc: false,
+      },
+    ],
+  },
 
   // Setup files to run before tests
   setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect', '<rootDir>/jest.setup.js'],
@@ -118,5 +131,3 @@ const config = {
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
 };
-
-export default config;

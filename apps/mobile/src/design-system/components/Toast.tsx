@@ -60,8 +60,10 @@ export function Toast({
 
         return () => clearTimeout(timer);
       }
+      return undefined;
     } else {
       hideToast();
+      return undefined;
     }
   }, [visible, duration]);
 

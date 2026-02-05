@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { type Session, type User, type AuthError } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import { secureStorage } from '../adapters/secureStorage';
@@ -207,14 +207,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const value: AuthContextType = {
-    ...state,
-    signIn,
-    signUp,
-    signOut,
-    resetPassword,
-    clearError,
-  };
+  const value = useMemo(
+    () => ({
+      ...state,
+      signIn,
+      signUp,
+      signOut,
+      resetPassword,
+      clearError,
+    }),
+    [state, signIn, signUp, signOut, resetPassword, clearError]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

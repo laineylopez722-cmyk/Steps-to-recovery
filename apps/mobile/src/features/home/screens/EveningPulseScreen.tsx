@@ -132,6 +132,8 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
           <Card variant="flat" style={styles.headerCard}>
             <Text
               style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 4 }]}
+              accessibilityRole="header"
+              accessibilityLabel="Good Evening"
             >
               Good Evening
             </Text>
@@ -147,6 +149,8 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
             <Card
               variant="flat"
               style={[styles.intentionCard, { backgroundColor: theme.colors.primaryLight }]}
+              accessibilityRole="text"
+              accessibilityLabel={`This morning's intention: ${morning.intention}`}
             >
               <Text
                 style={[theme.typography.caption, { color: theme.colors.primary, marginBottom: 4 }]}
@@ -248,6 +252,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
               style={styles.slider}
               accessibilityLabel={`Mood level: ${moodLabels[mood - 1]}`}
               accessibilityRole="adjustable"
+              accessibilityHint="Slide to adjust your mood level from 1 to 5"
             />
           </Card>
         </Animated.View>
@@ -289,6 +294,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
               style={styles.slider}
               accessibilityLabel={`Craving level: ${getCravingLabel(craving)}, ${craving} out of 10`}
               accessibilityRole="adjustable"
+              accessibilityHint="Slide to adjust your craving level from 0 to 10"
             />
 
             {/* High Craving Warning */}
@@ -296,6 +302,8 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
               <Animated.View
                 entering={FadeIn.duration(300)}
                 style={[styles.warningContainer, { backgroundColor: theme.colors.dangerLight }]}
+                accessibilityRole="alert"
+                accessibilityLabel="High craving warning"
               >
                 <Text style={[theme.typography.caption, { color: theme.colors.danger }]}>
                   Consider reaching out to your sponsor or attending a meeting if cravings are
@@ -315,7 +323,9 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
             disabled={!reflection.trim() || isPending}
             loading={isPending}
             accessibilityLabel="Submit evening check-in"
+            accessibilityRole="button"
             accessibilityHint="Complete your evening check-in"
+            accessibilityState={{ disabled: !reflection.trim() || isPending }}
             style={styles.submitButton}
           >
             Complete Day
@@ -325,7 +335,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
 
       {/* Success Modal */}
       <Modal visible={showSuccessModal} transparent animationType="fade" statusBarTranslucent>
-        <View style={styles.successModalOverlay}>
+        <View style={styles.successModalOverlay} accessible={false}>
           <Animated.View
             entering={FadeIn.duration(200)}
             exiting={SlideOutDown.duration(300)}
@@ -337,6 +347,8 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
                 ...(theme.isDark ? theme.shadows.lgDark : theme.shadows.lg),
               },
             ]}
+            accessibilityRole="alert"
+            accessibilityLabel="Evening check-in completed successfully"
           >
             <AnimatedCheckmark
               size={100}
@@ -348,6 +360,7 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
                 theme.typography.h2,
                 { color: theme.colors.text, marginTop: 20, textAlign: 'center' },
               ]}
+              accessibilityRole="header"
             >
               Day Complete!
             </Text>

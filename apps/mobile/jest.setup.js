@@ -3,6 +3,8 @@
  * Mocks for Expo modules and React Native APIs
  */
 
+const { cleanup } = require('@testing-library/react-native');
+
 // Set up Supabase environment variables BEFORE any module imports
 // This prevents supabase.ts from throwing during initialization
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test-project.supabase.co';
@@ -45,6 +47,7 @@ console.error = (...args) => {
 
 // Global afterEach cleanup to prevent test leaks
 afterEach(() => {
+  cleanup();
   // Clear all timers
   jest.clearAllTimers();
 

@@ -1,4 +1,3 @@
-import type * as Crypto from 'expo-crypto';
 import {
   generateEncryptionKey,
   getEncryptionKey,
@@ -9,10 +8,14 @@ import {
 } from '../encryption';
 
 // Mock Platform.OS to use 'web' path to avoid dynamic imports
+interface PlatformSelectObject {
+  web: string;
+}
+
 jest.mock('react-native', () => ({
   Platform: {
     OS: 'web',
-    select: <T>(obj: { web?: T }): T | undefined => obj.web,
+    select: (obj: PlatformSelectObject): string => obj.web,
   },
 }));
 
@@ -39,11 +42,11 @@ jest.mock('../../adapters/secureStorage', () => ({
 }));
 
 // Mock crypto.randomUUID and crypto.getRandomValues for web path
-const mockRandomUUID = jest.fn((): `${string}-${string}-${string}-${string}-${string}` => {
+const mockRandomUUID = jest.fn(() => {
   const hex = Math.random().toString(16).substring(2, 10);
   return `${hex}-${hex.substring(0, 4)}-4${hex.substring(1, 4)}-${hex.substring(0, 4)}-${hex}${hex.substring(0, 4)}`;
 });
-const mockGetRandomValues = jest.fn(<T extends ArrayBufferView>(array: T): T => {
+const mockGetRandomValues = jest.fn((array) => {
   if (array instanceof Uint8Array) {
     for (let i = 0; i < array.length; i++) {
       array[i] = Math.floor(Math.random() * 256);
@@ -56,28 +59,21 @@ Object.defineProperty(global, 'crypto', {
   value: {
     randomUUID: mockRandomUUID,
     getRandomValues: mockGetRandomValues,
-    subtle: {} as SubtleCrypto,
-  } satisfies Partial<Crypto>,
+    subtle: {},
+  },
   writable: true,
 });
-
-// Mock crypto-js is not needed as it's a pure JS library
-// We'll use it as-is for real encryption/decryption
 
 // Import the mocked secureStorage
 import { secureStorage } from '../../adapters/secureStorage';
 
-// Type for mocked secureStorage
-type MockedSecureStorage = jest.Mocked<typeof secureStorage>;
-
 // Test UUID constants matching the required format
-type UUID = `${string}-${string}-${string}-${string}-${string}`;
-const TEST_UUID_1: UUID = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
-const TEST_UUID_2: UUID = 'b2c3d4e5-f6a7-4b8c-9d0e-f1a2b3c4d5e6';
-const TEST_UUID_3: UUID = 'c3d4e5f6-a7b8-4c9d-0e1f-a2b3c4d5e6f7';
+const TEST_UUID_1 = 'a1b2c3d4-e5f6-4a7b-8c9d-e0f1a2b3c4d5';
+const TEST_UUID_2 = 'b2c3d4e5-f6a7-4b8c-9d0e-f1a2b3c4d5e6';
+const TEST_UUID_3 = 'c3d4e5f6-a7b8-4c9d-0e1f-a2b3c4d5e6f7';
 
 describe('Encryption Utilities', () => {
-  const mockSecureStorage = secureStorage as MockedSecureStorage;
+  const mockSecureStorage = secureStorage as jest.Mocked<typeof secureStorage>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -115,7 +111,7 @@ describe('Encryption Utilities', () => {
 
       await generateEncryptionKey();
 
-      // Verify SecureStore was called to store the derived key (salt is used during derivation but not stored)
+      // Verify SecureStore was called to store the derived key
       expect(mockSecureStorage.setItemAsync).toHaveBeenCalledTimes(1);
       expect(mockSecureStorage.setItemAsync).toHaveBeenCalledWith(
         'journal_encryption_key',
@@ -136,8 +132,6 @@ describe('Encryption Utilities', () => {
     });
 
     it('should use PBKDF2 with 100,000 iterations', async () => {
-      // We can verify this by checking the implementation uses the constant
-      // This is more of an integration test to ensure the algorithm is correct
       const mockRandomBytes = new Uint8Array(32).fill(42);
       mockGetRandomValues.mockReturnValue(mockRandomBytes);
       mockRandomUUID.mockReturnValue(TEST_UUID_2);
@@ -145,7 +139,6 @@ describe('Encryption Utilities', () => {
 
       const key = await generateEncryptionKey();
 
-      // The key should be deterministic for the same input
       expect(key).toBeDefined();
 
       // Setup for second call
@@ -178,6 +171,30 @@ describe('Encryption Utilities', () => {
 
       expect(mockRandomUUID).toHaveBeenCalled();
     });
+
+    it('should generate hex-only key string', async () => {
+      const mockRandomBytes = new Uint8Array(32).fill(128);
+      mockGetRandomValues.mockReturnValue(mockRandomBytes);
+      mockRandomUUID.mockReturnValue(TEST_UUID_1);
+      mockSecureStorage.setItemAsync.mockResolvedValue(undefined);
+
+      const key = await generateEncryptionKey();
+
+      // Verify key only contains valid hex characters
+      expect(key).toMatch(/^[0-9a-f]+$/i);
+    });
+
+    it('should handle edge case of all zero random bytes', async () => {
+      const mockRandomBytes = new Uint8Array(32).fill(0);
+      mockGetRandomValues.mockReturnValue(mockRandomBytes);
+      mockRandomUUID.mockReturnValue(TEST_UUID_1);
+      mockSecureStorage.setItemAsync.mockResolvedValue(undefined);
+
+      const key = await generateEncryptionKey();
+
+      expect(key).toBeDefined();
+      expect(key.length).toBe(64);
+    });
   });
 
   describe('getEncryptionKey()', () => {
@@ -197,6 +214,15 @@ describe('Encryption Utilities', () => {
       const key = await getEncryptionKey();
 
       expect(key).toBeNull();
+    });
+
+    it('should return exact stored value without modification', async () => {
+      const mockKey = 'abcdef1234567890'.repeat(4);
+      mockSecureStorage.getItemAsync.mockResolvedValue(mockKey);
+
+      const key = await getEncryptionKey();
+
+      expect(key).toBe(mockKey);
     });
   });
 
@@ -237,7 +263,7 @@ describe('Encryption Utilities', () => {
 
     it('should use different IVs for same plaintext', async () => {
       let callCount = 0;
-      mockGetRandomValues.mockImplementation((array: Uint8Array) => {
+      mockGetRandomValues.mockImplementation((array) => {
         array.fill(callCount++);
         return array;
       });
@@ -254,7 +280,7 @@ describe('Encryption Utilities', () => {
       expect(iv1).not.toBe(iv2);
     });
 
-    it('should handle empty strings', async () => {
+    it('should handle empty strings by producing valid ciphertext', async () => {
       const mockIV = new Uint8Array(16).fill(5);
       mockGetRandomValues.mockReturnValue(mockIV);
 
@@ -262,6 +288,8 @@ describe('Encryption Utilities', () => {
 
       expect(encrypted).toBeDefined();
       expect(encrypted).toContain(':');
+      const parts = encrypted.split(':');
+      expect(parts).toHaveLength(3);
     });
 
     it('should handle special characters', async () => {
@@ -300,6 +328,39 @@ describe('Encryption Utilities', () => {
 
       expect(mockGetRandomValues).toHaveBeenCalledWith(expect.any(Uint8Array));
     });
+
+    it('should produce base64-encoded ciphertext', async () => {
+      const mockIV = new Uint8Array(16).fill(21);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test message');
+      const [, ciphertext] = encrypted.split(':');
+
+      // Base64 characters only (CryptoJS outputs base64)
+      expect(ciphertext).toMatch(/^[A-Za-z0-9+/=]+$/);
+    });
+
+    it('should produce hex-encoded IV', async () => {
+      const mockIV = new Uint8Array(16).fill(22);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test message');
+      const [iv] = encrypted.split(':');
+
+      // IV should be hex-only
+      expect(iv).toMatch(/^[0-9a-f]+$/i);
+    });
+
+    it('should produce hex-encoded MAC', async () => {
+      const mockIV = new Uint8Array(16).fill(23);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test message');
+      const [, , mac] = encrypted.split(':');
+
+      // MAC should be hex-only
+      expect(mac).toMatch(/^[0-9a-f]+$/i);
+    });
   });
 
   describe('decryptContent()', () => {
@@ -310,14 +371,12 @@ describe('Encryption Utilities', () => {
     });
 
     it('should decrypt ciphertext to original plaintext', async () => {
-      // First encrypt something
       const mockIV = new Uint8Array(16).fill(1);
       mockGetRandomValues.mockReturnValue(mockIV);
 
       const original = 'Secret message';
       const encrypted = await encryptContent(original);
 
-      // Now decrypt it
       const decrypted = await decryptContent(encrypted);
 
       expect(decrypted).toBe(original);
@@ -340,7 +399,6 @@ describe('Encryption Utilities', () => {
       const validIV = '0'.repeat(32);
       const corruptedCiphertext = `${validIV}:corrupted-data-!!!`;
 
-      // This should fail during decryption
       await expect(decryptContent(corruptedCiphertext)).rejects.toThrow();
     });
 
@@ -356,6 +414,7 @@ describe('Encryption Utilities', () => {
 
       await expect(decryptContent(tampered)).rejects.toThrow('Integrity check failed');
     });
+
     it('should throw error if no encryption key exists', async () => {
       mockSecureStorage.getItemAsync.mockResolvedValue(null);
 
@@ -363,14 +422,23 @@ describe('Encryption Utilities', () => {
       await expect(decryptContent(`${validIV}:data`)).rejects.toThrow('Encryption key not found');
     });
 
-    it('should throw error on empty string decryption', async () => {
-      const mockIV = new Uint8Array(16).fill(2);
-      mockGetRandomValues.mockReturnValue(mockIV);
+    it('should throw error on empty ciphertext part', async () => {
+      const validIV = '0'.repeat(32);
+      const validMAC = 'f'.repeat(64);
+      await expect(decryptContent(`${validIV}::${validMAC}`)).rejects.toThrow('Invalid format');
+    });
 
-      const encrypted = await encryptContent('');
+    it('should throw error on empty MAC with three parts', async () => {
+      const validIV = '0'.repeat(32);
+      await expect(decryptContent(`${validIV}:data:`)).rejects.toThrow('Invalid format');
+    });
 
-      // Empty plaintext results are treated as decryption failures
-      await expect(decryptContent(encrypted)).rejects.toThrow('Decryption failed');
+    it('should accept two-part format (legacy without MAC)', async () => {
+      // Two-part format should work (IV:ciphertext without MAC)
+      // But decryption will likely fail due to invalid ciphertext
+      const validIV = '0'.repeat(32);
+      // This will fail at decryption, not format validation
+      await expect(decryptContent(`${validIV}:invaliddata`)).rejects.toThrow('Decryption failed');
     });
   });
 
@@ -429,7 +497,6 @@ describe('Encryption Utilities', () => {
       const mockIV = new Uint8Array(16).fill(7);
       mockGetRandomValues.mockReturnValue(mockIV);
 
-      // Generate a string larger than 10KB
       const original = 'A'.repeat(15000);
       const encrypted = await encryptContent(original);
       const decrypted = await decryptContent(encrypted);
@@ -467,6 +534,61 @@ With\ttabs\tand\nnewlines\r\n`;
       expect(decrypted).toBe(original);
       expect(JSON.parse(decrypted)).toEqual(JSON.parse(original));
     });
+
+    it('should work with single character', async () => {
+      const mockIV = new Uint8Array(16).fill(10);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const original = 'X';
+      const encrypted = await encryptContent(original);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(original);
+    });
+
+    it('should work with single space', async () => {
+      const mockIV = new Uint8Array(16).fill(11);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const original = ' ';
+      const encrypted = await encryptContent(original);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(original);
+    });
+
+    it('should work with HTML content', async () => {
+      const mockIV = new Uint8Array(16).fill(12);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const original = '<div class="test">Hello <b>World</b></div>';
+      const encrypted = await encryptContent(original);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(original);
+    });
+
+    it('should work with SQL-like content', async () => {
+      const mockIV = new Uint8Array(16).fill(13);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const original = "SELECT * FROM users WHERE name = 'test'; DROP TABLE users;--";
+      const encrypted = await encryptContent(original);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(original);
+    });
+
+    it('should work with base64 encoded content', async () => {
+      const mockIV = new Uint8Array(16).fill(14);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const original = 'SGVsbG8gV29ybGQh'; // "Hello World!" in base64
+      const encrypted = await encryptContent(original);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(original);
+    });
   });
 
   describe('deleteEncryptionKey()', () => {
@@ -477,6 +599,12 @@ With\ttabs\tand\nnewlines\r\n`;
 
       expect(mockSecureStorage.deleteItemAsync).toHaveBeenCalledWith('journal_encryption_key');
       expect(mockSecureStorage.deleteItemAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('should complete successfully when key does not exist', async () => {
+      mockSecureStorage.deleteItemAsync.mockResolvedValue(undefined);
+
+      await expect(deleteEncryptionKey()).resolves.toBeUndefined();
     });
   });
 
@@ -512,15 +640,21 @@ With\ttabs\tand\nnewlines\r\n`;
 
       expect(result).toBe(true);
     });
+
+    it('should return true for whitespace-only key', async () => {
+      mockSecureStorage.getItemAsync.mockResolvedValue('   ');
+
+      const result = await hasEncryptionKey();
+
+      expect(result).toBe(true);
+    });
   });
 
   describe('Key Management Integration', () => {
     it('should reflect correct state after key generation', async () => {
-      // Initially no key
       mockSecureStorage.getItemAsync.mockResolvedValue(null);
       expect(await hasEncryptionKey()).toBe(false);
 
-      // Generate key
       const mockRandomBytes = new Uint8Array(32).fill(1);
       mockGetRandomValues.mockReturnValue(mockRandomBytes);
       mockRandomUUID.mockReturnValue(TEST_UUID_1);
@@ -528,22 +662,18 @@ With\ttabs\tand\nnewlines\r\n`;
 
       const key = await generateEncryptionKey();
 
-      // Now mock that the key exists
       mockSecureStorage.getItemAsync.mockResolvedValue(key);
       expect(await hasEncryptionKey()).toBe(true);
     });
 
     it('should reflect correct state after key deletion', async () => {
-      // Start with a key
       const mockKey = 'existing-key';
       mockSecureStorage.getItemAsync.mockResolvedValue(mockKey);
       expect(await hasEncryptionKey()).toBe(true);
 
-      // Delete the key
       mockSecureStorage.deleteItemAsync.mockResolvedValue(undefined);
       await deleteEncryptionKey();
 
-      // Now key should not exist
       mockSecureStorage.getItemAsync.mockResolvedValue(null);
       expect(await hasEncryptionKey()).toBe(false);
     });
@@ -559,6 +689,23 @@ With\ttabs\tand\nnewlines\r\n`;
 
       await expect(decryptContent('00:data')).rejects.toThrow('Encryption key not found');
     });
+
+    it('should allow encryption immediately after key generation', async () => {
+      const mockRandomBytes = new Uint8Array(32).fill(1);
+      mockGetRandomValues.mockReturnValue(mockRandomBytes);
+      mockRandomUUID.mockReturnValue(TEST_UUID_1);
+      mockSecureStorage.setItemAsync.mockResolvedValue(undefined);
+
+      const key = await generateEncryptionKey();
+      mockSecureStorage.getItemAsync.mockResolvedValue(key);
+
+      const mockIV = new Uint8Array(16).fill(0);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test');
+      expect(encrypted).toBeDefined();
+      expect(encrypted).toContain(':');
+    });
   });
 
   describe('Security Properties', () => {
@@ -570,8 +717,7 @@ With\ttabs\tand\nnewlines\r\n`;
 
     it('should use random IV for each encryption', async () => {
       let callCount = 0;
-      mockGetRandomValues.mockImplementation((array: Uint8Array) => {
-        // Each call gets different values
+      mockGetRandomValues.mockImplementation((array) => {
         array.fill(callCount++);
         return array;
       });
@@ -581,7 +727,6 @@ With\ttabs\tand\nnewlines\r\n`;
       const encrypted2 = await encryptContent(plaintext);
       const encrypted3 = await encryptContent(plaintext);
 
-      // All should have different IVs
       const [iv1] = encrypted1.split(':');
       const [iv2] = encrypted2.split(':');
       const [iv3] = encrypted3.split(':');
@@ -592,7 +737,6 @@ With\ttabs\tand\nnewlines\r\n`;
     });
 
     it('should use AES-256-CBC encryption mode', async () => {
-      // This is verified by the implementation using CryptoJS.AES with 256-bit key
       const mockIV = new Uint8Array(16).fill(11);
       mockGetRandomValues.mockReturnValue(mockIV);
 
@@ -600,13 +744,12 @@ With\ttabs\tand\nnewlines\r\n`;
       const encrypted = await encryptContent(plaintext);
       const decrypted = await decryptContent(encrypted);
 
-      // If the mode was wrong, decryption would fail
       expect(decrypted).toBe(plaintext);
     });
 
     it('should produce different ciphertexts for same plaintext', async () => {
       let ivCounter = 0;
-      mockGetRandomValues.mockImplementation((array: Uint8Array) => {
+      mockGetRandomValues.mockImplementation((array) => {
         array.fill(ivCounter++);
         return array;
       });
@@ -618,7 +761,6 @@ With\ttabs\tand\nnewlines\r\n`;
         results.push(await encryptContent(plaintext));
       }
 
-      // All ciphertexts should be different
       const uniqueResults = new Set(results);
       expect(uniqueResults.size).toBe(5);
     });
@@ -626,7 +768,7 @@ With\ttabs\tand\nnewlines\r\n`;
     it('should verify PBKDF2 key derivation produces consistent keys', async () => {
       const mockRandomBytes = new Uint8Array(32);
       for (let i = 0; i < 32; i++) {
-        mockRandomBytes[i] = i * 7; // Deterministic pattern
+        mockRandomBytes[i] = i * 7;
       }
 
       mockGetRandomValues.mockReturnValue(mockRandomBytes);
@@ -635,13 +777,11 @@ With\ttabs\tand\nnewlines\r\n`;
 
       const key1 = await generateEncryptionKey();
 
-      // Reset mocks for second call
       mockGetRandomValues.mockReturnValue(mockRandomBytes);
       mockRandomUUID.mockReturnValue(TEST_UUID_1);
 
       const key2 = await generateEncryptionKey();
 
-      // Same inputs should produce same output (PBKDF2 is deterministic)
       expect(key1).toBe(key2);
     });
 
@@ -653,13 +793,55 @@ With\ttabs\tand\nnewlines\r\n`;
       mockRandomUUID.mockReturnValue(TEST_UUID_1);
       const key1 = await generateEncryptionKey();
 
-      // Reset for second call
       mockGetRandomValues.mockReturnValue(mockRandomBytes);
       mockRandomUUID.mockReturnValue(TEST_UUID_2);
       const key2 = await generateEncryptionKey();
 
-      // Different salts should produce different keys
       expect(key1).not.toBe(key2);
+    });
+
+    it('should detect MAC tampering in middle of MAC', async () => {
+      const mockIV = new Uint8Array(16).fill(1);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test');
+      const parts = encrypted.split(':');
+      const mac = parts[2];
+      // Flip a character in the middle
+      const midIndex = Math.floor(mac.length / 2);
+      const tamperedMac =
+        mac.substring(0, midIndex) +
+        (mac[midIndex] === 'a' ? 'b' : 'a') +
+        mac.substring(midIndex + 1);
+      const tampered = `${parts[0]}:${parts[1]}:${tamperedMac}`;
+
+      await expect(decryptContent(tampered)).rejects.toThrow('Integrity check failed');
+    });
+
+    it('should detect ciphertext tampering', async () => {
+      const mockIV = new Uint8Array(16).fill(1);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test message');
+      const parts = encrypted.split(':');
+      // Modify the ciphertext but keep the original MAC
+      const tamperedCiphertext = parts[1].split('').reverse().join('');
+      const tampered = `${parts[0]}:${tamperedCiphertext}:${parts[2]}`;
+
+      await expect(decryptContent(tampered)).rejects.toThrow('Integrity check failed');
+    });
+
+    it('should detect IV tampering', async () => {
+      const mockIV = new Uint8Array(16).fill(1);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('test message');
+      const parts = encrypted.split(':');
+      // Modify the IV but keep the original MAC
+      const tamperedIV = 'f'.repeat(32);
+      const tampered = `${tamperedIV}:${parts[1]}:${parts[2]}`;
+
+      await expect(decryptContent(tampered)).rejects.toThrow('Integrity check failed');
     });
   });
 
@@ -703,11 +885,16 @@ With\ttabs\tand\nnewlines\r\n`;
     it('should handle multiple colons in encrypted data', async () => {
       mockSecureStorage.getItemAsync.mockResolvedValue('a'.repeat(64));
 
-      // Encrypted payloads should only contain two or three segments
       const validIV = '0'.repeat(32);
       const encrypted = `${validIV}:data:with:colons`;
 
       await expect(decryptContent(encrypted)).rejects.toThrow('Invalid format');
+    });
+
+    it('should handle hasEncryptionKey when storage throws', async () => {
+      mockSecureStorage.getItemAsync.mockRejectedValue(new Error('Storage unavailable'));
+
+      await expect(hasEncryptionKey()).rejects.toThrow('Storage unavailable');
     });
   });
 
@@ -765,7 +952,7 @@ With\ttabs\tand\nnewlines\r\n`;
 
     it('should handle rapid successive encryptions', async () => {
       let ivCounter = 0;
-      mockGetRandomValues.mockImplementation((array: Uint8Array) => {
+      mockGetRandomValues.mockImplementation((array) => {
         array.fill(ivCounter++);
         return array;
       });
@@ -777,11 +964,109 @@ With\ttabs\tand\nnewlines\r\n`;
 
       const results = await Promise.all(promises);
 
-      // All should succeed
       expect(results).toHaveLength(10);
       results.forEach((result) => {
         expect(result).toContain(':');
       });
+    });
+
+    it('should handle rapid successive decryptions', async () => {
+      let ivCounter = 0;
+      mockGetRandomValues.mockImplementation((array) => {
+        array.fill(ivCounter++);
+        return array;
+      });
+
+      // First encrypt multiple messages
+      const encrypted = [];
+      for (let i = 0; i < 10; i++) {
+        encrypted.push(await encryptContent(`Message ${i}`));
+      }
+
+      // Then decrypt all at once
+      const decryptPromises = encrypted.map((e) => decryptContent(e));
+      const results = await Promise.all(decryptPromises);
+
+      expect(results).toHaveLength(10);
+      for (let i = 0; i < 10; i++) {
+        expect(results[i]).toBe(`Message ${i}`);
+      }
+    });
+
+    it('should handle content with colon characters', async () => {
+      const mockIV = new Uint8Array(16).fill(16);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const content = 'key:value:another:value';
+      const encrypted = await encryptContent(content);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(content);
+    });
+
+    it('should handle binary-like string content', async () => {
+      const mockIV = new Uint8Array(16).fill(17);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const content = String.fromCharCode(...Array.from({ length: 256 }, (_, i) => i));
+      const encrypted = await encryptContent(content);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(content);
+    });
+
+    it('should handle maximum IV value (all 255s)', async () => {
+      const mockIV = new Uint8Array(16).fill(255);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const content = 'test with max IV';
+      const encrypted = await encryptContent(content);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(content);
+    });
+
+    it('should handle minimum IV value (all 0s)', async () => {
+      const mockIV = new Uint8Array(16).fill(0);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const content = 'test with min IV';
+      const encrypted = await encryptContent(content);
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe(content);
+    });
+  });
+
+  describe('Cross-key behavior', () => {
+    it('should fail to decrypt with wrong key', async () => {
+      const key1 = 'a'.repeat(64);
+      const key2 = 'b'.repeat(64);
+
+      mockSecureStorage.getItemAsync.mockResolvedValue(key1);
+      const mockIV = new Uint8Array(16).fill(1);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('secret');
+
+      // Switch to different key
+      mockSecureStorage.getItemAsync.mockResolvedValue(key2);
+
+      // Decryption should fail (either integrity check or decryption itself)
+      await expect(decryptContent(encrypted)).rejects.toThrow();
+    });
+
+    it('should succeed with same key', async () => {
+      const key = 'a'.repeat(64);
+      mockSecureStorage.getItemAsync.mockResolvedValue(key);
+
+      const mockIV = new Uint8Array(16).fill(1);
+      mockGetRandomValues.mockReturnValue(mockIV);
+
+      const encrypted = await encryptContent('secret');
+      const decrypted = await decryptContent(encrypted);
+
+      expect(decrypted).toBe('secret');
     });
   });
 });

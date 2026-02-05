@@ -24,8 +24,7 @@ export * from './dailyReadings';
 export * from './prayers';
 export * from './keytags';
 
-// Export everything from achievements except getAchievementsByCategory
-// (getAchievementsByCategory is kept internal to avoid naming conflicts)
+// Export legacy achievement system
 export {
   FELLOWSHIP_ACHIEVEMENTS,
   STEP_WORK_ACHIEVEMENTS,
@@ -35,9 +34,21 @@ export {
   getAchievementDefinition,
   getTotalAchievementsCount,
   isValidAchievementId,
+  type AchievementDefinition,
 } from './achievements';
-export type { AchievementDefinition } from './achievements';
+
+// Export meeting check-in achievement system
+export {
+  MEETING_ACHIEVEMENTS,
+  ACHIEVEMENT_COLORS,
+  ACHIEVEMENT_MESSAGES,
+  getAchievementByKey,
+  getAchievementsByCategory,
+  getRandomAchievementMessage,
+  type Achievement,
+} from './achievements';
 
 export * from './readings';
 export * from './slogans';
 export * from './promises';
+

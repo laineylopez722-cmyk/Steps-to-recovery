@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 8;
+const CURRENT_SCHEMA_VERSION = 9;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -69,7 +69,21 @@ export async function initDatabase(db: StorageAdapter): Promise<void> {
   const existing = initPromises.get(dbName);
   if (existing) return existing;
 
-  const initPromise = (async () => {
+  // Create and store the promise immediately to prevent race conditions
+  // from concurrent calls
+  const initPromise = initializeDatabaseInternal(db);
+  initPromises.set(dbName, initPromise);
+
+  try {
+    await initPromise;
+    initializedDatabases.add(dbName);
+  } finally {
+    initPromises.delete(dbName);
+  }
+}
+
+async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
+  const dbName = db.getDatabaseName();
     logger.info('Initializing database', { dbName });
     // Some Android sqlite bindings can throw opaque native errors (e.g. NPE) when executing
     // very large multi-statement strings via execAsync. Execute pragmas and schema statements
@@ -217,15 +231,6 @@ export async function initDatabase(db: StorageAdapter): Promise<void> {
     // Run versioned migrations
     await runMigrations(db);
     logger.info('Database initialization complete', { dbName });
-  })();
-
-  initPromises.set(dbName, initPromise);
-  try {
-    await initPromise;
-    initializedDatabases.add(dbName);
-  } finally {
-    initPromises.delete(dbName);
-  }
 }
 
 /**
@@ -599,6 +604,71 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 
     await recordMigration(db, 8);
     logger.info('Migration v8 completed');
+  }
+
+  // Migration version 9: Add sync columns to weekly_reports, sponsor_connections, and sponsor_shared_entries
+  if (currentVersion < 9) {
+    logger.info('Running migration v9: Adding sync columns to new tables');
+
+    // Weekly reports sync columns
+    if (!(await columnExists(db, 'weekly_reports', 'sync_status'))) {
+      try {
+        await db.execAsync(
+          `ALTER TABLE weekly_reports ADD COLUMN sync_status TEXT DEFAULT 'pending';`,
+        );
+      } catch (error) {
+        logger.warn('Migration v9: Failed to add weekly_reports.sync_status', error);
+      }
+    }
+
+    if (!(await columnExists(db, 'weekly_reports', 'supabase_id'))) {
+      try {
+        await db.execAsync(`ALTER TABLE weekly_reports ADD COLUMN supabase_id TEXT;`);
+      } catch (error) {
+        logger.warn('Migration v9: Failed to add weekly_reports.supabase_id', error);
+      }
+    }
+
+    // Sponsor connections sync columns
+    if (!(await columnExists(db, 'sponsor_connections', 'sync_status'))) {
+      try {
+        await db.execAsync(
+          `ALTER TABLE sponsor_connections ADD COLUMN sync_status TEXT DEFAULT 'pending';`,
+        );
+      } catch (error) {
+        logger.warn('Migration v9: Failed to add sponsor_connections.sync_status', error);
+      }
+    }
+
+    if (!(await columnExists(db, 'sponsor_connections', 'supabase_id'))) {
+      try {
+        await db.execAsync(`ALTER TABLE sponsor_connections ADD COLUMN supabase_id TEXT;`);
+      } catch (error) {
+        logger.warn('Migration v9: Failed to add sponsor_connections.supabase_id', error);
+      }
+    }
+
+    // Sponsor shared entries sync columns
+    if (!(await columnExists(db, 'sponsor_shared_entries', 'sync_status'))) {
+      try {
+        await db.execAsync(
+          `ALTER TABLE sponsor_shared_entries ADD COLUMN sync_status TEXT DEFAULT 'pending';`,
+        );
+      } catch (error) {
+        logger.warn('Migration v9: Failed to add sponsor_shared_entries.sync_status', error);
+      }
+    }
+
+    if (!(await columnExists(db, 'sponsor_shared_entries', 'supabase_id'))) {
+      try {
+        await db.execAsync(`ALTER TABLE sponsor_shared_entries ADD COLUMN supabase_id TEXT;`);
+      } catch (error) {
+        logger.warn('Migration v9: Failed to add sponsor_shared_entries.supabase_id', error);
+      }
+    }
+
+    await recordMigration(db, 9);
+    logger.info('Migration v9 completed');
   }
 
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });

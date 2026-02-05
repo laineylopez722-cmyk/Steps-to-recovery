@@ -8,10 +8,18 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme, Card, Button, Modal, ProfileSkeleton } from '../../../design-system';
 import { Text } from 'react-native';
+import type { ProfileStackParamList, HomeStackParamList, MainTabParamList } from '../../../navigation/types';
+import type { CompositeNavigationProp } from '@react-navigation/native';
+
+type ProfileScreenNavigationProp = CompositeNavigationProp<
+  NativeStackNavigationProp<ProfileStackParamList>,
+  NativeStackNavigationProp<MainTabParamList>
+>;
 
 interface ListItemProps {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
@@ -80,7 +88,7 @@ function Divider(): React.ReactElement {
 }
 
 export function ProfileScreen(): React.ReactElement {
-  const navigation = useNavigation();
+  const navigation = useNavigation<ProfileScreenNavigationProp>();
   const theme = useTheme();
   const { user, signOut, loading } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
@@ -168,6 +176,34 @@ export function ProfileScreen(): React.ReactElement {
               title="Sponsor"
               description="Connect with sponsor or sponsees"
               onPress={() => navigation.navigate('Sponsor')}
+            />
+            <Divider />
+            <ListItem
+              icon="calendar-check"
+              title="Meeting Stats"
+              description="Track attendance and view achievements"
+              onPress={() => navigation.navigate('Home', { 
+                screen: 'MeetingStats'
+              })}
+            />
+            <Divider />
+            <ListItem
+              icon="trophy"
+              title="Achievements"
+              description="View your recovery milestones"
+              onPress={() => navigation.navigate('Home', {
+                screen: 'Achievements'
+              })}
+            />
+            <Divider />
+            <ListItem
+              icon="shield-account"
+              title="Trigger Protection"
+              description="Manage risky contacts and close calls"
+              onPress={() => navigation.navigate('Home', {
+                screen: 'DangerZone'
+              })}
+              iconColor={theme.colors.warning}
             />
             <Divider />
             <ListItem

@@ -40,3 +40,33 @@ export { useAchievements } from './useAchievements';
 
 // JITAI Hook
 export { useJitai } from './useJitai';
+
+// Offline-first hooks
+export {
+  useOfflineMutation,
+  usePendingMutationCount,
+  useHasPendingMutations,
+  useSyncPendingMutations,
+} from './useOfflineMutation';
+
+// App state hooks
+export {
+  useAppState,
+  useOnForeground,
+  useOnBackground,
+  useBackgroundTimeout,
+  useRefreshOnForeground,
+} from './useAppState';
+
+// Keyboard hooks
+export {
+  useKeyboard,
+  useKeyboardHeight,
+  useIsKeyboardVisible,
+  useDismissKeyboardOnTap,
+  useFocusedInput,
+  useKeyboardAwareScroll,
+  useKeyboardAnimation,
+  useAvoidKeyboard,
+  useInputFocusNavigation,
+} from './useKeyboard';

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { AppState, Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import { processSyncQueue } from '../services/syncService';
@@ -284,11 +284,14 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user, state.isOnline, state.isSyncing, triggerSync]);
 
-  const value: SyncContextType = {
-    ...state,
-    triggerSync,
-    clearError,
-  };
+  const value = useMemo(
+    () => ({
+      ...state,
+      triggerSync,
+      clearError,
+    }),
+    [state, triggerSync, clearError]
+  );
 
   return <SyncContext.Provider value={value}>{children}</SyncContext.Provider>;
 }

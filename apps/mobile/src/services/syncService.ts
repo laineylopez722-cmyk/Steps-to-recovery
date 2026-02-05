@@ -79,12 +79,19 @@ const BASE_BACKOFF_MS = 1000;
  * Throws an error if the operation takes longer than the specified timeout
  */
 function withTimeout<T>(promise: Promise<T>, timeoutMs: number, operation: string): Promise<T> {
-  return Promise.race([
-    promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error(`${operation} timed out after ${timeoutMs}ms`)), timeoutMs),
-    ),
-  ]);
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error(`${operation} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  });
 }
 
 /**
@@ -155,6 +162,7 @@ interface LocalDailyCheckIn {
   encrypted_reflection: string | null;
   encrypted_mood: string | null;
   encrypted_craving: string | null;
+  encrypted_gratitude: string | null;
   created_at: string;
   updated_at: string;
   sync_status: string;
@@ -185,6 +193,56 @@ interface LocalReadingReflection {
   reading_date: string;
   encrypted_reflection: string;
   word_count: number;
+  created_at: string;
+  updated_at: string;
+  sync_status: string;
+  supabase_id: string | null;
+}
+
+/**
+ * Weekly report from local SQLite
+ */
+interface LocalWeeklyReport {
+  id: string;
+  user_id: string;
+  week_start: string;
+  week_end: string;
+  report_json: string;
+  created_at: string;
+  sync_status: string;
+  supabase_id: string | null;
+}
+
+/**
+ * Sponsor connection from local SQLite
+ */
+interface LocalSponsorConnection {
+  id: string;
+  user_id: string;
+  role: 'sponsee' | 'sponsor';
+  status: 'pending' | 'connected';
+  invite_code: string;
+  display_name: string | null;
+  own_public_key: string;
+  peer_public_key: string | null;
+  shared_key: string | null;
+  pending_private_key: string | null;
+  created_at: string;
+  updated_at: string;
+  sync_status: string;
+  supabase_id: string | null;
+}
+
+/**
+ * Sponsor shared entry from local SQLite
+ */
+interface LocalSponsorSharedEntry {
+  id: string;
+  user_id: string;
+  connection_id: string;
+  direction: 'outgoing' | 'incoming' | 'comment';
+  journal_entry_id: string | null;
+  payload: string;
   created_at: string;
   updated_at: string;
   sync_status: string;
@@ -404,10 +462,12 @@ export async function syncDailyCheckIn(
       // Morning check-in: intention field
       supabaseData.intention = checkIn.encrypted_intention; // Already encrypted
       supabaseData.mood = checkIn.encrypted_mood;
+      supabaseData.gratitude = checkIn.encrypted_gratitude; // Already encrypted
     } else {
       // Evening check-in: reflection goes to notes
       supabaseData.notes = checkIn.encrypted_reflection; // Already encrypted
       supabaseData.mood = checkIn.encrypted_mood;
+      supabaseData.gratitude = checkIn.encrypted_gratitude; // Already encrypted
       // Convert craving (0-10) to day_rating (1-10, inverted: high craving = low rating)
       // If craving is encrypted, we store it as-is for now
       if (checkIn.encrypted_craving) {
@@ -609,6 +669,204 @@ export async function syncReadingReflection(
 }
 
 /**
+ * Sync a single weekly report to Supabase
+ * Maps local report data to Supabase schema
+ */
+export async function syncWeeklyReport(
+  db: StorageAdapter,
+  reportId: string,
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const report = await db.getFirstAsync<LocalWeeklyReport>(
+      'SELECT * FROM weekly_reports WHERE id = ? AND user_id = ?',
+      [reportId, userId],
+    );
+
+    if (!report) {
+      return { success: false, error: 'Weekly report not found' };
+    }
+
+    const supabaseId = report.supabase_id || generateUUID();
+
+    const supabaseData = {
+      id: supabaseId,
+      user_id: userId,
+      week_start: report.week_start,
+      week_end: report.week_end,
+      report_json: report.report_json, // Already encrypted or JSON string
+      created_at: report.created_at,
+    };
+
+    const response = await withTimeout(
+      Promise.resolve(
+        supabase.from('weekly_reports').upsert(supabaseData, {
+          onConflict: 'id',
+        }),
+      ),
+      NETWORK_TIMEOUT_MS,
+      'Weekly report upsert',
+    );
+    const supabaseError = (response as { error: { message: string } | null }).error;
+
+    if (supabaseError) {
+      logger.error('Supabase upsert failed for weekly report', supabaseError);
+      return { success: false, error: supabaseError.message };
+    }
+
+    await db.runAsync(
+      `UPDATE weekly_reports SET supabase_id = ?, sync_status = 'synced' WHERE id = ?`,
+      [supabaseId, reportId],
+    );
+
+    logger.info('Weekly report synced successfully', { reportId, supabaseId });
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Failed to sync weekly report', { reportId, error });
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Sync a single sponsor connection to Supabase
+ * Maps local connection data to Supabase schema
+ */
+export async function syncSponsorConnection(
+  db: StorageAdapter,
+  connectionId: string,
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const connection = await db.getFirstAsync<LocalSponsorConnection>(
+      'SELECT * FROM sponsor_connections WHERE id = ? AND user_id = ?',
+      [connectionId, userId],
+    );
+
+    if (!connection) {
+      return { success: false, error: 'Sponsor connection not found' };
+    }
+
+    const supabaseId = connection.supabase_id || generateUUID();
+
+    const supabaseData = {
+      id: supabaseId,
+      user_id: userId,
+      role: connection.role,
+      status: connection.status,
+      invite_code: connection.invite_code,
+      display_name: connection.display_name,
+      own_public_key: connection.own_public_key,
+      peer_public_key: connection.peer_public_key,
+      shared_key: connection.shared_key,
+      pending_private_key: connection.pending_private_key,
+      created_at: connection.created_at,
+      updated_at: connection.updated_at,
+    };
+
+    const response = await withTimeout(
+      Promise.resolve(
+        supabase.from('sponsor_connections').upsert(supabaseData, {
+          onConflict: 'id',
+        }),
+      ),
+      NETWORK_TIMEOUT_MS,
+      'Sponsor connection upsert',
+    );
+    const supabaseError = (response as { error: { message: string } | null }).error;
+
+    if (supabaseError) {
+      logger.error('Supabase upsert failed for sponsor connection', supabaseError);
+      return { success: false, error: supabaseError.message };
+    }
+
+    await db.runAsync(
+      `UPDATE sponsor_connections SET supabase_id = ?, sync_status = 'synced', updated_at = ? WHERE id = ?`,
+      [supabaseId, new Date().toISOString(), connectionId],
+    );
+
+    logger.info('Sponsor connection synced successfully', { connectionId, supabaseId });
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Failed to sync sponsor connection', { connectionId, error });
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Sync a single sponsor shared entry to Supabase
+ * Maps local shared entry data to Supabase schema
+ */
+export async function syncSponsorSharedEntry(
+  db: StorageAdapter,
+  entryId: string,
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const entry = await db.getFirstAsync<LocalSponsorSharedEntry>(
+      'SELECT * FROM sponsor_shared_entries WHERE id = ? AND user_id = ?',
+      [entryId, userId],
+    );
+
+    if (!entry) {
+      return { success: false, error: 'Sponsor shared entry not found' };
+    }
+
+    const supabaseId = entry.supabase_id || generateUUID();
+
+    // Get the supabase_id for the connection_id reference
+    const connection = await db.getFirstAsync<{ supabase_id: string | null }>(
+      'SELECT supabase_id FROM sponsor_connections WHERE id = ?',
+      [entry.connection_id],
+    );
+
+    if (!connection?.supabase_id) {
+      return { success: false, error: 'Parent sponsor connection not synced yet' };
+    }
+
+    const supabaseData = {
+      id: supabaseId,
+      user_id: userId,
+      connection_id: connection.supabase_id,
+      direction: entry.direction,
+      journal_entry_id: entry.journal_entry_id,
+      payload: entry.payload, // Already encrypted
+      created_at: entry.created_at,
+      updated_at: entry.updated_at,
+    };
+
+    const response = await withTimeout(
+      Promise.resolve(
+        supabase.from('sponsor_shared_entries').upsert(supabaseData, {
+          onConflict: 'id',
+        }),
+      ),
+      NETWORK_TIMEOUT_MS,
+      'Sponsor shared entry upsert',
+    );
+    const supabaseError = (response as { error: { message: string } | null }).error;
+
+    if (supabaseError) {
+      logger.error('Supabase upsert failed for sponsor shared entry', supabaseError);
+      return { success: false, error: supabaseError.message };
+    }
+
+    await db.runAsync(
+      `UPDATE sponsor_shared_entries SET supabase_id = ?, sync_status = 'synced', updated_at = ? WHERE id = ?`,
+      [supabaseId, new Date().toISOString(), entryId],
+    );
+
+    logger.info('Sponsor shared entry synced successfully', { entryId, supabaseId });
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Failed to sync sponsor shared entry', { entryId, error });
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
  * Delete a record from Supabase
  */
 async function deleteFromSupabase(
@@ -674,6 +932,12 @@ async function processSyncItem(
       return syncFavoriteMeeting(db, item.record_id, userId);
     case 'reading_reflections':
       return syncReadingReflection(db, item.record_id, userId);
+    case 'weekly_reports':
+      return syncWeeklyReport(db, item.record_id, userId);
+    case 'sponsor_connections':
+      return syncSponsorConnection(db, item.record_id, userId);
+    case 'sponsor_shared_entries':
+      return syncSponsorSharedEntry(db, item.record_id, userId);
     default:
       return {
         success: false,

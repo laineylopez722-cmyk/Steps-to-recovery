@@ -2,15 +2,15 @@
 import './polyfills';
 
 // Initialize Sentry early for crash reporting
-import { initSentry, wrap as sentryWrap } from './src/lib/sentry';
+import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
 initSentry();
 
-import React, { Suspense, useState, useMemo, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryProvider } from './src/providers/QueryProvider';
 import { ThemeProvider } from './src/design-system';
 import { DatabaseProvider } from './src/contexts/DatabaseContext';
 import { AuthProvider } from './src/contexts/AuthContext';
@@ -19,27 +19,6 @@ import { NotificationProvider } from './src/contexts/NotificationContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { PortalHost } from '@rn-primitives/portal';
-
-/**
- * Create a new QueryClient with optimized defaults for recovery app
- * - Retry twice on failure for resilience
- * - 5 minute stale time to reduce unnecessary refetches
- * - Garbage collection after 10 minutes to manage memory
- */
-function createQueryClient(): QueryClient {
-  return new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: 2,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-      },
-      mutations: {
-        retry: 1,
-      },
-    },
-  });
-}
 
 /**
  * Loading fallback shown during Suspense boundaries
@@ -77,21 +56,18 @@ function LoadingFallback(): React.ReactElement {
  *
  * Provider order is CRITICAL for proper initialization:
  * 1. ErrorBoundary - Catches all errors
- * 2. QueryClientProvider - React Query for async state
+ * 2. QueryProvider - React Query with offline persistence
  * 3. SafeAreaProvider - Safe area insets
  * 4. GestureHandlerRootView - Required for gestures/animations
  * 5. ThemeProvider - Design system theming
  * 6. DatabaseProvider - Local SQLite/IndexedDB
  * 7. AuthProvider - Supabase authentication
- * 8. SyncProvider - Background cloud sync
+ * 8. SyncProvider - Background cloud sync (legacy, being phased out)
  * 9. NotificationProvider - Push notifications
  */
 function App(): React.ReactElement {
   // Key used to force a full remount of the app tree on error recovery
   const [resetKey, setResetKey] = useState(0);
-
-  // Create a fresh QueryClient whenever the app resets
-  const queryClient = useMemo(() => createQueryClient(), [resetKey]);
 
   // Callback to trigger a full app remount (used by ErrorBoundary)
   const handleReset = useCallback(() => {
@@ -100,31 +76,31 @@ function App(): React.ReactElement {
 
   return (
     <ErrorBoundary key={resetKey} onReset={handleReset}>
-      <QueryClientProvider client={queryClient}>
+      <QueryProvider>
         <SafeAreaProvider>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <ThemeProvider>
-              <Suspense fallback={<LoadingFallback />}>
-                <DatabaseProvider>
-                  <AuthProvider>
-                    <SyncProvider>
-                      <NotificationProvider>
+              <DatabaseProvider>
+                <AuthProvider>
+                  <SyncProvider>
+                    <NotificationProvider>
+                      <Suspense fallback={<LoadingFallback />}>
                         <RootNavigator />
-                        <StatusBar
-                          style="light"
-                          backgroundColor="#0f172a"
-                          translucent={Platform.OS === 'android'}
-                        />
-                        <PortalHost />
-                      </NotificationProvider>
-                    </SyncProvider>
-                  </AuthProvider>
-                </DatabaseProvider>
-              </Suspense>
+                      </Suspense>
+                      <StatusBar
+                        style="light"
+                        backgroundColor="#0f172a"
+                        translucent={Platform.OS === 'android'}
+                      />
+                      <PortalHost />
+                    </NotificationProvider>
+                  </SyncProvider>
+                </AuthProvider>
+              </DatabaseProvider>
             </ThemeProvider>
           </GestureHandlerRootView>
         </SafeAreaProvider>
-      </QueryClientProvider>
+      </QueryProvider>
     </ErrorBoundary>
   );
 }

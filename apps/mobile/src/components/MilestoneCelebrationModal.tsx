@@ -95,6 +95,7 @@ export function MilestoneCelebrationModal({
       // Reset on close
       scale.value = withSpring(0);
       opacity.value = withTiming(0, { duration: 150 });
+      return undefined;
     }
   }, [visible, milestone]);
 

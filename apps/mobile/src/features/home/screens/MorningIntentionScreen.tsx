@@ -100,6 +100,8 @@ export function MorningIntentionScreen({
           <Card variant="flat" style={styles.headerCard}>
             <Text
               style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 4 }]}
+              accessibilityRole="header"
+              accessibilityLabel="Good Morning"
             >
               Good Morning
             </Text>
@@ -166,6 +168,7 @@ export function MorningIntentionScreen({
               style={styles.slider}
               accessibilityLabel={`Mood level: ${moodLabels[mood - 1]}`}
               accessibilityRole="adjustable"
+              accessibilityHint="Slide to adjust your mood level from 1 to 5"
             />
           </Card>
         </Animated.View>
@@ -179,7 +182,9 @@ export function MorningIntentionScreen({
             disabled={!intention.trim() || isPending}
             loading={isPending}
             accessibilityLabel="Submit morning check-in"
+            accessibilityRole="button"
             accessibilityHint="Complete your morning check-in and start your day"
+            accessibilityState={{ disabled: !intention.trim() || isPending }}
             style={styles.submitButton}
           >
             Start My Day
@@ -189,7 +194,7 @@ export function MorningIntentionScreen({
 
       {/* Success Modal */}
       <Modal visible={showSuccessModal} transparent animationType="fade" statusBarTranslucent>
-        <View style={styles.successModalOverlay}>
+        <View style={styles.successModalOverlay} accessible={false}>
           <Animated.View
             entering={FadeIn.duration(200)}
             exiting={SlideOutDown.duration(300)}
@@ -201,6 +206,8 @@ export function MorningIntentionScreen({
                 ...(theme.isDark ? theme.shadows.lgDark : theme.shadows.lg),
               },
             ]}
+            accessibilityRole="alert"
+            accessibilityLabel="Morning check-in completed successfully"
           >
             <AnimatedCheckmark
               size={100}
@@ -212,6 +219,7 @@ export function MorningIntentionScreen({
                 theme.typography.h2,
                 { color: theme.colors.text, marginTop: 20, textAlign: 'center' },
               ]}
+              accessibilityRole="header"
             >
               Great Start!
             </Text>

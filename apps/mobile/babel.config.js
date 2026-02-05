@@ -1,13 +1,37 @@
 // Ensure critical polyfills (e.g., localStorage shim) are loaded before Metro parses the app.
-// CRITICAL: Must be CommonJS for Metro compatibility
-import './polyfills.cjs';
+// CRITICAL: Must be CommonJS for Metro and Jest compatibility
+require('./polyfills.cjs');
 
 /** @param {import('@babel/core').ConfigAPI} api */
-export default function (api) {
-  api.cache.forever();
+module.exports = function (api) {
+  api.cache.using(() => process.env.BABEL_ENV || process.env.NODE_ENV);
+  const isTest = api.env('test');
   return {
-    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          jsxImportSource: 'nativewind',
+          ...(isTest ? {} : { unstable_transformProfile: 'hermes-stable' }),
+        },
+      ],
+      [
+        '@babel/preset-react',
+        {
+          runtime: 'automatic',
+        },
+      ],
+      [
+        '@babel/preset-typescript',
+        {
+          isTSX: true,
+          allExtensions: true,
+        },
+      ],
+      'nativewind/babel',
+    ],
     plugins: [
+      '@babel/plugin-syntax-typescript',
       [
         'module-resolver',
         {

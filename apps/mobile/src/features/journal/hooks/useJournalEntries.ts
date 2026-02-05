@@ -7,6 +7,13 @@ import { addToSyncQueue, addDeleteToSyncQueue } from '../../../services/syncServ
 import type { JournalEntry } from '@recovery/shared/src/types/database';
 import type { JournalEntryDecrypted } from '@recovery/shared/src/types/models';
 
+// Query keys for journal entries
+const journalKeys = {
+  all: ['journal_entries'] as const,
+  byUser: (userId: string) => [...journalKeys.all, userId] as const,
+  byId: (userId: string, id: string) => [...journalKeys.byUser(userId), id] as const,
+};
+
 /**
  * Decrypt a journal entry from database format to UI format
  */
@@ -38,10 +45,14 @@ async function decryptJournalEntry(entry: JournalEntry): Promise<JournalEntryDec
 
 /**
  * Hook to fetch all journal entries for the current user
+ * - Returns cached data immediately (stale-while-revalidate)
+ * - Persists across app restarts
+ * - Auto-refreshes when app comes to foreground
  */
 export function useJournalEntries(userId: string): {
   entries: JournalEntryDecrypted[];
   isLoading: boolean;
+  isFetching: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
 } {
@@ -49,10 +60,11 @@ export function useJournalEntries(userId: string): {
   const {
     data: entries = [],
     isLoading,
+    isFetching,
     error,
     refetch,
   } = useQuery({
-    queryKey: ['journal_entries', userId],
+    queryKey: journalKeys.byUser(userId),
     queryFn: async () => {
       if (!db || !isReady) {
         throw new Error('Database not ready');
@@ -71,11 +83,16 @@ export function useJournalEntries(userId: string): {
       }
     },
     enabled: isReady && !!db,
+    // Cache for 5 minutes - journal entries don't change often
+    staleTime: 5 * 60 * 1000,
+    // Keep data for 24 hours for offline support
+    gcTime: 24 * 60 * 60 * 1000,
   });
 
   return {
     entries,
     isLoading,
+    isFetching,
     error: error as Error | null,
     refetch: async () => {
       await refetch();
@@ -83,8 +100,19 @@ export function useJournalEntries(userId: string): {
   };
 }
 
+// Type for create entry variables
+interface CreateEntryVariables {
+  entry: Omit<
+    JournalEntryDecrypted,
+    'id' | 'user_id' | 'created_at' | 'updated_at' | 'sync_status' | 'supabase_id'
+  >;
+}
+
 /**
- * Hook to create a new journal entry
+ * Hook to create a new journal entry with optimistic updates
+ * - Updates UI immediately before server responds
+ * - Rolls back on error
+ * - Queues for sync if offline
  */
 export function useCreateJournalEntry(userId: string): {
   createEntry: (
@@ -98,67 +126,102 @@ export function useCreateJournalEntry(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: async (
-      entry: Omit<
-        JournalEntryDecrypted,
-        'id' | 'user_id' | 'created_at' | 'updated_at' | 'sync_status' | 'supabase_id'
-      >,
-    ) => {
-      try {
-        const id = generateId('journal');
-        const now = new Date().toISOString();
+  const mutation = useMutation<void, Error, CreateEntryVariables, { previousEntries: JournalEntryDecrypted[] | undefined }>({
+    mutationKey: ['createJournalEntry', userId],
+    mutationFn: async ({ entry }: CreateEntryVariables) => {
+      if (!db) throw new Error('Database not initialized');
 
-        const encrypted_title = entry.title ? await encryptContent(entry.title) : null;
-        const encrypted_body = await encryptContent(entry.body);
-        const encrypted_mood =
-          entry.mood !== null ? await encryptContent(entry.mood.toString()) : null;
-        const encrypted_craving =
-          entry.craving !== null ? await encryptContent(entry.craving.toString()) : null;
-        const encrypted_tags =
-          entry.tags.length > 0 ? await encryptContent(JSON.stringify(entry.tags)) : null;
+      const id = generateId('journal');
+      const now = new Date().toISOString();
 
-        if (!db) throw new Error('Database not initialized');
+      const encrypted_title = entry.title ? await encryptContent(entry.title) : null;
+      const encrypted_body = await encryptContent(entry.body);
+      const encrypted_mood =
+        entry.mood !== null ? await encryptContent(entry.mood.toString()) : null;
+      const encrypted_craving =
+        entry.craving !== null ? await encryptContent(entry.craving.toString()) : null;
+      const encrypted_tags =
+        entry.tags.length > 0 ? await encryptContent(JSON.stringify(entry.tags)) : null;
 
-        await db.runAsync(
-          `INSERT INTO journal_entries (id, user_id, encrypted_title, encrypted_body, encrypted_mood, encrypted_craving, encrypted_tags, created_at, updated_at, sync_status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            id,
-            userId,
-            encrypted_title,
-            encrypted_body,
-            encrypted_mood,
-            encrypted_craving,
-            encrypted_tags,
-            now,
-            now,
-            'pending',
-          ],
-        );
+      await db.runAsync(
+        `INSERT INTO journal_entries (id, user_id, encrypted_title, encrypted_body, encrypted_mood, encrypted_craving, encrypted_tags, created_at, updated_at, sync_status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          userId,
+          encrypted_title,
+          encrypted_body,
+          encrypted_mood,
+          encrypted_craving,
+          encrypted_tags,
+          now,
+          now,
+          'pending',
+        ],
+      );
 
-        // Add to sync queue for cloud backup
-        await addToSyncQueue(db, 'journal_entries', id, 'insert');
+      // Add to sync queue for cloud backup
+      await addToSyncQueue(db, 'journal_entries', id, 'insert');
 
-        logger.info('Journal entry created', { id });
-      } catch (err) {
-        logger.error('Failed to create journal entry', err);
-        throw err;
+      logger.info('Journal entry created', { id });
+    },
+
+    // Optimistically update the UI immediately
+    onMutate: async ({ entry }) => {
+      await queryClient.cancelQueries({ queryKey: journalKeys.byUser(userId) });
+      
+      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(journalKeys.byUser(userId));
+      
+      const optimisticEntry: JournalEntryDecrypted = {
+        ...entry,
+        id: 'temp-' + Date.now(),
+        user_id: userId,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        sync_status: 'pending',
+        supabase_id: null,
+      };
+
+      // Add new entry to the beginning of the list
+      queryClient.setQueryData(journalKeys.byUser(userId), [
+        optimisticEntry,
+        ...(previousEntries || []),
+      ]);
+      
+      return { previousEntries };
+    },
+
+    onError: (error, _variables, context) => {
+      logger.error('Failed to create journal entry', error);
+      if (context?.previousEntries) {
+        queryClient.setQueryData(journalKeys.byUser(userId), context.previousEntries);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['journal_entries', userId] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
     },
   });
 
   return {
-    createEntry: mutation.mutateAsync,
+    createEntry: (entry) => mutation.mutateAsync({ entry }),
     isPending: mutation.isPending,
   };
 }
 
+// Type for update entry variables
+interface UpdateEntryVariables {
+  id: string;
+  entry: Partial<
+    Omit<
+      JournalEntryDecrypted,
+      'id' | 'user_id' | 'created_at' | 'updated_at' | 'sync_status' | 'supabase_id'
+    >
+  >;
+}
+
 /**
- * Hook to update an existing journal entry
+ * Hook to update an existing journal entry with optimistic updates
  */
 export function useUpdateJournalEntry(userId: string): {
   updateEntry: (
@@ -175,75 +238,86 @@ export function useUpdateJournalEntry(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: async ({
-      id,
-      entry,
-    }: {
-      id: string;
-      entry: Partial<
-        Omit<
-          JournalEntryDecrypted,
-          'id' | 'user_id' | 'created_at' | 'updated_at' | 'sync_status' | 'supabase_id'
-        >
-      >;
-    }) => {
-      try {
-        const now = new Date().toISOString();
-        const updates: string[] = [];
-        const values: (string | null)[] = [];
+  const mutation = useMutation<void, Error, UpdateEntryVariables, { previousEntries: JournalEntryDecrypted[] | undefined }>({
+    mutationKey: ['updateJournalEntry', userId],
+    mutationFn: async ({ id, entry }: UpdateEntryVariables) => {
+      if (!db) throw new Error('Database not initialized');
 
-        if (entry.title !== undefined) {
-          updates.push('encrypted_title = ?');
-          values.push(entry.title ? await encryptContent(entry.title) : null);
-        }
-        if (entry.body !== undefined) {
-          updates.push('encrypted_body = ?');
-          values.push(await encryptContent(entry.body));
-        }
-        if (entry.mood !== undefined) {
-          updates.push('encrypted_mood = ?');
-          values.push(entry.mood !== null ? await encryptContent(entry.mood.toString()) : null);
-        }
-        if (entry.craving !== undefined) {
-          updates.push('encrypted_craving = ?');
-          values.push(
-            entry.craving !== null ? await encryptContent(entry.craving.toString()) : null,
-          );
-        }
-        if (entry.tags !== undefined) {
-          updates.push('encrypted_tags = ?');
-          values.push(
-            entry.tags.length > 0 ? await encryptContent(JSON.stringify(entry.tags)) : null,
-          );
-        }
+      const now = new Date().toISOString();
+      const updates: string[] = [];
+      const values: (string | null)[] = [];
 
-        updates.push('updated_at = ?');
-        values.push(now);
-        updates.push('sync_status = ?');
-        values.push('pending');
+      if (entry.title !== undefined) {
+        updates.push('encrypted_title = ?');
+        values.push(entry.title ? await encryptContent(entry.title) : null);
+      }
+      if (entry.body !== undefined) {
+        updates.push('encrypted_body = ?');
+        values.push(await encryptContent(entry.body));
+      }
+      if (entry.mood !== undefined) {
+        updates.push('encrypted_mood = ?');
+        values.push(entry.mood !== null ? await encryptContent(entry.mood.toString()) : null);
+      }
+      if (entry.craving !== undefined) {
+        updates.push('encrypted_craving = ?');
+        values.push(
+          entry.craving !== null ? await encryptContent(entry.craving.toString()) : null,
+        );
+      }
+      if (entry.tags !== undefined) {
+        updates.push('encrypted_tags = ?');
+        values.push(
+          entry.tags.length > 0 ? await encryptContent(JSON.stringify(entry.tags)) : null,
+        );
+      }
 
-        values.push(id);
-        values.push(userId);
+      updates.push('updated_at = ?');
+      values.push(now);
+      updates.push('sync_status = ?');
+      values.push('pending');
 
-        if (!db) throw new Error('Database not initialized');
+      values.push(id);
+      values.push(userId);
 
-        await db.runAsync(
-          `UPDATE journal_entries SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
-          values,
+      await db.runAsync(
+        `UPDATE journal_entries SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
+        values,
+      );
+
+      // Add to sync queue for cloud backup
+      await addToSyncQueue(db, 'journal_entries', id, 'update');
+
+      logger.info('Journal entry updated', { id });
+    },
+
+    onMutate: async ({ id, entry }) => {
+      await queryClient.cancelQueries({ queryKey: journalKeys.byUser(userId) });
+      
+      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(journalKeys.byUser(userId));
+      
+      if (previousEntries) {
+        const optimisticEntries = previousEntries.map((e) =>
+          e.id === id
+            ? { ...e, ...entry, updated_at: new Date().toISOString() }
+            : e
         );
 
-        // Add to sync queue for cloud backup
-        await addToSyncQueue(db, 'journal_entries', id, 'update');
+        queryClient.setQueryData(journalKeys.byUser(userId), optimisticEntries);
+      }
+      
+      return { previousEntries };
+    },
 
-        logger.info('Journal entry updated', { id });
-      } catch (err) {
-        logger.error('Failed to update journal entry', err);
-        throw err;
+    onError: (error, _variables, context) => {
+      logger.error('Failed to update journal entry', error);
+      if (context?.previousEntries) {
+        queryClient.setQueryData(journalKeys.byUser(userId), context.previousEntries);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['journal_entries', userId] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
     },
   });
 
@@ -254,7 +328,7 @@ export function useUpdateJournalEntry(userId: string): {
 }
 
 /**
- * Hook to delete a journal entry
+ * Hook to delete a journal entry with optimistic removal
  */
 export function useDeleteJournalEntry(userId: string): {
   deleteEntry: (id: string) => Promise<void>;
@@ -263,24 +337,40 @@ export function useDeleteJournalEntry(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const mutation = useMutation<void, Error, string, { previousEntries: JournalEntryDecrypted[] | undefined }>({
+    mutationKey: ['deleteJournalEntry', userId],
     mutationFn: async (id: string) => {
       if (!db) throw new Error('Database not initialized');
 
-      try {
-        // Capture supabase_id and add to sync queue BEFORE deleting
-        // This ensures we can delete from Supabase even after local deletion
-        await addDeleteToSyncQueue(db, 'journal_entries', id, userId);
+      // Capture supabase_id and add to sync queue BEFORE deleting
+      await addDeleteToSyncQueue(db, 'journal_entries', id, userId);
 
-        await db.runAsync('DELETE FROM journal_entries WHERE id = ? AND user_id = ?', [id, userId]);
-        logger.info('Journal entry deleted', { id });
-      } catch (err) {
-        logger.error('Failed to delete journal entry', err);
-        throw err;
+      await db.runAsync('DELETE FROM journal_entries WHERE id = ? AND user_id = ?', [id, userId]);
+      logger.info('Journal entry deleted', { id });
+    },
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: journalKeys.byUser(userId) });
+      
+      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(journalKeys.byUser(userId));
+      
+      if (previousEntries) {
+        const optimisticEntries = previousEntries.filter((e) => e.id !== id);
+        queryClient.setQueryData(journalKeys.byUser(userId), optimisticEntries);
+      }
+      
+      return { previousEntries };
+    },
+
+    onError: (error, _id, context) => {
+      logger.error('Failed to delete journal entry', error);
+      if (context?.previousEntries) {
+        queryClient.setQueryData(journalKeys.byUser(userId), context.previousEntries);
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['journal_entries', userId] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
     },
   });
 
@@ -289,3 +379,6 @@ export function useDeleteJournalEntry(userId: string): {
     isPending: mutation.isPending,
   };
 }
+
+// Re-export query keys for use in other components
+export { journalKeys };

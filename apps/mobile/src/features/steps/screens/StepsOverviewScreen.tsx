@@ -201,6 +201,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
         <Text
           style={[theme.typography.h1, { color: theme.colors.text }]}
           accessibilityRole="header"
+          accessibilityLabel="The 12 Steps"
         >
           The 12 Steps
         </Text>

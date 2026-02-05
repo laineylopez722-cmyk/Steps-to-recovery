@@ -9,6 +9,7 @@
  * - AES-256-CBC encryption with unique IV per encryption
  * - HMAC-SHA256 authentication tag (encrypt-then-MAC)
  * - PBKDF2 key derivation (100,000 iterations)
+ * - Constant-time MAC comparison to prevent timing attacks
  * - Keys stored in SecureStore (never in AsyncStorage or database)
  * - Platform-agnostic implementation (works on mobile and web)
  *
@@ -18,6 +19,26 @@
 import CryptoJS from 'crypto-js';
 import { Platform } from 'react-native';
 import { secureStorage } from '../adapters/secureStorage';
+
+/**
+ * Constant-time string comparison to prevent timing attacks
+ * 
+ * This function compares two strings in constant time, regardless of
+ * where they differ. This prevents timing attacks that could leak
+ * information about the expected MAC value.
+ * 
+ * @param a - First string to compare
+ * @param b - Second string to compare
+ * @returns true if strings are equal, false otherwise
+ */
+function constantTimeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return result === 0;
+}
 
 /** Secure storage key for encryption master key */
 const ENCRYPTION_KEY_NAME = 'journal_encryption_key';
@@ -183,13 +204,13 @@ export async function decryptContent(encrypted: string): Promise<string> {
   }
   const [iv, ciphertext, mac] = parts;
   if (!iv || !ciphertext) throw new Error('Invalid format');
-  if (parts.length === 3 && !mac) throw new Error('Invalid format');
+  if (parts.length === 3 && mac === '') throw new Error('Invalid format');
   if (mac) {
     const keyWordArray = CryptoJS.enc.Hex.parse(key);
     const macKey = CryptoJS.SHA256(keyWordArray);
     const payload = `${iv}:${ciphertext}`;
     const expectedMac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
-    if (expectedMac !== mac) {
+    if (!constantTimeEqual(expectedMac, mac)) {
       throw new Error('Integrity check failed');
     }
   }

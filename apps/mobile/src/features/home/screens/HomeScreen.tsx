@@ -47,8 +47,12 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
         >
           <View style={styles.header}>
             <View style={styles.headerTitle}>
-              <Text style={{ fontSize: 20, marginRight: 8 }}>✨</Text>
-              <Text style={[theme.typography.h1, { color: theme.colors.text, fontSize: 24 }]}>
+              <Text style={{ fontSize: 20, marginRight: 8 }} accessible={false}>✨</Text>
+              <Text 
+                style={[theme.typography.h1, { color: theme.colors.text, fontSize: 24 }]}
+                accessibilityRole="header"
+                accessibilityLabel="Welcome back"
+              >
                 Welcome back
               </Text>
             </View>
@@ -85,6 +89,8 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
         variant="danger"
         onPress={handleEmergency}
         accessibilityLabel="Emergency support button"
+        accessibilityRole="button"
+        accessibilityHint="Call emergency support contact"
       />
     </>
   );

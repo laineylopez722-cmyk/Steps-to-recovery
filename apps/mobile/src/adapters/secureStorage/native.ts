@@ -10,6 +10,7 @@
 
 import * as SecureStore from 'expo-secure-store';
 import type { SecureStorageAdapter } from './types';
+import { logger } from '../../utils/logger';
 
 /**
  * Custom error for SecureStore failures
@@ -36,7 +37,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
       // Log but don't throw - returning null allows auth flow to handle re-login
-      console.error(`[SecureStorage] Failed to get item "${key}":`, error);
+      logger.error(`Failed to get secure item "${key}"`, error);
 
       // Check for specific Android Keystore errors
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -46,7 +47,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
         errorMessage.includes('User not authenticated')
       ) {
         // Keystore locked or unavailable - user needs to unlock device or re-authenticate
-        console.warn('[SecureStorage] Keystore unavailable - user may need to re-authenticate');
+        logger.warn('Keystore unavailable - user may need to re-authenticate');
       }
 
       return null;
@@ -61,7 +62,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
     try {
       await SecureStore.setItemAsync(key, value);
     } catch (error) {
-      console.error(`[SecureStorage] Failed to set item "${key}":`, error);
+      logger.error(`Failed to set secure item "${key}"`, error);
 
       throw new SecureStorageError(
         `Failed to store secure data: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -81,7 +82,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
       await SecureStore.deleteItemAsync(key);
     } catch (error) {
       // Log but don't throw - deletion failure during logout is non-critical
-      console.error(`[SecureStorage] Failed to delete item "${key}":`, error);
+      logger.error(`Failed to delete secure item "${key}"`, error);
 
       // Only throw if it's a critical Keystore error
       const errorMessage = error instanceof Error ? error.message : String(error);

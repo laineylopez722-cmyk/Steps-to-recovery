@@ -7,12 +7,12 @@
 import React, { useState, useCallback } from 'react';
 import {
   View,
-  FlatList,
   StyleSheet,
   RefreshControl,
   ActivityIndicator,
   Pressable,
 } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
@@ -22,8 +22,9 @@ import { MeetingCard } from '../components/MeetingCard';
 import { MeetingFilters } from '../components/MeetingFilters';
 import { useNearbyMeetings } from '../hooks/useNearbyMeetings';
 import type { MeetingWithDetails } from '../types/meeting';
+import type { MeetingsStackParamList } from '../../../navigation/types';
 
-type MeetingFinderScreenProps = NativeStackScreenProps<Record<string, unknown>, 'MeetingFinder'>;
+type MeetingFinderScreenProps = NativeStackScreenProps<MeetingsStackParamList, 'MeetingFinder'>;
 
 export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): React.ReactElement {
   const theme = useTheme();
@@ -183,7 +184,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   // List view with meetings
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <FlatList
+      <FlashList
         data={meetings}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (

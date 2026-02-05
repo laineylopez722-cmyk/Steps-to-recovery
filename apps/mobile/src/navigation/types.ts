@@ -24,12 +24,22 @@ export type HomeStackParamList = {
   Emergency: undefined;
   DailyReading: undefined;
   ProgressDashboard: undefined;
+  MeetingStats: undefined;
+  Achievements: undefined;
+  DangerZone: undefined;
+  SafeDialIntervention: { contactName: string; phoneNumber: string };
 };
 
 // Journal Stack
 export type JournalStackParamList = {
   JournalList: undefined;
-  JournalEditor: { mode?: 'create' | 'edit'; entryId?: string } | undefined;
+  JournalEditor: { 
+    mode?: 'create' | 'edit'; 
+    entryId?: string;
+    initialTitle?: string;
+    initialContent?: string;
+    tags?: string[];
+  } | undefined;
 };
 
 // Steps Stack

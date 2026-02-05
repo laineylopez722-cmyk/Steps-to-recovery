@@ -263,11 +263,16 @@ export function StepDetailScreen(): React.ReactElement {
     ({ item }: ListRenderItemInfo<ListItem>) => {
       if (item.type === 'section') {
         return (
-          <View style={[styles.sectionHeader, { backgroundColor: theme.colors.primary + '10' }]}>
+          <View 
+            style={[styles.sectionHeader, { backgroundColor: theme.colors.primary + '10' }]}
+            accessibilityRole="header"
+            accessibilityLabel={`${item.title}, ${item.questionRange}`}
+          >
             <MaterialCommunityIcons
               name="bookmark-outline"
               size={20}
               color={theme.colors.primary}
+              accessible={false}
             />
             <View style={styles.sectionHeaderContent}>
               <Text
@@ -287,7 +292,7 @@ export function StepDetailScreen(): React.ReactElement {
         return (
           <Card variant="outlined" style={[styles.infoCard, { borderColor: theme.colors.success }]}>
             <View style={styles.infoContent}>
-              <MaterialCommunityIcons name="lock" size={24} color={theme.colors.success} />
+              <MaterialCommunityIcons name="lock" size={24} color={theme.colors.success} accessible={false} />
               <Text
                 style={[
                   theme.typography.caption,
@@ -357,6 +362,7 @@ export function StepDetailScreen(): React.ReactElement {
             showCharacterCount
             editable={!isSaving}
             accessibilityLabel={`Answer for question ${questionNumber} of ${totalQuestions}`}
+            accessibilityHint={`Write your answer to: ${item.prompt}`}
           />
 
           <Button
@@ -366,6 +372,10 @@ export function StepDetailScreen(): React.ReactElement {
             loading={isSaving}
             variant="primary"
             fullWidth
+            accessibilityLabel={isSaving ? 'Saving answer' : isAnswered ? 'Update answer' : 'Save answer'}
+            accessibilityRole="button"
+            accessibilityHint="Save your answer to this step question"
+            accessibilityState={{ disabled: !answers[questionNumber]?.trim() || isSaving }}
           />
         </Card>
       );

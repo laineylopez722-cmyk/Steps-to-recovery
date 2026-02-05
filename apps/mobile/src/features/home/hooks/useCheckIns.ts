@@ -1,4 +1,5 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { decryptContent, encryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
@@ -15,6 +16,22 @@ interface DailyCheckInWithGratitude extends DailyCheckIn {
 interface DailyCheckInDecryptedWithGratitude extends DailyCheckInDecrypted {
   gratitude?: string | null;
 }
+
+// Type for today's check-ins query result
+interface TodayCheckInsResult {
+  morning: DailyCheckInDecryptedWithGratitude | null;
+  evening: DailyCheckInDecryptedWithGratitude | null;
+  date: string;
+}
+
+// Query keys for check-ins
+const checkInKeys = {
+  all: ['daily_checkins'] as const,
+  byUser: (userId: string) => [...checkInKeys.all, userId] as const,
+  byDate: (userId: string, date: string) => [...checkInKeys.byUser(userId), date] as const,
+  today: (userId: string) => [...checkInKeys.byUser(userId), 'today'] as const,
+  streak: (userId: string) => ['streak', userId] as const,
+};
 
 /**
  * Decrypt a daily check-in from database format to UI format
@@ -54,20 +71,24 @@ async function decryptCheckIn(
 }
 
 /**
- * Hook to get today's check-ins
+ * Hook to get today's check-ins with offline-first support
+ * - Returns cached data immediately (stale-while-revalidate)
+ * - Automatically refreshes when online
+ * - Persists across app restarts
  */
 export function useTodayCheckIns(userId: string): {
   morning: DailyCheckInDecryptedWithGratitude | null;
   evening: DailyCheckInDecryptedWithGratitude | null;
   isLoading: boolean;
   error: Error | null;
+  isFetching: boolean;
 } {
   const { db, isReady } = useDatabase();
   const today = new Date().toISOString().split('T')[0];
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['daily_checkins', userId, today],
-    queryFn: async () => {
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: checkInKeys.today(userId),
+    queryFn: async (): Promise<TodayCheckInsResult> => {
       if (!db || !isReady) {
         throw new Error('Database not ready');
       }
@@ -81,13 +102,15 @@ export function useTodayCheckIns(userId: string): {
         const morning = decrypted.find((c) => c.check_in_type === 'morning') || null;
         const evening = decrypted.find((c) => c.check_in_type === 'evening') || null;
 
-        return { morning, evening };
+        return { morning, evening, date: today };
       } catch (err) {
         logger.error('Failed to fetch today check-ins', err);
         throw err;
       }
     },
     enabled: isReady && !!db,
+    // Stale time of 1 minute - data stays fresh for quick navigation
+    staleTime: 60 * 1000,
   });
 
   return {
@@ -95,80 +118,114 @@ export function useTodayCheckIns(userId: string): {
     evening: data?.evening || null,
     isLoading,
     error: error as Error | null,
+    isFetching,
   };
 }
 
+// Type for create check-in variables
+interface CreateCheckInVariables {
+  type: CheckInType;
+  intention?: string;
+  reflection?: string;
+  mood?: number;
+  craving?: number;
+  gratitude?: string;
+}
+
 /**
- * Hook to create a check-in
+ * Hook to create a check-in with optimistic updates
+ * - Updates UI immediately (optimistic)
+ * - Queues for sync if offline
+ * - Auto-retries on failure
  */
 export function useCreateCheckIn(userId: string): {
-  createCheckIn: (data: {
-    type: CheckInType;
-    intention?: string;
-    reflection?: string;
-    mood?: number;
-    craving?: number;
-    gratitude?: string;
-  }) => Promise<void>;
+  createCheckIn: (data: CreateCheckInVariables) => Promise<void>;
   isPending: boolean;
 } {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
+  const today = new Date().toISOString().split('T')[0];
 
-  const mutation = useMutation({
-    mutationFn: async (data: {
-      type: CheckInType;
-      intention?: string;
-      reflection?: string;
-      mood?: number;
-      craving?: number;
-      gratitude?: string;
-    }) => {
+  const mutation = useMutation<void, Error, CreateCheckInVariables, { previousData: TodayCheckInsResult | undefined }>({
+    mutationKey: ['createCheckIn', userId],
+    
+    mutationFn: async (data: CreateCheckInVariables): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
 
-      try {
-        const id = generateId('checkin');
-        const now = new Date().toISOString();
-        const today = now.split('T')[0];
+      const id = generateId('checkin');
+      const now = new Date().toISOString();
 
-        const encrypted_intention = data.intention ? await encryptContent(data.intention) : null;
-        const encrypted_reflection = data.reflection ? await encryptContent(data.reflection) : null;
-        const encrypted_mood =
-          data.mood !== undefined ? await encryptContent(data.mood.toString()) : null;
-        const encrypted_craving =
-          data.craving !== undefined ? await encryptContent(data.craving.toString()) : null;
-        const encrypted_gratitude = data.gratitude ? await encryptContent(data.gratitude) : null;
+      const encrypted_intention = data.intention ? await encryptContent(data.intention) : null;
+      const encrypted_reflection = data.reflection ? await encryptContent(data.reflection) : null;
+      const encrypted_mood =
+        data.mood !== undefined ? await encryptContent(data.mood.toString()) : null;
+      const encrypted_craving =
+        data.craving !== undefined ? await encryptContent(data.craving.toString()) : null;
+      const encrypted_gratitude = data.gratitude ? await encryptContent(data.gratitude) : null;
 
-        await db.runAsync(
-          `INSERT INTO daily_checkins (id, user_id, check_in_type, check_in_date, encrypted_intention, encrypted_reflection, encrypted_mood, encrypted_craving, encrypted_gratitude, created_at, sync_status)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            id,
-            userId,
-            data.type,
-            today,
-            encrypted_intention,
-            encrypted_reflection,
-            encrypted_mood,
-            encrypted_craving,
-            encrypted_gratitude,
-            now,
-            'pending',
-          ],
-        );
+      await db.runAsync(
+        `INSERT INTO daily_checkins (id, user_id, check_in_type, check_in_date, encrypted_intention, encrypted_reflection, encrypted_mood, encrypted_craving, encrypted_gratitude, created_at, sync_status)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          id,
+          userId,
+          data.type,
+          today,
+          encrypted_intention,
+          encrypted_reflection,
+          encrypted_mood,
+          encrypted_craving,
+          encrypted_gratitude,
+          now,
+          'pending',
+        ],
+      );
 
-        // Add to sync queue for cloud backup
-        await addToSyncQueue(db, 'daily_checkins', id, 'insert');
+      // Add to sync queue for cloud backup
+      await addToSyncQueue(db, 'daily_checkins', id, 'insert');
 
-        logger.info('Check-in created', { id, type: data.type });
-      } catch (err) {
-        logger.error('Failed to create check-in', err);
-        throw err;
+      logger.info('Check-in created', { id, type: data.type });
+    },
+
+    // Optimistically update the UI immediately
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: checkInKeys.today(userId) });
+      
+      const previousData = queryClient.getQueryData<TodayCheckInsResult>(checkInKeys.today(userId));
+      
+      const newCheckIn: DailyCheckInDecryptedWithGratitude = {
+        id: 'temp-' + Date.now(),
+        user_id: userId,
+        check_in_type: variables.type,
+        check_in_date: today,
+        intention: variables.intention || null,
+        reflection: variables.reflection || null,
+        mood: variables.mood ?? null,
+        craving: variables.craving ?? null,
+        gratitude: variables.gratitude || null,
+        created_at: new Date().toISOString(),
+        sync_status: 'pending',
+      };
+
+      const optimisticData: TodayCheckInsResult = variables.type === 'morning'
+        ? { morning: newCheckIn, evening: previousData?.evening ?? null, date: today }
+        : { morning: previousData?.morning ?? null, evening: newCheckIn, date: today };
+
+      queryClient.setQueryData(checkInKeys.today(userId), optimisticData);
+      
+      return { previousData };
+    },
+
+    onError: (error, _variables, context) => {
+      logger.error('Failed to create check-in', error);
+      if (context?.previousData) {
+        queryClient.setQueryData(checkInKeys.today(userId), context.previousData);
       }
     },
-    onSuccess: () => {
-      const today = new Date().toISOString().split('T')[0];
-      queryClient.invalidateQueries({ queryKey: ['daily_checkins', userId, today] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: checkInKeys.today(userId) });
+      queryClient.invalidateQueries({ queryKey: checkInKeys.streak(userId) });
     },
   });
 
@@ -178,77 +235,101 @@ export function useCreateCheckIn(userId: string): {
   };
 }
 
+// Type for update check-in variables
+interface UpdateCheckInVariables {
+  id: string;
+  data: { intention?: string; reflection?: string; mood?: number; craving?: number };
+}
+
 /**
- * Hook to update an existing check-in
+ * Hook to update a check-in with optimistic updates
  */
 export function useUpdateCheckIn(userId: string): {
-  updateCheckIn: (
-    id: string,
-    data: { intention?: string; reflection?: string; mood?: number; craving?: number },
-  ) => Promise<void>;
+  updateCheckIn: (id: string, data: UpdateCheckInVariables['data']) => Promise<void>;
   isPending: boolean;
 } {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: { intention?: string; reflection?: string; mood?: number; craving?: number };
-    }) => {
+  const mutation = useMutation<void, Error, UpdateCheckInVariables, { previousData: TodayCheckInsResult | undefined }>({
+    mutationKey: ['updateCheckIn', userId],
+    
+    mutationFn: async ({ id, data }: UpdateCheckInVariables): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
 
-      try {
-        const now = new Date().toISOString();
-        const updates: string[] = [];
-        const values: (string | null)[] = [];
+      const now = new Date().toISOString();
+      const updates: string[] = [];
+      const values: (string | null)[] = [];
 
-        if (data.intention !== undefined) {
-          updates.push('encrypted_intention = ?');
-          values.push(data.intention ? await encryptContent(data.intention) : null);
-        }
-        if (data.reflection !== undefined) {
-          updates.push('encrypted_reflection = ?');
-          values.push(data.reflection ? await encryptContent(data.reflection) : null);
-        }
-        if (data.mood !== undefined) {
-          updates.push('encrypted_mood = ?');
-          values.push(await encryptContent(data.mood.toString()));
-        }
-        if (data.craving !== undefined) {
-          updates.push('encrypted_craving = ?');
-          values.push(await encryptContent(data.craving.toString()));
-        }
+      if (data.intention !== undefined) {
+        updates.push('encrypted_intention = ?');
+        values.push(data.intention ? await encryptContent(data.intention) : null);
+      }
+      if (data.reflection !== undefined) {
+        updates.push('encrypted_reflection = ?');
+        values.push(data.reflection ? await encryptContent(data.reflection) : null);
+      }
+      if (data.mood !== undefined) {
+        updates.push('encrypted_mood = ?');
+        values.push(await encryptContent(data.mood.toString()));
+      }
+      if (data.craving !== undefined) {
+        updates.push('encrypted_craving = ?');
+        values.push(await encryptContent(data.craving.toString()));
+      }
 
-        updates.push('updated_at = ?');
-        values.push(now);
-        updates.push('sync_status = ?');
-        values.push('pending');
+      updates.push('updated_at = ?');
+      values.push(now);
+      updates.push('sync_status = ?');
+      values.push('pending');
 
-        values.push(id);
-        values.push(userId);
+      values.push(id);
+      values.push(userId);
 
-        await db.runAsync(
-          `UPDATE daily_checkins SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
-          values,
-        );
+      await db.runAsync(
+        `UPDATE daily_checkins SET ${updates.join(', ')} WHERE id = ? AND user_id = ?`,
+        values,
+      );
 
-        // Add to sync queue for cloud backup
-        await addToSyncQueue(db, 'daily_checkins', id, 'update');
+      // Add to sync queue for cloud backup
+      await addToSyncQueue(db, 'daily_checkins', id, 'update');
 
-        logger.info('Check-in updated', { id });
-      } catch (err) {
-        logger.error('Failed to update check-in', err);
-        throw err;
+      logger.info('Check-in updated', { id });
+    },
+
+    onMutate: async (variables) => {
+      await queryClient.cancelQueries({ queryKey: checkInKeys.today(userId) });
+      
+      const previousData = queryClient.getQueryData<TodayCheckInsResult>(checkInKeys.today(userId));
+      
+      if (previousData) {
+        const updateCheckIn = (checkIn: DailyCheckInDecryptedWithGratitude | null): DailyCheckInDecryptedWithGratitude | null => {
+          if (!checkIn || checkIn.id !== variables.id) return checkIn;
+          return { ...checkIn, ...variables.data };
+        };
+
+        const optimisticData: TodayCheckInsResult = {
+          ...previousData,
+          morning: updateCheckIn(previousData.morning),
+          evening: updateCheckIn(previousData.evening),
+        };
+
+        queryClient.setQueryData(checkInKeys.today(userId), optimisticData);
+      }
+      
+      return { previousData };
+    },
+
+    onError: (error, _variables, context) => {
+      logger.error('Failed to update check-in', error);
+      if (context?.previousData) {
+        queryClient.setQueryData(checkInKeys.today(userId), context.previousData);
       }
     },
-    onSuccess: () => {
-      const today = new Date().toISOString().split('T')[0];
-      queryClient.invalidateQueries({ queryKey: ['daily_checkins', userId, today] });
-      queryClient.invalidateQueries({ queryKey: ['streak', userId] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: checkInKeys.today(userId) });
+      queryClient.invalidateQueries({ queryKey: checkInKeys.streak(userId) });
     },
   });
 
@@ -259,7 +340,7 @@ export function useUpdateCheckIn(userId: string): {
 }
 
 /**
- * Hook to delete a check-in
+ * Hook to delete a check-in with optimistic removal
  */
 export function useDeleteCheckIn(userId: string): {
   deleteCheckIn: (id: string) => Promise<void>;
@@ -268,26 +349,47 @@ export function useDeleteCheckIn(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: async (id: string) => {
+  const mutation = useMutation<void, Error, string, { previousData: TodayCheckInsResult | undefined }>({
+    mutationKey: ['deleteCheckIn', userId],
+    
+    mutationFn: async (id: string): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
 
-      try {
-        // Capture supabase_id and add to sync queue BEFORE deleting
-        // This ensures we can delete from Supabase even after local deletion
-        await addDeleteToSyncQueue(db, 'daily_checkins', id, userId);
+      // Capture supabase_id and add to sync queue BEFORE deleting
+      await addDeleteToSyncQueue(db, 'daily_checkins', id, userId);
 
-        await db.runAsync('DELETE FROM daily_checkins WHERE id = ? AND user_id = ?', [id, userId]);
-        logger.info('Check-in deleted', { id });
-      } catch (err) {
-        logger.error('Failed to delete check-in', err);
-        throw err;
+      await db.runAsync('DELETE FROM daily_checkins WHERE id = ? AND user_id = ?', [id, userId]);
+      logger.info('Check-in deleted', { id });
+    },
+
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: checkInKeys.today(userId) });
+      
+      const previousData = queryClient.getQueryData<TodayCheckInsResult>(checkInKeys.today(userId));
+      
+      if (previousData) {
+        const optimisticData: TodayCheckInsResult = {
+          ...previousData,
+          morning: previousData.morning?.id === id ? null : previousData.morning,
+          evening: previousData.evening?.id === id ? null : previousData.evening,
+        };
+
+        queryClient.setQueryData(checkInKeys.today(userId), optimisticData);
+      }
+      
+      return { previousData };
+    },
+
+    onError: (error, _id, context) => {
+      logger.error('Failed to delete check-in', error);
+      if (context?.previousData) {
+        queryClient.setQueryData(checkInKeys.today(userId), context.previousData);
       }
     },
-    onSuccess: () => {
-      const today = new Date().toISOString().split('T')[0];
-      queryClient.invalidateQueries({ queryKey: ['daily_checkins', userId, today] });
-      queryClient.invalidateQueries({ queryKey: ['streak', userId] });
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: checkInKeys.today(userId) });
+      queryClient.invalidateQueries({ queryKey: checkInKeys.streak(userId) });
     },
   });
 
@@ -297,21 +399,29 @@ export function useDeleteCheckIn(userId: string): {
   };
 }
 
+// Type for streak result
+interface StreakResult {
+  current_streak: number;
+  longest_streak: number;
+  total_check_ins: number;
+}
+
 /**
- * Hook to calculate current streak
+ * Hook to calculate current streak with caching
  */
 export function useStreak(userId: string): {
   current_streak: number;
   longest_streak: number;
   total_check_ins: number;
   isLoading: boolean;
+  isFetching: boolean;
 } {
   const { db } = useDatabase();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['streak', userId],
-    queryFn: async () => {
-      if (!db) return { currentStreak: 0, longestStreak: 0 };
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: checkInKeys.streak(userId),
+    queryFn: async (): Promise<StreakResult> => {
+      if (!db) return { current_streak: 0, longest_streak: 0, total_check_ins: 0 };
 
       try {
         const result = await db.getAllAsync<{ check_in_date: string }>(
@@ -328,7 +438,6 @@ export function useStreak(userId: string): {
         let expectedDate = new Date(today);
 
         for (const dateStr of dates) {
-          const _checkDate = new Date(dateStr);
           const expectedStr = expectedDate.toISOString().split('T')[0];
 
           if (dateStr === expectedStr) {
@@ -357,6 +466,8 @@ export function useStreak(userId: string): {
         return { current_streak: 0, longest_streak: 0, total_check_ins: 0 };
       }
     },
+    // Cache streak for 5 minutes - it doesn't change often
+    staleTime: 5 * 60 * 1000,
   });
 
   return {
@@ -364,5 +475,9 @@ export function useStreak(userId: string): {
     longest_streak: data?.longest_streak || 0,
     total_check_ins: data?.total_check_ins || 0,
     isLoading,
+    isFetching,
   };
 }
+
+// Re-export query keys for use in other hooks
+export { checkInKeys };

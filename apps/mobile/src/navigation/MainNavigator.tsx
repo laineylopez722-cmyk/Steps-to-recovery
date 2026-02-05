@@ -23,8 +23,12 @@ import {
   MeetingDetailScreen,
   FavoriteMeetingsScreen,
 } from '../features/meetings/screens';
+import { MeetingStatsScreen } from '../features/meetings/screens/MeetingStatsScreen';
+import { AchievementsScreen } from '../features/meetings/screens/AchievementsScreen';
 import { DailyReadingScreen } from '../features/readings/screens';
 import { ProgressDashboardScreen } from '../features/progress/screens';
+import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen';
+import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -80,6 +84,34 @@ function HomeStackNavigator(): React.ReactElement {
       >
         {() => <ProgressDashboardScreen userId={userId} />}
       </HomeStack.Screen>
+      <HomeStack.Screen
+        name="MeetingStats"
+        options={{ title: 'Meeting Stats', headerBackTitle: 'Back' }}
+      >
+        {() => <MeetingStatsScreen userId={userId} />}
+      </HomeStack.Screen>
+      <HomeStack.Screen
+        name="Achievements"
+        options={{ title: 'Achievements', headerBackTitle: 'Back' }}
+      >
+        {() => <AchievementsScreen userId={userId} />}
+      </HomeStack.Screen>
+      <HomeStack.Screen
+        name="DangerZone"
+        options={{ title: 'Trigger Protection', headerBackTitle: 'Back' }}
+      >
+        {() => <DangerZoneScreen userId={userId} />}
+      </HomeStack.Screen>
+      <HomeStack.Screen
+        name="SafeDialIntervention"
+        component={SafeDialInterventionScreen}
+        options={{ 
+          title: 'Stop',
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          gestureEnabled: false,
+        }}
+      />
     </HomeStack.Navigator>
   );
 }

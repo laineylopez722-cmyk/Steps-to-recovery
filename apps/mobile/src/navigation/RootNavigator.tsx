@@ -137,6 +137,7 @@ export function RootNavigator() {
         subscription.unsubscribe();
       };
     }
+    return undefined;
   }, [user, needsOnboarding]);
 
   if ((!authInitialized && authLoading) || checkingProfile) {
