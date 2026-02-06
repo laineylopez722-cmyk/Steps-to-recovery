@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import type { AmendsEntry, DbAmendsEntry, AmendsType, AmendsStatus } from '../types';
+import { logger } from '../utils/logger';
 
 interface DecryptedAmendsEntry extends Omit<AmendsEntry, 'person' | 'harm' | 'notes'> {
   person: string;
@@ -83,7 +84,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
 
       set({ entries, isLoading: false });
     } catch (error) {
-      console.error('Failed to load amends entries:', error);
+      logger.error('Failed to load amends entries', error);
       set({ error: 'Failed to load amends list', isLoading: false });
     }
   },
@@ -219,7 +220,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
         notes: entry.notes ? await decryptContent(entry.notes) : undefined,
       };
     } catch (error) {
-      console.error('Failed to decrypt amends entry:', error);
+      logger.error('Failed to decrypt amends entry', error);
       return null;
     }
   },

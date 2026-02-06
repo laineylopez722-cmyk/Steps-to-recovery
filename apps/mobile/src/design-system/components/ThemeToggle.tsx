@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, Text, Pressable, StyleSheet, Appearance } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  interpolate,
-  Extrapolate,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { GlassCard } from './GlassCard';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
+
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -115,7 +115,7 @@ function ThemeOption({ icon, label, isSelected, onPress, previewColors }: ThemeO
 
         {/* Label */}
         <View style={styles.labelContainer}>
-          <MaterialIcons name={icon as any} size={18} color={isSelected ? darkAccent.primary : darkAccent.textMuted} />
+          <MaterialIcons name={icon as IconName} size={18} color={isSelected ? darkAccent.primary : darkAccent.textMuted} />
           <Text style={[styles.label, isSelected && styles.labelSelected]}>{label}</Text>
         </View>
       </Animated.View>

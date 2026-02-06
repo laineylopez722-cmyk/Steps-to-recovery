@@ -11,7 +11,7 @@
  * - Uses commitment device pattern (Ulysses Pact)
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -26,6 +26,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut, SlideInDown } from 'react-native-reanimated';
 import { useTheme, Button } from '../../../design-system';
 import { hapticWarning, hapticSuccess, hapticImpact } from '../../../utils/haptics';
+import { logger } from '../../../utils/logger';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCloseCallTracking, type RiskyContact, type ActionTaken } from '../hooks';
 
@@ -151,7 +152,7 @@ export function SafeDialInterventionScreen({
         notes,
       });
     } catch (error) {
-      console.error('Failed to log close call:', error);
+      logger.error('Failed to log close call:', error);
     }
   };
 
@@ -170,7 +171,7 @@ export function SafeDialInterventionScreen({
       setTimeout(() => {
         setStep('complete');
       }, 500);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to call sponsor. Please try again.');
     } finally {
       setIsProcessing(false);
@@ -192,7 +193,7 @@ export function SafeDialInterventionScreen({
       setTimeout(() => {
         setStep('complete');
       }, 500);
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to text sponsor. Please try again.');
     } finally {
       setIsProcessing(false);
@@ -374,7 +375,7 @@ export function SafeDialInterventionScreen({
             <Button
               title="⏱️ Just Wait 20 Minutes"
               onPress={handleWait20Minutes}
-              variant="outlined"
+              variant="outline"
               size="large"
               fullWidth
               disabled={isProcessing}
@@ -384,7 +385,7 @@ export function SafeDialInterventionScreen({
             <Button
               title="🎮 Play Calming Game"
               onPress={handlePlayGame}
-              variant="outlined"
+              variant="outline"
               size="large"
               fullWidth
               disabled={isProcessing}
@@ -505,7 +506,7 @@ export function SafeDialInterventionScreen({
           <Button
             title="Close"
             onPress={() => handleDismiss('dismissed')}
-            variant="outlined"
+            variant="outline"
             size="large"
             fullWidth
             style={{ marginTop: 48, borderColor: '#FFFFFF' }}

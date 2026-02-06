@@ -124,7 +124,7 @@ export function CheckInModal({
                   accessibilityLabel="Close modal"
                   accessibilityRole="button"
                 >
-                  <MaterialIcons name="close" size={24} color={darkAccent.text.secondary} />
+                  <MaterialIcons name="close" size={24} color={darkAccent.textMuted} />
                 </Pressable>
               </View>
 
@@ -136,20 +136,20 @@ export function CheckInModal({
                 {/* Meeting Details */}
                 <View style={styles.meetingInfo}>
                   <View style={styles.infoRow}>
-                    <MaterialIcons name="event" size={20} color={darkAccent.text.secondary} />
-                    <Text style={styles.meetingName}>{meeting.meeting_name}</Text>
+                    <MaterialIcons name="event" size={20} color={darkAccent.textMuted} />
+                    <Text style={styles.meetingName}>{meeting.name}</Text>
                   </View>
                   
                   {meeting.address && (
                     <View style={styles.infoRow}>
-                      <MaterialIcons name="place" size={20} color={darkAccent.text.secondary} />
+                      <MaterialIcons name="place" size={20} color={darkAccent.textMuted} />
                       <Text style={styles.meetingAddress}>{meeting.address}</Text>
                     </View>
                   )}
 
                   {meeting.time && (
                     <View style={styles.infoRow}>
-                      <MaterialIcons name="access-time" size={20} color={darkAccent.text.secondary} />
+                      <MaterialIcons name="access-time" size={20} color={darkAccent.textMuted} />
                       <Text style={styles.meetingTime}>{meeting.time}</Text>
                     </View>
                   )}
@@ -165,7 +165,7 @@ export function CheckInModal({
                     value={notes}
                     onChangeText={setNotes}
                     placeholder="How was the meeting? Any reflections?"
-                    placeholderTextColor={darkAccent.text.secondary}
+                    placeholderTextColor={darkAccent.textMuted}
                     multiline
                     numberOfLines={4}
                     maxLength={500}
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     flex: 1,
   },
   closeButton: {
@@ -273,18 +273,18 @@ const styles = StyleSheet.create({
   },
   meetingName: {
     ...typography.body,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
     flex: 1,
   },
   meetingAddress: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     flex: 1,
   },
   meetingTime: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     flex: 1,
   },
   notesSection: {
@@ -292,35 +292,35 @@ const styles = StyleSheet.create({
   },
   notesLabel: {
     ...typography.body,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
     marginBottom: spacing.sm,
   },
   notesInput: {
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     borderRadius: radius.md,
     padding: spacing.md,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     ...typography.body,
     minHeight: 100,
     borderWidth: 1,
-    borderColor: darkAccent.border.default,
+    borderColor: darkAccent.border,
   },
   charCount: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'right',
     marginTop: spacing.xs,
   },
   impactSection: {
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     borderRadius: radius.md,
     padding: spacing.md,
     gap: spacing.sm,
   },
   impactTitle: {
     ...typography.body,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
     marginBottom: spacing.xs,
   },
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
   },
   impactText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   actions: {
     marginTop: spacing.lg,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     fontWeight: '600',
   },
   successContainer: {
@@ -356,13 +356,13 @@ const styles = StyleSheet.create({
   },
   successText: {
     ...typography.h2,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     textAlign: 'center',
     marginBottom: spacing.sm,
   },
   successSubtext: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
 });

@@ -17,7 +17,7 @@ import React, { memo, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Card } from '../../design-system/components';
 import { useTheme } from '../../design-system/hooks/useTheme';
-import type { Achievement } from '@recovery/shared';
+import type { Achievement } from '../../types';
 import { logger } from '../../utils/logger';
 
 /**

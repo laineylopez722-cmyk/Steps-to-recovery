@@ -3,7 +3,6 @@ import {
   useQueryClient, 
   type UseMutationOptions,
   type QueryKey,
-  type MutationFunction,
 } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { logger } from '../utils/logger';
@@ -126,7 +125,7 @@ export function useOfflineMutation<
     },
 
     // On success or error, invalidate related queries
-    onSettled: (_data, _error, _variables, context) => {
+    onSettled: (_data, _error, _variables, _context) => {
       // Invalidate specified queries to ensure data consistency
       if (invalidateQueries) {
         invalidateQueries.forEach((queryKey) => {

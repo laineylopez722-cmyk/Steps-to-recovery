@@ -1,17 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
+  type SharedValue,
   useAnimatedStyle,
   interpolate,
-  Extrapolate,
+  Extrapolation,
+  useSharedValue,
+  useAnimatedScrollHandler,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, spacing, typography } from '../tokens/modern';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
 interface ParallaxHeaderProps {
-  scrollY: Animated.SharedValue<number>;
+  scrollY: SharedValue<number>;
   title: string;
   subtitle?: string;
   image?: React.ReactNode;
@@ -32,19 +36,19 @@ export function ParallaxHeader({
       scrollY.value,
       [0, height],
       [0, height * 0.5],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
     const scale = interpolate(
       scrollY.value,
       [-height, 0, height],
       [1.5, 1, 1],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
     const opacity = interpolate(
       scrollY.value,
       [0, height * 0.8],
       [1, 0],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return {
@@ -58,19 +62,19 @@ export function ParallaxHeader({
       scrollY.value,
       [0, height - collapsedHeight],
       [0, -height + collapsedHeight],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
     const scale = interpolate(
       scrollY.value,
       [0, height - collapsedHeight],
       [1, 0.8],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
     const opacity = interpolate(
       scrollY.value,
       [0, (height - collapsedHeight) * 0.5],
       [1, 0],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return {
@@ -84,7 +88,7 @@ export function ParallaxHeader({
       scrollY.value,
       [(height - collapsedHeight) * 0.5, height - collapsedHeight],
       [0, 1],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return { opacity };
@@ -95,7 +99,7 @@ export function ParallaxHeader({
       scrollY.value,
       [0, height * 0.5],
       [0, 1],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return { opacity };
@@ -187,7 +191,7 @@ export function ParallaxScrollView({
 
 // Sticky Section Header
 interface StickyHeaderProps {
-  scrollY: Animated.SharedValue<number>;
+  scrollY: SharedValue<number>;
   title: string;
   threshold: number;
 }
@@ -198,13 +202,13 @@ export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): 
       scrollY.value,
       [threshold, threshold + 60],
       [-60, 0],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
     const opacity = interpolate(
       scrollY.value,
       [threshold, threshold + 60],
       [0, 1],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return {
@@ -221,8 +225,6 @@ export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): 
   );
 }
 
-import { useSharedValue, useAnimatedScrollHandler } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
 
 const styles = StyleSheet.create({
   container: {

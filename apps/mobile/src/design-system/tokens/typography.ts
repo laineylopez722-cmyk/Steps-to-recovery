@@ -106,6 +106,12 @@ export const typography = {
     fontWeight: 'normal',
   } as TextStyle,
 
+  bodyBold: {
+    fontSize: 16,
+    lineHeight: 24,
+    fontWeight: '600',
+  } as TextStyle,
+
   // Labels - Form labels, buttons
   label: {
     fontSize: 14,
@@ -116,6 +122,12 @@ export const typography = {
   labelLarge: {
     fontSize: 16,
     lineHeight: 24,
+    fontWeight: '600',
+  } as TextStyle,
+
+  labelSmall: {
+    fontSize: 12,
+    lineHeight: 16,
     fontWeight: '600',
   } as TextStyle,
 

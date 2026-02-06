@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import type { AuthState } from '../types';
+import { logger } from '../utils/logger';
 
 const PIN_KEY = 'app_pin_code';
 
@@ -49,7 +50,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       }
       return false;
     } catch (error) {
-      console.error('Biometric authentication error:', error);
+      logger.error('Biometric authentication error', error);
       return false;
     }
   },
@@ -63,7 +64,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       }
       return false;
     } catch (error) {
-      console.error('PIN authentication error:', error);
+      logger.error('PIN authentication error', error);
       return false;
     }
   },

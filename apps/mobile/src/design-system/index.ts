@@ -1,79 +1,22 @@
-/**
- * Design System Barrel Export
- * Central export for all design system tokens, hooks, and components
- */
-
-// Context & Provider
-export { ThemeProvider, ThemeContext } from './context/ThemeContext';
-export type { Theme } from './context/ThemeContext';
-
-// Hooks
-export { useTheme, useColors, useIsDark } from './hooks/useTheme';
-export {
-  useFadeIn,
-  useScaleIn,
-  usePressAnimation,
-  useBounceAnimation,
-  useSlideIn,
-  useFadeAndScaleIn,
-  useNumberAnimation,
-  useShakeAnimation,
-  useCountUp,
-  getStaggerDelay,
-} from './hooks/useAnimation';
-
-// Tokens
-export { lightColors, darkColors, categoryColors } from './tokens/colors';
-export { darkAccent, gradients, modernShadows, glass, timing } from './tokens/modern';
-export type { ColorPalette, CategoryColor } from './tokens/colors';
-
-export { typography } from './tokens/typography';
-export type { TypographyStyle } from './tokens/typography';
-
-export { spacing } from './tokens/spacing';
-export type { SpacingKey } from './tokens/spacing';
-
-export { radius } from './tokens/radius';
-export type { RadiusKey } from './tokens/radius';
-
-export { shadows } from './tokens/shadows';
-export type { ShadowKey } from './tokens/shadows';
-
-export {
-  springConfigs,
-  timingDurations,
-  easingCurves,
-  scales,
-  opacities,
-  createTimingConfig,
-  animationPresets,
-  reanimatedSprings,
-} from './tokens/animations';
-export type {
-  SpringConfigKey,
-  TimingDurationKey,
-  EasingCurveKey,
-  ReanimatedSpringKey,
-} from './tokens/animations';
-
-// Components
+// Unified exports for the design system
 export {
   Badge,
   Button,
   Card,
   Divider,
   EmptyState,
+  EmptySearch,
+  EmptyJournal,
   FloatingActionButton,
   Input,
   ListItem,
   Modal,
   ProgressBar,
   SobrietyCounter,
-  Text,
   TextArea,
+  Text,
   Toast,
   Toggle,
-  // Premium UI Components
   AnimatedCheckmark,
   GlassCard,
   GradientButton,
@@ -82,14 +25,52 @@ export {
   BottomSheet,
   CircularProgress,
   PullToRefresh,
-  RefreshIndicator,
   ContextMenu,
   BreathingCircle,
   Skeleton,
-  SkeletonGroup,
-  ProfileSkeleton,
-  CardSkeleton,
+  SkeletonCard,
+  SkeletonListItem,
+  SkeletonStats,
+  SkeletonHome,
+  SkeletonJournalList,
+  ConfettiCelebration,
+  MilestoneCelebration,
+  ParallaxHeader,
+  ParallaxScrollView,
+  StickyHeader,
+  AnimatedCheckbox,
+  AnimatedToggle,
+  AnimatedRadio,
+  SuccessCheckmark,
+  AnimatedCounter,
+  FavoriteButton,
+  BouncingBadge,
+  ThemeToggle,
+  AnimatedThemeProvider,
+  AsyncImage,
+  Avatar,
+  ZoomableImage,
+  SearchExperience,
+  FilterChip,
+  SearchResultsHeader,
+  HighlightedText,
+  ScreenReaderText,
+  AccessibleButton,
+  Focusable,
+  AccessibleField,
+  AccessibleProgress,
+  LiveRegion,
+  SkipLink,
+  Heading,
+  AccessibleList,
+  AccessibleListItem,
+  announce,
+  isScreenReaderEnabled,
 } from './components';
+
+export { ThemeProvider } from './context/ThemeContext';
+export { useTheme, useColors, useIsDark } from './hooks/useTheme';
+
 export type {
   BadgeProps,
   ButtonProps,
@@ -110,7 +91,6 @@ export type {
   ToastProps,
   ToastVariant,
   ToggleProps,
-  // Premium UI Component Types
   AnimatedCheckmarkProps,
   GlassCardProps,
   GradientButtonProps,
@@ -118,12 +98,13 @@ export type {
   SwipeableListItemProps,
   SwipeAction,
   BottomSheetProps,
-  BottomSheetRef,
   CircularProgressProps,
   PullToRefreshProps,
   ContextMenuProps,
   ContextMenuItem,
   BreathingCircleProps,
   SkeletonProps,
-  SkeletonGroupProps,
+  AsyncImageProps,
+  AvatarProps,
+  ZoomableImageProps,
 } from './components';

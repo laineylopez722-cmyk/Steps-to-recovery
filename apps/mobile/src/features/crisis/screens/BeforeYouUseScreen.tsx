@@ -20,7 +20,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, {
   FadeIn,
-  FadeOut,
   SlideInDown,
   ZoomIn,
 } from 'react-native-reanimated';
@@ -75,7 +74,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): React.R
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   
   // Stage 4: Contact
-  const [contactedSponsor, setContactedSponsor] = useState(false);
+  const [_contactedSponsor, setContactedSponsor] = useState(false);
   
   // Stage 5: Complete
   const [finalIntensity, setFinalIntensity] = useState(5);
@@ -213,6 +212,9 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): React.R
               minimumTrackTintColor={darkAccent.error}
               maximumTrackTintColor="rgba(148,163,184,0.2)"
               thumbTintColor={darkAccent.error}
+              accessibilityLabel={`Craving intensity: ${cravingIntensity} out of 10`}
+              accessibilityRole="adjustable"
+              accessibilityHint="Slide to rate your craving intensity from 1 to 10"
             />
             <View style={styles.sliderLabels}>
               <Text style={styles.sliderLabel}>Mild</Text>
@@ -226,11 +228,13 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): React.R
           <TextInput
             style={styles.input}
             placeholder="Stress, boredom, specific situation..."
-            placeholderTextColor={darkAccent.text.secondary}
+            placeholderTextColor={darkAccent.textMuted}
             value={triggerText}
             onChangeText={setTriggerText}
             multiline
             numberOfLines={3}
+            accessibilityLabel="Describe what triggered this craving"
+            accessibilityHint="Optional: describe the stress, boredom, or situation"
           />
         </View>
         
@@ -327,7 +331,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): React.R
             <TextInput
               style={[styles.input, styles.journalInput]}
               placeholder="What's really going on right now?"
-              placeholderTextColor={darkAccent.text.secondary}
+              placeholderTextColor={darkAccent.textMuted}
               value={journalEntry}
               onChangeText={setJournalEntry}
               multiline
@@ -413,7 +417,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): React.R
           <GradientButton
             title="I Resisted 🎉"
             onPress={() => handleComplete('resisted')}
-            gradient={[darkAccent.success, darkAccent.primary]}
+            variant="success"
             accessibilityLabel="Mark as resisted"
           />
           
@@ -448,7 +452,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): React.R
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <MaterialIcons name="close" size={28} color={darkAccent.text.primary} />
+            <MaterialIcons name="close" size={28} color={darkAccent.text} />
           </Pressable>
           <Text style={styles.headerTitle}>Crisis Checkpoint</Text>
           <View style={{ width: 28 }} />
@@ -507,7 +511,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
   },
   scrollView: {
     flex: 1,
@@ -524,13 +528,13 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h2,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     marginTop: spacing[3],
     textAlign: 'center',
   },
   subtitle: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     marginTop: spacing[2],
     textAlign: 'center',
     lineHeight: 22,
@@ -540,7 +544,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.label,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     marginBottom: spacing[2],
     fontWeight: '600',
   },
@@ -565,13 +569,13 @@ const styles = StyleSheet.create({
   },
   sliderLabel: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   input: {
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: radius.lg,
     padding: spacing[3],
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     ...typography.body,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -604,7 +608,7 @@ const styles = StyleSheet.create({
   },
   tipsTitle: {
     ...typography.label,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
     marginBottom: spacing[3],
   },
@@ -616,7 +620,7 @@ const styles = StyleSheet.create({
   },
   tipText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     flex: 1,
   },
   skipButton: {
@@ -625,7 +629,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textDecorationLine: 'underline',
   },
   emotionsGrid: {
@@ -647,7 +651,7 @@ const styles = StyleSheet.create({
   },
   emotionChipText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     fontSize: 14,
   },
   emotionChipTextSelected: {
@@ -664,12 +668,12 @@ const styles = StyleSheet.create({
   },
   sponsorName: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     marginBottom: spacing[1],
   },
   sponsorPhone: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     marginBottom: spacing[4],
   },
   contactButtons: {
@@ -704,7 +708,7 @@ const styles = StyleSheet.create({
   },
   noSponsorText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
   outcomeButtons: {
@@ -720,6 +724,6 @@ const styles = StyleSheet.create({
   },
   usedButtonText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
 });

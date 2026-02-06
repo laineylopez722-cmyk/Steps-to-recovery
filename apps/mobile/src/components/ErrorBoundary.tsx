@@ -268,4 +268,3 @@ export function useErrorBoundary() {
   return { resetKey, reset };
 }
 
-export default ErrorBoundary;

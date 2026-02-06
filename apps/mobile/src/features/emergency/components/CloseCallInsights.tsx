@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Card, useTheme } from '../../../design-system';
@@ -13,7 +14,7 @@ import type { CloseCallStats } from '../hooks';
 
 interface CloseCallInsightsProps {
   stats: CloseCallStats;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): React.ReactElement {

@@ -18,6 +18,7 @@ export interface FloatingActionButtonProps {
   onPress: () => void;
   style?: ViewStyle;
   accessibilityLabel?: string;
+  accessibilityRole?: string;
   testID?: string;
 }
 

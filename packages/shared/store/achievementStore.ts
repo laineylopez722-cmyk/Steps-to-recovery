@@ -23,6 +23,7 @@ import {
 } from '../constants/keytags';
 import { ALL_ACHIEVEMENTS, getTotalAchievementsCount } from '../constants/achievements';
 import type { Achievement, AchievementCategory } from '../types';
+import { logger } from '../utils/logger';
 
 interface AchievementState {
   achievements: Achievement[];
@@ -100,7 +101,7 @@ export const useAchievementStore = create<AchievementState & AchievementActions>
 
       set({ isInitialized: true, isLoading: false });
     } catch (error) {
-      console.error('Failed to initialize achievements:', error);
+      logger.error('Failed to initialize achievements', error);
       set({ isLoading: false });
     }
   },
@@ -139,7 +140,7 @@ export const useAchievementStore = create<AchievementState & AchievementActions>
         isLoading: false,
       });
     } catch (error) {
-      console.error('Failed to load achievements:', error);
+      logger.error('Failed to load achievements', error);
       set({ isLoading: false });
     }
   },
@@ -209,7 +210,7 @@ export const useAchievementStore = create<AchievementState & AchievementActions>
 
       return updated;
     } catch (error) {
-      console.error('Failed to self-check achievement:', error);
+      logger.error('Failed to self-check achievement', error);
       return null;
     }
   },
@@ -219,7 +220,7 @@ export const useAchievementStore = create<AchievementState & AchievementActions>
       await saveAchievementReflection(id, reflection);
       await get().loadAchievements();
     } catch (error) {
-      console.error('Failed to save reflection:', error);
+      logger.error('Failed to save reflection', error);
     }
   },
 
@@ -227,7 +228,7 @@ export const useAchievementStore = create<AchievementState & AchievementActions>
     try {
       return await getAchievementReflection(id);
     } catch (error) {
-      console.error('Failed to get reflection:', error);
+      logger.error('Failed to get reflection', error);
       return null;
     }
   },

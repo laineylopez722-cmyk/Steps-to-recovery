@@ -27,7 +27,7 @@ import Animated, {
 import type { StepsStackParamList } from '../../../navigation/types';
 import { useTheme, Card, CircularProgress, Badge, Modal } from '../../../design-system';
 import { useStepProgress } from '../hooks/useStepWork';
-import { STEP_PROMPTS } from '@recovery/shared/constants';
+import { STEP_PROMPTS } from '@recovery/shared';
 import { hapticSelection } from '../../../utils/haptics';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList>;

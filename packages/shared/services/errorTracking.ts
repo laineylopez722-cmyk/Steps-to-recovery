@@ -21,6 +21,7 @@
 // Uncomment when Sentry is installed:
 // import * as Sentry from '@sentry/react-native';
 import React from 'react';
+import { logger } from '../utils/logger';
 
 /**
  * Context information for error tracking
@@ -69,8 +70,8 @@ export function initializeErrorTracking(): void {
 
   if (!dsn) {
     if (__DEV__) {
-      console.log('[ErrorTracking] Sentry DSN not configured. Error tracking disabled.');
-      console.log('[ErrorTracking] To enable, set EXPO_PUBLIC_SENTRY_DSN in your environment.');
+      logger.info('Sentry DSN not configured. Error tracking disabled.');
+      logger.info('To enable, set EXPO_PUBLIC_SENTRY_DSN in your environment.');
     }
     return;
   }
@@ -111,7 +112,7 @@ export function initializeErrorTracking(): void {
   //   },
   // });
 
-  console.log('[ErrorTracking] Error tracking initialized');
+  logger.info('Error tracking initialized');
 }
 
 /**
@@ -136,7 +137,7 @@ export function initializeErrorTracking(): void {
  */
 export function captureException(error: Error, context?: ErrorContext): void {
   const errorMessage = error instanceof Error ? error.message : String(error);
-  console.error('[ErrorTracking] Exception:', errorMessage, context);
+  logger.error('Exception', { message: errorMessage, context });
 
   // Uncomment when Sentry is installed:
   // Sentry.captureException(error, {
@@ -157,7 +158,7 @@ export function captureMessage(
   level: 'debug' | 'info' | 'warning' | 'error' = 'info',
   context?: ErrorContext,
 ): void {
-  console.log(`[ErrorTracking] ${level.toUpperCase()}: ${message}`, context);
+  logger.info(`${level.toUpperCase()}: ${message}`, context);
 
   // Uncomment when Sentry is installed:
   // Sentry.captureMessage(message, {
@@ -223,7 +224,7 @@ export function startTransaction(name: string, op: string): { finish: () => void
   return {
     finish: () => {
       const duration = Date.now() - startTime;
-      console.log(`[ErrorTracking] Transaction "${name}" (${op}) took ${duration}ms`);
+      logger.info(`Transaction "${name}" (${op}) took ${duration}ms`);
     },
   };
 }
@@ -246,7 +247,7 @@ class SimpleErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: unknown, errorInfo: unknown): void {
-    console.error('[ErrorTracking] Error boundary caught error:', error, errorInfo);
+    logger.error('Error boundary caught error', { error, errorInfo });
   }
 
   render(): React.ReactNode {

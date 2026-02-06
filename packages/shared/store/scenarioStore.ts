@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import type { ScenarioPractice, DbScenarioPractice } from '../types';
+import { logger } from '../utils/logger';
 
 interface ScenarioState {
   practices: ScenarioPractice[];
@@ -57,14 +58,14 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
         try {
           practices.push(await dbToPractice(row));
         } catch (error) {
-          console.error('Failed to process scenario practice:', row.id, error);
+          logger.error('Failed to process scenario practice', error);
         }
       }
 
       set({ practices, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to load scenario practices', isLoading: false });
-      console.error('Load scenario practices error:', error);
+      logger.error('Load scenario practices error', error);
     }
   },
 
@@ -98,7 +99,7 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
 
       return newPractice;
     } catch (error) {
-      console.error('Add scenario practice error:', error);
+      logger.error('Add scenario practice error', error);
       throw error;
     }
   },

@@ -36,7 +36,7 @@ export interface RiskPattern {
   message: string;
   suggestedAction: string;
   actionRoute: string;
-  actionParams?: Record<string, any>;
+  actionParams?: Record<string, unknown>;
   icon: string;
   canNotifySponsor: boolean;
 }
@@ -59,7 +59,7 @@ const THRESHOLDS = {
   sponsor: 7, // days
 } as const;
 
-const SEVERITY_MAPPING: Record<number, 'low' | 'medium' | 'high'> = {
+const _SEVERITY_MAPPING: Record<number, 'low' | 'medium' | 'high'> = {
   1: 'low',
   2: 'low',
   3: 'medium',
@@ -384,7 +384,8 @@ export async function dismissPattern(
     const key = `risk_dismissed_${userId}_${patternType}`;
     const value = Date.now().toString();
     
-    // Store dismissed timestamp in AsyncStorage (not Supabase - privacy!)
+    // AsyncStorage is acceptable here: dismissed timestamps are non-sensitive UI preference
+    // data (no PII, no recovery content). SecureStore is reserved for encryption keys/tokens.
     const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
     await AsyncStorage.setItem(key, value);
     

@@ -1,7 +1,7 @@
-import { LinkingOptions } from '@react-navigation/native';
+import type { LinkingOptions } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
 import { logger } from '../utils/logger';
-import type { RootStackParamList, MainTabParamList, HomeStackParamList, JournalStackParamList, MeetingsStackParamList, StepsStackParamList, ProfileStackParamList } from './types';
+import type * as types from './types';
 
 /**
  * Deep Linking Configuration
@@ -42,7 +42,7 @@ const PREFIXES = [
 /**
  * Deep link configuration for React Navigation
  */
-export const linking: LinkingOptions<RootStackParamList> = {
+export const linking: LinkingOptions<types.RootStackParamList> = {
   prefixes: PREFIXES,
   
   // Configure how to handle incoming links
@@ -322,4 +322,3 @@ export async function openAppSettings(): Promise<void> {
   }
 }
 
-export default linking;

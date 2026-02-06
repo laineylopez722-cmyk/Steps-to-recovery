@@ -9,6 +9,7 @@
 
 import * as SMS from 'expo-sms';
 import { Linking, Platform, Alert } from 'react-native';
+import { logger } from './logger';
 
 /** Default SOS message for emergency contacts */
 export const SOS_MESSAGE = "Hey, I'm having a hard time. Can you talk?";
@@ -47,7 +48,7 @@ export async function isSMSAvailable(): Promise<boolean> {
     return await SMS.isAvailableAsync();
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[SMS] Error checking SMS availability:', errorMessage);
+    logger.error('Error checking SMS availability', errorMessage);
     return false;
   }
 }
@@ -107,7 +108,7 @@ export async function sendSMS(phoneNumber: string, message: string): Promise<Sen
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[SMS] Error sending SMS:', errorMessage);
+    logger.error('Error sending SMS', errorMessage);
 
     // Try fallback
     try {
@@ -162,7 +163,7 @@ async function sendSMSViaLinking(phoneNumber: string, message: string): Promise<
     // when using Linking, so we assume success
     return { success: true };
   } catch (error) {
-    console.error('Error with SMS linking fallback:', error);
+    logger.error('Error with SMS linking fallback', error);
     return {
       success: false,
       error: 'Failed to open SMS app',
@@ -272,7 +273,7 @@ export async function makePhoneCall(phoneNumber: string): Promise<boolean> {
     await Linking.openURL(telUrl);
     return true;
   } catch (error) {
-    console.error('Error making phone call:', error);
+    logger.error('Error making phone call', error);
     Alert.alert('Call Failed', 'Unable to make the call. Please try again.');
     return false;
   }
@@ -295,7 +296,7 @@ export async function openMessagingApp(phoneNumber: string): Promise<boolean> {
     await Linking.openURL(smsUrl);
     return true;
   } catch (error) {
-    console.error('Error opening messaging app:', error);
+    logger.error('Error opening messaging app', error);
     return false;
   }
 }

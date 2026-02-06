@@ -8,18 +8,13 @@ import { GlassCard } from '../../../design-system/components/GlassCard';
 import { AnimatedToggle } from '../../../design-system/components/MicroInteractions';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
 interface NotificationChannel {
   id: string;
   title: string;
   description: string;
   icon: string;
-  enabled: boolean;
-}
-
-interface NotificationTime {
-  id: string;
-  label: string;
-  time: string;
   enabled: boolean;
 }
 
@@ -79,7 +74,7 @@ export function NotificationPreferencesScreen(): React.ReactElement {
                 <View key={channel.id}>
                   <View style={styles.channelRow}>
                     <View style={[styles.channelIcon, { backgroundColor: `${darkAccent.primary}15` }]}>
-                      <MaterialIcons name={channel.icon as any} size={20} color={darkAccent.primary} />
+                      <MaterialIcons name={channel.icon as IconName} size={20} color={darkAccent.primary} />
                     </View>
                     <View style={styles.channelInfo}>
                       <Text style={styles.channelTitle}>{channel.title}</Text>

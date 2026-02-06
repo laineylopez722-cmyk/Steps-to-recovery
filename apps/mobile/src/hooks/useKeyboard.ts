@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Keyboard,
-  KeyboardEvent,
+  type KeyboardEvent,
   Platform,
-  EmitterSubscription,
+  type EmitterSubscription,
 } from 'react-native';
 
 /**
@@ -244,7 +244,7 @@ export function useKeyboardAnimation(
   transform: Array<{ translateY: number }>;
   opacity: number;
 } {
-  const { isVisible, duration } = useKeyboard();
+  const { isVisible, duration: _duration } = useKeyboard();
 
   // Simple animation values
   // For more complex animations, use Animated API
@@ -348,4 +348,3 @@ export function useInputFocusNavigation(
   };
 }
 
-export default useKeyboard;

@@ -54,9 +54,9 @@ export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCard
           onPress: async () => {
             try {
               setIsDeleting(true);
-              await onDelete?.(contact.id);
+              onDelete?.(contact.id);
               hapticSelection();
-            } catch (error) {
+            } catch (_error) {
               Alert.alert('Error', 'Failed to remove contact. Please try again.');
             } finally {
               setIsDeleting(false);

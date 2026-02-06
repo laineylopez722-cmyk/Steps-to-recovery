@@ -22,7 +22,7 @@ type PromptModalProps = {
   onCancel: () => void;
 };
 
-export default function PromptModal({
+export function PromptModal({
   visible,
   title,
   description,

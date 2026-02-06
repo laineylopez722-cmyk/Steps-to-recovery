@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { AppState, type AppStateStatus, Platform } from 'react-native';
+import { AppState, type AppStateStatus } from 'react-native';
 import { logger } from '../utils/logger';
 
 /**
@@ -358,4 +358,3 @@ export function useRefreshOnForeground<T>(
   return { data, isRefreshing, error };
 }
 
-export default useAppState;

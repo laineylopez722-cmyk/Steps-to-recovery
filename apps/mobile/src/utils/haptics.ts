@@ -193,4 +193,3 @@ export const haptics = {
   threshold: hapticThreshold,
 } as const;
 
-export default haptics;

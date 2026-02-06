@@ -6,14 +6,15 @@ import Animated, {
   withSpring,
   withRepeat,
   withTiming,
-  interpolate,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GradientButton } from './GradientButton';
-import { darkAccent, gradients, radius, spacing, typography } from '../tokens/modern';
+import { darkAccent, gradients, spacing, typography } from '../tokens/modern';
 
-interface EmptyStateProps {
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
+export interface EmptyStateProps {
   icon: string;
   title: string;
   description: string;
@@ -64,7 +65,7 @@ export function EmptyState({
           colors={gradients.primary}
           style={styles.iconGradient}
         >
-          <MaterialIcons name={icon as any} size={48} color="#FFF" />
+          <MaterialIcons name={icon as IconName} size={48} color="#FFF" />
         </LinearGradient>
         
         {/* Decorative circles */}

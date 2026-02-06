@@ -46,7 +46,6 @@ export function platformSelect<T>(options: {
 // Device type detection
 const { width, height } = Dimensions.get('window');
 const screenWidth = Math.min(width, height);
-const screenHeight = Math.max(width, height);
 
 /**
  * Check if device is a tablet (based on screen size)
@@ -467,29 +466,4 @@ export const accessibility = {
   },
 };
 
-// Export everything
-export default {
-  isIOS,
-  isAndroid,
-  isWeb,
-  isNative,
-  platformSelect,
-  isTablet,
-  isPhone,
-  isLandscape,
-  isPortrait,
-  hasNotch,
-  hasDynamicIsland,
-  screenDimensions,
-  pixelDensity,
-  normalize,
-  safeAreaInsets,
-  platformStyles,
-  features,
-  osVersion,
-  dateTime,
-  navigation,
-  keyboard,
-  animation,
-  accessibility,
-};
+// All utilities are exported as named exports above

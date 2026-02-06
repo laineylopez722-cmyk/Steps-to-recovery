@@ -289,7 +289,7 @@ async function getCheckpointStartTime(
     }
 
     return data.started_at;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }
@@ -315,7 +315,7 @@ export async function getActiveCheckpoint(
     }
 
     return data as CrisisCheckpoint;
-  } catch (error) {
+  } catch (_error) {
     return null;
   }
 }

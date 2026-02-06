@@ -15,7 +15,7 @@ import { useCheckin } from '../../lib/hooks/useCheckin';
 import { useJournalStore, useRhythmStore } from '../../lib/store';
 import type { PulseContext, TinyInventory } from '../../lib/store/rhythmStore';
 import { STEP_PROMPTS } from '../../lib/constants/stepPrompts';
-import PromptModal from '../../components/common/PromptModal';
+import { PromptModal } from '../../components/common/PromptModal';
 
 // Note: LayoutAnimation.configureNext still works but setLayoutAnimationEnabledExperimental
 // is a no-op in New Architecture (which is enabled in this app)

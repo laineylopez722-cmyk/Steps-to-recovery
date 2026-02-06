@@ -10,10 +10,7 @@
   ],
   "overrides": {
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-native": "0.81.5",
-    "@sentry/react-native": "^7.11.0",
-    "react-test-renderer": "19.1.0"
+    "react-dom": "19.1.0"
   },
   "scripts": {
     "dev": "turbo run dev",
@@ -26,32 +23,24 @@
     "lint-staged": "lint-staged",
     "validate-env": "node scripts/validate-env.js",
     "clean": "turbo run clean",
-    "mobile": "npm start --workspace=mobile",
-    "web": "npm run web --workspace=mobile",
-    "android": "npm run android --workspace=mobile",
-    "ios": "npm run ios --workspace=mobile",
-    "prepare": "husky install"
+    "mobile": "npm start -w apps/mobile",
+    "web": "npm run web -w apps/mobile",
+    "android": "npm run android -w apps/mobile",
+    "ios": "npm run ios -w apps/mobile",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
-    "@types/sql.js": "^1.4.9",
-    "@types/ws": "^8.18.1",
     "dotenv": "^17.2.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
-    "supabase": "^2.72.9",
     "turbo": "^2.8.1",
-    "typescript": "~5.9.3"
+    "typescript": "^5.9.3"
   },
   "engines": {
     "node": ">=20.0.0"
-  },
-  "dependencies": {
-    "@sentry/react-native": "^7.11.0",
-    "react": "19.1.0",
-    "react-native": "0.81.5"
   }
 }

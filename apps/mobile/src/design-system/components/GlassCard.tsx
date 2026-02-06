@@ -4,9 +4,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  interpolate,
 } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
 import { darkAccent, radius, modernShadows } from '../tokens/modern';
 
 export interface GlassCardProps extends ViewProps {
@@ -27,7 +25,7 @@ export function GlassCard({
   glowColor,
   borderGradient = false,
   pressable = false,
-  onPress,
+  onPress: _onPress,
   pressed = false,
   ...props
 }: GlassCardProps): React.ReactElement {
@@ -98,6 +96,8 @@ export function GlassCard({
   );
 }
 
+const spacing = { 3: 16 } as const;
+
 const styles = StyleSheet.create({
   base: {
     borderRadius: radius.lg,
@@ -123,6 +123,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.03)',
   },
 });
-
-// Spacing reference for the styles above
-const spacing = { 3: 16 };

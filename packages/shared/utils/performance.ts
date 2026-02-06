@@ -9,6 +9,7 @@
  */
 
 import { useCallback, useRef, useEffect, useState } from 'react';
+import { logger } from './logger';
 
 /**
  * Debounce a function call
@@ -247,7 +248,7 @@ export function measurePerformance<T>(name: string, fn: () => T): T {
 
   if (process.env.NODE_ENV === 'development' && duration > 16) {
     // Warn if operation takes longer than one frame (16ms)
-    console.warn(`[Performance] ${name} took ${duration.toFixed(2)}ms`);
+    logger.warn(`${name} took ${duration.toFixed(2)}ms`);
   }
 
   return result;
@@ -263,7 +264,7 @@ export async function measurePerformanceAsync<T>(name: string, fn: () => Promise
 
   if (process.env.NODE_ENV === 'development' && duration > 100) {
     // Warn if async operation takes longer than 100ms
-    console.warn(`[Performance] ${name} took ${duration.toFixed(2)}ms`);
+    logger.warn(`${name} took ${duration.toFixed(2)}ms`);
   }
 
   return result;

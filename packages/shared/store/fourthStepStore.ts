@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import type { FourthStepEntry, DbFourthStepEntry, FourthStepType } from '../types';
+import { logger } from '../utils/logger';
 
 // The affects options for resentments (Big Book columns)
 export const AFFECTS_OPTIONS = [
@@ -85,7 +86,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
 
       set({ entries, isLoading: false });
     } catch (error) {
-      console.error('Failed to load 4th step entries:', error);
+      logger.error('Failed to load 4th step entries', error);
       set({ error: 'Failed to load inventory', isLoading: false });
     }
   },
@@ -119,7 +120,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to load entries by type:', error);
+      logger.error('Failed to load entries by type', error);
       set({ error: 'Failed to load inventory', isLoading: false });
     }
   },
@@ -235,7 +236,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
         myPart: await decryptContent(entry.myPart),
       };
     } catch (error) {
-      console.error('Failed to decrypt entry:', error);
+      logger.error('Failed to decrypt entry', error);
       return null;
     }
   },

@@ -173,4 +173,3 @@ export function SimpleTrendChart({
   );
 }
 
-export default SimpleTrendChart;

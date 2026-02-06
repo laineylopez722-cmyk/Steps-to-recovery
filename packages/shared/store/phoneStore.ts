@@ -13,6 +13,7 @@ import {
   deletePhoneCallLog,
 } from '../db/models';
 import { decryptContent } from '../encryption';
+import { logger } from '../utils/logger';
 
 interface PhoneState {
   todayCalls: PhoneCallLog[];
@@ -58,7 +59,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
       const todayCalls = await getTodayCallLogs();
       set({ todayCalls, isLoading: false });
     } catch (error) {
-      console.error("Failed to load today's calls:", error);
+      logger.error('Failed to load today\'s calls', error);
       set({ error: 'Failed to load calls', isLoading: false });
     }
   },
@@ -71,7 +72,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
       const todayCalls = await getTodayCallLogs();
       set({ callHistory, todayCalls, isLoading: false });
     } catch (error) {
-      console.error('Failed to load call history:', error);
+      logger.error('Failed to load call history', error);
       set({ error: 'Failed to load call history', isLoading: false });
     }
   },
@@ -87,7 +88,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
 
       return call;
     } catch (error) {
-      console.error('Failed to log call:', error);
+      logger.error('Failed to log call', error);
       throw error;
     }
   },
@@ -101,7 +102,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
         callHistory: state.callHistory.filter((c) => c.id !== id),
       }));
     } catch (error) {
-      console.error('Failed to delete call:', error);
+      logger.error('Failed to delete call', error);
       throw error;
     }
   },
@@ -110,7 +111,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
     try {
       return await getCallLogsByContact(contactId);
     } catch (error) {
-      console.error('Failed to get calls for contact:', error);
+      logger.error('Failed to get calls for contact', error);
       return [];
     }
   },
@@ -148,7 +149,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
     try {
       return await decryptContent(call.notes);
     } catch (error) {
-      console.error('Failed to decrypt call notes:', error);
+      logger.error('Failed to decrypt call notes', error);
       return null;
     }
   },

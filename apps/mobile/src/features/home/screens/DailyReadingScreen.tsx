@@ -24,13 +24,13 @@ import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
 import { useReading } from '../../../hooks/useReading';
-import type { NavigationProp } from '@react-navigation/native';
-import type { RootStackParamList } from '../../../navigation/types';
+import { logger } from '../../../utils/logger';
+import type { HomeStackScreenProps } from '../../../navigation/types';
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 export function DailyReadingScreen(): React.ReactElement {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<HomeStackScreenProps<'DailyReading'>['navigation']>();
   const {
     todayReading,
     hasReflectedToday,
@@ -49,7 +49,8 @@ export function DailyReadingScreen(): React.ReactElement {
     if (!todayReading) return;
 
     // Navigate to journal with pre-filled content
-    navigation.navigate('Journal' as any, {
+    // Cross-tab navigation requires casting the route name
+    (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Journal', {
       screen: 'JournalEditor',
       params: {
         mode: 'create',
@@ -75,7 +76,7 @@ export function DailyReadingScreen(): React.ReactElement {
       setShowReflectionInput(false);
       setReflectionText('');
     } catch (error) {
-      console.error('Failed to save reflection:', error);
+      logger.error('Failed to save reflection', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
       setIsSaving(false);
@@ -288,7 +289,7 @@ export function DailyReadingScreen(): React.ReactElement {
               <GradientButton
                 title="View in Journal"
                 icon={<MaterialIcons name="book" size={20} color="#fff" accessible={false} />}
-                onPress={() => navigation.navigate('Journal' as any, { screen: 'JournalList' })}
+                onPress={() => (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Journal', { screen: 'JournalList' })}
                 variant="secondary"
                 size="lg"
                 style={styles.actionButton}

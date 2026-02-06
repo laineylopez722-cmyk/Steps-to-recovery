@@ -159,4 +159,3 @@ export function CrisisButton() {
   );
 }
 
-export default CrisisButton;

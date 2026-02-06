@@ -20,6 +20,7 @@ const FileSystem = ExpoFileSystem as typeof ExpoFileSystem & {
 };
 const Sharing = ExpoSharing;
 import { decryptContent } from '../encryption';
+import { logger } from '../utils/logger';
 import type {
   SobrietyProfile,
   JournalEntry,
@@ -384,7 +385,7 @@ export async function exportAndShare(): Promise<boolean> {
 
     return true;
   } catch (error) {
-    console.error('Export failed:', error);
+    logger.error('Export failed', error);
     throw error;
   }
 }

@@ -11,10 +11,11 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTheme, Card, Button, Modal, ProfileSkeleton } from '../../../design-system';
+import { useTheme, Card, Button, Modal } from '../../../design-system';
 import { Text } from 'react-native';
-import type { ProfileStackParamList, HomeStackParamList, MainTabParamList } from '../../../navigation/types';
+import type { ProfileStackParamList, MainTabParamList } from '../../../navigation/types';
 import type { CompositeNavigationProp } from '@react-navigation/native';
+import { SkeletonCard } from '../../../design-system/components/Skeleton';
 
 type ProfileScreenNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<ProfileStackParamList>,
@@ -124,7 +125,7 @@ export function ProfileScreen(): React.ReactElement {
           <Card variant="elevated" style={{ marginBottom: theme.spacing.lg }}>
             <View style={styles.userProfile}>
               {isLoading ? (
-                <ProfileSkeleton />
+                <SkeletonCard />
               ) : (
                 <>
                   <View

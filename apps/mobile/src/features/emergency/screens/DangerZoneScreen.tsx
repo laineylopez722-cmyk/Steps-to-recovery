@@ -21,6 +21,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useTheme, Button, Card } from '../../../design-system';
 import { hapticSelection } from '../../../utils/haptics';
 import { useAuth } from '../../../contexts/AuthContext';
+import type { RelationshipType } from '../../../services/safeDialService';
 import {
   useRiskyContacts,
   useCloseCallTracking,
@@ -42,7 +43,7 @@ export function DangerZoneScreen({
   const theme = useTheme();
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
-  const [editingContact, setEditingContact] = useState<RiskyContact | null>(null);
+  const [, setEditingContact] = useState<RiskyContact | null>(null);
 
   const {
     contacts,
@@ -72,7 +73,7 @@ export function DangerZoneScreen({
     async (contact: {
       name: string;
       phoneNumber: string;
-      relationshipType: any;
+      relationshipType: RelationshipType;
       notes?: string;
     }) => {
       await addContact(contact);
@@ -305,7 +306,7 @@ export function DangerZoneScreen({
               <Button
                 title="Retry"
                 onPress={handleRefresh}
-                variant="outlined"
+                variant="outline"
                 size="small"
                 style={{ marginTop: 12 }}
               />

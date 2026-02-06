@@ -97,6 +97,7 @@ export const radius = {
   lg: 20,
   xl: 24,
   '2xl': 32,
+  xxl: 40,
   full: 9999,
 } as const;
 
@@ -117,6 +118,13 @@ export const spacing = {
   10: 80,
   12: 96,
   16: 128,
+  // Named aliases for convenience
+  xs: 8,
+  sm: 12,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  xxl: 40,
 } as const;
 
 // Modern animation timing
@@ -180,11 +188,29 @@ export const typography = {
     letterSpacing: 0,
     lineHeight: 22,
   },
+  bodyBold: {
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: 0,
+    lineHeight: 22,
+  },
   bodySmall: {
     fontSize: 13,
     fontWeight: '400',
     letterSpacing: 0.1,
     lineHeight: 18,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+    lineHeight: 20,
+  },
+  labelSmall: {
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.2,
+    lineHeight: 16,
   },
   caption: {
     fontSize: 12,
@@ -229,6 +255,11 @@ export const darkAccent = {
   muted: '#94A3B8',
   subtle: '#64748B',
   
+  // Additional aliases
+  secondary: '#0EA5E9',
+  danger: '#F87171',
+  default: 'rgba(148,163,184,0.15)',
+  
   // Surfaces
   background: '#020617',
   surface: '#0F172A',
@@ -243,4 +274,7 @@ export const darkAccent = {
   // Borders
   border: 'rgba(148,163,184,0.15)',
   borderStrong: 'rgba(148,163,184,0.25)',
+
+  // Shadows
+  shadows: modernShadows,
 } as const;

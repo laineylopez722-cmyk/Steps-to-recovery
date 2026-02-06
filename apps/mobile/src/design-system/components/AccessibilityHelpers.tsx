@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, AccessibilityInfo, ViewProps } from 'react-native';
+import { View, Text, StyleSheet, Pressable, AccessibilityInfo, type ViewProps } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 import { darkAccent, spacing, typography } from '../tokens/modern';
 
 // Screen reader only text
@@ -146,7 +147,7 @@ interface SkipLinkProps {
   label: string;
 }
 
-export function SkipLink({ to, label }: SkipLinkProps): React.ReactElement {
+export function SkipLink({ to: _to, label }: SkipLinkProps): React.ReactElement {
   const handlePress = () => {
     // Navigate to element with id
   };
@@ -166,10 +167,10 @@ export function SkipLink({ to, label }: SkipLinkProps): React.ReactElement {
 interface HeadingProps {
   level: 1 | 2 | 3 | 4;
   children: React.ReactNode;
-  style?: any;
+  style?: StyleProp<TextStyle>;
 }
 
-export function Heading({ level, children, style }: HeadingProps): React.ReactElement {
+export function Heading({ level, children, style: _style }: HeadingProps): React.ReactElement {
   const headingStyles = {
     1: typography.h1,
     2: typography.h2,
@@ -178,11 +179,8 @@ export function Heading({ level, children, style }: HeadingProps): React.ReactEl
   };
 
   return (
-    <Text
+    <Text style={headingStyles[level]} accessibilityRole="header">
       accessibilityRole="header"
-      accessibilityLevel={level}
-      style={[headingStyles[level], style]}
-    >
       {children}
     </Text>
   );
@@ -204,20 +202,20 @@ export function AccessibleList({ children, label }: AccessibleListProps): React.
 
 export function AccessibleListItem({ children }: { children: React.ReactNode }): React.ReactElement {
   return (
-    <View accessibilityRole="listitem">
+    <View accessibilityRole="text">
       {children}
     </View>
   );
 }
 
 // Screen reader announcement helper
-export function announce(message: string, priority: 'default' | 'high' = 'default'): void {
+export function announce(message: string, _priority: 'default' | 'high' = 'default'): void {
   AccessibilityInfo.announceForAccessibility(message);
 }
 
 // Check if screen reader is enabled
 export async function isScreenReaderEnabled(): Promise<boolean> {
-  return await AccessibilityInfo.isScreenReaderEnabled();
+  return AccessibilityInfo.isScreenReaderEnabled();
 }
 
 const styles = StyleSheet.create({

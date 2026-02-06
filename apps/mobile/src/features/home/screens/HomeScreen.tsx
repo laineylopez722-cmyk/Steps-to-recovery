@@ -88,9 +88,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
         label="Emergency"
         variant="danger"
         onPress={handleEmergency}
-        accessibilityLabel="Emergency support button"
-        accessibilityRole="button"
-        accessibilityHint="Call emergency support contact"
+        accessibilityLabel="Emergency support button - Call emergency support contact"
       />
     </>
   );

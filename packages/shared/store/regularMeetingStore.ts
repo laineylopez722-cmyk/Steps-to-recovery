@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import type { RegularMeeting, RegularMeetingType } from '../types';
+import { logger } from '../utils/logger';
 import {
   createRegularMeeting,
   getRegularMeetings,
@@ -112,7 +113,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
         // Schedule reminders for all meetings with reminders enabled
         await scheduleAllMeetingReminders(meetings);
       } catch (error) {
-        console.error('Failed to load regular meetings:', error);
+        logger.error('Failed to load regular meetings', error);
         set({ error: 'Failed to load meetings', isLoading: false });
       }
     },
@@ -144,7 +145,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
 
         return meeting;
       } catch (error) {
-        console.error('Failed to add meeting:', error);
+        logger.error('Failed to add meeting', error);
         throw error;
       }
     },
@@ -189,7 +190,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
         await get().refreshTodayMeetings();
         await get().refreshNextMeeting();
       } catch (error) {
-        console.error('Failed to update meeting:', error);
+        logger.error('Failed to update meeting', error);
         throw error;
       }
     },
@@ -213,7 +214,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
           await get().refreshNextMeeting();
         }
       } catch (error) {
-        console.error('Failed to delete meeting:', error);
+        logger.error('Failed to delete meeting', error);
         throw error;
       }
     },
@@ -226,7 +227,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
       try {
         return await getRegularMeetingById(id);
       } catch (error) {
-        console.error('Failed to get meeting:', error);
+        logger.error('Failed to get meeting', error);
         return null;
       }
     },
@@ -243,7 +244,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
           homeGroup: state.meetings.find((m) => m.id === id) || null,
         }));
       } catch (error) {
-        console.error('Failed to set home group:', error);
+        logger.error('Failed to set home group', error);
         throw error;
       }
     },
@@ -268,7 +269,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
           }
         }
       } catch (error) {
-        console.error('Failed to toggle reminder:', error);
+        logger.error('Failed to toggle reminder', error);
         throw error;
       }
     },
@@ -277,7 +278,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
       try {
         return await getUpcomingMeetings(days);
       } catch (error) {
-        console.error('Failed to get upcoming meetings:', error);
+        logger.error('Failed to get upcoming meetings', error);
         return [];
       }
     },
@@ -287,7 +288,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
         const todayMeetings = await getTodayMeetings();
         set({ todayMeetings });
       } catch (error) {
-        console.error('Failed to refresh today meetings:', error);
+        logger.error('Failed to refresh today meetings', error);
       }
     },
 
@@ -296,7 +297,7 @@ export const useRegularMeetingStore = create<RegularMeetingState & RegularMeetin
         const nextMeeting = await getNextMeeting();
         set({ nextMeeting });
       } catch (error) {
-        console.error('Failed to refresh next meeting:', error);
+        logger.error('Failed to refresh next meeting', error);
       }
     },
 

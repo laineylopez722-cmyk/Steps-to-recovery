@@ -12,6 +12,7 @@ export interface DailyReading {
   content: string;
   source: string;
   reflection_prompt: string;
+  reflectionPrompt?: string;
 }
 
 export interface DailyReadingReflection {
@@ -22,6 +23,33 @@ export interface DailyReadingReflection {
   encrypted_reflection: string;
   reflection: string;
   created_at: string;
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  status: 'locked' | 'in_progress' | 'unlocked';
+  current: number;
+  target: number;
+  unlockedAt?: string | null;
+  icon?: string;
+}
+
+export interface MeetingWithDetails {
+  id: string;
+  name?: string;
+  meeting_name?: string;
+  meeting_type?: string | null;
+  meeting_address?: string | null;
+  location_name?: string | null;
+  distance?: number | null;
+  start_time?: string | null;
+  startTime?: string | null;
+  type?: string | null;
+  day?: string | null;
+  notes?: string | null;
+  [key: string]: string | number | boolean | null | undefined;
 }
 
 export interface RegularMeeting {
@@ -49,4 +77,11 @@ export interface SobrietyMilestone {
   days: number;
   achieved_at: string;
   celebrated: boolean;
+}
+
+export interface SponsorInfo {
+  id: string;
+  name: string;
+  phone: string;
+  notes?: string;
 }

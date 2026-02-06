@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,10 +10,10 @@ import { Image } from 'expo-image';
 import { Skeleton } from './Skeleton';
 import { darkAccent } from '../tokens/modern';
 
-interface AsyncImageProps {
+export interface AsyncImageProps {
   source: string;
   blurHash?: string;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
   transition?: number;
   priority?: 'low' | 'normal' | 'high';
@@ -101,7 +102,7 @@ export function AsyncImage({
 }
 
 // Avatar with fallback
-interface AvatarProps {
+export interface AvatarProps {
   source?: string;
   name: string;
   size?: number;
@@ -150,9 +151,9 @@ function stringToColor(str: string): string {
 }
 
 // Zoomable Image
-interface ZoomableImageProps {
+export interface ZoomableImageProps {
   source: string;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';

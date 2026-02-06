@@ -9,13 +9,14 @@
 
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
 import { GradientButton } from '../../../design-system/components/GradientButton';
-import { darkAccent, gradients, radius, spacing, typography } from '../../../design-system/tokens/modern';
-import type { RiskPattern } from '../services/riskDetectionService';
+import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import type { RiskPattern } from '../../../services/riskDetectionService';
 import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 
@@ -27,7 +28,7 @@ export interface RiskAlertCardProps {
   pattern: RiskPattern;
   onDismiss: () => void;
   onNotifySponsor?: () => Promise<{ success: boolean; error?: string }>;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 // ========================================
@@ -75,8 +76,11 @@ export function RiskAlertCard({
   const handleAction = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     
-    // Navigate to suggested route
-    navigation.navigate(pattern.actionRoute as never, pattern.actionParams as never);
+    // Navigate to suggested route (cross-navigator navigation)
+    (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate(
+      pattern.actionRoute,
+      pattern.actionParams as Record<string, unknown> | undefined
+    );
   };
 
   // Handle dismiss
@@ -120,7 +124,7 @@ export function RiskAlertCard({
       <View style={styles.card}>
         <BlurView intensity={20} tint="dark" style={styles.blur}>
           <LinearGradient
-            colors={colors.background}
+            colors={colors.background as [string, string]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.gradient}
@@ -132,7 +136,7 @@ export function RiskAlertCard({
                 <View style={styles.headerLeft}>
                   <View style={[styles.iconContainer, { backgroundColor: `${colors.icon}20` }]}>
                     <MaterialCommunityIcons
-                      name={pattern.icon as any}
+                      name={pattern.icon as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
                       size={24}
                       color={colors.icon}
                       accessible={false}
@@ -140,7 +144,7 @@ export function RiskAlertCard({
                   </View>
                   <View style={styles.headerText}>
                     <Text
-                      style={[styles.title, { color: darkAccent.text.primary }]}
+                      style={[styles.title, { color: darkAccent.text }]}
                       accessibilityRole="header"
                     >
                       {pattern.title}
@@ -166,7 +170,7 @@ export function RiskAlertCard({
                   <MaterialCommunityIcons
                     name="close"
                     size={20}
-                    color={darkAccent.text.secondary}
+                    color={darkAccent.textMuted}
                     accessible={false}
                   />
                 </Pressable>
@@ -174,7 +178,7 @@ export function RiskAlertCard({
 
               {/* Message */}
               <Text
-                style={[styles.message, { color: darkAccent.text.secondary }]}
+                style={[styles.message, { color: darkAccent.textMuted }]}
                 accessibilityLabel={pattern.message}
               >
                 {pattern.message}

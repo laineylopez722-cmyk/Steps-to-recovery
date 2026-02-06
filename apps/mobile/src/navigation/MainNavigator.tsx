@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../design-system';
 import { HomeScreen } from '../features/home/screens/HomeScreen';
@@ -88,37 +89,57 @@ function HomeStackNavigator(): React.ReactElement {
       <HomeStack.Screen
         name="MeetingStats"
         options={{ title: 'Meeting Stats', headerBackTitle: 'Back' }}
-      >
-        {() => <MeetingStatsScreen userId={userId} />}
-      </HomeStack.Screen>
+        component={MeetingStatsScreen}
+      />
       <HomeStack.Screen
         name="Achievements"
         options={{ title: 'Achievements', headerBackTitle: 'Back' }}
-      >
-        {() => <AchievementsScreen userId={userId} />}
-      </HomeStack.Screen>
+        component={AchievementsScreen}
+      />
       <HomeStack.Screen
         name="DangerZone"
         options={{ title: 'Trigger Protection', headerBackTitle: 'Back' }}
-      >
-        {() => <DangerZoneScreen userId={userId} />}
-      </HomeStack.Screen>
+        component={DangerZoneScreen}
+      />
       <HomeStack.Screen
         name="SafeDialIntervention"
-        component={SafeDialInterventionScreen}
         options={{ 
           title: 'Stop',
           headerShown: false,
           presentation: 'fullScreenModal',
           gestureEnabled: false,
         }}
-      />
+      >
+        {() => {
+          const route = useRoute();
+          const navigation = useNavigation();
+          const { user } = useAuth();
+          const params = route.params as { contactName: string; phoneNumber: string };
+          
+          return (
+            <SafeDialInterventionScreen
+              riskyContact={{
+                id: '',
+                userId: user?.id || '',
+                name: params.contactName,
+                phoneNumber: params.phoneNumber,
+                relationshipType: 'other',
+                notes: '',
+                addedAt: new Date().toISOString(),
+                isActive: true,
+              }}
+              onDismiss={() => navigation.goBack()}
+            />
+          );
+        }}
+      </HomeStack.Screen>
       <HomeStack.Screen
         name="BeforeYouUse"
         options={{ 
           title: 'Before You Use',
           headerShown: false,
           presentation: 'fullScreenModal',
+          gestureEnabled: false,
         }}
       >
         {() => <BeforeYouUseScreen userId={userId} />}
@@ -238,10 +259,12 @@ export function MainNavigator(): React.ReactElement {
         headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-        },
+        tabBarStyle: [
+          {
+            backgroundColor: theme.colors.surface,
+            borderTopColor: theme.colors.border,
+          },
+        ],
       }}
     >
       <Tab.Screen

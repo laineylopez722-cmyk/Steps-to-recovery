@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { JournalEntryDecrypted } from '@recovery/shared/src/types/models';
+import type { JournalEntryDecrypted } from '@recovery/shared';
 import { useTheme, Card, Badge } from '../../../design-system';
 
 // Constants

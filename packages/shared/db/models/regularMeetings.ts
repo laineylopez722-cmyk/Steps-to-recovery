@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../client';
 import { encryptContent, decryptContent } from '../../encryption';
 import type { RegularMeeting, DbRegularMeeting, RegularMeetingType } from '../../types';
+import { logger } from '../../utils/logger';
 
 // ============================================
 // CREATE
@@ -318,7 +319,7 @@ export async function decryptMeetingNotes(meeting: RegularMeeting): Promise<stri
   try {
     return await decryptContent(meeting.notes);
   } catch (error) {
-    console.error('Failed to decrypt meeting notes:', error);
+    logger.error('Failed to decrypt meeting notes', error);
     return null;
   }
 }

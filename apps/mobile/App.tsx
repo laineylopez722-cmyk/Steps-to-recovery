@@ -5,7 +5,7 @@ import './polyfills';
 import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
 initSentry();
 
-import React, { Suspense, useState, useCallback, useEffect } from 'react';
+import React, { Suspense, useState, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

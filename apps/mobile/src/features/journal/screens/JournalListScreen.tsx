@@ -7,7 +7,7 @@ import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { JournalCard } from '../components/JournalCard';
 import { useJournalEntries, useDeleteJournalEntry } from '../hooks/useJournalEntries';
-import type { JournalEntryDecrypted } from '@recovery/shared/src/types/models';
+import type { JournalEntryDecrypted } from '@recovery/shared';
 import {
   useTheme,
   FloatingActionButton,
@@ -201,7 +201,6 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
           accessibilityRole="list"
           accessibilityLabel="Journal entries list"
           showsVerticalScrollIndicator={false}
-          estimatedItemSize={180}
         />
       )}
 
@@ -210,9 +209,7 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
         label="New Entry"
         variant="primary"
         onPress={handleNewEntry}
-        accessibilityLabel="Create new journal entry"
-        accessibilityRole="button"
-        accessibilityHint="Opens the journal editor to create a new entry"
+        accessibilityLabel="Create new journal entry - Opens the journal editor to create a new entry"
       />
     </SafeAreaView>
   );

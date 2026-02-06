@@ -6,26 +6,23 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import type { NavigationProp } from '@react-navigation/native';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
 import { useReading } from '../../../hooks/useReading';
-import type { RootStackParamList } from '../../../navigation/types';
+import type { HomeStackScreenProps } from '../../../navigation/types';
 
 interface DailyReadingCardProps {
   userId: string;
 }
 
-export function DailyReadingCard({ userId }: DailyReadingCardProps): React.ReactElement {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): React.ReactElement {
+  const navigation = useNavigation<HomeStackScreenProps<'HomeMain'>['navigation']>();
   const {
     todayReading,
     hasReflectedToday,
     readingStreak,
-    shortDate,
     readingPreview,
     streakMessage,
     isLoading,
@@ -34,8 +31,8 @@ export function DailyReadingCard({ userId }: DailyReadingCardProps): React.React
   const handleReflect = (): void => {
     if (!todayReading) return;
     
-    // Navigate to journal editor with pre-filled content
-    navigation.navigate('Journal' as any, {
+    // Cross-tab navigation requires casting the route name
+    (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Journal', {
       screen: 'JournalEditor',
       params: {
         mode: 'create',
@@ -47,9 +44,7 @@ export function DailyReadingCard({ userId }: DailyReadingCardProps): React.React
   };
 
   const handleReadMore = (): void => {
-    navigation.navigate('Home' as any, {
-      screen: 'DailyReading',
-    });
+    navigation.navigate('DailyReading');
   };
 
   if (isLoading) {
@@ -67,59 +62,12 @@ export function DailyReadingCard({ userId }: DailyReadingCardProps): React.React
   }
 
   if (!todayReading) {
-    return null;
+    return <></>;
   }
 
   return (
-    <Animated.View entering={FadeInUp.delay(150).duration(600)}>
-      <GlassCard
-        intensity="medium"
-        glow
-        glowColor={darkAccent.primary}
-        style={styles.container}
-        accessibilityRole="article"
-        accessibilityLabel={`Daily reading: ${todayReading.title}`}
-      >
-        {/* Gradient border effect */}
-        <LinearGradient
-          colors={['rgba(99, 102, 241, 0.3)', 'rgba(168, 85, 247, 0.3)', 'rgba(236, 72, 153, 0.3)']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-          pointerEvents="none"
-        />
-        
+    <Animated.View entering={FadeInUp.delay(150).duration(600)}>      <GlassCard style={styles.container} accessibilityValue={{ text: `Daily reading: ${todayReading.title}` }} accessibilityLabel={`Daily reading: ${todayReading.title}`}>        
         <View style={styles.content}>
-          {/* Header with icon and date */}
-          <View style={styles.header}>
-            <View style={styles.iconContainer}>
-              <MaterialIcons name="auto-stories" size={24} color={darkAccent.primary} accessible={false} />
-            </View>
-            <View style={styles.headerText}>
-              <Text style={styles.label} accessibilityRole="text">Daily Reading</Text>
-              <Text style={styles.date} accessibilityRole="text">{shortDate}</Text>
-            </View>
-            {readingStreak > 0 && (
-              <View 
-                style={styles.streakBadge}
-                accessibilityLabel={streakMessage}
-                accessibilityRole="text"
-              >
-                <MaterialIcons name="local-fire-department" size={14} color="#FBBF24" accessible={false} />
-                <Text style={styles.streakText}>{readingStreak}</Text>
-              </View>
-            )}
-          </View>
-
-          {/* Title */}
-          <Text
-            style={styles.title}
-            accessibilityRole="header"
-            accessibilityLabel={`Reading title: ${todayReading.title}`}
-          >
-            {todayReading.title}
-          </Text>
-
           {/* Reading preview */}
           <Text
             style={styles.preview}

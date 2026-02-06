@@ -14,6 +14,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import * as SecureStore from 'expo-secure-store';
+import { logger } from '../utils/logger';
 
 // Secure store keys
 const SPONSOR_CODE_KEY = 'sponsor_connection_code';
@@ -393,7 +394,7 @@ export async function getCurrentSponsorCode(): Promise<ConnectionCode | null> {
       isExpired,
     };
   } catch (error) {
-    console.error('Failed to get sponsor code:', error);
+    logger.error('Failed to get sponsor code', error);
     return null;
   }
 }
@@ -445,7 +446,7 @@ export async function getSponseeConnections(): Promise<SponseeConnection[]> {
       lastSyncAt: c.lastSyncAt ? new Date(c.lastSyncAt) : undefined,
     }));
   } catch (error) {
-    console.error('Failed to get sponsee connections:', error);
+    logger.error('Failed to get sponsee connections', error);
     return [];
   }
 }
@@ -537,7 +538,7 @@ export function decodeShareData(encoded: string): SponsorShareData | null {
     const json = base64Decode(base64);
     return JSON.parse(json) as SponsorShareData;
   } catch (error) {
-    console.error('Failed to decode share data:', error);
+    logger.error('Failed to decode share data', error);
     return null;
   }
 }

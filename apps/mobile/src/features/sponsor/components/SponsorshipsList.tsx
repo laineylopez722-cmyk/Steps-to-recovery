@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../../design-system/components/GlassCard';
-import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { darkAccent, spacing, typography } from '../../../design-system/tokens/modern';
 
 export interface SponsorConnection {
   id: string;

@@ -8,6 +8,7 @@
 
 import { scheduleJitaiNotification } from './notifications';
 import type { JitaiTrigger, JitaiIntervention, JitaiContext, TriggerPriority } from './types';
+import { logger } from '../utils/logger';
 
 /**
  * Define all intervention triggers
@@ -302,7 +303,7 @@ export function evaluateTriggers(context: JitaiContext): JitaiIntervention[] {
         markTriggered(trigger.id);
       }
     } catch (error) {
-      console.error(`Error evaluating trigger ${trigger.id}:`, error);
+      logger.error(`Error evaluating trigger ${trigger.id}`, error);
     }
   }
 

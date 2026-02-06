@@ -16,6 +16,7 @@
 
 import { Platform } from 'react-native';
 import type * as NotificationsTypes from 'expo-notifications';
+import { logger } from '../utils/logger';
 
 type NotificationsModule = typeof NotificationsTypes;
 
@@ -155,7 +156,7 @@ export async function scheduleDailyCheckinReminder(checkInTime: string): Promise
     trigger,
   });
 
-  console.log(`Daily check-in reminder scheduled for ${checkInTime}`);
+  logger.info(`Daily check-in reminder scheduled for ${checkInTime}`);
 }
 
 /**
@@ -244,7 +245,7 @@ export async function scheduleMeetingReminder(daysSinceLastMeeting: number): Pro
     },
   });
 
-  console.log(`Meeting reminder scheduled for ${tomorrow.toISOString()}`);
+  logger.info(`Meeting reminder scheduled for ${tomorrow.toISOString()}`);
 }
 
 /**
@@ -311,7 +312,7 @@ export async function scheduleTimeCapsuleNotification(
     },
   });
 
-  console.log(`Time capsule notification scheduled for ${unlockDate.toISOString()}`);
+  logger.info(`Time capsule notification scheduled for ${unlockDate.toISOString()}`);
 }
 
 /**
@@ -478,9 +479,7 @@ export async function scheduleRegularMeetingReminder(
     trigger,
   });
 
-  console.log(
-    `Regular meeting reminder scheduled for ${meetingName} on day ${dayOfWeek} at ${reminderHour}:${reminderMinute}`,
-  );
+  logger.info(`Regular meeting reminder scheduled for ${meetingName} on day ${dayOfWeek} at ${reminderHour}:${reminderMinute}`);
 }
 
 /**

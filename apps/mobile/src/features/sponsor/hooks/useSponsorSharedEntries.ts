@@ -3,7 +3,6 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 import { generateId } from '../../../utils/id';
-import type { JournalEntryDecrypted } from '@recovery/shared/src/types/models';
 import {
   createEntrySharePayload,
   createCommentSharePayload,
@@ -11,7 +10,8 @@ import {
   encryptWithSharedKey,
   parseCommentSharePayload,
   parseEntrySharePayload,
-} from '@recovery/shared/services/sponsorConnection';
+} from '@recovery/shared';
+import type { JournalEntryDecrypted } from '@recovery/shared';
 
 interface SponsorConnectionRow {
   id: string;

@@ -2,8 +2,8 @@ import React, { useCallback } from 'react';
 import {
   Pressable,
   StyleSheet,
-  Text,
   type PressableProps,
+  type GestureResponderEvent,
   View,
   ActivityIndicator,
 } from 'react-native';
@@ -16,7 +16,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { darkAccent, gradients, radius, typography } from '../tokens/modern';
+import { darkAccent, gradients, radius } from '../tokens/modern';
 
 type ButtonVariant = 'primary' | 'secondary' | 'success' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
@@ -63,7 +63,7 @@ export function GradientButton({
   }, []);
 
   const handlePress = useCallback(
-    (e: any) => {
+    (e: GestureResponderEvent) => {
       if (haptic && !disabled && !loading) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       }
@@ -99,7 +99,7 @@ export function GradientButton({
     lg: { paddingVertical: 18, paddingHorizontal: 32, borderRadius: radius.xl },
   };
 
-  const textSizeStyles = {
+  const textSizeStyles: Record<ButtonSize, { fontSize: number; fontWeight: '600' | '700' }> = {
     sm: { fontSize: 14, fontWeight: '600' },
     md: { fontSize: 16, fontWeight: '600' },
     lg: { fontSize: 18, fontWeight: '600' },
@@ -132,7 +132,7 @@ export function GradientButton({
           { borderRadius: sizeStyles[size].borderRadius },
         ]}
       />
-      
+
       {isGhost && (
         <View style={styles.ghostBorder} pointerEvents="none" />
       )}

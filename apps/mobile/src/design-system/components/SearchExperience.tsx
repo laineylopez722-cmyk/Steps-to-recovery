@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable, FlatList } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
+import type { StyleProp, TextStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
   withSpring,
   FadeIn,
   FadeInUp,
-  Layout,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { GlassCard } from './GlassCard';
@@ -240,7 +239,7 @@ export function SearchResultsHeader({ query, resultCount, onClear }: SearchResul
 interface HighlightedTextProps {
   text: string;
   highlight: string;
-  style?: any;
+  style?: StyleProp<TextStyle>;
 }
 
 export function HighlightedText({ text, highlight, style }: HighlightedTextProps): React.ReactElement {

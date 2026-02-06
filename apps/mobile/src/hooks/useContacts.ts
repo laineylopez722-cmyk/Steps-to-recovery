@@ -5,7 +5,7 @@
 
 import { useEffect, useMemo, useCallback } from 'react';
 import { Linking, Alert } from 'react-native';
-import { useContactStore } from '@recovery/shared/store/contactStore';
+import { useContactStore } from '@recovery/shared';
 import type { RecoveryContact, ContactRole } from '@recovery/shared';
 import { logger } from '../utils/logger';
 

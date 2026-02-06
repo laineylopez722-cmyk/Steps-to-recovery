@@ -74,7 +74,18 @@ export interface LogCloseCallParams {
 // Database Mapping Helpers
 // ========================================
 
-function mapToRiskyContact(row: any): RiskyContact {
+interface RiskyContactRow {
+  id: string;
+  user_id: string;
+  name: string;
+  phone_number: string;
+  relationship_type: RelationshipType;
+  notes?: string;
+  added_at: string;
+  is_active: boolean;
+}
+
+function mapToRiskyContact(row: RiskyContactRow): RiskyContact {
   return {
     id: row.id,
     userId: row.user_id,
@@ -87,7 +98,17 @@ function mapToRiskyContact(row: any): RiskyContact {
   };
 }
 
-function mapToCloseCall(row: any): CloseCall {
+interface CloseCallRow {
+  id: string;
+  user_id: string;
+  risky_contact_id?: string;
+  contact_name: string;
+  action_taken: ActionTaken;
+  notes?: string;
+  created_at: string;
+}
+
+function mapToCloseCall(row: CloseCallRow): CloseCall {
   return {
     id: row.id,
     userId: row.user_id,
@@ -207,7 +228,7 @@ export async function updateRiskyContact(
   updates: Partial<Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>>
 ): Promise<RiskyContact> {
   try {
-    const dbUpdates: any = {};
+    const dbUpdates: Record<string, string | number | boolean | null> = {};
     
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.phoneNumber !== undefined) dbUpdates.phone_number = normalizePhoneNumber(updates.phoneNumber);

@@ -9,6 +9,7 @@ import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import { STEP_PROMPTS } from '../constants/stepPrompts';
 import type { StepProgress, StepAnswer, DbStepProgress, DbStepAnswer, StepStatus } from '../types';
+import { logger } from '../utils/logger';
 
 interface StepWorkState {
   progress: StepProgress[];
@@ -100,7 +101,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
 
       set({ progress, isLoading: false });
     } catch (error) {
-      console.error('Failed to load step progress:', error);
+      logger.error('Failed to load step progress', error);
       set({ error: 'Failed to load step progress', isLoading: false });
     }
   },
@@ -130,7 +131,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
         answers: [...state.answers.filter((a) => a.stepNumber !== stepNumber), ...stepAnswers],
       }));
     } catch (error) {
-      console.error('Failed to load step answers:', error);
+      logger.error('Failed to load step answers', error);
     }
   },
 
@@ -187,7 +188,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
       // Update step progress
       await get().updateProgressFromAnswers(stepNumber);
     } catch (error) {
-      console.error('Failed to save step answer:', error);
+      logger.error('Failed to save step answer', error);
       throw error;
     }
   },
@@ -282,7 +283,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
     try {
       return await decryptContent(answer.answer);
     } catch (error) {
-      console.error('Failed to decrypt answer:', error);
+      logger.error('Failed to decrypt answer', error);
       return null;
     }
   },

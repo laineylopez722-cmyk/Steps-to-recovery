@@ -7,8 +7,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { AnimatedCheckbox } from '../../../design-system/components/MicroInteractions';
-import { darkAccent, gradients, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useToast } from '../../../design-system/components/ToastProvider';
+
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 const EXPORT_FORMATS = [
   { id: 'json', label: 'JSON', description: 'Machine readable format', icon: 'code' },
@@ -29,7 +31,7 @@ export function DataExportScreen(): React.ReactElement {
   const [selectedTypes, setSelectedTypes] = useState<string[]>(['journal', 'checkins', 'meetings', 'steps', 'profile']);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
-  const { success, error } = useToast();
+  const { showToast } = useToast();
 
   const toggleDataType = (id: string) => {
     setSelectedTypes((prev) =>
@@ -39,7 +41,7 @@ export function DataExportScreen(): React.ReactElement {
 
   const handleExport = async () => {
     if (selectedTypes.length === 0) {
-      error('Please select at least one data type');
+      showToast('Please select at least one data type', 'error');
       return;
     }
 
@@ -53,7 +55,7 @@ export function DataExportScreen(): React.ReactElement {
     }
 
     setIsExporting(false);
-    success('Export completed! Check your downloads.', {
+    showToast('Export completed! Check your downloads.', 'success', {
       action: {
         label: 'Share',
         onPress: () => {
@@ -91,7 +93,7 @@ export function DataExportScreen(): React.ReactElement {
                   ]}
                 >
                   <MaterialIcons
-                    name={format.icon as any}
+                    name={format.icon as IconName}
                     size={28}
                     color={selectedFormat === format.id ? darkAccent.primary : darkAccent.textMuted}
                   />

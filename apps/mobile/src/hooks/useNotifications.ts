@@ -12,8 +12,8 @@ import {
   scheduleMilestoneNotification,
   getScheduledNotifications,
   clearBadge,
-} from '@recovery/shared/notifications';
-import { useSettingsStore } from '@recovery/shared';
+  useSettingsStore,
+} from '@recovery/shared';
 import { logger } from '../utils/logger';
 
 export function useNotifications() {

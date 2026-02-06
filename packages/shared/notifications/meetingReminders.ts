@@ -6,6 +6,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import type { RegularMeeting } from '../types';
+import { logger } from '../utils/logger';
 
 // Notification identifier prefix
 const REGULAR_MEETING_REMINDER_PREFIX = 'regular-meeting-';
@@ -121,11 +122,9 @@ export async function scheduleRegularMeetingReminder(meeting: RegularMeeting): P
       trigger,
     });
 
-    console.log(
-      `Scheduled meeting reminder for "${meeting.name}" on day ${meeting.dayOfWeek} at ${meeting.time}`,
-    );
+    logger.info(`Scheduled meeting reminder for "${meeting.name}" on day ${meeting.dayOfWeek} at ${meeting.time}`);
   } catch (error) {
-    console.error('Failed to schedule meeting reminder:', error);
+    logger.error('Failed to schedule meeting reminder', error);
   }
 }
 
@@ -136,7 +135,7 @@ export async function cancelRegularMeetingReminder(meetingId: string): Promise<v
   try {
     await Notifications.cancelScheduledNotificationAsync(getMeetingNotificationId(meetingId));
   } catch (error) {
-    console.error('Failed to cancel meeting reminder:', error);
+    logger.error('Failed to cancel meeting reminder', error);
   }
 }
 
@@ -150,7 +149,7 @@ export async function scheduleAllMeetingReminders(meetings: RegularMeeting[]): P
     await scheduleRegularMeetingReminder(meeting);
   }
 
-  console.log(`Scheduled ${meetingsWithReminders.length} meeting reminders`);
+  logger.info(`Scheduled ${meetingsWithReminders.length} meeting reminders`);
 }
 
 /**

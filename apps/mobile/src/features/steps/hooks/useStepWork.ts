@@ -4,9 +4,7 @@ import { decryptContent, encryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 import { generateId } from '../../../utils/id';
 import { addToSyncQueue } from '../../../services/syncService';
-import { STEP_PROMPTS } from '@recovery/shared/constants';
-import type { StepWork } from '@recovery/shared/src/types/database';
-import type { StepWorkDecrypted } from '@recovery/shared/src/types/models';
+import { STEP_PROMPTS, type StepWork, type StepWorkDecrypted } from '@recovery/shared';
 
 /**
  * Decrypt step work from database format to UI format

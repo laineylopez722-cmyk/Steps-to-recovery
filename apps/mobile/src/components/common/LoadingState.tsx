@@ -226,4 +226,3 @@ export const SkeletonList = memo(function SkeletonList({
   );
 });
 
-export default LoadingState;

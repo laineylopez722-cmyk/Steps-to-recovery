@@ -5,8 +5,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  interpolate,
-  Extrapolate,
   runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -15,14 +13,16 @@ import { BlurView } from 'expo-blur';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
 
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-interface BottomSheetProps {
+export interface BottomSheetProps {
   isVisible: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  snapPoints?: number[];
+  snapPoints?: readonly number[];
   showDragHandle?: boolean;
   showCloseButton?: boolean;
 }
@@ -31,8 +31,8 @@ export function BottomSheet({
   isVisible,
   onClose,
   title,
+  snapPoints: _snapPoints = [50, 75] as readonly number[],
   children,
-  snapPoints = [50, 75],
   showDragHandle = true,
   showCloseButton = true,
 }: BottomSheetProps): React.ReactElement | null {
@@ -48,7 +48,7 @@ export function BottomSheet({
       translateY.value = withSpring(SCREEN_HEIGHT, { damping: 25, stiffness: 300 });
       opacity.value = withTiming(0, { duration: 200 });
     }
-  }, [isVisible]);
+  }, [isVisible, translateY, opacity]);
 
   const gesture = Gesture.Pan()
     .onUpdate((event) => {
@@ -120,7 +120,7 @@ export function BottomSheet({
 }
 
 // Action Sheet Item
-interface ActionSheetItemProps {
+export interface ActionSheetItemProps {
   icon?: string;
   title: string;
   subtitle?: string;
@@ -139,10 +139,10 @@ export function ActionSheetItem({
 }: ActionSheetItemProps): React.ReactElement {
   const { light } = useHaptics();
 
-  const handlePress = async () => {
+  const handlePress = useCallback(async () => {
     await light();
     onPress();
-  };
+  }, [light, onPress]);
 
   return (
     <Pressable
@@ -156,7 +156,7 @@ export function ActionSheetItem({
     >
       {icon && (
         <MaterialIcons
-          name={icon as any}
+          name={icon as IconName}
           size={24}
           color={destructive ? darkAccent.error : darkAccent.primary}
           style={styles.actionIcon}

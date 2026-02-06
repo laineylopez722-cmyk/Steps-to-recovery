@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, RefreshControlProps } from 'react-native';
+import { View, StyleSheet, type RefreshControlProps } from 'react-native';
 import Animated, {
+  type SharedValue,
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming,
   interpolate,
   Extrapolate,
@@ -11,19 +11,19 @@ import Animated, {
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius } from '../tokens/modern';
 
-interface PullToRefreshProps extends RefreshControlProps {
-  scrollY: Animated.SharedValue<number>;
+export interface PullToRefreshProps extends RefreshControlProps {
+  scrollY: SharedValue<number>;
 }
 
-const AnimatedIcon = Animated.createAnimatedComponent(MaterialIcons);
+const _AnimatedIcon = Animated.createAnimatedComponent(MaterialIcons);
 
 export function PullToRefresh({
   refreshing,
-  onRefresh,
+  onRefresh: _onRefresh,
   scrollY,
 }: PullToRefreshProps): React.ReactElement {
   const rotation = useSharedValue(0);
-  const scale = useSharedValue(1);
+  const _scale = useSharedValue(1);
 
   useEffect(() => {
     if (refreshing) {

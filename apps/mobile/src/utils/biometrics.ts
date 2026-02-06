@@ -327,15 +327,4 @@ export async function getBiometricStatus(): Promise<{
   };
 }
 
-export default {
-  isBiometricSupported,
-  hasEnrolledBiometrics,
-  getBiometricType,
-  getBiometricLabel,
-  isBiometricReady,
-  authenticateWithBiometrics,
-  secureAuthenticate,
-  quickAuthenticate,
-  openBiometricSettings,
-  getBiometricStatus,
-};
+// All utilities are exported as named exports above

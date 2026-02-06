@@ -16,7 +16,7 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useSponsorConnections } from '../hooks/useSponsorConnections';
 import { generateId } from '../../../utils/id';
 import { logger } from '../../../utils/logger';
-import { parseCommentSharePayload } from '@recovery/shared/services/sponsorConnection';
+import { parseCommentSharePayload } from '@recovery/shared';
 import { Text } from 'react-native';
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList>;

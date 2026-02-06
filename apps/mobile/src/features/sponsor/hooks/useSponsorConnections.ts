@@ -12,7 +12,7 @@ import {
   parseConfirmPayload,
   parseInvitePayload,
   type SponsorConfirmPayload,
-} from '@recovery/shared/services/sponsorConnection';
+} from '@recovery/shared';
 
 export type SponsorRole = 'sponsee' | 'sponsor';
 export type SponsorStatus = 'pending' | 'connected';

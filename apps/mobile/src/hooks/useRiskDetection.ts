@@ -57,7 +57,7 @@ export function useRiskDetection(userId: string | undefined): UseRiskDetectionRe
     queryKey: getRiskDetectionKey(userId || ''),
     queryFn: async () => {
       if (!userId) throw new Error('User ID required');
-      return await detectRiskPatterns(userId);
+      return detectRiskPatterns(userId);
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -118,7 +118,7 @@ export function useRiskDetection(userId: string | undefined): UseRiskDetectionRe
   const notifySponsorMutation = useMutation({
     mutationFn: async (pattern: RiskPattern) => {
       if (!userId) throw new Error('User ID required');
-      return await notifySponsor(userId, pattern);
+      return notifySponsor(userId, pattern);
     },
     onError: (error) => {
       logger.error('useRiskDetection: Notify sponsor failed', { error });
@@ -136,7 +136,7 @@ export function useRiskDetection(userId: string | undefined): UseRiskDetectionRe
   // Notify sponsor handler
   const notifySponsorAbout = useCallback(
     async (pattern: RiskPattern) => {
-      return await notifySponsorMutation.mutateAsync(pattern);
+      return notifySponsorMutation.mutateAsync(pattern);
     },
     [notifySponsorMutation]
   );

@@ -4,36 +4,36 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import { getDatabase } from '../client';
-import { encryptContent, decryptContent } from '../../encryption';
+import { decryptContent, encryptContent } from '../../encryption';
 import type {
-  SobrietyProfile,
-  JournalEntry,
-  DailyCheckin,
-  Milestone,
-  MeetingLog,
-  EmotionTag,
   AppSettings,
-  DbSobrietyProfile,
-  DbJournalEntry,
-  DbDailyCheckin,
-  DbMilestone,
-  DbEmotionTag,
-  DbAppSettings,
-  JournalType,
-  MilestoneType,
-  ProgramType,
-  ThemeMode,
+  ContactRole,
   CrisisRegion,
+  DailyCheckin,
+  DailyReadingReflection,
+  DbAppSettings,
+  DbDailyCheckin,
+  DbDailyReadingReflection,
+  DbEmotionTag,
+  DbJournalEntry,
+  DbMilestone,
+  DbPhoneCallLog,
+  DbRecoveryContact,
+  DbSobrietyProfile,
+  EmotionTag,
+  JournalEntry,
+  JournalType,
+  MeetingLog,
+  Milestone,
+  MilestoneType,
+  PhoneCallLog,
+  ProgramType,
   // V2 Types
   RecoveryContact,
-  DbRecoveryContact,
-  ContactRole,
-  PhoneCallLog,
-  DbPhoneCallLog,
-  DailyReadingReflection,
-  DbDailyReadingReflection,
+  SobrietyProfile,
+  ThemeMode,
 } from '../../types';
+import { getDatabase } from '../client';
 
 // ============================================
 // SOBRIETY PROFILE
@@ -859,13 +859,13 @@ export async function decryptReflection(reflection: DailyReadingReflection): Pro
 // ACHIEVEMENTS (Phase 4)
 // ============================================
 
+import { ALL_ACHIEVEMENTS, type AchievementDefinition } from '../../constants/achievements';
 import type {
   Achievement,
-  DbAchievement,
   AchievementCategory,
   AchievementStatus,
+  DbAchievement,
 } from '../../types';
-import { ALL_ACHIEVEMENTS, type AchievementDefinition } from '../../constants/achievements';
 
 /**
  * Initialize achievements table with all definitions

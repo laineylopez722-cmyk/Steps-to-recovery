@@ -8,7 +8,9 @@ import Animated, {
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 
-interface GlassListItemProps extends ViewProps {
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
+export interface GlassListItemProps extends ViewProps {
   title: string;
   subtitle?: string;
   description?: string;
@@ -74,7 +76,7 @@ export function GlassListItem({
       <View style={styles.content}>
         {icon && (
           <View style={[styles.iconContainer, { backgroundColor: `${iconColor}15` }]}>
-            <MaterialIcons name={icon as any} size={24} color={iconColor} />
+            <MaterialIcons name={icon as IconName} size={24} color={iconColor} />
           </View>
         )}
         

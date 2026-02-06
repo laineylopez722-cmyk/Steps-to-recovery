@@ -271,4 +271,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CircularProgress;

@@ -144,4 +144,3 @@ export const EMPTY_STATES = {
   },
 } as const;
 
-export default EmptyState;

@@ -1,15 +1,12 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withSpring,
-  withDecay,
   withDelay,
-  interpolate,
   Easing,
-  runOnJS,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 
@@ -233,7 +230,6 @@ import { Text } from 'react-native';
 import { GlassCard } from './GlassCard';
 import { GradientButton } from './GradientButton';
 import { darkAccent, typography } from '../tokens/modern';
-import { MaterialIcons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 
 export function MilestoneCelebration({

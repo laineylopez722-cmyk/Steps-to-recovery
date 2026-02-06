@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, StyleSheet, TextInput, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import type { MeetingCheckIn } from '../services/meetingCheckInService';
 import { darkAccent, spacing, radius, typography } from '../design-system/tokens/modern';
 import { GlassCard } from '../design-system/components/GlassCard';
 import { GradientButton } from '../design-system/components/GradientButton';
@@ -26,8 +27,8 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
   
   const [showPreModal, setShowPreModal] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
-  const [currentCheckin, setCurrentCheckin] = useState<any>(null);
-  const [preMood, setPreMood] = useState<number | undefined>();
+  const [currentCheckin, setCurrentCheckin] = useState<MeetingCheckIn | null>(null);
+  const [_preMood, _setPreMood] = useState<number | undefined>();
 
   const handleQuickCheckIn = async () => {
     if (!meetingName.trim()) {
@@ -58,7 +59,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
       } else {
         Alert.alert('Error', 'Could not check in. Please try again.');
       }
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Unexpected error during check-in');
     } finally {
       setIsChecking(false);
@@ -83,7 +84,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
           <TextInput
             style={styles.input}
             placeholder="Thursday Night Group"
-            placeholderTextColor={darkAccent.text.secondary}
+            placeholderTextColor={darkAccent.textMuted}
             value={meetingName}
             onChangeText={setMeetingName}
             autoFocus
@@ -125,7 +126,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
           <Text style={styles.checkInTitle}>Check In to Meeting</Text>
           <Text style={styles.checkInSubtitle}>Track attendance & earn badges</Text>
         </View>
-        <MaterialIcons name="arrow-forward" size={20} color={darkAccent.text.secondary} />
+        <MaterialIcons name="arrow-forward" size={20} color={darkAccent.textMuted} />
       </Pressable>
 
       {/* For testing post-modal */}
@@ -157,7 +158,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
           userId={userId}
           checkinId={currentCheckin.id}
           meetingName={currentCheckin.meetingName || meetingName}
-          preMood={preMood}
+          preMood={_preMood}
           onClose={() => setShowPostModal(false)}
           onComplete={() => {
             setShowPostModal(false);
@@ -194,12 +195,12 @@ const styles = StyleSheet.create({
   },
   checkInTitle: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     marginBottom: spacing[1],
   },
   checkInSubtitle: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     fontSize: 14,
   },
   checkInInputContainer: {
@@ -208,13 +209,13 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
   },
   input: {
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: radius.lg,
     padding: spacing[3],
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     ...typography.body,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     fontWeight: '600',
   },
 });

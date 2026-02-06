@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   daysText: {
     fontSize: 72,
     fontWeight: '700',
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     letterSpacing: -2,
   },
   milestoneGlow: {
@@ -280,7 +280,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     fontSize: 14,
     fontWeight: '600',
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     letterSpacing: 2,
     marginTop: -spacing[2],
     marginBottom: spacing[2],
@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     ...typography.body,
     fontSize: 18,
     fontWeight: '500',
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     letterSpacing: 1,
   },
 });

@@ -19,6 +19,7 @@ import { getDatabase } from '../db';
 import { encryptContent, decryptContent } from '../encryption';
 import { scheduleTimeCapsuleNotification, cancelTimeCapsuleNotification } from '../notifications';
 import type { TimeCapsule, DbTimeCapsule } from '../types';
+import { logger } from '../utils/logger';
 
 /**
  * Validates capsule creation parameters
@@ -88,7 +89,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
     set({ isLoading: true });
 
     try {
-      console.debug('Loading time capsules from database');
+      logger.debug('Loading time capsules from database');
       const db = await getDatabase();
 
       const rows = await db.getAllAsync<DbTimeCapsule>(
@@ -109,7 +110,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
             };
             return capsule;
           } catch (parseError) {
-            console.warn('Failed to parse capsule row, skipping', {
+            logger.warn('Failed to parse capsule row, skipping', {
               capsuleId: row.id,
               error: parseError,
             });
@@ -118,10 +119,10 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
         })
         .filter((capsule): capsule is TimeCapsule => capsule !== null);
 
-      console.info('Loaded time capsules', { count: capsules.length });
+      logger.info('Loaded time capsules', { count: capsules.length });
       set({ capsules, isLoading: false });
     } catch (error) {
-      console.error('Failed to load time capsules', error);
+      logger.error('Failed to load time capsules', error);
       set({ isLoading: false });
       throw error; // Re-throw to allow caller to handle
     }
@@ -135,9 +136,8 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       const id = uuid();
       const now = new Date();
 
-      console.log('Creating time capsule', {
+      logger.info('Creating time capsule', {
         capsuleId: id,
-        title: title.substring(0, 50) + (title.length > 50 ? '...' : ''),
         unlockDate: unlockDate.toISOString(),
       });
 
@@ -174,19 +174,19 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       // Schedule notification for unlock date
       try {
         await scheduleTimeCapsuleNotification(id, title, unlockDate);
-        console.debug('Scheduled notification for capsule', { capsuleId: id });
+        logger.debug('Scheduled notification for capsule', { capsuleId: id });
       } catch (notificationError) {
-        console.warn('Failed to schedule capsule notification', {
+        logger.warn('Failed to schedule capsule notification', {
           capsuleId: id,
           error: notificationError,
         });
         // Don't fail the entire operation for notification issues
       }
 
-      console.info('Time capsule created successfully', { capsuleId: id });
+      logger.info('Time capsule created successfully', { capsuleId: id });
       return capsule;
     } catch (error) {
-      console.error('Failed to create time capsule', error);
+      logger.error('Failed to create time capsule', error);
       throw error;
     }
   },
@@ -205,13 +205,13 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       const capsule = capsules.find((c) => c.id === id);
 
       if (!capsule) {
-        console.warn('Capsule not found for unlocking', { capsuleId: id });
+        logger.warn('Capsule not found for unlocking', { capsuleId: id });
         return null;
       }
 
       // Check if it's time to unlock
       if (capsule.unlockDate > now) {
-        console.debug('Capsule not yet unlockable', {
+        logger.debug('Capsule not yet unlockable', {
           capsuleId: id,
           unlockDate: capsule.unlockDate.toISOString(),
           currentTime: now.toISOString(),
@@ -220,7 +220,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       }
 
       if (capsule.isUnlocked) {
-        console.debug('Capsule already unlocked', { capsuleId: id });
+        logger.debug('Capsule already unlocked', { capsuleId: id });
         // Return cached decrypted content if available
         const { decryptedContent } = get();
         if (decryptedContent) {
@@ -230,7 +230,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
         return await decryptContent(capsule.content);
       }
 
-      console.info('Unlocking time capsule', { capsuleId: id });
+      logger.info('Unlocking time capsule', { capsuleId: id });
 
       // Decrypt content first (fail fast if decryption fails)
       const decrypted = await decryptContent(capsule.content);
@@ -259,19 +259,19 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       // Cancel the notification since it's now unlocked
       try {
         await cancelTimeCapsuleNotification(id);
-        console.debug('Cancelled notification for unlocked capsule', { capsuleId: id });
+        logger.debug('Cancelled notification for unlocked capsule', { capsuleId: id });
       } catch (notificationError) {
-        console.warn('Failed to cancel capsule notification', {
+        logger.warn('Failed to cancel capsule notification', {
           capsuleId: id,
           error: notificationError,
         });
         // Don't fail the unlock operation for notification issues
       }
 
-      console.info('Time capsule unlocked successfully', { capsuleId: id });
+      logger.info('Time capsule unlocked successfully', { capsuleId: id });
       return decrypted;
     } catch (error) {
-      console.error('Failed to unlock time capsule', { capsuleId: id, error });
+      logger.error('Failed to unlock time capsule', error);
       throw error;
     }
   },
@@ -282,7 +282,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
     }
 
     try {
-      console.info('Deleting time capsule', { capsuleId: id });
+      logger.info('Deleting time capsule', { capsuleId: id });
 
       const db = await getDatabase();
 
@@ -293,7 +293,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       );
 
       if (!existing) {
-        console.warn('Attempted to delete non-existent capsule', { capsuleId: id });
+        logger.warn('Attempted to delete non-existent capsule', { capsuleId: id });
         return; // Silently succeed for idempotency
       }
 
@@ -311,18 +311,18 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       // Cancel any scheduled notification
       try {
         await cancelTimeCapsuleNotification(id);
-        console.debug('Cancelled notification for deleted capsule', { capsuleId: id });
+        logger.debug('Cancelled notification for deleted capsule', { capsuleId: id });
       } catch (notificationError) {
-        console.warn('Failed to cancel notification for deleted capsule', {
+        logger.warn('Failed to cancel notification for deleted capsule', {
           capsuleId: id,
           error: notificationError,
         });
         // Don't fail the delete operation for notification issues
       }
 
-      console.info('Time capsule deleted successfully', { capsuleId: id });
+      logger.info('Time capsule deleted successfully', { capsuleId: id });
     } catch (error) {
-      console.error('Failed to delete time capsule', { capsuleId: id, error });
+      logger.error('Failed to delete time capsule', error);
       throw error;
     }
   },
@@ -335,7 +335,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       const unlockableCapsules = capsules.filter((c) => !c.isUnlocked && c.unlockDate <= now);
 
       if (unlockableCapsules.length > 0) {
-        console.info('Found unlockable capsules', {
+        logger.info('Found unlockable capsules', {
           count: unlockableCapsules.length,
           capsuleIds: unlockableCapsules.map((c) => c.id),
         });
@@ -343,7 +343,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
 
       return unlockableCapsules;
     } catch (error) {
-      console.error('Failed to check for unlockable capsules', error);
+      logger.error('Failed to check for unlockable capsules', error);
       throw error;
     }
   },
@@ -358,14 +358,14 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       const capsule = capsules.find((c) => c.id === id);
 
       if (capsule) {
-        console.debug('Found capsule by ID', { capsuleId: id });
+        logger.debug('Found capsule by ID', { capsuleId: id });
       } else {
-        console.debug('Capsule not found by ID', { capsuleId: id });
+        logger.debug('Capsule not found by ID', { capsuleId: id });
       }
 
       return capsule || null;
     } catch (error) {
-      console.error('Failed to get capsule by ID', { capsuleId: id, error });
+      logger.error('Failed to get capsule by ID', error);
       throw error;
     }
   },

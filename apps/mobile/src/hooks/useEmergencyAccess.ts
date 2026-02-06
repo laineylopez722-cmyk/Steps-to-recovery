@@ -28,7 +28,8 @@
 import { useCallback, useMemo } from 'react';
 import { Linking, Platform, Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { useContactsStore, type Contact } from '@recovery/shared/store/contactsStore';
+import { useContactStore } from '@recovery/shared';
+import type { RecoveryContact } from '@recovery/shared';
 import { logger } from '../utils/logger';
 
 interface CrisisHotline {
@@ -79,9 +80,9 @@ interface SafetyPlanItem {
 
 interface EmergencyAccessState {
   /** Primary sponsor contact (if set) */
-  sponsor: Contact | null;
+  sponsor: RecoveryContact | null;
   /** All emergency contacts */
-  emergencyContacts: Contact[];
+  emergencyContacts: RecoveryContact[];
   /** Crisis hotline numbers */
   crisisHotlines: CrisisHotline[];
   /** User's safety plan items */
@@ -94,13 +95,13 @@ interface EmergencyAccessActions {
   /** Call sponsor (shows confirmation first) */
   callSponsor: (skipConfirmation?: boolean) => Promise<void>;
   /** Call specific contact */
-  callContact: (contact: Contact, skipConfirmation?: boolean) => Promise<void>;
+  callContact: (contact: RecoveryContact, skipConfirmation?: boolean) => Promise<void>;
   /** Call crisis hotline */
   callCrisisLine: (hotline: CrisisHotline) => Promise<void>;
   /** Text sponsor */
   textSponsor: (message?: string) => Promise<void>;
   /** Text contact */
-  textContact: (contact: Contact, message?: string) => Promise<void>;
+  textContact: (contact: RecoveryContact, message?: string) => Promise<void>;
   /** Open phone's emergency dialer */
   callEmergencyServices: () => Promise<void>;
   /** Log emergency event for tracking */
@@ -108,7 +109,7 @@ interface EmergencyAccessActions {
 }
 
 export function useEmergencyAccess(): EmergencyAccessState & EmergencyAccessActions {
-  const { contacts } = useContactsStore();
+  const { contacts } = useContactStore();
 
   // Find sponsor
   const sponsor = useMemo(() => {
@@ -253,7 +254,7 @@ export function useEmergencyAccess(): EmergencyAccessState & EmergencyAccessActi
   );
 
   const callContact = useCallback(
-    async (contact: Contact, skipConfirmation = false): Promise<void> => {
+    async (contact: RecoveryContact, skipConfirmation = false): Promise<void> => {
       if (!contact.phone) {
         Alert.alert('No Phone Number', `${contact.name} does not have a phone number saved.`);
         return;
@@ -303,7 +304,7 @@ export function useEmergencyAccess(): EmergencyAccessState & EmergencyAccessActi
   );
 
   const textContact = useCallback(
-    async (contact: Contact, message?: string): Promise<void> => {
+    async (contact: RecoveryContact, message?: string): Promise<void> => {
       if (!contact.phone) {
         Alert.alert('No Phone Number', `${contact.name} does not have a phone number saved.`);
         return;

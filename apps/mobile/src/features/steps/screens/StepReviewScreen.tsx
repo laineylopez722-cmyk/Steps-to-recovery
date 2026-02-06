@@ -11,7 +11,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared/constants';
+import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared';
 import { useAuth } from '@/contexts/AuthContext';
 import { useStepWork } from '../hooks/useStepWork';
 import { logger } from '@/utils/logger';

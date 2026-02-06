@@ -34,6 +34,7 @@
  */
 
 import * as SQLite from 'expo-sqlite';
+import { logger } from '../utils/logger';
 
 const DATABASE_NAME = 'recovery_companion.db';
 
@@ -528,23 +529,23 @@ async function runMigrations(database: SQLite.SQLiteDatabase): Promise<void> {
     return;
   }
 
-  console.log(`Running ${pendingMigrations.length} database migration(s)...`);
+  logger.info(`Running ${pendingMigrations.length} database migration(s)...`);
 
   // Run each migration in order
   for (const migration of pendingMigrations.sort((a, b) => a.version - b.version)) {
     try {
-      console.log(`Migration ${migration.version}: ${migration.description}`);
+      logger.info(`Migration ${migration.version}: ${migration.description}`);
       await migration.up(database);
       await setSchemaVersion(database, migration.version);
     } catch (error) {
-      console.error(`Migration ${migration.version} failed:`, error);
+      logger.error(`Migration ${migration.version} failed`, error);
       // Continue with other migrations - some ALTERs may fail if column exists
     }
   }
 
   // Ensure we're at the current schema version
   await setSchemaVersion(database, SCHEMA_VERSION);
-  console.log(`Database schema updated to version ${SCHEMA_VERSION}`);
+  logger.info(`Database schema updated to version ${SCHEMA_VERSION}`);
 }
 
 /**

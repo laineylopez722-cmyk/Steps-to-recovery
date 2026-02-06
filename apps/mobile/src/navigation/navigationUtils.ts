@@ -310,25 +310,4 @@ export const deepLinkNavigation = {
   },
 };
 
-// Export all utilities
-export default {
-  setNavigationRef,
-  navigate,
-  navigateNested,
-  navigateToMainApp,
-  navigateToAuth,
-  navigateToMainTab,
-  featureNavigation,
-  authNavigation,
-  push,
-  replace,
-  goBack,
-  pop,
-  popToTop,
-  reset,
-  canGoBack,
-  getCurrentRoute,
-  isCurrentScreen,
-  navigateIfNotCurrent,
-  deepLinkNavigation,
-};
+// All utilities are exported as named exports above

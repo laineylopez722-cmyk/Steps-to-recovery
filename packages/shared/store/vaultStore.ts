@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import type { VaultItem, VaultItemType, DbVaultItem } from '../types';
+import { logger } from '../utils/logger';
 
 interface VaultState {
   items: VaultItem[];
@@ -78,14 +79,14 @@ export const useVaultStore = create<VaultState>((set, get) => ({
           const decryptedContent = await decryptContent(row.content);
           items.push(dbToVaultItem(row, decryptedContent));
         } catch (error) {
-          console.error('Failed to decrypt vault item:', row.id, error);
+          logger.error('Failed to decrypt vault item', error);
         }
       }
 
       set({ items, isLoading: false });
     } catch (error) {
       set({ error: 'Failed to load vault items', isLoading: false });
-      console.error('Load vault items error:', error);
+      logger.error('Load vault items error', error);
     }
   },
 
@@ -130,7 +131,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
 
       return newItem;
     } catch (error) {
-      console.error('Add vault item error:', error);
+      logger.error('Add vault item error', error);
       throw error;
     }
   },
@@ -174,7 +175,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('Update vault item error:', error);
+      logger.error('Update vault item error', error);
       throw error;
     }
   },
@@ -188,7 +189,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
         items: state.items.filter((item) => item.id !== id),
       }));
     } catch (error) {
-      console.error('Delete vault item error:', error);
+      logger.error('Delete vault item error', error);
       throw error;
     }
   },
@@ -222,7 +223,7 @@ export const useVaultStore = create<VaultState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('Record view error:', error);
+      logger.error('Record view error', error);
     }
   },
 

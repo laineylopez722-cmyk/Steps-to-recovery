@@ -336,4 +336,3 @@ export const designTokens = {
   zIndex: Z_INDEX,
 } as const;
 
-export default designTokens;

@@ -15,6 +15,7 @@ import {
   deleteRecoveryContact,
 } from '../db/models';
 import { decryptContent } from '../encryption';
+import { logger } from '../utils/logger';
 
 interface ContactState {
   contacts: RecoveryContact[];
@@ -55,7 +56,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
       const sponsor = await getSponsor();
       set({ contacts, sponsor, isLoading: false });
     } catch (error) {
-      console.error('Failed to load contacts:', error);
+      logger.error('Failed to load contacts', error);
       set({ error: 'Failed to load contacts', isLoading: false });
     }
   },
@@ -89,7 +90,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
 
       return contact;
     } catch (error) {
-      console.error('Failed to add contact:', error);
+      logger.error('Failed to add contact', error);
       throw error;
     }
   },
@@ -116,7 +117,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
         };
       });
     } catch (error) {
-      console.error('Failed to update contact:', error);
+      logger.error('Failed to update contact', error);
       throw error;
     }
   },
@@ -130,7 +131,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
         sponsor: state.sponsor?.id === id ? null : state.sponsor,
       }));
     } catch (error) {
-      console.error('Failed to delete contact:', error);
+      logger.error('Failed to delete contact', error);
       throw error;
     }
   },
@@ -149,7 +150,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
             : state.sponsor,
       }));
     } catch (error) {
-      console.error('Failed to mark contact as contacted:', error);
+      logger.error('Failed to mark contact as contacted', error);
       throw error;
     }
   },
@@ -162,7 +163,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
     try {
       return await getRecoveryContactById(id);
     } catch (error) {
-      console.error('Failed to get contact:', error);
+      logger.error('Failed to get contact', error);
       return null;
     }
   },
@@ -177,7 +178,7 @@ export const useContactStore = create<ContactState & ContactActions>((set, get) 
     try {
       return await decryptContent(contact.notes);
     } catch (error) {
-      console.error('Failed to decrypt notes:', error);
+      logger.error('Failed to decrypt notes', error);
       return null;
     }
   },

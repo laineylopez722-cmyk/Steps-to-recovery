@@ -1,22 +1,22 @@
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
+import type { StyleProp, ViewStyle, DimensionValue } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
-  interpolate,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { darkAccent, radius } from '../tokens/modern';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-interface SkeletonProps {
+export interface SkeletonProps {
   width?: number | string;
   height?: number;
   borderRadius?: number;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function Skeleton({
@@ -39,7 +39,8 @@ export function Skeleton({
     transform: [{ translateX: translateX.value }],
   }));
 
-  const widthStyle = typeof width === 'number' ? { width } : { width: width as string };
+  const widthStyle: { width: DimensionValue } = 
+    typeof width === 'number' ? { width } : { width: width as DimensionValue };
 
   return (
     <View style={[styles.container, { height, borderRadius }, widthStyle, style]}>

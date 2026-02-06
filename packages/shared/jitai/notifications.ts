@@ -4,6 +4,7 @@
 
 import * as Notifications from 'expo-notifications';
 import type { JitaiIntervention } from './types';
+import { logger } from '../utils/logger';
 
 const JITAI_NOTIFICATION_PREFIX = 'jitai-';
 
@@ -36,9 +37,9 @@ export async function scheduleJitaiNotification(intervention: JitaiIntervention)
       },
     });
 
-    console.log(`JITAI notification scheduled: ${intervention.triggerId}`);
+    logger.info(`JITAI notification scheduled: ${intervention.triggerId}`);
   } catch (error) {
-    console.error('Failed to schedule JITAI notification:', error);
+    logger.error('Failed to schedule JITAI notification', error);
   }
 }
 
@@ -69,7 +70,7 @@ export async function cancelAllJitaiNotifications(): Promise<void> {
       await Notifications.cancelScheduledNotificationAsync(notification.identifier);
     }
   } catch (error) {
-    console.error('Failed to cancel JITAI notifications:', error);
+    logger.error('Failed to cancel JITAI notifications', error);
   }
 }
 

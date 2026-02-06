@@ -15,7 +15,7 @@ import { useRoute, useNavigation, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared/constants';
+import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
@@ -29,11 +29,15 @@ import {
   Divider,
   Text,
   Skeleton,
-  CardSkeleton,
+  SkeletonCard,
+  SkeletonListItem,
+  SkeletonStats,
+  SkeletonHome,
+  SkeletonJournalList,
 } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
-type NavigationProp = NativeStackNavigationProp<StepsStackParamList>;
+type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
 
 interface QuestionItem {
   type: 'question';
@@ -466,14 +470,14 @@ export function StepDetailScreen(): React.ReactElement {
           {/* Header skeleton */}
           <Card variant="elevated" style={styles.headerCard}>
             <View style={styles.header}>
-              <Skeleton variant="avatar" avatarSize={50} />
+              <Skeleton width={50} height={50} borderRadius={25} />
               <View style={[styles.headerContent, { gap: 8 }]}>
-                <Skeleton variant="text" width="80%" height={20} />
-                <Skeleton variant="text" width="50%" height={14} />
+                <Skeleton width="80%" height={20} />
+                <Skeleton width="50%" height={14} />
               </View>
             </View>
             <View style={styles.progressSection}>
-              <Skeleton variant="text" width="100%" height={8} borderRadius={4} />
+              <Skeleton width="100%" height={8} borderRadius={4} />
             </View>
           </Card>
 
@@ -482,17 +486,17 @@ export function StepDetailScreen(): React.ReactElement {
             variant="outlined"
             style={[styles.descriptionCard, { borderColor: theme.colors.border }]}
           >
-            <Skeleton variant="text" width="40%" height={12} />
+            <Skeleton width="40%" height={12} />
             <View style={{ height: 8 }} />
-            <Skeleton variant="text" width="100%" height={14} />
+            <Skeleton width="100%" height={14} />
             <View style={{ height: 4 }} />
-            <Skeleton variant="text" width="90%" height={14} />
+            <Skeleton width="90%" height={14} />
           </Card>
 
           {/* Question cards skeleton */}
           <View style={{ padding: 16, gap: 16 }}>
-            <CardSkeleton />
-            <CardSkeleton />
+            <Skeleton width="100%" height={100} borderRadius={8} />
+            <Skeleton width="100%" height={100} borderRadius={8} />
           </View>
         </View>
       </SafeAreaView>

@@ -20,15 +20,15 @@
  */
 
 import { useEffect, useMemo, useRef } from 'react';
-import { useProfileStore } from '@recovery/shared/store/profileStore';
-import { useSettingsStore } from '@recovery/shared/store/settingsStore';
 import {
+  useProfileStore,
+  useSettingsStore,
   getNextMilestone,
   getLatestMilestone,
   getAchievedMilestones,
-} from '@recovery/shared/constants/milestones';
-import { scheduleMilestoneNotification } from '@recovery/shared/notifications';
-import type { AppSettings } from '@recovery/shared/types';
+  scheduleMilestoneNotification,
+} from '@recovery/shared';
+import type { AppSettings } from '@recovery/shared';
 
 /**
  * Sobriety calculation and milestone tracking hook

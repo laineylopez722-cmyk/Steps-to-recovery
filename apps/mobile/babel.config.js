@@ -15,23 +15,9 @@ module.exports = function (api) {
           ...(isTest ? {} : { unstable_transformProfile: 'hermes-stable' }),
         },
       ],
-      [
-        '@babel/preset-react',
-        {
-          runtime: 'automatic',
-        },
-      ],
-      [
-        '@babel/preset-typescript',
-        {
-          isTSX: true,
-          allExtensions: true,
-        },
-      ],
       'nativewind/babel',
     ],
     plugins: [
-      '@babel/plugin-syntax-typescript',
       [
         'module-resolver',
         {

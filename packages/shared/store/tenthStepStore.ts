@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import type { TenthStepReview, DbTenthStepReview } from '../types';
+import { logger } from '../utils/logger';
 
 interface DecryptedTenthStepReview {
   id: string;
@@ -97,7 +98,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
       const streak = await get().calculateStreak();
       set({ reviews, currentStreak: streak, isLoading: false });
     } catch (error) {
-      console.error('Failed to load 10th step reviews:', error);
+      logger.error('Failed to load 10th step reviews', error);
       set({ error: 'Failed to load reviews', isLoading: false });
     }
   },
@@ -131,7 +132,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
       const streak = await get().calculateStreak();
       set({ reviews, currentStreak: streak, isLoading: false });
     } catch (error) {
-      console.error('Failed to load recent reviews:', error);
+      logger.error('Failed to load recent reviews', error);
       set({ error: 'Failed to load reviews', isLoading: false });
     }
   },
@@ -304,7 +305,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
         createdAt: review.createdAt,
       };
     } catch (error) {
-      console.error('Failed to decrypt review:', error);
+      logger.error('Failed to decrypt review', error);
       return null;
     }
   },

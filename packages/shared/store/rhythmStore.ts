@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
+import { logger } from '../utils/logger';
 
 // Context tags for pulse checks
 export type PulseContext =
@@ -218,7 +219,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         isLoading: false,
       });
     } catch (error) {
-      console.error("Failed to load today's rhythm:", error);
+      logger.error('Failed to load today\'s rhythm', error);
       set({ error: 'Failed to load daily rhythm', isLoading: false });
     }
   },
@@ -249,7 +250,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
 
       set({ todayIntention: newIntention, isLoading: false });
     } catch (error) {
-      console.error('Failed to set intention:', error);
+      logger.error('Failed to set intention', error);
       set({ error: 'Failed to save intention', isLoading: false });
     }
   },
@@ -292,7 +293,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         isLoading: false,
       }));
     } catch (error) {
-      console.error('Failed to submit pulse check:', error);
+      logger.error('Failed to submit pulse check', error);
       set({ error: 'Failed to save pulse check', isLoading: false });
     }
   },
@@ -340,7 +341,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
 
       set({ todayInventory: newInventory, isLoading: false });
     } catch (error) {
-      console.error('Failed to submit tiny inventory:', error);
+      logger.error('Failed to submit tiny inventory', error);
       set({ error: 'Failed to save inventory', isLoading: false });
     }
   },

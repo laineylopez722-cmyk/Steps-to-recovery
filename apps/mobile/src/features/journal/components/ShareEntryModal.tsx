@@ -21,7 +21,7 @@ import { darkAccent, radius, spacing, typography } from '../../../design-system/
 import { useSponsorConnections } from '../../sponsor/hooks/useSponsorConnections';
 import { useSponsorSharedEntries } from '../../sponsor/hooks/useSponsorSharedEntries';
 import { useAuth } from '../../../contexts/AuthContext';
-import type { JournalEntryDecrypted } from '@recovery/shared/src/types/models';
+import type { JournalEntryDecrypted } from '@recovery/shared';
 import { hapticSuccess, hapticWarning } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 

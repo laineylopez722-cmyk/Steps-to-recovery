@@ -82,18 +82,6 @@ export async function performLogoutCleanup(options: LogoutCleanupOptions = {}): 
   }
 
   try {
-    // Step 4: Clear shared database (legacy/shared store stack)
-    if (Platform.OS !== 'web') {
-      logger.info('Logout cleanup: Clearing shared database');
-      const { clearAllData } = await import('@recovery/shared/db/client');
-      await clearAllData();
-    }
-  } catch (error) {
-    logger.error('Failed to clear shared database during logout', error);
-    errors.push(error instanceof Error ? error : new Error('Failed to clear shared database'));
-  }
-
-  try {
     // Step 4: Clear shared database (native only)
     if (Platform.OS !== 'web') {
       logger.info('Logout cleanup: Clearing shared database');

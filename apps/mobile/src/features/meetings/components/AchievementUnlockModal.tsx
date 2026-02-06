@@ -29,9 +29,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GradientButton } from '../../../design-system/components/GradientButton';
+import { logger } from '../../../utils/logger';
 import {
-  darkAccent,
-  gradients,
   radius,
   spacing,
   typography,
@@ -41,6 +40,8 @@ import {
   getRandomAchievementMessage,
   ACHIEVEMENT_COLORS,
 } from '@recovery/shared';
+
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -119,7 +120,7 @@ export function AchievementUnlockModal({
         message: `🎉 I just unlocked "${achievement.title}" in Steps to Recovery! ${achievement.description}`,
       });
     } catch (error) {
-      console.error('Error sharing achievement:', error);
+      logger.error('Error sharing achievement:', error);
     }
   };
 
@@ -176,7 +177,7 @@ export function AchievementUnlockModal({
                 ]}
               >
                 <MaterialIcons
-                  name={['star', 'favorite', 'emoji-events'][i % 3] as any}
+                  name={['star', 'favorite', 'emoji-events'][i % 3] as IconName}
                   size={20}
                   color="rgba(255,255,255,0.4)"
                 />
@@ -189,7 +190,7 @@ export function AchievementUnlockModal({
             >
               <View style={styles.iconBg}>
                 <MaterialIcons
-                  name={achievement.icon as any}
+                  name={achievement.icon as IconName}
                   size={80}
                   color="#FFFFFF"
                 />

@@ -16,7 +16,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
@@ -165,7 +165,7 @@ export function PostMeetingReflectionModal({
                 <TextInput
                   style={styles.input}
                   placeholder="The main thing I'm taking away is..."
-                  placeholderTextColor={darkAccent.text.secondary}
+                  placeholderTextColor={darkAccent.textMuted}
                   value={keyTakeaway}
                   onChangeText={setKeyTakeaway}
                   multiline
@@ -180,7 +180,7 @@ export function PostMeetingReflectionModal({
                 <TextInput
                   style={styles.input}
                   placeholder="I'm grateful for..."
-                  placeholderTextColor={darkAccent.text.secondary}
+                  placeholderTextColor={darkAccent.textMuted}
                   value={gratitude}
                   onChangeText={setGratitude}
                   multiline
@@ -195,7 +195,7 @@ export function PostMeetingReflectionModal({
                 <TextInput
                   style={styles.input}
                   placeholder="One thing I'll try..."
-                  placeholderTextColor={darkAccent.text.secondary}
+                  placeholderTextColor={darkAccent.textMuted}
                   value={willApply}
                   onChangeText={setWillApply}
                   multiline
@@ -277,12 +277,12 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h2,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     marginBottom: spacing[2],
   },
   subtitle: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
   section: {
@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.label,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     marginBottom: spacing[3],
     fontWeight: '600',
   },
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   },
   moodLabel: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   moodLiftContainer: {
     flexDirection: 'row',
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: radius.lg,
     padding: spacing[3],
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     ...typography.body,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.1)',
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textDecorationLine: 'underline',
   },
 });

@@ -4,8 +4,7 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { logger } from '../../../utils/logger';
 import { scheduleAllMilestones } from '../../../services/notificationService';
 import { generateId } from '../../../utils/id';
-import type { UserProfile } from '@recovery/shared/src/types/database';
-import type { MilestoneDefinition as Milestone } from '@recovery/shared/src/types/models';
+import type { UserProfile, MilestoneDefinition as Milestone } from '@recovery/shared';
 
 /**
  * Milestones configuration

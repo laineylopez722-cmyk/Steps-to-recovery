@@ -18,10 +18,8 @@ import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
-import { GradientButton } from '../../../design-system/components/GradientButton';
 import {
   darkAccent,
-  gradients,
   radius,
   spacing,
   typography,
@@ -31,6 +29,8 @@ import { useAchievements } from '../hooks/useAchievements';
 import { use90In90Progress, get90In90MotivationalMessage } from '../hooks/use90In90Progress';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
 import { ACHIEVEMENT_COLORS } from '@recovery/shared';
+
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 export function MeetingStatsScreen(): React.ReactElement {
   const navigation = useNavigation();
@@ -95,7 +95,7 @@ export function MeetingStatsScreen(): React.ReactElement {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[darkAccent.background, darkAccent.surface.secondary]}
+        colors={[darkAccent.background, darkAccent.surfaceHigh]}
         style={StyleSheet.absoluteFill}
       />
 
@@ -108,7 +108,7 @@ export function MeetingStatsScreen(): React.ReactElement {
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <MaterialIcons name="arrow-back" size={24} color={darkAccent.text.primary} />
+            <MaterialIcons name="arrow-back" size={24} color={darkAccent.text} />
           </Pressable>
           <Text style={styles.headerTitle} accessibilityRole="header">
             My Meeting Journey
@@ -263,12 +263,12 @@ export function MeetingStatsScreen(): React.ReactElement {
                   accessibilityRole="button"
                 >
                   <MaterialIcons
-                    name={achievement.icon as any}
+                    name={achievement.icon as IconName}
                     size={32}
                     color={
                       achievement.unlocked
                         ? ACHIEVEMENT_COLORS[achievement.category].primary
-                        : darkAccent.text.secondary
+                        : darkAccent.textMuted
                     }
                   />
                   {achievement.unlocked && (
@@ -280,7 +280,7 @@ export function MeetingStatsScreen(): React.ReactElement {
                     <MaterialIcons
                       name="lock"
                       size={16}
-                      color={darkAccent.text.secondary}
+                      color={darkAccent.textMuted}
                       style={styles.lockIcon}
                     />
                   )}
@@ -302,7 +302,7 @@ export function MeetingStatsScreen(): React.ReactElement {
                 <MaterialIcons
                   name="event-note"
                   size={48}
-                  color={darkAccent.text.secondary}
+                  color={darkAccent.textMuted}
                 />
                 <Text style={styles.emptyText}>No check-ins yet</Text>
                 <Text style={styles.emptySubtext}>
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...typography.h2,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     flex: 1,
     textAlign: 'center',
   },
@@ -392,12 +392,12 @@ const styles = StyleSheet.create({
   },
   statValue: {
     ...typography.h1,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '800',
   },
   statLabel: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
   ninetyCard: {
@@ -415,12 +415,12 @@ const styles = StyleSheet.create({
   },
   ninetyTitle: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '700',
   },
   ninetySubtitle: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     marginTop: spacing.xs,
   },
   progressContainer: {
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 24,
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     borderRadius: radius.full,
     overflow: 'hidden',
   },
@@ -442,7 +442,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     ...typography.body,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
     textAlign: 'center',
   },
@@ -486,7 +486,7 @@ const styles = StyleSheet.create({
   },
   startDateText: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   section: {
     marginBottom: spacing.xl,
@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '700',
   },
   viewAllText: {
@@ -517,7 +517,7 @@ const styles = StyleSheet.create({
     height: 72,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     borderRadius: radius.lg,
     position: 'relative',
   },
@@ -542,7 +542,7 @@ const styles = StyleSheet.create({
   },
   achievementCount: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
   emptyCard: {
@@ -552,12 +552,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...typography.body,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
   },
   emptySubtext: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
   checkInCard: {
@@ -580,17 +580,17 @@ const styles = StyleSheet.create({
   },
   checkInName: {
     ...typography.body,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '600',
     marginBottom: spacing.xs,
   },
   checkInAddress: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     marginBottom: spacing.xs,
   },
   checkInDate: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
 });

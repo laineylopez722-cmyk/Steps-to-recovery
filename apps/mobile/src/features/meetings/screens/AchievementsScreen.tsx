@@ -28,6 +28,8 @@ import { useAchievements } from '../hooks/useAchievements';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
 import { ACHIEVEMENT_COLORS } from '@recovery/shared';
 
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+
 type FilterType = 'all' | 'unlocked' | 'locked';
 
 export function AchievementsScreen(): React.ReactElement {
@@ -39,7 +41,7 @@ export function AchievementsScreen(): React.ReactElement {
 
   const {
     achievements,
-    isLoading,
+    isLoading: _isLoading,
     unlockedCount,
     totalCount,
   } = useAchievements();
@@ -71,7 +73,7 @@ export function AchievementsScreen(): React.ReactElement {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[darkAccent.background, darkAccent.surface.secondary]}
+        colors={[darkAccent.background, darkAccent.surfaceHigh]}
         style={StyleSheet.absoluteFill}
       />
 
@@ -84,7 +86,7 @@ export function AchievementsScreen(): React.ReactElement {
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <MaterialIcons name="arrow-back" size={24} color={darkAccent.text.primary} />
+            <MaterialIcons name="arrow-back" size={24} color={darkAccent.text} />
           </Pressable>
           <Text style={styles.headerTitle} accessibilityRole="header">
             Achievements
@@ -231,7 +233,7 @@ export function AchievementsScreen(): React.ReactElement {
                         style={styles.iconBg}
                       >
                         <MaterialIcons
-                          name={achievement.icon as any}
+                          name={achievement.icon as IconName}
                           size={48}
                           color={achievement.unlocked ? '#FFFFFF' : '#6B7280'}
                         />
@@ -334,7 +336,7 @@ export function AchievementsScreen(): React.ReactElement {
               <MaterialIcons
                 name="emoji-events"
                 size={64}
-                color={darkAccent.text.secondary}
+                color={darkAccent.textMuted}
               />
               <Text style={styles.emptyText}>
                 {filter === 'unlocked'
@@ -378,7 +380,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     ...typography.h2,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     flex: 1,
     textAlign: 'center',
   },
@@ -428,7 +430,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: radius.md,
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     alignItems: 'center',
   },
   filterTabActive: {
@@ -436,7 +438,7 @@ const styles = StyleSheet.create({
   },
   filterTabText: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     fontWeight: '600',
   },
   filterTabTextActive: {
@@ -493,7 +495,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: darkAccent.surface.primary,
+    borderColor: darkAccent.primary,
   },
   lockBadge: {
     position: 'absolute',
@@ -502,11 +504,11 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: darkAccent.border.default,
+    borderColor: darkAccent.border,
   },
   infoContainer: {
     flex: 1,
@@ -514,20 +516,20 @@ const styles = StyleSheet.create({
   },
   achievementTitle: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     fontWeight: '700',
     marginBottom: spacing.xs,
   },
   achievementTitleLocked: {
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   achievementDescription: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     marginBottom: spacing.sm,
   },
   achievementDescriptionLocked: {
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   unlockedDate: {
     ...typography.caption,
@@ -539,7 +541,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 6,
-    backgroundColor: darkAccent.surface.secondary,
+    backgroundColor: darkAccent.surfaceHigh,
     borderRadius: radius.full,
     overflow: 'hidden',
   },
@@ -553,7 +555,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     ...typography.caption,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
   },
   shineOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -567,12 +569,12 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     ...typography.h3,
-    color: darkAccent.text.primary,
+    color: darkAccent.text,
     textAlign: 'center',
   },
   emptySubtext: {
     ...typography.body,
-    color: darkAccent.text.secondary,
+    color: darkAccent.textMuted,
     textAlign: 'center',
   },
 });

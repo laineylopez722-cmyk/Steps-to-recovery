@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { getDatabase } from '../db/client';
 import { encryptContent, decryptContent } from '../encryption';
 import type { LiteratureProgress, DbLiteratureProgress } from '../types';
+import { logger } from '../utils/logger';
 
 // Book definitions
 export interface Book {
@@ -137,7 +138,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
 
       set({ progress, isLoading: false });
     } catch (error) {
-      console.error('Failed to load literature progress:', error);
+      logger.error('Failed to load literature progress', error);
       set({ error: 'Failed to load progress', isLoading: false });
     }
   },
@@ -189,7 +190,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         set({ progress: [...progress, newProgress] });
       }
     } catch (error) {
-      console.error('Failed to toggle chapter complete:', error);
+      logger.error('Failed to toggle chapter complete', error);
     }
   },
 
@@ -234,7 +235,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         set({ progress: [...progress, newProgress] });
       }
     } catch (error) {
-      console.error('Failed to save chapter notes:', error);
+      logger.error('Failed to save chapter notes', error);
     }
   },
 
@@ -247,7 +248,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
     try {
       return await decryptContent(entry.notes);
     } catch (error) {
-      console.error('Failed to decrypt chapter notes:', error);
+      logger.error('Failed to decrypt chapter notes', error);
       return null;
     }
   },
@@ -282,7 +283,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
 
       set({ promiseExperiences, isLoading: false });
     } catch (error) {
-      console.error('Failed to load promise experiences:', error);
+      logger.error('Failed to load promise experiences', error);
       set({ error: 'Failed to load promises', isLoading: false });
     }
   },
@@ -335,7 +336,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         });
       }
     } catch (error) {
-      console.error('Failed to toggle promise experienced:', error);
+      logger.error('Failed to toggle promise experienced', error);
     }
   },
 
@@ -377,7 +378,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         });
       }
     } catch (error) {
-      console.error('Failed to save promise reflection:', error);
+      logger.error('Failed to save promise reflection', error);
     }
   },
 
@@ -390,7 +391,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
     try {
       return await decryptContent(entry.reflection);
     } catch (error) {
-      console.error('Failed to decrypt promise reflection:', error);
+      logger.error('Failed to decrypt promise reflection', error);
       return null;
     }
   },

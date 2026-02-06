@@ -12,14 +12,11 @@ import {
   useMeetingStore,
   useRhythmStore,
   useStepWorkStore,
-} from '@recovery/shared';
-import {
   runJitaiEvaluation,
   resetCooldowns,
   getCooldownStatus,
-} from '@recovery/shared/jitai/engine';
-import type { JitaiContext } from '@recovery/shared/jitai/types';
-import type { MeetingLog } from '@recovery/shared';
+} from '@recovery/shared';
+import type { JitaiContext, MeetingLog } from '@recovery/shared';
 import { logger } from '../utils/logger';
 
 // Minimum interval between evaluations (5 minutes)

@@ -1,17 +1,18 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-  withDelay,
   runOnJS,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, radius, spacing, typography } from '../tokens/modern';
 import { LinearGradient } from 'expo-linear-gradient';
+
+type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -83,13 +84,13 @@ function ToastItem({
 }: {
   toast: Toast;
   index: number;
-  onDismiss: () => void;
+  onDismiss: (() => void) | undefined;
 }) {
   const translateY = useSharedValue(-100);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.9);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Entrance animation
     translateY.value = withSpring(0, { damping: 15, stiffness: 200 });
     opacity.value = withTiming(1, { duration: 200 });
@@ -98,27 +99,29 @@ function ToastItem({
     // Auto dismiss
     const timer = setTimeout(() => {
       translateY.value = withSpring(-100, {}, () => {
-        runOnJS(onDismiss)();
+        if (typeof onDismiss === 'function') {
+          runOnJS(onDismiss)();
+        }
       });
       opacity.value = withTiming(0);
     }, toast.duration);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [toast.duration, onDismiss, translateY, opacity, scale, toast.type]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }, { scale: scale.value }],
     opacity: opacity.value,
   }));
 
-  const iconConfig = {
+  const iconConfig: Record<ToastType, { icon: IconName; color: string; gradient: readonly string[] }> = {
     success: { icon: 'check-circle', color: darkAccent.success, gradient: gradients.success },
     error: { icon: 'error', color: darkAccent.error, gradient: ['#DC2626', '#EF4444'] },
     warning: { icon: 'warning', color: darkAccent.warning, gradient: ['#D97706', '#F59E0B'] },
     info: { icon: 'info', color: darkAccent.primary, gradient: gradients.primary },
   };
 
-  const { icon, color, gradient } = iconConfig[toast.type];
+  const { icon, color, gradient: _gradient } = iconConfig[toast.type];
 
   return (
     <Animated.View style={[styles.toast, animatedStyle, { top: 60 + index * 80 }]}>
@@ -131,7 +134,7 @@ function ToastItem({
       />
       
       <View style={[styles.iconContainer, { backgroundColor: color }]}>
-        <MaterialIcons name={icon as any} size={20} color="#FFF" />
+        <MaterialIcons name={icon as IconName} size={20} color="#FFF" />
       </View>
 
       <View style={styles.content}>

@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import type { DailyReading, DailyReadingReflection } from '../types';
+import { logger } from '../utils/logger';
 import { getTodayReading, getReadingByDate } from '../constants/dailyReadings';
 import {
   createDailyReadingReflection,
@@ -61,7 +62,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
         isLoading: false,
       });
     } catch (error) {
-      console.error("Failed to load today's reading:", error);
+      logger.error('Failed to load today\'s reading', error);
       set({ error: 'Failed to load reading', isLoading: false });
     }
   },
@@ -74,7 +75,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
 
       set({ reflections, readingStreak, isLoading: false });
     } catch (error) {
-      console.error('Failed to load reflections:', error);
+      logger.error('Failed to load reflections', error);
       set({ error: 'Failed to load reflections', isLoading: false });
     }
   },
@@ -103,7 +104,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
 
       return savedReflection;
     } catch (error) {
-      console.error('Failed to save reflection:', error);
+      logger.error('Failed to save reflection', error);
       throw error;
     }
   },
@@ -120,7 +121,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
     try {
       return await getDailyReadingReflection(dateKey);
     } catch (error) {
-      console.error('Failed to get reflection for date:', error);
+      logger.error('Failed to get reflection for date', error);
       return null;
     }
   },
@@ -129,7 +130,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
     try {
       return await decryptReflection(reflection);
     } catch (error) {
-      console.error('Failed to decrypt reflection:', error);
+      logger.error('Failed to decrypt reflection', error);
       return '';
     }
   },
