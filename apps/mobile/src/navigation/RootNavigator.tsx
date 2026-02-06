@@ -26,9 +26,13 @@ export function RootNavigator() {
   const instanceId = instanceIdRef.current;
 
   useEffect(() => {
-    logger.info('RootNavigator mounted', { instanceId });
+    if (__DEV__) {
+      logger.debug('RootNavigator mounted', { instanceId });
+    }
     return () => {
-      logger.warn('RootNavigator unmounted', { instanceId });
+      if (__DEV__) {
+        logger.debug('RootNavigator unmounted', { instanceId });
+      }
     };
   }, [instanceId]);
 
@@ -68,14 +72,16 @@ export function RootNavigator() {
   }, [user, needsOnboarding]);
 
   useEffect(() => {
-    logger.info('Navigation auth state', {
-      instanceId,
-      hasUser: Boolean(user),
-      authLoading,
-      authInitialized,
-      needsOnboarding,
-      checkingProfile,
-    });
+    if (__DEV__) {
+      logger.debug('Navigation auth state', {
+        instanceId,
+        hasUser: Boolean(user),
+        authLoading,
+        authInitialized,
+        needsOnboarding,
+        checkingProfile,
+      });
+    }
   }, [user, authLoading, needsOnboarding, checkingProfile, authInitialized, instanceId]);
 
   const checkOnboardingStatus = useCallback(async () => {
