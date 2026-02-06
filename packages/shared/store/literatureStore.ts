@@ -126,7 +126,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
         [bookId],
       );
 
-      const progress: LiteratureProgress[] = rows.map((row) => ({
+      const progress: LiteratureProgress[] = rows.map((row: DbLiteratureProgress) => ({
         id: row.id,
         bookId: row.book_id,
         chapterId: row.chapter_id,
@@ -274,7 +274,7 @@ export const useLiteratureStore = create<LiteratureState & LiteratureActions>((s
       const db = await getDatabase();
       const rows = await db.getAllAsync<DbPromiseExperience>('SELECT * FROM promise_experiences');
 
-      const promiseExperiences: PromiseExperience[] = rows.map((row) => ({
+      const promiseExperiences: PromiseExperience[] = rows.map((row: DbPromiseExperience) => ({
         promiseId: row.promise_id,
         experienced: row.experienced === 1,
         reflection: row.reflection || undefined,

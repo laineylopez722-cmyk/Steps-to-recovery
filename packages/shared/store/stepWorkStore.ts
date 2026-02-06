@@ -80,7 +80,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
         'SELECT * FROM step_progress ORDER BY step_number',
       );
 
-      const progress: StepProgress[] = rows.map((row) => ({
+      const progress: StepProgress[] = rows.map((row: DbStepProgress) => ({
         id: row.id,
         stepNumber: row.step_number,
         questionsAnswered: row.questions_answered,
@@ -117,7 +117,7 @@ export const useStepWorkStore = create<StepWorkState>((set, get) => ({
         [stepNumber],
       );
 
-      const stepAnswers: StepAnswer[] = rows.map((row) => ({
+      const stepAnswers: StepAnswer[] = rows.map((row: DbStepAnswer) => ({
         id: row.id,
         stepNumber: row.step_number,
         questionIndex: row.question_index,

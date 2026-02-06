@@ -10,7 +10,11 @@
   ],
   "overrides": {
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-test-renderer": "19.1.0",
+    "@testing-library/react-native": {
+      "react-test-renderer": "19.1.0"
+    }
   },
   "scripts": {
     "dev": "turbo run dev",
@@ -20,7 +24,6 @@
     "type-check": "turbo run type-check",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint-staged": "lint-staged",
     "validate-env": "node scripts/validate-env.js",
     "clean": "turbo run clean",
     "mobile": "npm start -w apps/mobile",
@@ -33,6 +36,8 @@
     "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^20.3.1",
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
+    "@types/base-64": "^1.0.2",
+    "@types/react": "~19.1.10",
     "dotenv": "^17.2.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
@@ -42,5 +47,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@react-native/debugger-frontend": "^0.83.1"
   }
 }

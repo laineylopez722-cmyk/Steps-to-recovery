@@ -29,11 +29,6 @@ import {
   Divider,
   Text,
   Skeleton,
-  SkeletonCard,
-  SkeletonListItem,
-  SkeletonStats,
-  SkeletonHome,
-  SkeletonJournalList,
 } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
@@ -267,7 +262,7 @@ export function StepDetailScreen(): React.ReactElement {
     ({ item }: ListRenderItemInfo<ListItem>) => {
       if (item.type === 'section') {
         return (
-          <View 
+          <View
             style={[styles.sectionHeader, { backgroundColor: theme.colors.primary + '10' }]}
             accessibilityRole="header"
             accessibilityLabel={`${item.title}, ${item.questionRange}`}
@@ -296,7 +291,12 @@ export function StepDetailScreen(): React.ReactElement {
         return (
           <Card variant="outlined" style={[styles.infoCard, { borderColor: theme.colors.success }]}>
             <View style={styles.infoContent}>
-              <MaterialCommunityIcons name="lock" size={24} color={theme.colors.success} accessible={false} />
+              <MaterialCommunityIcons
+                name="lock"
+                size={24}
+                color={theme.colors.success}
+                accessible={false}
+              />
               <Text
                 style={[
                   theme.typography.caption,
@@ -376,7 +376,9 @@ export function StepDetailScreen(): React.ReactElement {
             loading={isSaving}
             variant="primary"
             fullWidth
-            accessibilityLabel={isSaving ? 'Saving answer' : isAnswered ? 'Update answer' : 'Save answer'}
+            accessibilityLabel={
+              isSaving ? 'Saving answer' : isAnswered ? 'Update answer' : 'Save answer'
+            }
             accessibilityRole="button"
             accessibilityHint="Save your answer to this step question"
             accessibilityState={{ disabled: !answers[questionNumber]?.trim() || isSaving }}

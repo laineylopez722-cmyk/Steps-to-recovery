@@ -17,13 +17,18 @@
   },
   "peerDependencies": {
     "expo-crypto": "^15.0.0",
+    "expo-notifications": "~0.32.0",
     "expo-secure-store": "^15.0.0",
     "expo-sqlite": "^16.0.0",
     "expo-standard-web-crypto": "^3.0.0",
+    "react-native": ">=0.74.0",
     "react-native-get-random-values": "^1.11.0"
   },
   "devDependencies": {
+    "@sentry/react-native": "~7.2.0",
     "@types/node": "^25.2.1",
+    "expo-notifications": "~0.32.0",
+    "expo-sqlite": "~16.0.0",
     "typescript": "~5.9.3"
   }
 }

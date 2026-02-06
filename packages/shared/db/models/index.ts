@@ -193,7 +193,7 @@ export async function getJournalEntries(
 
   const rows = await db.getAllAsync<DbJournalEntry>(query, params);
 
-  return rows.map((row) => ({
+  return rows.map((row: DbJournalEntry) => ({
     id: row.id,
     type: row.type as JournalType,
     content: row.content, // Still encrypted, decrypt when displaying
@@ -310,7 +310,7 @@ export async function getCheckinHistory(days = 30): Promise<DailyCheckin[]> {
     [startDate.toISOString().split('T')[0]],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbDailyCheckin) => ({
     id: row.id,
     date: new Date(row.date),
     mood: row.mood,
@@ -375,7 +375,7 @@ export async function getMilestones(): Promise<Milestone[]> {
     'SELECT * FROM milestones ORDER BY achieved_at DESC',
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbMilestone) => ({
     id: row.id,
     type: row.type as MilestoneType,
     title: row.title,
@@ -395,7 +395,7 @@ export async function getEmotionTags(): Promise<EmotionTag[]> {
   const db = await getDatabase();
   const rows = await db.getAllAsync<DbEmotionTag>('SELECT * FROM emotion_tags ORDER BY name');
 
-  return rows.map((row) => ({
+  return rows.map((row: DbEmotionTag) => ({
     id: row.id,
     name: row.name,
     color: row.color,
@@ -553,7 +553,7 @@ export async function getRecoveryContacts(): Promise<RecoveryContact[]> {
     'SELECT * FROM recovery_contacts ORDER BY role, name',
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbRecoveryContact) => ({
     id: row.id,
     name: row.name,
     phone: row.phone,
@@ -591,7 +591,7 @@ export async function getContactsByRole(role: ContactRole): Promise<RecoveryCont
     [role],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbRecoveryContact) => ({
     id: row.id,
     name: row.name,
     phone: row.phone,
@@ -693,7 +693,7 @@ export async function getPhoneCallLogs(limit = 50): Promise<PhoneCallLog[]> {
     [limit],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbPhoneCallLog) => ({
     id: row.id,
     contactId: row.contact_id,
     contactName: row.contact_name,
@@ -708,13 +708,13 @@ export async function getTodayCallLogs(): Promise<PhoneCallLog[]> {
   const today = new Date().toISOString().split('T')[0];
 
   const rows = await db.getAllAsync<DbPhoneCallLog>(
-    `SELECT * FROM phone_call_logs 
-     WHERE date(called_at) = ? 
+    `SELECT * FROM phone_call_logs
+     WHERE date(called_at) = ?
      ORDER BY called_at DESC`,
     [today],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbPhoneCallLog) => ({
     id: row.id,
     contactId: row.contact_id,
     contactName: row.contact_name,
@@ -731,7 +731,7 @@ export async function getCallLogsByContact(contactId: string): Promise<PhoneCall
     [contactId],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbPhoneCallLog) => ({
     id: row.id,
     contactId: row.contact_id,
     contactName: row.contact_name,
@@ -811,7 +811,7 @@ export async function getReadingReflections(limit = 30): Promise<DailyReadingRef
     [limit],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbDailyReadingReflection) => ({
     id: row.id,
     readingDate: row.reading_date,
     reflection: row.reflection,
@@ -839,7 +839,9 @@ export async function getReadingStreak(): Promise<number> {
     const expectedDay = String(expectedDate.getDate()).padStart(2, '0');
     const expectedKey = `${expectedMonth}-${expectedDay}`;
 
-    const hasReflectionForDate = rows.some((row) => row.reading_date === expectedKey);
+    const hasReflectionForDate = rows.some(
+      (row: DbDailyReadingReflection) => row.reading_date === expectedKey,
+    );
 
     if (hasReflectionForDate) {
       streak++;

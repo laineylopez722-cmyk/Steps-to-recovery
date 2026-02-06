@@ -71,7 +71,7 @@ export const useAmendsStore = create<AmendsState>((set, get) => ({
         'SELECT * FROM amends_list ORDER BY created_at DESC',
       );
 
-      const entries: AmendsEntry[] = rows.map((row) => ({
+      const entries: AmendsEntry[] = rows.map((row: DbAmendsEntry) => ({
         id: row.id,
         person: row.person,
         harm: row.harm,

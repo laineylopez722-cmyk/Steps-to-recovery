@@ -234,7 +234,9 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
       .filter((c) => c.duration_seconds !== null)
       .map((c) => (c.duration_seconds ?? 0) / 60);
     const avgDurationMinutes =
-      durationsMinutes.length > 0 ? durationsMinutes.reduce((a, b) => a + b, 0) / durationsMinutes.length : 0;
+      durationsMinutes.length > 0
+        ? durationsMinutes.reduce((a, b) => a + b, 0) / durationsMinutes.length
+        : 0;
 
     // Top coping strategy
     const copingCounts: Record<string, number> = {};
@@ -250,7 +252,10 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
     // Success rate
     const completedCravings = cravingHistory.filter((c) => c.did_use !== null);
     const successfulCravings = completedCravings.filter((c) => c.did_use === false);
-    const successRate = completedCravings.length > 0 ? (successfulCravings.length / completedCravings.length) * 100 : 0;
+    const successRate =
+      completedCravings.length > 0
+        ? (successfulCravings.length / completedCravings.length) * 100
+        : 0;
 
     // This week
     const weekAgo = new Date();
@@ -295,8 +300,8 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
       );
 
       // Decrypt entries
-      const decrypted: CravingEntry[] = await Promise.all(
-        rows.map(async (row) => {
+      const decryptedResults = await Promise.all(
+        rows.map(async (row): Promise<CravingEntry | null> => {
           try {
             const data = JSON.parse(await decryptContent(row.encrypted_data)) as {
               intensity: number;
@@ -325,7 +330,7 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
         }),
       );
 
-      setCravingHistory(decrypted.filter((d): d is CravingEntry => d !== null));
+      setCravingHistory(decryptedResults.filter((d): d is CravingEntry => d !== null));
 
       // Check for active craving (started but not ended)
       const active = rows.find((r) => r.ended_at === null);
@@ -398,7 +403,9 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
       if (!db || !user || !activeCraving) return;
 
       const now = new Date();
-      const durationSeconds = Math.floor((now.getTime() - activeCraving.startedAt.getTime()) / 1000);
+      const durationSeconds = Math.floor(
+        (now.getTime() - activeCraving.startedAt.getTime()) / 1000,
+      );
 
       // Re-fetch current data to preserve fields
       const row = await db.getFirstAsync<{ encrypted_data: string }>(
@@ -432,7 +439,13 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
         `UPDATE cravings
          SET ended_at = ?, encrypted_data = ?, did_use = ?, duration_seconds = ?
          WHERE id = ?`,
-        [now.toISOString(), encryptedData, params.didUse ? 1 : 0, durationSeconds, activeCraving.id],
+        [
+          now.toISOString(),
+          encryptedData,
+          params.didUse ? 1 : 0,
+          durationSeconds,
+          activeCraving.id,
+        ],
       );
 
       await addToSyncQueue(db, 'cravings', activeCraving.id, 'update');

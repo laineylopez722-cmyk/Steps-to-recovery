@@ -169,18 +169,28 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
       }>('SELECT * FROM pulse_checks WHERE date = ? ORDER BY created_at DESC', [today]);
 
       const todayPulseChecks: PulseCheck[] = await Promise.all(
-        pulseRows.map(async (row) => {
-          const decryptedNotes = row.notes ? await decryptContent(row.notes) : null;
-          return {
-            id: row.id,
-            date: row.date,
-            mood: row.mood,
-            cravingLevel: row.craving_level,
-            context: JSON.parse(row.context) as PulseContext[],
-            notes: decryptedNotes || undefined,
-            createdAt: new Date(row.created_at),
-          };
-        }),
+        pulseRows.map(
+          async (row: {
+            id: string;
+            date: string;
+            mood: number;
+            craving_level: number;
+            context: string;
+            notes: string | null;
+            created_at: string;
+          }) => {
+            const decryptedNotes = row.notes ? await decryptContent(row.notes) : null;
+            return {
+              id: row.id,
+              date: row.date,
+              mood: row.mood,
+              cravingLevel: row.craving_level,
+              context: JSON.parse(row.context) as PulseContext[],
+              notes: decryptedNotes || undefined,
+              createdAt: new Date(row.created_at),
+            };
+          },
+        ),
       );
 
       // Load today's inventory
@@ -219,7 +229,7 @@ export const useRhythmStore = create<RhythmStore>((set, get) => ({
         isLoading: false,
       });
     } catch (error) {
-      logger.error('Failed to load today\'s rhythm', error);
+      logger.error("Failed to load today's rhythm", error);
       set({ error: 'Failed to load daily rhythm', isLoading: false });
     }
   },

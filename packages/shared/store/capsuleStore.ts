@@ -97,7 +97,7 @@ export const useCapsuleStore = create<CapsuleState & CapsuleActions>((set, get) 
       );
 
       const capsules: TimeCapsule[] = rows
-        .map((row) => {
+        .map((row: DbTimeCapsule) => {
           try {
             const capsule: TimeCapsule = {
               id: row.id,

@@ -1,16 +1,16 @@
 /**
  * Risk Pattern Detection Service
- * 
+ *
  * Privacy-first client-side detection of behavioral patterns that may indicate risk.
  * NO DATA LEAVES THE DEVICE - all logic runs locally.
- * 
+ *
  * Patterns detected:
  * - Journal inactivity (3+ days)
  * - Check-in gaps (2+ days)
  * - Meeting absence (7+ days)
  * - JFT reflection gaps (5+ days)
  * - Sponsor contact gaps (7+ days, if sponsor connected)
- * 
+ *
  * Philosophy: Proactive support, not surveillance.
  */
 
@@ -21,7 +21,7 @@ import { logger } from '../utils/logger';
 // Type Definitions
 // ========================================
 
-export type RiskPatternType = 
+export type RiskPatternType =
   | 'journal_inactive'
   | 'checkin_gap'
   | 'meeting_absent'
@@ -77,12 +77,12 @@ const _SEVERITY_MAPPING: Record<number, 'low' | 'medium' | 'high'> = {
  */
 function daysSince(lastActivityDate: string | null): number {
   if (!lastActivityDate) return 999; // No activity ever
-  
+
   const now = new Date();
   const last = new Date(lastActivityDate);
   const diffMs = now.getTime() - last.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  
+
   return diffDays;
 }
 
@@ -114,7 +114,7 @@ async function checkJournalActivity(userId: string): Promise<RiskPattern | null>
     }
 
     const days = daysSince(data?.created_at || null);
-    
+
     if (days < THRESHOLDS.journal) return null;
 
     return {
@@ -141,10 +141,10 @@ async function checkJournalActivity(userId: string): Promise<RiskPattern | null>
 async function checkCheckInActivity(userId: string): Promise<RiskPattern | null> {
   try {
     const { data, error } = await supabase
-      .from('daily_check_ins')
-      .select('check_in_date')
+      .from('daily_checkins')
+      .select('checkin_date')
       .eq('user_id', userId)
-      .order('check_in_date', { ascending: false })
+      .order('checkin_date', { ascending: false })
       .limit(1)
       .single();
 
@@ -153,8 +153,8 @@ async function checkCheckInActivity(userId: string): Promise<RiskPattern | null>
       return null;
     }
 
-    const days = daysSince(data?.check_in_date || null);
-    
+    const days = daysSince(data?.checkin_date || null);
+
     if (days < THRESHOLDS.checkin) return null;
 
     return {
@@ -194,7 +194,7 @@ async function checkMeetingAttendance(userId: string): Promise<RiskPattern | nul
     }
 
     const days = daysSince(data?.checked_in_at || null);
-    
+
     if (days < THRESHOLDS.meeting) return null;
 
     return {
@@ -234,7 +234,7 @@ async function checkJFTReflections(userId: string): Promise<RiskPattern | null> 
     }
 
     const days = daysSince(data?.reflected_at || null);
-    
+
     if (days < THRESHOLDS.jft) return null;
 
     return {
@@ -273,13 +273,14 @@ async function checkSponsorContact(userId: string): Promise<RiskPattern | null> 
       return null;
     }
 
-    // Check last shared entry or contact
+    // Check last shared entry from this user to their sponsor connection.
+    // Current schema uses sponsor_shared_entries with direction + user_id fields.
     const { data, error } = await supabase
-      .from('shared_journal_entries')
-      .select('shared_at')
-      .eq('sharer_id', userId)
-      .eq('recipient_id', sponsorData.sponsor_id)
-      .order('shared_at', { ascending: false })
+      .from('sponsor_shared_entries')
+      .select('created_at')
+      .eq('user_id', userId)
+      .eq('direction', 'outgoing')
+      .order('created_at', { ascending: false })
       .limit(1)
       .single();
 
@@ -288,8 +289,8 @@ async function checkSponsorContact(userId: string): Promise<RiskPattern | null> 
       return null;
     }
 
-    const days = daysSince(data?.shared_at || null);
-    
+    const days = daysSince(data?.created_at || null);
+
     if (days < THRESHOLDS.sponsor) return null;
 
     return {
@@ -349,16 +350,16 @@ export async function detectRiskPatterns(userId: string): Promise<RiskDetectionR
       lastChecked: Date.now(),
     };
 
-    logger.info('Risk detection: Analysis complete', { 
-      userId, 
+    logger.info('Risk detection: Analysis complete', {
+      userId,
       patternCount: patterns.length,
-      patterns: patterns.map(p => p.type),
+      patterns: patterns.map((p) => p.type),
     });
 
     return result;
   } catch (error) {
     logger.error('Risk detection: Fatal error', { error, userId });
-    
+
     // Return safe empty result on error
     return {
       hasRisks: false,
@@ -376,19 +377,16 @@ export async function detectRiskPatterns(userId: string): Promise<RiskDetectionR
  * Mark a pattern as dismissed (store in AsyncStorage)
  * User can dismiss alerts to avoid notification fatigue
  */
-export async function dismissPattern(
-  userId: string,
-  patternType: RiskPatternType
-): Promise<void> {
+export async function dismissPattern(userId: string, patternType: RiskPatternType): Promise<void> {
   try {
     const key = `risk_dismissed_${userId}_${patternType}`;
     const value = Date.now().toString();
-    
+
     // AsyncStorage is acceptable here: dismissed timestamps are non-sensitive UI preference
     // data (no PII, no recovery content). SecureStore is reserved for encryption keys/tokens.
     const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
     await AsyncStorage.setItem(key, value);
-    
+
     logger.info('Risk detection: Pattern dismissed', { userId, patternType });
   } catch (error) {
     logger.error('Risk detection: Dismiss failed', { error, userId, patternType });
@@ -401,19 +399,19 @@ export async function dismissPattern(
  */
 export async function wasRecentlyDismissed(
   userId: string,
-  patternType: RiskPatternType
+  patternType: RiskPatternType,
 ): Promise<boolean> {
   try {
     const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
     const key = `risk_dismissed_${userId}_${patternType}`;
     const dismissed = await AsyncStorage.getItem(key);
-    
+
     if (!dismissed) return false;
-    
+
     const dismissedAt = parseInt(dismissed, 10);
     const now = Date.now();
     const hoursSince = (now - dismissedAt) / (1000 * 60 * 60);
-    
+
     return hoursSince < 24; // Show again after 24 hours
   } catch (error) {
     logger.error('Risk detection: Dismissed check failed', { error });
@@ -431,7 +429,7 @@ export async function wasRecentlyDismissed(
  */
 export async function notifySponsor(
   userId: string,
-  pattern: RiskPattern
+  pattern: RiskPattern,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Get sponsor connection
@@ -448,17 +446,15 @@ export async function notifySponsor(
 
     // Create notification entry
     const message = `📊 Recovery Check-In Alert\n\n${pattern.message}\n\nYour sponsee might benefit from a check-in.`;
-    
-    const { error: notifError } = await supabase
-      .from('sponsor_notifications')
-      .insert({
-        sponsor_id: sponsorship.sponsor_id,
-        sponsee_id: userId,
-        notification_type: 'risk_alert',
-        message,
-        severity: pattern.severity,
-        created_at: new Date().toISOString(),
-      });
+
+    const { error: notifError } = await supabase.from('sponsor_notifications').insert({
+      sponsor_id: sponsorship.sponsor_id,
+      sponsee_id: userId,
+      notification_type: 'risk_alert',
+      message,
+      severity: pattern.severity,
+      created_at: new Date().toISOString(),
+    });
 
     if (notifError) {
       logger.error('Risk detection: Sponsor notification failed', { error: notifError });

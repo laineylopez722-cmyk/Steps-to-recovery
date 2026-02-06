@@ -153,7 +153,7 @@ export async function getMeetingsByDay(dayOfWeek: number): Promise<RegularMeetin
     [dayOfWeek],
   );
 
-  return rows.map((row) => ({
+  return rows.map((row: DbRegularMeeting) => ({
     id: row.id,
     name: row.name,
     location: row.location || undefined,

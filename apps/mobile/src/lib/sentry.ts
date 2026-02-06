@@ -8,6 +8,7 @@
  */
 
 import * as Sentry from '@sentry/react-native';
+import type { ErrorEvent, Breadcrumb, Exception } from '@sentry/react-native';
 import Constants from 'expo-constants';
 
 /**
@@ -25,6 +26,7 @@ const SENSITIVE_KEYS = [
   'encrypted_notes',
   'encrypted_tags',
   'encrypted_gratitude',
+  'plaintext',
   'password',
   'token',
   'key',
@@ -97,7 +99,7 @@ export function initSentry(): void {
     // Disable automatic breadcrumbs for privacy
     enableAutoSessionTracking: true,
     // Configure beforeSend to sanitize all events
-    beforeSend(event) {
+    beforeSend(event: ErrorEvent): ErrorEvent | null {
       // Sanitize event data
       if (event.extra) {
         event.extra = sanitizeData(event.extra as Record<string, unknown>);
@@ -105,7 +107,7 @@ export function initSentry(): void {
 
       // Sanitize breadcrumb data
       if (event.breadcrumbs) {
-        event.breadcrumbs = event.breadcrumbs.map((breadcrumb) => {
+        event.breadcrumbs = event.breadcrumbs.map((breadcrumb: Breadcrumb) => {
           if (breadcrumb.data) {
             breadcrumb.data = sanitizeData(breadcrumb.data as Record<string, unknown>);
           }
@@ -119,7 +121,7 @@ export function initSentry(): void {
 
       // Sanitize exception messages (but keep stack traces)
       if (event.exception?.values) {
-        event.exception.values = event.exception.values.map((exception) => {
+        event.exception.values = event.exception.values.map((exception: Exception) => {
           if (exception.value && mightContainSensitiveData(exception.value)) {
             exception.value = '[REDACTED]';
           }

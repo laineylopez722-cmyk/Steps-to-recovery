@@ -3,24 +3,28 @@
  * Uses jest-expo preset for React Native/Expo compatibility
  */
 
+const path = require('path');
+const expoPreset = require('jest-expo/jest-preset');
+
 module.exports = {
+  ...expoPreset,
   // Explicitly pin rootDir so Jest resolves Babel config and module paths from apps/mobile
   rootDir: __dirname,
-  preset: 'jest-expo',
 
   // Explicit transform ensures TS/TSX + JSX go through babel-jest with our Babel config
   transform: {
+    ...(expoPreset.transform ?? {}),
     '^.+\\.(js|jsx|ts|tsx)$': [
       'babel-jest',
       {
-        configFile: require('path').resolve(__dirname, 'babel.config.js'),
+        configFile: path.resolve(__dirname, 'babel.config.js'),
         babelrc: false,
       },
     ],
   },
 
   // Setup files to run before tests
-  setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect', '<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: [...(expoPreset.setupFilesAfterEnv ?? []), '<rootDir>/jest.setup.js'],
 
   // Transform settings - handle pnpm's .pnpm folder structure and React Native 0.83+
   // pnpm creates: node_modules/.pnpm/package@version/node_modules/package/
@@ -52,6 +56,7 @@ module.exports = {
 
   // Module name mappings
   moduleNameMapper: {
+    ...(expoPreset.moduleNameMapper ?? {}),
     '^@/(.*)$': '<rootDir>/$1',
     // Mock NativeWind css-interop for Jest - prevents JSX runtime errors
     '^react-native-css-interop/jsx-runtime$':

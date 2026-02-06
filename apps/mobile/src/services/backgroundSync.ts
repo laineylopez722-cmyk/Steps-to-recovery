@@ -3,6 +3,7 @@ import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 import { logger } from '../utils/logger';
 import { processSyncQueue } from './syncService';
+import type { StorageAdapter } from '../adapters/storage/types';
 // Note: Import your actual auth utility here
 // import { getStoredUserId } from '../utils/auth';
 // Note: Import your actual database utility here
@@ -12,12 +13,12 @@ const BACKGROUND_SYNC_TASK = 'background-sync-task';
 
 /**
  * Background Sync Service
- * 
+ *
  * Provides automatic background synchronization when:
  * - App is in the background
  * - Device comes back online
  * - Periodic intervals (every 15 minutes minimum)
- * 
+ *
  * Features:
  * - Battery-efficient sync using iOS/Android background fetch APIs
  * - Respects user preferences (can be disabled)
@@ -32,7 +33,7 @@ const BACKGROUND_SYNC_TASK = 'background-sync-task';
 TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
   try {
     logger.info('Background sync task started');
-    
+
     // Get current user
     const userId = await getStoredUserId();
     if (!userId) {
@@ -49,9 +50,9 @@ TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
 
     // Check if there's pending work
     const pendingResult = await db.getFirstAsync<{ count: number }>(
-      'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3'
+      'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3',
     );
-    
+
     if (!pendingResult || pendingResult.count === 0) {
       logger.info('Background sync: No pending items');
       return BackgroundFetch.BackgroundFetchResult.NoData;
@@ -61,7 +62,7 @@ TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
 
     // Process sync queue
     const result = await processSyncQueue(db, userId);
-    
+
     logger.info('Background sync completed', {
       synced: result.synced,
       failed: result.failed,
@@ -70,7 +71,7 @@ TaskManager.defineTask(BACKGROUND_SYNC_TASK, async () => {
     if (result.failed > 0) {
       return BackgroundFetch.BackgroundFetchResult.NewData;
     }
-    
+
     return BackgroundFetch.BackgroundFetchResult.NoData;
   } catch (error) {
     logger.error('Background sync failed', error);
@@ -92,7 +93,7 @@ export async function registerBackgroundSync(): Promise<void> {
   try {
     // Check if task is already registered
     const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_SYNC_TASK);
-    
+
     if (isRegistered) {
       logger.info('Background sync already registered');
       return;
@@ -101,8 +102,8 @@ export async function registerBackgroundSync(): Promise<void> {
     // Register the task
     await BackgroundFetch.registerTaskAsync(BACKGROUND_SYNC_TASK, {
       minimumInterval: 15 * 60, // 15 minutes minimum
-      stopOnTerminate: false,   // Continue after app termination (iOS)
-      startOnBoot: true,        // Start after device reboot (Android)
+      stopOnTerminate: false, // Continue after app termination (iOS)
+      startOnBoot: true, // Start after device reboot (Android)
     });
 
     logger.info('Background sync registered successfully');
@@ -120,7 +121,7 @@ export async function unregisterBackgroundSync(): Promise<void> {
 
   try {
     const isRegistered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_SYNC_TASK);
-    
+
     if (isRegistered) {
       await BackgroundFetch.unregisterTaskAsync(BACKGROUND_SYNC_TASK);
       logger.info('Background sync unregistered');
@@ -197,7 +198,7 @@ export async function triggerBackgroundSync(): Promise<{
     }
 
     const result = await processSyncQueue(db, userId);
-    
+
     return {
       success: result.failed === 0,
       message: `Synced ${result.synced} items, ${result.failed} failed`,
@@ -218,7 +219,7 @@ export async function setupBackgroundSync(): Promise<void> {
   try {
     // Check if background fetch is available
     const { isAvailable } = await getBackgroundFetchStatus();
-    
+
     if (!isAvailable) {
       logger.warn('Background fetch not available on this device');
       return;
@@ -226,7 +227,7 @@ export async function setupBackgroundSync(): Promise<void> {
 
     // Register the sync task
     await registerBackgroundSync();
-    
+
     logger.info('Background sync setup completed');
   } catch (error) {
     logger.error('Failed to setup background sync', error);
@@ -239,7 +240,7 @@ async function getStoredUserId(): Promise<string | null> {
   return null;
 }
 
-async function openDatabase(): Promise<{ getFirstAsync?: (query: string) => Promise<{ count: number } | null>; } | null> {
+async function openDatabase(): Promise<StorageAdapter | null> {
   // TODO: Implement based on your DatabaseContext
   return null;
 }

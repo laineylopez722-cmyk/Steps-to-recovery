@@ -108,20 +108,27 @@ Notifications.setNotificationHandler({
 export function useMeetingReminder(): MeetingReminderState & MeetingReminderActions {
   const [reminders, setReminders] = useState<ScheduledReminder[]>([]);
   const [isGeofencingActive, setIsGeofencingActive] = useState(false);
-  const [locationPermission, setLocationPermission] = useState<'granted' | 'denied' | 'undetermined'>('undetermined');
-  const [notificationPermission, setNotificationPermission] =
-    useState<'granted' | 'denied' | 'undetermined'>('undetermined');
+  const [locationPermission, setLocationPermission] = useState<
+    'granted' | 'denied' | 'undetermined'
+  >('undetermined');
+  const [notificationPermission, setNotificationPermission] = useState<
+    'granted' | 'denied' | 'undetermined'
+  >('undetermined');
 
   // Check permissions on mount
   useEffect(() => {
     const checkPermissions = async (): Promise<void> => {
       // Check notification permission
       const notifStatus = await Notifications.getPermissionsAsync();
-      setNotificationPermission(notifStatus.granted ? 'granted' : notifStatus.canAskAgain ? 'undetermined' : 'denied');
+      setNotificationPermission(
+        notifStatus.granted ? 'granted' : notifStatus.canAskAgain ? 'undetermined' : 'denied',
+      );
 
       // Check location permission
       const locStatus = await Location.getForegroundPermissionsAsync();
-      setLocationPermission(locStatus.granted ? 'granted' : locStatus.canAskAgain ? 'undetermined' : 'denied');
+      setLocationPermission(
+        locStatus.granted ? 'granted' : locStatus.canAskAgain ? 'undetermined' : 'denied',
+      );
     };
 
     void checkPermissions();
@@ -206,6 +213,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
             data: { meetingId: meeting.id, type: 'meeting_reminder' },
           },
           trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DATE,
             date: triggerDate,
           },
         });
@@ -254,7 +262,9 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
 
   const getUpcomingReminders = useCallback((): ScheduledReminder[] => {
     const now = new Date();
-    return reminders.filter((r) => r.scheduledTime > now).sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime());
+    return reminders
+      .filter((r) => r.scheduledTime > now)
+      .sort((a, b) => a.scheduledTime.getTime() - b.scheduledTime.getTime());
   }, [reminders]);
 
   const setupGeofence = useCallback(
@@ -280,7 +290,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
       try {
         // Define the geofence task if not already defined
         if (!TaskManager.isTaskDefined(GEOFENCE_TASK_NAME)) {
-          TaskManager.defineTask(GEOFENCE_TASK_NAME, ({ data, error }) => {
+          TaskManager.defineTask(GEOFENCE_TASK_NAME, async ({ data, error }) => {
             if (error) {
               logger.error('Geofence task error', error);
               return;
@@ -288,12 +298,12 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
 
             const { eventType, region } = data as {
               eventType: Location.GeofencingEventType;
-              region: Location.GeofencingRegion;
+              region: Location.LocationRegion;
             };
 
             if (eventType === Location.GeofencingEventType.Enter) {
               // User entered meeting area
-              void Notifications.scheduleNotificationAsync({
+              await Notifications.scheduleNotificationAsync({
                 content: {
                   title: "You're near a meeting!",
                   body: `${region.identifier} is nearby. Stay strong!`,

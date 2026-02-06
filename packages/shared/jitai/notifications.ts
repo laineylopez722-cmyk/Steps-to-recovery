@@ -62,7 +62,7 @@ export async function cancelJitaiNotification(triggerId: string): Promise<void> 
 export async function cancelAllJitaiNotifications(): Promise<void> {
   try {
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    const jitaiNotifications = scheduled.filter((n) =>
+    const jitaiNotifications = scheduled.filter((n: Notifications.NotificationRequest) =>
       n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX),
     );
 
@@ -81,5 +81,7 @@ export async function getScheduledJitaiNotifications(): Promise<
   Notifications.NotificationRequest[]
 > {
   const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-  return scheduled.filter((n) => n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX));
+  return scheduled.filter((n: Notifications.NotificationRequest) =>
+    n.identifier.startsWith(JITAI_NOTIFICATION_PREFIX),
+  );
 }

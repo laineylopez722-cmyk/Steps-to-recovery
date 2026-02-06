@@ -122,7 +122,9 @@ export async function scheduleRegularMeetingReminder(meeting: RegularMeeting): P
       trigger,
     });
 
-    logger.info(`Scheduled meeting reminder for "${meeting.name}" on day ${meeting.dayOfWeek} at ${meeting.time}`);
+    logger.info(
+      `Scheduled meeting reminder for "${meeting.name}" on day ${meeting.dayOfWeek} at ${meeting.time}`,
+    );
   } catch (error) {
     logger.error('Failed to schedule meeting reminder', error);
   }
@@ -203,5 +205,7 @@ export async function createMeetingNotificationChannel(): Promise<void> {
  */
 export async function getScheduledMeetingReminders(): Promise<Notifications.NotificationRequest[]> {
   const allNotifications = await Notifications.getAllScheduledNotificationsAsync();
-  return allNotifications.filter((n) => n.identifier.startsWith(REGULAR_MEETING_REMINDER_PREFIX));
+  return allNotifications.filter((n: Notifications.NotificationRequest) =>
+    n.identifier.startsWith(REGULAR_MEETING_REMINDER_PREFIX),
+  );
 }

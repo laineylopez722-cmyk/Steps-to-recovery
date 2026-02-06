@@ -74,7 +74,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
         'SELECT * FROM fourth_step_inventory ORDER BY created_at DESC',
       );
 
-      const entries: FourthStepEntry[] = rows.map((row) => ({
+      const entries: FourthStepEntry[] = rows.map((row: DbFourthStepEntry) => ({
         id: row.id,
         type: row.type as FourthStepType,
         who: row.who,
@@ -104,7 +104,7 @@ export const useFourthStepStore = create<FourthStepState>((set, get) => ({
         [type],
       );
 
-      const typeEntries: FourthStepEntry[] = rows.map((row) => ({
+      const typeEntries: FourthStepEntry[] = rows.map((row: DbFourthStepEntry) => ({
         id: row.id,
         type: row.type as FourthStepType,
         who: row.who,

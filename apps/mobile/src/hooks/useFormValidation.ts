@@ -98,7 +98,13 @@ interface FormValidationActions<T> {
 export function useFormValidation<T extends Record<string, unknown>>(
   options: FormValidationOptions<T>,
 ): FormValidationState<T> & FormValidationActions<T> {
-  const { initialValues, validators = {}, onSubmit, validateOnChange = true, validateOnBlur = true } = options;
+  const {
+    initialValues,
+    validators = {},
+    onSubmit,
+    validateOnChange = true,
+    validateOnBlur = true,
+  } = options;
 
   const [values, setValues] = useState<T>(initialValues);
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
@@ -110,7 +116,9 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
   // Check if form is dirty (has changes)
   const isDirty = useMemo(() => {
-    return Object.keys(values).some((key) => values[key as keyof T] !== initialValuesRef.current[key as keyof T]);
+    return Object.keys(values).some(
+      (key) => values[key as keyof T] !== initialValuesRef.current[key as keyof T],
+    );
   }, [values]);
 
   // Check if form is valid
@@ -121,7 +129,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
   // Validate a single field
   const validateField = useCallback(
     async (field: keyof T): Promise<string | null> => {
-      const validator = validators[field];
+      const validator = (validators as Partial<Record<keyof T, Validator<T>>>)[field];
       if (!validator) return null;
 
       try {
@@ -161,7 +169,7 @@ export function useFormValidation<T extends Record<string, unknown>>(
 
       if (validateOnChange) {
         void (async () => {
-          const validator = validators[field];
+          const validator = (validators as Partial<Record<keyof T, Validator<T>>>)[field];
           if (validator) {
             const error = await validator(value, { ...values, [field]: value });
             setErrors((prev) => ({ ...prev, [field]: error || undefined }));
@@ -277,18 +285,22 @@ export function useFormValidation<T extends Record<string, unknown>>(
  * Common validators
  */
 export const validators = {
-  required: (message = 'This field is required') => (value: unknown) => {
-    if (value === null || value === undefined || value === '') {
-      return message;
-    }
-    return null;
-  },
+  required:
+    (message = 'This field is required') =>
+    (value: unknown) => {
+      if (value === null || value === undefined || value === '') {
+        return message;
+      }
+      return null;
+    },
 
-  email: (message = 'Please enter a valid email') => (value: string) => {
-    if (!value) return null; // Use required validator separately
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(value) ? null : message;
-  },
+  email:
+    (message = 'Please enter a valid email') =>
+    (value: string) => {
+      if (!value) return null; // Use required validator separately
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(value) ? null : message;
+    },
 
   minLength: (min: number, message?: string) => (value: string) => {
     if (!value) return null;
@@ -300,22 +312,26 @@ export const validators = {
     return value.length <= max ? null : message || `Must be at most ${max} characters`;
   },
 
-  pattern: (regex: RegExp, message = 'Invalid format') => (value: string) => {
-    if (!value) return null;
-    return regex.test(value) ? null : message;
-  },
+  pattern:
+    (regex: RegExp, message = 'Invalid format') =>
+    (value: string) => {
+      if (!value) return null;
+      return regex.test(value) ? null : message;
+    },
 
   range: (min: number, max: number, message?: string) => (value: number) => {
     if (value === null || value === undefined) return null;
     return value >= min && value <= max ? null : message || `Must be between ${min} and ${max}`;
   },
 
-  match: <T extends Record<string, unknown>>(field: keyof T, message = 'Fields do not match') =>
+  match:
+    <T extends Record<string, unknown>>(field: keyof T, message = 'Fields do not match') =>
     (value: unknown, values: T) => {
       return value === values[field] ? null : message;
     },
 
-  compose: <T>(...fns: Array<(value: T, values: Record<string, unknown>) => ValidationResult>) =>
+  compose:
+    <T>(...fns: Array<(value: T, values: Record<string, unknown>) => ValidationResult>) =>
     (value: T, values: Record<string, unknown>) => {
       for (const fn of fns) {
         const error = fn(value, values);

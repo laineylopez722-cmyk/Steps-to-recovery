@@ -143,7 +143,7 @@ async function getExpoPushToken(): Promise<string | undefined> {
 
     // Get push token
     const { data: token } = await Notifications.getExpoPushTokenAsync({
-      projectId: '12bd81db-2aa5-41b7-a7b5-fdfe22bc2bf2', // From app.json
+      projectId: '31a006e3-47da-4995-b63a-ded28567f594', // From app.json
     });
 
     return token;

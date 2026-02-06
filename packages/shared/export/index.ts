@@ -123,7 +123,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt journal entries
   const journalEntries = await Promise.all(
-    journalRows.map(async (row) => {
+    journalRows.map(async (row: DbJournalEntry) => {
       let decryptedContent = '';
       try {
         decryptedContent = await decryptContent(row.content);
@@ -151,7 +151,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt check-ins
   const dailyCheckins = await Promise.all(
-    checkinRows.map(async (row) => {
+    checkinRows.map(async (row: DbDailyCheckin) => {
       let decryptedGratitude: string | undefined;
       if (row.gratitude) {
         try {
@@ -175,7 +175,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt milestones
   const milestones = await Promise.all(
-    milestoneRows.map(async (row) => {
+    milestoneRows.map(async (row: DbMilestone) => {
       let decryptedReflection: string | undefined;
       if (row.reflection) {
         try {
@@ -200,7 +200,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt meeting logs
   const meetingLogs = await Promise.all(
-    meetingRows.map(async (row) => {
+    meetingRows.map(async (row: DbMeetingLog) => {
       let decryptedTakeaways = '';
       try {
         decryptedTakeaways = await decryptContent(row.key_takeaways);
@@ -225,7 +225,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt vault items
   const vaultItems = await Promise.all(
-    vaultRows.map(async (row) => {
+    vaultRows.map(async (row: DbVaultItem) => {
       let decryptedContent = '';
       try {
         decryptedContent = await decryptContent(row.content);
@@ -250,7 +250,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt time capsules
   const timeCapsules = await Promise.all(
-    capsuleRows.map(async (row) => {
+    capsuleRows.map(async (row: DbTimeCapsule) => {
       let decryptedContent = '';
       // Only decrypt if unlocked or we're exporting
       try {
@@ -273,7 +273,7 @@ export async function exportAllData(): Promise<string> {
 
   // Transform and decrypt scenario practices
   const scenarioPractices = await Promise.all(
-    scenarioRows.map(async (row) => {
+    scenarioRows.map(async (row: DbScenarioPractice) => {
       let decryptedReflection: string | undefined;
       if (row.reflection) {
         try {

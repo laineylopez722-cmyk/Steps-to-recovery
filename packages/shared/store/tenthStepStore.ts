@@ -82,7 +82,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
         'SELECT * FROM tenth_step_reviews ORDER BY date DESC',
       );
 
-      const reviews: TenthStepReview[] = rows.map((row) => ({
+      const reviews: TenthStepReview[] = rows.map((row: DbTenthStepReview) => ({
         id: row.id,
         date: new Date(row.date),
         wasResentful: row.was_resentful || undefined,
@@ -116,7 +116,7 @@ export const useTenthStepStore = create<TenthStepState>((set, get) => ({
         [limit],
       );
 
-      const reviews: TenthStepReview[] = rows.map((row) => ({
+      const reviews: TenthStepReview[] = rows.map((row: DbTenthStepReview) => ({
         id: row.id,
         date: new Date(row.date),
         wasResentful: row.was_resentful || undefined,

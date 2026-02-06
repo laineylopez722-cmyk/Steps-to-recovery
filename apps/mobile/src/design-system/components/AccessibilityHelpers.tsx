@@ -6,7 +6,11 @@ import { darkAccent, spacing, typography } from '../tokens/modern';
 // Screen reader only text
 export function ScreenReaderText({ children }: { children: string }): React.ReactElement {
   return (
-    <Text style={styles.screenReaderOnly} accessibilityElementsHidden={false} importantForAccessibility="yes">
+    <Text
+      style={styles.screenReaderOnly}
+      accessibilityElementsHidden={false}
+      importantForAccessibility="yes"
+    >
       {children}
     </Text>
   );
@@ -53,12 +57,14 @@ interface FocusableProps extends ViewProps {
   isFocused?: boolean;
 }
 
-export function Focusable({ children, isFocused, style, ...props }: FocusableProps): React.ReactElement {
+export function Focusable({
+  children,
+  isFocused,
+  style,
+  ...props
+}: FocusableProps): React.ReactElement {
   return (
-    <View
-      style={[style, isFocused && styles.focused]}
-      {...props}
-    >
+    <View style={[style, isFocused && styles.focused]} {...props}>
       {children}
     </View>
   );
@@ -84,11 +90,7 @@ export function AccessibleField({
   const hintText = error || helperText;
 
   return (
-    <View
-      accessible={true}
-      accessibilityLabel={labelText}
-      accessibilityHint={hintText}
-    >
+    <View accessible={true} accessibilityLabel={labelText} accessibilityHint={hintText}>
       <View style={styles.labelRow}>
         <Text style={styles.fieldLabel}>{label}</Text>
         {required && <Text style={styles.required}>*</Text>}
@@ -111,7 +113,10 @@ interface AccessibleProgressProps {
   label: string;
 }
 
-export function AccessibleProgress({ progress, label }: AccessibleProgressProps): React.ReactElement {
+export function AccessibleProgress({
+  progress,
+  label,
+}: AccessibleProgressProps): React.ReactElement {
   return (
     <View
       accessible={true}
@@ -153,11 +158,7 @@ export function SkipLink({ to: _to, label }: SkipLinkProps): React.ReactElement 
   };
 
   return (
-    <Pressable
-      onPress={handlePress}
-      style={styles.skipLink}
-      accessibilityRole="link"
-    >
+    <Pressable onPress={handlePress} style={styles.skipLink} accessibilityRole="link">
       <Text style={styles.skipLinkText}>{label}</Text>
     </Pressable>
   );
@@ -200,12 +201,12 @@ export function AccessibleList({ children, label }: AccessibleListProps): React.
   );
 }
 
-export function AccessibleListItem({ children }: { children: React.ReactNode }): React.ReactElement {
-  return (
-    <View accessibilityRole="text">
-      {children}
-    </View>
-  );
+export function AccessibleListItem({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactElement {
+  return <View accessibilityRole="text">{children}</View>;
 }
 
 // Screen reader announcement helper
@@ -226,7 +227,9 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: -1,
     overflow: 'hidden',
-    clip: 'rect(0, 0, 0, 0)',
+    // Note: 'clip' is not supported in React Native. Use opacity: 0 instead
+    // for visually hiding content while keeping it accessible to screen readers
+    opacity: 0,
     borderWidth: 0,
   },
   focused: {

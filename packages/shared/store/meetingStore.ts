@@ -220,7 +220,9 @@ export const useMeetingStore = create<MeetingState & MeetingActions>((set, get) 
       });
 
       // Convert database rows to MeetingLog objects with lazy decryption
-      const meetings: MeetingLog[] = await Promise.all(rows.map((row) => dbRowToMeetingLog(row)));
+      const meetings: MeetingLog[] = await Promise.all(
+        rows.map((row: DbMeetingLog) => dbRowToMeetingLog(row)),
+      );
 
       const hasMore = offset + rows.length < total;
 

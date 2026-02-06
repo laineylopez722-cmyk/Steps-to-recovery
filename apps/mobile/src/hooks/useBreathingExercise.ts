@@ -49,7 +49,7 @@ interface PatternConfig {
   description: string;
 }
 
-const PATTERNS: Record<Exclude<BreathingPattern, 'custom'>, PatternConfig> = {
+const PATTERNS: Record<'box' | 'relaxing' | '478' | 'calming', PatternConfig> = {
   box: {
     inhale: 4,
     holdIn: 4,
@@ -85,11 +85,11 @@ const PATTERNS: Record<Exclude<BreathingPattern, 'custom'>, PatternConfig> = {
 };
 
 const PHASE_LABELS: Record<BreathingPhase, string> = {
-  'inhale': 'Breathe In',
+  inhale: 'Breathe In',
   'hold-in': 'Hold',
-  'exhale': 'Breathe Out',
+  exhale: 'Breathe Out',
   'hold-out': 'Hold',
-  'idle': 'Ready',
+  idle: 'Ready',
 };
 
 interface BreathingExerciseOptions {
@@ -140,7 +140,10 @@ interface BreathingExerciseActions {
   /** Toggle between running and paused */
   toggle: () => void;
   /** Change the breathing pattern */
-  setPattern: (pattern: BreathingPattern, customTiming?: Omit<PatternConfig, 'name' | 'description'>) => void;
+  setPattern: (
+    pattern: BreathingPattern,
+    customTiming?: Omit<PatternConfig, 'name' | 'description'>,
+  ) => void;
 }
 
 export function useBreathingExercise(
@@ -159,7 +162,9 @@ export function useBreathingExercise(
     if (pattern === 'custom' && customTiming) {
       return { ...customTiming, name: 'Custom', description: 'Custom breathing pattern' };
     }
-    return PATTERNS[pattern] || PATTERNS.box;
+    // For non-custom patterns, use the predefined pattern or fallback to box
+    const predefinedPattern = pattern !== 'custom' ? PATTERNS[pattern] : undefined;
+    return predefinedPattern || PATTERNS.box;
   });
 
   const [state, setState] = useState<Omit<BreathingExerciseState, 'config'>>({
@@ -350,13 +355,18 @@ export function useBreathingExercise(
   }, [state.isRunning, state.isPaused, pause, resume, start]);
 
   const setPattern = useCallback(
-    (newPattern: BreathingPattern, newCustomTiming?: Omit<PatternConfig, 'name' | 'description'>) => {
+    (
+      newPattern: BreathingPattern,
+      newCustomTiming?: Omit<PatternConfig, 'name' | 'description'>,
+    ) => {
       reset();
 
       if (newPattern === 'custom' && newCustomTiming) {
         setConfig({ ...newCustomTiming, name: 'Custom', description: 'Custom breathing pattern' });
       } else if (newPattern !== 'custom') {
-        setConfig(PATTERNS[newPattern] || PATTERNS.box);
+        // For non-custom patterns, use the predefined pattern or fallback to box
+        const predefinedPattern = PATTERNS[newPattern];
+        setConfig(predefinedPattern || PATTERNS.box);
       }
     },
     [reset],
