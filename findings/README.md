@@ -13,6 +13,10 @@
    - Rewrote ErrorBoundary tests with stable mocks in `apps/mobile/src/components/__tests__/ErrorBoundary.test.tsx`.
 4. Lint cleanup:
    - Removed unused design-system skeleton imports in `apps/mobile/src/features/steps/screens/StepDetailScreen.tsx`.
+5. Fixed runtime crash from hook-order violation in database provider:
+   - `apps/mobile/src/contexts/DatabaseContext.tsx`
+6. Hardened root error fallback to work without `ThemeProvider`:
+   - `apps/mobile/src/components/ErrorBoundary.tsx`
 
 ## What is verified working now
 
@@ -25,6 +29,7 @@
 5. `npx expo export --platform web --clear` passes.
 6. Root `npx expo-doctor --verbose` passes (17/17).
 7. App-level `cd apps/mobile && npx expo-doctor --verbose` passes (17/17).
+8. `npx expo export --platform android --clear` passes after provider/error-boundary fixes.
 
 ## Remaining verified gaps
 

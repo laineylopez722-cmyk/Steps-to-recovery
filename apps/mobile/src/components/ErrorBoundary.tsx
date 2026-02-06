@@ -1,7 +1,7 @@
 import React, { Component, type ReactNode, type ErrorInfo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../design-system';
+import { ThemeContext } from '../design-system/context/ThemeContext';
 import { logger } from '../utils/logger';
 import { captureException } from '../lib/sentry';
 
@@ -91,34 +91,44 @@ interface ErrorFallbackProps {
   onReset: () => void;
 }
 
+const FALLBACK_COLORS = {
+  background: '#0f172a',
+  danger: '#ef4444',
+  primary: '#2563eb',
+  text: '#f8fafc',
+  textSecondary: '#94a3b8',
+} as const;
+
 function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React.ReactElement {
-  const theme = useTheme();
+  // Error fallback must work even when upstream providers fail to mount.
+  const theme = React.useContext(ThemeContext);
+  const colors = theme?.colors ?? FALLBACK_COLORS;
   const [showDetails, setShowDetails] = React.useState(false);
 
   const isDev = __DEV__;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.content}>
         {/* Error Icon */}
-        <View style={[styles.iconContainer, { backgroundColor: `${theme.colors.danger}20` }]}>
-          <MaterialIcons name="error-outline" size={64} color={theme.colors.danger} />
+        <View style={[styles.iconContainer, { backgroundColor: `${colors.danger}20` }]}>
+          <MaterialIcons name="error-outline" size={64} color={colors.danger} />
         </View>
 
         {/* Title */}
-        <Text style={[styles.title, { color: theme.colors.text }]}>
+        <Text style={[styles.title, { color: colors.text }]}>
           Something went wrong
         </Text>
 
         {/* Description */}
-        <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
+        <Text style={[styles.description, { color: colors.textSecondary }]}>
           We apologize for the inconvenience. The app encountered an unexpected error.
         </Text>
 
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: theme.colors.primary }]}
+            style={[styles.button, { backgroundColor: colors.primary }]}
             onPress={onReset}
             accessibilityRole="button"
             accessibilityLabel="Try again"
@@ -136,13 +146,13 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React
             accessibilityRole="button"
             accessibilityLabel={showDetails ? 'Hide error details' : 'Show error details'}
           >
-            <Text style={[styles.detailsToggleText, { color: theme.colors.primary }]}>
+            <Text style={[styles.detailsToggleText, { color: colors.primary }]}>
               {showDetails ? 'Hide Details' : 'Show Details'}
             </Text>
             <MaterialIcons
               name={showDetails ? 'expand-less' : 'expand-more'}
               size={24}
-              color={theme.colors.primary}
+              color={colors.primary}
             />
           </TouchableOpacity>
         )}
@@ -150,17 +160,17 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React
         {/* Error Details (Dev Only) */}
         {isDev && showDetails && (
           <ScrollView style={styles.detailsContainer}>
-            <Text style={[styles.detailsTitle, { color: theme.colors.danger }]}>
+            <Text style={[styles.detailsTitle, { color: colors.danger }]}>
               Error:
             </Text>
-            <Text style={[styles.detailsText, { color: theme.colors.text }]}>
+            <Text style={[styles.detailsText, { color: colors.text }]}>
               {error?.toString()}
             </Text>
             
-            <Text style={[styles.detailsTitle, { color: theme.colors.danger, marginTop: 16 }]}>
+            <Text style={[styles.detailsTitle, { color: colors.danger, marginTop: 16 }]}>
               Component Stack:
             </Text>
-            <Text style={[styles.detailsText, { color: theme.colors.text }]}>
+            <Text style={[styles.detailsText, { color: colors.text }]}>
               {errorInfo?.componentStack}
             </Text>
           </ScrollView>

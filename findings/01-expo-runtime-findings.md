@@ -31,6 +31,20 @@
 - Cause:
   - Stale tests and missing mocks for newer hook/infra behavior.
 
+## 4) Runtime hook-order violation in database provider
+
+- Symptom reproduced in Android logs:
+  - `React has detected a change in the order of Hooks called by MobileDatabaseProvider`.
+- Cause:
+  - `useMemo` for `contextValue` was called only after conditional early returns in `MobileDatabaseProvider`.
+
+## 5) ErrorBoundary fallback depended on ThemeProvider during provider failures
+
+- Symptom reproduced in Android logs:
+  - `Error: useTheme must be used within a ThemeProvider`.
+- Cause:
+  - `ErrorBoundary` fallback UI called `useTheme()`, but ErrorBoundary wraps the full tree and can render before ThemeProvider is available.
+
 ## Fixes Applied
 
 1. Added missing dependency:
@@ -45,6 +59,10 @@
    - `apps/mobile/src/components/__tests__/ErrorBoundary.test.tsx`
 4. Removed lint debt:
    - `apps/mobile/src/features/steps/screens/StepDetailScreen.tsx`
+5. Fixed hook-order crash:
+   - `apps/mobile/src/contexts/DatabaseContext.tsx`
+6. Made ErrorBoundary fallback provider-agnostic:
+   - `apps/mobile/src/components/ErrorBoundary.tsx`
 
 ## Verification Results
 
@@ -59,6 +77,7 @@
 
 1. `npx expo export --platform android --clear` -> PASS
 2. `npx expo export --platform web --clear` -> PASS
+3. `npx expo export --platform android --clear` -> PASS after hook/provider fixes
 
 ## Doctor
 

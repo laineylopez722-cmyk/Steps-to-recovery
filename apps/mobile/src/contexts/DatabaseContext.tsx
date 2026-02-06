@@ -82,6 +82,10 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
   }, []);
 
   const errorContextValue = useMemo(() => ({ db: null, isReady: false }), []);
+  const contextValue = useMemo(
+    () => ({ db: adapter, isReady: adapter !== null }),
+    [adapter]
+  );
 
   // Show error state if SQLite failed to load
   if (error) {
@@ -100,11 +104,6 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
   }
 
   const SQLiteProviderElement = SQLiteProviderComponent;
-
-  const contextValue = useMemo(
-    () => ({ db: adapter, isReady: adapter !== null }),
-    [adapter]
-  );
 
   return (
     <SQLiteProviderElement
