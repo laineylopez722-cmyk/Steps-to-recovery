@@ -131,6 +131,44 @@ function detectCrisis(content: string): CrisisSignal | null {
 }
 
 /**
+ * Generate a short title from the first user message
+ */
+function generateConversationTitle(message: string): string {
+  // Common patterns and their titles
+  const patterns: Array<{ pattern: RegExp; title: string }> = [
+    { pattern: /step\s*(\d+|work)/i, title: 'Step Work' },
+    { pattern: /craving|urge|tempt/i, title: 'Craving Support' },
+    { pattern: /relaps/i, title: 'Relapse Concern' },
+    { pattern: /stressed|anxious|anxiety|worried/i, title: 'Stress & Anxiety' },
+    { pattern: /sleep|insomnia|can't sleep/i, title: 'Sleep Troubles' },
+    { pattern: /meeting|sponsor/i, title: 'Program Talk' },
+    { pattern: /family|relationship|partner|spouse/i, title: 'Relationship' },
+    { pattern: /work|job|boss/i, title: 'Work Stuff' },
+    { pattern: /vent|off my chest|need to talk/i, title: 'Venting' },
+    { pattern: /grateful|gratitude|thankful/i, title: 'Gratitude' },
+    { pattern: /win|good news|celebrate/i, title: 'Good News' },
+    { pattern: /morning|start.*day/i, title: 'Morning Check-in' },
+    { pattern: /reflect|review|today went/i, title: 'Daily Reflection' },
+  ];
+
+  for (const { pattern, title } of patterns) {
+    if (pattern.test(message)) {
+      return title;
+    }
+  }
+
+  // Fall back to first few words (cleaned up)
+  const cleaned = message
+    .replace(/[^\w\s]/g, '')
+    .trim()
+    .split(/\s+/)
+    .slice(0, 4)
+    .join(' ');
+
+  return cleaned.length > 30 ? cleaned.slice(0, 30) + '...' : cleaned || 'Chat';
+}
+
+/**
  * Main AI Chat Hook
  */
 export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
@@ -352,6 +390,18 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           { crisisDetected: crisis?.detected }
         );
         setMessages(prev => [...prev, aiMessage]);
+        
+        // Auto-title the conversation after first exchange
+        if (messages.length === 0 && content.length > 0) {
+          // Generate a short title from the first user message
+          const title = generateConversationTitle(content);
+          try {
+            await chatHistory.updateConversationTitle(currentConversation.id, title);
+            setCurrentConversation(prev => prev ? { ...prev, title } : prev);
+          } catch {
+            // Title update failed, not critical
+          }
+        }
         
         // Extract and save memories from the user message
         try {

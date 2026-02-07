@@ -17,6 +17,7 @@ export interface UseChatHistoryReturn {
   createConversation: (type: ConversationType, stepNumber?: number) => Promise<Conversation>;
   getConversation: (id: string) => Promise<Conversation | null>;
   archiveConversation: (id: string) => Promise<void>;
+  updateConversationTitle: (id: string, title: string) => Promise<void>;
 
   // Message management
   addMessage: (conversationId: string, role: 'user' | 'assistant', content: string, metadata?: Record<string, unknown>) => Promise<Message>;
@@ -360,12 +361,38 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
     [db, isReady]
   );
 
+  /**
+   * Update conversation title
+   */
+  const updateConversationTitle = useCallback(
+    async (conversationId: string, title: string): Promise<void> => {
+      if (!db || !isReady) return;
+
+      try {
+        await db.runAsync(
+          `UPDATE chat_conversations SET title = ?, updated_at = ? WHERE id = ?`,
+          [title, new Date().toISOString(), conversationId]
+        );
+
+        // Update local state
+        setConversations(prev =>
+          prev.map(c => (c.id === conversationId ? { ...c, title } : c))
+        );
+      } catch (err) {
+        console.error('Failed to update conversation title:', err);
+        throw err;
+      }
+    },
+    [db, isReady]
+  );
+
   return {
     conversations,
     isLoading,
     createConversation,
     getConversation,
     archiveConversation,
+    updateConversationTitle,
     addMessage,
     getMessages,
     refreshConversations,

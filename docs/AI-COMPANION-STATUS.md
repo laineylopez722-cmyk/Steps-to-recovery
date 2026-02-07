@@ -1,6 +1,6 @@
 # AI Companion - Implementation Status
 
-> **Last Updated:** 2026-02-07 21:00 AEDT
+> **Last Updated:** 2026-02-08 02:30 AEDT
 
 ## What's Built
 
@@ -10,6 +10,15 @@
 - Memory extraction from conversations
 - Encrypted message storage
 - OpenAI + Anthropic support (auto-detect from key)
+- **AI welcome message** - Personalized first greeting
+- **Time-based quick actions** - Different suggestions for morning/afternoon/evening/night
+- **Conversation history** - View and manage past chats
+
+### Context & Personalization ✅
+- **Sobriety days** wired to AI context
+- **Sponsor info** available for crisis overlay
+- **Memory context** - AI references past conversations
+- Quick actions adapt to time of day
 
 ### Step Work Tools ✅
 - Step 4 Inventory Builder (4-column resentment method)
@@ -19,9 +28,16 @@
 
 ### Navigation & Integration ✅
 - Chat accessible from home screen (amber card)
-- AI Settings in Profile
+- AI Settings in Profile with quick access from chat
 - Crisis overlay with sponsor/988 hotline
-- Quick action chips for common intents
+- Back button in chat header
+
+### Backend Proxy (Ready for Deployment) ✅
+- Edge Function: `supabase/functions/ai-chat/index.ts`
+- SQL migration: `supabase/migrations/20260208_ai_usage_tracking.sql`
+- Free tier: 20 messages/day
+- BYOK support for unlimited
+- Just needs deployment and `PROXY_ENABLED = true`
 
 ---
 
