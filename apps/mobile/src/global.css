@@ -1,0 +1,198 @@
+/**
+ * Steps to Recovery - Design System
+ * 
+ * Premium dark theme with calm confidence.
+ * Uniwind + Tailwind CSS 4 syntax.
+ * 
+ * @see DESIGN_SYSTEM.md for full specification
+ */
+
+@import 'tailwindcss';
+@import 'uniwind';
+
+/* ============================================================================
+ * Theme Configuration
+ * All themes define the same variables for consistency
+ * ============================================================================ */
+@layer theme {
+  :root {
+    /* Dark theme (default) */
+    @variant dark {
+      /* === Background Layers === */
+      --color-bg-primary: #000000;
+      --color-bg-secondary: #0C0C0E;
+      --color-bg-tertiary: #161618;
+      --color-bg-quaternary: #1C1C1E;
+      
+      /* === Text Hierarchy === */
+      --color-text-primary: #FFFFFF;
+      --color-text-secondary: rgba(255, 255, 255, 0.72);
+      --color-text-tertiary: rgba(255, 255, 255, 0.48);
+      --color-text-quaternary: rgba(255, 255, 255, 0.32);
+      
+      /* === Accent Colors (muted, sophisticated) === */
+      --color-accent-warm: #E8A855;
+      --color-accent-calm: #6B9EBF;
+      --color-accent-growth: #7BA873;
+      --color-accent-alert: #C97B7B;
+      
+      /* === Semantic Colors === */
+      --color-success: #7BA873;
+      --color-warning: #D4A853;
+      --color-error: #C97B7B;
+      --color-info: #6B9EBF;
+      
+      /* === Borders & Dividers === */
+      --color-border-subtle: rgba(255, 255, 255, 0.06);
+      --color-border-default: rgba(255, 255, 255, 0.10);
+      --color-border-strong: rgba(255, 255, 255, 0.16);
+      --color-divider: rgba(255, 255, 255, 0.08);
+      
+      /* === Interactive States === */
+      --color-ring: #E8A855;
+      
+      /* === Legacy/Compat (shadcn) === */
+      --background: #000000;
+      --foreground: #FFFFFF;
+      --card: #161618;
+      --card-foreground: #FFFFFF;
+      --popover: #161618;
+      --popover-foreground: #FFFFFF;
+      --primary: #E8A855;
+      --primary-foreground: #000000;
+      --secondary: #1C1C1E;
+      --secondary-foreground: #FFFFFF;
+      --muted: #1C1C1E;
+      --muted-foreground: rgba(255, 255, 255, 0.48);
+      --accent: #E8A855;
+      --accent-foreground: #000000;
+      --destructive: #C97B7B;
+      --destructive-foreground: #FFFFFF;
+      --border: rgba(255, 255, 255, 0.10);
+      --input: rgba(255, 255, 255, 0.10);
+      --ring: #E8A855;
+    }
+
+    /* Light theme (for accessibility option) */
+    @variant light {
+      /* === Background Layers === */
+      --color-bg-primary: #FFFFFF;
+      --color-bg-secondary: #F5F5F7;
+      --color-bg-tertiary: #EBEBED;
+      --color-bg-quaternary: #E0E0E2;
+      
+      /* === Text Hierarchy === */
+      --color-text-primary: #000000;
+      --color-text-secondary: rgba(0, 0, 0, 0.72);
+      --color-text-tertiary: rgba(0, 0, 0, 0.48);
+      --color-text-quaternary: rgba(0, 0, 0, 0.32);
+      
+      /* === Accent Colors === */
+      --color-accent-warm: #C4872A;
+      --color-accent-calm: #4A7A9A;
+      --color-accent-growth: #5A8A53;
+      --color-accent-alert: #A85858;
+      
+      /* === Semantic Colors === */
+      --color-success: #5A8A53;
+      --color-warning: #B58A33;
+      --color-error: #A85858;
+      --color-info: #4A7A9A;
+      
+      /* === Borders & Dividers === */
+      --color-border-subtle: rgba(0, 0, 0, 0.06);
+      --color-border-default: rgba(0, 0, 0, 0.10);
+      --color-border-strong: rgba(0, 0, 0, 0.16);
+      --color-divider: rgba(0, 0, 0, 0.08);
+      
+      /* === Interactive States === */
+      --color-ring: #C4872A;
+      
+      /* === Legacy/Compat (shadcn) === */
+      --background: #FFFFFF;
+      --foreground: #000000;
+      --card: #EBEBED;
+      --card-foreground: #000000;
+      --popover: #EBEBED;
+      --popover-foreground: #000000;
+      --primary: #C4872A;
+      --primary-foreground: #FFFFFF;
+      --secondary: #E0E0E2;
+      --secondary-foreground: #000000;
+      --muted: #E0E0E2;
+      --muted-foreground: rgba(0, 0, 0, 0.48);
+      --accent: #C4872A;
+      --accent-foreground: #FFFFFF;
+      --destructive: #A85858;
+      --destructive-foreground: #FFFFFF;
+      --border: rgba(0, 0, 0, 0.10);
+      --input: rgba(0, 0, 0, 0.10);
+      --ring: #C4872A;
+    }
+  }
+}
+
+/* ============================================================================
+ * Custom Theme Extensions
+ * ============================================================================ */
+@theme {
+  /* === Spacing Scale (4px base) === */
+  --spacing-0: 0;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  
+  /* === Border Radius === */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  
+  /* === Typography Scale (1.25 ratio) === */
+  --font-size-micro: 11px;
+  --font-size-caption: 13px;
+  --font-size-body-sm: 15px;
+  --font-size-body: 17px;
+  --font-size-h3: 20px;
+  --font-size-h2: 24px;
+  --font-size-h1: 32px;
+  --font-size-display: 40px;
+  
+  /* === Line Heights === */
+  --line-height-micro: 14px;
+  --line-height-caption: 18px;
+  --line-height-body-sm: 22px;
+  --line-height-body: 26px;
+  --line-height-h3: 28px;
+  --line-height-h2: 32px;
+  --line-height-h1: 40px;
+  --line-height-display: 48px;
+  
+  /* === Animation Timing === */
+  --duration-quick: 150ms;
+  --duration-standard: 250ms;
+  --duration-slow: 400ms;
+  
+  /* === Shadows (minimal) === */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* ============================================================================
+ * Base Layer
+ * ============================================================================ */
+@layer base {
+  * {
+    border-color: var(--color-border-default);
+  }
+}

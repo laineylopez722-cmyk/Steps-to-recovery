@@ -1,20 +1,12 @@
 /**
  * Danger Zone Screen
- * 
+ *
  * Main screen for managing risky contacts (Safe Dial protection)
  * Shows list of protected contacts and close call statistics
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-  Pressable,
-  Alert,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -22,16 +14,8 @@ import { useTheme, Button, Card } from '../../../design-system';
 import { hapticSelection } from '../../../utils/haptics';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { RelationshipType } from '../../../services/safeDialService';
-import {
-  useRiskyContacts,
-  useCloseCallTracking,
-  type RiskyContact,
-} from '../hooks';
-import {
-  RiskyContactCard,
-  CloseCallInsights,
-  AddRiskyContactModal,
-} from '../components';
+import { useRiskyContacts, useCloseCallTracking, type RiskyContact } from '../hooks';
+import { RiskyContactCard, CloseCallInsights, AddRiskyContactModal } from '../components';
 
 interface DangerZoneScreenProps {
   onNavigateToIntervention?: () => void;
@@ -79,7 +63,7 @@ export function DangerZoneScreen({
       await addContact(contact);
       hapticSelection();
     },
-    [addContact]
+    [addContact],
   );
 
   const handleRemoveContact = useCallback(
@@ -87,7 +71,7 @@ export function DangerZoneScreen({
       await removeContact(contactId);
       hapticSelection();
     },
-    [removeContact]
+    [removeContact],
   );
 
   const handleEditContact = useCallback((contact: RiskyContact) => {
@@ -95,7 +79,7 @@ export function DangerZoneScreen({
     Alert.alert(
       'Edit Contact',
       'Contact editing will be implemented in the edit modal (coming soon)',
-      [{ text: 'OK', onPress: () => setEditingContact(null) }]
+      [{ text: 'OK', onPress: () => setEditingContact(null) }],
     );
   }, []);
 
@@ -243,12 +227,7 @@ export function DangerZoneScreen({
                 'Help you make healthier choices',
               ].map((step, index) => (
                 <View key={index} style={styles.howItWorksStep}>
-                  <View
-                    style={[
-                      styles.stepNumber,
-                      { backgroundColor: theme.colors.primary },
-                    ]}
-                  >
+                  <View style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
                     <Text
                       style={[
                         theme.typography.labelSmall,
@@ -300,7 +279,9 @@ export function DangerZoneScreen({
                 color={theme.colors.danger}
                 style={{ marginBottom: 8 }}
               />
-              <Text style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}>
+              <Text
+                style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}
+              >
                 Failed to load contacts
               </Text>
               <Button
@@ -386,13 +367,13 @@ export function DangerZoneScreen({
               style={{ marginRight: 8 }}
             />
             <Text
-              style={[
-                theme.typography.bodySmall,
-                { color: theme.colors.textSecondary, flex: 1 },
-              ]}
+              style={[theme.typography.bodySmall, { color: theme.colors.textSecondary, flex: 1 }]}
             >
-              <Text style={{ fontWeight: '600', color: theme.colors.text }}>Your privacy is protected.</Text>{' '}
-              All contact data is encrypted and never shared. You can disable this feature anytime in Settings.
+              <Text style={{ fontWeight: '600', color: theme.colors.text }}>
+                Your privacy is protected.
+              </Text>{' '}
+              All contact data is encrypted and never shared. You can disable this feature anytime
+              in Settings.
             </Text>
           </Card>
         </Animated.View>

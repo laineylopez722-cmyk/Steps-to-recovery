@@ -91,7 +91,15 @@ export function useCleanTime(userId: string): {
     queryKey: ['clean_time', userId],
     queryFn: async () => {
       if (!db || !isReady) {
-        throw new Error('Database not ready');
+        // Return defaults when database not ready
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          nextMilestone: MILESTONES[0],
+          recentMilestones: [],
+        };
       }
       try {
         const result = await db.getFirstAsync<UserProfile>(
@@ -99,8 +107,17 @@ export function useCleanTime(userId: string): {
           [userId],
         );
 
-        if (!result) {
-          throw new Error('User profile not found');
+        // Handle missing profile gracefully - user may not have set sobriety date yet
+        if (!result || !result.sobriety_start_date) {
+          logger.debug('User profile or sobriety date not found, returning defaults');
+          return {
+            days: 0,
+            hours: 0,
+            minutes: 0,
+            seconds: 0,
+            nextMilestone: MILESTONES[0],
+            recentMilestones: [],
+          };
         }
 
         const cleanTime = calculateCleanTime(result.sobriety_start_date);
@@ -114,7 +131,15 @@ export function useCleanTime(userId: string): {
         };
       } catch (err) {
         logger.error('Failed to calculate clean time', err);
-        throw err;
+        // Return defaults on error instead of throwing
+        return {
+          days: 0,
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          nextMilestone: MILESTONES[0],
+          recentMilestones: [],
+        };
       }
     },
     enabled: isReady && !!db,
@@ -185,7 +210,7 @@ export function useMilestones(userId: string): {
         [userId],
       );
 
-      if (!profile) {
+      if (!profile || !profile.sobriety_start_date) {
         return [];
       }
 

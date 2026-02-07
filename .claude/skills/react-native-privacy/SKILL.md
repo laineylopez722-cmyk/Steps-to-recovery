@@ -79,29 +79,29 @@ await SecureStore.deleteItemAsync('encryption_key');
 
 ### What Goes Where
 
-| Storage | Use For | Never Store |
-|---------|---------|-------------|
-| SecureStore | Encryption keys, auth tokens, PII | Large data |
-| AsyncStorage | UI state, cache, preferences | Keys, tokens, PII |
-| SQLite | App data, encrypted content | Unencrypted sensitive data |
-| Keychain/Keystore | Credentials, certificates | - |
+| Storage           | Use For                           | Never Store                |
+| ----------------- | --------------------------------- | -------------------------- |
+| SecureStore       | Encryption keys, auth tokens, PII | Large data                 |
+| AsyncStorage      | UI state, cache, preferences      | Keys, tokens, PII          |
+| SQLite            | App data, encrypted content       | Unencrypted sensitive data |
+| Keychain/Keystore | Credentials, certificates         | -                          |
 
 ## Data Export (GDPR/CCPA)
 
 ```typescript
 async function exportUserData(userId: string): Promise<string> {
   const db = await openDatabase();
-  
+
   // Gather all user data
   const journal = await db.getAllAsync('SELECT * FROM journal WHERE user_id = ?', userId);
   const checkins = await db.getAllAsync('SELECT * FROM checkins WHERE user_id = ?', userId);
-  
+
   // Decrypt what can be decrypted
   const decryptedJournal = await Promise.all(
     journal.map(async (entry) => ({
       ...entry,
       content: await decryptContent(entry.encrypted_body).catch(() => '[encrypted]'),
-    }))
+    })),
   );
 
   const exportData = {
@@ -118,7 +118,7 @@ async function exportUserData(userId: string): Promise<string> {
 async function shareDataExport(): Promise<void> {
   const data = await exportUserData(currentUser.id);
   const fileUri = FileSystem.cacheDirectory + 'export.json';
-  
+
   await FileSystem.writeAsStringAsync(fileUri, data);
   await Sharing.shareAsync(fileUri, {
     mimeType: 'application/json',
@@ -237,7 +237,7 @@ async function auditLog(action: string, resource: string): Promise<void> {
     currentUser.id,
     action,
     resource,
-    Date.now()
+    Date.now(),
   );
 }
 

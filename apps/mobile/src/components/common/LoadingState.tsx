@@ -225,4 +225,3 @@ export const SkeletonList = memo(function SkeletonList({
     </View>
   );
 });
-

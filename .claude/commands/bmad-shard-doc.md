@@ -4,6 +4,6 @@ description: 'Splits large markdown documents into smaller, organized files base
 
 # Shard Document
 
-Read the entire task file at: _bmad/core/tasks/shard-doc.xml
+Read the entire task file at: \_bmad/core/tasks/shard-doc.xml
 
 Follow all instructions in the task file exactly as written.

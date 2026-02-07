@@ -1,6 +1,6 @@
 /**
  * Emergency Components
- * 
+ *
  * Barrel export for safe dial components
  */
 

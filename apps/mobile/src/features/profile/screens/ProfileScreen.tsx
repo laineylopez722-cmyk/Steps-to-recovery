@@ -183,27 +183,33 @@ export function ProfileScreen(): React.ReactElement {
               icon="calendar-check"
               title="Meeting Stats"
               description="Track attendance and view achievements"
-              onPress={() => navigation.navigate('Home', { 
-                screen: 'MeetingStats'
-              })}
+              onPress={() =>
+                navigation.navigate('Home', {
+                  screen: 'MeetingStats',
+                })
+              }
             />
             <Divider />
             <ListItem
               icon="trophy"
               title="Achievements"
               description="View your recovery milestones"
-              onPress={() => navigation.navigate('Home', {
-                screen: 'Achievements'
-              })}
+              onPress={() =>
+                navigation.navigate('Home', {
+                  screen: 'Achievements',
+                })
+              }
             />
             <Divider />
             <ListItem
               icon="shield-account"
               title="Trigger Protection"
               description="Manage risky contacts and close calls"
-              onPress={() => navigation.navigate('Home', {
-                screen: 'DangerZone'
-              })}
+              onPress={() =>
+                navigation.navigate('Home', {
+                  screen: 'DangerZone',
+                })
+              }
               iconColor={theme.colors.warning}
             />
             <Divider />

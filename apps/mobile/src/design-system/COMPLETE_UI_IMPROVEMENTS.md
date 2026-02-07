@@ -10,100 +10,100 @@ The Steps to Recovery app has been transformed into a **2025 premium mobile expe
 
 ### Core Modern Components
 
-| Component | Purpose | Key Features |
-|-----------|---------|--------------|
-| **GlassCard** | Glassmorphism container | Blur intensities, glow effects, press animations |
-| **GradientButton** | Premium buttons | Gradients, haptics, spring animations |
-| **GlassListItem** | Glass list rows | Icons, subtitles, right elements |
-| **Skeleton** | Loading states | Shimmer, preset layouts |
-| **BottomSheet** | Modal actions | Swipe to dismiss, backdrop blur |
-| **ToastProvider** | Notifications | Auto-dismiss, actions, queue |
-| **ConfettiCelebration** | Success animations | Physics-based particles |
-| **MilestoneCelebration** | Achievement modal | Confetti + glass card |
+| Component                | Purpose                 | Key Features                                     |
+| ------------------------ | ----------------------- | ------------------------------------------------ |
+| **GlassCard**            | Glassmorphism container | Blur intensities, glow effects, press animations |
+| **GradientButton**       | Premium buttons         | Gradients, haptics, spring animations            |
+| **GlassListItem**        | Glass list rows         | Icons, subtitles, right elements                 |
+| **Skeleton**             | Loading states          | Shimmer, preset layouts                          |
+| **BottomSheet**          | Modal actions           | Swipe to dismiss, backdrop blur                  |
+| **ToastProvider**        | Notifications           | Auto-dismiss, actions, queue                     |
+| **ConfettiCelebration**  | Success animations      | Physics-based particles                          |
+| **MilestoneCelebration** | Achievement modal       | Confetti + glass card                            |
 
 ### Micro-Interactions
 
-| Component | Animation |
-|-----------|-----------|
-| **AnimatedCheckbox** | Spring scale + fill |
-| **AnimatedToggle** | Smooth thumb slide |
-| **AnimatedRadio** | Scale in dot |
-| **SuccessCheckmark** | Draw animation |
-| **AnimatedCounter** | Number counting |
-| **FavoriteButton** | Heart bounce |
-| **BouncingBadge** | Scale pulse on change |
+| Component            | Animation             |
+| -------------------- | --------------------- |
+| **AnimatedCheckbox** | Spring scale + fill   |
+| **AnimatedToggle**   | Smooth thumb slide    |
+| **AnimatedRadio**    | Scale in dot          |
+| **SuccessCheckmark** | Draw animation        |
+| **AnimatedCounter**  | Number counting       |
+| **FavoriteButton**   | Heart bounce          |
+| **BouncingBadge**    | Scale pulse on change |
 
 ### Media & Images
 
-| Component | Features |
-|-----------|----------|
-| **AsyncImage** | Blur hash placeholder, fade in |
-| **Avatar** | Initials fallback, gradient gen |
-| **ZoomableImage** | Pinch to zoom, pan |
+| Component         | Features                        |
+| ----------------- | ------------------------------- |
+| **AsyncImage**    | Blur hash placeholder, fade in  |
+| **Avatar**        | Initials fallback, gradient gen |
+| **ZoomableImage** | Pinch to zoom, pan              |
 
 ### Search Experience
 
-| Component | Purpose |
-|-----------|---------|
-| **SearchExperience** | Search bar + suggestions |
-| **FilterChip** | Toggleable filter chips |
-| **SearchResultsHeader** | Results summary |
-| **HighlightedText** | Search term highlight |
+| Component               | Purpose                  |
+| ----------------------- | ------------------------ |
+| **SearchExperience**    | Search bar + suggestions |
+| **FilterChip**          | Toggleable filter chips  |
+| **SearchResultsHeader** | Results summary          |
+| **HighlightedText**     | Search term highlight    |
 
 ### Parallax Effects
 
-| Component | Effect |
-|-----------|--------|
-| **ParallaxHeader** | Collapsing header |
-| **ParallaxScrollView** | Full parallax page |
-| **StickyHeader** | Sticky section headers |
+| Component              | Effect                 |
+| ---------------------- | ---------------------- |
+| **ParallaxHeader**     | Collapsing header      |
+| **ParallaxScrollView** | Full parallax page     |
+| **StickyHeader**       | Sticky section headers |
 
 ### Theme & Accessibility
 
-| Component | Purpose |
-|-----------|---------|
-| **ThemeToggle** | Light/dark/system switch |
-| **AnimatedThemeProvider** | Smooth theme transitions |
-| **ScreenReaderText** | A11y-only content |
-| **AccessibleButton** | Proper labels/hints |
-| **AccessibleField** | Form field labels |
-| **LiveRegion** | Screen reader announcements |
+| Component                 | Purpose                     |
+| ------------------------- | --------------------------- |
+| **ThemeToggle**           | Light/dark/system switch    |
+| **AnimatedThemeProvider** | Smooth theme transitions    |
+| **ScreenReaderText**      | A11y-only content           |
+| **AccessibleButton**      | Proper labels/hints         |
+| **AccessibleField**       | Form field labels           |
+| **LiveRegion**            | Screen reader announcements |
 
 ---
 
 ## 📱 Modernized Screens (7)
 
-| Screen | Key Features |
-|--------|--------------|
-| **HomeScreenModern** | Glass counter, animated stats, quick actions |
-| **LoginScreenModern** | Gradient logo, glass form, biometric prompt |
-| **JournalListScreenModern** | Search, stats, GlassListItem |
-| **JournalEditorScreenModern** | Mood dots, craving slider |
-| **MeetingFinderScreenModern** | Filter modal, type chips |
-| **StepsOverviewScreenModern** | Progress circle, step grid |
-| **ProfileScreenModern** | Avatar gradient, stats, menu |
+| Screen                        | Key Features                                 |
+| ----------------------------- | -------------------------------------------- |
+| **HomeScreenModern**          | Glass counter, animated stats, quick actions |
+| **LoginScreenModern**         | Gradient logo, glass form, biometric prompt  |
+| **JournalListScreenModern**   | Search, stats, GlassListItem                 |
+| **JournalEditorScreenModern** | Mood dots, craving slider                    |
+| **MeetingFinderScreenModern** | Filter modal, type chips                     |
+| **StepsOverviewScreenModern** | Progress circle, step grid                   |
+| **ProfileScreenModern**       | Avatar gradient, stats, menu                 |
 
 ---
 
 ## 🎯 Feature Screens (4)
 
-| Screen | Features |
-|--------|----------|
-| **BiometricPrompt** | Face ID/Touch ID modal |
-| **AppLockScreen** | Lock screen with auth |
-| **DataExportScreen** | Format selection, progress |
+| Screen                      | Features                     |
+| --------------------------- | ---------------------------- |
+| **BiometricPrompt**         | Face ID/Touch ID modal       |
+| **AppLockScreen**           | Lock screen with auth        |
+| **DataExportScreen**        | Format selection, progress   |
 | **NotificationPreferences** | Channel toggles, quiet hours |
-| **OnboardingFlow** | 4-screen parallax intro |
+| **OnboardingFlow**          | 4-screen parallax intro      |
 
 ---
 
 ## 🛠️ Custom Hooks
 
-| Hook | Features |
-|------|----------|
-| **useHaptics** | Light/medium/heavy, patterns |
-| **useToast** | Success/error/warning/info |
-| **useToastHelpers** | Preset toast methods |
+| Hook                | Features                     |
+| ------------------- | ---------------------------- |
+| **useHaptics**      | Light/medium/heavy, patterns |
+| **useToast**        | Success/error/warning/info   |
+| **useToastHelpers** | Preset toast methods         |
 
 ---
 
@@ -124,12 +124,12 @@ function App() {
 
 function MyComponent() {
   const { success, error } = useToastHelpers();
-  
+
   const handleAction = async () => {
     try {
       await doSomething();
       success('Saved successfully!', {
-        action: { label: 'Undo', onPress: handleUndo }
+        action: { label: 'Undo', onPress: handleUndo },
       });
     } catch (e) {
       error('Failed to save');
@@ -145,27 +145,14 @@ import { BottomSheet, ActionSheetItem } from './design-system';
 
 function MyScreen() {
   const [showSheet, setShowSheet] = useState(false);
-  
+
   return (
     <>
       <Button onPress={() => setShowSheet(true)}>Open</Button>
-      
-      <BottomSheet
-        isVisible={showSheet}
-        onClose={() => setShowSheet(false)}
-        title="Options"
-      >
-        <ActionSheetItem
-          icon="edit"
-          title="Edit"
-          onPress={() => {}}
-        />
-        <ActionSheetItem
-          icon="delete"
-          title="Delete"
-          destructive
-          onPress={() => {}}
-        />
+
+      <BottomSheet isVisible={showSheet} onClose={() => setShowSheet(false)} title="Options">
+        <ActionSheetItem icon="edit" title="Edit" onPress={() => {}} />
+        <ActionSheetItem icon="delete" title="Delete" destructive onPress={() => {}} />
       </BottomSheet>
     </>
   );
@@ -179,11 +166,11 @@ import { ConfettiCelebration, MilestoneCelebration } from './design-system';
 
 function AchievementScreen() {
   const [showConfetti, setShowConfetti] = useState(false);
-  
+
   return (
     <>
       <Button onPress={() => setShowConfetti(true)}>Celebrate</Button>
-      
+
       <ConfettiCelebration
         isActive={showConfetti}
         onComplete={() => setShowConfetti(false)}
@@ -202,7 +189,7 @@ import { SearchExperience, FilterChip } from './design-system';
 function SearchScreen() {
   const [query, setQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
-  
+
   return (
     <SearchExperience
       placeholder="Search entries..."
@@ -228,17 +215,13 @@ function SearchScreen() {
 ### 5. Micro-Interactions
 
 ```tsx
-import { 
-  AnimatedCheckbox, 
-  AnimatedToggle, 
-  FavoriteButton 
-} from './design-system';
+import { AnimatedCheckbox, AnimatedToggle, FavoriteButton } from './design-system';
 
 function SettingsScreen() {
   const [checked, setChecked] = useState(false);
   const [enabled, setEnabled] = useState(true);
   const [favorite, setFavorite] = useState(false);
-  
+
   return (
     <>
       <AnimatedCheckbox
@@ -246,17 +229,10 @@ function SettingsScreen() {
         onToggle={() => setChecked(!checked)}
         label="Enable notifications"
       />
-      
-      <AnimatedToggle
-        value={enabled}
-        onValueChange={setEnabled}
-        label="Dark mode"
-      />
-      
-      <FavoriteButton
-        isFavorite={favorite}
-        onToggle={() => setFavorite(!favorite)}
-      />
+
+      <AnimatedToggle value={enabled} onValueChange={setEnabled} label="Dark mode" />
+
+      <FavoriteButton isFavorite={favorite} onToggle={() => setFavorite(!favorite)} />
     </>
   );
 }
@@ -275,12 +251,8 @@ function ProfileScreen() {
         blurHash="LEHV6nWB2yk8pyo0adR*.7kCMdnj"
         style={{ width: 200, height: 200 }}
       />
-      
-      <Avatar
-        source="https://example.com/avatar.jpg"
-        name="John Doe"
-        size={64}
-      />
+
+      <Avatar source="https://example.com/avatar.jpg" name="John Doe" size={64} />
     </>
   );
 }
@@ -291,40 +263,40 @@ function ProfileScreen() {
 ## 🎨 Theme Tokens
 
 ```tsx
-import { 
-  darkAccent, 
-  gradients, 
+import {
+  darkAccent,
+  gradients,
   modernShadows,
   radius,
   spacing,
-  typography 
+  typography,
 } from './design-system/tokens/modern';
 
 // Colors
-darkAccent.primary     // #818CF8
-darkAccent.success     // #34D399
-darkAccent.error       // #F87171
-darkAccent.warning     // #FBBF24
+darkAccent.primary; // #818CF8
+darkAccent.success; // #34D399
+darkAccent.error; // #F87171
+darkAccent.warning; // #FBBF24
 
 // Gradients
-gradients.primary      // Indigo to purple
-gradients.success      // Emerald
-gradients.aurora       // Blue to pink
-gradients.ocean        // Cyan to indigo
-gradients.sunset       // Orange to pink
+gradients.primary; // Indigo to purple
+gradients.success; // Emerald
+gradients.aurora; // Blue to pink
+gradients.ocean; // Cyan to indigo
+gradients.sunset; // Orange to pink
 
 // Spacing (8px grid)
-spacing[1]  // 8px
-spacing[2]  // 16px
-spacing[3]  // 24px
-spacing[4]  // 32px
+spacing[1]; // 8px
+spacing[2]; // 16px
+spacing[3]; // 24px
+spacing[4]; // 32px
 
 // Typography
-typography.h1         // 34px bold
-typography.h2         // 28px bold
-typography.h3         // 22px semibold
-typography.body       // 15px regular
-typography.caption    // 12px medium
+typography.h1; // 34px bold
+typography.h2; // 28px bold
+typography.h3; // 22px semibold
+typography.body; // 15px regular
+typography.caption; // 12px medium
 ```
 
 ---
@@ -332,6 +304,7 @@ typography.caption    // 12px medium
 ## ♿ Accessibility Features
 
 ### Screen Reader Support
+
 - All buttons have labels and hints
 - Form fields have proper labels
 - Live regions for dynamic content
@@ -339,12 +312,14 @@ typography.caption    // 12px medium
 - Progress announcements
 
 ### Focus Management
+
 - Visible focus indicators
 - Skip links for navigation
 - Focus trapping in modals
 - Logical tab order
 
 ### Color & Contrast
+
 - WCAG 2.1 AA compliant
 - High contrast text
 - Color not sole indicator
@@ -436,7 +411,7 @@ export default function App() {
 // In navigator
 import { HomeScreenModern } from './features/home/screens/HomeScreenModern';
 
-<Stack.Screen name="Home" component={HomeScreenModern} />
+<Stack.Screen name="Home" component={HomeScreenModern} />;
 ```
 
 ### 3. Show Onboarding (First Launch)
@@ -446,11 +421,11 @@ import { OnboardingFlow } from './features/onboarding/OnboardingFlow';
 
 function App() {
   const [hasOnboarded, setHasOnboarded] = useState(false);
-  
+
   if (!hasOnboarded) {
     return <OnboardingFlow onComplete={() => setHasOnboarded(true)} />;
   }
-  
+
   return <MainApp />;
 }
 ```

@@ -1,6 +1,6 @@
 /**
  * Before You Use - Crisis Checkpoint System
- * 
+ *
  * Life-saving intervention flow when user is considering using.
  * Multi-stage checkpoint with sponsor quick-dial, journaling,
  * craving tracking, and delay tactics.
@@ -19,24 +19,24 @@ export interface CrisisCheckpoint {
   started_at: string;
   completed_at?: string;
   outcome: 'resisted' | 'used' | 'abandoned';
-  
+
   // Stage 1: Initial acknowledgment
   craving_intensity: number; // 1-10
   trigger_description?: string;
-  
+
   // Stage 2: Delay tactics
   waited_10_minutes: boolean;
   called_sponsor: boolean;
   texted_sponsor: boolean;
-  
+
   // Stage 3: Reflection
   journal_entry?: string;
   emotions_identified?: string[];
-  
+
   // Stage 4: Outcome
   final_craving_intensity?: number;
   hours_resisted?: number;
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -59,7 +59,7 @@ export interface CrisisStats {
  */
 export async function startCrisisCheckpoint(
   userId: string,
-  cravingIntensity: number
+  cravingIntensity: number,
 ): Promise<{ success: boolean; checkpointId?: string; error?: string }> {
   try {
     const { data, error } = await supabase
@@ -97,7 +97,7 @@ export async function startCrisisCheckpoint(
 export async function updateTriggerDescription(
   checkpointId: string,
   userId: string,
-  triggerDescription: string
+  triggerDescription: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
@@ -126,7 +126,7 @@ export async function updateTriggerDescription(
  */
 export async function markWaitedTenMinutes(
   checkpointId: string,
-  userId: string
+  userId: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
@@ -156,12 +156,10 @@ export async function markWaitedTenMinutes(
 export async function markSponsorContact(
   checkpointId: string,
   userId: string,
-  actionType: 'call' | 'text'
+  actionType: 'call' | 'text',
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const updateData = actionType === 'call'
-      ? { called_sponsor: true }
-      : { texted_sponsor: true };
+    const updateData = actionType === 'call' ? { called_sponsor: true } : { texted_sponsor: true };
 
     const { error } = await supabase
       .from('crisis_checkpoints')
@@ -191,7 +189,7 @@ export async function saveReflection(
   checkpointId: string,
   userId: string,
   journalEntry: string,
-  emotions: string[]
+  emotions: string[],
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
@@ -223,12 +221,12 @@ export async function completeCrisisCheckpoint(
   checkpointId: string,
   userId: string,
   outcome: 'resisted' | 'used',
-  finalCravingIntensity: number
+  finalCravingIntensity: number,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const completedAt = new Date();
     const startedAt = await getCheckpointStartTime(checkpointId, userId);
-    
+
     let hoursResisted = 0;
     if (startedAt) {
       hoursResisted = (completedAt.getTime() - new Date(startedAt).getTime()) / (1000 * 60 * 60);
@@ -251,13 +249,13 @@ export async function completeCrisisCheckpoint(
       return { success: false, error: error.message };
     }
 
-    logger.info('Crisis checkpoint: Completed', { 
-      userId, 
-      checkpointId, 
+    logger.info('Crisis checkpoint: Completed', {
+      userId,
+      checkpointId,
       outcome,
-      hoursResisted 
+      hoursResisted,
     });
-    
+
     return { success: true };
   } catch (error) {
     logger.error('Crisis checkpoint: Complete error', { error });
@@ -274,7 +272,7 @@ export async function completeCrisisCheckpoint(
  */
 async function getCheckpointStartTime(
   checkpointId: string,
-  userId: string
+  userId: string,
 ): Promise<string | null> {
   try {
     const { data, error } = await supabase
@@ -297,9 +295,7 @@ async function getCheckpointStartTime(
 /**
  * Get active checkpoint for user
  */
-export async function getActiveCheckpoint(
-  userId: string
-): Promise<CrisisCheckpoint | null> {
+export async function getActiveCheckpoint(userId: string): Promise<CrisisCheckpoint | null> {
   try {
     const { data, error } = await supabase
       .from('crisis_checkpoints')
@@ -323,9 +319,7 @@ export async function getActiveCheckpoint(
 /**
  * Get crisis statistics
  */
-export async function getCrisisStats(
-  userId: string
-): Promise<CrisisStats> {
+export async function getCrisisStats(userId: string): Promise<CrisisStats> {
   try {
     const { data, error } = await supabase
       .from('crisis_checkpoints')
@@ -346,21 +340,20 @@ export async function getCrisisStats(
 
     const checkpoints = data as CrisisCheckpoint[];
     const total = checkpoints.length;
-    const resisted = checkpoints.filter(c => c.outcome === 'resisted').length;
-    const used = checkpoints.filter(c => c.outcome === 'used').length;
-    
-    const avgIntensity = total > 0
-      ? checkpoints.reduce((sum, c) => sum + c.craving_intensity, 0) / total
-      : 0;
+    const resisted = checkpoints.filter((c) => c.outcome === 'resisted').length;
+    const used = checkpoints.filter((c) => c.outcome === 'used').length;
+
+    const avgIntensity =
+      total > 0 ? checkpoints.reduce((sum, c) => sum + c.craving_intensity, 0) / total : 0;
 
     // Get most common triggers
     const triggerCounts: Record<string, number> = {};
-    checkpoints.forEach(c => {
+    checkpoints.forEach((c) => {
       if (c.trigger_description) {
         triggerCounts[c.trigger_description] = (triggerCounts[c.trigger_description] || 0) + 1;
       }
     });
-    
+
     const mostCommon = Object.entries(triggerCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)

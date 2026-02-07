@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../design-system';
 import { HomeScreen } from '../features/home/screens/HomeScreen';
 import { JournalListScreen } from '../features/journal/screens/JournalListScreen';
 import { JournalEditorScreen } from '../features/journal/screens/JournalEditorScreen';
@@ -30,7 +29,7 @@ import { DailyReadingScreen } from '../features/readings/screens';
 import { ProgressDashboardScreen } from '../features/progress/screens';
 import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen';
 import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
-import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
+import BeforeYouUseScreen from '../features/crisis/screens/BeforeYouUseScreen';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -47,12 +46,36 @@ const StepsStack = createNativeStackNavigator<StepsStackParamList>();
 const MeetingsStack = createNativeStackNavigator<MeetingsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
+// Serene Olive theme colors
+const themeColors = {
+  background: '#2E3E2C',        // Deep olive
+  surface: 'rgba(255, 255, 255, 0.08)',
+  accent: '#E8E0D0',            // Warm cream
+  text: '#FFFFFF',
+  textMuted: 'rgba(255, 255, 255, 0.5)',
+  border: 'rgba(255, 255, 255, 0.1)',
+};
+
+// Dark header style for all stacks
+const darkHeaderOptions = {
+  headerStyle: {
+    backgroundColor: themeColors.background,
+  },
+  headerTintColor: themeColors.text,
+  headerTitleStyle: {
+    fontWeight: '600' as const,
+    fontSize: 17,
+  },
+  headerShadowVisible: false,
+  headerBackTitleVisible: false,
+};
+
 function HomeStackNavigator(): React.ReactElement {
   const { user } = useAuth();
   const userId = user?.id || '';
 
   return (
-    <HomeStack.Navigator>
+    <HomeStack.Navigator screenOptions={darkHeaderOptions}>
       <HomeStack.Screen name="HomeMain" options={{ headerShown: false }}>
         {() => <HomeScreen userId={userId} />}
       </HomeStack.Screen>
@@ -103,7 +126,7 @@ function HomeStackNavigator(): React.ReactElement {
       />
       <HomeStack.Screen
         name="SafeDialIntervention"
-        options={{ 
+        options={{
           title: 'Stop',
           headerShown: false,
           presentation: 'fullScreenModal',
@@ -115,7 +138,7 @@ function HomeStackNavigator(): React.ReactElement {
           const navigation = useNavigation();
           const { user } = useAuth();
           const params = route.params as { contactName: string; phoneNumber: string };
-          
+
           return (
             <SafeDialInterventionScreen
               riskyContact={{
@@ -135,7 +158,7 @@ function HomeStackNavigator(): React.ReactElement {
       </HomeStack.Screen>
       <HomeStack.Screen
         name="BeforeYouUse"
-        options={{ 
+        options={{
           title: 'Before You Use',
           headerShown: false,
           presentation: 'fullScreenModal',
@@ -153,7 +176,7 @@ function JournalStackNavigator(): React.ReactElement {
   const userId = user?.id || '';
 
   return (
-    <JournalStack.Navigator>
+    <JournalStack.Navigator screenOptions={darkHeaderOptions}>
       <JournalStack.Screen name="JournalList" options={{ title: 'Journal' }}>
         {() => <JournalListScreen userId={userId} />}
       </JournalStack.Screen>
@@ -172,7 +195,7 @@ function StepsStackNavigator(): React.ReactElement {
   const userId = user?.id || '';
 
   return (
-    <StepsStack.Navigator>
+    <StepsStack.Navigator screenOptions={darkHeaderOptions}>
       <StepsStack.Screen name="StepsOverview" options={{ title: '12 Steps' }}>
         {() => <StepsOverviewScreen userId={userId} />}
       </StepsStack.Screen>
@@ -198,7 +221,7 @@ function StepsStackNavigator(): React.ReactElement {
 
 function MeetingsStackNavigator(): React.ReactElement {
   return (
-    <MeetingsStack.Navigator>
+    <MeetingsStack.Navigator screenOptions={darkHeaderOptions}>
       <MeetingsStack.Screen
         name="MeetingFinder"
         component={MeetingFinderScreen}
@@ -220,7 +243,7 @@ function MeetingsStackNavigator(): React.ReactElement {
 
 function ProfileStackNavigator(): React.ReactElement {
   return (
-    <ProfileStack.Navigator>
+    <ProfileStack.Navigator screenOptions={darkHeaderOptions}>
       <ProfileStack.Screen
         name="ProfileHome"
         component={ProfileScreen}
@@ -251,20 +274,21 @@ function ProfileStackNavigator(): React.ReactElement {
 }
 
 export function MainNavigator(): React.ReactElement {
-  const theme = useTheme();
-
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.textSecondary,
-        tabBarStyle: [
-          {
-            backgroundColor: theme.colors.surface,
-            borderTopColor: theme.colors.border,
-          },
-        ],
+        tabBarActiveTintColor: themeColors.accent,
+        tabBarInactiveTintColor: themeColors.textMuted,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: themeColors.background,
+          borderTopColor: themeColors.border,
+          borderTopWidth: 1,
+          paddingTop: 12,
+          paddingBottom: 8,
+          height: 70,
+        },
       }}
     >
       <Tab.Screen

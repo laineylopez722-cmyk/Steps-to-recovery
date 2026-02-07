@@ -3,10 +3,11 @@
  * Displays NA keytags in a visual grid
  */
 
-import React, { memo } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { LegacyCard as Card } from '../ui';
+import { memo } from 'react';
+import { View, Text, TouchableOpacity, type ViewStyle } from 'react-native';
+import { Card } from '../../design-system/components';
 import type { KeytagWithStatus } from '@recovery/shared';
+import type { ReactElement } from 'react';
 
 interface KeytagWallProps {
   keytags: KeytagWithStatus[];
@@ -18,21 +19,20 @@ export const KeytagWall = memo(function KeytagWall({
   keytags,
   onKeytagPress,
   className = '',
-}: KeytagWallProps) {
+}: KeytagWallProps): ReactElement {
   const earnedCount = keytags.filter((k) => k.isEarned).length;
 
   return (
-    <Card variant="default" className={className}>
-      <View className="flex-row justify-between items-center mb-4">
-        <Text className="text-lg font-semibold text-surface-900 dark:text-surface-100">
-          Keytags
-        </Text>
-        <Text className="text-sm text-surface-500">
+    <Card style={className as ViewStyle}>
+      <View>
+        <Text>Keytags</Text>
+      </View>
+      <View>
+        <Text>
           {earnedCount} of {keytags.length}
         </Text>
       </View>
-
-      <View className="flex-row flex-wrap justify-center gap-3">
+      <View>
         {keytags.map((keytag) => (
           <KeytagItem key={keytag.id} keytag={keytag} onPress={() => onKeytagPress?.(keytag)} />
         ))}
@@ -51,7 +51,7 @@ export const KeytagItem = memo(function KeytagItem({
   keytag,
   onPress,
   size = 'medium',
-}: KeytagItemProps) {
+}: KeytagItemProps): ReactElement {
   const { hexColor, title, days, isEarned, progress } = keytag;
 
   const sizeClasses = {
@@ -130,37 +130,25 @@ export const FeaturedKeytag = memo(function FeaturedKeytag({
   current: KeytagWithStatus | null;
   next: KeytagWithStatus | null;
   onPress?: () => void;
-}) {
-  if (!current) return null;
+}): ReactElement | null {
+  if (!current) return null as unknown as ReactElement;
 
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <Card variant="elevated" className="items-center py-4">
-        <Text className="text-sm text-surface-500 mb-2">Current Keytag</Text>
-
+      <Card style={{ alignItems: 'center', paddingVertical: 4 } as ViewStyle}>
+        <Text>Current Keytag</Text>
         <KeytagItem keytag={current} size="large" />
-
-        {next && (
-          <View className="mt-4 items-center">
-            <Text className="text-xs text-surface-400">
-              Next: {next.title} in {next.daysUntil} days
-            </Text>
-            <View className="w-32 h-1 bg-surface-200 dark:bg-surface-700 rounded-full mt-2 overflow-hidden">
-              <View
-                className="h-full bg-secondary-500 rounded-full"
-                style={{ width: next.progress ? `${next.progress}%` : 0 }}
-              />
-            </View>
-          </View>
-        )}
+        <Text>
+          Next: {next?.title} in {next?.daysUntil} days
+        </Text>
       </Card>
     </TouchableOpacity>
   );
 });
 
-function formatDays(days: number): string {
+export const formatDays = (days: number): string => {
   if (days >= 730) return `${Math.floor(days / 365)}Y`;
   if (days >= 365) return '1Y';
   if (days >= 30) return `${Math.floor(days / 30)}M`;
   return `${days}`;
-}
+};

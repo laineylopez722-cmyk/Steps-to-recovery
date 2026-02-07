@@ -32,7 +32,7 @@ export function SponsorshipsList({
 }: SponsershipsListProps): React.ReactElement {
   const formatLastContact = (dateString?: string) => {
     if (!dateString) return 'No recent contact';
-    
+
     const date = new Date(dateString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();

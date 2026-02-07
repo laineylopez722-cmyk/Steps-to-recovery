@@ -21,6 +21,7 @@ node scaffold.js GratitudeList
 This generates **9 files** in under 1 second with all boilerplate wired up.
 
 This generates:
+
 - Database migration (SQLite + Supabase)
 - TypeScript types
 - Encrypted storage hooks (useFeature.ts)
@@ -155,23 +156,23 @@ const FEATURE_KEY = 'gratitude-items';
 
 export function useGratitudeItems() {
   const { db, userId } = useDatabase();
-  
+
   return useQuery({
     queryKey: [FEATURE_KEY],
     queryFn: async (): Promise<GratitudeItem[]> => {
       if (!db) throw new Error('Database not initialized');
-      
+
       const items = await db.getAllAsync<GratitudeItem>(
         'SELECT * FROM gratitude_items WHERE user_id = ? ORDER BY created_at DESC',
-        userId
+        userId,
       );
-      
+
       // Decrypt content for display
       return Promise.all(
         items.map(async (item) => ({
           ...item,
           content: await decryptContent(item.encrypted_content),
-        }))
+        })),
       );
     },
     enabled: !!db && !!userId,
@@ -182,21 +183,26 @@ export function useCreateGratitude() {
   const { db, userId } = useDatabase();
   const queryClient = useQueryClient();
   const { enqueueSync } = useSyncQueue();
-  
+
   return useMutation({
     mutationFn: async (input: CreateGratitudeInput): Promise<GratitudeItem> => {
       if (!db) throw new Error('Database not initialized');
-      
+
       const id = generateUUID();
       const now = Date.now();
       const encrypted = await encryptContent(input.content);
-      
+
       await db.runAsync(
         `INSERT INTO gratitude_items (id, user_id, encrypted_content, category, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        id, userId, encrypted, input.category, now, now
+        id,
+        userId,
+        encrypted,
+        input.category,
+        now,
+        now,
       );
-      
+
       const item: GratitudeItem = {
         id,
         user_id: userId!,
@@ -205,10 +211,10 @@ export function useCreateGratitude() {
         created_at: now.toString(),
         updated_at: now.toString(),
       };
-      
+
       // Queue for sync
       await enqueueSync('gratitude_items', id, 'INSERT', item);
-      
+
       return item;
     },
     onSuccess: () => {
@@ -221,15 +227,15 @@ export function useUpdateGratitude() {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
   const { enqueueSync } = useSyncQueue();
-  
+
   return useMutation({
     mutationFn: async (input: UpdateGratitudeInput): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
-      
+
       const now = Date.now();
       const updates: string[] = [];
       const values: (string | number)[] = [];
-      
+
       if (input.content) {
         updates.push('encrypted_content = ?');
         values.push(await encryptContent(input.content));
@@ -238,16 +244,13 @@ export function useUpdateGratitude() {
         updates.push('category = ?');
         values.push(input.category);
       }
-      
+
       updates.push('updated_at = ?');
       values.push(now);
       values.push(input.id);
-      
-      await db.runAsync(
-        `UPDATE gratitude_items SET ${updates.join(', ')} WHERE id = ?`,
-        ...values
-      );
-      
+
+      await db.runAsync(`UPDATE gratitude_items SET ${updates.join(', ')} WHERE id = ?`, ...values);
+
       // Queue for sync
       await enqueueSync('gratitude_items', input.id, 'UPDATE', { id: input.id });
     },
@@ -261,13 +264,13 @@ export function useDeleteGratitude() {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
   const { enqueueSync } = useSyncQueue();
-  
+
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
-      
+
       await db.runAsync('DELETE FROM gratitude_items WHERE id = ?', id);
-      
+
       // Queue for sync
       await enqueueSync('gratitude_items', id, 'DELETE');
     },
@@ -385,26 +388,31 @@ See [references/example-output.md](references/example-output.md) for full genera
 
 ## Common Feature Patterns
 
-| Feature Type | Command | Use Case |
-|--------------|---------|----------|
-| Simple List | `node scaffold.js GratitudeList` | Gratitude, affirmations, quotes |
-| Journal Entry | `node scaffold.js DailyInventory` | Reflections, step work |
-| Checklist | `node scaffold.js StepOneTasks` | Step work tasks, goals |
-| Relationships | `node scaffold.js SponsorContact` | People, sponsors, contacts |
+| Feature Type  | Command                           | Use Case                        |
+| ------------- | --------------------------------- | ------------------------------- |
+| Simple List   | `node scaffold.js GratitudeList`  | Gratitude, affirmations, quotes |
+| Journal Entry | `node scaffold.js DailyInventory` | Reflections, step work          |
+| Checklist     | `node scaffold.js StepOneTasks`   | Step work tasks, goals          |
+| Relationships | `node scaffold.js SponsorContact` | People, sponsors, contacts      |
 
 ## Troubleshooting
 
 ### Migration number collision
+
 Script auto-detects next migration number. If you have conflicts, manually rename files.
 
 ### Missing imports
+
 Add to `tsconfig.json` paths if needed:
+
 ```json
 "@/features/*": ["./src/features/*"]
 ```
 
 ### Supabase deploy fails
+
 Ensure you're logged in:
+
 ```bash
 npx supabase login
 npx supabase link --project-ref tbiunmmvfbakwlzykpwq

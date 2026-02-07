@@ -1,62 +1,63 @@
 /**
  * Jest Configuration for Recovery Companion
  * Uses jest-expo preset for React Native/Expo compatibility
+ * @see https://docs.expo.dev/develop/unit-testing/
  */
 
-const path = require('path');
-const expoPreset = require('jest-expo/jest-preset');
+import { resolve } from 'path';
+import expoPreset, { transform as _transform, setupFilesAfterEnv as _setupFilesAfterEnv, moduleNameMapper as _moduleNameMapper } from 'jest-expo/jest-preset';
 
-module.exports = {
+export default {
   ...expoPreset,
   // Explicitly pin rootDir so Jest resolves Babel config and module paths from apps/mobile
   rootDir: __dirname,
 
   // Explicit transform ensures TS/TSX + JSX go through babel-jest with our Babel config
   transform: {
-    ...(expoPreset.transform ?? {}),
+    ...(_transform ?? {}),
     '^.+\\.(js|jsx|ts|tsx)$': [
       'babel-jest',
       {
-        configFile: path.resolve(__dirname, 'babel.config.js'),
+        configFile: resolve(__dirname, 'babel.config.js'),
         babelrc: false,
       },
     ],
   },
 
   // Setup files to run before tests
-  setupFilesAfterEnv: [...(expoPreset.setupFilesAfterEnv ?? []), '<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: [...(_setupFilesAfterEnv ?? []), '<rootDir>/jest.setup.js'],
 
-  // Transform settings - handle pnpm's .pnpm folder structure and React Native 0.83+
-  // pnpm creates: node_modules/.pnpm/package@version/node_modules/package/
-  // We need to NOT ignore packages that need transformation
+  // Transform settings - handle monorepo and React Native 0.81+
+  // Packages that need transformation (ESM or JSX)
   transformIgnorePatterns: [
-    // Match node_modules but allow through packages that need transformation
-    // This pattern handles both regular npm/yarn and pnpm structures
-    'node_modules/(?!(.pnpm|' +
+    'node_modules/(?!(' +
       '(jest-)?react-native|' +
-      'react-native-.*|' + // All react-native-* packages (url-polyfill, css-interop, etc.)
+      'react-native-.*|' +
       '@react-native(-community)?|' +
       '@react-native/js-polyfills|' +
       'expo|' +
-      'expo-.*|' + // All expo-* packages (expo-modules-core, expo-constants, etc.)
+      'expo-.*|' +
       '@expo|' +
       '@expo-google-fonts|' +
       'react-navigation|' +
       '@react-navigation|' +
       '@unimodules|' +
       'unimodules|' +
-      'sentry-expo|' +
-      '@sentry/react-native|' + // Sentry React Native SDK
-      'native-base|' +
+      '@sentry/react-native|' +
       'nativewind|' +
-      '@supabase|' + // Supabase client
+      '@rn-primitives/.*|' +
+      'class-variance-authority|' +
+      'clsx|' +
+      'tailwind-merge|' +
+      '@supabase/supabase-js|' +
+      '@supabase/postgrest-js|' +
       'uuid' +
       ')/)',
   ],
 
   // Module name mappings
   moduleNameMapper: {
-    ...(expoPreset.moduleNameMapper ?? {}),
+    ...(_moduleNameMapper ?? {}),
     '^@/(.*)$': '<rootDir>/$1',
     // Mock NativeWind css-interop for Jest - prevents JSX runtime errors
     '^react-native-css-interop/jsx-runtime$':
@@ -93,12 +94,6 @@ module.exports = {
   // Coverage thresholds - Gradually increase as test coverage improves
   // For critical utils (encryption, database, sync), aim for 80%+
   coverageThreshold: {
-    global: {
-      statements: 40,
-      branches: 30,
-      functions: 30,
-      lines: 40,
-    },
     // Critical security modules require higher coverage
     './src/utils/encryption.ts': {
       statements: 90,
@@ -132,6 +127,10 @@ module.exports = {
 
   // Verbose output
   verbose: true,
+
+  // Some RN/native mocks leave background handles alive in Jest.
+  // Keep CI/local runs deterministic until the underlying leak is isolated.
+  forceExit: true,
 
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

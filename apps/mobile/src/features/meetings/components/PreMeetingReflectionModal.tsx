@@ -1,20 +1,12 @@
 /**
  * PreMeetingReflectionModal
- * 
+ *
  * Modal shown before attending a meeting.
  * Captures intention, mood, and hopes for the meeting.
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
@@ -55,45 +47,37 @@ export function PreMeetingReflectionModal({
   const [mood, setMood] = useState(3);
   const [hope, setHope] = useState('');
   const [saving, setSaving] = useState(false);
-  
+
   const intentionPrompt = getRandomPrePrompt();
-  
+
   const handleSave = async (): Promise<void> => {
     setSaving(true);
-    
+
     const prompts: PreMeetingPrompts = {
       intention,
       mood,
       hope,
     };
-    
+
     const result = await savePreMeetingReflection(userId, checkinId, prompts);
-    
+
     setSaving(false);
-    
+
     if (result.success) {
       onComplete();
     }
   };
-  
+
   const handleSkip = (): void => {
     onClose();
   };
-  
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <Pressable style={styles.backdropPress} onPress={onClose} />
-        
-        <Animated.View
-          entering={SlideInDown.duration(400)}
-          style={styles.modalContainer}
-        >
+
+        <Animated.View entering={SlideInDown.duration(400)} style={styles.modalContainer}>
           <GlassCard intensity="heavy" style={styles.modalCard}>
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header */}
@@ -102,29 +86,22 @@ export function PreMeetingReflectionModal({
                   <MaterialIcons name="psychology" size={32} color={darkAccent.primary} />
                 </View>
                 <Text style={styles.title}>Before You Go</Text>
-                <Text style={styles.subtitle}>
-                  Set an intention for {meetingName}
-                </Text>
+                <Text style={styles.subtitle}>Set an intention for {meetingName}</Text>
               </View>
-              
+
               {/* Mood */}
               <View style={styles.section}>
                 <Text style={styles.label}>How are you feeling right now?</Text>
                 <View style={styles.moodButtons}>
-                  {[1, 2, 3, 4, 5].map(value => (
+                  {[1, 2, 3, 4, 5].map((value) => (
                     <Pressable
                       key={value}
-                      style={[
-                        styles.moodButton,
-                        mood === value && styles.moodButtonSelected,
-                      ]}
+                      style={[styles.moodButton, mood === value && styles.moodButtonSelected]}
                       onPress={() => setMood(value)}
                       accessibilityLabel={`Mood ${value} out of 5`}
                       accessibilityRole="button"
                     >
-                      <Text style={styles.moodEmoji}>
-                        {getMoodEmoji(value)}
-                      </Text>
+                      <Text style={styles.moodEmoji}>{getMoodEmoji(value)}</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -133,7 +110,7 @@ export function PreMeetingReflectionModal({
                   <Text style={styles.moodLabel}>Great</Text>
                 </View>
               </View>
-              
+
               {/* Intention */}
               <View style={styles.section}>
                 <Text style={styles.label}>{intentionPrompt}</Text>
@@ -148,7 +125,7 @@ export function PreMeetingReflectionModal({
                   accessibilityLabel="Intention for meeting"
                 />
               </View>
-              
+
               {/* Hope */}
               <View style={styles.section}>
                 <Text style={styles.label}>What would make this meeting meaningful?</Text>
@@ -163,7 +140,7 @@ export function PreMeetingReflectionModal({
                   accessibilityLabel="Hope for meeting"
                 />
               </View>
-              
+
               {/* Buttons */}
               <View style={styles.buttons}>
                 <GradientButton
@@ -172,7 +149,7 @@ export function PreMeetingReflectionModal({
                   disabled={saving || !intention.trim()}
                   accessibilityLabel="Save reflection and continue"
                 />
-                
+
                 <Pressable
                   style={styles.skipButton}
                   onPress={handleSkip}

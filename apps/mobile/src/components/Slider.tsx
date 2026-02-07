@@ -37,12 +37,13 @@ export interface AccessibleSliderProps extends SliderProps {
  * ```
  */
 export function Slider({
-  ref: _ref,
   accessibilityLabel,
   accessibilityHint,
   accessibilityUnits,
   ...props
 }: AccessibleSliderProps): React.ReactElement {
+  const NativeSlider = RNSlider as unknown as React.ComponentType<SliderProps>;
+
   // Build accessibility value object for enhanced screen reader support
   const accessibilityValue = accessibilityUnits
     ? {
@@ -54,7 +55,7 @@ export function Slider({
     : undefined;
 
   return (
-    <RNSlider
+    <NativeSlider
       {...props}
       minimumValue={Number(props.minimumValue)}
       maximumValue={Number(props.maximumValue)}

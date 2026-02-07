@@ -14,7 +14,13 @@ import Animated, {
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GradientButton } from '../../design-system/components/GradientButton';
-import { darkAccent, gradients, spacing, typography, radius } from '../../design-system/tokens/modern';
+import {
+  darkAccent,
+  gradients,
+  spacing,
+  typography,
+  radius,
+} from '../../design-system/tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
@@ -53,17 +59,36 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
 ];
 
-function OnboardingPage({ step, index, scrollX }: { step: OnboardingStep; index: number; scrollX: SharedValue<number> }) {
+function OnboardingPage({
+  step,
+  index,
+  scrollX,
+}: {
+  step: OnboardingStep;
+  index: number;
+  scrollX: SharedValue<number>;
+}) {
   const inputRange = [(index - 1) * SCREEN_WIDTH, index * SCREEN_WIDTH, (index + 1) * SCREEN_WIDTH];
 
   const imageStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolate.CLAMP),
-    transform: [{ scale: interpolate(scrollX.value, inputRange, [0.8, 1, 0.8], Extrapolate.CLAMP) }],
+    transform: [
+      { scale: interpolate(scrollX.value, inputRange, [0.8, 1, 0.8], Extrapolate.CLAMP) },
+    ],
   }));
 
   const textStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolate.CLAMP),
-    transform: [{ translateX: interpolate(scrollX.value, inputRange, [SCREEN_WIDTH * 0.3, 0, -SCREEN_WIDTH * 0.3], Extrapolate.CLAMP) }],
+    transform: [
+      {
+        translateX: interpolate(
+          scrollX.value,
+          inputRange,
+          [SCREEN_WIDTH * 0.3, 0, -SCREEN_WIDTH * 0.3],
+          Extrapolate.CLAMP,
+        ),
+      },
+    ],
   }));
 
   return (
@@ -82,7 +107,15 @@ function OnboardingPage({ step, index, scrollX }: { step: OnboardingStep; index:
   );
 }
 
-function PaginationDot({ index, currentIndex, onPress }: { index: number; currentIndex: number; onPress: () => void }) {
+function PaginationDot({
+  index,
+  currentIndex,
+  onPress,
+}: {
+  index: number;
+  currentIndex: number;
+  onPress: () => void;
+}) {
   const isActive = index === currentIndex;
   const scale = useSharedValue(1);
   const width = useSharedValue(isActive ? 24 : 8);
@@ -99,7 +132,11 @@ function PaginationDot({ index, currentIndex, onPress }: { index: number; curren
   }));
 
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={`Go to step ${index + 1}`}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`Go to step ${index + 1}`}
+    >
       <Animated.View style={[styles.paginationDot, style]} />
     </Pressable>
   );
@@ -152,7 +189,12 @@ export function OnboardingFlow(): React.ReactElement {
         <View style={styles.footer}>
           <View style={styles.pagination}>
             {ONBOARDING_STEPS.map((_, index) => (
-              <PaginationDot key={index} index={index} currentIndex={currentIndex.value} onPress={() => handleDotPress(index)} />
+              <PaginationDot
+                key={index}
+                index={index}
+                currentIndex={currentIndex.value}
+                onPress={() => handleDotPress(index)}
+              />
             ))}
           </View>
           <GradientButton
@@ -160,7 +202,11 @@ export function OnboardingFlow(): React.ReactElement {
             variant="primary"
             size="lg"
             fullWidth
-            icon={currentIndex.value === ONBOARDING_STEPS.length - 1 ? undefined : <MaterialIcons name="arrow-forward" size={20} color="#FFF" />}
+            icon={
+              currentIndex.value === ONBOARDING_STEPS.length - 1 ? undefined : (
+                <MaterialIcons name="arrow-forward" size={20} color="#FFF" />
+              )
+            }
             iconPosition="right"
             onPress={handleNext}
           />

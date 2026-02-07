@@ -7,28 +7,35 @@ This feature gamifies meeting attendance with check-ins, streaks, and achievemen
 ## 📁 Files Created
 
 ### Database
+
 - `supabase-migration-meeting-checkins.sql` - Complete database schema with RLS policies, helper functions, and achievement triggers
 
 ### Constants
+
 - `packages/shared/constants/achievements.ts` - Achievement definitions, colors, and motivational messages
 
 ### Services
+
 - `apps/mobile/src/services/meetingCheckInService.ts` - Core business logic for check-ins, streaks, and stats
 
 ### Hooks (React Query)
+
 - `apps/mobile/src/features/meetings/hooks/useMeetingCheckIns.ts` - Check-in queries and mutations
 - `apps/mobile/src/features/meetings/hooks/useAchievements.ts` - Achievement tracking with progress
 - `apps/mobile/src/features/meetings/hooks/use90In90Progress.ts` - 90-in-90 specific logic
 
 ### Components
+
 - `apps/mobile/src/features/meetings/components/CheckInModal.tsx` - Modal for confirming check-ins
 - `apps/mobile/src/features/meetings/components/AchievementUnlockModal.tsx` - Celebration modal when achievements unlock
 
 ### Screens
+
 - `apps/mobile/src/features/meetings/screens/MeetingStatsScreen.tsx` - Dashboard with stats, streaks, and recent check-ins
 - `apps/mobile/src/features/meetings/screens/AchievementsScreen.tsx` - Full achievement gallery with filters
 
 ### Integration
+
 - `MEETING-FINDER-CHECKIN-PATCH.md` - Instructions to add check-in button to existing Meeting Finder screen
 
 ## 🗄️ Database Schema
@@ -36,12 +43,14 @@ This feature gamifies meeting attendance with check-ins, streaks, and achievemen
 ### Tables
 
 **meeting_checkins**
+
 - Stores every meeting check-in
 - Prevents duplicate check-ins (unique constraint: user + meeting + date)
 - Tracks location, notes, and check-in type (manual, geofence, QR)
 - Automatically triggers achievement checks after insert
 
 **achievements**
+
 - Tracks unlocked achievements per user
 - Unique constraint prevents duplicate unlocks
 - Timestamp shows when achievement was earned
@@ -49,15 +58,18 @@ This feature gamifies meeting attendance with check-ins, streaks, and achievemen
 ### Helper Functions
 
 **get_user_meeting_streak(user_uuid)**
+
 - Returns consecutive days with meetings (current streak)
 - Checks backwards from yesterday to find first missing day
 - Used for streak-based achievements
 
 **get_user_total_meetings(user_uuid)**
+
 - Returns count of unique days with meetings
 - Used for total meeting achievements
 
 **get_90_in_90_progress(user_uuid)**
+
 - Returns JSON with complete 90-in-90 status
 - Tracks days completed, days remaining, start date, target date
 - Determines if challenge is complete
@@ -65,6 +77,7 @@ This feature gamifies meeting attendance with check-ins, streaks, and achievemen
 ### Automatic Achievement Unlocking
 
 The `check_achievement_unlocks()` trigger runs after every check-in and automatically unlocks achievements when requirements are met:
+
 - First meeting (1 meeting)
 - Week strong (7-day streak)
 - 30 in 30 (30 meetings in 30 days)
@@ -77,15 +90,15 @@ The `check_achievement_unlocks()` trigger runs after every check-in and automati
 
 ### Defined Achievements
 
-| Key | Title | Description | Requirement | Category |
-|-----|-------|-------------|-------------|----------|
-| `first_meeting` | First Step | Attended your first meeting | 1 | total |
-| `week_strong` | Week Strong | 7 consecutive days with meetings | 7 | streak |
-| `30_in_30` | 30 in 30 | Attended 30 meetings in 30 days | 30 | challenge |
-| `90_in_90` | 90 in 90 | Completed the legendary 90 in 90 challenge! | 90 | challenge |
-| `centurion` | Centurion | Attended 100 total meetings | 100 | total |
-| `year_strong` | Year Strong | 365 consecutive days with meetings | 365 | streak |
-| `marathon` | Marathon | Attended 500 total meetings | 500 | total |
+| Key             | Title       | Description                                 | Requirement | Category  |
+| --------------- | ----------- | ------------------------------------------- | ----------- | --------- |
+| `first_meeting` | First Step  | Attended your first meeting                 | 1           | total     |
+| `week_strong`   | Week Strong | 7 consecutive days with meetings            | 7           | streak    |
+| `30_in_30`      | 30 in 30    | Attended 30 meetings in 30 days             | 30          | challenge |
+| `90_in_90`      | 90 in 90    | Completed the legendary 90 in 90 challenge! | 90          | challenge |
+| `centurion`     | Centurion   | Attended 100 total meetings                 | 100         | total     |
+| `year_strong`   | Year Strong | 365 consecutive days with meetings          | 365         | streak    |
+| `marathon`      | Marathon    | Attended 500 total meetings                 | 500         | total     |
 
 ### Achievement Colors
 
@@ -140,6 +153,7 @@ Each achievement has multiple random motivational messages that display when unl
 ## ♿ Accessibility
 
 Every interactive element has:
+
 - `accessibilityLabel` - What it is
 - `accessibilityRole` - Type of element
 - `accessibilityHint` - What happens when tapped
@@ -150,17 +164,21 @@ Screen readers fully supported throughout.
 ## 🎨 Design Patterns
 
 ### Glass Morphism
+
 All cards use the `GlassCard` component for consistent frosted-glass effect
 
 ### Gradient Buttons
+
 Action buttons use `GradientButton` with haptic feedback
 
 ### Animations
+
 - Entrance animations: `FadeIn`, `FadeInUp`, `SlideInDown`
 - Success animations: `ZoomIn`, scale/rotation springs
 - Progress bars: Smooth width animations
 
 ### Colors
+
 - Dark theme throughout
 - Gradients for category distinction
 - High contrast for accessibility
@@ -168,16 +186,19 @@ Action buttons use `GradientButton` with haptic feedback
 ## 📊 Stats Calculation
 
 ### Current Streak
+
 Calculated by checking backwards from yesterday. Stops at first missing day.
 
 Example:
+
 - Today: ✅ (doesn't count for streak yet)
 - Yesterday: ✅
 - 2 days ago: ✅
 - 3 days ago: ❌
-**Streak = 2**
+  **Streak = 2**
 
 ### 90-in-90 Progress
+
 - **Start date**: Date of first check-in
 - **Target date**: Start date + 89 days
 - **Days completed**: Count of unique days with check-ins within window
@@ -185,11 +206,13 @@ Example:
 - **On track**: Days completed >= days elapsed
 
 ### Longest Streak
+
 Iterates through all check-in dates to find longest consecutive sequence.
 
 ## 🔧 Integration Steps
 
 ### 1. Run Database Migration
+
 ```sql
 -- In Supabase SQL Editor
 -- Paste contents of supabase-migration-meeting-checkins.sql
@@ -197,6 +220,7 @@ Iterates through all check-in dates to find longest consecutive sequence.
 ```
 
 ### 2. Add Navigation Routes
+
 ```typescript
 // In your navigation stack
 <Stack.Screen name="MeetingStats" component={MeetingStatsScreen} />
@@ -204,12 +228,15 @@ Iterates through all check-in dates to find longest consecutive sequence.
 ```
 
 ### 3. Update Meeting Finder
+
 Follow instructions in `MEETING-FINDER-CHECKIN-PATCH.md` to:
+
 - Add check-in button to meeting cards
 - Import required hooks and components
 - Handle check-in flow and achievement modals
 
 ### 4. Test Coverage
+
 Run through the checklist in the main task description (see below).
 
 ## 🧪 Testing Checklist
@@ -231,6 +258,7 @@ Run through the checklist in the main task description (see below).
 ## 📈 Impact
 
 This feature will:
+
 - **Increase meeting attendance** through gamification
 - **Build accountability** with visible streaks
 - **Celebrate progress** with achievements and milestones
@@ -241,17 +269,20 @@ This feature will:
 ## 🎯 Future Enhancements
 
 ### Geofencing (Phase 2)
+
 - Auto-check-in when entering meeting geofence
 - Notification: "Check in to [Meeting Name]?"
 - Requires: `expo-location`, `expo-task-manager`
 
 ### Social Features (Phase 3)
+
 - Share achievements to social media
 - Sponsor can see sponsee's progress
 - Accountability groups
 - Leaderboards (opt-in)
 
 ### Additional Achievements
+
 - "Early Bird" - 10 morning meetings
 - "Night Owl" - 10 evening meetings
 - "Traveler" - Attended meetings in 5+ different locations
@@ -259,11 +290,13 @@ This feature will:
 - "Weekend Warrior" - Attended meetings on all weekend days in a month
 
 ### Meeting Types
+
 - Add QR code scanning for check-ins
 - Meeting hosts can generate QR codes
 - Prevents fake check-ins
 
 ### Analytics
+
 - Track meeting attendance patterns
 - Best time of day for meetings
 - Most attended meeting types
@@ -272,10 +305,13 @@ This feature will:
 ## 📝 Notes for Developers
 
 ### Supabase RPC Calls
+
 The helper functions use `supabase.rpc()` to call PostgreSQL functions. These are defined in the migration file.
 
 ### React Query Cache Invalidation
+
 After check-in, multiple queries are invalidated:
+
 - `meetingCheckIns`
 - `meetingStats`
 - `achievements`
@@ -284,12 +320,15 @@ After check-in, multiple queries are invalidated:
 This ensures UI updates immediately.
 
 ### Achievement Trigger
+
 The database trigger is the source of truth for achievement unlocking. The app just displays what the database unlocked.
 
 ### Error Handling
+
 All service functions return `null` or empty arrays on error. Error logging to console for debugging.
 
 ### Performance
+
 - `FlashList` for efficient meeting list rendering
 - `React Query` for automatic caching and refetching
 - Database indexes on user_id and created_at for fast queries

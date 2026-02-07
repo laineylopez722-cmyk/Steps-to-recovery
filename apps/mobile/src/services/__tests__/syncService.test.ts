@@ -4,14 +4,24 @@ import {
   syncJournalEntry,
   syncStepWork,
   syncDailyCheckIn,
+  syncFavoriteMeeting,
+  syncReadingReflection,
+  syncWeeklyReport,
+  syncSponsorConnection,
+  syncSponsorSharedEntry,
   addToSyncQueue,
+  addDeleteToSyncQueue,
 } from '../syncService';
 import { supabase } from '../../lib/supabase';
 import { logger } from '../../utils/logger';
+import { decryptContent } from '../../utils/encryption';
 
 // Mock dependencies
 jest.mock('../../lib/supabase');
 jest.mock('../../utils/logger');
+jest.mock('../../utils/encryption', () => ({
+  decryptContent: jest.fn(),
+}));
 
 // Mock UUID generation for consistent testing
 jest.mock('crypto', () => ({
@@ -51,6 +61,7 @@ describe('syncService Integration Tests', () => {
       delete: mockSupabaseDelete,
     });
     (supabase.from as jest.Mock) = mockSupabaseFrom;
+    (decryptContent as jest.Mock).mockResolvedValue('5');
   });
 
   describe('addToSyncQueue', () => {
@@ -620,6 +631,358 @@ describe('syncService Integration Tests', () => {
         expect.arrayContaining([expect.any(String), checkInId]),
       );
     });
+
+    it('should map evening craving to challenges and day_rating when decrypt succeeds', async () => {
+      const checkInId = 'checkin-evening-1';
+      const userId = 'user-123';
+      const checkIn = {
+        id: checkInId,
+        user_id: userId,
+        check_in_type: 'evening' as const,
+        check_in_date: '2025-01-02',
+        encrypted_intention: null,
+        encrypted_reflection: 'enc-reflection',
+        encrypted_mood: 'enc-mood',
+        encrypted_craving: 'enc-craving',
+        encrypted_gratitude: 'enc-gratitude',
+        created_at: '2025-01-02T00:00:00Z',
+        updated_at: '2025-01-02T00:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      };
+
+      mockDb.getFirstAsync.mockResolvedValueOnce(checkIn);
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      (decryptContent as jest.Mock).mockResolvedValueOnce('7');
+
+      const result = await syncDailyCheckIn(mockDb, checkInId, userId);
+
+      expect(result.success).toBe(true);
+      expect(mockSupabaseUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          checkin_type: 'evening',
+          notes: 'enc-reflection',
+          challenges_faced: 'enc-craving',
+          day_rating: 4,
+        }),
+        { onConflict: 'id' },
+      );
+    });
+
+    it('should continue syncing evening check-in when craving decrypt fails', async () => {
+      const checkInId = 'checkin-evening-2';
+      const userId = 'user-123';
+      const checkIn = {
+        id: checkInId,
+        user_id: userId,
+        check_in_type: 'evening' as const,
+        check_in_date: '2025-01-03',
+        encrypted_intention: null,
+        encrypted_reflection: 'enc-reflection',
+        encrypted_mood: 'enc-mood',
+        encrypted_craving: 'enc-craving',
+        encrypted_gratitude: null,
+        created_at: '2025-01-03T00:00:00Z',
+        updated_at: '2025-01-03T00:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      };
+
+      mockDb.getFirstAsync.mockResolvedValueOnce(checkIn);
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      (decryptContent as jest.Mock).mockRejectedValueOnce(new Error('decrypt failed'));
+
+      const result = await syncDailyCheckIn(mockDb, checkInId, userId);
+
+      expect(result.success).toBe(true);
+      const upsertArgs = mockSupabaseUpsert.mock.calls[0][0] as Record<string, unknown>;
+      expect(upsertArgs.challenges_faced).toBe('enc-craving');
+      expect(upsertArgs.day_rating).toBeUndefined();
+    });
+  });
+
+  describe('Additional table sync functions', () => {
+    const userId = 'user-123';
+
+    it('should sync favorite meeting and mark as synced', async () => {
+      const favoriteId = 'favorite-1';
+      mockDb.getFirstAsync.mockResolvedValueOnce({
+        id: favoriteId,
+        user_id: userId,
+        meeting_id: 'meeting-42',
+        encrypted_notes: 'enc-notes',
+        notification_enabled: 1,
+        created_at: '2025-01-01T00:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      const result = await syncFavoriteMeeting(mockDb, favoriteId, userId);
+
+      expect(result.success).toBe(true);
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('favorite_meetings');
+      expect(mockSupabaseUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: userId,
+          meeting_id: 'meeting-42',
+          notes: 'enc-notes',
+          notification_enabled: true,
+        }),
+        { onConflict: 'id' },
+      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE favorite_meetings'),
+        expect.arrayContaining([expect.any(String), favoriteId]),
+      );
+    });
+
+    it('should return error when favorite meeting upsert fails', async () => {
+      const favoriteId = 'favorite-2';
+      mockDb.getFirstAsync.mockResolvedValueOnce({
+        id: favoriteId,
+        user_id: userId,
+        meeting_id: 'meeting-42',
+        encrypted_notes: 'enc-notes',
+        notification_enabled: 0,
+        created_at: '2025-01-01T00:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      });
+      mockSupabaseUpsert.mockReturnValueOnce({ error: { message: 'boom' } });
+
+      const result = await syncFavoriteMeeting(mockDb, favoriteId, userId);
+
+      expect(result).toEqual({ success: false, error: 'boom' });
+      expect(mockDb.runAsync).not.toHaveBeenCalled();
+      expect(logger.error).toHaveBeenCalledWith(
+        'Supabase upsert failed for favorite meeting',
+        expect.any(Object),
+      );
+    });
+
+    it('should sync reading reflection and mark as synced', async () => {
+      const reflectionId = 'reflection-1';
+      mockDb.getFirstAsync.mockResolvedValueOnce({
+        id: reflectionId,
+        user_id: userId,
+        reading_id: 'reading-1',
+        reading_date: '2025-01-01',
+        encrypted_reflection: 'enc-reflection',
+        word_count: 123,
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T01:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      const result = await syncReadingReflection(mockDb, reflectionId, userId);
+
+      expect(result.success).toBe(true);
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('reading_reflections');
+      expect(mockSupabaseUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: userId,
+          reading_id: 'reading-1',
+          encrypted_reflection: 'enc-reflection',
+          word_count: 123,
+        }),
+        { onConflict: 'id' },
+      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE reading_reflections'),
+        expect.arrayContaining([expect.any(String), reflectionId]),
+      );
+    });
+
+    it('should return not found for missing reading reflection', async () => {
+      const reflectionId = 'reflection-missing';
+      mockDb.getFirstAsync.mockResolvedValueOnce(null);
+
+      const result = await syncReadingReflection(mockDb, reflectionId, userId);
+
+      expect(result).toEqual({
+        success: false,
+        error: `Reading reflection not found: ${reflectionId}`,
+      });
+      expect(mockSupabaseUpsert).not.toHaveBeenCalled();
+    });
+
+    it('should sync weekly report and mark as synced', async () => {
+      const reportId = 'report-1';
+      mockDb.getFirstAsync.mockResolvedValueOnce({
+        id: reportId,
+        user_id: userId,
+        week_start: '2025-01-01',
+        week_end: '2025-01-07',
+        report_json: '{"summary":"ok"}',
+        created_at: '2025-01-08T00:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      const result = await syncWeeklyReport(mockDb, reportId, userId);
+
+      expect(result.success).toBe(true);
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('weekly_reports');
+      expect(mockSupabaseUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: userId,
+          week_start: '2025-01-01',
+          week_end: '2025-01-07',
+          report_json: '{"summary":"ok"}',
+        }),
+        { onConflict: 'id' },
+      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE weekly_reports'),
+        expect.arrayContaining([expect.any(String), reportId]),
+      );
+    });
+
+    it('should sync sponsor connection and mark as synced', async () => {
+      const connectionId = 'connection-1';
+      mockDb.getFirstAsync.mockResolvedValueOnce({
+        id: connectionId,
+        user_id: userId,
+        role: 'sponsee',
+        status: 'connected',
+        invite_code: 'ABC123',
+        display_name: 'Sponsor Name',
+        own_public_key: 'own-key',
+        peer_public_key: 'peer-key',
+        shared_key: 'shared-key',
+        pending_private_key: null,
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T01:00:00Z',
+        sync_status: 'pending',
+        supabase_id: null,
+      });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      const result = await syncSponsorConnection(mockDb, connectionId, userId);
+
+      expect(result.success).toBe(true);
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsor_connections');
+      expect(mockSupabaseUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: userId,
+          role: 'sponsee',
+          status: 'connected',
+          invite_code: 'ABC123',
+          own_public_key: 'own-key',
+        }),
+        { onConflict: 'id' },
+      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE sponsor_connections'),
+        expect.arrayContaining([expect.any(String), expect.any(String), connectionId]),
+      );
+    });
+
+    it('should sync sponsor shared entry when parent connection is synced', async () => {
+      const entryId = 'shared-entry-1';
+      mockDb.getFirstAsync
+        .mockResolvedValueOnce({
+          id: entryId,
+          user_id: userId,
+          connection_id: 'local-connection-1',
+          direction: 'outgoing',
+          journal_entry_id: 'journal-1',
+          payload: 'enc-payload',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T01:00:00Z',
+          sync_status: 'pending',
+          supabase_id: null,
+        })
+        .mockResolvedValueOnce({ supabase_id: 'supabase-connection-1' });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      const result = await syncSponsorSharedEntry(mockDb, entryId, userId);
+
+      expect(result.success).toBe(true);
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsor_shared_entries');
+      expect(mockSupabaseUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          user_id: userId,
+          connection_id: 'supabase-connection-1',
+          payload: 'enc-payload',
+        }),
+        { onConflict: 'id' },
+      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('UPDATE sponsor_shared_entries'),
+        expect.arrayContaining([expect.any(String), expect.any(String), entryId]),
+      );
+    });
+
+    it('should block sponsor shared entry sync when parent connection is not synced', async () => {
+      const entryId = 'shared-entry-2';
+      mockDb.getFirstAsync
+        .mockResolvedValueOnce({
+          id: entryId,
+          user_id: userId,
+          connection_id: 'local-connection-1',
+          direction: 'incoming',
+          journal_entry_id: null,
+          payload: 'enc-payload',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T01:00:00Z',
+          sync_status: 'pending',
+          supabase_id: null,
+        })
+        .mockResolvedValueOnce({ supabase_id: null });
+
+      const result = await syncSponsorSharedEntry(mockDb, entryId, userId);
+
+      expect(result).toEqual({
+        success: false,
+        error: 'Parent sponsor connection not synced yet',
+      });
+      expect(mockSupabaseUpsert).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('addDeleteToSyncQueue', () => {
+    const userId = 'user-delete';
+
+    it('should queue delete with existing supabase_id', async () => {
+      mockDb.getFirstAsync.mockResolvedValueOnce({ supabase_id: 'sb-123' });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      await addDeleteToSyncQueue(mockDb, 'journal_entries', 'entry-1', userId);
+
+      expect(mockDb.getFirstAsync).toHaveBeenCalledWith(
+        'SELECT supabase_id FROM journal_entries WHERE id = ? AND user_id = ?',
+        ['entry-1', userId],
+      );
+      const insertCall = (mockDb.runAsync as jest.Mock).mock.calls[0];
+      expect(insertCall[0]).toContain('INSERT OR REPLACE INTO sync_queue');
+      expect(insertCall[1]).toEqual(
+        expect.arrayContaining(['journal_entries', 'entry-1', 'delete', 'sb-123']),
+      );
+    });
+
+    it('should queue delete without supabase_id for unsynced records', async () => {
+      mockDb.getFirstAsync.mockResolvedValueOnce({ supabase_id: null });
+      mockDb.runAsync.mockResolvedValueOnce({} as any);
+
+      await addDeleteToSyncQueue(mockDb, 'daily_checkins', 'checkin-1', userId);
+
+      const insertCall = (mockDb.runAsync as jest.Mock).mock.calls[0];
+      expect(insertCall[1]).toEqual(
+        expect.arrayContaining(['daily_checkins', 'checkin-1', 'delete', null]),
+      );
+      expect(logger.info).toHaveBeenCalledWith(
+        'Delete queued for unsynced record - will skip cloud delete',
+        expect.objectContaining({
+          tableName: 'daily_checkins',
+          recordId: 'checkin-1',
+        }),
+      );
+    });
   });
 
   describe('processSyncQueue', () => {
@@ -942,6 +1305,7 @@ describe('syncService Integration Tests', () => {
         table_name: 'journal_entries',
         record_id: 'entry-deleted',
         operation: 'delete',
+        supabase_id: null,
         retry_count: 0,
         last_error: null,
       };
@@ -954,6 +1318,33 @@ describe('syncService Integration Tests', () => {
       // Delete operations without supabase_id are skipped (nothing to delete remotely)
       expect(result.synced).toBe(1);
       expect(mockSupabaseFrom).not.toHaveBeenCalled();
+    });
+
+    it('should delete from Supabase when delete item has supabase_id', async () => {
+      const queueItem = {
+        id: 'queue-delete-cloud',
+        table_name: 'journal_entries',
+        record_id: 'entry-cloud',
+        operation: 'delete',
+        supabase_id: 'sb-entry-1',
+        retry_count: 0,
+        last_error: null,
+      };
+
+      mockDb.getAllAsync.mockResolvedValueOnce([queueItem]);
+      mockDb.runAsync.mockResolvedValue({} as any);
+
+      const result = await processSyncQueue(mockDb, userId);
+
+      expect(result.synced).toBe(1);
+      expect(result.failed).toBe(0);
+      expect(mockSupabaseFrom).toHaveBeenCalledWith('journal_entries');
+      expect(mockSupabaseDelete).toHaveBeenCalled();
+      expect(mockSupabaseEq).toHaveBeenCalledWith('id', 'sb-entry-1');
+      expect(mockSupabaseEq).toHaveBeenCalledWith('user_id', userId);
+      expect(mockDb.runAsync).toHaveBeenCalledWith('DELETE FROM sync_queue WHERE id = ?', [
+        queueItem.id,
+      ]);
     });
 
     it('should route to correct sync function based on table_name', async () => {
@@ -1041,6 +1432,59 @@ describe('syncService Integration Tests', () => {
       await processSyncQueue(mockDb, userId);
 
       expect(logger.warn).toHaveBeenCalled();
+    });
+
+    it('should mark queue item as permanently failed at max retries', async () => {
+      const queueItem = {
+        id: 'queue-max-retry',
+        table_name: 'journal_entries',
+        record_id: 'entry-missing',
+        operation: 'insert',
+        supabase_id: null,
+        retry_count: 2,
+        last_error: 'prev',
+      };
+
+      mockDb.getAllAsync.mockResolvedValueOnce([queueItem]);
+      mockDb.getFirstAsync.mockResolvedValueOnce(null);
+      mockDb.runAsync.mockResolvedValue({} as any);
+
+      const result = await processSyncQueue(mockDb, userId);
+
+      expect(result.synced).toBe(0);
+      expect(result.failed).toBe(1);
+      expect(mockDb.runAsync).toHaveBeenCalledWith(
+        expect.stringContaining('failed_at'),
+        [3, 'Journal entry not found', expect.any(String), queueItem.id],
+      );
+      expect(logger.error).toHaveBeenCalledWith(
+        'Sync item permanently failed after max retries',
+        expect.objectContaining({ queueItemId: queueItem.id }),
+      );
+    });
+
+    it('should reject concurrent queue processing while mutex is locked', async () => {
+      let releaseQueue: ((value: unknown[]) => void) | null = null;
+      const firstQueueRead = new Promise<unknown[]>((resolve) => {
+        releaseQueue = resolve;
+      });
+
+      mockDb.getAllAsync
+        .mockReturnValueOnce(firstQueueRead as any)
+        .mockResolvedValueOnce([]);
+
+      const firstRun = processSyncQueue(mockDb, userId);
+      const secondRun = await processSyncQueue(mockDb, userId);
+
+      expect(secondRun).toEqual({
+        synced: 0,
+        failed: 0,
+        errors: ['Sync already in progress'],
+      });
+      expect(logger.info).toHaveBeenCalledWith('Sync already in progress, skipping duplicate call');
+
+      releaseQueue?.([]);
+      await firstRun;
     });
 
     it('should handle top-level processing errors', async () => {

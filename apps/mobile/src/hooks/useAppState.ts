@@ -4,28 +4,28 @@ import { logger } from '../utils/logger';
 
 /**
  * App State Hook
- * 
+ *
  * Tracks and manages app state changes:
  * - Foreground/Background transitions
  * - Inactive state (iOS)
  * - App launch and termination
  * - Provides time tracking for session duration
- * 
+ *
  * Features:
  * - Detect when app comes to foreground
  * - Detect when app goes to background
  * - Calculate time spent in background
  * - Track total session time
- * 
+ *
  * @example
  * ```tsx
- * const { 
- *   appState, 
- *   isActive, 
+ * const {
+ *   appState,
+ *   isActive,
  *   timeInBackground,
- *   onForeground 
+ *   onForeground
  * } = useAppState();
- * 
+ *
  * // Refresh data when app comes to foreground
  * useEffect(() => {
  *   if (isActive) {
@@ -83,7 +83,7 @@ export function useAppState(options: UseAppStateOptions = {}): AppStateInfo {
   const handleAppStateChange = useCallback(
     (nextAppState: AppStateStatus) => {
       const prevState = previousState.current;
-      
+
       if (enableLogging) {
         logger.debug('App state change', { from: prevState, to: nextAppState });
       }
@@ -106,8 +106,8 @@ export function useAppState(options: UseAppStateOptions = {}): AppStateInfo {
           backgroundStartTime.current = null;
 
           if (enableLogging) {
-            logger.info('App returned from background', { 
-              duration: `${(backgroundDuration / 1000).toFixed(1)}s` 
+            logger.info('App returned from background', {
+              duration: `${(backgroundDuration / 1000).toFixed(1)}s`,
             });
           }
         }
@@ -137,7 +137,7 @@ export function useAppState(options: UseAppStateOptions = {}): AppStateInfo {
         onBackground?.();
       }
     },
-    [onForeground, onBackground, enableLogging]
+    [onForeground, onBackground, enableLogging],
   );
 
   // Subscribe to app state changes
@@ -172,7 +172,7 @@ export function useAppState(options: UseAppStateOptions = {}): AppStateInfo {
  */
 export function useOnForeground(callback: () => void, deps: React.DependencyList = []): void {
   const callbackRef = useRef(callback);
-  
+
   // Keep callback ref up to date
   useEffect(() => {
     callbackRef.current = callback;
@@ -202,7 +202,7 @@ export function useOnForeground(callback: () => void, deps: React.DependencyList
  */
 export function useOnBackground(callback: () => void, deps: React.DependencyList = []): void {
   const callbackRef = useRef(callback);
-  
+
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
@@ -250,13 +250,13 @@ export function useBackgroundTimeout(timeoutMs: number): {
       // App went to background
       if (nextAppState === 'background') {
         backgroundTimeRef.current = Date.now();
-        
+
         // Set timeout
         timeoutRef.current = setTimeout(() => {
           setHasTimedOut(true);
         }, timeoutMs);
       }
-      
+
       // App came to foreground
       if (nextAppState === 'active') {
         // Check if timeout was reached while in background
@@ -266,13 +266,13 @@ export function useBackgroundTimeout(timeoutMs: number): {
             setHasTimedOut(true);
           }
         }
-        
+
         // Clear the timeout
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
           timeoutRef.current = null;
         }
-        
+
         backgroundTimeRef.current = null;
       }
     };
@@ -297,7 +297,7 @@ export function useBackgroundTimeout(timeoutMs: number): {
 export function useRefreshOnForeground<T>(
   fetchFn: () => Promise<T>,
   minBackgroundTime: number = 5000,
-  deps: React.DependencyList = []
+  deps: React.DependencyList = [],
 ): { data: T | null; isRefreshing: boolean; error: Error | null } {
   const [data, setData] = useState<T | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -309,16 +309,16 @@ export function useRefreshOnForeground<T>(
       if (nextAppState === 'background') {
         backgroundTimeRef.current = Date.now();
       }
-      
+
       if (nextAppState === 'active' && backgroundTimeRef.current) {
         const timeInBackground = Date.now() - backgroundTimeRef.current;
         backgroundTimeRef.current = null;
-        
+
         // Only refresh if app was in background for minimum time
         if (timeInBackground >= minBackgroundTime) {
           setIsRefreshing(true);
           setError(null);
-          
+
           try {
             const newData = await fetchFn();
             setData(newData);
@@ -351,10 +351,9 @@ export function useRefreshOnForeground<T>(
         setIsRefreshing(false);
       }
     };
-    
+
     fetchInitial();
   }, deps);
 
   return { data, isRefreshing, error };
 }
-

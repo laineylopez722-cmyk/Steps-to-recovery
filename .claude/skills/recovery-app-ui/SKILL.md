@@ -30,18 +30,18 @@ function CleanTimeTracker({ soberDate, onShare }: CleanTimeProps) {
   return (
     <View className="bg-slate-900 rounded-2xl p-6 items-center">
       <Text className="text-slate-400 text-sm mb-2">Clean Time</Text>
-      
+
       <View className="flex-row gap-4">
         <TimeUnit value={duration.years} label="Years" />
         <TimeUnit value={duration.months} label="Months" />
         <TimeUnit value={duration.days} label="Days" />
       </View>
-      
+
       <View className="flex-row gap-2 mt-4">
         <TimeUnitSmall value={duration.hours} label="hrs" />
         <TimeUnitSmall value={duration.minutes} label="min" />
       </View>
-      
+
       <TouchableOpacity onPress={onShare} className="mt-4">
         <Text className="text-violet-400">Share Progress</Text>
       </TouchableOpacity>
@@ -124,7 +124,7 @@ function DailyCheckIn({ onSubmit, streak }: DailyCheckInProps) {
 
 function MoodButton({ value, selected, onPress }: MoodButtonProps) {
   const emojis = ['😢', '😕', '😐', '🙂', '😊'];
-  
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -222,7 +222,7 @@ function StepWorkProgress({ currentStep, completedSteps }: StepProgressProps) {
   return (
     <View className="bg-slate-800 rounded-xl p-4">
       <Text className="text-white font-semibold mb-4">Step Work Progress</Text>
-      
+
       <View className="flex-row flex-wrap gap-2">
         {Array.from({ length: 12 }, (_, i) => i + 1).map((step) => (
           <StepIndicator

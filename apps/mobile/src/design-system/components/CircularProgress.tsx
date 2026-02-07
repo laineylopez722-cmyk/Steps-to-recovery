@@ -148,15 +148,15 @@ export function CircularProgress({
 
         const animateFrame = (): void => {
           const elapsed = Date.now() - startTime;
-          const progress = Math.min(elapsed / duration, 1);
+          const prog = Math.min(elapsed / duration, 1);
 
           // Ease out cubic
-          const eased = 1 - Math.pow(1 - progress, 3);
+          const eased = 1 - Math.pow(1 - prog, 3);
           const currentValue = startValue + (endValue - startValue) * eased;
 
           setDisplayNumber(Math.round(currentValue));
 
-          if (progress < 1) {
+          if (prog < 1) {
             requestAnimationFrame(animateFrame);
           }
         };
@@ -270,4 +270,3 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 });
-

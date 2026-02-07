@@ -10,11 +10,7 @@ import { logger } from '../../../utils/logger';
 import { useUserLocation } from './useUserLocation';
 import { useMeetingSearch } from './useMeetingSearch';
 import { useFavoriteMeetings } from './useFavoriteMeetings';
-import type {
-  CachedMeeting,
-  MeetingWithDetails,
-  MeetingFilters,
-} from '../types/meeting';
+import type { CachedMeeting, MeetingWithDetails, MeetingFilters } from '../types/meeting';
 import { calculateDistance, meetingMatchesFilters } from '../types/meeting';
 
 /**

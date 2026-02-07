@@ -1,10 +1,10 @@
 /**
  * AddRiskyContactModal Component
- * 
+ *
  * Modal for adding a new risky contact to the danger zone
  */
 
-import React, { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import {
   View,
   Text,
@@ -69,39 +69,35 @@ export function AddRiskyContactModal({
   visible,
   onClose,
   onAdd,
-}: AddRiskyContactModalProps): React.ReactElement {
+      }: AddRiskyContactModalProps): ReactElement {
   const theme = useTheme();
   const [name, setName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [relationshipType, setRelationshipType] = useState<RelationshipType>('other');
-  const [notes, setNotes] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState<string>('');
+  const [relationshipType, setRelationshipType] = useState<RelationshipType>('dealer');
+  const [notes, setNotes] = useState<string | undefined>(undefined);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const resetForm = (): void => {
-    setName('');
-    setPhoneNumber('');
+    setName('' as string);
+        setPhoneNumber('' as string);
     setRelationshipType('other');
-    setNotes('');
+      setNotes(undefined);
   };
 
   const handleClose = (): void => {
     if (name || phoneNumber || notes) {
       hapticWarning();
-      Alert.alert(
-        'Discard Changes?',
-        'You have unsaved changes. Are you sure you want to close?',
-        [
-          { text: 'Keep Editing', style: 'cancel', onPress: () => hapticSelection() },
-          {
-            text: 'Discard',
-            style: 'destructive',
-            onPress: () => {
-              resetForm();
-              onClose();
-            },
+      Alert.alert('Discard Changes?', 'You have unsaved changes. Are you sure you want to close?', [
+        { text: 'Keep Editing', style: 'cancel', onPress: () => hapticSelection() },
+        {
+          text: 'Discard',
+          style: 'destructive',
+          onPress: () => {
+            resetForm();
+            onClose();
           },
-        ]
-      );
+        },
+      ]);
     } else {
       onClose();
     }
@@ -110,10 +106,10 @@ export function AddRiskyContactModal({
   const validateForm = (): string | null => {
     if (!name.trim()) return 'Please enter a name';
     if (!phoneNumber.trim()) return 'Please enter a phone number';
-    
+
     const cleaned = phoneNumber.replace(/\D/g, '');
     if (cleaned.length < 10) return 'Please enter a valid phone number';
-    
+
     return null;
   };
 
@@ -145,31 +141,28 @@ export function AddRiskyContactModal({
                 name: name.trim(),
                 phoneNumber: phoneNumber.trim(),
                 relationshipType,
-                notes: notes.trim() || undefined,
+                notes: notes?.trim() || undefined,
               });
-              
+
               hapticSuccess();
               resetForm();
               onClose();
             } catch (err) {
               hapticWarning();
-              Alert.alert(
-                'Error',
-                err instanceof Error ? err.message : 'Failed to add contact'
-              );
+              Alert.alert('Error', err instanceof Error ? err.message : 'Failed to add contact');
             } finally {
               setIsSubmitting(false);
             }
           },
         },
-      ]
+      ],
     );
   };
 
   const formatPhoneNumber = (text: string): string => {
     const cleaned = text.replace(/\D/g, '');
     let formatted = cleaned;
-    
+
     if (cleaned.length >= 10) {
       formatted = `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
     } else if (cleaned.length >= 6) {
@@ -177,7 +170,7 @@ export function AddRiskyContactModal({
     } else if (cleaned.length >= 3) {
       formatted = `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
     }
-    
+
     return formatted;
   };
 
@@ -208,7 +201,12 @@ export function AddRiskyContactModal({
           >
             <MaterialCommunityIcons name="close" size={24} color={theme.colors.text} />
           </Pressable>
-          <Text style={[theme.typography.h2, { color: theme.colors.text, flex: 1, textAlign: 'center', marginRight: 40 }]}>
+          <Text
+            style={[
+              theme.typography.h2,
+              { color: theme.colors.text, flex: 1, textAlign: 'center', marginRight: 40 },
+            ]}
+          >
             Add Protection
           </Text>
         </View>
@@ -219,26 +217,34 @@ export function AddRiskyContactModal({
           keyboardShouldPersistTaps="handled"
         >
           {/* Introduction */}
-          <Card variant="outlined" style={[styles.introCard, { backgroundColor: theme.colors.primary + '15' }]}>
+          <Card
+            variant="outlined"
+            style={[styles.introCard, { backgroundColor: theme.colors.primary + '15' }]}
+          >
             <MaterialCommunityIcons
               name="shield-check"
               size={32}
               color={theme.colors.primary}
               style={{ marginBottom: 8 }}
             />
-            <Text style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}>
-              Add contacts you want protection from. When you try to call them, we'll help you make healthier choices.
+            <Text
+              style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}
+            >
+              Add contacts you want protection from. When you try to call them, we'll help you make
+              healthier choices.
             </Text>
           </Card>
 
           {/* Name Input */}
           <View style={styles.inputGroup}>
-            <Text style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}>
+            <Text
+              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+            >
               What should we call this contact? *
             </Text>
             <TextInput
-              value={name}
-              onChangeText={setName}
+              value={name as string}
+              onChangeText={setName as (text: string) => void     }
               placeholder="e.g., My Dealer, Old Friend"
               placeholderTextColor={theme.colors.textSecondary}
               style={[
@@ -258,12 +264,14 @@ export function AddRiskyContactModal({
 
           {/* Phone Number Input */}
           <View style={styles.inputGroup}>
-            <Text style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}>
+            <Text
+              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+            >
               Phone Number *
             </Text>
             <TextInput
-              value={phoneNumber}
-              onChangeText={handlePhoneChange}
+              value={phoneNumber as string}
+              onChangeText={handlePhoneChange as (text: string) => void}
               placeholder="(555) 123-4567"
               placeholderTextColor={theme.colors.textSecondary}
               keyboardType="phone-pad"
@@ -284,7 +292,9 @@ export function AddRiskyContactModal({
 
           {/* Relationship Type Picker */}
           <View style={styles.inputGroup}>
-            <Text style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}>
+            <Text
+              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+            >
               Relationship Type *
             </Text>
             <View style={styles.relationshipGrid}>
@@ -299,7 +309,10 @@ export function AddRiskyContactModal({
                     styles.relationshipOption,
                     {
                       backgroundColor: theme.colors.surface,
-                      borderColor: relationshipType === option.value ? theme.colors.primary : theme.colors.border,
+                      borderColor:
+                        relationshipType === option.value
+                          ? theme.colors.primary
+                          : theme.colors.border,
                       borderWidth: relationshipType === option.value ? 2 : 1,
                     },
                   ]}
@@ -311,13 +324,20 @@ export function AddRiskyContactModal({
                   <MaterialCommunityIcons
                     name={option.icon}
                     size={32}
-                    color={relationshipType === option.value ? theme.colors.primary : theme.colors.textSecondary}
+                    color={
+                      relationshipType === option.value
+                        ? theme.colors.primary
+                        : theme.colors.textSecondary
+                    }
                   />
                   <Text
                     style={[
                       theme.typography.labelLarge,
                       {
-                        color: relationshipType === option.value ? theme.colors.primary : theme.colors.text,
+                        color:
+                          relationshipType === option.value
+                            ? theme.colors.primary
+                            : theme.colors.text,
                         marginTop: 8,
                         textAlign: 'center',
                       },
@@ -344,12 +364,14 @@ export function AddRiskyContactModal({
 
           {/* Notes Input */}
           <View style={styles.inputGroup}>
-            <Text style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}>
+            <Text
+              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+            >
               Why is this contact risky? (Optional)
             </Text>
             <TextInput
-              value={notes}
-              onChangeText={setNotes}
+              value={notes as string | undefined}
+              onChangeText={setNotes as (text: string | undefined) => void}
               placeholder="e.g., Always calls when I'm vulnerable..."
               placeholderTextColor={theme.colors.textSecondary}
               multiline
@@ -372,7 +394,12 @@ export function AddRiskyContactModal({
         </ScrollView>
 
         {/* Footer */}
-        <View style={[styles.footer, { borderTopColor: theme.colors.border, backgroundColor: theme.colors.background }]}>
+        <View
+          style={[
+            styles.footer,
+            { borderTopColor: theme.colors.border, backgroundColor: theme.colors.background },
+          ]}
+        >
           <Button
             title={isSubmitting ? 'Adding...' : 'Add to Danger Zone'}
             onPress={handleSubmit}

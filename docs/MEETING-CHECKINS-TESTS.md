@@ -7,6 +7,7 @@ This test plan covers functional, integration, accessibility, and user experienc
 ## ✅ Database Testing
 
 ### Migration Verification
+
 - [ ] Migration runs successfully without errors
 - [ ] All tables created: `meeting_checkins`, `achievements`
 - [ ] All indexes created successfully
@@ -15,27 +16,29 @@ This test plan covers functional, integration, accessibility, and user experienc
 - [ ] RPC functions created successfully
 
 ### Test Queries
+
 ```sql
 -- Verify tables
-SELECT table_name FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT table_name FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name IN ('meeting_checkins', 'achievements');
 
 -- Verify RLS policies
-SELECT tablename, policyname FROM pg_policies 
+SELECT tablename, policyname FROM pg_policies
 WHERE tablename IN ('meeting_checkins', 'achievements');
 
 -- Verify RPC functions
-SELECT routine_name FROM information_schema.routines 
-WHERE routine_schema = 'public' 
+SELECT routine_name FROM information_schema.routines
+WHERE routine_schema = 'public'
 AND (routine_name LIKE '%meeting%' OR routine_name LIKE '%90%');
 
 -- Verify trigger
-SELECT tgname FROM pg_trigger 
+SELECT tgname FROM pg_trigger
 WHERE tgname = 'trigger_check_achievement_unlocks';
 ```
 
 ### RLS Testing
+
 ```sql
 -- Test as authenticated user
 SET request.jwt.claim.sub = 'user-uuid-here';
@@ -56,6 +59,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ### meetingCheckInService.ts
 
 #### checkInToMeeting()
+
 - [ ] Successfully creates check-in with all fields
 - [ ] Returns check-in data and new achievements
 - [ ] Handles missing optional fields (notes, location)
@@ -63,23 +67,27 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Returns null on error
 
 #### getMeetingCheckIns()
+
 - [ ] Returns user's check-ins ordered by date desc
 - [ ] Respects limit parameter
 - [ ] Returns empty array if no check-ins
 - [ ] Returns empty array on error
 
 #### calculateStreak()
+
 - [ ] Returns 0 for new user
 - [ ] Returns correct streak for consecutive days
 - [ ] Resets streak after missing day
 - [ ] Handles edge cases (timezone boundaries)
 
 #### calculateTotal()
+
 - [ ] Returns count of unique days with meetings
 - [ ] Returns 0 for new user
 - [ ] Counts multiple meetings in same day as 1
 
 #### check90In90Progress()
+
 - [ ] Returns correct structure for new user
 - [ ] Calculates days completed correctly
 - [ ] Calculates days remaining correctly
@@ -87,11 +95,13 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Calculates start and target dates correctly
 
 #### hasCheckedInToday()
+
 - [ ] Returns false for no check-ins today
 - [ ] Returns true if checked in today
 - [ ] Respects timezone boundaries
 
 #### hasCheckedInToMeetingToday()
+
 - [ ] Returns false for new meeting
 - [ ] Returns true if checked in to specific meeting today
 - [ ] Respects unique constraint
@@ -99,6 +109,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Hook Testing (React Query)
 
 ### useMeetingCheckIns()
+
 - [ ] Fetches check-ins on mount
 - [ ] Updates when checkIn mutation succeeds
 - [ ] Invalidates related queries after check-in
@@ -107,6 +118,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Handles error state correctly
 
 ### useAchievements()
+
 - [ ] Fetches unlocked achievements
 - [ ] Combines with achievement definitions
 - [ ] Calculates progress for locked achievements
@@ -114,6 +126,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Updates when new achievements unlock
 
 ### use90In90Progress()
+
 - [ ] Fetches 90-in-90 progress
 - [ ] Calculates percentComplete correctly
 - [ ] Determines isOnTrack correctly
@@ -121,11 +134,13 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Updates after check-in
 
 ### useTodayCheckIn()
+
 - [ ] Returns false initially
 - [ ] Returns true after checking in
 - [ ] Respects cache
 
 ### useMeetingCheckInStatus()
+
 - [ ] Returns false for unchecked meeting
 - [ ] Returns true for checked meeting
 - [ ] Handles meetingId changes
@@ -133,6 +148,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Component Testing
 
 ### CheckInModal
+
 - [ ] Displays when visible prop is true
 - [ ] Shows meeting details correctly
 - [ ] Accepts optional notes (max 500 chars)
@@ -146,6 +162,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Keyboard avoids content
 
 ### AchievementUnlockModal
+
 - [ ] Displays when visible prop is true
 - [ ] Shows correct achievement details
 - [ ] Plays celebration animation
@@ -159,6 +176,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Screen Testing
 
 ### MeetingStatsScreen
+
 - [ ] Loads all data on mount
 - [ ] Shows correct total meetings
 - [ ] Shows correct current streak
@@ -176,6 +194,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Achievement modal opens on tap
 
 ### AchievementsScreen
+
 - [ ] Loads all achievements
 - [ ] Shows correct unlock count
 - [ ] Shows progress bar correctly
@@ -192,6 +211,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Shows empty state for filters
 
 ### MeetingFinderScreenModern (Updated)
+
 - [ ] Check-in button appears on each meeting
 - [ ] Tapping check-in opens modal
 - [ ] Check-in modal shows correct meeting
@@ -205,6 +225,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Integration Testing
 
 ### End-to-End Flow: First Check-In
+
 1. User opens Meeting Finder
 2. User taps "Check In" on a meeting
 3. Modal opens with meeting details
@@ -221,6 +242,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 14. See "First Step" achievement unlocked
 
 ### End-to-End Flow: Building a Streak
+
 1. Check in day 1 ✓
 2. Check in day 2 ✓ → Streak = 1
 3. Check in day 3 ✓ → Streak = 2
@@ -232,6 +254,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 9. See progress toward 30-in-30
 
 ### End-to-End Flow: 90-in-90 Challenge
+
 1. User checks in to first meeting → Challenge starts
 2. Stats screen shows: "1 / 90 days"
 3. User checks in over 30 days → "30 in 30" unlocked
@@ -242,6 +265,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 8. Badge shows "Complete! 🎉"
 
 ### Edge Cases
+
 - [ ] Multiple meetings same day → Counts as 1 day
 - [ ] Check in after midnight → New day
 - [ ] Timezone changes → Handled correctly
@@ -253,6 +277,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Accessibility Testing
 
 ### Screen Reader (VoiceOver/TalkBack)
+
 - [ ] All buttons have proper labels
 - [ ] All buttons have roles
 - [ ] All buttons have hints
@@ -264,6 +289,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Lists properly announced
 
 ### Navigation
+
 - [ ] Tab navigation works in modals
 - [ ] Focus trapped in modals
 - [ ] Focus returns after modal close
@@ -271,12 +297,14 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Visual focus indicators
 
 ### States
+
 - [ ] Disabled states announced
 - [ ] Selected states announced
 - [ ] Loading states announced
 - [ ] Error states announced
 
 ### Text
+
 - [ ] Minimum contrast ratios met (WCAG AA)
 - [ ] Text scalable
 - [ ] Text doesn't overlap at 200%
@@ -284,18 +312,21 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Performance Testing
 
 ### Load Times
+
 - [ ] Stats screen loads < 1s
 - [ ] Achievements screen loads < 1s
 - [ ] Check-in modal opens instantly
 - [ ] Achievement modal opens instantly
 
 ### Animations
+
 - [ ] All animations 60fps
 - [ ] No jank on scroll
 - [ ] Smooth progress bar animation
 - [ ] Smooth modal transitions
 
 ### Data Loading
+
 - [ ] Query caching works
 - [ ] Pagination for large lists (future)
 - [ ] Optimistic updates (consider)
@@ -303,6 +334,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ User Experience Testing
 
 ### Emotional Response
+
 - [ ] Check-in feels rewarding
 - [ ] Achievement unlock feels special
 - [ ] Progress tracking is motivating
@@ -310,6 +342,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Streak loss handled with empathy
 
 ### Usability
+
 - [ ] Check-in flow is fast (< 5 seconds)
 - [ ] Stats are easy to understand
 - [ ] Progress is clearly visualized
@@ -317,6 +350,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] Navigation is intuitive
 
 ### Copy & Messaging
+
 - [ ] Motivational messages are encouraging
 - [ ] Achievement names are memorable
 - [ ] Descriptions are clear
@@ -326,6 +360,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 ## ✅ Security Testing
 
 ### Row-Level Security
+
 - [ ] Users can only see their own check-ins
 - [ ] Users can only see their own achievements
 - [ ] Users can only insert their own data
@@ -333,6 +368,7 @@ SELECT * FROM meeting_checkins WHERE user_id != 'user-uuid-here';
 - [ ] API keys properly secured
 
 ### Data Validation
+
 - [ ] Input sanitization on notes field
 - [ ] Date validation
 - [ ] User ID validation
@@ -356,18 +392,21 @@ These MUST pass before release:
 
 ```markdown
 ## Test Run: [Date]
+
 **Tester**: [Name]
 **Environment**: [Dev/Staging/Prod]
 **Platform**: [iOS/Android]
 **Version**: [App Version]
 
 ### Summary
+
 - Total Tests: X
 - Passed: Y
 - Failed: Z
 - Blocked: W
 
 ### Failures
+
 1. [Test Name]
    - Expected: [Description]
    - Actual: [Description]
@@ -375,12 +414,14 @@ These MUST pass before release:
    - Steps to Reproduce: [Steps]
 
 ### Notes
+
 [Any observations, suggestions, or concerns]
 ```
 
 ## 🎯 Success Criteria
 
 Feature is ready for release when:
+
 - [ ] All critical path tests pass
 - [ ] No high-severity bugs
 - [ ] All accessibility requirements met

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, type ReactElement } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import type { StyleProp, TextStyle } from 'react-native';
 import Animated, {
@@ -39,9 +39,9 @@ export function SearchExperience({
   suggestions = [],
   onSuggestionPress,
   filters,
-  showFilters = false,
+  showFilters,
   onToggleFilters,
-}: SearchExperienceProps): React.ReactElement {
+}: SearchExperienceProps): ReactElement {
   const [isFocused, setIsFocused] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const { light } = useHaptics();
@@ -130,7 +130,9 @@ export function SearchExperience({
             {recentSearches.map((search, index) => (
               <Pressable
                 key={index}
-                onPress={() => handleSuggestionPress({ id: String(index), text: search, type: 'recent' })}
+                onPress={() =>
+                  handleSuggestionPress({ id: String(index), text: search, type: 'recent' })
+                }
                 style={styles.suggestionItem}
               >
                 <MaterialIcons name="history" size={18} color={darkAccent.textMuted} />
@@ -143,11 +145,11 @@ export function SearchExperience({
       )}
 
       {/* Live Suggestions */}
-      {value.length > 0 && suggestions.length > 0 && (
+      {value.length > 0 && suggestions && suggestions.length > 0 && (
         <Animated.View entering={FadeIn} style={styles.suggestionsContainer}>
           <GlassCard intensity="heavy" style={styles.suggestionsCard}>
             <Text style={styles.suggestionsTitle}>Suggestions</Text>
-            {suggestions.map((suggestion) => (
+            {suggestions.map((suggestion: SearchSuggestion) => (
               <Pressable
                 key={suggestion.id}
                 onPress={() => handleSuggestionPress(suggestion)}
@@ -176,7 +178,12 @@ interface FilterChipProps {
   count?: number;
 }
 
-export function FilterChip({ label, isSelected, onPress, count }: FilterChipProps): React.ReactElement {
+export function FilterChip({
+  label,
+  isSelected,
+  onPress,
+  count,
+}: FilterChipProps): ReactElement {
   const scale = useSharedValue(1);
 
   const handlePress = async () => {
@@ -192,16 +199,8 @@ export function FilterChip({ label, isSelected, onPress, count }: FilterChipProp
 
   return (
     <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.chip,
-          isSelected && styles.chipSelected,
-          animatedStyle,
-        ]}
-      >
-        <Text style={[styles.chipLabel, isSelected && styles.chipLabelSelected]}>
-          {label}
-        </Text>
+      <Animated.View style={[styles.chip, isSelected && styles.chipSelected, animatedStyle]}>
+        <Text style={[styles.chipLabel, isSelected && styles.chipLabelSelected]}>{label}</Text>
         {count !== undefined && (
           <View style={[styles.chipCount, isSelected && styles.chipCountSelected]}>
             <Text style={[styles.chipCountText, isSelected && styles.chipCountTextSelected]}>
@@ -221,7 +220,11 @@ interface SearchResultsHeaderProps {
   onClear: () => void;
 }
 
-export function SearchResultsHeader({ query, resultCount, onClear }: SearchResultsHeaderProps): React.ReactElement {
+export function SearchResultsHeader({
+  query,
+  resultCount,
+  onClear,
+}: SearchResultsHeaderProps): ReactElement {
   return (
     <View style={styles.resultsHeader}>
       <View style={styles.resultsInfo}>
@@ -242,7 +245,11 @@ interface HighlightedTextProps {
   style?: StyleProp<TextStyle>;
 }
 
-export function HighlightedText({ text, highlight, style }: HighlightedTextProps): React.ReactElement {
+export function HighlightedText({
+  text,
+  highlight,
+  style,
+      }: HighlightedTextProps): ReactElement {
   if (!highlight.trim()) {
     return <Text style={style}>{text}</Text>;
   }
@@ -258,7 +265,7 @@ export function HighlightedText({ text, highlight, style }: HighlightedTextProps
           </Text>
         ) : (
           part
-        )
+        ),
       )}
     </Text>
   );

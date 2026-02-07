@@ -84,37 +84,37 @@ export async function initDatabase(db: StorageAdapter): Promise<void> {
 
 async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
   const dbName = db.getDatabaseName();
-    logger.info('Initializing database', { dbName });
-    // Some Android sqlite bindings can throw opaque native errors (e.g. NPE) when executing
-    // very large multi-statement strings via execAsync. Execute pragmas and schema statements
-    // in smaller chunks to be more reliable.
+  logger.info('Initializing database', { dbName });
+  // Some Android sqlite bindings can throw opaque native errors (e.g. NPE) when executing
+  // very large multi-statement strings via execAsync. Execute pragmas and schema statements
+  // in smaller chunks to be more reliable.
 
-    // Pragmas
-    try {
-      await db.execAsync('PRAGMA journal_mode = WAL;');
-    } catch {
-      // Some platforms may not support WAL; ignore and continue.
-    }
-    try {
-      await db.execAsync('PRAGMA busy_timeout = 5000;');
-    } catch {
-      // Ignore; best-effort.
-    }
-    try {
-      await db.execAsync('PRAGMA foreign_keys = ON;');
-    } catch {
-      // Ignore; best-effort.
-    }
+  // Pragmas
+  try {
+    await db.execAsync('PRAGMA journal_mode = WAL;');
+  } catch {
+    // Some platforms may not support WAL; ignore and continue.
+  }
+  try {
+    await db.execAsync('PRAGMA busy_timeout = 5000;');
+  } catch {
+    // Ignore; best-effort.
+  }
+  try {
+    await db.execAsync('PRAGMA foreign_keys = ON;');
+  } catch {
+    // Ignore; best-effort.
+  }
 
-    const statements: string[] = [
-      `CREATE TABLE IF NOT EXISTS user_profile (
+  const statements: string[] = [
+    `CREATE TABLE IF NOT EXISTS user_profile (
         id TEXT PRIMARY KEY,
         encrypted_email TEXT NOT NULL,
         sobriety_start_date TEXT NOT NULL,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
       );`,
-      `CREATE TABLE IF NOT EXISTS journal_entries (
+    `CREATE TABLE IF NOT EXISTS journal_entries (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         encrypted_title TEXT,
@@ -128,7 +128,7 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         supabase_id TEXT,
         FOREIGN KEY (user_id) REFERENCES user_profile(id)
       );`,
-      `CREATE TABLE IF NOT EXISTS daily_checkins (
+    `CREATE TABLE IF NOT EXISTS daily_checkins (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         check_in_type TEXT NOT NULL CHECK(check_in_type IN ('morning','evening')),
@@ -143,7 +143,7 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         supabase_id TEXT,
         FOREIGN KEY (user_id) REFERENCES user_profile(id)
       );`,
-      `CREATE TABLE IF NOT EXISTS step_work (
+    `CREATE TABLE IF NOT EXISTS step_work (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         step_number INTEGER NOT NULL CHECK(step_number >= 1 AND step_number <= 12),
@@ -158,7 +158,7 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         UNIQUE(user_id, step_number, question_number),
         FOREIGN KEY (user_id) REFERENCES user_profile(id)
       );`,
-      `CREATE TABLE IF NOT EXISTS achievements (
+    `CREATE TABLE IF NOT EXISTS achievements (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         achievement_key TEXT NOT NULL,
@@ -168,7 +168,7 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         UNIQUE(user_id, achievement_key),
         FOREIGN KEY (user_id) REFERENCES user_profile(id)
       );`,
-      `CREATE TABLE IF NOT EXISTS sync_queue (
+    `CREATE TABLE IF NOT EXISTS sync_queue (
         id TEXT PRIMARY KEY,
         table_name TEXT NOT NULL,
         record_id TEXT NOT NULL,
@@ -180,7 +180,7 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         failed_at TEXT,
         UNIQUE(table_name, record_id, operation)
       );`,
-      `CREATE TABLE IF NOT EXISTS daily_readings (
+    `CREATE TABLE IF NOT EXISTS daily_readings (
         id TEXT PRIMARY KEY,
         day_of_year INTEGER NOT NULL UNIQUE CHECK(day_of_year >= 1 AND day_of_year <= 366),
         month INTEGER NOT NULL CHECK(month >= 1 AND month <= 12),
@@ -191,7 +191,7 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         reflection_prompt TEXT NOT NULL,
         created_at TEXT NOT NULL
       );`,
-      `CREATE TABLE IF NOT EXISTS reading_reflections (
+    `CREATE TABLE IF NOT EXISTS reading_reflections (
         id TEXT PRIMARY KEY,
         user_id TEXT NOT NULL,
         reading_id TEXT NOT NULL,
@@ -206,31 +206,31 @@ async function initializeDatabaseInternal(db: StorageAdapter): Promise<void> {
         FOREIGN KEY (user_id) REFERENCES user_profile(id),
         FOREIGN KEY (reading_id) REFERENCES daily_readings(id)
       );`,
-      `CREATE TABLE IF NOT EXISTS schema_migrations (
+    `CREATE TABLE IF NOT EXISTS schema_migrations (
         version INTEGER PRIMARY KEY,
         applied_at TEXT NOT NULL
       );`,
-      `CREATE INDEX IF NOT EXISTS idx_journal_user ON journal_entries(user_id);`,
-      `CREATE INDEX IF NOT EXISTS idx_journal_created ON journal_entries(created_at);`,
-      `CREATE INDEX IF NOT EXISTS idx_checkin_user ON daily_checkins(user_id);`,
-      `CREATE INDEX IF NOT EXISTS idx_checkin_date ON daily_checkins(check_in_date);`,
-      `CREATE INDEX IF NOT EXISTS idx_step_user ON step_work(user_id);`,
-      `CREATE INDEX IF NOT EXISTS idx_step_number ON step_work(step_number);`,
-      `CREATE INDEX IF NOT EXISTS idx_step_supabase_id ON step_work(supabase_id);`,
-      `CREATE INDEX IF NOT EXISTS idx_achievement_user ON achievements(user_id);`,
-      `CREATE INDEX IF NOT EXISTS idx_sync_queue_table ON sync_queue(table_name);`,
-      `CREATE INDEX IF NOT EXISTS idx_daily_readings_day ON daily_readings(day_of_year);`,
-      `CREATE INDEX IF NOT EXISTS idx_reading_reflections_user ON reading_reflections(user_id);`,
-      `CREATE INDEX IF NOT EXISTS idx_reading_reflections_date ON reading_reflections(reading_date);`,
-    ];
+    `CREATE INDEX IF NOT EXISTS idx_journal_user ON journal_entries(user_id);`,
+    `CREATE INDEX IF NOT EXISTS idx_journal_created ON journal_entries(created_at);`,
+    `CREATE INDEX IF NOT EXISTS idx_checkin_user ON daily_checkins(user_id);`,
+    `CREATE INDEX IF NOT EXISTS idx_checkin_date ON daily_checkins(check_in_date);`,
+    `CREATE INDEX IF NOT EXISTS idx_step_user ON step_work(user_id);`,
+    `CREATE INDEX IF NOT EXISTS idx_step_number ON step_work(step_number);`,
+    `CREATE INDEX IF NOT EXISTS idx_step_supabase_id ON step_work(supabase_id);`,
+    `CREATE INDEX IF NOT EXISTS idx_achievement_user ON achievements(user_id);`,
+    `CREATE INDEX IF NOT EXISTS idx_sync_queue_table ON sync_queue(table_name);`,
+    `CREATE INDEX IF NOT EXISTS idx_daily_readings_day ON daily_readings(day_of_year);`,
+    `CREATE INDEX IF NOT EXISTS idx_reading_reflections_user ON reading_reflections(user_id);`,
+    `CREATE INDEX IF NOT EXISTS idx_reading_reflections_date ON reading_reflections(reading_date);`,
+  ];
 
-    for (const sql of statements) {
-      await db.execAsync(sql);
-    }
+  for (const sql of statements) {
+    await db.execAsync(sql);
+  }
 
-    // Run versioned migrations
-    await runMigrations(db);
-    logger.info('Database initialization complete', { dbName });
+  // Run versioned migrations
+  await runMigrations(db);
+  logger.info('Database initialization complete', { dbName });
 }
 
 /**

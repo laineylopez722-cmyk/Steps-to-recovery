@@ -1,6 +1,9 @@
 // CRITICAL: Import polyfills FIRST before any other code
 import './polyfills';
 
+// Uniwind - Import global CSS with design system tokens
+import './src/global.css';
+
 // Initialize Sentry early for crash reporting
 import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
 initSentry();
@@ -8,7 +11,8 @@ initSentry();
 import React, { Suspense, useState, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaInsetsContext } from 'react-native-safe-area-context';
+import { Uniwind } from 'uniwind';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryProvider } from './src/providers/QueryProvider';
 import { ThemeProvider } from './src/design-system';
@@ -22,7 +26,7 @@ import { PortalHost } from '@rn-primitives/portal';
 
 /**
  * Loading fallback shown during Suspense boundaries
- * Uses dark theme colors to match app aesthetic
+ * Uses design system colors
  */
 function LoadingFallback(): React.ReactElement {
   return (
@@ -31,23 +35,40 @@ function LoadingFallback(): React.ReactElement {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#0f172a', // navy-900
+        backgroundColor: '#000000', // bg-primary
       }}
       accessible
       accessibilityLabel="Loading application"
       accessibilityRole="progressbar"
     >
-      <ActivityIndicator size="large" color="#8b5cf6" />
+      <ActivityIndicator size="large" color="#E8A855" />
       <Text
         style={{
           marginTop: 16,
-          color: '#94a3b8', // slate-400
+          color: 'rgba(255, 255, 255, 0.48)', // text-tertiary
           fontSize: 14,
         }}
       >
         Loading...
       </Text>
     </View>
+  );
+}
+
+/**
+ * Uniwind Safe Area Bridge
+ * Forwards safe area insets to Uniwind for p-safe/m-safe utilities
+ */
+function UniwindSafeAreaBridge({ children }: { children: React.ReactNode }): React.ReactElement {
+  return (
+    <SafeAreaInsetsContext.Consumer>
+      {(insets) => {
+        if (insets) {
+          Uniwind.updateInsets(insets);
+        }
+        return <>{children}</>;
+      }}
+    </SafeAreaInsetsContext.Consumer>
   );
 }
 
@@ -78,27 +99,29 @@ function App(): React.ReactElement {
     <ErrorBoundary key={resetKey} onReset={handleReset}>
       <QueryProvider>
         <SafeAreaProvider>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <ThemeProvider>
-              <DatabaseProvider>
-                <AuthProvider>
-                  <SyncProvider>
-                    <NotificationProvider>
-                      <Suspense fallback={<LoadingFallback />}>
-                        <RootNavigator />
-                      </Suspense>
-                      <StatusBar
-                        style="light"
-                        backgroundColor="#0f172a"
-                        translucent={Platform.OS === 'android'}
-                      />
-                      <PortalHost />
-                    </NotificationProvider>
-                  </SyncProvider>
-                </AuthProvider>
-              </DatabaseProvider>
-            </ThemeProvider>
-          </GestureHandlerRootView>
+          <UniwindSafeAreaBridge>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <ThemeProvider>
+                <DatabaseProvider>
+                  <AuthProvider>
+                    <SyncProvider>
+                      <NotificationProvider>
+                        <Suspense fallback={<LoadingFallback />}>
+                          <RootNavigator />
+                        </Suspense>
+                        <StatusBar
+                          style="light"
+                          backgroundColor="#000000"
+                          translucent={Platform.OS === 'android'}
+                        />
+                        <PortalHost />
+                      </NotificationProvider>
+                    </SyncProvider>
+                  </AuthProvider>
+                </DatabaseProvider>
+              </ThemeProvider>
+            </GestureHandlerRootView>
+          </UniwindSafeAreaBridge>
         </SafeAreaProvider>
       </QueryProvider>
     </ErrorBoundary>

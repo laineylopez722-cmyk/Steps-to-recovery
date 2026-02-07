@@ -1,22 +1,24 @@
 /**
- * Progress Dashboard Screen
- * Visualizes recovery progress with mood trends, craving patterns, and insights
- *
+ * Progress Dashboard Screen - Organic Calming + Dark Luxury
+ * 
  * Features:
- * - Mood trend visualization (last 30 days)
- * - Craving pattern chart
- * - Step work progress overview
- * - Check-in and journal streaks
- * - Personalized recovery insights
- *
- * All data is decrypted client-side for privacy.
+ * - Glass stat cards with glow
+ * - Animated chart bars
+ * - Skeleton loading states
+ * - Atmospheric gradients
+ * - Premium milestone effects
  */
 
 import React from 'react';
-import { ScrollView, StyleSheet, View, Text, ActivityIndicator, Dimensions } from 'react-native';
+import { ScrollView, StyleSheet, View, Text, Dimensions } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, Card, Badge, ProgressBar } from '../../../design-system';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated from 'react-native-reanimated';
+import { useTheme, GlassCard, SkeletonCard } from '../../../design-system';
+import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useRecoveryAnalytics, type RecoveryInsight } from '../hooks/useRecoveryAnalytics';
 
 interface ProgressDashboardScreenProps {
@@ -25,7 +27,7 @@ interface ProgressDashboardScreenProps {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Simple bar chart component (no external dependency needed)
+// Mini bar chart with animation
 function MiniBarChart({
   data,
   maxValue,
@@ -37,16 +39,16 @@ function MiniBarChart({
   color: string;
   height?: number;
 }): React.ReactElement {
-  const _theme = useTheme();
-  const barWidth = Math.max(4, (screenWidth - 100) / Math.max(data.length, 1) - 2);
+  const barWidth = Math.max(4, (screenWidth - 120) / Math.max(data.length, 1) - 2);
 
   return (
     <View style={[styles.chartContainer, { height }]}>
       {data.map((value, index) => {
         const barHeight = maxValue > 0 ? (value / maxValue) * height : 0;
         return (
-          <View
+          <Animated.View
             key={index}
+            entering={ScreenAnimations.fadeDelayed(index * 30)}
             style={[
               styles.bar,
               {
@@ -54,6 +56,10 @@ function MiniBarChart({
                 height: Math.max(2, barHeight),
                 backgroundColor: color,
                 opacity: 0.3 + (value / maxValue) * 0.7,
+                shadowColor: color,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: value / maxValue * 0.5,
+                shadowRadius: 4,
               },
             ]}
           />
@@ -79,7 +85,7 @@ function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElem
   };
 
   return (
-    <Card variant="outlined" style={styles.insightCard}>
+    <GlassCard intensity="subtle" style={styles.insightCard}>
       <View style={styles.insightHeader}>
         <MaterialCommunityIcons
           name={iconMap[insight.type]}
@@ -91,7 +97,7 @@ function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElem
       <Text style={[styles.insightDescription, { color: theme.colors.textSecondary }]}>
         {insight.description}
       </Text>
-    </Card>
+    </GlassCard>
   );
 }
 
@@ -101,24 +107,31 @@ function StatCard({
   value,
   subtext,
   color,
+  glow = false,
 }: {
   icon: keyof typeof MaterialCommunityIcons.glyphMap;
   label: string;
   value: string | number;
   subtext?: string;
   color: string;
+  glow?: boolean;
 }): React.ReactElement {
   const theme = useTheme();
 
   return (
-    <Card variant="elevated" style={styles.statCard}>
+    <GlassCard 
+      intensity="card" 
+      style={[styles.statCard, glow && { shadowColor: color, shadowOpacity: 0.3, shadowRadius: 16 }]}
+      glow={glow}
+      glowColor={color}
+    >
       <View style={[styles.statIconContainer, { backgroundColor: color + '20' }]}>
         <MaterialCommunityIcons name={icon} size={24} color={color} />
       </View>
       <Text style={[styles.statValue, { color: theme.colors.text }]}>{value}</Text>
       <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>{label}</Text>
       {subtext && <Text style={[styles.statSubtext, { color }]}>{subtext}</Text>}
-    </Card>
+    </GlassCard>
   );
 }
 
@@ -128,15 +141,19 @@ export function ProgressDashboardScreen({
   const theme = useTheme();
   const analytics = useRecoveryAnalytics(userId);
 
+  // Loading state
   if (analytics.isLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
-            Analyzing your recovery data...
-          </Text>
-        </View>
+        <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
+        <ScrollView contentContainerStyle={styles.loadingContent}>
+          <View style={styles.statsRow}>
+            <SkeletonCard />
+            <SkeletonCard />
+          </View>
+          <SkeletonCard />
+          <SkeletonCard />
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -144,6 +161,7 @@ export function ProgressDashboardScreen({
   if (analytics.error) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
         <View style={styles.errorContainer}>
           <MaterialCommunityIcons name="alert-circle" size={48} color={theme.colors.danger} />
           <Text style={[styles.errorText, { color: theme.colors.text }]}>
@@ -157,11 +175,9 @@ export function ProgressDashboardScreen({
     );
   }
 
-  // Prepare chart data
   const moodValues = analytics.moodData.map((d) => d.mood);
   const cravingValues = analytics.moodData.map((d) => d.craving);
 
-  // Get trend icons
   const moodTrendIcon: keyof typeof MaterialCommunityIcons.glyphMap =
     analytics.moodTrend === 'improving'
       ? 'trending-up'
@@ -177,272 +193,196 @@ export function ProgressDashboardScreen({
         : 'minus';
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        accessibilityRole="scrollbar"
-        accessibilityLabel="Progress dashboard content"
-      >
-        {/* Header Stats Row */}
-        <View style={styles.statsRow}>
-          <StatCard
-            icon="fire"
-            label="Check-in Streak"
-            value={analytics.checkInStreak}
-            subtext={analytics.checkInStreak > 0 ? 'days' : undefined}
-            color={theme.colors.warning}
-          />
-          <StatCard
-            icon="book-open-variant"
-            label="Journal Streak"
-            value={analytics.journalStreak}
-            subtext={analytics.journalStreak > 0 ? 'days' : undefined}
-            color={theme.colors.primary}
-          />
-        </View>
+    <View style={styles.container}>
+      {/* Background */}
+      <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
+      
+      {/* Glow Orbs */}
+      <View style={styles.glowOrbTop} pointerEvents="none" />
+      <View style={styles.glowOrbBottom} pointerEvents="none" />
 
-        {/* Mood Trend Card */}
-        <Card variant="elevated" style={styles.chartCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <MaterialCommunityIcons
-                name="emoticon-outline"
-                size={20}
-                color={theme.colors.primary}
-              />
-              <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Mood Trend</Text>
-            </View>
-            <View style={styles.trendBadge}>
-              <MaterialCommunityIcons
-                name={moodTrendIcon}
-                size={16}
-                color={
-                  analytics.moodTrend === 'improving'
-                    ? theme.colors.success
-                    : analytics.moodTrend === 'declining'
-                      ? theme.colors.danger
-                      : theme.colors.textSecondary
-                }
-              />
-              <Text
-                style={[
-                  styles.trendText,
-                  {
-                    color:
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Header Stats Row */}
+          <Animated.View entering={ScreenAnimations.entrance} style={styles.statsRow}>
+            <StatCard
+              icon="fire"
+              label="Check-in Streak"
+              value={analytics.checkInStreak}
+              subtext={analytics.checkInStreak > 0 ? 'days' : undefined}
+              color={aestheticColors.gold.DEFAULT}
+              glow={analytics.checkInStreak > 7}
+            />
+            <StatCard
+              icon="book-open-variant"
+              label="Journal Streak"
+              value={analytics.journalStreak}
+              subtext={analytics.journalStreak > 0 ? 'days' : undefined}
+              color={aestheticColors.primary[500]}
+            />
+          </Animated.View>
+
+          {/* Mood Trend Card */}
+          <Animated.View entering={ScreenAnimations.item(0)}>
+            <GlassCard intensity="card" style={styles.chartCard}>
+              <View style={styles.cardHeader}>
+                <View style={styles.cardTitleRow}>
+                  <MaterialCommunityIcons
+                    name="emoticon-outline"
+                    size={20}
+                    color={aestheticColors.primary[500]}
+                  />
+                  <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Mood Trend</Text>
+                </View>
+                <View style={styles.trendBadge}>
+                  <MaterialCommunityIcons
+                    name={moodTrendIcon}
+                    size={16}
+                    color={
                       analytics.moodTrend === 'improving'
                         ? theme.colors.success
                         : analytics.moodTrend === 'declining'
                           ? theme.colors.danger
-                          : theme.colors.textSecondary,
-                  },
-                ]}
-              >
-                {analytics.moodTrend}
-              </Text>
-            </View>
-          </View>
-
-          {moodValues.length > 0 ? (
-            <>
-              <MiniBarChart data={moodValues} maxValue={5} color={theme.colors.primary} />
-              <View style={styles.chartLegend}>
-                <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
-                  Last {moodValues.length} days
-                </Text>
-                <Text style={[styles.averageText, { color: theme.colors.text }]}>
-                  Avg: {analytics.averageMood.toFixed(1)}/5
-                </Text>
+                          : theme.colors.textSecondary
+                    }
+                  />
+                  <Text
+                    style={[
+                      styles.trendText,
+                      {
+                        color:
+                          analytics.moodTrend === 'improving'
+                            ? theme.colors.success
+                            : analytics.moodTrend === 'declining'
+                              ? theme.colors.danger
+                              : theme.colors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {analytics.moodTrend}
+                  </Text>
+                </View>
               </View>
-            </>
-          ) : (
-            <View style={styles.emptyChart}>
-              <Text style={[styles.emptyChartText, { color: theme.colors.textSecondary }]}>
-                Complete check-ins to see your mood trend
-              </Text>
-            </View>
-          )}
-        </Card>
 
-        {/* Craving Trend Card */}
-        <Card variant="elevated" style={styles.chartCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <MaterialCommunityIcons
-                name="lightning-bolt"
-                size={20}
-                color={theme.colors.warning}
-              />
-              <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Craving Levels</Text>
-            </View>
-            <View style={styles.trendBadge}>
-              <MaterialCommunityIcons
-                name={cravingTrendIcon}
-                size={16}
-                color={
-                  analytics.cravingTrend === 'improving'
-                    ? theme.colors.success
-                    : analytics.cravingTrend === 'worsening'
-                      ? theme.colors.danger
-                      : theme.colors.textSecondary
-                }
-              />
-              <Text
-                style={[
-                  styles.trendText,
-                  {
-                    color:
+              {moodValues.length > 0 ? (
+                <>
+                  <MiniBarChart data={moodValues} maxValue={5} color={aestheticColors.primary[500]} />
+                  <View style={styles.chartLegend}>
+                    <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
+                      Last {moodValues.length} days
+                    </Text>
+                    <Text style={[styles.averageText, { color: theme.colors.text }]}>
+                      Avg: {analytics.averageMood.toFixed(1)}/5
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                <View style={styles.emptyChart}>
+                  <Text style={[styles.emptyChartText, { color: theme.colors.textSecondary }]}>
+                    Complete check-ins to see your mood trend
+                  </Text>
+                </View>
+              )}
+            </GlassCard>
+          </Animated.View>
+
+          {/* Craving Trend Card */}
+          <Animated.View entering={ScreenAnimations.item(1)}>
+            <GlassCard intensity="card" style={styles.chartCard}>
+              <View style={styles.cardHeader}>
+                <View style={styles.cardTitleRow}>
+                  <MaterialCommunityIcons
+                    name="lightning-bolt"
+                    size={20}
+                    color={aestheticColors.warning.DEFAULT}
+                  />
+                  <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Craving Levels</Text>
+                </View>
+                <View style={styles.trendBadge}>
+                  <MaterialCommunityIcons
+                    name={cravingTrendIcon}
+                    size={16}
+                    color={
                       analytics.cravingTrend === 'improving'
                         ? theme.colors.success
                         : analytics.cravingTrend === 'worsening'
                           ? theme.colors.danger
-                          : theme.colors.textSecondary,
-                  },
-                ]}
-              >
-                {analytics.cravingTrend}
-              </Text>
-            </View>
-          </View>
-
-          {cravingValues.length > 0 ? (
-            <>
-              <MiniBarChart data={cravingValues} maxValue={10} color={theme.colors.warning} />
-              <View style={styles.chartLegend}>
-                <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
-                  Last {cravingValues.length} days
-                </Text>
-                <Text style={[styles.averageText, { color: theme.colors.text }]}>
-                  Avg: {analytics.averageCraving.toFixed(1)}/10
-                </Text>
-              </View>
-            </>
-          ) : (
-            <View style={styles.emptyChart}>
-              <Text style={[styles.emptyChartText, { color: theme.colors.textSecondary }]}>
-                Log cravings in evening check-ins to track patterns
-              </Text>
-            </View>
-          )}
-        </Card>
-
-        {/* Step Work Progress */}
-        <Card variant="elevated" style={styles.chartCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.cardTitleRow}>
-              <MaterialCommunityIcons name="stairs" size={20} color={theme.colors.secondary} />
-              <Text style={[styles.cardTitle, { color: theme.colors.text }]}>
-                Step Work Progress
-              </Text>
-            </View>
-            <Badge variant={analytics.totalStepsCompleted > 0 ? 'success' : 'muted'}>
-              {analytics.totalStepsCompleted}/12 Complete
-            </Badge>
-          </View>
-
-          <View style={styles.stepsGrid}>
-            {analytics.stepProgress.slice(0, 4).map((step) => {
-              const progress =
-                step.totalQuestions > 0 ? step.answeredQuestions / step.totalQuestions : 0;
-
-              return (
-                <View key={step.stepNumber} style={styles.stepItem}>
-                  <View style={styles.stepHeader}>
-                    <Text style={[styles.stepNumber, { color: theme.colors.text }]}>
-                      Step {step.stepNumber}
-                    </Text>
-                    {step.isComplete && (
-                      <MaterialCommunityIcons
-                        name="check-circle"
-                        size={16}
-                        color={theme.colors.success}
-                      />
-                    )}
-                  </View>
-                  <ProgressBar
-                    progress={progress}
-                    color={step.isComplete ? theme.colors.success : theme.colors.primary}
-                    style={styles.stepProgress}
+                          : theme.colors.textSecondary
+                    }
                   />
-                  <Text style={[styles.stepProgressText, { color: theme.colors.textSecondary }]}>
-                    {step.answeredQuestions}/{step.totalQuestions}
+                  <Text
+                    style={[
+                      styles.trendText,
+                      {
+                        color:
+                          analytics.cravingTrend === 'improving'
+                            ? theme.colors.success
+                            : analytics.cravingTrend === 'worsening'
+                              ? theme.colors.danger
+                              : theme.colors.textSecondary,
+                      },
+                    ]}
+                  >
+                    {analytics.cravingTrend}
                   </Text>
                 </View>
-              );
-            })}
-          </View>
+              </View>
 
-          {analytics.totalStepsStarted === 0 && (
-            <Text style={[styles.helpText, { color: theme.colors.textSecondary }]}>
-              Start your step work to track progress here
+              {cravingValues.length > 0 ? (
+                <>
+                  <MiniBarChart data={cravingValues} maxValue={10} color={aestheticColors.warning.DEFAULT} />
+                  <View style={styles.chartLegend}>
+                    <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
+                      Last {cravingValues.length} days
+                    </Text>
+                    <Text style={[styles.averageText, { color: theme.colors.text }]}>
+                      Avg: {analytics.averageCraving.toFixed(1)}/10
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                <View style={styles.emptyChart}>
+                  <Text style={[styles.emptyChartText, { color: theme.colors.textSecondary }]}>
+                    Log cravings in evening check-ins to track patterns
+                  </Text>
+                </View>
+              )}
+            </GlassCard>
+          </Animated.View>
+
+          {/* Recovery Insights */}
+          <Animated.View entering={ScreenAnimations.item(2)} style={styles.insightsSection}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons
+                name="lightbulb-outline"
+                size={20}
+                color={aestheticColors.gold.DEFAULT}
+              />
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                Recovery Insights
+              </Text>
+            </View>
+
+            {analytics.insights.map((insight, index) => (
+              <InsightCard key={index} insight={insight} />
+            ))}
+          </Animated.View>
+
+          {/* Privacy Notice */}
+          <Animated.View entering={ScreenAnimations.fadeDelayed(400)} style={styles.privacyNotice}>
+            <MaterialCommunityIcons name="shield-lock" size={14} color={theme.colors.textSecondary} />
+            <Text style={[styles.privacyText, { color: theme.colors.textSecondary }]}>
+              All analytics are calculated on your device. Your data never leaves your phone
+              unencrypted.
             </Text>
-          )}
-        </Card>
-
-        {/* Recovery Insights */}
-        <View style={styles.insightsSection}>
-          <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons
-              name="lightbulb-outline"
-              size={20}
-              color={theme.colors.warning}
-            />
-            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              Recovery Insights
-            </Text>
-          </View>
-
-          {analytics.insights.map((insight, index) => (
-            <InsightCard key={index} insight={insight} />
-          ))}
-        </View>
-
-        {/* Summary Stats */}
-        <Card variant="outlined" style={styles.summaryCard}>
-          <Text style={[styles.summaryTitle, { color: theme.colors.text }]}>
-            Your Recovery Summary
-          </Text>
-          <View style={styles.summaryGrid}>
-            <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
-                {analytics.totalCheckIns}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                Total Check-ins
-              </Text>
-            </View>
-            <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
-                {analytics.journalEntryCount}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                Journal Entries
-              </Text>
-            </View>
-            <View style={styles.summaryItem}>
-              <Text style={[styles.summaryValue, { color: theme.colors.primary }]}>
-                {analytics.totalStepsStarted}
-              </Text>
-              <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
-                Steps Started
-              </Text>
-            </View>
-          </View>
-        </Card>
-
-        {/* Privacy Notice */}
-        <View style={styles.privacyNotice}>
-          <MaterialCommunityIcons name="shield-lock" size={14} color={theme.colors.textSecondary} />
-          <Text style={[styles.privacyText, { color: theme.colors.textSecondary }]}>
-            All analytics are calculated on your device. Your data never leaves your phone
-            unencrypted.
-          </Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          </Animated.View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -450,22 +390,40 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  safeArea: {
+    flex: 1,
+  },
   scrollView: {
     flex: 1,
   },
   contentContainer: {
-    padding: 16,
+    padding: 20,
     paddingBottom: 40,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+  loadingContent: {
+    padding: 20,
+    gap: 16,
   },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-  },
+  glowOrbTop: {
+    position: 'absolute',
+    top: -50,
+    right: -50,
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: aestheticColors.gold.DEFAULT,
+    opacity: 0.05,
+  } as ViewStyle,
+  glowOrbBottom: {
+    position: 'absolute',
+    bottom: 100,
+    left: -100,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: aestheticColors.secondary[500],
+    opacity: 0.04,
+  } as ViewStyle,
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -485,13 +443,13 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 20,
     gap: 12,
   },
   statCard: {
     flex: 1,
     alignItems: 'center',
-    padding: 16,
+    padding: 20,
   },
   statIconContainer: {
     width: 48,
@@ -499,10 +457,10 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   statValue: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '700',
   },
   statLabel: {
@@ -514,8 +472,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   chartCard: {
-    marginBottom: 16,
-    padding: 16,
+    marginBottom: 20,
+    padding: 20,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -558,7 +516,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   legendText: {
     fontSize: 12,
@@ -576,40 +534,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
   },
-  stepsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  stepItem: {
-    width: '48%',
-    marginBottom: 12,
-  },
-  stepHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  stepNumber: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  stepProgress: {
-    height: 6,
-    borderRadius: 3,
-  },
-  stepProgressText: {
-    fontSize: 11,
-    marginTop: 4,
-  },
-  helpText: {
-    fontSize: 13,
-    textAlign: 'center',
-    marginTop: 8,
-  },
   insightsSection: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -638,32 +564,6 @@ const styles = StyleSheet.create({
   insightDescription: {
     fontSize: 14,
     lineHeight: 20,
-  },
-  summaryCard: {
-    marginBottom: 16,
-    padding: 20,
-  },
-  summaryTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  summaryGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  summaryItem: {
-    alignItems: 'center',
-  },
-  summaryValue: {
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  summaryLabel: {
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
   },
   privacyNotice: {
     flexDirection: 'row',

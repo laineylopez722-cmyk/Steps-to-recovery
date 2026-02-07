@@ -1,6 +1,6 @@
 /**
  * QuickMeetingCheckIn Component
- * 
+ *
  * Simple button to check in to a meeting and show reflection modals.
  * Use on HomeScreen for quick access.
  */
@@ -24,7 +24,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
   const [showCheckInInput, setShowCheckInInput] = useState(false);
   const [meetingName, setMeetingName] = useState('');
   const [isChecking, setIsChecking] = useState(false);
-  
+
   const [showPreModal, setShowPreModal] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
   const [currentCheckin, setCurrentCheckin] = useState<MeetingCheckIn | null>(null);
@@ -53,7 +53,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
         if (result.newAchievements.length > 0) {
           Alert.alert(
             '🎉 Achievement Unlocked!',
-            `You earned: ${result.newAchievements.join(', ')}`
+            `You earned: ${result.newAchievements.join(', ')}`,
           );
         }
       } else {

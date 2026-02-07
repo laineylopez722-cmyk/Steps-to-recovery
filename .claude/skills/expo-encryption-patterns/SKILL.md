@@ -38,26 +38,28 @@ import * as Crypto from 'expo-crypto';
 
 async function encryptContent(plaintext: string): Promise<string> {
   const key = await getOrCreateKey();
-  
+
   // Generate unique IV
   const ivBytes = await Crypto.getRandomBytesAsync(16);
-  const iv = Array.from(ivBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-  
+  const iv = Array.from(ivBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
   const ivWordArray = CryptoJS.enc.Hex.parse(iv);
   const keyWordArray = CryptoJS.enc.Hex.parse(key);
-  
+
   // Encrypt
   const encrypted = CryptoJS.AES.encrypt(plaintext, keyWordArray, {
     iv: ivWordArray,
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
   });
-  
+
   // Generate MAC (encrypt-then-MAC)
   const payload = `${iv}:${encrypted.toString()}`;
   const macKey = CryptoJS.SHA256(keyWordArray);
   const mac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
-  
+
   return `${payload}:${mac}`;
 }
 ```
@@ -68,20 +70,20 @@ async function encryptContent(plaintext: string): Promise<string> {
 async function decryptContent(encrypted: string): Promise<string> {
   const key = await getOrCreateKey();
   const parts = encrypted.split(':');
-  
+
   if (parts.length !== 3) throw new Error('Invalid format');
   const [iv, ciphertext, mac] = parts;
-  
+
   // Verify MAC (constant-time comparison)
   const keyWordArray = CryptoJS.enc.Hex.parse(key);
   const macKey = CryptoJS.SHA256(keyWordArray);
   const payload = `${iv}:${ciphertext}`;
   const expectedMac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
-  
+
   if (!constantTimeEqual(expectedMac, mac)) {
     throw new Error('Integrity check failed');
   }
-  
+
   // Decrypt
   const ivWordArray = CryptoJS.enc.Hex.parse(iv);
   const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, {
@@ -89,7 +91,7 @@ async function decryptContent(encrypted: string): Promise<string> {
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
   });
-  
+
   return decrypted.toString(CryptoJS.enc.Utf8);
 }
 
@@ -139,18 +141,15 @@ Encrypt before storing, decrypt after retrieval:
 ```typescript
 // Storing
 const encrypted = await encryptContent(journalEntry);
-await db.runAsync(
-  'INSERT INTO journal (encrypted_body) VALUES (?)',
-  encrypted
-);
+await db.runAsync('INSERT INTO journal (encrypted_body) VALUES (?)', encrypted);
 
 // Retrieving
 const rows = await db.getAllAsync('SELECT encrypted_body FROM journal');
 const entries = await Promise.all(
-  rows.map(async row => ({
+  rows.map(async (row) => ({
     ...row,
-    content: await decryptContent(row.encrypted_body)
-  }))
+    content: await decryptContent(row.encrypted_body),
+  })),
 );
 ```
 

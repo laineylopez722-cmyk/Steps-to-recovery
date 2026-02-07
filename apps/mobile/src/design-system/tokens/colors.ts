@@ -1,115 +1,128 @@
 /**
- * iOS-style color palette for Steps to Recovery
- * Supports light and dark modes
+ * Color Palette - Serene Olive Theme
+ * 
+ * Inspired by: Calm, wellness apps
+ * - Soft olive/sage green gradients
+ * - Cream/white accents
+ * - Frosted glass effects
+ * - Calming, muted tones
  */
 
 export const lightColors = {
-  // Primary colors - iOS blue
-  primary: '#007AFF',
-  primaryLight: '#5AC8FA',
-  primaryDark: '#0051D5',
+  // Primary accent - Olive/Sage
+  primary: '#6B7B5E',           // Muted olive
+  primaryLight: '#8A9A7C',      // Lighter sage
+  primaryDark: '#4A5A42',       // Darker olive
 
-  // Secondary colors - iOS green
-  secondary: '#34C759',
-  secondaryLight: '#52D769',
-  secondaryDark: '#248A3D',
+  // Secondary - Cream/Gold
+  secondary: '#D4C5A9',         // Warm cream
+  secondaryLight: '#E8DCC6',    // Light cream
+  secondaryDark: '#B8A88C',     // Darker cream
 
   // Semantic colors
-  danger: '#FF3B30',
-  dangerLight: '#FF6961',
-  success: '#34C759',
-  successLight: '#52D769',
-  successMuted: 'rgba(52, 199, 89, 0.2)',
-  warning: '#FF9500',
-  info: '#5AC8FA',
+  danger: '#C45C5C',
+  dangerLight: '#D47474',
+  success: '#6B8E6B',
+  successLight: '#8AAD8A',
+  successMuted: 'rgba(107, 142, 107, 0.15)',
+  warning: '#D4A855',
+  info: '#5A7A8A',
 
-  // Neutral colors
+  // System grays
   muted: '#8E8E93',
   disabled: '#C7C7CC',
 
   // Background colors
-  background: '#F2F2F7', // iOS grouped background
-  surface: '#FFFFFF', // Card background
-  surfaceElevated: '#FFFFFF', // Elevated card
-  surfaceVariant: '#F2F2F7', // Variant surface color
+  background: '#F5F5F0',
+  surface: '#FFFFFF',
+  surfaceElevated: '#FFFFFF',
+  surfaceVariant: '#F0F0EB',
 
   // Text colors
-  text: '#000000',
-  textSecondary: '#8E8E93',
-  textTertiary: '#C7C7CC',
+  text: '#2C3E2C',
+  textSecondary: '#5A6B5A',
+  textTertiary: '#8A9A8A',
   textInverse: '#FFFFFF',
 
   // Border colors
-  border: 'rgba(0, 0, 0, 0.1)',
-  borderLight: 'rgba(0, 0, 0, 0.05)',
-  divider: 'rgba(0, 0, 0, 0.1)',
+  border: 'rgba(60, 80, 60, 0.12)',
+  borderLight: 'rgba(60, 80, 60, 0.08)',
+  divider: 'rgba(60, 80, 60, 0.12)',
 
   // Interactive states
-  pressed: 'rgba(0, 0, 0, 0.1)',
-  overlay: 'rgba(0, 0, 0, 0.5)',
+  pressed: 'rgba(0, 0, 0, 0.05)',
+  overlay: 'rgba(0, 0, 0, 0.4)',
+
+  // Glow colors
+  glow: 'rgba(107, 123, 94, 0.3)',
+  glowStrong: 'rgba(107, 123, 94, 0.5)',
 } as const;
 
 export const darkColors = {
-  // Primary colors - Reference app bright blue
-  primary: '#5B9EFF',
-  primaryLight: '#7DB3FF',
-  primaryDark: '#3D7FE5',
+  // Primary accent - Soft Cream/White (for ring and accents)
+  primary: '#E8E0D0',           // Warm cream
+  primaryLight: '#F5EDE0',      // Bright cream
+  primaryDark: '#D4C8B8',       // Muted cream
 
-  // Secondary colors - Reference app green/teal (streak color)
-  secondary: '#00D4AA',
-  secondaryLight: '#33DFC0',
-  secondaryDark: '#00A888',
+  // Secondary - Olive/Sage (for subtle elements)
+  secondary: '#8A9A7C',         // Sage green
+  secondaryLight: '#9DAD8F',    // Light sage
+  secondaryDark: '#6B7B5E',     // Darker olive
 
   // Semantic colors
-  danger: '#FF453A',
-  dangerLight: '#FF7A73',
-  success: '#00D4AA', // Match secondary for consistency
-  successLight: '#33DFC0',
-  successMuted: 'rgba(0, 212, 170, 0.2)',
-  warning: '#FF9F0A',
-  info: '#5B9EFF', // Match primary
+  danger: '#D47474',
+  dangerLight: '#E08A8A',
+  success: '#8AAD8A',
+  successLight: '#9DBD9D',
+  successMuted: 'rgba(138, 173, 138, 0.15)',
+  warning: '#E0B860',
+  info: '#7A9AAA',
 
-  // Neutral colors
-  muted: '#8E8E93',
-  disabled: '#48484A',
+  // System grays
+  muted: '#A8A8AD',
+  disabled: '#5A5A5C',
 
-  // Background colors - Reference app dark navy theme
-  background: '#0B1120', // Dark navy-black
-  surface: '#1A2332', // Navy card background
-  surfaceElevated: '#232F42', // Elevated navy card
-  surfaceVariant: '#141B28', // Variant surface (darker)
+  // Background colors - Olive gradient base
+  background: '#3A4A38',        // Deep olive
+  surface: 'rgba(255, 255, 255, 0.08)', // Frosted glass
+  surfaceElevated: 'rgba(255, 255, 255, 0.12)',
+  surfaceVariant: 'rgba(255, 255, 255, 0.06)',
 
   // Text colors
   text: '#FFFFFF',
-  textSecondary: '#8E8E93',
-  textTertiary: '#5A6475',
-  textInverse: '#000000',
+  textSecondary: 'rgba(255, 255, 255, 0.7)',
+  textTertiary: 'rgba(255, 255, 255, 0.5)',
+  textInverse: '#2C3E2C',
 
   // Border colors
-  border: 'rgba(255, 255, 255, 0.08)',
-  borderLight: 'rgba(255, 255, 255, 0.04)',
-  divider: 'rgba(255, 255, 255, 0.08)',
+  border: 'rgba(255, 255, 255, 0.12)',
+  borderLight: 'rgba(255, 255, 255, 0.08)',
+  divider: 'rgba(255, 255, 255, 0.1)',
 
   // Interactive states
-  pressed: 'rgba(91, 158, 255, 0.15)', // Blue tint on press
-  overlay: 'rgba(0, 0, 0, 0.85)',
+  pressed: 'rgba(255, 255, 255, 0.08)',
+  overlay: 'rgba(0, 0, 0, 0.5)',
+
+  // Glow colors - Soft cream
+  glow: 'rgba(232, 224, 208, 0.2)',
+  glowStrong: 'rgba(232, 224, 208, 0.4)',
+  glowRing: 'rgba(232, 224, 208, 0.6)',
 } as const;
 
 /**
- * Category colors for recovery features
- * (Same in light and dark modes for consistency)
+ * Category colors - Muted naturals
  */
 export const categoryColors = {
-  gratitude: '#FFD700', // Gold
-  reflection: '#007AFF', // Blue
-  action: '#34C759', // Green
-  connection: '#FF9500', // Orange
-  'self-care': '#AF52DE', // Purple
-  sponsor: '#FF3B30', // Red
-  meeting: '#5AC8FA', // Cyan
+  gratitude: '#8A9A7C',   // Sage
+  reflection: '#7A8AAA',  // Soft blue
+  action: '#8AAD8A',      // Soft green
+  connection: '#A89A8A',  // Warm taupe
+  'self-care': '#AA8A9A', // Dusty rose
+  sponsor: '#D4C5A9',     // Cream
+  meeting: '#8AAD8A',     // Soft green
 } as const;
 
-// Export a flexible color palette type that works for both light and dark
+// Type definitions
 export type ColorPalette = {
   primary: string;
   primaryLight: string;
@@ -139,6 +152,9 @@ export type ColorPalette = {
   divider: string;
   pressed: string;
   overlay: string;
+  glow: string;
+  glowStrong: string;
+  glowRing?: string;
 };
 
 export type CategoryColor = keyof typeof categoryColors;

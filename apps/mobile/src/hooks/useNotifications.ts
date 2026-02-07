@@ -49,15 +49,18 @@ export function useNotifications() {
     }
   }, [checkPermissions]);
 
-  const scheduleCheckinReminder = useCallback(async (time?: string) => {
-    try {
-      const checkInTime = time || settings?.checkInTime || '09:00';
-      await scheduleDailyCheckinReminder(checkInTime);
-      await refreshScheduledNotifications();
-    } catch (error) {
-      logger.error('Failed to schedule check-in reminder:', error);
-    }
-  }, [settings?.checkInTime]);
+  const scheduleCheckinReminder = useCallback(
+    async (time?: string) => {
+      try {
+        const checkInTime = time || settings?.checkInTime || '09:00';
+        await scheduleDailyCheckinReminder(checkInTime);
+        await refreshScheduledNotifications();
+      } catch (error) {
+        logger.error('Failed to schedule check-in reminder:', error);
+      }
+    },
+    [settings?.checkInTime],
+  );
 
   const cancelCheckinReminder = useCallback(async () => {
     try {

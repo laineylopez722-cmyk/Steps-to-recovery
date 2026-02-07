@@ -4,14 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
-import {
-  View,
-  Text,
-  Modal,
-  StyleSheet,
-  Pressable,
-  Share,
-} from 'react-native';
+import { View, Text, Modal, StyleSheet, Pressable, Share } from 'react-native';
 import Animated, {
   FadeIn,
   FadeOut,
@@ -30,11 +23,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { logger } from '../../../utils/logger';
-import {
-  radius,
-  spacing,
-  typography,
-} from '../../../design-system/tokens/modern';
+import { radius, spacing, typography } from '../../../design-system/tokens/modern';
 import {
   getAchievementByKey,
   getRandomAchievementMessage,
@@ -70,24 +59,13 @@ export function AchievementUnlockModal({
       // Animate entrance
       scale.value = withSequence(
         withSpring(1.2, { damping: 8, stiffness: 200 }),
-        withSpring(1, { damping: 12, stiffness: 300 })
+        withSpring(1, { damping: 12, stiffness: 300 }),
       );
 
-      rotation.value = withSequence(
-        withSpring(-10),
-        withSpring(10),
-        withSpring(0)
-      );
+      rotation.value = withSequence(withSpring(-10), withSpring(10), withSpring(0));
 
       // Shine animation
-      shine.value = withDelay(
-        500,
-        withRepeat(
-          withTiming(1, { duration: 1500 }),
-          -1,
-          true
-        )
-      );
+      shine.value = withDelay(500, withRepeat(withTiming(1, { duration: 1500 }), -1, true));
     } else {
       scale.value = 0;
       rotation.value = 0;
@@ -96,10 +74,7 @@ export function AchievementUnlockModal({
   }, [visible, achievementKey]);
 
   const iconAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
+    transform: [{ scale: scale.value }, { rotate: `${rotation.value}deg` }],
   }));
 
   const shineAnimatedStyle = useAnimatedStyle(() => ({
@@ -146,9 +121,7 @@ export function AchievementUnlockModal({
           style={styles.modalContent}
         >
           {/* Shine effect */}
-          <Animated.View
-            style={[styles.shineEffect, shineAnimatedStyle]}
-          >
+          <Animated.View style={[styles.shineEffect, shineAnimatedStyle]}>
             <LinearGradient
               colors={['transparent', 'rgba(255,255,255,0.3)', 'transparent']}
               start={{ x: 0, y: 0 }}
@@ -171,7 +144,7 @@ export function AchievementUnlockModal({
                 style={[
                   styles.confetti,
                   {
-                    left: `${(i * 12.5) + 10}%`,
+                    left: `${i * 12.5 + 10}%`,
                     top: i % 2 === 0 ? 20 : 40,
                   },
                 ]}
@@ -185,15 +158,9 @@ export function AchievementUnlockModal({
             ))}
 
             {/* Achievement Icon */}
-            <Animated.View
-              style={[styles.iconContainer, iconAnimatedStyle]}
-            >
+            <Animated.View style={[styles.iconContainer, iconAnimatedStyle]}>
               <View style={styles.iconBg}>
-                <MaterialIcons
-                  name={achievement.icon as IconName}
-                  size={80}
-                  color="#FFFFFF"
-                />
+                <MaterialIcons name={achievement.icon as IconName} size={80} color="#FFFFFF" />
               </View>
             </Animated.View>
 
@@ -206,10 +173,7 @@ export function AchievementUnlockModal({
             </Animated.View>
 
             {/* Actions */}
-            <Animated.View
-              entering={SlideInUp.delay(500).springify()}
-              style={styles.actions}
-            >
+            <Animated.View entering={SlideInUp.delay(500).springify()} style={styles.actions}>
               <GradientButton
                 title="Share Achievement"
                 variant="ghost"
@@ -220,7 +184,7 @@ export function AchievementUnlockModal({
                 accessibilityLabel="Share this achievement"
                 accessibilityHint="Opens share dialog to celebrate with others"
               />
-              
+
               {onViewAll && (
                 <Pressable
                   onPress={() => {

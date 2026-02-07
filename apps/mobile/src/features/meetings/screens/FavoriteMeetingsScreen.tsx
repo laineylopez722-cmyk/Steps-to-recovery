@@ -18,7 +18,10 @@ import { calculateDistance } from '../types/meeting';
 import { logger } from '../../../utils/logger';
 import type { MeetingsStackParamList } from '../../../navigation/types';
 
-type FavoriteMeetingsScreenProps = NativeStackScreenProps<MeetingsStackParamList, 'FavoriteMeetings'>;
+type FavoriteMeetingsScreenProps = NativeStackScreenProps<
+  MeetingsStackParamList,
+  'FavoriteMeetings'
+>;
 
 export function FavoriteMeetingsScreen({
   navigation,

@@ -30,9 +30,11 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
 
   const handleReflect = (): void => {
     if (!todayReading) return;
-    
+
     // Cross-tab navigation requires casting the route name
-    (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Journal', {
+    (
+      navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }
+    ).navigate('Journal', {
       screen: 'JournalEditor',
       params: {
         mode: 'create',
@@ -52,7 +54,11 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
       <Animated.View entering={FadeInUp.delay(150).duration(600)}>
         <GlassCard intensity="medium" glow glowColor={darkAccent.primary}>
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText} accessibilityRole="text" accessibilityLabel="Loading daily reading">
+            <Text
+              style={styles.loadingText}
+              accessibilityRole="text"
+              accessibilityLabel="Loading daily reading"
+            >
               Loading today's reading...
             </Text>
           </View>
@@ -66,7 +72,13 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
   }
 
   return (
-    <Animated.View entering={FadeInUp.delay(150).duration(600)}>      <GlassCard style={styles.container} accessibilityValue={{ text: `Daily reading: ${todayReading.title}` }} accessibilityLabel={`Daily reading: ${todayReading.title}`}>        
+    <Animated.View entering={FadeInUp.delay(150).duration(600)}>
+      {' '}
+      <GlassCard
+        style={styles.container}
+        accessibilityValue={{ text: `Daily reading: ${todayReading.title}` }}
+        accessibilityLabel={`Daily reading: ${todayReading.title}`}
+      >
         <View style={styles.content}>
           {/* Reading preview */}
           <Text
@@ -87,7 +99,12 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
               accessibilityRole="button"
               accessibilityHint="Opens the complete daily reading"
             >
-              <MaterialIcons name="menu-book" size={18} color={darkAccent.text} accessible={false} />
+              <MaterialIcons
+                name="menu-book"
+                size={18}
+                color={darkAccent.text}
+                accessible={false}
+              />
               <Text style={styles.readButtonText}>Read More</Text>
             </Pressable>
 
@@ -99,12 +116,14 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
               ]}
               onPress={handleReflect}
               disabled={hasReflectedToday}
-              accessibilityLabel={hasReflectedToday ? "Reflection completed" : "Reflect on today's reading"}
+              accessibilityLabel={
+                hasReflectedToday ? 'Reflection completed' : "Reflect on today's reading"
+              }
               accessibilityRole="button"
               accessibilityHint={
                 hasReflectedToday
                   ? "You have already reflected on today's reading"
-                  : "Opens journal to write your thoughts about this reading"
+                  : 'Opens journal to write your thoughts about this reading'
               }
               accessibilityState={{ disabled: hasReflectedToday }}
             >
@@ -140,7 +159,12 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
           {/* Streak message */}
           {hasReflectedToday && readingStreak > 0 && (
             <View style={styles.streakMessage}>
-              <MaterialIcons name="celebration" size={16} color={darkAccent.success} accessible={false} />
+              <MaterialIcons
+                name="celebration"
+                size={16}
+                color={darkAccent.success}
+                accessible={false}
+              />
               <Text style={styles.streakMessageText} accessibilityRole="text">
                 {streakMessage}
               </Text>

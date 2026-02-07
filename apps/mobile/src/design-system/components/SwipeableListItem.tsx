@@ -23,7 +23,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ACTION_WIDTH = 80;
 const DELETE_THRESHOLD = -ACTION_WIDTH * 0.75;
 // EDIT_THRESHOLD reserved for future right-swipe edit feature
- 
+
 const _EDIT_THRESHOLD = ACTION_WIDTH * 0.75;
 
 export interface SwipeAction {
@@ -301,4 +301,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-

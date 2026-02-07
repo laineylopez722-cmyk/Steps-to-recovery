@@ -3,8 +3,9 @@
  * Animated progress indicator with smooth transitions
  */
 
-import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet, type ViewStyle, type AccessibilityRole } from 'react-native';
+import { useEffect } from 'react';
+import { View, StyleSheet, type ViewStyle, type AccessibilityRole } from 'react-native';
+import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
 
 export interface ProgressBarProps {
@@ -62,31 +63,23 @@ export function ProgressBar({
   accessibilityHint,
 }: ProgressBarProps) {
   const theme = useTheme();
-  const progressAnim = useRef(new Animated.Value(0)).current;
-
+  const progressWidth = useSharedValue(0);
   // Clamp progress between 0 and 1
   const clampedProgress = Math.max(0, Math.min(1, progress));
 
   useEffect(() => {
     if (animated) {
-      Animated.spring(progressAnim, {
-        toValue: clampedProgress,
-        tension: 40,
-        friction: 8,
-        useNativeDriver: false, // Cannot use native driver for width animation
-      }).start();
+      progressWidth.value = withSpring(clampedProgress, {
+        damping: 15,
+        stiffness: 300,
+      });
     } else {
-      progressAnim.setValue(clampedProgress);
+      progressWidth.value = clampedProgress;
     }
-  }, [clampedProgress, animated, progressAnim]);
+  }, [clampedProgress, animated, progressWidth]);
 
   const fillColor = color || theme.colors.primary;
   const bgColor = backgroundColor || theme.colors.border;
-
-  const progressWidth = progressAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0%', '100%'],
-  });
 
   return (
     <View

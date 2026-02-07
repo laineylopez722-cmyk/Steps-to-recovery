@@ -13,12 +13,13 @@
  * @see Achievement type for data structure
  */
 
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Card } from '../../design-system/components';
 import { useTheme } from '../../design-system/hooks/useTheme';
 import type { Achievement } from '../../types';
 import { logger } from '../../utils/logger';
+import type { ReactElement } from 'react';
 
 /**
  * Props for the AchievementCard component
@@ -58,7 +59,7 @@ export const AchievementCard = memo(function AchievementCard({
   onPress,
   showProgress = true,
   className: _className = '',
-}: AchievementCardProps) {
+}: AchievementCardProps): ReactElement {
   // className kept for API compatibility, not currently used in render
   void _className;
   const theme = useTheme();
@@ -66,7 +67,7 @@ export const AchievementCard = memo(function AchievementCard({
   // Validate achievement data
   if (!achievement || typeof achievement !== 'object') {
     logger.warn('AchievementCard: Invalid achievement data provided', { achievement });
-    return null;
+    return null as unknown as ReactElement;
   }
 
   const { title, description, icon, status, current, target, unlockedAt } = achievement;
@@ -248,68 +249,17 @@ export const AchievementBadge = memo(function AchievementBadge({
    * If provided, the badge becomes interactive
    */
   onPress?: () => void;
-}) {
-  // Validate achievement data
-  if (!achievement || typeof achievement !== 'object') {
-    logger.warn('AchievementBadge: Invalid achievement data provided', { achievement });
-    return null;
-  }
-
-  const { icon, status, title } = achievement;
-  const isUnlocked = status === 'unlocked';
-  const isInteractive = Boolean(onPress);
-
-  const Wrapper = isInteractive ? TouchableOpacity : View;
-
-  // Generate accessibility label
-  const accessibilityLabel = useMemo(() => {
-    const baseLabel = `${title || 'Unnamed achievement'} achievement`;
-    return isUnlocked ? `${baseLabel}, unlocked` : `${baseLabel}, locked`;
-  }, [title, isUnlocked]);
-
+}): ReactElement | null {
   return (
-    <Wrapper
+    <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`items-center p-2 ${!isUnlocked ? 'opacity-40' : ''}`}
-      accessibilityLabel={accessibilityLabel}
-      accessibilityRole={isInteractive ? 'button' : 'image'}
+      className={`items-center p-2 ${achievement.status !== 'unlocked' ? 'opacity-40' : ''}`}
+      accessibilityLabel={`Achievement icon: ${achievement.icon || 'unknown'}`}
+      accessibilityRole={onPress ? 'button' : 'image'}
       accessibilityState={{ disabled: false }}
-      accessibilityHint={isInteractive ? 'Tap to view achievement details' : undefined}
-    >
-      <View
-        className={`w-14 h-14 rounded-xl items-center justify-center ${
-          isUnlocked
-            ? 'bg-secondary-100 dark:bg-secondary-900'
-            : 'bg-surface-200 dark:bg-surface-700'
-        }`}
-        accessibilityRole="image"
-        accessibilityLabel={`Achievement icon: ${icon || 'unknown'}`}
-      >
-        <Text className="text-2xl" accessibilityElementsHidden>
-          {icon || '🏆'}
-        </Text>
-        {isUnlocked && (
-          <View
-            className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-secondary-500 items-center justify-center"
-            accessibilityRole="text"
-            accessibilityLabel="Achievement unlocked"
-          >
-            <Text className="text-white text-xs" accessibilityElementsHidden>
-              ✓
-            </Text>
-          </View>
-        )}
-      </View>
-      <Text
-        className="text-xs text-center mt-1 text-surface-600 dark:text-surface-400"
-        numberOfLines={2}
-        ellipsizeMode="tail"
-        accessibilityElementsHidden
-      >
-        {title || 'Unnamed Achievement'}
-      </Text>
-    </Wrapper>
+      accessibilityHint={onPress ? 'Tap to view achievement details' : undefined}
+    />
   );
 });
 

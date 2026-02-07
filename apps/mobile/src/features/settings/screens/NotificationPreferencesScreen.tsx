@@ -20,25 +20,56 @@ interface NotificationChannel {
 
 export function NotificationPreferencesScreen(): React.ReactElement {
   const [channels, setChannels] = useState<NotificationChannel[]>([
-    { id: 'morning', title: 'Morning Intention', description: 'Daily check-in reminder', icon: 'wb-sunny', enabled: true },
-    { id: 'evening', title: 'Evening Reflection', description: 'End of day check-in', icon: 'nights-stay', enabled: true },
-    { id: 'meetings', title: 'Meeting Reminders', description: 'Upcoming meetings nearby', icon: 'groups', enabled: true },
-    { id: 'milestones', title: 'Milestones', description: 'Celebrate achievements', icon: 'emoji-events', enabled: true },
-    { id: 'sponsor', title: 'Sponsor Messages', description: 'When sponsor shares with you', icon: 'person', enabled: true },
+    {
+      id: 'morning',
+      title: 'Morning Intention',
+      description: 'Daily check-in reminder',
+      icon: 'wb-sunny',
+      enabled: true,
+    },
+    {
+      id: 'evening',
+      title: 'Evening Reflection',
+      description: 'End of day check-in',
+      icon: 'nights-stay',
+      enabled: true,
+    },
+    {
+      id: 'meetings',
+      title: 'Meeting Reminders',
+      description: 'Upcoming meetings nearby',
+      icon: 'groups',
+      enabled: true,
+    },
+    {
+      id: 'milestones',
+      title: 'Milestones',
+      description: 'Celebrate achievements',
+      icon: 'emoji-events',
+      enabled: true,
+    },
+    {
+      id: 'sponsor',
+      title: 'Sponsor Messages',
+      description: 'When sponsor shares with you',
+      icon: 'person',
+      enabled: true,
+    },
   ]);
 
   const [quietHours, setQuietHours] = useState({ enabled: true, start: '22:00', end: '07:00' });
 
   const toggleChannel = (id: string) => {
-    setChannels((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, enabled: !c.enabled } : c))
-    );
+    setChannels((prev) => prev.map((c) => (c.id === id ? { ...c, enabled: !c.enabled } : c)));
   };
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={[darkAccent.background, darkAccent.surface]} style={StyleSheet.absoluteFill} />
-      
+      <LinearGradient
+        colors={[darkAccent.background, darkAccent.surface]}
+        style={StyleSheet.absoluteFill}
+      />
+
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           {/* Header */}
@@ -58,10 +89,7 @@ export function NotificationPreferencesScreen(): React.ReactElement {
                   <Text style={styles.masterToggleTitle}>Allow Notifications</Text>
                   <Text style={styles.masterToggleDesc}>Turn on to receive all notifications</Text>
                 </View>
-                <AnimatedToggle
-                  value={true}
-                  onValueChange={() => {}}
-                />
+                <AnimatedToggle value={true} onValueChange={() => {}} />
               </View>
             </GlassCard>
           </Animated.View>
@@ -73,8 +101,14 @@ export function NotificationPreferencesScreen(): React.ReactElement {
               {channels.map((channel, index) => (
                 <View key={channel.id}>
                   <View style={styles.channelRow}>
-                    <View style={[styles.channelIcon, { backgroundColor: `${darkAccent.primary}15` }]}>
-                      <MaterialIcons name={channel.icon as IconName} size={20} color={darkAccent.primary} />
+                    <View
+                      style={[styles.channelIcon, { backgroundColor: `${darkAccent.primary}15` }]}
+                    >
+                      <MaterialIcons
+                        name={channel.icon as IconName}
+                        size={20}
+                        color={darkAccent.primary}
+                      />
                     </View>
                     <View style={styles.channelInfo}>
                       <Text style={styles.channelTitle}>{channel.title}</Text>
@@ -135,7 +169,9 @@ export function NotificationPreferencesScreen(): React.ReactElement {
                 <Text style={styles.previewTime}>Now</Text>
               </View>
               <Text style={styles.previewTitle}>Morning Check-in</Text>
-              <Text style={styles.previewBody}>How are you feeling today? Take a moment to check in with yourself.</Text>
+              <Text style={styles.previewBody}>
+                How are you feeling today? Take a moment to check in with yourself.
+              </Text>
             </View>
           </Animated.View>
         </ScrollView>

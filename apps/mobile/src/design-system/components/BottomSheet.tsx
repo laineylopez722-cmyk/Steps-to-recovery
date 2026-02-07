@@ -5,7 +5,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -58,11 +57,11 @@ export function BottomSheet({
     })
     .onEnd((event) => {
       if (event.translationY > 100 || event.velocityY > 500) {
-        translateY.value = withSpring(SCREEN_HEIGHT, {}, () => {
-          runOnJS(onClose)();
+        translateY.value = withSpring(SCREEN_HEIGHT, { damping: 25, stiffness: 300 }, () => {
+          onClose();
         });
       } else {
-        translateY.value = withSpring(0);
+        translateY.value = withSpring(0, { damping: 25, stiffness: 300 });
       }
     });
 
@@ -163,12 +162,7 @@ export function ActionSheetItem({
         />
       )}
       <View style={styles.actionTextContainer}>
-        <Text
-          style={[
-            styles.actionTitle,
-            destructive && { color: darkAccent.error },
-          ]}
-        >
+        <Text style={[styles.actionTitle, destructive && { color: darkAccent.error }]}>
           {title}
         </Text>
         {subtitle && <Text style={styles.actionSubtitle}>{subtitle}</Text>}

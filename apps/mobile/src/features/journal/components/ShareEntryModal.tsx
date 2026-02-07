@@ -57,7 +57,7 @@ export function ShareEntryModal({
     try {
       setSharing(true);
       const payloads = await shareEntries(selectedSponsorId, [entry], user?.email);
-      
+
       if (payloads.length > 0) {
         setSharePayload(payloads[0]);
         setShareSuccess(true);
@@ -102,9 +102,9 @@ export function ShareEntryModal({
   return (
     <View style={styles.overlay}>
       <Pressable style={StyleSheet.absoluteFill} onPress={handleClose} />
-      
+
       <Animated.View entering={FadeIn.duration(200)} style={styles.backdrop} />
-      
+
       <Animated.View entering={FadeInDown.duration(300).springify()} style={styles.modalContainer}>
         <GlassCard intensity="heavy" style={styles.modal}>
           {/* Header */}
@@ -148,7 +148,7 @@ export function ShareEntryModal({
               {/* Sponsor Selection */}
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Share with</Text>
-                
+
                 {sponsorsLoading ? (
                   <View style={styles.loadingContainer}>
                     <ActivityIndicator size="small" color={darkAccent.primary} />
@@ -170,15 +170,9 @@ export function ShareEntryModal({
                     >
                       <View style={styles.sponsorCardContent}>
                         <View style={styles.radioCircle}>
-                          {selectedSponsorId === mySponsor.id && (
-                            <View style={styles.radioInner} />
-                          )}
+                          {selectedSponsorId === mySponsor.id && <View style={styles.radioInner} />}
                         </View>
-                        <MaterialIcons
-                          name="account-circle"
-                          size={32}
-                          color={darkAccent.primary}
-                        />
+                        <MaterialIcons name="account-circle" size={32} color={darkAccent.primary} />
                         <View style={styles.sponsorInfo}>
                           <Text style={styles.sponsorName}>
                             {mySponsor.display_name || 'My Sponsor'}

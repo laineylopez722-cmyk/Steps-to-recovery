@@ -9,10 +9,14 @@
 
 import React, { useState, useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Linking, Text } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
-import { useTheme, Card, Button, BreathingCircle } from '../../../design-system';
+import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
+import { useTheme, Button, BreathingCircle, GlassCard } from '../../../design-system';
+import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { hapticSelection } from '../../../utils/haptics';
 import { useNavigation } from '@react-navigation/native';
 
@@ -48,9 +52,9 @@ const CRISIS_HOTLINES: CrisisHotline[] = [
   },
 ];
 
-// Gentle animation timing for crisis context
-const GENTLE_DURATION = 600;
-const getGentleDelay = (index: number): number => 150 + index * 100;
+// Animation budget: 2 patterns for crisis context (gentle)
+const GENTLE_DURATION = 400;
+const getStaggerDelay = (index: number): number => Math.min(index * 100, 500);
 
 export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): React.ReactElement {
   const theme = useTheme();
@@ -73,11 +77,18 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
   }, []);
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <ScrollView
+    <View style={styles.container}>
+      {/* Calming Gradient Background */}
+      <LinearGradient 
+        colors={[gradients.background[0], '#1a1f35', gradients.background[1]]} 
+        style={StyleSheet.absoluteFill} 
+      />
+      
+      {/* Soft Glow */}
+      <View style={styles.glowOrb} pointerEvents="none" />
+
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         accessibilityRole="scrollbar"
@@ -86,17 +97,17 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
       >
         {/* Header Section - Gentle fade in */}
         <Animated.View
-          entering={FadeIn.duration(GENTLE_DURATION).delay(100)}
+          entering={ScreenAnimations.entrance}
           style={[styles.header, { paddingHorizontal: theme.spacing.lg }]}
         >
           <Animated.View
-            entering={FadeIn.duration(GENTLE_DURATION * 1.5).delay(200)}
+            entering={FadeIn.duration(400).delay(200)}
             style={[styles.iconContainer, { backgroundColor: theme.colors.danger + '20' }]}
           >
             <MaterialCommunityIcons name="phone-alert" size={48} color={theme.colors.danger} />
           </Animated.View>
           <Animated.Text
-            entering={FadeInDown.duration(GENTLE_DURATION).delay(300)}
+            entering={FadeInDown.duration(400).delay(300)}
             style={[
               theme.typography.h1,
               { color: theme.colors.text, textAlign: 'center', marginTop: theme.spacing.md },
@@ -106,7 +117,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             Emergency Support
           </Animated.Text>
           <Animated.Text
-            entering={FadeInDown.duration(GENTLE_DURATION).delay(400)}
+            entering={FadeInDown.duration(400).delay(400)}
             style={[
               theme.typography.body,
               {
@@ -122,7 +133,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
         {/* Crisis Hotlines Section */}
         <Animated.View
-          entering={FadeInDown.duration(GENTLE_DURATION).delay(500)}
+          entering={FadeInDown.duration(400).delay(500)}
           style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
         >
           <Text
@@ -138,10 +149,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
           {CRISIS_HOTLINES.map((hotline, index) => (
             <Animated.View
               key={index}
-              entering={FadeInDown.duration(GENTLE_DURATION).delay(getGentleDelay(index + 4))}
+              entering={FadeInDown.duration(400).delay(getStaggerDelay(index + 4))}
               layout={Layout.springify()}
             >
-              <Card variant="elevated" style={{ marginBottom: theme.spacing.md }}>
+              <GlassCard intensity="card" style={{ marginBottom: theme.spacing.md }}>
                 <View style={styles.hotlineCard}>
                   <View style={styles.hotlineIcon}>
                     <MaterialCommunityIcons
@@ -179,24 +190,28 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     />
                   </View>
                 </View>
-              </Card>
+              </GlassCard>
             </Animated.View>
           ))}
         </Animated.View>
 
         {/* Before You Use - Crisis Checkpoint */}
         <Animated.View
-          entering={FadeInDown.duration(GENTLE_DURATION).delay(800)}
+          entering={FadeInDown.duration(400).delay(600)}
           style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
         >
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.md, backgroundColor: 'rgba(239,68,68,0.05)', borderColor: theme.colors.danger, borderWidth: 2 }}>
+          <GlassCard 
+            intensity="modal"
+            style={{
+              marginBottom: theme.spacing.md,
+              backgroundColor: 'rgba(239,68,68,0.05)',
+              borderColor: theme.colors.danger,
+              borderWidth: 2,
+            }}
+          >
             <View style={styles.crisisCheckpointCard}>
               <View style={styles.crisisCheckpointIcon}>
-                <MaterialCommunityIcons
-                  name="pause-circle"
-                  size={48}
-                  color={theme.colors.danger}
-                />
+                <MaterialCommunityIcons name="pause-circle" size={48} color={theme.colors.danger} />
               </View>
               <View style={styles.crisisCheckpointContent}>
                 <Text
@@ -230,12 +245,12 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 />
               </View>
             </View>
-          </Card>
+          </GlassCard>
         </Animated.View>
 
         {/* Box Breathing Section with Interactive Animation */}
         <Animated.View
-          entering={FadeInDown.duration(GENTLE_DURATION).delay(900)}
+          entering={FadeInDown.duration(400).delay(700)}
           style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
         >
           <Text
@@ -248,7 +263,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             Calming Exercise
           </Text>
 
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.md }}>
+          <GlassCard intensity="card" style={{ marginBottom: theme.spacing.md }}>
             <View style={styles.breathingSection}>
               <Text
                 style={[
@@ -298,7 +313,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 Tap the circle to start • 4 cycles recommended
               </Text>
             </View>
-          </Card>
+          </GlassCard>
         </Animated.View>
 
         {/* Grounding Techniques Section */}
@@ -318,7 +333,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
           {/* 5-4-3-2-1 Grounding */}
           <Animated.View entering={FadeInDown.duration(GENTLE_DURATION).delay(950)}>
-            <Card variant="elevated" style={{ marginBottom: theme.spacing.md }}>
+            <GlassCard intensity="card" style={{ marginBottom: theme.spacing.md }}>
               <Text
                 style={[
                   theme.typography.h3,
@@ -344,7 +359,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
               ].map((step, index) => (
                 <Animated.View
                   key={index}
-                  entering={FadeIn.duration(400).delay(1000 + index * 80)}
+                  entering={FadeIn.duration(300).delay(800 + index * 60)}
                   style={styles.techniqueStep}
                 >
                   <View style={[styles.groundingBadge, { backgroundColor: step.color + '20' }]}>
@@ -357,7 +372,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                   </Text>
                 </Animated.View>
               ))}
-            </Card>
+            </GlassCard>
           </Animated.View>
         </Animated.View>
 
@@ -376,7 +391,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             Immediate Actions
           </Text>
 
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.xl }}>
+          <GlassCard intensity="card" style={{ marginBottom: theme.spacing.xl }}>
             <Text
               style={[
                 theme.typography.bodySmall,
@@ -395,7 +410,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             ].map((action, index) => (
               <Animated.View
                 key={index}
-                entering={FadeIn.duration(400).delay(1200 + index * 60)}
+                entering={FadeIn.duration(300).delay(1000 + index * 50)}
                 style={styles.actionItem}
               >
                 <MaterialCommunityIcons
@@ -409,12 +424,12 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 </Text>
               </Animated.View>
             ))}
-          </Card>
+          </GlassCard>
         </Animated.View>
 
         {/* Safety Reminder - Final gentle entrance */}
         <Animated.View
-          entering={FadeInUp.duration(GENTLE_DURATION * 1.2).delay(1400)}
+          entering={FadeInUp.duration(400).delay(900)}
           style={[
             styles.reminderCard,
             {
@@ -452,6 +467,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
+  </View>
   );
 }
 
@@ -459,6 +475,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  safeArea: {
+    flex: 1,
+  },
+  glowOrb: {
+    position: 'absolute',
+    top: 200,
+    right: -100,
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    backgroundColor: aestheticColors.secondary[500],
+    opacity: 0.06,
+  } as ViewStyle,
   scrollView: {
     flex: 1,
   },

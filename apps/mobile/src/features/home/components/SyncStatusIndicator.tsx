@@ -1,33 +1,39 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
+import type { GestureResponderEvent } from 'react-native';
 import { View, StyleSheet, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsOnline } from '../../../providers/QueryProvider';
-import { useSyncPendingMutations } from '../../../hooks/useOfflineMutation';
-import { useHasPendingMutations } from '../../../hooks/useOfflineMutation';
+import * as useOfflineMutation from '../../../hooks/useOfflineMutation';
 import { useSync } from '../../../contexts/SyncContext';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { logger } from '../../../utils/logger';
 
 /**
  * SyncStatusIndicator - Enhanced with React Query offline support
- * 
+ *
  * Shows sync status combining:
  * - Legacy sync queue status (for backward compatibility)
  * - React Query pending mutations
  * - Network connectivity
- * 
+ *
  * Gradually migrating to React Query for all sync operations
  */
 export function SyncStatusIndicator() {
   const theme = useTheme();
-  
+
   // Legacy sync context (phasing out)
-  const { isSyncing: isLegacySyncing, lastSyncTime, pendingCount: legacyPendingCount, error: legacyError, triggerSync } = useSync();
-  
+  const {
+    isSyncing: isLegacySyncing,
+    lastSyncTime,
+    pendingCount: legacyPendingCount,
+    error: legacyError,
+    triggerSync,
+  } = useSync();
+
   // New React Query offline status
   const isOnline = useIsOnline();
-  const hasPendingMutations = useHasPendingMutations();
-  const syncPendingMutations = useSyncPendingMutations();
+  const hasPendingMutations = useOfflineMutation.useHasPendingMutations();
+  const syncPendingMutations = useOfflineMutation.useSyncPendingMutations();
 
   // Combined pending count (legacy + React Query)
   const totalPending = legacyPendingCount + (hasPendingMutations ? 1 : 0);
@@ -35,13 +41,13 @@ export function SyncStatusIndicator() {
   const hasError = !!legacyError;
 
   // Handle sync press - triggers both legacy and new sync
-  const handlePress = useCallback(async () => {
+  const handlePress = useCallback(async (event: GestureResponderEvent) => {
     if (isSyncing || !isOnline) return;
 
     try {
       // Trigger legacy sync
       await triggerSync();
-      
+
       // Also sync any React Query pending mutations
       await syncPendingMutations();
     } catch (error) {
@@ -56,9 +62,10 @@ export function SyncStatusIndicator() {
         icon: 'cloud-off-outline' as const,
         color: theme.colors.muted,
         label: 'Offline',
-        subtext: totalPending > 0 
-          ? `${totalPending} item${totalPending !== 1 ? 's' : ''} queued` 
-          : 'Sync paused',
+        subtext:
+          totalPending > 0
+            ? `${totalPending} item${totalPending !== 1 ? 's' : ''} queued`
+            : 'Sync paused',
       };
     }
 
@@ -67,9 +74,10 @@ export function SyncStatusIndicator() {
         icon: 'cloud-sync' as const,
         color: theme.colors.primary,
         label: 'Syncing...',
-        subtext: totalPending > 0 
-          ? `${totalPending} item${totalPending !== 1 ? 's' : ''} remaining` 
-          : 'Uploading changes',
+        subtext:
+          totalPending > 0
+            ? `${totalPending} item${totalPending !== 1 ? 's' : ''} remaining`
+            : 'Uploading changes',
       };
     }
 
@@ -134,7 +142,12 @@ export function SyncStatusIndicator() {
         {isSyncing ? (
           <ActivityIndicator key="status-indicator" size={20} color={status.color} />
         ) : (
-          <MaterialCommunityIcons key="status-indicator" name={status.icon} size={20} color={status.color} />
+          <MaterialCommunityIcons
+            key="status-indicator"
+            name={status.icon}
+            size={20}
+            color={status.color}
+          />
         )}
         <View key="text-container" style={styles.textContainer}>
           <Text style={[theme.typography.subheadline, { color: status.color, fontWeight: '600' }]}>

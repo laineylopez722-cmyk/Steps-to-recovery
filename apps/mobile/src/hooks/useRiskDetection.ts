@@ -1,14 +1,23 @@
 /**
  * useRiskDetection Hook
- * 
+ *
  * React hook for risk pattern detection with automatic refresh
  * Manages detection state, caching, and periodic checks
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { detectRiskPatterns, dismissPattern, notifySponsor, wasRecentlyDismissed } from '../services/riskDetectionService';
-import type { RiskDetectionResult, RiskPattern, RiskPatternType } from '../services/riskDetectionService';
+import {
+  detectRiskPatterns,
+  dismissPattern,
+  notifySponsor,
+  wasRecentlyDismissed,
+} from '../services/riskDetectionService';
+import type {
+  RiskDetectionResult,
+  RiskPattern,
+  RiskPatternType,
+} from '../services/riskDetectionService';
 import { logger } from '../utils/logger';
 
 // ========================================
@@ -28,15 +37,15 @@ export interface UseRiskDetectionResult {
   result: RiskDetectionResult | null;
   isLoading: boolean;
   error: Error | null;
-  
+
   // Primary pattern (highest severity/priority)
   primaryPattern: RiskPattern | null;
-  
+
   // Actions
   refresh: () => Promise<void>;
   dismiss: (patternType: RiskPatternType) => Promise<void>;
   notifySponsorAbout: (pattern: RiskPattern) => Promise<{ success: boolean; error?: string }>;
-  
+
   // Utilities
   hasHighRisk: boolean;
   hasAnyRisk: boolean;
@@ -76,14 +85,14 @@ export function useRiskDetection(userId: string | undefined): UseRiskDetectionRe
 
     const filterDismissed = async () => {
       const filtered: RiskPattern[] = [];
-      
+
       for (const pattern of result.patterns) {
         const dismissed = await wasRecentlyDismissed(userId, pattern.type);
         if (!dismissed) {
           filtered.push(pattern);
         }
       }
-      
+
       setFilteredPatterns(filtered);
     };
 
@@ -130,7 +139,7 @@ export function useRiskDetection(userId: string | undefined): UseRiskDetectionRe
     async (patternType: RiskPatternType) => {
       await dismissMutation.mutateAsync(patternType);
     },
-    [dismissMutation]
+    [dismissMutation],
   );
 
   // Notify sponsor handler
@@ -138,7 +147,7 @@ export function useRiskDetection(userId: string | undefined): UseRiskDetectionRe
     async (pattern: RiskPattern) => {
       return notifySponsorMutation.mutateAsync(pattern);
     },
-    [notifySponsorMutation]
+    [notifySponsorMutation],
   );
 
   // Computed values

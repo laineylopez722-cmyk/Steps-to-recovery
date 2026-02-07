@@ -158,8 +158,12 @@ export function Button({
           <ActivityIndicator color={colors.indicator} size="small" />
         ) : (
           <View style={styles.content}>
-            {icon ? <View key="icon" style={styles.iconContainer}>{icon}</View> : null}
-            {(typeof children === 'string' || title) ? (
+            {icon ? (
+              <View key="icon" style={styles.iconContainer}>
+                {icon}
+              </View>
+            ) : null}
+            {typeof children === 'string' || title ? (
               <Text
                 key="label"
                 style={[

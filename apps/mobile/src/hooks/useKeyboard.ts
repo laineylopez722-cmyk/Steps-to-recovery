@@ -1,36 +1,31 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import {
-  Keyboard,
-  type KeyboardEvent,
-  Platform,
-  type EmitterSubscription,
-} from 'react-native';
+import { Keyboard, type KeyboardEvent, Platform, type EmitterSubscription } from 'react-native';
 
 /**
  * Keyboard Hook
- * 
+ *
  * Provides comprehensive keyboard state management:
  * - Track keyboard visibility
  * - Get keyboard height
  * - Handle keyboard show/hide events
  * - Keyboard-aware scrolling helpers
  * - Dismiss keyboard utilities
- * 
+ *
  * Features:
  * - Cross-platform (iOS/Android)
  * - Animated keyboard height
  * - Keyboard duration for smooth animations
  * - Multiple keyboard event listeners
- * 
+ *
  * @example
  * ```tsx
- * const { 
- *   isVisible, 
- *   height, 
+ * const {
+ *   isVisible,
+ *   height,
  *   dismiss,
- *   keyboardStyle 
+ *   keyboardStyle
  * } = useKeyboard();
- * 
+ *
  * // Adjust layout based on keyboard
  * <View style={{ paddingBottom: isVisible ? height : 0 }}>
  *   <TextInput />
@@ -83,7 +78,7 @@ export function useKeyboard(options: UseKeyboardOptions = {}): KeyboardState & {
     // Handle keyboard showing
     const handleKeyboardShow = (event: KeyboardEvent) => {
       const { endCoordinates } = event;
-      
+
       setState({
         isVisible: true,
         height: endCoordinates.height,
@@ -111,7 +106,7 @@ export function useKeyboard(options: UseKeyboardOptions = {}): KeyboardState & {
     // Handle keyboard frame changes (iOS)
     const handleKeyboardChange = (event: KeyboardEvent) => {
       const { endCoordinates } = event;
-      
+
       setState((prev) => ({
         ...prev,
         height: endCoordinates.height,
@@ -198,10 +193,7 @@ export function useFocusedInput(): {
 } {
   const [focusedInput, setFocusedInput] = useState<number | null>(null);
 
-  const isInputFocused = useCallback(
-    (id: number) => focusedInput === id,
-    [focusedInput]
-  );
+  const isInputFocused = useCallback((id: number) => focusedInput === id, [focusedInput]);
 
   return {
     focusedInput,
@@ -214,9 +206,7 @@ export function useFocusedInput(): {
  * Hook to adjust scroll view content inset based on keyboard
  * Returns props to spread onto ScrollView
  */
-export function useKeyboardAwareScroll(
-  extraHeight: number = 0
-): {
+export function useKeyboardAwareScroll(extraHeight: number = 0): {
   keyboardDismissMode: 'interactive' | 'on-drag' | 'none';
   keyboardShouldPersistTaps: 'always' | 'never' | 'handled';
   contentInset: { bottom: number };
@@ -238,9 +228,7 @@ export function useKeyboardAwareScroll(
  * Hook to animate layout based on keyboard visibility
  * Returns animated style props
  */
-export function useKeyboardAnimation(
-  translateDistance: number = 100
-): {
+export function useKeyboardAnimation(translateDistance: number = 100): {
   transform: Array<{ translateY: number }>;
   opacity: number;
 } {
@@ -259,8 +247,19 @@ export function useKeyboardAnimation(
  * Calculates offset needed to keep input visible
  */
 export function useAvoidKeyboard(
-  inputRef: React.RefObject<{ measure: (callback: (x: number, y: number, width: number, height: number, pageX: number, pageY: number) => void) => void }>,
-  extraSpace: number = 20
+  inputRef: React.RefObject<{
+    measure: (
+      callback: (
+        x: number,
+        y: number,
+        width: number,
+        height: number,
+        pageX: number,
+        pageY: number,
+      ) => void,
+    ) => void;
+  }>,
+  extraSpace: number = 20,
 ): { avoidKeyboardStyle: { marginBottom: number } } {
   const { height, isVisible } = useKeyboard();
   const [offset, setOffset] = useState(0);
@@ -297,9 +296,7 @@ export function useAvoidKeyboard(
  * Hook to handle keyboard next/done buttons
  * Manages focus between multiple inputs
  */
-export function useInputFocusNavigation(
-  inputCount: number
-): {
+export function useInputFocusNavigation(inputCount: number): {
   focusNext: (currentIndex: number) => void;
   focusPrevious: (currentIndex: number) => void;
   isLastInput: (index: number) => boolean;
@@ -307,15 +304,18 @@ export function useInputFocusNavigation(
 } {
   const inputRefs = useRef<Array<{ focus: () => void; blur: () => void } | null>>([]);
 
-  const focusNext = useCallback((currentIndex: number) => {
-    const nextIndex = currentIndex + 1;
-    if (nextIndex < inputCount) {
-      inputRefs.current[nextIndex]?.focus();
-    } else {
-      // Last input - dismiss keyboard
-      Keyboard.dismiss();
-    }
-  }, [inputCount]);
+  const focusNext = useCallback(
+    (currentIndex: number) => {
+      const nextIndex = currentIndex + 1;
+      if (nextIndex < inputCount) {
+        inputRefs.current[nextIndex]?.focus();
+      } else {
+        // Last input - dismiss keyboard
+        Keyboard.dismiss();
+      }
+    },
+    [inputCount],
+  );
 
   const focusPrevious = useCallback((currentIndex: number) => {
     const prevIndex = currentIndex - 1;
@@ -324,10 +324,7 @@ export function useInputFocusNavigation(
     }
   }, []);
 
-  const isLastInput = useCallback(
-    (index: number) => index === inputCount - 1,
-    [inputCount]
-  );
+  const isLastInput = useCallback((index: number) => index === inputCount - 1, [inputCount]);
 
   const onSubmitEditing = useCallback(
     (index: number) => {
@@ -337,7 +334,7 @@ export function useInputFocusNavigation(
         focusNext(index);
       }
     },
-    [focusNext, isLastInput]
+    [focusNext, isLastInput],
   );
 
   return {
@@ -347,4 +344,3 @@ export function useInputFocusNavigation(
     onSubmitEditing,
   };
 }
-

@@ -56,13 +56,13 @@ describe('Encryption', () => {
 
   it('should encrypt and decrypt to return original text', async () => {
     const plaintext = 'My sensitive journal entry about recovery';
-    
+
     const encrypted = await encryptContent(plaintext);
-    
+
     // Verify encrypted format
     expect(encrypted).toContain(':');
     expect(encrypted).not.toBe(plaintext);
-    
+
     // Decrypt and verify
     const decrypted = await decryptContent(encrypted);
     expect(decrypted).toBe(plaintext);
@@ -70,10 +70,10 @@ describe('Encryption', () => {
 
   it('should produce different ciphertexts for same plaintext (unique IV)', async () => {
     const plaintext = 'Same text';
-    
+
     const encrypted1 = await encryptContent(plaintext);
     const encrypted2 = await encryptContent(plaintext);
-    
+
     expect(encrypted1).not.toBe(encrypted2);
   });
 });
@@ -85,23 +85,23 @@ describe('Encryption', () => {
 it('should throw on tampered ciphertext', async () => {
   const plaintext = 'Original text';
   const encrypted = await encryptContent(plaintext);
-  
+
   // Tamper with the ciphertext
   const parts = encrypted.split(':');
   parts[1] = parts[1].substring(0, parts[1].length - 4) + 'dead';
   const tampered = parts.join(':');
-  
+
   await expect(decryptContent(tampered)).rejects.toThrow('Integrity check failed');
 });
 
 it('should throw on tampered IV', async () => {
   const plaintext = 'Original text';
   const encrypted = await encryptContent(plaintext);
-  
+
   const parts = encrypted.split(':');
   parts[0] = 'aabbccdd'; // Change IV
   const tampered = parts.join(':');
-  
+
   await expect(decryptContent(tampered)).rejects.toThrow('Integrity check failed');
 });
 ```
@@ -131,7 +131,7 @@ it('should handle large content', async () => {
 
 it('should throw when no encryption key exists', async () => {
   await SecureStore.deleteItemAsync('journal_encryption_key');
-  
+
   await expect(encryptContent('test')).rejects.toThrow('Encryption key not found');
 });
 ```
@@ -167,13 +167,13 @@ describe('Journal with Encryption', () => {
       'INSERT INTO journal (id, encrypted_body, created_at) VALUES (?, ?, ?)',
       entry.id,
       encrypted,
-      entry.created_at
+      entry.created_at,
     );
 
     // Retrieve and decrypt
     const row = await db.getFirstAsync<{ encrypted_body: string }>(
       'SELECT encrypted_body FROM journal WHERE id = ?',
-      entry.id
+      entry.id,
     );
 
     const decrypted = await decryptContent(row!.encrypted_body);
@@ -197,7 +197,7 @@ describe('Sync Queue with Encryption', () => {
     await db.runAsync(
       'INSERT INTO journal (id, encrypted_body) VALUES (?, ?)',
       entry.id,
-      encrypted
+      encrypted,
     );
 
     // Queue for sync (send encrypted data)
@@ -209,7 +209,7 @@ describe('Sync Queue with Encryption', () => {
     // Verify sync queue has encrypted data
     const queueItem = await db.getFirstAsync('SELECT * FROM sync_queue');
     const data = JSON.parse(queueItem.data);
-    
+
     // Data should still be encrypted in queue
     expect(data.encrypted_body).toBe(encrypted);
     expect(data.encrypted_body).not.toContain(entry.content);
@@ -235,7 +235,9 @@ export const getRandomBytesAsync = jest.fn((length: number) => {
   return Promise.resolve(bytes.slice(0, length));
 });
 
-beforeEach(() => { mockIndex = 0; });
+beforeEach(() => {
+  mockIndex = 0;
+});
 ```
 
 ### Testing Key Rotation
@@ -245,11 +247,11 @@ it('should handle key rotation gracefully', async () => {
   // Create entry with old key
   const oldKey = await generateEncryptionKey();
   const encrypted = await encryptContent('Important data');
-  
+
   // Rotate key
   await deleteEncryptionKey();
   await generateEncryptionKey();
-  
+
   // Old data should still decrypt (if key was backed up)
   // OR should fail gracefully
   await expect(decryptContent(encrypted)).rejects.toThrow();

@@ -89,7 +89,8 @@ export function useTodayCheckIns(userId: string): {
     queryKey: checkInKeys.today(userId),
     queryFn: async (): Promise<TodayCheckInsResult> => {
       if (!db || !isReady) {
-        throw new Error('Database not ready');
+        // Return defaults when database not ready
+        return { morning: null, evening: null, date: today };
       }
       try {
         const result = await db.getAllAsync<DailyCheckInWithGratitude>(
@@ -104,7 +105,8 @@ export function useTodayCheckIns(userId: string): {
         return { morning, evening, date: today };
       } catch (err) {
         logger.error('Failed to fetch today check-ins', err);
-        throw err;
+        // Return defaults on error
+        return { morning: null, evening: null, date: today };
       }
     },
     enabled: isReady && !!db,
@@ -145,9 +147,14 @@ export function useCreateCheckIn(userId: string): {
   const queryClient = useQueryClient();
   const today = new Date().toISOString().split('T')[0];
 
-  const mutation = useMutation<void, Error, CreateCheckInVariables, { previousData: TodayCheckInsResult | undefined }>({
+  const mutation = useMutation<
+    void,
+    Error,
+    CreateCheckInVariables,
+    { previousData: TodayCheckInsResult | undefined }
+  >({
     mutationKey: ['createCheckIn', userId],
-    
+
     mutationFn: async (data: CreateCheckInVariables): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
 
@@ -189,9 +196,9 @@ export function useCreateCheckIn(userId: string): {
     // Optimistically update the UI immediately
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: checkInKeys.today(userId) });
-      
+
       const previousData = queryClient.getQueryData<TodayCheckInsResult>(checkInKeys.today(userId));
-      
+
       const newCheckIn: DailyCheckInDecryptedWithGratitude = {
         id: 'temp-' + Date.now(),
         user_id: userId,
@@ -206,12 +213,13 @@ export function useCreateCheckIn(userId: string): {
         sync_status: 'pending',
       };
 
-      const optimisticData: TodayCheckInsResult = variables.type === 'morning'
-        ? { morning: newCheckIn, evening: previousData?.evening ?? null, date: today }
-        : { morning: previousData?.morning ?? null, evening: newCheckIn, date: today };
+      const optimisticData: TodayCheckInsResult =
+        variables.type === 'morning'
+          ? { morning: newCheckIn, evening: previousData?.evening ?? null, date: today }
+          : { morning: previousData?.morning ?? null, evening: newCheckIn, date: today };
 
       queryClient.setQueryData(checkInKeys.today(userId), optimisticData);
-      
+
       return { previousData };
     },
 
@@ -250,9 +258,14 @@ export function useUpdateCheckIn(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, Error, UpdateCheckInVariables, { previousData: TodayCheckInsResult | undefined }>({
+  const mutation = useMutation<
+    void,
+    Error,
+    UpdateCheckInVariables,
+    { previousData: TodayCheckInsResult | undefined }
+  >({
     mutationKey: ['updateCheckIn', userId],
-    
+
     mutationFn: async ({ id, data }: UpdateCheckInVariables): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
 
@@ -298,11 +311,13 @@ export function useUpdateCheckIn(userId: string): {
 
     onMutate: async (variables) => {
       await queryClient.cancelQueries({ queryKey: checkInKeys.today(userId) });
-      
+
       const previousData = queryClient.getQueryData<TodayCheckInsResult>(checkInKeys.today(userId));
-      
+
       if (previousData) {
-        const updateCheckIn = (checkIn: DailyCheckInDecryptedWithGratitude | null): DailyCheckInDecryptedWithGratitude | null => {
+        const updateCheckIn = (
+          checkIn: DailyCheckInDecryptedWithGratitude | null,
+        ): DailyCheckInDecryptedWithGratitude | null => {
           if (!checkIn || checkIn.id !== variables.id) return checkIn;
           return { ...checkIn, ...variables.data };
         };
@@ -315,7 +330,7 @@ export function useUpdateCheckIn(userId: string): {
 
         queryClient.setQueryData(checkInKeys.today(userId), optimisticData);
       }
-      
+
       return { previousData };
     },
 
@@ -348,9 +363,14 @@ export function useDeleteCheckIn(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, Error, string, { previousData: TodayCheckInsResult | undefined }>({
+  const mutation = useMutation<
+    void,
+    Error,
+    string,
+    { previousData: TodayCheckInsResult | undefined }
+  >({
     mutationKey: ['deleteCheckIn', userId],
-    
+
     mutationFn: async (id: string): Promise<void> => {
       if (!db) throw new Error('Database not initialized');
 
@@ -363,9 +383,9 @@ export function useDeleteCheckIn(userId: string): {
 
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: checkInKeys.today(userId) });
-      
+
       const previousData = queryClient.getQueryData<TodayCheckInsResult>(checkInKeys.today(userId));
-      
+
       if (previousData) {
         const optimisticData: TodayCheckInsResult = {
           ...previousData,
@@ -375,7 +395,7 @@ export function useDeleteCheckIn(userId: string): {
 
         queryClient.setQueryData(checkInKeys.today(userId), optimisticData);
       }
-      
+
       return { previousData };
     },
 

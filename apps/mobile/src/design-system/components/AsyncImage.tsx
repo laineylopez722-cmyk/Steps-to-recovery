@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 import { Skeleton } from './Skeleton';
 import { darkAccent } from '../tokens/modern';
@@ -122,7 +118,12 @@ export function Avatar({ source, name, size = 48, blurHash }: AvatarProps): Reac
 
   if (!source || hasError) {
     return (
-      <View style={[styles.avatar, { width: size, height: size, borderRadius: size / 2, backgroundColor }]}>
+      <View
+        style={[
+          styles.avatar,
+          { width: size, height: size, borderRadius: size / 2, backgroundColor },
+        ]}
+      >
         <Text style={[styles.avatarText, { fontSize: size * 0.4 }]}>{initials}</Text>
       </View>
     );
@@ -146,7 +147,7 @@ function stringToColor(str: string): string {
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  const c = (hash & 0x00FFFFFF).toString(16).toUpperCase();
+  const c = (hash & 0x00ffffff).toString(16).toUpperCase();
   return '#' + '00000'.substring(0, 6 - c.length) + c;
 }
 

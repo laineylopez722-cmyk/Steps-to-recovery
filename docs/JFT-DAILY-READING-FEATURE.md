@@ -9,6 +9,7 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
 ### Components
 
 #### 1. **DailyReadingCard** (`apps/mobile/src/features/home/components/DailyReadingCard.tsx`)
+
 - Displays on HomeScreen below the sobriety counter
 - Shows today's reading title and preview (first ~150 chars)
 - Two action buttons:
@@ -20,6 +21,7 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
 - Fully accessible with proper ARIA labels
 
 #### 2. **DailyReadingScreen** (`apps/mobile/src/features/home/screens/DailyReadingScreen.tsx`)
+
 - Full-screen reading experience
 - Beautiful typography optimized for reading
 - Quick reflection input (inline)
@@ -31,6 +33,7 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
 ### Data Layer
 
 #### Daily Readings Content (`packages/shared/constants/dailyReadings.ts`)
+
 - 35+ original daily meditations (currently)
 - Each reading includes:
   - `id`: Unique identifier
@@ -41,6 +44,7 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
   - `source`: 'jft' (Just For Today)
 
 **Content Themes:**
+
 - Recovery principles (one day at a time, surrender, gratitude)
 - Step-related themes (honesty, willingness, inventory)
 - Common challenges (cravings, relationships, triggers)
@@ -48,12 +52,14 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
 - Service and community
 
 **Content Tone:**
+
 - Gentle, not preachy
 - Hopeful, not toxic positivity
 - Practical, not abstract
 - Inclusive (AA/NA/CA/all programs)
 
 #### Types (`packages/shared/types/index.ts`)
+
 ```typescript
 export interface DailyReading {
   id: string;
@@ -73,6 +79,7 @@ export interface DailyReadingReflection {
 ```
 
 #### Database Schema (`supabase-migration-reading-reflections.sql`)
+
 ```sql
 CREATE TABLE reading_reflections (
   id UUID PRIMARY KEY,
@@ -92,7 +99,9 @@ CREATE TABLE reading_reflections (
 ### State Management
 
 #### Reading Store (`apps/mobile/src/store/readingStore.ts`)
+
 Zustand store managing:
+
 - `todayReading`: Current day's reading
 - `todayReflection`: User's reflection (if exists)
 - `reflections`: All user reflections
@@ -100,7 +109,9 @@ Zustand store managing:
 - Actions for loading, saving, and calculating streaks
 
 #### Reading Database Hook (`apps/mobile/src/hooks/useReadingDatabase.ts`)
+
 Bridges store with SQLite database:
+
 - Initializes readings in local DB
 - Loads today's reading
 - Saves reflections (encrypted)
@@ -108,7 +119,9 @@ Bridges store with SQLite database:
 - Syncs with Supabase
 
 #### Reading Hook (`apps/mobile/src/hooks/useReading.ts`)
+
 Simplified UI hook providing:
+
 - `todayReading` - Today's reading content
 - `hasReflectedToday` - Boolean reflection status
 - `readingStreak` - Consecutive reflection days
@@ -119,6 +132,7 @@ Simplified UI hook providing:
 ### Navigation
 
 #### Routes Added
+
 ```typescript
 // Home Stack
 export type HomeStackParamList = {
@@ -130,17 +144,20 @@ export type HomeStackParamList = {
 // Journal Stack (enhanced)
 export type JournalStackParamList = {
   JournalList: undefined;
-  JournalEditor: { 
-    mode?: 'create' | 'edit';
-    entryId?: string;
-    initialTitle?: string;      // NEW: Pre-fill title
-    initialContent?: string;    // NEW: Pre-fill content
-    tags?: string[];            // NEW: Pre-fill tags
-  } | undefined;
+  JournalEditor:
+    | {
+        mode?: 'create' | 'edit';
+        entryId?: string;
+        initialTitle?: string; // NEW: Pre-fill title
+        initialContent?: string; // NEW: Pre-fill content
+        tags?: string[]; // NEW: Pre-fill tags
+      }
+    | undefined;
 };
 ```
 
 #### Navigation Flow
+
 1. **Home → DailyReading**
    - User taps "Read More" on DailyReadingCard
    - Opens full reading screen
@@ -159,24 +176,28 @@ export type JournalStackParamList = {
 ## Features
 
 ### 1. Daily Reading Display
+
 - Reading changes daily based on date
 - Cycles through available readings (MM-DD format)
 - Persistent across app restarts
 - Works offline (readings stored locally)
 
 ### 2. Reflection Tracking
+
 - One reflection per day per user
 - Encrypted client-side before storage
 - Tracks consecutive day streaks
 - Visual feedback (🔥 streak badge)
 
 ### 3. Journal Integration
+
 - Pre-filled journal entries from readings
 - Auto-tagged "JFT Reflection"
 - Seamless navigation between reading and journal
 - Reflection history preserved in journal
 
 ### 4. Streak System
+
 - Calculates consecutive days with reflections
 - Displays motivational messages:
   - 0 days: "Start your streak today!"
@@ -187,13 +208,16 @@ export type JournalStackParamList = {
   - 90+ days: "X day streak - Incredible dedication!"
 
 ### 5. Accessibility
+
 Every interactive element includes:
+
 - `accessibilityLabel` - Clear description
 - `accessibilityRole` - Semantic role
 - `accessibilityHint` - Action result
 - `accessibilityState` - Current state
 
 Example:
+
 ```tsx
 <Pressable
   accessibilityLabel="Reflect on today's reading"
@@ -207,6 +231,7 @@ Example:
 ## Design System
 
 ### Visual Style
+
 - **Glassmorphic cards** with blur and transparency
 - **Gradient borders** (purple-pink) for reading cards
 - **Gradient buttons** for primary actions
@@ -215,12 +240,14 @@ Example:
 - **Haptic feedback** on interactions
 
 ### Typography
+
 - **Title**: H2 (28-32px), bold, high contrast
 - **Body**: 18px, line-height 28px, readable
 - **Labels**: 12-14px, uppercase, medium weight
 - **Reflection prompt**: Italic, lower contrast
 
 ### Colors (darkAccent tokens)
+
 - **Primary**: #6366F1 (indigo)
 - **Success**: #22C55E (green)
 - **Warning**: #FBBF24 (amber)
@@ -243,6 +270,7 @@ Example:
 ## Future Enhancements
 
 ### Phase 2 (Optional)
+
 1. **Bookmarks/Favorites**
    - User can save favorite readings
    - "My Bookmarks" screen
@@ -303,12 +331,14 @@ When adding new readings:
 ### Migration Required: reading_reflections table
 
 Run in Supabase SQL Editor:
+
 ```bash
 # File: supabase-migration-reading-reflections.sql
 # This creates the reading_reflections table with proper RLS policies
 ```
 
 **Migration adds:**
+
 - `reading_reflections` table
 - Indexes for performance (user, date, composite)
 - RLS policies (users can only access their own)
@@ -318,34 +348,36 @@ Run in Supabase SQL Editor:
 ## API Reference
 
 ### useReading Hook
+
 ```typescript
 const {
   // State
-  todayReading,           // DailyReading | null
-  todayReflection,        // DailyReadingReflection | null
-  reflections,            // DailyReadingReflection[]
-  readingStreak,          // number
-  isLoading,              // boolean
-  error,                  // string | null
-  
+  todayReading, // DailyReading | null
+  todayReflection, // DailyReadingReflection | null
+  reflections, // DailyReadingReflection[]
+  readingStreak, // number
+  isLoading, // boolean
+  error, // string | null
+
   // Computed
-  hasReflectedToday,      // boolean
-  formattedDate,          // string (e.g., "Monday, January 1")
-  shortDate,              // string (e.g., "Jan 1")
-  readingPreview,         // string (truncated)
-  streakMessage,          // string (motivational)
-  
+  hasReflectedToday, // boolean
+  formattedDate, // string (e.g., "Monday, January 1")
+  shortDate, // string (e.g., "Jan 1")
+  readingPreview, // string (truncated)
+  streakMessage, // string (motivational)
+
   // Actions
-  loadTodayReading,       // () => Promise<void>
-  loadReflections,        // () => Promise<void>
-  submitReflection,       // (text: string) => Promise<DailyReadingReflection>
-  getReading,             // (date: Date) => Promise<DailyReading | null>
-  getReflection,          // (date: Date) => Promise<DailyReadingReflection | null>
-  decryptReflection,      // (reflection: DailyReadingReflection) => Promise<string>
+  loadTodayReading, // () => Promise<void>
+  loadReflections, // () => Promise<void>
+  submitReflection, // (text: string) => Promise<DailyReadingReflection>
+  getReading, // (date: Date) => Promise<DailyReading | null>
+  getReflection, // (date: Date) => Promise<DailyReadingReflection | null>
+  decryptReflection, // (reflection: DailyReadingReflection) => Promise<string>
 } = useReading();
 ```
 
 ### Component Props
+
 ```typescript
 // DailyReadingCard
 interface DailyReadingCardProps {
@@ -357,6 +389,7 @@ interface DailyReadingCardProps {
 ```
 
 ## File Structure
+
 ```
 apps/mobile/src/
 ├── features/
@@ -414,12 +447,14 @@ Root/
 ## Support & Maintenance
 
 ### Adding New Readings
+
 1. Edit `packages/shared/constants/dailyReadings.ts`
 2. Add entry with format: `'MM-DD': { ... }`
 3. Follow content guidelines above
 4. Test on device by changing date
 
 ### Troubleshooting
+
 - **Reading not loading**: Check database initialization
 - **Reflection not saving**: Check encryption key setup
 - **Streak incorrect**: Check reflection table queries

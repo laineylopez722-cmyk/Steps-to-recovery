@@ -6,6 +6,7 @@
  * - No 'any' types (TypeScript strict mode)
  * - Accessibility requirements
  * - React best practices
+ * @see https://docs.expo.dev/guides/using-eslint/
  */
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';

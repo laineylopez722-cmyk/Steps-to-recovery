@@ -11,12 +11,13 @@ import {
   Text,
   StyleSheet,
   TouchableWithoutFeedback,
-  Animated,
   Dimensions,
   type ViewStyle,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { Button } from './Button';
+import Animated, { type AnimatedProps, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import type { ReactElement } from 'react';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -51,53 +52,23 @@ export function Modal({
   children,
   dismissable = true,
   testID,
-}: ModalProps): React.ReactElement {
+}: ModalProps): ReactElement {
   const theme = useTheme();
-  const slideAnim = React.useRef(new Animated.Value(SCREEN_HEIGHT)).current;
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+    const slideAnim = useSharedValue(SCREEN_HEIGHT);
+  const fadeAnim = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
       // Animate in
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: theme.animations.durations.normal,
-          useNativeDriver: true,
-        }),
-        variant === 'bottom'
-          ? Animated.spring(slideAnim, {
-              toValue: 0,
-              tension: 65,
-              friction: 11,
-              useNativeDriver: true,
-            })
-          : Animated.timing(slideAnim, {
-              toValue: 0,
-              duration: 0,
-              useNativeDriver: true,
-            }),
-      ]).start();
+                        fadeAnim.value = withTiming(1, { duration: theme.animations.durations.normal });
+      if (variant === 'bottom') {
+        slideAnim.value = withSpring(0, { damping: 25, stiffness: 300 });
+      } else {
+        slideAnim.value = withTiming(0, { duration: 0 });
+      }
     } else {
       // Animate out
-      Animated.parallel([
-        Animated.timing(fadeAnim, {
-          toValue: 0,
-          duration: theme.animations.durations.fast,
-          useNativeDriver: true,
-        }),
-        variant === 'bottom'
-          ? Animated.timing(slideAnim, {
-              toValue: SCREEN_HEIGHT,
-              duration: theme.animations.durations.fast,
-              useNativeDriver: true,
-            })
-          : Animated.timing(slideAnim, {
-              toValue: 0,
-              duration: 0,
-              useNativeDriver: true,
-            }),
-      ]).start();
+      fadeAnim.value = withTiming(0, { duration: theme.animations.durations.fast });
     }
   }, [visible, variant, slideAnim, fadeAnim, theme.animations.durations]);
 
@@ -110,22 +81,8 @@ export function Modal({
   const containerStyle: ViewStyle =
     variant === 'center' ? styles.centerContainer : styles.bottomContainer;
 
-  const contentStyle: Animated.AnimatedProps<ViewStyle> =
-    variant === 'center'
-      ? {
-          ...styles.centerContent,
-          backgroundColor: theme.colors.surface,
-          borderRadius: theme.radius.modal,
-          ...(!theme.isDark ? theme.shadows.lg : theme.shadows.lgDark),
-        }
-      : {
-          ...styles.bottomContent,
-          backgroundColor: theme.colors.surface,
-          borderTopLeftRadius: theme.radius.modal,
-          borderTopRightRadius: theme.radius.modal,
-          ...(!theme.isDark ? theme.shadows.xl : theme.shadows.xlDark),
-          transform: [{ translateY: slideAnim }],
-        };
+  const contentStyle: ViewStyle =
+      variant === 'center' ? styles.centerContent : styles.bottomContent;
 
   return (
     <RNModal
@@ -142,12 +99,12 @@ export function Modal({
             styles.backdrop,
             {
               backgroundColor: theme.colors.overlay,
-              opacity: fadeAnim,
+              opacity: fadeAnim.value,
             },
           ]}
         >
           <TouchableWithoutFeedback>
-            <Animated.View style={[containerStyle, contentStyle]}>
+            <Animated.View style={[containerStyle, contentStyle as ViewStyle & AnimatedProps<ViewStyle> ]}>
               {/* Header */}
               {title && (
                 <View style={styles.header}>

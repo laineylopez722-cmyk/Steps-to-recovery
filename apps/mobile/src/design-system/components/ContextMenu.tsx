@@ -22,7 +22,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
 } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../hooks/useTheme';
@@ -166,9 +165,9 @@ export function ContextMenu({
     .enabled(enabled)
     .minDuration(longPressDuration)
     .onStart(() => {
-      runOnJS(triggerOpenHaptic)();
+      triggerOpenHaptic();
       triggerScale.value = withSpring(0.95, { damping: 15, stiffness: 300 });
-      runOnJS(openMenu)();
+      openMenu();
     });
 
   // Calculate menu position
@@ -334,4 +333,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-

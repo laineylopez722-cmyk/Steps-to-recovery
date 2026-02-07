@@ -5,13 +5,13 @@ import type { RootStackParamList } from './types';
 
 /**
  * Navigation Utilities
- * 
+ *
  * Provides centralized navigation helpers for programmatic navigation.
- * 
+ *
  * @example
  * ```tsx
  * import { navigationRef, goBack } from './navigation/navigationUtils';
- * 
+ *
  * // Go back
  * goBack();
  * ```
@@ -26,9 +26,7 @@ export const navigationRef = {
  * Set the navigation container reference
  * Call this in your root navigation component
  */
-export function setNavigationRef(
-  ref: NavigationContainerRef<RootStackParamList> | null
-): void {
+export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList> | null): void {
   navigationRef.current = ref;
 }
 
@@ -36,13 +34,13 @@ export function setNavigationRef(
  * Navigate to a screen
  * Note: Use type assertion for screen names to avoid complex type issues
  */
-export function navigate(
-  name: string,
-  params?: Record<string, unknown>
-): void {
+export function navigate(name: string, params?: Record<string, unknown>): void {
   if (navigationRef.current) {
     // Use type assertion to avoid complex navigation type issues
-    (navigationRef.current.navigate as (name: string, params?: Record<string, unknown>) => void)(name, params);
+    (navigationRef.current.navigate as (name: string, params?: Record<string, unknown>) => void)(
+      name,
+      params,
+    );
     logger.debug('Navigation: navigate', { name, params });
   } else {
     logger.warn('Navigation: Navigation ref not set');
@@ -55,7 +53,7 @@ export function navigate(
 export function navigateNested(
   parent: string,
   screen: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
 ): void {
   navigate(parent, { screen, params });
 }
@@ -81,53 +79,79 @@ export function navigateToAuth(screen?: 'Login' | 'SignUp' | 'ForgotPassword'): 
 /**
  * Navigate to a specific tab in the main navigator
  */
-export function navigateToMainTab(
-  tab: string,
-  params?: Record<string, unknown>
-): void {
+export function navigateToMainTab(tab: string, params?: Record<string, unknown>): void {
   navigate('MainApp', { screen: tab, params });
 }
 
 // Feature navigation helpers
 export const featureNavigation = {
-  goHome(): void { navigateToMainTab('Home'); },
-  goToJournal(): void { navigateToMainTab('Journal'); },
+  goHome(): void {
+    navigateToMainTab('Home');
+  },
+  goToJournal(): void {
+    navigateToMainTab('Journal');
+  },
   goToJournalEditor(mode: 'create' | 'edit' = 'create', entryId?: string): void {
     navigateToMainTab('Journal', { screen: 'JournalEditor', params: { mode, entryId } });
   },
-  goToSteps(): void { navigateToMainTab('Steps'); },
+  goToSteps(): void {
+    navigateToMainTab('Steps');
+  },
   goToStepDetail(stepNumber: number): void {
     navigateToMainTab('Steps', { screen: 'StepDetail', params: { stepNumber } });
   },
-  goToMeetings(): void { navigateToMainTab('Meetings'); },
+  goToMeetings(): void {
+    navigateToMainTab('Meetings');
+  },
   goToMeetingDetail(meetingId: string): void {
     navigateToMainTab('Meetings', { screen: 'MeetingDetail', params: { meetingId } });
   },
-  goToProfile(): void { navigateToMainTab('Profile'); },
-  goToSponsor(): void { navigateToMainTab('Profile', { screen: 'Sponsor' }); },
-  goToMorningIntention(): void { navigateToMainTab('Home', { screen: 'MorningIntention' }); },
-  goToEveningPulse(): void { navigateToMainTab('Home', { screen: 'EveningPulse' }); },
-  goToEmergency(): void { navigateToMainTab('Home', { screen: 'Emergency' }); },
-  goToDailyReading(): void { navigateToMainTab('Home', { screen: 'DailyReading' }); },
-  goToProgressDashboard(): void { navigateToMainTab('Home', { screen: 'ProgressDashboard' }); },
+  goToProfile(): void {
+    navigateToMainTab('Profile');
+  },
+  goToSponsor(): void {
+    navigateToMainTab('Profile', { screen: 'Sponsor' });
+  },
+  goToMorningIntention(): void {
+    navigateToMainTab('Home', { screen: 'MorningIntention' });
+  },
+  goToEveningPulse(): void {
+    navigateToMainTab('Home', { screen: 'EveningPulse' });
+  },
+  goToEmergency(): void {
+    navigateToMainTab('Home', { screen: 'Emergency' });
+  },
+  goToDailyReading(): void {
+    navigateToMainTab('Home', { screen: 'DailyReading' });
+  },
+  goToProgressDashboard(): void {
+    navigateToMainTab('Home', { screen: 'ProgressDashboard' });
+  },
 };
 
 // Auth navigation helpers
 export const authNavigation = {
-  goToLogin(): void { navigateToAuth('Login'); },
-  goToSignUp(): void { navigateToAuth('SignUp'); },
-  goToForgotPassword(): void { navigateToAuth('ForgotPassword'); },
-  goToMainApp(): void { navigateToMainApp(); },
-  logout(): void { navigateToAuth('Login'); },
+  goToLogin(): void {
+    navigateToAuth('Login');
+  },
+  goToSignUp(): void {
+    navigateToAuth('SignUp');
+  },
+  goToForgotPassword(): void {
+    navigateToAuth('ForgotPassword');
+  },
+  goToMainApp(): void {
+    navigateToMainApp();
+  },
+  logout(): void {
+    navigateToAuth('Login');
+  },
 };
 
 /**
  * Push a screen onto the stack
  */
-export function push(
-  name: string,
-  params?: Record<string, unknown>
-): void {
+export function push(name: string, params?: Record<string, unknown>): void {
   if (navigationRef.current) {
     navigationRef.current.dispatch(StackActions.push(name, params));
     logger.debug('Navigation: push', { name, params });
@@ -139,10 +163,7 @@ export function push(
 /**
  * Replace current screen with new one
  */
-export function replace(
-  name: string,
-  params?: Record<string, unknown>
-): void {
+export function replace(name: string, params?: Record<string, unknown>): void {
   if (navigationRef.current) {
     navigationRef.current.dispatch(StackActions.replace(name, params));
     logger.debug('Navigation: replace', { name, params });
@@ -227,10 +248,7 @@ export function isCurrentScreen(name: string): boolean {
 /**
  * Navigate to screen only if not already there
  */
-export function navigateIfNotCurrent(
-  name: string,
-  params?: Record<string, unknown>
-): void {
+export function navigateIfNotCurrent(name: string, params?: Record<string, unknown>): void {
   if (getCurrentRoute() !== name) {
     navigate(name, params);
   } else {
@@ -242,7 +260,7 @@ export function navigateIfNotCurrent(
 export const deepLinkNavigation = {
   handleDeepLink(url: string): void {
     logger.info('Handling deep link', { url });
-    
+
     try {
       const parsed = new URL(url);
       const path = parsed.pathname;

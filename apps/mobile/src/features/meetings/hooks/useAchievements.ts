@@ -30,16 +30,12 @@ export function useAchievements() {
     error: unlockedError,
   } = useQuery({
     queryKey: ['achievements', userId],
-    queryFn: () =>
-      userId ? checkInService.getAchievements(userId) : [],
+    queryFn: () => (userId ? checkInService.getAchievements(userId) : []),
     enabled: !!userId,
   });
 
   // Get current stats for progress calculation
-  const {
-    data: stats,
-    isLoading: isLoadingStats,
-  } = useQuery({
+  const { data: stats, isLoading: isLoadingStats } = useQuery({
     queryKey: ['meetingStats', userId],
     queryFn: () =>
       userId
@@ -49,19 +45,15 @@ export function useAchievements() {
   });
 
   // Combine achievement definitions with unlock status
-  const achievements: AchievementWithStatus[] = MEETING_ACHIEVEMENTS.map(
-    (achievement) => {
-      const unlocked = unlockedAchievements.find(
-        (u) => u.achievementKey === achievement.key
-      );
+  const achievements: AchievementWithStatus[] = MEETING_ACHIEVEMENTS.map((achievement) => {
+    const unlocked = unlockedAchievements.find((u) => u.achievementKey === achievement.key);
 
-      return {
-        ...achievement,
-        unlocked: !!unlocked,
-        unlockedAt: unlocked?.unlockedAt,
-      };
-    }
-  );
+    return {
+      ...achievement,
+      unlocked: !!unlocked,
+      unlockedAt: unlocked?.unlockedAt,
+    };
+  });
 
   // Calculate progress for each achievement
   const achievementsWithProgress = achievements.map((achievement) => {
@@ -73,14 +65,14 @@ export function useAchievements() {
         case 'total':
           progress = Math.min(
             ((stats?.totalMeetings || 0) / (achievement.requirement as number)) * 100,
-            100
+            100,
           );
           progressText = `${stats?.totalMeetings || 0} / ${achievement.requirement}`;
           break;
         case 'streak':
           progress = Math.min(
             ((stats?.currentStreak || 0) / (achievement.requirement as number)) * 100,
-            100
+            100,
           );
           progressText = `${stats?.currentStreak || 0} / ${achievement.requirement} days`;
           break;
@@ -140,7 +132,7 @@ export function useRecentAchievements(sinceDays: number = 7) {
     queryKey: ['recentAchievements', userId, sinceDays],
     queryFn: async () => {
       if (!userId) return [];
-      
+
       const allAchievements = await checkInService.getAchievements(userId);
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - sinceDays);

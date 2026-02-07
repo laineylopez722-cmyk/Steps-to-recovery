@@ -9,15 +9,9 @@
     "userInterfaceStyle": "dark",
     "jsEngine": "hermes",
     "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0f172a"
-    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.recovery.stepstorecovery",
-      "buildNumber": "1",
       "infoPlist": {
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to notify you when you're near saved meeting locations to provide timely support.",
         "NSLocationWhenInUseUsageDescription": "We use your location to help you find nearby meetings and save locations for reminders.",
@@ -33,7 +27,6 @@
     },
     "android": {
       "package": "com.recovery.stepstorecovery",
-      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0f172a"
@@ -93,9 +86,18 @@
       ]
     },
     "plugins": [
+      "expo-dev-client",
       "expo-system-ui",
       "expo-secure-store",
       "expo-sqlite",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0f172a",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200
+        }
+      ],
       [
         "expo-notifications",
         {
@@ -125,18 +127,14 @@
       "fallbackToCacheTimeout": 30000,
       "checkAutomatically": "ON_LOAD"
     },
-    "runtimeVersion": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "extra": {
       "eas": {
         "projectId": "31a006e3-47da-4995-b63a-ded28567f594"
       }
     },
-    "owner": "ripkdrs-organization",
-    "sdkVersion": "54.0.0",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ]
+    "owner": "ripkdrs-organization"
   }
 }

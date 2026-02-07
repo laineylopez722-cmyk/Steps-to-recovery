@@ -12,7 +12,6 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   Easing,
-  runOnJS,
   cancelAnimation,
 } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
@@ -113,14 +112,12 @@ export function BreathingCircle({
       opacity.value = withTiming(0.3, { duration: 500 });
       return;
     }
-
     if (currentCycle >= cycles) {
-      runOnJS(handleComplete)();
+      handleComplete();
       return;
     }
-
     // Inhale - expand
-    runOnJS(handlePhaseChange)('inhale');
+    handlePhaseChange('inhale');
     scale.value = withTiming(1, {
       duration: phaseDuration,
       easing: Easing.inOut(Easing.ease),
@@ -129,12 +126,12 @@ export function BreathingCircle({
 
     // Hold 1
     const hold1Timeout = setTimeout(() => {
-      runOnJS(handlePhaseChange)('hold1');
+      handlePhaseChange('hold1');
     }, phaseDuration);
 
     // Exhale - contract
     const exhaleTimeout = setTimeout(() => {
-      runOnJS(handlePhaseChange)('exhale');
+      handlePhaseChange('exhale');
       scale.value = withTiming(0.5, {
         duration: phaseDuration,
         easing: Easing.inOut(Easing.ease),
@@ -144,12 +141,12 @@ export function BreathingCircle({
 
     // Hold 2
     const hold2Timeout = setTimeout(() => {
-      runOnJS(handlePhaseChange)('hold2');
+      handlePhaseChange('hold2');
     }, phaseDuration * 3);
 
     // Next cycle
     const nextCycleTimeout = setTimeout(() => {
-      runOnJS(incrementCycle)();
+      incrementCycle();
     }, phaseDuration * 4);
 
     return () => {
@@ -269,4 +266,3 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
-

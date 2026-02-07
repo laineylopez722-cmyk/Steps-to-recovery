@@ -29,7 +29,7 @@ export * from './native-only-animated-view';
 // App-specific components (kept from original)
 export { Slider } from './Slider';
 
-// Icon component (shadcn style - Lucide icons with NativeWind support)
+// Icon component (shadcn style - Lucide icons with Uniwind support)
 export { Icon } from './Icon';
 
 // Legacy compatibility wrappers (use new components for new code)

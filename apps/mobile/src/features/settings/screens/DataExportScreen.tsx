@@ -28,15 +28,19 @@ const DATA_TYPES = [
 
 export function DataExportScreen(): React.ReactElement {
   const [selectedFormat, setSelectedFormat] = useState('json');
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(['journal', 'checkins', 'meetings', 'steps', 'profile']);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([
+    'journal',
+    'checkins',
+    'meetings',
+    'steps',
+    'profile',
+  ]);
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const { showToast } = useToast();
 
   const toggleDataType = (id: string) => {
-    setSelectedTypes((prev) =>
-      prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]
-    );
+    setSelectedTypes((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]));
   };
 
   const handleExport = async () => {
@@ -67,8 +71,11 @@ export function DataExportScreen(): React.ReactElement {
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={[darkAccent.background, darkAccent.surface]} style={StyleSheet.absoluteFill} />
-      
+      <LinearGradient
+        colors={[darkAccent.background, darkAccent.surface]}
+        style={StyleSheet.absoluteFill}
+      />
+
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView style={styles.scrollView} contentContainerStyle={styles.content}>
           {/* Header */}
@@ -97,7 +104,12 @@ export function DataExportScreen(): React.ReactElement {
                     size={28}
                     color={selectedFormat === format.id ? darkAccent.primary : darkAccent.textMuted}
                   />
-                  <Text style={[styles.formatLabel, selectedFormat === format.id && styles.formatLabelSelected]}>
+                  <Text
+                    style={[
+                      styles.formatLabel,
+                      selectedFormat === format.id && styles.formatLabelSelected,
+                    ]}
+                  >
                     {format.label}
                   </Text>
                   <Text style={styles.formatDesc}>{format.description}</Text>
@@ -135,7 +147,8 @@ export function DataExportScreen(): React.ReactElement {
             <View style={styles.privacyNotice}>
               <MaterialIcons name="info-outline" size={20} color={darkAccent.info} />
               <Text style={styles.privacyText}>
-                Your exported data will be unencrypted. Keep it secure and do not share it with untrusted parties.
+                Your exported data will be unencrypted. Keep it secure and do not share it with
+                untrusted parties.
               </Text>
             </View>
           </Animated.View>

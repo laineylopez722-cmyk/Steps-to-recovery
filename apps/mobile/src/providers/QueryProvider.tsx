@@ -49,7 +49,7 @@ interface QueryProviderProps {
 
 /**
  * QueryProvider - React Query with offline persistence
- * 
+ *
  * Features:
  * - Automatic cache persistence across app restarts
  * - Offline-first data fetching (shows stale data while loading)
@@ -66,12 +66,12 @@ export function QueryProvider({ children }: QueryProviderProps): React.ReactElem
     // Update React Query's online status based on NetInfo
     const unsubscribe = NetInfo.addEventListener((state) => {
       const isOnline = state.isConnected === true && state.isInternetReachable !== false;
-      
+
       // Only log when status changes
       if (onlineManager.isOnline() !== isOnline) {
         logger.info('Network status changed', { isOnline });
       }
-      
+
       onlineManager.setOnline(isOnline);
     });
 
@@ -84,7 +84,7 @@ export function QueryProvider({ children }: QueryProviderProps): React.ReactElem
       if (nextAppState === 'active') {
         // Resume any paused mutations when app comes to foreground
         queryClient.resumePausedMutations();
-        
+
         // Invalidate stale queries to refresh data
         queryClient.invalidateQueries({
           predicate: (query) => {
@@ -160,9 +160,9 @@ export function useIsOnline(): boolean {
  */
 export async function syncPendingMutations(queryClient: QueryClient): Promise<void> {
   const mutationCache = queryClient.getMutationCache();
-  const pendingMutations = mutationCache.getAll().filter(
-    (mutation) => mutation.state.status === 'pending'
-  );
+  const pendingMutations = mutationCache
+    .getAll()
+    .filter((mutation) => mutation.state.status === 'pending');
 
   if (pendingMutations.length === 0) {
     logger.info('No pending mutations to sync');

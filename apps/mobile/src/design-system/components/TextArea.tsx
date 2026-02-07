@@ -3,8 +3,16 @@
  * Multi-line text input optimized for longer content
  */
 
-import React, { forwardRef } from 'react';
-import { View, TextInput, Text, StyleSheet, type TextInputProps, type ViewStyle } from 'react-native';
+import { forwardRef, type Ref } from 'react';
+import { useState } from 'react';
+import {
+  View,
+  TextInput,
+  Text,
+  StyleSheet,
+  type TextInputProps,
+  type ViewStyle,
+} from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export interface TextAreaProps extends Omit<
@@ -37,10 +45,10 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
     showCharacterCount = false,
     ...textInputProps
   }: TextAreaProps,
-  ref: React.ForwardedRef<TextInput>,
+  ref: Ref<TextInput>,
 ) {
   const theme = useTheme();
-  const [isFocused, setIsFocused] = React.useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   // Character count display
   const characterCount = value.length;

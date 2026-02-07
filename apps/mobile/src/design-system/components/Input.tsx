@@ -3,7 +3,7 @@
  * Text input with label, error states, and icon support
  */
 
-import React, { useState, forwardRef } from 'react';
+import { useState, forwardRef, type Ref } from 'react';
 import {
   View,
   TextInput,
@@ -15,16 +15,17 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
+import type { ReactNode } from 'react';
 
 export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText'> {
   label: string;
   value: string;
-  onChangeText: (text: string) => void;
+  onChangeText?: (text: string) => void;
   error?: string;
   hint?: string;
   required?: boolean;
-  leftIcon?: React.ReactNode;
-  rightIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   containerStyle?: ViewStyle;
 }
 
@@ -42,7 +43,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
     containerStyle,
     ...textInputProps
   }: InputProps,
-  ref: React.ForwardedRef<TextInput>,
+  ref: Ref<TextInput>,
 ) {
   const theme = useTheme();
   const [isFocused, setIsFocused] = useState(false);
@@ -65,7 +66,8 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       <View style={styles.labelContainer}>
         {required ? (
           <Text style={[theme.typography.label, { color: theme.colors.text }]}>
-            {label}<Text style={{ color: theme.colors.danger }}> *</Text>
+            {label}
+            <Text style={{ color: theme.colors.danger }}> *</Text>
           </Text>
         ) : (
           <Text style={[theme.typography.label, { color: theme.colors.text }]}>{label}</Text>
@@ -84,7 +86,11 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           error && styles.inputError,
         ]}
       >
-        {leftIcon ? <View key="left-icon" style={styles.leftIconContainer}>{leftIcon}</View> : null}
+        {leftIcon ? (
+          <View key="left-icon" style={styles.leftIconContainer}>
+            {leftIcon}
+          </View>
+        ) : null}
         <TextInput
           key="text-input"
           ref={ref}
@@ -118,17 +124,25 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
             />
           </TouchableOpacity>
         ) : rightIcon ? (
-          <View key="right-action" style={styles.rightIconContainer}>{rightIcon}</View>
+          <View key="right-action" style={styles.rightIconContainer}>
+            {rightIcon}
+          </View>
         ) : null}
       </View>
 
       {/* Error or Hint Text */}
       {error ? (
-        <Text key="helper-text" style={[theme.typography.caption, styles.errorText, { color: theme.colors.danger }]}>
+        <Text
+          key="helper-text"
+          style={[theme.typography.caption, styles.errorText, { color: theme.colors.danger }]}
+        >
           {error}
         </Text>
       ) : hint ? (
-        <Text key="helper-text" style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+        <Text
+          key="helper-text"
+          style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
+        >
           {hint}
         </Text>
       ) : null}

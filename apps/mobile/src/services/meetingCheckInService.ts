@@ -46,7 +46,7 @@ export interface NinetyInNinetyProgress {
  */
 export async function checkInToMeeting(
   userId: string,
-  meetingData: Omit<MeetingCheckIn, 'id' | 'userId' | 'createdAt'>
+  meetingData: Omit<MeetingCheckIn, 'id' | 'userId' | 'createdAt'>,
 ): Promise<{ checkIn: MeetingCheckIn; newAchievements: string[] } | null> {
   try {
     // Insert check-in
@@ -106,7 +106,7 @@ export async function checkInToMeeting(
  */
 export async function getMeetingCheckIns(
   userId: string,
-  limit?: number
+  limit?: number,
 ): Promise<MeetingCheckIn[]> {
   try {
     let query = supabase
@@ -189,9 +189,7 @@ export async function calculateTotal(userId: string): Promise<number> {
 /**
  * Get 90-in-90 challenge progress
  */
-export async function check90In90Progress(
-  userId: string
-): Promise<NinetyInNinetyProgress> {
+export async function check90In90Progress(userId: string): Promise<NinetyInNinetyProgress> {
   try {
     const { data, error } = await supabase.rpc('get_90_in_90_progress', {
       user_uuid: userId,
@@ -233,9 +231,7 @@ export async function check90In90Progress(
 /**
  * Get user's unlocked achievements
  */
-export async function getAchievements(
-  userId: string
-): Promise<Achievement[]> {
+export async function getAchievements(userId: string): Promise<Achievement[]> {
   try {
     const { data, error } = await supabase
       .from('achievements')
@@ -292,15 +288,11 @@ export async function getMeetingStats(userId: string): Promise<MeetingStats> {
 /**
  * Calculate longest streak from check-in history
  */
-function calculateLongestStreakFromCheckIns(
-  checkIns: MeetingCheckIn[]
-): number {
+function calculateLongestStreakFromCheckIns(checkIns: MeetingCheckIn[]): number {
   if (checkIns.length === 0) return 0;
 
   // Get unique dates and sort
-  const uniqueDates = Array.from(
-    new Set(checkIns.map((c) => c.createdAt.split('T')[0]))
-  ).sort();
+  const uniqueDates = Array.from(new Set(checkIns.map((c) => c.createdAt.split('T')[0]))).sort();
 
   let longestStreak = 1;
   let currentStreak = 1;
@@ -308,9 +300,7 @@ function calculateLongestStreakFromCheckIns(
   for (let i = 1; i < uniqueDates.length; i++) {
     const prevDate = new Date(uniqueDates[i - 1]);
     const currDate = new Date(uniqueDates[i]);
-    const dayDiff = Math.floor(
-      (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const dayDiff = Math.floor((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
 
     if (dayDiff === 1) {
       currentStreak++;
@@ -337,7 +327,7 @@ export async function hasCheckedInToday(userId: string): Promise<boolean> {
       .limit(1);
 
     if (error) {
-      logger.error('Error checking today\'s check-in:', error);
+      logger.error("Error checking today's check-in:", error);
       return false;
     }
 
@@ -353,7 +343,7 @@ export async function hasCheckedInToday(userId: string): Promise<boolean> {
  */
 export async function hasCheckedInToMeetingToday(
   userId: string,
-  meetingId: string
+  meetingId: string,
 ): Promise<boolean> {
   try {
     const today = new Date().toISOString().split('T')[0];

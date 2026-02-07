@@ -40,10 +40,7 @@ export function AnimatedCheckbox({
   const handlePress = async () => {
     if (disabled) return;
     await light();
-    scale.value = withSequence(
-      withTiming(0.9, { duration: 50 }),
-      withSpring(1, { damping: 15 })
-    );
+    scale.value = withSequence(withTiming(0.9, { duration: 50 }), withSpring(1, { damping: 15 }));
     onToggle();
   };
 
@@ -52,13 +49,9 @@ export function AnimatedCheckbox({
     backgroundColor: interpolate(
       checkProgress.value,
       [0, 1],
-      [darkAccent.surfaceHigh, darkAccent.success]
+      [darkAccent.surfaceHigh, darkAccent.success],
     ),
-    borderColor: interpolate(
-      checkProgress.value,
-      [0, 1],
-      [darkAccent.border, darkAccent.success]
-    ),
+    borderColor: interpolate(checkProgress.value, [0, 1], [darkAccent.border, darkAccent.success]),
   }));
 
   const checkStyle = useAnimatedStyle(() => ({
@@ -81,9 +74,7 @@ export function AnimatedCheckbox({
         </Animated.View>
       </Animated.View>
       {label && (
-        <Text style={[styles.checkboxLabel, disabled && styles.disabledText]}>
-          {label}
-        </Text>
+        <Text style={[styles.checkboxLabel, disabled && styles.disabledText]}>{label}</Text>
       )}
     </Pressable>
   );
@@ -120,7 +111,7 @@ export function AnimatedToggle({
     backgroundColor: interpolate(
       translateX.value,
       [0, 24],
-      [darkAccent.surfaceHigh, darkAccent.success]
+      [darkAccent.surfaceHigh, darkAccent.success],
     ),
   }));
 
@@ -137,17 +128,10 @@ export function AnimatedToggle({
       accessibilityLabel={label || 'Toggle'}
       accessibilityState={{ checked: value, disabled }}
     >
-      {label && (
-        <Text style={[styles.toggleLabel, disabled && styles.disabledText]}>
-          {label}
-        </Text>
-      )}
+      {label && <Text style={[styles.toggleLabel, disabled && styles.disabledText]}>{label}</Text>}
       <Animated.View style={[styles.toggleTrack, trackStyle]}>
         <Animated.View style={[styles.toggleThumb, thumbStyle]}>
-          <LinearGradient
-            colors={['#FFF', '#F0F0F0']}
-            style={styles.toggleThumbGradient}
-          />
+          <LinearGradient colors={['#FFF', '#F0F0F0']} style={styles.toggleThumbGradient} />
         </Animated.View>
       </Animated.View>
     </Pressable>
@@ -197,11 +181,7 @@ export function AnimatedRadio({
       <View style={[styles.radioOuter, selected && styles.radioOuterSelected]}>
         <Animated.View style={[styles.radioInner, innerStyle]} />
       </View>
-      {label && (
-        <Text style={[styles.radioLabel, disabled && styles.disabledText]}>
-          {label}
-        </Text>
-      )}
+      {label && <Text style={[styles.radioLabel, disabled && styles.disabledText]}>{label}</Text>}
     </Pressable>
   );
 }
@@ -212,7 +192,10 @@ interface SuccessCheckmarkProps {
   onComplete?: () => void;
 }
 
-export function SuccessCheckmark({ size = 60, onComplete }: SuccessCheckmarkProps): React.ReactElement {
+export function SuccessCheckmark({
+  size = 60,
+  onComplete,
+}: SuccessCheckmarkProps): React.ReactElement {
   const circleProgress = useSharedValue(0);
   const checkProgress = useSharedValue(0);
   const scale = useSharedValue(0);
@@ -220,7 +203,7 @@ export function SuccessCheckmark({ size = 60, onComplete }: SuccessCheckmarkProp
   useEffect(() => {
     // Entrance animation
     scale.value = withSpring(1, { damping: 12 });
-    
+
     // Circle draw
     circleProgress.value = withTiming(1, { duration: 600 }, () => {
       // Check draw after circle
@@ -237,7 +220,10 @@ export function SuccessCheckmark({ size = 60, onComplete }: SuccessCheckmarkProp
   return (
     <Animated.View style={[containerStyle, { width: size, height: size }]}>
       <View style={[styles.checkmarkContainer, { width: size, height: size }]}>
-        <LinearGradient colors={gradients.success} style={[styles.checkmarkBackground, { borderRadius: size / 2 }]}>
+        <LinearGradient
+          colors={gradients.success}
+          style={[styles.checkmarkBackground, { borderRadius: size / 2 }]}
+        >
           <MaterialIcons name="check" size={size * 0.5} color="#FFF" />
         </LinearGradient>
       </View>
@@ -252,7 +238,11 @@ interface AnimatedCounterProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function AnimatedCounter({ value, duration = 1000, style }: AnimatedCounterProps): React.ReactElement {
+export function AnimatedCounter({
+  value,
+  duration = 1000,
+  style,
+}: AnimatedCounterProps): React.ReactElement {
   const animatedValue = useSharedValue(0);
 
   useEffect(() => {
@@ -278,16 +268,17 @@ interface FavoriteButtonProps {
   size?: number;
 }
 
-export function FavoriteButton({ isFavorite, onToggle, size = 24 }: FavoriteButtonProps): React.ReactElement {
+export function FavoriteButton({
+  isFavorite,
+  onToggle,
+  size = 24,
+}: FavoriteButtonProps): React.ReactElement {
   const scale = useSharedValue(1);
   const { medium } = useHaptics();
 
   const handlePress = async () => {
     await medium();
-    scale.value = withSequence(
-      withTiming(1.3, { duration: 100 }),
-      withSpring(1, { damping: 10 })
-    );
+    scale.value = withSequence(withTiming(1.3, { duration: 100 }), withSpring(1, { damping: 10 }));
     onToggle();
   };
 
@@ -323,10 +314,7 @@ export function BouncingBadge({ count, children }: BouncingBadgeProps): React.Re
   const scale = useSharedValue(1);
 
   useEffect(() => {
-    scale.value = withSequence(
-      withTiming(1.4, { duration: 150 }),
-      withSpring(1, { damping: 10 })
-    );
+    scale.value = withSequence(withTiming(1.4, { duration: 150 }), withSpring(1, { damping: 10 }));
   }, [count]);
 
   const animatedStyle = useAnimatedStyle(() => ({

@@ -34,13 +34,15 @@ export type HomeStackParamList = {
 // Journal Stack
 export type JournalStackParamList = {
   JournalList: undefined;
-  JournalEditor: { 
-    mode?: 'create' | 'edit'; 
-    entryId?: string;
-    initialTitle?: string;
-    initialContent?: string;
-    tags?: string[];
-  } | undefined;
+  JournalEditor:
+    | {
+        mode?: 'create' | 'edit';
+        entryId?: string;
+        initialTitle?: string;
+        initialContent?: string;
+        tags?: string[];
+      }
+    | undefined;
 };
 
 // Steps Stack

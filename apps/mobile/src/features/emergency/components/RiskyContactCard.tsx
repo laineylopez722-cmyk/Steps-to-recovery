@@ -1,6 +1,6 @@
 /**
  * RiskyContactCard Component
- * 
+ *
  * Displays a single risky contact with edit/delete actions
  */
 
@@ -32,13 +32,17 @@ const RELATIONSHIP_LABELS: Record<RelationshipType, string> = {
   other: 'Other',
 };
 
-export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCardProps): React.ReactElement {
+export function RiskyContactCard({
+  contact,
+  onEdit,
+  onDelete,
+}: RiskyContactCardProps): React.ReactElement {
   const theme = useTheme();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = (): void => {
     hapticWarning();
-    
+
     Alert.alert(
       'Remove Protection?',
       `Are you sure you want to remove protection from "${contact.name}"? You can always add them back later.`,
@@ -63,7 +67,7 @@ export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCard
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -93,12 +97,7 @@ export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCard
       <Card variant="elevated" style={styles.card}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <View
-              style={[
-                styles.iconContainer,
-                { backgroundColor: theme.colors.danger + '20' },
-              ]}
-            >
+            <View style={[styles.iconContainer, { backgroundColor: theme.colors.danger + '20' }]}>
               <MaterialCommunityIcons
                 name={RELATIONSHIP_ICONS[contact.relationshipType]}
                 size={24}
@@ -106,10 +105,7 @@ export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCard
               />
             </View>
             <View style={styles.headerText}>
-              <Text
-                style={[theme.typography.h3, { color: theme.colors.text }]}
-                numberOfLines={1}
-              >
+              <Text style={[theme.typography.h3, { color: theme.colors.text }]} numberOfLines={1}>
                 {contact.name}
               </Text>
               <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
@@ -127,11 +123,7 @@ export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCard
                 accessibilityLabel={`Edit ${contact.name}`}
                 disabled={isDeleting}
               >
-                <MaterialCommunityIcons
-                  name="pencil"
-                  size={20}
-                  color={theme.colors.primary}
-                />
+                <MaterialCommunityIcons name="pencil" size={20} color={theme.colors.primary} />
               </Pressable>
             )}
             {onDelete && (
@@ -142,11 +134,7 @@ export function RiskyContactCard({ contact, onEdit, onDelete }: RiskyContactCard
                 accessibilityLabel={`Delete ${contact.name}`}
                 disabled={isDeleting}
               >
-                <MaterialCommunityIcons
-                  name="delete"
-                  size={20}
-                  color={theme.colors.danger}
-                />
+                <MaterialCommunityIcons name="delete" size={20} color={theme.colors.danger} />
               </Pressable>
             )}
           </View>

@@ -10,13 +10,14 @@ The Steps to Recovery app has been elevated to **2025 premium standards** with t
 
 ### 1. **Glassmorphism Design System**
 
-| Component | Description |
-|-----------|-------------|
-| `GlassCard` | Blur-effect cards with intensity levels, glow effects, and press animations |
-| `GlassListItem` | Glass row items with icons, subtitles, and right elements |
-| `GradientButton` | Gradient buttons with haptic feedback and spring animations |
+| Component        | Description                                                                 |
+| ---------------- | --------------------------------------------------------------------------- |
+| `GlassCard`      | Blur-effect cards with intensity levels, glow effects, and press animations |
+| `GlassListItem`  | Glass row items with icons, subtitles, and right elements                   |
+| `GradientButton` | Gradient buttons with haptic feedback and spring animations                 |
 
 **Features:**
+
 - 3 blur intensities (light/medium/heavy)
 - Colored glow shadows
 - Animated press states
@@ -26,19 +27,19 @@ The Steps to Recovery app has been elevated to **2025 premium standards** with t
 
 ```tsx
 // Dark accent colors
-darkAccent.primary    // Indigo #818CF8
-darkAccent.success    // Emerald #34D399
-darkAccent.error      // Rose #F87171
+darkAccent.primary; // Indigo #818CF8
+darkAccent.success; // Emerald #34D399
+darkAccent.error; // Rose #F87171
 
 // Gradient presets
-gradients.primary     // Indigo to purple
-gradients.success     // Emerald gradient
-gradients.aurora      // Blue to pink
-gradients.ocean       // Cyan to indigo
+gradients.primary; // Indigo to purple
+gradients.success; // Emerald gradient
+gradients.aurora; // Blue to pink
+gradients.ocean; // Cyan to indigo
 
 // Modern shadows
-modernShadows.glow    // Colored glow effect
-modernShadows.sm      // Subtle elevation
+modernShadows.glow; // Colored glow effect
+modernShadows.sm; // Subtle elevation
 ```
 
 ### 3. **Skeleton Loading States**
@@ -55,6 +56,7 @@ New `Skeleton` component with shimmer animation:
 ```
 
 **Benefits:**
+
 - Reduces perceived load time
 - Prevents layout shift
 - Elegant shimmer animation
@@ -62,12 +64,14 @@ New `Skeleton` component with shimmer animation:
 ### 4. **Enhanced Empty States**
 
 New `EmptyState` component with:
+
 - Floating icon animation
 - Gradient icon backgrounds
 - Decorative orbiting circles
 - Action buttons
 
 **Presets:**
+
 - `EmptySearch` - Search results empty
 - `EmptyJournal` - No journal entries
 - `EmptyMeetings` - No meetings found
@@ -88,6 +92,7 @@ haptics.delete();
 ```
 
 **Patterns:**
+
 - Light/Medium/Heavy impact
 - Success/Error/Warning notifications
 - Selection feedback
@@ -96,12 +101,14 @@ haptics.delete();
 ### 6. **Onboarding Flow**
 
 4-screen animated onboarding:
+
 - Welcome & Introduction
 - Privacy First
 - Progress Tracking
 - Community Support
 
 **Features:**
+
 - Parallax scrolling
 - Animated pagination dots
 - Skip option
@@ -109,15 +116,15 @@ haptics.delete();
 
 ### 7. **Modernized Screens**
 
-| Screen | Key Improvements |
-|--------|------------------|
-| **Home** | Glass sobriety counter, animated stats, quick action grid |
-| **Login** | Gradient logo, glass form, password toggle |
-| **Journal List** | Search bar, stats cards, GlassListItem rows |
-| **Journal Editor** | Glass sections, mood dots, craving slider |
-| **Meeting Finder** | Filter modal, type chips, distance badges |
-| **Steps Overview** | Progress circle, current step highlight |
-| **Profile** | Avatar gradient, stats row, glass menu items |
+| Screen             | Key Improvements                                          |
+| ------------------ | --------------------------------------------------------- |
+| **Home**           | Glass sobriety counter, animated stats, quick action grid |
+| **Login**          | Gradient logo, glass form, password toggle                |
+| **Journal List**   | Search bar, stats cards, GlassListItem rows               |
+| **Journal Editor** | Glass sections, mood dots, craving slider                 |
+| **Meeting Finder** | Filter modal, type chips, distance badges                 |
+| **Steps Overview** | Progress circle, current step highlight                   |
+| **Profile**        | Avatar gradient, stats row, glass menu items              |
 
 ---
 
@@ -192,16 +199,16 @@ haptics.delete();
 
 ## 📊 Before vs After Comparison
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| **Loading** | Spinner | Skeleton shimmer |
-| **Empty States** | Basic text | Animated illustrations |
-| **Buttons** | Solid colors | Gradient + haptics |
-| **Cards** | Flat | Glassmorphism |
-| **Feedback** | Visual only | Visual + haptic |
-| **Onboarding** | None | 4-screen flow |
-| **Typography** | System default | Refined scale |
-| **Animations** | Fade | Spring physics |
+| Aspect           | Before         | After                  |
+| ---------------- | -------------- | ---------------------- |
+| **Loading**      | Spinner        | Skeleton shimmer       |
+| **Empty States** | Basic text     | Animated illustrations |
+| **Buttons**      | Solid colors   | Gradient + haptics     |
+| **Cards**        | Flat           | Glassmorphism          |
+| **Feedback**     | Visual only    | Visual + haptic        |
+| **Onboarding**   | None           | 4-screen flow          |
+| **Typography**   | System default | Refined scale          |
+| **Animations**   | Fade           | Spring physics         |
 
 ---
 
@@ -210,12 +217,12 @@ haptics.delete();
 ### Use Modern Components
 
 ```tsx
-import { 
-  GlassCard, 
-  GradientButton, 
+import {
+  GlassCard,
+  GradientButton,
   GlassListItem,
   Skeleton,
-  EmptyState 
+  EmptyState
 } from './design-system';
 
 // Glass card with glow
@@ -224,8 +231,8 @@ import {
 </GlassCard>
 
 // Gradient button with haptics
-<GradientButton 
-  title="Save" 
+<GradientButton
+  title="Save"
   variant="primary"
   haptic
   onPress={handleSave}
@@ -251,7 +258,7 @@ import { useHaptics } from './hooks/useHaptics';
 
 function MyComponent() {
   const { success, error } = useHaptics();
-  
+
   const handleAction = async () => {
     try {
       await doSomething();
@@ -270,11 +277,11 @@ import { OnboardingFlow } from './features/onboarding/OnboardingFlow';
 
 function App() {
   const [showOnboarding, setShowOnboarding] = useState(true);
-  
+
   if (showOnboarding) {
     return <OnboardingFlow onComplete={() => setShowOnboarding(false)} />;
   }
-  
+
   return <MainApp />;
 }
 ```
@@ -315,16 +322,16 @@ apps/mobile/src/
 
 All modern screens use consistent tokens:
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `darkAccent.background` | `#020617` | App background |
-| `darkAccent.surface` | `#0F172A` | Card backgrounds |
-| `darkAccent.primary` | `#818CF8` | Primary actions |
-| `darkAccent.success` | `#34D399` | Success states |
-| `radius.lg` | `16` | Card corners |
-| `spacing[3]` | `24` | Section padding |
-| `typography.h1` | `34px bold` | Screen titles |
-| `typography.body` | `15px regular` | Body text |
+| Token                   | Value          | Usage            |
+| ----------------------- | -------------- | ---------------- |
+| `darkAccent.background` | `#020617`      | App background   |
+| `darkAccent.surface`    | `#0F172A`      | Card backgrounds |
+| `darkAccent.primary`    | `#818CF8`      | Primary actions  |
+| `darkAccent.success`    | `#34D399`      | Success states   |
+| `radius.lg`             | `16`           | Card corners     |
+| `spacing[3]`            | `24`           | Section padding  |
+| `typography.h1`         | `34px bold`    | Screen titles    |
+| `typography.body`       | `15px regular` | Body text        |
 
 ---
 

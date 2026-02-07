@@ -1,13 +1,20 @@
 import { cn } from '@/lib/utils';
 import { Platform, TextInput, type TextInputProps } from 'react-native';
 
+interface TextareaProps extends TextInputProps {
+  /**
+   * @deprecated Use placeholderTextColor instead
+   */
+  placeholderClassName?: string;
+}
+
 function Textarea({
   className,
   multiline = true,
-  numberOfLines = Platform.select({ web: 2, native: 8 }), // On web, numberOfLines also determines initial height. On native, it determines the maximum height.
-  placeholderClassName,
+  numberOfLines = Platform.select({ web: 2, native: 8 }),
+  placeholderClassName: _placeholderClassName, // Kept for backward compat, but unused
   ...props
-}: TextInputProps & React.RefAttributes<TextInput>) {
+}: TextareaProps & React.RefAttributes<TextInput>) {
   return (
     <TextInput
       className={cn(
@@ -18,7 +25,7 @@ function Textarea({
         props.editable === false && 'opacity-50',
         className,
       )}
-      placeholderClassName={cn('text-muted-foreground', placeholderClassName)}
+      placeholderTextColor="rgba(255, 255, 255, 0.48)" // text-tertiary from design system
       multiline={multiline}
       numberOfLines={numberOfLines}
       textAlignVertical="top"

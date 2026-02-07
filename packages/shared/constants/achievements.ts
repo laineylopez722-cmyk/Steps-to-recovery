@@ -320,9 +320,7 @@ export function getAchievementByKey(key: string): Achievement | undefined {
 /**
  * Get all achievements in a specific category
  */
-export function getAchievementsByCategory(
-  category: Achievement['category']
-): Achievement[] {
+export function getAchievementsByCategory(category: Achievement['category']): Achievement[] {
   return MEETING_ACHIEVEMENTS.filter((a) => a.category === category);
 }
 
@@ -371,7 +369,7 @@ export const ACHIEVEMENT_MESSAGES: Record<string, string[]> = {
   ],
   '90_in_90': [
     '90 meetings in 90 days! LEGENDARY! ⭐',
-    'You completed one of recovery\'s greatest challenges!',
+    "You completed one of recovery's greatest challenges!",
     'This is a milestone worth celebrating! Incredible work!',
   ],
   centurion: [
@@ -382,7 +380,7 @@ export const ACHIEVEMENT_MESSAGES: Record<string, string[]> = {
   year_strong: [
     'A FULL YEAR streak! You are unstoppable! 👑',
     '365 consecutive days - absolutely incredible!',
-    'You\'ve proven that consistency changes everything!',
+    "You've proven that consistency changes everything!",
   ],
   marathon: [
     '500 meetings! You are a recovery CHAMPION! ❤️',
@@ -395,8 +393,6 @@ export const ACHIEVEMENT_MESSAGES: Record<string, string[]> = {
  * Get a random motivational message for an achievement
  */
 export function getRandomAchievementMessage(achievementKey: string): string {
-  const messages = ACHIEVEMENT_MESSAGES[achievementKey] || [
-    'Achievement unlocked!',
-  ];
+  const messages = ACHIEVEMENT_MESSAGES[achievementKey] || ['Achievement unlocked!'];
   return messages[Math.floor(Math.random() * messages.length)];
 }

@@ -3,10 +3,9 @@
  * Reusable list item with icon, label, value, and chevron support
  */
 
-import React from 'react';
 import { View, Text, StyleSheet, type ViewStyle, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import type { ComponentProps } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import { useTheme } from '../hooks/useTheme';
 
 type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
@@ -16,8 +15,8 @@ export interface ListItemProps {
   value?: string;
   icon?: MaterialIconName;
   iconColor?: string;
-  leftElement?: React.ReactNode;
-  rightElement?: React.ReactNode;
+  leftElement?: ReactNode;
+  rightElement?: ReactNode;
   showChevron?: boolean;
   onPress?: () => void;
   disabled?: boolean;
@@ -39,7 +38,7 @@ export function ListItem({
   containerStyle,
   accessibilityLabel,
   accessibilityHint,
-}: ListItemProps): React.ReactElement {
+}: ListItemProps): ReactElement {
   const theme = useTheme();
 
   const content = (

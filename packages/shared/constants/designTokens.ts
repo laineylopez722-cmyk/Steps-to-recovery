@@ -335,4 +335,3 @@ export const designTokens = {
   easing: EASING,
   zIndex: Z_INDEX,
 } as const;
-

@@ -1,195 +1,128 @@
 /**
- * Centralized Haptics System
- * Provides consistent haptic feedback patterns throughout the app
- *
- * Uses expo-haptics for cross-platform haptic support.
- * Falls back gracefully when haptics are not available (web, simulator).
+ * Haptic Feedback Utilities
+ * Micro-interactions for premium tactile feedback
  */
 
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 
-/**
- * Check if haptics are available on this device/platform
- */
+// Check if haptics are available (not on web/simulator)
 const isHapticsAvailable = Platform.OS !== 'web';
 
 /**
- * Haptic feedback for successful actions
- * Light impact followed by success notification
- * Use for: save complete, task done, goal achieved
+ * Light impact - subtle feedback
+ * Use for: Button presses, toggles, selections
+ */
+export async function hapticLight(): Promise<void> {
+  if (!isHapticsAvailable) return;
+  try {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  } catch {
+    // Silently fail on unsupported devices
+  }
+}
+
+/**
+ * Medium impact - standard feedback
+ * Use for: Primary actions, navigation, confirmations
+ */
+export async function hapticMedium(): Promise<void> {
+  if (!isHapticsAvailable) return;
+  try {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  } catch {
+    // Silently fail
+  }
+}
+
+/**
+ * Heavy impact - strong feedback
+ * Use for: Deletions, warnings, emergency actions
+ */
+export async function hapticHeavy(): Promise<void> {
+  if (!isHapticsAvailable) return;
+  try {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  } catch {
+    // Silently fail
+  }
+}
+
+/**
+ * Success notification - positive feedback
+ * Use for: Completion, success states, milestones
  */
 export async function hapticSuccess(): Promise<void> {
   if (!isHapticsAvailable) return;
-
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Small delay before notification for distinction
-    await new Promise((resolve) => setTimeout(resolve, 50));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   } catch {
-    // Haptics not available on this device
+    // Silently fail
   }
 }
 
 /**
- * Haptic feedback for errors
- * Medium impact followed by error notification
- * Use for: validation errors, failed actions, blocked operations
+ * Error notification - negative feedback
+ * Use for: Errors, failures, deletions
  */
 export async function hapticError(): Promise<void> {
   if (!isHapticsAvailable) return;
-
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await new Promise((resolve) => setTimeout(resolve, 50));
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
   } catch {
-    // Haptics not available on this device
+    // Silently fail
   }
 }
 
 /**
- * Haptic feedback for warnings
- * Warning notification feedback
- * Use for: confirmations, important notices, caution states
+ * Warning notification - caution feedback
+ * Use for: Alerts, important notices, high craving warnings
  */
 export async function hapticWarning(): Promise<void> {
   if (!isHapticsAvailable) return;
-
   try {
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
   } catch {
-    // Haptics not available on this device
+    // Silently fail
   }
 }
 
 /**
- * Haptic feedback for selection changes
- * Subtle selection feedback
- * Use for: toggles, option selection, slider changes
+ * Selection feedback - subtle tick
+ * Use for: Sliders, pickers, steppers
  */
 export async function hapticSelection(): Promise<void> {
   if (!isHapticsAvailable) return;
-
   try {
     await Haptics.selectionAsync();
   } catch {
-    // Haptics not available on this device
+    // Silently fail
   }
 }
 
 /**
- * Haptic impact feedback with configurable intensity
- * Use for: button presses, taps, gestures
+ * Button press with appropriate feedback
+ * Automatically selects impact based on button importance
  */
-export async function hapticImpact(
-  style: 'light' | 'medium' | 'heavy' | 'soft' | 'rigid' = 'light',
-): Promise<void> {
-  if (!isHapticsAvailable) return;
-
-  const styleMap: Record<string, Haptics.ImpactFeedbackStyle> = {
-    light: Haptics.ImpactFeedbackStyle.Light,
-    medium: Haptics.ImpactFeedbackStyle.Medium,
-    heavy: Haptics.ImpactFeedbackStyle.Heavy,
-    soft: Haptics.ImpactFeedbackStyle.Soft,
-    rigid: Haptics.ImpactFeedbackStyle.Rigid,
-  };
-
-  try {
-    await Haptics.impactAsync(styleMap[style]);
-  } catch {
-    // Haptics not available on this device
+export async function hapticButtonPress(importance: 'low' | 'medium' | 'high' = 'medium'): Promise<void> {
+  switch (importance) {
+    case 'low':
+      return hapticLight();
+    case 'high':
+      return hapticHeavy();
+    default:
+      return hapticMedium();
   }
 }
 
-/**
- * Celebration haptic sequence for milestones
- * Multi-step haptic pattern for achievements
- * Use for: milestone reached, streak completed, level up
- */
-export async function hapticCelebration(): Promise<void> {
-  if (!isHapticsAvailable) return;
-
-  try {
-    // Staccato celebration pattern
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    await new Promise((resolve) => setTimeout(resolve, 80));
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    await new Promise((resolve) => setTimeout(resolve, 80));
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    await new Promise((resolve) => setTimeout(resolve, 100));
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  } catch {
-    // Haptics not available on this device
-  }
+// Aliases for backward compatibility
+export function hapticImpact(style?: 'light' | 'medium' | 'heavy'): Promise<void> {
+  if (style === 'light') return hapticLight();
+  if (style === 'heavy') return hapticHeavy();
+  return hapticMedium();
 }
-
-/**
- * Haptic tick for step-through interactions
- * Light tick feedback for incremental changes
- * Use for: stepping through values, scrolling snaps, pagination
- */
-export async function hapticTick(): Promise<void> {
-  if (!isHapticsAvailable) return;
-
-  try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Soft);
-  } catch {
-    // Haptics not available on this device
-  }
+export const hapticTick = hapticSelection;
+export const hapticCelebration = hapticSuccess;
+export function hapticThreshold(): Promise<void> {
+  return hapticWarning();
 }
-
-/**
- * Haptic feedback for gesture thresholds
- * Rigid impact when user crosses an action threshold
- * Use for: swipe-to-delete threshold, pull-to-refresh trigger, snap points
- */
-export async function hapticThreshold(): Promise<void> {
-  if (!isHapticsAvailable) return;
-
-  try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid);
-  } catch {
-    // Haptics not available on this device
-  }
-}
-
-/**
- * Convenience namespace for organized haptic access
- *
- * @example
- * ```tsx
- * import { haptics } from '../utils/haptics';
- *
- * // In a button press handler
- * const handlePress = async () => {
- *   await haptics.impact('light');
- *   // ... do action
- *   await haptics.success();
- * };
- *
- * // In a toggle
- * const handleToggle = async () => {
- *   await haptics.selection();
- *   setValue(!value);
- * };
- *
- * // In milestone celebration
- * const handleMilestone = async () => {
- *   await haptics.celebration();
- *   showModal();
- * };
- * ```
- */
-export const haptics = {
-  success: hapticSuccess,
-  error: hapticError,
-  warning: hapticWarning,
-  selection: hapticSelection,
-  impact: hapticImpact,
-  celebration: hapticCelebration,
-  tick: hapticTick,
-  threshold: hapticThreshold,
-} as const;
-

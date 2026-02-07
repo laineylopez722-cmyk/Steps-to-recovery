@@ -1,222 +1,361 @@
-import React from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+/**
+ * Theme Toggle Component
+ * 
+ * Elegant dark/light mode toggle with:
+ * - Smooth animated transitions
+ * - Haptic feedback
+ * - Glassmorphism styling
+ * - Sun/moon icon morphing
+ */
+
+import React, { useCallback } from 'react';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withTiming,
+  interpolate,
+  Extrapolate,
 } from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
-import { GlassCard } from './GlassCard';
-import { darkAccent, radius, spacing, typography } from '../tokens/modern';
-import { useHaptics } from '../../hooks/useHaptics';
+import { BlurView } from 'expo-blur';
+import { Feather } from '@expo/vector-icons';
 
-type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+import { hapticLight } from '../../utils/haptics';
+import { aestheticColors } from '../tokens/aesthetic';
+import { FadeIn, withSequence } from 'react-native-reanimated';
 
-type ThemeMode = 'light' | 'dark' | 'system';
+// ============================================================================
+// TYPES
+// ============================================================================
 
 interface ThemeToggleProps {
-  currentTheme: ThemeMode;
-  onThemeChange: (theme: ThemeMode) => void;
+  /** Current theme state */
+  isDark: boolean;
+  /** Theme change handler */
+  onToggle: () => void;
+  /** Size variant */
+  size?: 'sm' | 'md' | 'lg';
+  /** Show label text */
+  showLabel?: boolean;
+  /** Custom container style */
+  style?: StyleProp<ViewStyle>;
+  /** Glass effect intensity */
+  glassIntensity?: 'light' | 'medium' | 'heavy';
 }
 
-export function ThemeToggle({ currentTheme, onThemeChange }: ThemeToggleProps): React.ReactElement {
-  const { light } = useHaptics();
+// ============================================================================
+// SIZE CONFIGS
+// ============================================================================
 
-  const handlePress = async (theme: ThemeMode) => {
-    await light();
-    onThemeChange(theme);
-  };
+const sizeConfigs = {
+  sm: {
+    container: { width: 48, height: 28, borderRadius: 14 },
+    knob: { width: 22, height: 22, borderRadius: 11 },
+    icon: 12,
+    padding: 3,
+  },
+  md: {
+    container: { width: 56, height: 32, borderRadius: 16 },
+    knob: { width: 26, height: 26, borderRadius: 13 },
+    icon: 14,
+    padding: 3,
+  },
+  lg: {
+    container: { width: 64, height: 36, borderRadius: 18 },
+    knob: { width: 30, height: 30, borderRadius: 15 },
+    icon: 16,
+    padding: 3,
+  },
+};
 
-  return (
-    <GlassCard intensity="light" style={styles.container}>
-      <Text style={styles.title}>Appearance</Text>
-      
-      <View style={styles.options}>
-        <ThemeOption
-          icon="brightness-5"
-          label="Light"
-          isSelected={currentTheme === 'light'}
-          onPress={() => handlePress('light')}
-          previewColors={['#FFFFFF', '#F5F5F5', '#007AFF']}
-        />
-        
-        <ThemeOption
-          icon="brightness-2"
-          label="Dark"
-          isSelected={currentTheme === 'dark'}
-          onPress={() => handlePress('dark')}
-          previewColors={['#0B1120', '#1A2332', '#6366F1']}
-        />
-        
-        <ThemeOption
-          icon="brightness-auto"
-          label="System"
-          isSelected={currentTheme === 'system'}
-          onPress={() => handlePress('system')}
-          previewColors={['#0B1120', '#FFFFFF', '#6366F1']}
-        />
-      </View>
-    </GlassCard>
-  );
-}
+// ============================================================================
+// COMPONENT
+// ============================================================================
 
-interface ThemeOptionProps {
-  icon: string;
-  label: string;
-  isSelected: boolean;
-  onPress: () => void;
-  previewColors: string[];
-}
-
-function ThemeOption({ icon, label, isSelected, onPress, previewColors }: ThemeOptionProps): React.ReactElement {
+export function ThemeToggle({
+  isDark,
+  onToggle,
+  size = 'md',
+  showLabel = false,
+  style,
+  glassIntensity = 'medium',
+}: ThemeToggleProps) {
+  const progress = useSharedValue(isDark ? 1 : 0);
   const scale = useSharedValue(1);
-  const checkProgress = useSharedValue(isSelected ? 1 : 0);
 
+  // Animate when isDark changes externally
   React.useEffect(() => {
-    checkProgress.value = withSpring(isSelected ? 1 : 0);
-  }, [isSelected]);
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.98);
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1);
-  };
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const checkStyle = useAnimatedStyle(() => ({
-    opacity: checkProgress.value,
-    transform: [{ scale: checkProgress.value }],
-  }));
-
-  return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={handlePressIn}
-      onPressOut={handlePressOut}
-      style={styles.option}
-    >
-      <Animated.View style={[styles.optionCard, isSelected && styles.optionCardSelected, animatedStyle]}>
-        {/* Preview */}
-        <View style={styles.preview}>
-          <View style={[styles.previewTop, { backgroundColor: previewColors[0] }]} />
-          <View style={[styles.previewBottom, { backgroundColor: previewColors[1] }]} />
-          <View style={[styles.previewAccent, { backgroundColor: previewColors[2] }]} />
-        </View>
-
-        {/* Selection Indicator */}
-        <Animated.View style={[styles.checkmark, checkStyle]}>
-          <MaterialIcons name="check-circle" size={20} color={darkAccent.success} />
-        </Animated.View>
-
-        {/* Label */}
-        <View style={styles.labelContainer}>
-          <MaterialIcons name={icon as IconName} size={18} color={isSelected ? darkAccent.primary : darkAccent.textMuted} />
-          <Text style={[styles.label, isSelected && styles.labelSelected]}>{label}</Text>
-        </View>
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-// Animated theme transition wrapper
-interface ThemeProviderProps {
-  children: React.ReactNode;
-  theme: ThemeMode;
-}
-
-export function AnimatedThemeProvider({ children, theme }: ThemeProviderProps): React.ReactElement {
-  const opacity = useSharedValue(1);
-
-  React.useEffect(() => {
-    // Fade out, then fade in on theme change
-    opacity.value = withSpring(0.95, {}, () => {
-      opacity.value = withSpring(1);
+    progress.value = withSpring(isDark ? 1 : 0, {
+      damping: 15,
+      stiffness: 120,
     });
-  }, [theme]);
+  }, [isDark, progress]);
+
+  const handlePress = useCallback(() => {
+    hapticLight();
+    
+    // Button press animation
+    scale.value = withSequence(
+      withTiming(0.95, { duration: 100 }),
+      withTiming(1, { duration: 100 })
+    );
+    
+    onToggle();
+  }, [onToggle, scale]);
+
+  const config = sizeConfigs[size];
+
+  // Animated knob position
+  const knobStyle = useAnimatedStyle(() => {
+    const translateX = interpolate(
+      progress.value,
+      [0, 1],
+      [0, config.container.width - config.knob.width - config.padding * 2],
+      Extrapolate.CLAMP
+    );
+    
+    return {
+      transform: [
+        { translateX },
+        { scale: scale.value },
+      ],
+    };
+  });
+
+  // Background color animation
+  const backgroundStyle = useAnimatedStyle(() => {
+    // Use opacity to blend between light and dark backgrounds
+    return {
+      backgroundColor: isDark 
+        ? `rgba(245, 158, 11, ${0.2 + progress.value * 0.1})`
+        : `rgba(20, 184, 166, ${0.2 + (1 - progress.value) * 0.1})`,
+    };
+  });
+
+  // Icon rotation
+  const iconStyle = useAnimatedStyle(() => {
+    const rotate = interpolate(
+      progress.value,
+      [0, 1],
+      [0, 180],
+      Extrapolate.CLAMP
+    );
+    
+    const opacity = interpolate(
+      progress.value,
+      [0, 0.5, 1],
+      [1, 0.5, 1],
+      Extrapolate.CLAMP
+    );
+
+    return {
+      transform: [{ rotate: `${rotate}deg` }],
+      opacity,
+    };
+  });
+
+  const blurIntensity = {
+    light: 20,
+    medium: 40,
+    heavy: 60,
+  }[glassIntensity];
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      activeOpacity={0.8}
+      accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      accessibilityRole="switch"
+      accessibilityState={{ checked: isDark }}
+      style={[styles.wrapper, style]}
+    >
+      <Animated.View
+        style={[
+          styles.container,
+          config.container,
+          backgroundStyle,
+        ]}
+      >
+        <BlurView
+          intensity={blurIntensity}
+          tint={isDark ? 'dark' : 'light'}
+          style={[StyleSheet.absoluteFill, { borderRadius: config.container.borderRadius }]}
+        />
+        
+        {/* Icons */}
+        <View style={styles.iconsContainer}>
+          <Feather
+            name="sun"
+            size={config.icon}
+            color={isDark ? '#64748B' : '#F59E0B'}
+            style={styles.leftIcon}
+          />
+          <Feather
+            name="moon"
+            size={config.icon}
+            color={isDark ? '#14B8A6' : '#64748B'}
+            style={styles.rightIcon}
+          />
+        </View>
+        
+        {/* Animated Knob */}
+        <Animated.View
+          style={[
+            styles.knob,
+            config.knob,
+            knobStyle,
+            {
+              backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
+              shadowColor: isDark ? '#000' : '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: isDark ? 0.5 : 0.15,
+              shadowRadius: isDark ? 4 : 3,
+              elevation: isDark ? 4 : 3,
+            },
+          ]}
+        >
+          <Animated.View style={iconStyle}>
+            <Feather
+              name={isDark ? 'moon' : 'sun'}
+              size={config.icon - 2}
+              color={isDark ? '#14B8A6' : '#F59E0B'}
+            />
+          </Animated.View>
+        </Animated.View>
+      </Animated.View>
+      
+      {showLabel && (
+        <Animated.Text
+          entering={FadeIn.duration(200)}
+          style={[
+            styles.label,
+            { color: isDark ? aestheticColors.navy[200] : aestheticColors.navy[400] },
+          ]}
+        >
+          {isDark ? 'Dark' : 'Light'}
+        </Animated.Text>
+      )}
+    </TouchableOpacity>
+  );
+}
+
+// ============================================================================
+// COMPACT VARIANT
+// ============================================================================
+
+interface CompactThemeToggleProps {
+  isDark: boolean;
+  onToggle: () => void;
+  style?: StyleProp<ViewStyle>;
+}
+
+export function CompactThemeToggle({
+  isDark,
+  onToggle,
+  style,
+}: CompactThemeToggleProps) {
+  const scale = useSharedValue(1);
+  const rotate = useSharedValue(0);
+
+  const handlePress = useCallback(() => {
+    hapticLight();
+    
+    scale.value = withSequence(
+      withTiming(0.9, { duration: 100 }),
+      withTiming(1, { duration: 150 })
+    );
+    
+    rotate.value = withTiming(rotate.value + 180, {
+      duration: 300,
+    });
+    
+    onToggle();
+  }, [onToggle, scale, rotate]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+    transform: [
+      { scale: scale.value },
+      { rotate: `${rotate.value}deg` },
+    ],
   }));
 
   return (
-    <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
-      {children}
-    </Animated.View>
+    <TouchableOpacity
+      onPress={handlePress}
+      style={[styles.compactContainer, style]}
+      accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+      accessibilityRole="button"
+    >
+      <BlurView
+        intensity={40}
+        tint={isDark ? 'dark' : 'light'}
+        style={StyleSheet.absoluteFill}
+      />
+      <Animated.View style={animatedStyle}>
+        <Feather
+          name={isDark ? 'moon' : 'sun'}
+          size={20}
+          color={isDark ? aestheticColors.secondary[500] : aestheticColors.primary[500]}
+        />
+      </Animated.View>
+    </TouchableOpacity>
   );
 }
+
+// ============================================================================
+// STYLES
+// ============================================================================
 
 const styles = StyleSheet.create({
-  container: {
-    padding: spacing[3],
-  },
-  title: {
-    ...typography.h4,
-    color: darkAccent.text,
-    marginBottom: spacing[3],
-  },
-  options: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  option: {
-    flex: 1,
-  },
-  optionCard: {
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.lg,
-    padding: spacing[2],
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  optionCardSelected: {
-    borderColor: darkAccent.primary,
-  },
-  preview: {
-    height: 60,
-    borderRadius: radius.md,
-    overflow: 'hidden',
-    position: 'relative',
-    marginBottom: spacing[2],
-  },
-  previewTop: {
-    height: '60%',
-  },
-  previewBottom: {
-    height: '40%',
-  },
-  previewAccent: {
-    position: 'absolute',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    bottom: 8,
-    right: 8,
-  },
-  checkmark: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: darkAccent.surface,
-    borderRadius: 10,
-  },
-  labelContainer: {
+  wrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
+  },
+  container: {
     justifyContent: 'center',
-    gap: 6,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  iconsContainer: {
+    ...StyleSheet.absoluteFillObject,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  leftIcon: {
+    marginLeft: 2,
+  },
+  rightIcon: {
+    marginRight: 2,
+  },
+  knob: {
+    position: 'absolute',
+    left: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   label: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
+    fontSize: 14,
     fontWeight: '500',
   },
-  labelSelected: {
-    color: darkAccent.primary,
-    fontWeight: '700',
+  compactContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
 });
+
+export default ThemeToggle;

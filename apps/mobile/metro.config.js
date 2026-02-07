@@ -1,40 +1,65 @@
-// Metro configuration for Expo using CommonJS syntax
-// Ensures .wasm assets (expo-sqlite web) are bundled correctly and supports monorepo paths.
+/**
+ * Metro configuration for Expo React Native
+ * Supports Uniwind, monorepo workspaces, and WASM assets
+ * @see https://docs.expo.dev/guides/customizing-metro/
+ */
 const { resolve } = require('path');
 const { getDefaultConfig } = require('expo/metro-config');
-const { withNativeWind } = require('nativewind/metro');
+const { withUniwindConfig } = require('uniwind/metro');
 
-/** @type {string} Absolute path to the mobile app directory */
-const projectRoot = __dirname;
+// @ts-check
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
 
-/** @type {string} Absolute path to the monorepo root (two levels up from mobile app) */
-const monorepoRoot = resolve(projectRoot, '..', '..');
+// Get monorepo root (two levels up from apps/mobile)
+const monorepoRoot = resolve(__dirname, '..', '..');
 
-/** @type {import('expo/metro-config').MetroConfig} Metro bundler configuration object */
-const config = getDefaultConfig(projectRoot);
-
-// Allow importing files from the monorepo root (e.g., ../../index.ts) when bundling release.
+// ============================================================================
+// Watch Folders (Monorepo Support)
+// ============================================================================
 const existingWatchFolders = config.watchFolders ?? [];
 config.watchFolders = existingWatchFolders.includes(monorepoRoot)
   ? existingWatchFolders
   : [...existingWatchFolders, monorepoRoot];
+
+// ============================================================================
+// Node Modules Resolution
+// ============================================================================
 config.resolver.nodeModulesPaths = [
-  resolve(projectRoot, 'node_modules'),
+  resolve(__dirname, 'node_modules'),
   resolve(monorepoRoot, 'node_modules'),
 ];
 
-// Exclude reference/documentation folders from Metro bundler to prevent conflicts
+// Ensure proper resolution order for React Native monorepos
+config.resolver.disableHierarchicalLookup = false;
+
+// ============================================================================
+// Block List (Exclude from Bundling)
+// ============================================================================
+// Normalize path for cross-platform regex compatibility and escape for RegExp
+const normalizedRoot = monorepoRoot.replace(/\\/g, '/');
+const escapedRoot = normalizedRoot.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 config.resolver.blockList = [
-  // Exclude reference screens (documentation only)
-  new RegExp(`${monorepoRoot.replace(/\\/g, '\\\\')}\\\\_bmad-output.*`),
-  // Exclude supabase folder
-  new RegExp(`${monorepoRoot.replace(/\\/g, '\\\\')}\\\\supabase.*`),
+  // Exclude Extra folder (archived docs/temp files)
+  new RegExp(`${escapedRoot}/Extra/.*`),
+  // Exclude Supabase CLI folder
+  new RegExp(`${escapedRoot}/supabase/.*`),
+  // Exclude git internals
+  new RegExp(`${escapedRoot}/\\.git/.*`),
+  // Exclude test coverage
+  new RegExp(`${escapedRoot}/coverage/.*`),
 ];
 
-// Treat wasm as an asset so Metro bundles the provided wa-sqlite.wasm
+// ============================================================================
+// Asset Extensions (WASM for expo-sqlite web support)
+// ============================================================================
 config.resolver.assetExts = [...config.resolver.assetExts, 'wasm'];
-config.resolver.sourceExts = config.resolver.sourceExts.filter((ext) => {
-  return ext !== 'wasm';
-});
+config.resolver.sourceExts = config.resolver.sourceExts.filter((ext) => ext !== 'wasm');
 
-module.exports = withNativeWind(config, { input: './global.css' });
+// ============================================================================
+// Uniwind Configuration
+// ============================================================================
+module.exports = withUniwindConfig(config, {
+  cssEntryFile: './src/global.css',
+  dtsFile: './src/uniwind-types.d.ts',
+});

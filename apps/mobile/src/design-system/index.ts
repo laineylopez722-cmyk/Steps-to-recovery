@@ -32,7 +32,7 @@ export {
   SkeletonListItem,
   SkeletonStats,
   SkeletonHome,
-  SkeletonJournalList,
+  SkeletonList,
   ConfettiCelebration,
   MilestoneCelebration,
   ParallaxHeader,
@@ -46,7 +46,7 @@ export {
   FavoriteButton,
   BouncingBadge,
   ThemeToggle,
-  AnimatedThemeProvider,
+  CompactThemeToggle,
   AsyncImage,
   Avatar,
   ZoomableImage,
@@ -66,10 +66,51 @@ export {
   AccessibleListItem,
   announce,
   isScreenReaderEnabled,
+  // New themed components
+  AmberButton,
+  TealCard,
+  SageCard,
+  LavenderCard,
+  GoldButton,
+  // Illustration System
+  Illustration,
+  OnboardingIllustration,
+  BadgeIllustration,
+  EmptyStateIllustration,
 } from './components';
 
 export { ThemeProvider } from './context/ThemeContext';
 export { useTheme, useColors, useIsDark } from './hooks/useTheme';
+export { ScreenAnimations } from './tokens/screen-animations';
+export { glass, glow, glassGradients } from './tokens/glass';
+export {
+  aestheticColors,
+  gradients,
+  atmosphericShadows,
+  aestheticTypography,
+  aestheticSpacing,
+  aestheticRadius,
+  calmingMotion,
+  premiumEffects,
+  componentPatterns,
+} from './tokens/aesthetic';
+export { useTheme as useThemeTokens, darkColors, lightColors, spacing as themeSpacing, typography as themeTypography, borderRadius as themeBorderRadius } from './tokens/theme';
+export type { Theme } from './tokens/theme';
+export {
+  pressAnimation,
+  hoverAnimation,
+  successAnimation,
+  attentionAnimation,
+  loadingAnimation,
+  breathingAnimation,
+  usePressAnimation,
+  useHoverAnimation,
+  useSuccessAnimation,
+  useAttentionAnimation,
+  useShimmerAnimation,
+  useBreathingAnimation,
+  useStaggerAnimation,
+} from './tokens/micro-animations';
 
 export type {
   BadgeProps,
@@ -107,4 +148,11 @@ export type {
   AsyncImageProps,
   AvatarProps,
   ZoomableImageProps,
+  // New themed component types
+  AmberButtonProps,
+  TealCardProps,
+  SageCardProps,
+  LavenderCardProps,
+  GoldButtonProps,
+  IllustrationProps,
 } from './components';

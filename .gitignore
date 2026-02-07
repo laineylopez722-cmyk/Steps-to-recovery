@@ -40,6 +40,9 @@ yarn-error.log*
 # Turbo
 .turbo
 
+# Extra folder (archived/temp files - move to desktop before deleting)
+Extra/
+
 # IDE
 .vscode/
 .idea/

@@ -26,10 +26,10 @@
     "format:check": "prettier --check .",
     "validate-env": "node scripts/validate-env.js",
     "clean": "turbo run clean",
-    "mobile": "npm start -w apps/mobile",
-    "web": "npm run web -w apps/mobile",
-    "android": "npm run android -w apps/mobile",
-    "ios": "npm run ios -w apps/mobile",
+    "mobile": "npm run start --workspace=apps/mobile",
+    "web": "npm run web --workspace=apps/mobile",
+    "android": "npm run android --workspace=apps/mobile",
+    "ios": "npm run ios --workspace=apps/mobile",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -49,6 +49,10 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
-    "@react-native/debugger-frontend": "^0.83.1"
+    "@react-native/debugger-frontend": "^0.83.1",
+    "expo": "~54.0.33",
+    "expo-device": "~8.0.10",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
   }
 }

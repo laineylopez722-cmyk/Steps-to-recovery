@@ -24,8 +24,7 @@ export function useMeetingCheckIns() {
     refetch,
   } = useQuery({
     queryKey: ['meetingCheckIns', userId],
-    queryFn: () =>
-      userId ? checkInService.getMeetingCheckIns(userId, 50) : [],
+    queryFn: () => (userId ? checkInService.getMeetingCheckIns(userId, 50) : []),
     enabled: !!userId,
   });
 
@@ -41,9 +40,7 @@ export function useMeetingCheckIns() {
 
   // Mutation: Create new check-in
   const checkInMutation = useMutation({
-    mutationFn: async (
-      meetingData: Omit<MeetingCheckIn, 'id' | 'userId' | 'createdAt'>
-    ) => {
+    mutationFn: async (meetingData: Omit<MeetingCheckIn, 'id' | 'userId' | 'createdAt'>) => {
       if (!userId) throw new Error('User not authenticated');
       return checkInService.checkInToMeeting(userId, meetingData);
     },
@@ -80,8 +77,7 @@ export function useTodayCheckIn() {
 
   const { data: hasCheckedIn = false, isLoading } = useQuery({
     queryKey: ['todayCheckIn', userId],
-    queryFn: () =>
-      userId ? checkInService.hasCheckedInToday(userId) : false,
+    queryFn: () => (userId ? checkInService.hasCheckedInToday(userId) : false),
     enabled: !!userId,
   });
 
@@ -101,9 +97,7 @@ export function useMeetingCheckInStatus(meetingId?: string) {
   const { data: hasCheckedIn = false, isLoading } = useQuery({
     queryKey: ['meetingCheckIn', userId, meetingId],
     queryFn: () =>
-      userId && meetingId
-        ? checkInService.hasCheckedInToMeetingToday(userId, meetingId)
-        : false,
+      userId && meetingId ? checkInService.hasCheckedInToMeetingToday(userId, meetingId) : false,
     enabled: !!userId && !!meetingId,
   });
 

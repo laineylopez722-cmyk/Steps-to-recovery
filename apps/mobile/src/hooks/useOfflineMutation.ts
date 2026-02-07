@@ -1,6 +1,6 @@
-import { 
-  useMutation, 
-  useQueryClient, 
+import {
+  useMutation,
+  useQueryClient,
   type UseMutationOptions,
   type QueryKey,
 } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ interface OptimisticUpdateOptions<TData, TVariables> {
    * Query keys to optimistically update
    */
   queryKeys: QueryKey[];
-  
+
   /**
    * Function to generate optimistic data
    * Receives current data and variables, returns updated data
@@ -31,18 +31,21 @@ interface OfflineMutationOptions<
   TError = Error,
   TVariables = void,
   TContext = unknown,
-> extends Omit<UseMutationOptions<TData, TError, TVariables, TContext>, 'onMutate' | 'onError' | 'onSettled'> {
+> extends Omit<
+  UseMutationOptions<TData, TError, TVariables, TContext>,
+  'onMutate' | 'onError' | 'onSettled'
+> {
   /**
    * Optimistic update configuration
    * When provided, the UI will update immediately before the server responds
    */
   optimisticUpdate?: OptimisticUpdateOptions<TData, TVariables>;
-  
+
   /**
    * Query keys to invalidate after successful mutation
    */
   invalidateQueries?: QueryKey[];
-  
+
   /**
    * Whether to show error toast on failure (defaults to true)
    */
@@ -51,13 +54,13 @@ interface OfflineMutationOptions<
 
 /**
  * Hook for mutations with offline support and optimistic updates
- * 
+ *
  * This hook wraps React Query's useMutation with:
  * - Automatic optimistic updates (immediate UI feedback)
  * - Rollback on error
  * - Query invalidation on success
  * - Offline queueing (mutations execute when back online)
- * 
+ *
  * @example
  * ```typescript
  * const { mutate, isPending } = useOfflineMutation({
@@ -70,15 +73,23 @@ interface OfflineMutationOptions<
  * });
  * ```
  */
-export function useOfflineMutation<
-  TData = unknown,
-  TError = Error,
-  TVariables = void,
->(options: OfflineMutationOptions<TData, TError, TVariables>) {
+export function useOfflineMutation<TData = unknown, TError = Error, TVariables = void>(
+  options: OfflineMutationOptions<TData, TError, TVariables>,
+) {
   const queryClient = useQueryClient();
-  const { optimisticUpdate, invalidateQueries, showErrorToast = true, ...mutationOptions } = options;
+  const {
+    optimisticUpdate,
+    invalidateQueries,
+    showErrorToast = true,
+    ...mutationOptions
+  } = options;
 
-  const mutation = useMutation<TData, TError, TVariables, { previousData: Map<QueryKey, TData | undefined> }>({
+  const mutation = useMutation<
+    TData,
+    TError,
+    TVariables,
+    { previousData: Map<QueryKey, TData | undefined> }
+  >({
     ...mutationOptions,
 
     // Optimistic update - modify cache before mutation executes
@@ -91,9 +102,7 @@ export function useOfflineMutation<
 
       // Cancel outgoing refetches so they don't overwrite our optimistic update
       await Promise.all(
-        optimisticUpdate.queryKeys.map((queryKey) =>
-          queryClient.cancelQueries({ queryKey })
-        )
+        optimisticUpdate.queryKeys.map((queryKey) => queryClient.cancelQueries({ queryKey })),
       );
 
       // Snapshot previous values and apply optimistic updates
@@ -138,7 +147,7 @@ export function useOfflineMutation<
         optimisticUpdate.queryKeys.forEach((queryKey) => {
           // Only invalidate if we haven't already
           const alreadyInvalidating = invalidateQueries?.some(
-            (key) => JSON.stringify(key) === JSON.stringify(queryKey)
+            (key) => JSON.stringify(key) === JSON.stringify(queryKey),
           );
           if (!alreadyInvalidating) {
             queryClient.invalidateQueries({ queryKey });
@@ -154,15 +163,17 @@ export function useOfflineMutation<
       logger.info('Starting offline mutation', { mutationKey: mutationOptions.mutationKey });
       mutation.mutate(variables);
     },
-    [mutation, mutationOptions.mutationKey]
+    [mutation, mutationOptions.mutationKey],
   );
 
   const mutateAsync = useCallback(
     async (variables: TVariables): Promise<TData> => {
-      logger.info('Starting offline mutation (async)', { mutationKey: mutationOptions.mutationKey });
+      logger.info('Starting offline mutation (async)', {
+        mutationKey: mutationOptions.mutationKey,
+      });
       return mutation.mutateAsync(variables);
     },
-    [mutation, mutationOptions.mutationKey]
+    [mutation, mutationOptions.mutationKey],
   );
 
   return {
@@ -178,16 +189,14 @@ export function useOfflineMutation<
  */
 export function usePendingMutationCount(): number {
   const queryClient = useQueryClient();
-  
+
   // Get all mutations from the cache
   const mutationCache = queryClient.getMutationCache();
   const mutations = mutationCache.getAll();
-  
+
   // Count pending mutations (those waiting for network)
-  const pendingCount = mutations.filter(
-    (mutation) => mutation.state.status === 'pending'
-  ).length;
-  
+  const pendingCount = mutations.filter((mutation) => mutation.state.status === 'pending').length;
+
   return pendingCount;
 }
 
@@ -207,9 +216,9 @@ export function useSyncPendingMutations() {
 
   return useCallback(async () => {
     const mutationCache = queryClient.getMutationCache();
-    const pendingMutations = mutationCache.getAll().filter(
-      (mutation) => mutation.state.status === 'pending'
-    );
+    const pendingMutations = mutationCache
+      .getAll()
+      .filter((mutation) => mutation.state.status === 'pending');
 
     if (pendingMutations.length === 0) {
       logger.info('No pending mutations to sync');

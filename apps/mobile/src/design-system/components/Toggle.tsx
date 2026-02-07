@@ -3,7 +3,7 @@
  * A themed switch control for on/off settings
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { View, Switch, Text, StyleSheet, type ViewStyle, Platform } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { hapticSelection } from '../../utils/haptics';

@@ -99,7 +99,8 @@ export function useAutoSave<T>(options: AutoSaveOptions<T>): AutoSaveState & Aut
 
   // Track dirty state
   useEffect(() => {
-    const isDirty = savedContentRef.current !== undefined && !isEqual(content, savedContentRef.current);
+    const isDirty =
+      savedContentRef.current !== undefined && !isEqual(content, savedContentRef.current);
     setState((prev) => {
       if (prev.isDirty !== isDirty) {
         return { ...prev, isDirty };
@@ -136,7 +137,10 @@ export function useAutoSave<T>(options: AutoSaveOptions<T>): AutoSaveState & Aut
 
   const performSave = useCallback(async (): Promise<void> => {
     // Don't save if nothing changed
-    if (savedContentRef.current !== undefined && isEqual(contentRef.current, savedContentRef.current)) {
+    if (
+      savedContentRef.current !== undefined &&
+      isEqual(contentRef.current, savedContentRef.current)
+    ) {
       return;
     }
 

@@ -55,7 +55,7 @@ async function enqueueSync(
   table: string,
   recordId: string,
   operation: 'INSERT' | 'UPDATE' | 'DELETE',
-  data?: object
+  data?: object,
 ): Promise<void> {
   await db.runAsync(
     `INSERT INTO sync_queue (table_name, record_id, operation, data, retry_count, created_at)
@@ -64,7 +64,7 @@ async function enqueueSync(
     recordId,
     operation,
     data ? JSON.stringify(data) : null,
-    Date.now()
+    Date.now(),
   );
 }
 ```
@@ -72,20 +72,17 @@ async function enqueueSync(
 ### 2. Process Queue
 
 ```typescript
-async function processSyncQueue(
-  db: SQLiteDatabase,
-  supabase: SupabaseClient
-): Promise<void> {
+async function processSyncQueue(db: SQLiteDatabase, supabase: SupabaseClient): Promise<void> {
   const pending = await db.getAllAsync<SyncQueueItem>(
     `SELECT * FROM sync_queue 
      WHERE processed_at IS NULL AND retry_count < 5
      ORDER BY created_at ASC
-     LIMIT 50`
+     LIMIT 50`,
   );
 
   // Process DELETEs first to avoid FK conflicts
-  const deletes = pending.filter(p => p.operation === 'DELETE');
-  const others = pending.filter(p => p.operation !== 'DELETE');
+  const deletes = pending.filter((p) => p.operation === 'DELETE');
+  const others = pending.filter((p) => p.operation !== 'DELETE');
 
   for (const item of [...deletes, ...others]) {
     try {
@@ -103,24 +100,21 @@ async function processSyncQueue(
 async function processQueueItem(
   db: SQLiteDatabase,
   supabase: SupabaseClient,
-  item: SyncQueueItem
+  item: SyncQueueItem,
 ): Promise<void> {
-  const { error } = await supabase
-    .from(item.table_name)
-    .upsert({
+  const { error } = await supabase.from(item.table_name).upsert(
+    {
       id: item.record_id,
       ...(item.data ? JSON.parse(item.data) : {}),
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'id' });
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'id' },
+  );
 
   if (error) throw error;
 
   // Mark as processed
-  await db.runAsync(
-    'UPDATE sync_queue SET processed_at = ? WHERE id = ?',
-    Date.now(),
-    item.id
-  );
+  await db.runAsync('UPDATE sync_queue SET processed_at = ? WHERE id = ?', Date.now(), item.id);
 }
 ```
 
@@ -163,7 +157,7 @@ function useCreateJournal() {
         'INSERT INTO journal (id, encrypted_body, created_at) VALUES (?, ?, ?)',
         entry.id,
         await encryptContent(entry.content),
-        entry.created_at
+        entry.created_at,
       );
 
       // 2. Queue for sync
@@ -173,7 +167,7 @@ function useCreateJournal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['journal'] });
-    }
+    },
   });
 }
 ```
@@ -183,13 +177,10 @@ function useCreateJournal() {
 Last-write-wins with server timestamp:
 
 ```typescript
-async function resolveConflict(
-  local: JournalEntry,
-  remote: JournalEntry
-): Promise<JournalEntry> {
+async function resolveConflict(local: JournalEntry, remote: JournalEntry): Promise<JournalEntry> {
   const localTime = new Date(local.updated_at).getTime();
   const remoteTime = new Date(remote.updated_at).getTime();
-  
+
   return remoteTime > localTime ? remote : local;
 }
 ```
@@ -205,7 +196,7 @@ const SYNC_TASK = 'background-sync';
 TaskManager.defineTask(SYNC_TASK, async () => {
   const db = await openDatabase();
   const supabase = createClient();
-  
+
   try {
     await processSyncQueue(db, supabase);
     return BackgroundFetch.BackgroundFetchResult.NewData;
@@ -218,7 +209,7 @@ async function registerBackgroundSync() {
   await BackgroundFetch.registerTaskAsync(SYNC_TASK, {
     minimumInterval: 15 * 60, // 15 minutes
     stopOnTerminate: false,
-    startOnBoot: true
+    startOnBoot: true,
   });
 }
 ```
@@ -228,11 +219,7 @@ async function registerBackgroundSync() {
 Exponential backoff for failed items:
 
 ```typescript
-async function markFailed(
-  db: SQLiteDatabase,
-  queueId: number,
-  error: string
-): Promise<void> {
+async function markFailed(db: SQLiteDatabase, queueId: number, error: string): Promise<void> {
   await db.runAsync(
     `UPDATE sync_queue 
      SET retry_count = retry_count + 1,
@@ -241,7 +228,7 @@ async function markFailed(
      WHERE id = ?`,
     error,
     Date.now() + Math.pow(2, retry_count) * 60000, // Exponential backoff
-    queueId
+    queueId,
   );
 }
 ```

@@ -27,6 +27,10 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger } from '../utils/logger';
 
+const CURRENT_PLATFORM = Platform.OS;
+const IS_WEB = CURRENT_PLATFORM === 'web';
+const IS_TEST_ENV = process.env.NODE_ENV === 'test' || Boolean(process.env.JEST_WORKER_ID);
+
 /**
  * Custom storage adapter for Supabase auth tokens
  *
@@ -38,58 +42,59 @@ import { logger } from '../utils/logger';
  *
  * @internal
  */
+/** Log storage ops only in dev to avoid noise; platform is fixed at module load. */
+function logStorage(operation: string, key: string, extra?: Record<string, unknown>): void {
+  if (__DEV__ && !IS_TEST_ENV) {
+    logger.debug('Supabase auth storage', {
+      operation,
+      platform: CURRENT_PLATFORM,
+      key,
+      ...extra,
+    });
+  }
+}
+
 const ExpoSecureStoreAdapter =
-  Platform.OS === 'web'
+  IS_WEB
     ? {
         getItem: async (key: string) => {
-          logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'web', key });
+          logStorage('getItem', key);
           return AsyncStorage.getItem(key);
         },
         setItem: async (key: string, value: string) => {
-          logger.debug('Supabase auth storage', {
-            operation: 'setItem',
-            platform: 'web',
-            key,
-            valueLength: value.length,
-          });
+          logStorage('setItem', key, { valueLength: value.length });
           await AsyncStorage.setItem(key, value);
         },
         removeItem: async (key: string) => {
-          logger.debug('Supabase auth storage', { operation: 'removeItem', platform: 'web', key });
+          logStorage('removeItem', key);
           await AsyncStorage.removeItem(key);
         },
       }
     : {
         getItem: async (key: string) => {
-          logger.debug('Supabase auth storage', { operation: 'getItem', platform: 'native', key });
+          logStorage('getItem', key);
           return SecureStore.getItemAsync(key);
         },
         setItem: async (key: string, value: string) => {
-          logger.debug('Supabase auth storage', {
-            operation: 'setItem',
-            platform: 'native',
-            key,
-            valueLength: value.length,
-          });
+          logStorage('setItem', key, { valueLength: value.length });
           await SecureStore.setItemAsync(key, value);
         },
         removeItem: async (key: string) => {
-          logger.debug('Supabase auth storage', {
-            operation: 'removeItem',
-            platform: 'native',
-            key,
-          });
+          logStorage('removeItem', key);
           await SecureStore.deleteItemAsync(key);
         },
       };
 
-// Log platform detection for debugging
-logger.info('Supabase storage adapter initialized', {
-  platform: Platform.OS,
-  usingSecureStore: Platform.OS !== 'web',
-  webSecurityNote:
-    Platform.OS === 'web' ? 'Using AsyncStorage (not encrypted)' : 'Using SecureStore (encrypted)',
-});
+if (__DEV__) {
+  logger.info('Supabase storage adapter initialized', {
+    platform: CURRENT_PLATFORM,
+    usingSecureStore: !IS_WEB,
+    webSecurityNote:
+      IS_WEB
+        ? 'Using AsyncStorage (not encrypted)'
+        : 'Using SecureStore (encrypted)',
+  });
+}
 
 /** Supabase project URL from environment */
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
@@ -118,11 +123,13 @@ function validateEnvironmentVariables(): void {
     throw new Error(errorMessage);
   }
 
-  logger.info('Supabase environment variables validated', {
-    urlPresent: !!supabaseUrl,
-    keyPresent: !!supabaseAnonKey,
-    urlPrefix: supabaseUrl?.substring(0, 30) + '...',
-  });
+  if (__DEV__) {
+    logger.info('Supabase environment variables validated', {
+      urlPresent: !!supabaseUrl,
+      keyPresent: !!supabaseAnonKey,
+      urlPrefix: supabaseUrl?.substring(0, 30) + '...',
+    });
+  }
 }
 
 // Validate environment variables
@@ -148,17 +155,19 @@ validateEnvironmentVariables();
 export const supabase = createClient(supabaseUrl!, supabaseAnonKey!, {
   auth: {
     storage: ExpoSecureStoreAdapter,
-    autoRefreshToken: true,
-    persistSession: true,
+    autoRefreshToken: !IS_TEST_ENV,
+    persistSession: !IS_TEST_ENV,
     detectSessionInUrl: false,
   },
 });
 
-logger.info('Supabase client created successfully', {
-  url: supabaseUrl?.substring(0, 30) + '...',
-  authConfigured: true,
-  platform: Platform.OS,
-});
+if (__DEV__) {
+  logger.info('Supabase client created successfully', {
+    url: supabaseUrl?.substring(0, 30) + '...',
+    authConfigured: true,
+    platform: CURRENT_PLATFORM,
+  });
+}
 
 /**
  * Tests Supabase connectivity and basic functionality
@@ -171,7 +180,7 @@ logger.info('Supabase client created successfully', {
  * ```ts
  * const health = await testSupabaseConnection();
  * if (!health.connected) {
- *   console.error('Supabase connection failed:', health.error);
+ *   logger.error('Supabase connection failed', { error: health.error });
  * }
  * ```
  */
@@ -294,10 +303,12 @@ export async function clearSupabaseAuthStorage(): Promise<{ success: boolean; er
     }
 
     // Clear storage adapter
-    if (Platform.OS === 'web') {
-      // Clear AsyncStorage items that might contain auth data
+    if (IS_WEB) {
+      // Clear only Supabase auth keys (sb-* or supabase*) to avoid removing other app data
       const keys = await AsyncStorage.getAllKeys();
-      const authKeys = keys.filter((key) => key.includes('supabase') || key.includes('auth'));
+      const authKeys = keys.filter(
+        (key) => key.startsWith('sb-') || key.toLowerCase().includes('supabase'),
+      );
       await AsyncStorage.multiRemove(authKeys);
     } else {
       // For native, rely on the signOut above and SecureStore cleanup
@@ -316,9 +327,9 @@ export async function clearSupabaseAuthStorage(): Promise<{ success: boolean; er
 // Development helper: Log Supabase configuration on initialization
 if (__DEV__) {
   logger.debug('Supabase client initialized in development mode', {
-    platform: Platform.OS,
+    platform: CURRENT_PLATFORM,
     urlConfigured: !!supabaseUrl,
     keyConfigured: !!supabaseAnonKey,
-    storageType: Platform.OS === 'web' ? 'AsyncStorage' : 'SecureStore',
+    storageType: IS_WEB ? 'AsyncStorage' : 'SecureStore',
   });
 }

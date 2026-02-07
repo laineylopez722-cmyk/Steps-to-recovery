@@ -1,12 +1,17 @@
 /**
  * CloseCallInsights Component
- * 
+ *
  * Displays statistics and insights about close calls
  */
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import type { StyleProp, ViewStyle } from 'react-native';
+import { type ReactElement } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Card, useTheme } from '../../../design-system';
@@ -17,7 +22,10 @@ interface CloseCallInsightsProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): React.ReactElement {
+export function CloseCallInsights({
+  stats,
+  style,
+}: CloseCallInsightsProps): ReactElement {
   const theme = useTheme();
 
   const resistanceRate =
@@ -94,7 +102,10 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
           <View
             style={[
               styles.resistanceBar,
-              { backgroundColor: theme.colors.background, marginTop: theme.spacing.md },
+              {
+                backgroundColor: theme.colors.background,
+                marginTop: theme.spacing.md,
+              },
             ]}
           >
             <View style={styles.resistanceBarHeader}>
@@ -102,17 +113,15 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 Resistance Rate
               </Text>
               <Text
-                style={[theme.typography.h2, { color: theme.colors.success, fontWeight: 'bold' }]}
+                style={[
+                  theme.typography.h2,
+                  { color: theme.colors.success, fontWeight: 'bold' },
+                ]}
               >
                 {resistanceRate}%
               </Text>
             </View>
-            <View
-              style={[
-                styles.progressBarContainer,
-                { backgroundColor: theme.colors.border },
-              ]}
-            >
+            <View style={[styles.progressBarContainer, { backgroundColor: theme.colors.border }]}>
               <View
                 style={[
                   styles.progressBarFill,
@@ -126,7 +135,11 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             <Text
               style={[
                 theme.typography.caption,
-                { color: theme.colors.textSecondary, marginTop: 4, textAlign: 'center' },
+                {
+                  color: theme.colors.textSecondary,
+                  marginTop: 4,
+                  textAlign: 'center',
+                },
               ]}
             >
               You chose recovery {stats.timesResisted} out of {stats.totalCloseCalls} times
@@ -167,7 +180,8 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 </Text>
               </View>
               <Text style={[theme.typography.bodyBold, { color: theme.colors.textSecondary }]}>
-                {stats.longestStreakDays} {stats.longestStreakDays === 1 ? 'day' : 'days'}
+                {stats.longestStreakDays}{' '}
+                {stats.longestStreakDays === 1 ? 'day' : 'days'}
               </Text>
             </View>
           )}
@@ -212,7 +226,11 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             <Text
               style={[
                 theme.typography.bodySmall,
-                { color: theme.colors.success, flex: 1, fontWeight: '500' },
+                {
+                  color: theme.colors.success,
+                  flex: 1,
+                  fontWeight: '500',
+                },
               ]}
             >
               {getEncouragementMessage(stats)}
@@ -243,6 +261,9 @@ function formatLastCloseCall(dateString: string): string {
 }
 
 function getEncouragementMessage(stats: CloseCallStats): string {
+  if (stats.totalCloseCalls === 0) {
+    return "Every choice to resist is progress. You're still fighting, and that matters.";
+  }
   const rate = stats.timesResisted / stats.totalCloseCalls;
 
   if (rate === 1) {

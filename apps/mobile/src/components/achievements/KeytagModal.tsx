@@ -3,7 +3,8 @@
  * Full-screen modal showing keytag details and celebration
  */
 
-import React, { memo, useState } from 'react';
+import { memo, useState } from 'react';
+import type { ReactElement } from 'react';
 import {
   View,
   Text,
@@ -15,7 +16,7 @@ import {
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../ui';
+import { GradientButton } from '../../design-system/components';
 import type { KeytagWithStatus } from '@recovery/shared';
 
 interface KeytagModalProps {
@@ -30,16 +31,16 @@ export const KeytagModal = memo(function KeytagModal({
   visible,
   onClose,
   onSaveReflection,
-}: KeytagModalProps) {
+}: KeytagModalProps): ReactElement | null {
   const [reflection, setReflection] = useState('');
   const [showReflectionInput, setShowReflectionInput] = useState(false);
 
-  if (!keytag) return null;
+  if (!keytag) return null as unknown as ReactElement;
 
   const { title, hexColor, color, days, description, message, isEarned, daysUntil } = keytag;
   const isWhite = color === 'white';
 
-  const handleSaveReflection = () => {
+  const handleSaveReflection = (): void => {
     if (reflection.trim() && onSaveReflection) {
       onSaveReflection(reflection.trim());
       setReflection('');
@@ -145,11 +146,11 @@ export const KeytagModal = memo(function KeytagModal({
             {isEarned && (
               <View className="mb-6">
                 {!showReflectionInput ? (
-                  <Button
+                  <GradientButton
                     title="Add a Reflection"
-                    variant="outline"
+                    variant="secondary"
                     onPress={() => setShowReflectionInput(true)}
-                    className="w-full"
+                    fullWidth
                   />
                 ) : (
                   <View>
@@ -167,21 +168,21 @@ export const KeytagModal = memo(function KeytagModal({
                       textAlignVertical="top"
                     />
                     <View className="flex-row gap-3 mt-3">
-                      <Button
+                      <GradientButton
                         title="Cancel"
-                        variant="ghost"
+                        variant="secondary"
                         onPress={() => {
                           setShowReflectionInput(false);
                           setReflection('');
                         }}
-                        className="flex-1"
+                        fullWidth
                       />
-                      <Button
+                      <GradientButton
                         title="Save"
-                        variant="default"
+                        variant="primary"
                         onPress={handleSaveReflection}
                         disabled={!reflection.trim()}
-                        className="flex-1"
+                        fullWidth
                       />
                     </View>
                   </View>
@@ -206,8 +207,8 @@ export const UnlockCelebrationModal = memo(function UnlockCelebrationModal({
   achievement: { title: string; icon: string; description: string } | null;
   visible: boolean;
   onClose: () => void;
-}) {
-  if (!achievement) return null;
+}): ReactElement | null {
+  if (!achievement) return null as unknown as ReactElement;
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={onClose}>
@@ -232,29 +233,29 @@ export const UnlockCelebrationModal = memo(function UnlockCelebrationModal({
           </Text>
 
           {/* Close button */}
-          <Button title="Awesome!" variant="default" onPress={onClose} className="w-full" />
+          <GradientButton title="Awesome!" variant="primary" onPress={onClose} fullWidth />
         </View>
       </View>
     </Modal>
   );
 });
 
-function formatDaysLong(days: number): string {
+export const formatDaysLong = (days: number): string => {
   if (days >= 730) return `${Math.floor(days / 365)}yr`;
   if (days >= 365) return '1yr';
   if (days >= 180) return `${Math.floor(days / 30)}mo`;
   return `${days}d`;
-}
+};
 
-function formatFullDate(date: Date): string {
+export const formatFullDate = (date: Date): string => {
   return new Date(date).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
     year: 'numeric',
   });
-}
+};
 
-function getKeytagMeaning(days: number): string {
+export const getKeytagMeaning = (days: number): string => {
   const meanings: Record<number, string> = {
     0: "You showed up. You admitted you need help. That takes incredible courage. Just for today, you're here.",
     30: "Thirty days of choosing recovery, one day at a time. Your brain is starting to heal, and you're building new patterns.",
@@ -268,4 +269,4 @@ function getKeytagMeaning(days: number): string {
   };
 
   return meanings[days] || 'Every clean day is a victory worth celebrating.';
-}
+};

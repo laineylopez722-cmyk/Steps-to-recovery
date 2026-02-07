@@ -5,8 +5,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  runOnJS,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, radius, spacing, typography } from '../tokens/modern';
@@ -28,7 +27,11 @@ interface Toast {
 }
 
 interface ToastContextType {
-  showToast: (message: string, type: ToastType, options?: { duration?: number; action?: { label: string; onPress: () => void } }) => void;
+  showToast: (
+    message: string,
+    type: ToastType,
+    options?: { duration?: number; action?: { label: string; onPress: () => void } },
+  ) => void;
   hideToast: (id: string) => void;
 }
 
@@ -43,17 +46,24 @@ export function useToast() {
 export function ToastProvider({ children }: { children: React.ReactNode }): React.ReactElement {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = useCallback((message: string, type: ToastType, options?: { duration?: number; action?: { label: string; onPress: () => void } }) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const toast: Toast = {
-      id,
-      message,
-      type,
-      duration: options?.duration || 4000,
-      action: options?.action,
-    };
-    setToasts((prev) => [...prev, toast]);
-  }, []);
+  const showToast = useCallback(
+    (
+      message: string,
+      type: ToastType,
+      options?: { duration?: number; action?: { label: string; onPress: () => void } },
+    ) => {
+      const id = Math.random().toString(36).substr(2, 9);
+      const toast: Toast = {
+        id,
+        message,
+        type,
+        duration: options?.duration || 4000,
+        action: options?.action,
+      };
+      setToasts((prev) => [...prev, toast]);
+    },
+    [],
+  );
 
   const hideToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -100,7 +110,7 @@ function ToastItem({
     const timer = setTimeout(() => {
       translateY.value = withSpring(-100, {}, () => {
         if (typeof onDismiss === 'function') {
-          runOnJS(onDismiss)();
+          onDismiss();
         }
       });
       opacity.value = withTiming(0);
@@ -114,7 +124,10 @@ function ToastItem({
     opacity: opacity.value,
   }));
 
-  const iconConfig: Record<ToastType, { icon: IconName; color: string; gradient: readonly string[] }> = {
+  const iconConfig: Record<
+    ToastType,
+    { icon: IconName; color: string; gradient: readonly string[] }
+  > = {
     success: { icon: 'check-circle', color: darkAccent.success, gradient: gradients.success },
     error: { icon: 'error', color: darkAccent.error, gradient: ['#DC2626', '#EF4444'] },
     warning: { icon: 'warning', color: darkAccent.warning, gradient: ['#D97706', '#F59E0B'] },
@@ -132,7 +145,7 @@ function ToastItem({
         end={{ x: 1, y: 0 }}
         style={StyleSheet.absoluteFill}
       />
-      
+
       <View style={[styles.iconContainer, { backgroundColor: color }]}>
         <MaterialIcons name={icon as IconName} size={20} color="#FFF" />
       </View>
@@ -158,14 +171,22 @@ export function useToastHelpers() {
   const { showToast } = useToast();
 
   return {
-    success: (message: string, options?: { duration?: number; action?: { label: string; onPress: () => void } }) =>
-      showToast(message, 'success', options),
-    error: (message: string, options?: { duration?: number; action?: { label: string; onPress: () => void } }) =>
-      showToast(message, 'error', options),
-    warning: (message: string, options?: { duration?: number; action?: { label: string; onPress: () => void } }) =>
-      showToast(message, 'warning', options),
-    info: (message: string, options?: { duration?: number; action?: { label: string; onPress: () => void } }) =>
-      showToast(message, 'info', options),
+    success: (
+      message: string,
+      options?: { duration?: number; action?: { label: string; onPress: () => void } },
+    ) => showToast(message, 'success', options),
+    error: (
+      message: string,
+      options?: { duration?: number; action?: { label: string; onPress: () => void } },
+    ) => showToast(message, 'error', options),
+    warning: (
+      message: string,
+      options?: { duration?: number; action?: { label: string; onPress: () => void } },
+    ) => showToast(message, 'warning', options),
+    info: (
+      message: string,
+      options?: { duration?: number; action?: { label: string; onPress: () => void } },
+    ) => showToast(message, 'info', options),
   };
 }
 

@@ -2,7 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -10,7 +10,7 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "noEmit": true,
-    "allowJs": false,
+    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": false,
@@ -20,6 +20,7 @@
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "incremental": true,
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
     "paths": {
       "@/*": ["./src/*"],
       "@/components/*": ["./src/components/*"],
@@ -40,7 +41,7 @@
     "index.ts",
     "polyfills.ts",
     "scripts/**/*.ts",
-    "nativewind-env.d.ts"
+    "src/uniwind-types.d.ts"
   ],
   "exclude": [
     "node_modules",

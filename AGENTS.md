@@ -27,19 +27,19 @@ This file provides essential information for AI coding agents working on the **S
 
 ### Core Technologies
 
-| Category | Technology | Version |
-|----------|------------|---------|
-| **Frontend** | React Native + Expo | SDK ~54.0.32 |
-| **React** | React | 19.1.0 |
-| **Language** | TypeScript | ~5.9.3 (strict mode) |
-| **Backend** | Supabase | ^2.89.0 |
-| **Database** | PostgreSQL (Supabase) | - |
-| **Offline Storage** | SQLite (mobile) / IndexedDB (web) | expo-sqlite ~16.0.10 |
-| **State Management** | React Query + Zustand | ^5.90.15 / ^5.0.9 |
-| **Navigation** | React Navigation | ^7.x |
-| **Styling** | NativeWind (Tailwind CSS) | ^4.2.1 |
-| **Monorepo** | Turborepo | ^2.8.1 |
-| **Package Manager** | npm | 10.9.2 |
+| Category             | Technology                        | Version              |
+| -------------------- | --------------------------------- | -------------------- |
+| **Frontend**         | React Native + Expo               | SDK ~54.0.32         |
+| **React**            | React                             | 19.1.0               |
+| **Language**         | TypeScript                        | ~5.9.3 (strict mode) |
+| **Backend**          | Supabase                          | ^2.89.0              |
+| **Database**         | PostgreSQL (Supabase)             | -                    |
+| **Offline Storage**  | SQLite (mobile) / IndexedDB (web) | expo-sqlite ~16.0.10 |
+| **State Management** | React Query + Zustand             | ^5.90.15 / ^5.0.9    |
+| **Navigation**       | React Navigation                  | ^7.x                 |
+| **Styling**          | NativeWind (Tailwind CSS)         | ^4.2.1               |
+| **Monorepo**         | Turborepo                         | ^2.8.1               |
+| **Package Manager**  | npm                               | 10.9.2               |
 
 ### Security & Encryption
 
@@ -109,6 +109,7 @@ Steps-to-recovery/
 ### Feature Organization
 
 Each feature contains:
+
 - `screens/` - Screen components
 - `components/` - Feature-specific components
 - `hooks/` - Feature-specific hooks (e.g., `useJournalEntries`)
@@ -162,6 +163,7 @@ npm run type-check   # TypeScript check
 ### Critical Test Command
 
 **Always run encryption tests after modifying encryption code:**
+
 ```bash
 cd apps/mobile && npm run test:encryption
 ```
@@ -214,7 +216,8 @@ export function JournalEntry({ entryId, onSave }: JournalEntryProps): React.Reac
 }
 
 // ❌ WRONG: No 'any' types, no default exports
-export function JournalEntry({ entryId, onSave }: any) {  // Never use 'any'
+export function JournalEntry({ entryId, onSave }: any) {
+  // Never use 'any'
   // ...
 }
 ```
@@ -281,12 +284,14 @@ src/
 ### What to Test
 
 **✅ DO test**:
+
 - **Critical security code**: Encryption, authentication, RLS
 - **Business logic**: Journal creation, sync logic, milestone calculations
 - **User-facing features**: Navigation, form validation, error states
 - **Error handling**: Network failures, invalid data, missing keys
 
 **❌ DON'T test**:
+
 - **Third-party libraries**: Trust `crypto-js`, `@tanstack/react-query`
 - **Expo SDK internals**: Trust `expo-sqlite`, `expo-secure-store`
 - **Implementation details**: Internal state, private methods
@@ -299,11 +304,11 @@ Always test encryption roundtrips:
 it('should encrypt and decrypt to return original text', async () => {
   const plaintext = 'Sensitive recovery journal entry';
   const encrypted = await encryptContent(plaintext);
-  
+
   // Verify encrypted (not plaintext)
   expect(encrypted).not.toBe(plaintext);
   expect(encrypted).toContain(':'); // IV:ciphertext format
-  
+
   // Decrypt and verify
   const decrypted = await decryptContent(encrypted);
   expect(decrypted).toBe(plaintext);
@@ -323,6 +328,7 @@ User Input → Encrypt (encryptContent) → Store in SQLite → Queue for Sync �
 ```
 
 **Key Rules**:
+
 - NEVER store unencrypted sensitive data anywhere
 - Encryption keys stored ONLY in SecureStore (never AsyncStorage, SQLite, or Supabase)
 - Each encryption generates a unique IV (prevents pattern analysis)
@@ -391,11 +397,11 @@ CREATE POLICY "Users can only access their own data"
 
 ### Build Profiles (eas.json)
 
-| Profile | Purpose | Distribution |
-|---------|---------|--------------|
-| **development** | Internal testing, debugging | Internal only |
-| **preview** | QA testing, beta releases | Internal testing |
-| **production** | App Store / Play Store | Public app stores |
+| Profile         | Purpose                     | Distribution      |
+| --------------- | --------------------------- | ----------------- |
+| **development** | Internal testing, debugging | Internal only     |
+| **preview**     | QA testing, beta releases   | Internal testing  |
+| **production**  | App Store / Play Store      | Public app stores |
 
 ### Build Commands
 
@@ -417,6 +423,7 @@ eas submit --platform android --latest
 ### Environment Variables
 
 **Required for all builds**:
+
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -428,12 +435,14 @@ EXPO_PUBLIC_SENTRY_DSN=your-sentry-dsn  # Optional but recommended
 ### Pre-Release Checklist
 
 #### Code Quality
+
 - [ ] All tests passing (`npm test`)
 - [ ] Test coverage >75% (`npm run test:coverage`)
 - [ ] No TypeScript errors (`npx tsc --noEmit`)
 - [ ] No ESLint warnings (`npm run lint`)
 
 #### Functionality
+
 - [ ] Signup/Login works
 - [ ] Journal entry encryption/decryption works
 - [ ] Daily check-ins save correctly
@@ -441,6 +450,7 @@ EXPO_PUBLIC_SENTRY_DSN=your-sentry-dsn  # Optional but recommended
 - [ ] Offline mode works (airplane mode test)
 
 #### Security
+
 - [ ] Sensitive data encrypted before storage
 - [ ] Encryption keys stored in SecureStore
 - [ ] No PII logged in console or error logs
@@ -485,6 +495,7 @@ Local Write → Add to sync_queue → Background Worker → Process Queue → Up
 **Important**: Deletes are processed BEFORE inserts/updates to avoid foreign key conflicts.
 
 **Sync Triggers**:
+
 1. Every 5 minutes when online
 2. When app returns from background
 3. When device comes online
@@ -498,7 +509,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useJournalEntries() {
   const { db } = useDatabase();
-  
+
   return useQuery({
     queryKey: ['journal-entries'],
     queryFn: async () => {
@@ -525,6 +536,7 @@ export function useJournalEntries() {
 **Target**: WCAG AAA compliance (users may be in vulnerable states)
 
 ALL interactive components MUST include:
+
 - `accessibilityLabel` (required)
 - `accessibilityRole` (required)
 - `accessibilityState` (when disabled/loading)
@@ -543,6 +555,7 @@ ALL interactive components MUST include:
 ```
 
 **Additional Requirements**:
+
 - Minimum touch target: 48x48dp
 - Color contrast ratio: 7:1 (AAA)
 - Support screen readers (TalkBack, VoiceOver)
@@ -554,30 +567,30 @@ ALL interactive components MUST include:
 
 ### Security-Critical Files
 
-| File | Purpose |
-|------|---------|
-| `apps/mobile/src/utils/encryption.ts` | AES-256-CBC encryption with PBKDF2 |
-| `apps/mobile/src/adapters/secureStorage/` | Platform-specific secure key storage |
-| `apps/mobile/src/services/syncService.ts` | Queue processing, retry logic |
-| `apps/mobile/src/contexts/SyncContext.tsx` | Manages sync lifecycle |
+| File                                       | Purpose                              |
+| ------------------------------------------ | ------------------------------------ |
+| `apps/mobile/src/utils/encryption.ts`      | AES-256-CBC encryption with PBKDF2   |
+| `apps/mobile/src/adapters/secureStorage/`  | Platform-specific secure key storage |
+| `apps/mobile/src/services/syncService.ts`  | Queue processing, retry logic        |
+| `apps/mobile/src/contexts/SyncContext.tsx` | Manages sync lifecycle               |
 
 ### Core Configuration Files
 
-| File | Purpose |
-|------|---------|
-| `package.json` | Monorepo workspace config, npm scripts |
-| `turbo.json` | Turborepo task pipeline |
-| `apps/mobile/package.json` | Mobile app dependencies |
-| `apps/mobile/tsconfig.json` | TypeScript config (strict mode) |
-| `.prettierrc.json` | Code formatting rules |
-| `.editorconfig` | Editor settings |
+| File                        | Purpose                                |
+| --------------------------- | -------------------------------------- |
+| `package.json`              | Monorepo workspace config, npm scripts |
+| `turbo.json`                | Turborepo task pipeline                |
+| `apps/mobile/package.json`  | Mobile app dependencies                |
+| `apps/mobile/tsconfig.json` | TypeScript config (strict mode)        |
+| `.prettierrc.json`          | Code formatting rules                  |
+| `.editorconfig`             | Editor settings                        |
 
 ### Database & Backend
 
-| File | Purpose |
-|------|---------|
-| `supabase-schema.sql` | Base database schema with RLS policies |
-| `supabase-migration-*.sql` | Migration files for additional tables |
+| File                       | Purpose                                |
+| -------------------------- | -------------------------------------- |
+| `supabase-schema.sql`      | Base database schema with RLS policies |
+| `supabase-migration-*.sql` | Migration files for additional tables  |
 
 ---
 

@@ -6,14 +6,14 @@ A complete visual refresh with **glassmorphism**, **gradient accents**, and **pr
 
 ### Before vs After
 
-| Aspect | Before | After (2025) |
-|--------|--------|--------------|
-| Cards | Solid backgrounds | Glassmorphism with blur |
-| Buttons | Solid colors | Gradient with haptics |
-| Shadows | Standard iOS | Colored glow effects |
-| Typography | System default | Refined scale |
-| Backgrounds | Flat navy | Gradient depth |
-| Animations | Basic | Spring physics |
+| Aspect      | Before            | After (2025)            |
+| ----------- | ----------------- | ----------------------- |
+| Cards       | Solid backgrounds | Glassmorphism with blur |
+| Buttons     | Solid colors      | Gradient with haptics   |
+| Shadows     | Standard iOS      | Colored glow effects    |
+| Typography  | System default    | Refined scale           |
+| Backgrounds | Flat navy         | Gradient depth          |
+| Animations  | Basic             | Spring physics          |
 
 ## New Components
 
@@ -41,6 +41,7 @@ import { GlassCard } from '../design-system/components/GlassCard';
 ```
 
 **Props:**
+
 - `intensity`: 'light' | 'medium' | 'heavy'
 - `glow`: boolean - Adds colored shadow
 - `glowColor`: string - Custom glow color
@@ -88,14 +89,14 @@ import { GradientButton } from '../design-system/components/GradientButton';
 Import modern tokens for consistent styling:
 
 ```tsx
-import { 
-  darkAccent, 
-  gradients, 
-  modernShadows, 
+import {
+  darkAccent,
+  gradients,
+  modernShadows,
   glass,
   radius,
   spacing,
-  typography 
+  typography,
 } from '../design-system/tokens/modern';
 ```
 
@@ -103,39 +104,39 @@ import {
 
 ```tsx
 // Primary accents
-darkAccent.primary      // #818CF8 (indigo)
-darkAccent.success      // #34D399 (emerald)
-darkAccent.warning      // #FBBF24 (amber)
-darkAccent.error        // #F87171 (rose)
+darkAccent.primary; // #818CF8 (indigo)
+darkAccent.success; // #34D399 (emerald)
+darkAccent.warning; // #FBBF24 (amber)
+darkAccent.error; // #F87171 (rose)
 
 // Surfaces
-darkAccent.background   // #020617 (deep navy)
-darkAccent.surface      // #0F172A (navy)
-darkAccent.surfaceHigh  // #1E293B (elevated)
+darkAccent.background; // #020617 (deep navy)
+darkAccent.surface; // #0F172A (navy)
+darkAccent.surfaceHigh; // #1E293B (elevated)
 
 // Text
-darkAccent.text         // #F8FAFC (white)
-darkAccent.textMuted    // #CBD5E1 (gray 300)
-darkAccent.textSubtle   // #94A3B8 (gray 400)
+darkAccent.text; // #F8FAFC (white)
+darkAccent.textMuted; // #CBD5E1 (gray 300)
+darkAccent.textSubtle; // #94A3B8 (gray 400)
 ```
 
 ### Gradient Presets
 
 ```tsx
-gradients.primary    // Indigo to purple
-gradients.success    // Emerald gradient
-gradients.aurora     // Blue to pink
-gradients.sunset     // Orange to pink
-gradients.ocean      // Cyan to indigo
+gradients.primary; // Indigo to purple
+gradients.success; // Emerald gradient
+gradients.aurora; // Blue to pink
+gradients.sunset; // Orange to pink
+gradients.ocean; // Cyan to indigo
 ```
 
 ### Modern Shadows
 
 ```tsx
-modernShadows.sm     // Subtle colored shadow
-modernShadows.md     // Medium elevation
-modernShadows.lg     // Large elevation
-modernShadows.glow   // Glow effect
+modernShadows.sm; // Subtle colored shadow
+modernShadows.md; // Medium elevation
+modernShadows.lg; // Large elevation
+modernShadows.glow; // Glow effect
 ```
 
 ## Screen Upgrades
@@ -145,6 +146,7 @@ modernShadows.glow   // Glow effect
 Location: `features/home/screens/HomeScreenModern.tsx`
 
 Features:
+
 - Glassmorphism sobriety counter with glow
 - Animated time breakdown
 - Quick action grid with tiles
@@ -158,6 +160,7 @@ Features:
 Location: `features/auth/screens/LoginScreenModern.tsx`
 
 Features:
+
 - Gradient brand logo
 - Glass form card
 - Modern input styling with icons
@@ -199,8 +202,8 @@ import { HomeScreenModern } from './features/home/screens/HomeScreenModern';
 <Button title="Submit" onPress={handleSubmit} />
 
 // After
-<GradientButton 
-  title="Submit" 
+<GradientButton
+  title="Submit"
   variant="primary"
   size="lg"
   fullWidth
@@ -212,32 +215,36 @@ import { HomeScreenModern } from './features/home/screens/HomeScreenModern';
 
 ```tsx
 // Before
-theme.colors.primary
-theme.colors.surface
+theme.colors.primary;
+theme.colors.surface;
 
 // After
-darkAccent.primary
-darkAccent.surface
+darkAccent.primary;
+darkAccent.surface;
 ```
 
 ## Design Principles
 
 ### 1. Depth & Layering
+
 - Use multiple glass intensities for depth
 - Heavy for primary cards, light for secondary
 - Add glow to highlight important elements
 
 ### 2. Gradient Accents
+
 - Primary actions use gradient buttons
 - Brand elements use `gradients.primary`
 - Decorative elements use aurora/ocean gradients
 
 ### 3. Spacing & Rhythm
+
 - Use `spacing` token for consistent gaps
 - 16px (spacing[2]) as base unit
 - 24px (spacing[3]) for section gaps
 
 ### 4. Typography Hierarchy
+
 - Hero: 48px for counters
 - H1: 34px for screen titles
 - H3: 22px for card titles
@@ -246,17 +253,17 @@ darkAccent.surface
 ## Animation Guidelines
 
 ### Entrance Animations
+
 ```tsx
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 <Animated.View entering={FadeInUp.duration(600)}>
-  <GlassCard>
-    {/* Stagger children */}
-  </GlassCard>
-</Animated.View>
+  <GlassCard>{/* Stagger children */}</GlassCard>
+</Animated.View>;
 ```
 
 ### Press Feedback
+
 ```tsx
 // Built into GlassCard with pressable prop
 <GlassCard pressable onPress={handlePress}>

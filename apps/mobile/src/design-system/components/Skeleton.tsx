@@ -1,195 +1,261 @@
-import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
-import type { StyleProp, ViewStyle, DimensionValue } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
-import { darkAccent, radius } from '../tokens/modern';
+/**
+ * Skeleton Loading Components
+ * Premium loading placeholders with shimmer animation
+ * 
+ * Usage:
+ * <SkeletonCard />
+ * <SkeletonList items={3} />
+ * <SkeletonStats />
+ */
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+import React, { useEffect, useRef } from 'react';
+import { View, StyleSheet, Animated, type DimensionValue, type StyleProp, type ViewStyle } from 'react-native';
+import { useTheme } from '../hooks/useTheme';
 
 export interface SkeletonProps {
-  width?: number | string;
+  width?: DimensionValue;
   height?: number;
   borderRadius?: number;
   style?: StyleProp<ViewStyle>;
 }
 
+/**
+ * Base skeleton with shimmer animation
+ */
 export function Skeleton({
   width = '100%',
   height = 16,
-  borderRadius = radius.md,
+  borderRadius = 8,
   style,
 }: SkeletonProps): React.ReactElement {
-  const translateX = useSharedValue(-SCREEN_WIDTH);
+  const theme = useTheme();
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
-    translateX.value = withRepeat(
-      withTiming(SCREEN_WIDTH, { duration: 1500 }),
-      -1,
-      false
+  useEffect(() => {
+    const shimmer = Animated.loop(
+      Animated.sequence([
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(shimmerAnim, {
+          toValue: 0,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
     );
-  }, []);
+    shimmer.start();
+    return () => shimmer.stop();
+  }, [shimmerAnim]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
-  }));
-
-  const widthStyle: { width: DimensionValue } = 
-    typeof width === 'number' ? { width } : { width: width as DimensionValue };
+  const translateX = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-200, 200],
+  });
 
   return (
-    <View style={[styles.container, { height, borderRadius }, widthStyle, style]}>
-      <View style={[styles.background, { borderRadius }]} />
-      <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]}>
-        <LinearGradient
-          colors={['transparent', 'rgba(255,255,255,0.08)', 'transparent']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
+    <View
+      style={[
+        styles.skeleton,
+        {
+          width,
+          height,
+          borderRadius,
+          backgroundColor: theme.colors.surface,
+        },
+        style,
+      ]}
+    >
+      <Animated.View
+        style={[
+          styles.shimmer,
+          {
+            transform: [{ translateX }],
+            backgroundColor: theme.isDark
+              ? 'rgba(255,255,255,0.05)'
+              : 'rgba(0,0,0,0.05)',
+          },
+        ]}
+      />
     </View>
   );
 }
 
-// Preset skeleton layouts
-export function SkeletonCard(): React.ReactElement {
+/**
+ * Card skeleton with title and content lines
+ */
+export function SkeletonCard({ lines = 3 }: { lines?: number }): React.ReactElement {
+  const theme = useTheme();
+  
   return (
-    <View style={styles.card}>
-      <Skeleton width="60%" height={20} style={styles.mb12} />
-      <Skeleton width="90%" height={14} style={styles.mb8} />
-      <Skeleton width="75%" height={14} />
-    </View>
-  );
-}
-
-export function SkeletonListItem(): React.ReactElement {
-  return (
-    <View style={styles.listItem}>
-      <Skeleton width={48} height={48} borderRadius={radius.lg} />
-      <View style={styles.listItemContent}>
-        <Skeleton width="70%" height={16} style={styles.mb8} />
-        <Skeleton width="50%" height={12} />
-      </View>
-    </View>
-  );
-}
-
-export function SkeletonStats(): React.ReactElement {
-  return (
-    <View style={styles.statsRow}>
-      {[1, 2, 3].map((i) => (
-        <View key={i} style={styles.statItem}>
-          <Skeleton width={40} height={32} style={[styles.mb8, { alignSelf: 'center' }]} />
-          <Skeleton width={60} height={12} style={{ alignSelf: 'center' }} />
-        </View>
-      ))}
-    </View>
-  );
-}
-
-export function SkeletonHome(): React.ReactElement {
-  return (
-    <View style={styles.page}>
-      {/* Header */}
-      <Skeleton width={150} height={28} style={styles.mb24} />
+    <View
+      style={[
+        styles.card,
+        {
+          backgroundColor: theme.colors.surface,
+          borderColor: theme.colors.border,
+        },
+      ]}
+    >
+      {/* Title */}
+      <Skeleton width="60%" height={20} borderRadius={6} />
       
-      {/* Counter Card */}
-      <SkeletonCard />
-      
-      {/* Check-in Card */}
-      <View style={styles.card}>
-        <Skeleton width="40%" height={18} style={styles.mb16} />
-        <View style={styles.row}>
-          <Skeleton width="48%" height={60} borderRadius={radius.lg} />
-          <Skeleton width="48%" height={60} borderRadius={radius.lg} />
-        </View>
-      </View>
-      
-      {/* Action Grid */}
-      <Skeleton width={100} height={20} style={styles.mb16} />
-      <View style={styles.grid}>
-        {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} width="47%" height={80} borderRadius={radius.lg} />
+      {/* Content lines */}
+      <View style={styles.lines}>
+        {Array.from({ length: lines }).map((_, i) => (
+          <Skeleton
+            key={i}
+            width={i === lines - 1 ? '70%' : '100%'}
+            height={14}
+            borderRadius={6}
+            style={styles.line}
+          />
         ))}
       </View>
     </View>
   );
 }
 
-export function SkeletonJournalList(): React.ReactElement {
+/**
+ * List item skeleton
+ */
+export function SkeletonListItem(): React.ReactElement {
   return (
-    <View style={styles.page}>
-      <Skeleton width={120} height={32} style={styles.mb16} />
-      <Skeleton width="100%" height={48} borderRadius={radius.lg} style={styles.mb16} />
-      <SkeletonStats />
-      {[1, 2, 3, 4, 5].map((i) => (
+    <View style={styles.listItem}>
+      {/* Avatar */}
+      <Skeleton width={48} height={48} borderRadius={24} />
+      
+      {/* Content */}
+      <View style={styles.listContent}>
+        <Skeleton width="50%" height={16} borderRadius={6} />
+        <Skeleton width="80%" height={12} borderRadius={6} style={styles.line} />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Stats skeleton (for dashboard)
+ */
+export function SkeletonStats(): React.ReactElement {
+  return (
+    <View style={styles.statsRow}>
+      <SkeletonCard />
+      <SkeletonCard />
+    </View>
+  );
+}
+
+/**
+ * Full screen skeleton list
+ */
+export function SkeletonList({ items = 5 }: { items?: number }): React.ReactElement {
+  return (
+    <View style={styles.list}>
+      {Array.from({ length: items }).map((_, i) => (
         <SkeletonListItem key={i} />
       ))}
     </View>
   );
 }
 
+// Backwards-compatible alias used by older imports.
+export const SkeletonJournalList = SkeletonList;
+
+/**
+ * Home screen skeleton
+ */
+export function SkeletonHome(): React.ReactElement {
+  const theme = useTheme();
+  
+  return (
+    <View style={styles.container}>
+      {/* Header */}
+      <Skeleton width="50%" height={28} borderRadius={8} />
+      <Skeleton width="80%" height={16} borderRadius={6} style={styles.line} />
+      
+      {/* Clean time tracker */}
+      <View
+        style={[
+          styles.tracker,
+          {
+            backgroundColor: theme.colors.surface,
+            borderColor: theme.colors.border,
+          },
+        ]}
+      >
+        <Skeleton width="40%" height={48} borderRadius={8} />
+        <Skeleton width="60%" height={16} borderRadius={6} style={styles.line} />
+      </View>
+      
+      {/* Check-in card */}
+      <SkeletonCard lines={2} />
+      
+      {/* Quick actions */}
+      <View style={styles.actions}>
+        <Skeleton width="48%" height={80} borderRadius={12} />
+        <Skeleton width="48%" height={80} borderRadius={12} />
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: darkAccent.surfaceHigh,
+  skeleton: {
     overflow: 'hidden',
   },
-  background: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: darkAccent.surfaceHigh,
-  },
-  page: {
-    padding: 16,
+  shimmer: {
+    width: 100,
+    height: '200%',
+    position: 'absolute',
+    top: '-50%',
+    left: 0,
+    transform: [{ skewX: '-20deg' }],
   },
   card: {
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.lg,
     padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
     marginBottom: 16,
+  },
+  lines: {
+    marginTop: 12,
+    gap: 8,
+  },
+  line: {
+    marginTop: 8,
   },
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     gap: 12,
-    marginBottom: 8,
   },
-  listItemContent: {
+  listContent: {
     flex: 1,
+  },
+  list: {
+    gap: 8,
   },
   statsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 16,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 12,
   },
-  mb8: {
-    marginBottom: 8,
+  container: {
+    padding: 20,
   },
-  mb12: {
-    marginBottom: 12,
+  tracker: {
+    padding: 24,
+    borderRadius: 16,
+    borderWidth: 1,
+    marginVertical: 16,
+    alignItems: 'center',
   },
-  mb16: {
-    marginBottom: 16,
-  },
-  mb24: {
-    marginBottom: 24,
+  actions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
   },
 });

@@ -1,4 +1,5 @@
 # Build & Run Guide - Final Testing
+
 **Date**: 2026-02-06  
 **Status**: Ready to build & test  
 **Time**: 10-15 minutes
@@ -52,6 +53,7 @@ npx expo run:android --device
 ### **iOS (TestFlight - Best for Beta)**:
 
 1. **Build**:
+
    ```bash
    eas build --platform ios --profile preview
    ```
@@ -68,6 +70,7 @@ npx expo run:android --device
 ### **Android (Internal Testing)**:
 
 1. **Build**:
+
    ```bash
    eas build --platform android --profile preview
    ```
@@ -86,7 +89,9 @@ npx expo run:android --device
 ### **Common Build Errors**:
 
 #### **Error: "Cannot find module '@recovery/shared'"**
+
 **Fix**:
+
 ```bash
 cd C:\Users\h\Documents\github\steps-to-recovery
 npm install
@@ -95,14 +100,18 @@ npm install
 ```
 
 #### **Error: "Worklet compilation error"**
+
 **Fix**:
+
 ```bash
 # Clear Metro cache
 npx expo start -c
 ```
 
 #### **Error: "Unable to resolve module"**
+
 **Fix**:
+
 ```bash
 # Clear all caches
 rm -rf node_modules
@@ -114,7 +123,9 @@ npx expo start --clear
 ```
 
 #### **TypeScript Errors**:
+
 **Fix**:
+
 ```bash
 cd apps/mobile
 npx tsc --noEmit
@@ -169,9 +180,13 @@ Before building:
 ## 📊 Success Metrics
 
 ### **App Launches**: ✅ ❌
+
 ### **No Crashes**: ✅ ❌
+
 ### **All Features Work**: ✅ ❌
+
 ### **Database Saves**: ✅ ❌
+
 ### **Animations Smooth**: ✅ ❌
 
 ---
@@ -181,11 +196,13 @@ Before building:
 **Congratulations!** 🚀
 
 You've successfully built:
+
 - **Circular Progress Rings** (premium UX)
 - **Meeting Reflections** (value maximization)
 - **Crisis Checkpoint** (life-saving intervention)
 
 **Next Steps**:
+
 1. Beta testing with real users
 2. Gather feedback
 3. Iterate & polish
@@ -205,7 +222,7 @@ npx expo start --clear
 # iOS simulator
 npx expo run:ios
 
-# Android emulator  
+# Android emulator
 npx expo run:android
 
 # Check TypeScript

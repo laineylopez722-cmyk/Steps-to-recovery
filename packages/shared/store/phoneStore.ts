@@ -59,7 +59,7 @@ export const usePhoneStore = create<PhoneState & PhoneActions>((set, get) => ({
       const todayCalls = await getTodayCallLogs();
       set({ todayCalls, isLoading: false });
     } catch (error) {
-      logger.error('Failed to load today\'s calls', error);
+      logger.error("Failed to load today's calls", error);
       set({ error: 'Failed to load calls', isLoading: false });
     }
   },

@@ -4,14 +4,14 @@ import { logger } from './logger';
 
 /**
  * Biometric Authentication Utilities
- * 
+ *
  * Provides secure biometric authentication using:
  * - Face ID (iOS)
  * - Touch ID (iOS)
  * - Fingerprint (Android)
  * - Face Recognition (Android)
  * - Iris Scan (Android - Samsung)
- * 
+ *
  * Features:
  * - Check device capabilities
  * - Enrolled biometrics detection
@@ -22,7 +22,13 @@ import { logger } from './logger';
 /**
  * Types of biometric authentication available
  */
-export type BiometricType = 'face_id' | 'touch_id' | 'fingerprint' | 'facial_recognition' | 'iris' | 'none';
+export type BiometricType =
+  | 'face_id'
+  | 'touch_id'
+  | 'fingerprint'
+  | 'facial_recognition'
+  | 'iris'
+  | 'none';
 
 /**
  * Result of biometric authentication
@@ -132,7 +138,7 @@ export async function isBiometricReady(): Promise<{
   reason?: string;
 }> {
   const type = await getBiometricType();
-  
+
   if (type === 'none') {
     const supported = await isBiometricSupported();
     return {
@@ -144,7 +150,7 @@ export async function isBiometricReady(): Promise<{
   }
 
   const enrolled = await hasEnrolledBiometrics();
-  
+
   if (!enrolled) {
     return {
       available: false,
@@ -163,17 +169,19 @@ export async function isBiometricReady(): Promise<{
 
 /**
  * Authenticate user with biometrics
- * 
+ *
  * @param options - Authentication options
  * @returns Authentication result
  */
-export async function authenticateWithBiometrics(options: {
-  promptMessage?: string;
-  fallbackLabel?: string;
-  cancelLabel?: string;
-  allowDeviceCredentials?: boolean;
-  requireConfirmation?: boolean;
-} = {}): Promise<BiometricAuthResult> {
+export async function authenticateWithBiometrics(
+  options: {
+    promptMessage?: string;
+    fallbackLabel?: string;
+    cancelLabel?: string;
+    allowDeviceCredentials?: boolean;
+    requireConfirmation?: boolean;
+  } = {},
+): Promise<BiometricAuthResult> {
   try {
     // Skip on web
     if (Platform.OS === 'web') {
@@ -197,7 +205,8 @@ export async function authenticateWithBiometrics(options: {
     if (!enrolled) {
       return {
         success: false,
-        error: 'No biometrics enrolled. Please set up Face ID/Touch ID or Fingerprint in your device settings.',
+        error:
+          'No biometrics enrolled. Please set up Face ID/Touch ID or Fingerprint in your device settings.',
         warning: 'BIOMETRICS_NOT_ENROLLED',
       };
     }
@@ -211,7 +220,7 @@ export async function authenticateWithBiometrics(options: {
       fallbackLabel: options.fallbackLabel || 'Use passcode',
       cancelLabel: options.cancelLabel || 'Cancel',
       disableDeviceFallback: !options.allowDeviceCredentials,
-      requireConfirmation: options.requireConfirmation ?? (Platform.OS === 'android'),
+      requireConfirmation: options.requireConfirmation ?? Platform.OS === 'android',
     });
 
     if (result.success) {
@@ -263,7 +272,7 @@ export async function authenticateWithBiometrics(options: {
  * Always requires biometric confirmation
  */
 export async function secureAuthenticate(
-  operation: string = 'this action'
+  operation: string = 'this action',
 ): Promise<BiometricAuthResult> {
   return authenticateWithBiometrics({
     promptMessage: `Authenticate to ${operation}`,

@@ -125,7 +125,12 @@ export function useCreateJournalEntry(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, Error, CreateEntryVariables, { previousEntries: JournalEntryDecrypted[] | undefined }>({
+  const mutation = useMutation<
+    void,
+    Error,
+    CreateEntryVariables,
+    { previousEntries: JournalEntryDecrypted[] | undefined }
+  >({
     mutationKey: ['createJournalEntry', userId],
     mutationFn: async ({ entry }: CreateEntryVariables) => {
       if (!db) throw new Error('Database not initialized');
@@ -168,9 +173,11 @@ export function useCreateJournalEntry(userId: string): {
     // Optimistically update the UI immediately
     onMutate: async ({ entry }) => {
       await queryClient.cancelQueries({ queryKey: journalKeys.byUser(userId) });
-      
-      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(journalKeys.byUser(userId));
-      
+
+      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(
+        journalKeys.byUser(userId),
+      );
+
       const optimisticEntry: JournalEntryDecrypted = {
         ...entry,
         id: 'temp-' + Date.now(),
@@ -186,7 +193,7 @@ export function useCreateJournalEntry(userId: string): {
         optimisticEntry,
         ...(previousEntries || []),
       ]);
-      
+
       return { previousEntries };
     },
 
@@ -237,7 +244,12 @@ export function useUpdateJournalEntry(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, Error, UpdateEntryVariables, { previousEntries: JournalEntryDecrypted[] | undefined }>({
+  const mutation = useMutation<
+    void,
+    Error,
+    UpdateEntryVariables,
+    { previousEntries: JournalEntryDecrypted[] | undefined }
+  >({
     mutationKey: ['updateJournalEntry', userId],
     mutationFn: async ({ id, entry }: UpdateEntryVariables) => {
       if (!db) throw new Error('Database not initialized');
@@ -260,9 +272,7 @@ export function useUpdateJournalEntry(userId: string): {
       }
       if (entry.craving !== undefined) {
         updates.push('encrypted_craving = ?');
-        values.push(
-          entry.craving !== null ? await encryptContent(entry.craving.toString()) : null,
-        );
+        values.push(entry.craving !== null ? await encryptContent(entry.craving.toString()) : null);
       }
       if (entry.tags !== undefined) {
         updates.push('encrypted_tags = ?');
@@ -292,19 +302,19 @@ export function useUpdateJournalEntry(userId: string): {
 
     onMutate: async ({ id, entry }) => {
       await queryClient.cancelQueries({ queryKey: journalKeys.byUser(userId) });
-      
-      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(journalKeys.byUser(userId));
-      
+
+      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(
+        journalKeys.byUser(userId),
+      );
+
       if (previousEntries) {
         const optimisticEntries = previousEntries.map((e) =>
-          e.id === id
-            ? { ...e, ...entry, updated_at: new Date().toISOString() }
-            : e
+          e.id === id ? { ...e, ...entry, updated_at: new Date().toISOString() } : e,
         );
 
         queryClient.setQueryData(journalKeys.byUser(userId), optimisticEntries);
       }
-      
+
       return { previousEntries };
     },
 
@@ -336,7 +346,12 @@ export function useDeleteJournalEntry(userId: string): {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
-  const mutation = useMutation<void, Error, string, { previousEntries: JournalEntryDecrypted[] | undefined }>({
+  const mutation = useMutation<
+    void,
+    Error,
+    string,
+    { previousEntries: JournalEntryDecrypted[] | undefined }
+  >({
     mutationKey: ['deleteJournalEntry', userId],
     mutationFn: async (id: string) => {
       if (!db) throw new Error('Database not initialized');
@@ -350,14 +365,16 @@ export function useDeleteJournalEntry(userId: string): {
 
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: journalKeys.byUser(userId) });
-      
-      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(journalKeys.byUser(userId));
-      
+
+      const previousEntries = queryClient.getQueryData<JournalEntryDecrypted[]>(
+        journalKeys.byUser(userId),
+      );
+
       if (previousEntries) {
         const optimisticEntries = previousEntries.filter((e) => e.id !== id);
         queryClient.setQueryData(journalKeys.byUser(userId), optimisticEntries);
       }
-      
+
       return { previousEntries };
     },
 

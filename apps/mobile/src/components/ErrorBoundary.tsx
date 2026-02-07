@@ -19,14 +19,14 @@ interface State {
 
 /**
  * ErrorBoundary - React Class Component for catching JavaScript errors
- * 
+ *
  * Features:
  * - Catches errors in child component tree
  * - Displays user-friendly error UI
  * - Logs errors to Sentry
  * - Allows app reset/recovery
  * - Shows error details in development
- * 
+ *
  * Usage:
  * ```tsx
  * <ErrorBoundary onReset={() => setResetKey(k => k + 1)}>
@@ -47,7 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log to console/logger
     logger.error('ErrorBoundary caught error', { error, errorInfo });
-    
+
     // Log to Sentry
     captureException(error, {
       componentStack: errorInfo.componentStack,
@@ -116,9 +116,7 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React
         </View>
 
         {/* Title */}
-        <Text style={[styles.title, { color: colors.text }]}>
-          Something went wrong
-        </Text>
+        <Text style={[styles.title, { color: colors.text }]}>Something went wrong</Text>
 
         {/* Description */}
         <Text style={[styles.description, { color: colors.textSecondary }]}>
@@ -160,13 +158,9 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React
         {/* Error Details (Dev Only) */}
         {isDev && showDetails && (
           <ScrollView style={styles.detailsContainer}>
-            <Text style={[styles.detailsTitle, { color: colors.danger }]}>
-              Error:
-            </Text>
-            <Text style={[styles.detailsText, { color: colors.text }]}>
-              {error?.toString()}
-            </Text>
-            
+            <Text style={[styles.detailsTitle, { color: colors.danger }]}>Error:</Text>
+            <Text style={[styles.detailsText, { color: colors.text }]}>{error?.toString()}</Text>
+
             <Text style={[styles.detailsTitle, { color: colors.danger, marginTop: 16 }]}>
               Component Stack:
             </Text>
@@ -277,4 +271,3 @@ export function useErrorBoundary() {
 
   return { resetKey, reset };
 }
-

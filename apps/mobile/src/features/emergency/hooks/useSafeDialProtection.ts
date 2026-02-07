@@ -1,6 +1,6 @@
 /**
  * Safe Dial Protection Hooks
- * 
+ *
  * React hooks for managing risky contacts and intervention flow.
  * Uses optimistic updates and proper error handling.
  */
@@ -39,7 +39,9 @@ export interface UseRiskyContactsReturn {
   addContact: (params: Omit<AddRiskyContactParams, 'userId'>) => Promise<RiskyContact>;
   updateContact: (
     contactId: string,
-    updates: Partial<Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>>
+    updates: Partial<
+      Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>
+    >,
   ) => Promise<RiskyContact>;
   removeContact: (contactId: string) => Promise<void>;
   addMultiple: (contacts: Omit<AddRiskyContactParams, 'userId'>[]) => Promise<{
@@ -95,24 +97,24 @@ export function useRiskyContacts(): UseRiskyContactsReturn {
       setContacts((prev) => [newContact, ...prev]);
       return newContact;
     },
-    [user?.id]
+    [user?.id],
   );
 
   const updateContact = useCallback(
     async (
       contactId: string,
-      updates: Partial<Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>>
+      updates: Partial<
+        Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>
+      >,
     ): Promise<RiskyContact> => {
       const updated = await updateRiskyContact(contactId, updates);
 
       // Optimistic update
-      setContacts((prev) =>
-        prev.map((c) => (c.id === contactId ? updated : c))
-      );
+      setContacts((prev) => prev.map((c) => (c.id === contactId ? updated : c)));
 
       return updated;
     },
-    []
+    [],
   );
 
   const removeContact = useCallback(async (contactId: string): Promise<void> => {
@@ -138,7 +140,7 @@ export function useRiskyContacts(): UseRiskyContactsReturn {
 
       return result;
     },
-    [user?.id]
+    [user?.id],
   );
 
   return {
@@ -184,7 +186,7 @@ export function useCheckRiskyContact(): UseCheckRiskyContactReturn {
         setIsChecking(false);
       }
     },
-    [user?.id]
+    [user?.id],
   );
 
   return {
@@ -265,12 +267,15 @@ export function useCloseCallTracking(): UseCloseCallTrackingReturn {
         setStats({
           ...stats,
           totalCloseCalls: stats.totalCloseCalls + 1,
-          timesResisted:
-            ['called_sponsor', 'texted_sponsor', 'waited', 'dismissed', 'played_game'].includes(
-              params.actionTaken
-            )
-              ? stats.timesResisted + 1
-              : stats.timesResisted,
+          timesResisted: [
+            'called_sponsor',
+            'texted_sponsor',
+            'waited',
+            'dismissed',
+            'played_game',
+          ].includes(params.actionTaken)
+            ? stats.timesResisted + 1
+            : stats.timesResisted,
           timesProceeded:
             params.actionTaken === 'proceeded' ? stats.timesProceeded + 1 : stats.timesProceeded,
           lastCloseCall: closeCall.createdAt,
@@ -279,7 +284,7 @@ export function useCloseCallTracking(): UseCloseCallTrackingReturn {
 
       return closeCall;
     },
-    [user?.id, stats]
+    [user?.id, stats],
   );
 
   return {

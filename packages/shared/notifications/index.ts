@@ -479,7 +479,9 @@ export async function scheduleRegularMeetingReminder(
     trigger,
   });
 
-  logger.info(`Regular meeting reminder scheduled for ${meetingName} on day ${dayOfWeek} at ${reminderHour}:${reminderMinute}`);
+  logger.info(
+    `Regular meeting reminder scheduled for ${meetingName} on day ${dayOfWeek} at ${reminderHour}:${reminderMinute}`,
+  );
 }
 
 /**

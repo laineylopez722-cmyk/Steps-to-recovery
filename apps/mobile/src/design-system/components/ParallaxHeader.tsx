@@ -36,20 +36,15 @@ export function ParallaxHeader({
       scrollY.value,
       [0, height],
       [0, height * 0.5],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     const scale = interpolate(
       scrollY.value,
       [-height, 0, height],
       [1.5, 1, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
-    const opacity = interpolate(
-      scrollY.value,
-      [0, height * 0.8],
-      [1, 0],
-      Extrapolation.CLAMP
-    );
+    const opacity = interpolate(scrollY.value, [0, height * 0.8], [1, 0], Extrapolation.CLAMP);
 
     return {
       transform: [{ translateY }, { scale }],
@@ -62,19 +57,19 @@ export function ParallaxHeader({
       scrollY.value,
       [0, height - collapsedHeight],
       [0, -height + collapsedHeight],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     const scale = interpolate(
       scrollY.value,
       [0, height - collapsedHeight],
       [1, 0.8],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     const opacity = interpolate(
       scrollY.value,
       [0, (height - collapsedHeight) * 0.5],
       [1, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     return {
@@ -88,19 +83,14 @@ export function ParallaxHeader({
       scrollY.value,
       [(height - collapsedHeight) * 0.5, height - collapsedHeight],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     return { opacity };
   });
 
   const gradientStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(
-      scrollY.value,
-      [0, height * 0.5],
-      [0, 1],
-      Extrapolation.CLAMP
-    );
+    const opacity = interpolate(scrollY.value, [0, height * 0.5], [0, 1], Extrapolation.CLAMP);
 
     return { opacity };
   });
@@ -202,13 +192,13 @@ export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): 
       scrollY.value,
       [threshold, threshold + 60],
       [-60, 0],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
     const opacity = interpolate(
       scrollY.value,
       [threshold, threshold + 60],
       [0, 1],
-      Extrapolation.CLAMP
+      Extrapolation.CLAMP,
     );
 
     return {
@@ -224,7 +214,6 @@ export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): 
     </Animated.View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

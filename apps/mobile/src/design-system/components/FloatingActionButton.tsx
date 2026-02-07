@@ -1,9 +1,15 @@
 /**
- * iOS-style Floating Action Button (FAB)
- * Replaces react-native-paper FAB with custom iOS design
+ * FloatingActionButton - DEPRECATED
+ * 
+ * This component is deprecated and should not be used in new code.
+ * The FAB pattern was removed from the design system for a cleaner UX.
+ * 
+ * Use inline buttons or fixed bottom bars instead.
+ * 
+ * @deprecated Use AmberButton or standard buttons instead
  */
 
-import React from 'react';
+import type { ReactNode, ReactElement } from 'react';
 import { TouchableOpacity, StyleSheet, type ViewStyle, Animated, View, Text } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
@@ -12,16 +18,24 @@ import { hapticImpact } from '../../utils/haptics';
 type FABVariant = 'primary' | 'danger';
 
 export interface FloatingActionButtonProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label?: string;
   variant?: FABVariant;
-  onPress: () => void;
+  onPress?: () => void;
   style?: ViewStyle;
   accessibilityLabel?: string;
   accessibilityRole?: string;
   testID?: string;
+  /** 
+   * Show the FAB. Defaults to false (hidden).
+   * @deprecated FAB is deprecated - use inline buttons instead
+   */
+  visible?: boolean;
 }
 
+/**
+ * @deprecated This component is deprecated. Use AmberButton or inline actions instead.
+ */
 export function FloatingActionButton({
   icon,
   label,
@@ -30,19 +44,31 @@ export function FloatingActionButton({
   style,
   accessibilityLabel,
   testID,
-}: FloatingActionButtonProps) {
+  visible = false, // Hidden by default
+}: FloatingActionButtonProps): ReactElement | null {
   const theme = useTheme();
   const { scaleAnim, animatePress } = usePressAnimation(theme.animations.scales.press);
 
-  // Determine background color based on variant
-  const backgroundColor = variant === 'danger' ? theme.colors.danger : theme.colors.primary;
+  // Return null if not visible (default behavior)
+  if (!visible) {
+    return null;
+  }
 
-  // If label is provided, render extended FAB
+  // Log deprecation warning in development
+  if (__DEV__) {
+    console.warn(
+      'FloatingActionButton is deprecated. Use AmberButton or inline buttons instead.'
+    );
+  }
+
+  const backgroundColor = variant === 'danger' ? theme.colors.danger : theme.colors.primary;
   const hasLabel = !!label;
 
   const handlePress = async (): Promise<void> => {
     await hapticImpact('medium');
-    onPress();
+    if (onPress) {
+      onPress();
+    }
   };
 
   return (
@@ -63,7 +89,6 @@ export function FloatingActionButton({
             backgroundColor,
             borderRadius: hasLabel ? theme.radius.xl : theme.radius.full,
             transform: [{ scale: scaleAnim }],
-            ...(theme.isDark ? theme.shadows.lgDark : theme.shadows.xl),
           },
           hasLabel && styles.fabExtended,
         ]}
@@ -88,6 +113,12 @@ const styles = StyleSheet.create({
     height: 56,
     alignItems: 'center',
     justifyContent: 'center',
+    // Simplified shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
   },
   fabExtended: {
     width: 'auto',

@@ -1,4 +1,5 @@
 # Integration Guide - Wiring New Features
+
 **Status**: Implementation guide for connecting features to navigation  
 **Time Required**: 2-3 hours  
 **Date**: 2026-02-06
@@ -8,6 +9,7 @@
 ## 🎯 Overview
 
 This guide shows how to integrate the 3 new features into the main app:
+
 1. **Circular Progress Rings** - Already integrated ✅
 2. **Meeting Reflections** - Wire into meeting check-in flow
 3. **Crisis Checkpoint** - Add to navigation and emergency toolkit
@@ -80,6 +82,7 @@ export function useMeetingCheckin(userId: string) {
 **File**: `apps/mobile/src/features/meetings/screens/MeetingFinderScreen.tsx` (or wherever meeting check-in happens)
 
 **Add imports**:
+
 ```typescript
 import { useState } from 'react';
 import { PreMeetingReflectionModal } from '../components/PreMeetingReflectionModal';
@@ -88,6 +91,7 @@ import { useMeetingCheckin } from '../hooks/useMeetingCheckin';
 ```
 
 **Add state**:
+
 ```typescript
 const [showPreModal, setShowPreModal] = useState(false);
 const [showPostModal, setShowPostModal] = useState(false);
@@ -95,10 +99,11 @@ const { checkin, currentCheckin, isChecking } = useMeetingCheckin(userId);
 ```
 
 **Update check-in handler**:
+
 ```typescript
 const handleCheckin = async (meetingName: string, location?: string) => {
   const result = await checkin(meetingName, location);
-  
+
   if (result.success && result.checkin) {
     // Show pre-meeting reflection modal
     setShowPreModal(true);
@@ -107,11 +112,12 @@ const handleCheckin = async (meetingName: string, location?: string) => {
 ```
 
 **Add modals to JSX** (before closing tag):
+
 ```typescript
 return (
   <View>
     {/* ... existing meeting finder UI ... */}
-    
+
     {/* Pre-Meeting Reflection Modal */}
     {currentCheckin && (
       <PreMeetingReflectionModal
@@ -127,7 +133,7 @@ return (
         }}
       />
     )}
-    
+
     {/* Post-Meeting Reflection Modal */}
     {currentCheckin && (
       <PostMeetingReflectionModal
@@ -153,13 +159,17 @@ return (
 ### **C. Add "End Meeting" Button**
 
 **Option 1: Timer-based** (Auto-show post-modal after 2 hours):
+
 ```typescript
 useEffect(() => {
   if (currentCheckin && !currentCheckin.completed_at) {
-    const timer = setTimeout(() => {
-      // Show post-meeting modal after 2 hours
-      setShowPostModal(true);
-    }, 2 * 60 * 60 * 1000); // 2 hours
+    const timer = setTimeout(
+      () => {
+        // Show post-meeting modal after 2 hours
+        setShowPostModal(true);
+      },
+      2 * 60 * 60 * 1000,
+    ); // 2 hours
 
     return () => clearTimeout(timer);
   }
@@ -167,6 +177,7 @@ useEffect(() => {
 ```
 
 **Option 2: Manual button**:
+
 ```typescript
 <GradientButton
   title="End Meeting"
@@ -176,6 +187,7 @@ useEffect(() => {
 ```
 
 **Option 3: On next app open** (check for ended meetings):
+
 ```typescript
 // In HomeScreen or App.tsx
 useEffect(() => {
@@ -184,11 +196,11 @@ useEffect(() => {
 
 const checkPendingMeetings = async () => {
   const meetings = await getActiveMeetingCheckins(userId);
-  
+
   for (const meeting of meetings) {
-    const hoursSinceCheckin = 
+    const hoursSinceCheckin =
       (Date.now() - new Date(meeting.checked_in_at).getTime()) / (1000 * 60 * 60);
-    
+
     if (hoursSinceCheckin > 2) {
       // Show post-meeting modal
       setPendingMeeting(meeting);
@@ -208,14 +220,16 @@ const checkPendingMeetings = async () => {
 **File**: `apps/mobile/src/navigation/RootNavigator.tsx` (or similar)
 
 **Add import**:
+
 ```typescript
 import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 ```
 
 **Add route**:
+
 ```typescript
-<Stack.Screen 
-  name="BeforeYouUse" 
+<Stack.Screen
+  name="BeforeYouUse"
   component={BeforeYouUseScreen}
   options={{
     headerShown: false,
@@ -231,6 +245,7 @@ import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScree
 **File**: `apps/mobile/src/features/emergency/screens/EmergencyToolkitScreen.tsx` (or wherever emergency tools are)
 
 **Add button**:
+
 ```typescript
 <Pressable
   style={styles.crisisButton}
@@ -252,6 +267,7 @@ import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScree
 ```
 
 **Style**:
+
 ```typescript
 crisisButton: {
   flexDirection: 'row',
@@ -292,6 +308,7 @@ crisisSubtitle: {
 **File**: `apps/mobile/src/features/home/screens/HomeScreenModern.tsx`
 
 **Add button below sobriety counter**:
+
 ```typescript
 {/* Crisis Checkpoint Quick Access */}
 <Animated.View entering={FadeInUp.delay(200).duration(600)}>
@@ -311,6 +328,7 @@ crisisSubtitle: {
 ```
 
 **Style**:
+
 ```typescript
 crisisQuickAccess: {
   flexDirection: 'row',
@@ -338,11 +356,12 @@ crisisQuickAccessText: {
 **File**: `apps/mobile/src/types/navigation.ts` (or similar)
 
 **Add new screen types**:
+
 ```typescript
 export type RootStackParamList = {
   // ... existing screens
   BeforeYouUse: { userId: string };
-  MeetingReflection: { 
+  MeetingReflection: {
     checkinId: string;
     meetingName: string;
     type: 'pre' | 'post';
@@ -355,6 +374,7 @@ export type RootStackParamList = {
 ## 🧪 5. Testing Checklist
 
 ### **Meeting Reflections**:
+
 - [ ] Pre-meeting modal shows on check-in
 - [ ] Mood buttons select correctly (1-5)
 - [ ] Save button disabled until intention filled
@@ -365,6 +385,7 @@ export type RootStackParamList = {
 - [ ] Both modals save to database
 
 ### **Crisis Checkpoint**:
+
 - [ ] Accessible from emergency toolkit
 - [ ] Accessible from home screen quick button
 - [ ] Stage 1: Craving intensity slider works
@@ -376,6 +397,7 @@ export type RootStackParamList = {
 - [ ] Back button prompts "Are you sure?"
 
 ### **Navigation**:
+
 - [ ] All screens accessible via navigation
 - [ ] Modal presentation works (full-screen)
 - [ ] Back navigation doesn't lose state
@@ -395,6 +417,7 @@ npm list react-native-reanimated
 ```
 
 **If missing, install**:
+
 ```bash
 npm install @react-native-community/slider
 npm install react-native-svg
@@ -402,6 +425,7 @@ npm install react-native-reanimated
 ```
 
 **Then rebuild**:
+
 ```bash
 npx expo prebuild --clean
 npx expo run:ios  # or run:android
@@ -412,12 +436,14 @@ npx expo run:ios  # or run:android
 ## 🚀 7. Build & Test
 
 ### **Development Build**:
+
 ```bash
 cd apps/mobile
 npx expo start
 ```
 
 ### **Physical Device Test**:
+
 ```bash
 # iOS
 npx expo run:ios --device
@@ -427,6 +453,7 @@ npx expo run:android --device
 ```
 
 ### **Key Things to Test**:
+
 1. Pre-meeting modal shows and saves
 2. Post-meeting modal shows after meeting
 3. Crisis checkpoint full flow works
@@ -445,6 +472,7 @@ Before testing, ensure these migrations are run:
 - [ ] `20260206000003_crisis_checkpoints.sql` (crisis table) ⏳ Run this now
 
 **How to verify migrations ran**:
+
 1. Go to Supabase → Table Editor
 2. Check these tables exist:
    - `crisis_checkpoints` ✅
@@ -456,6 +484,7 @@ Before testing, ensure these migrations are run:
 ## ✅ Success Criteria
 
 **Integration complete when**:
+
 - [ ] Meeting reflections accessible from meeting check-in
 - [ ] Crisis checkpoint accessible from 2 places (home + emergency)
 - [ ] All TypeScript errors resolved

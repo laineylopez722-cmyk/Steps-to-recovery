@@ -12,7 +12,6 @@ import {
   withSequence,
   withTiming,
   withSpring,
-  runOnJS,
   Easing as ReanimatedEasing,
 } from 'react-native-reanimated';
 import { springConfigs, easingCurves } from '../tokens/animations';
@@ -314,7 +313,7 @@ export function useFadeAndScaleIn(delay: number = 0): FadeAndScaleReturn {
  * Number counter animation hook
  * Animates a number from start to end value
  *
- * @param start - Starting number
+ * @param _start - Starting number
  * @param end - Ending number
  * @param duration - Animation duration in ms
  * @returns Animated value that goes from 0 to 1, use interpolate for custom ranges
@@ -336,7 +335,7 @@ export function useFadeAndScaleIn(delay: number = 0): FadeAndScaleReturn {
  * ```
  */
 export function useNumberAnimation(
-  start: number,
+  _start: number,
   end: number,
   duration: number = 500,
 ): Animated.Value {
@@ -416,7 +415,7 @@ export function useShakeAnimation(
 
       // Trigger haptic on the JS thread
       if (withHaptic) {
-        runOnJS(hapticError)();
+        hapticError();
       }
     },
     [amplitude, oscillations, translateX],

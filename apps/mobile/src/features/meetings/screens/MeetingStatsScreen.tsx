@@ -4,26 +4,14 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
-import {
-  darkAccent,
-  radius,
-  spacing,
-  typography,
-} from '../../../design-system/tokens/modern';
+import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useMeetingCheckIns } from '../hooks/useMeetingCheckIns';
 import { useAchievements } from '../hooks/useAchievements';
 import { use90In90Progress, get90In90MotivationalMessage } from '../hooks/use90In90Progress';
@@ -46,11 +34,7 @@ export function MeetingStatsScreen(): React.ReactElement {
     refetch: refetchCheckIns,
   } = useMeetingCheckIns();
 
-  const {
-    achievements,
-    unlockedCount,
-    totalCount,
-  } = useAchievements();
+  const { achievements, unlockedCount, totalCount } = useAchievements();
 
   const {
     progress: ninetyInNinetyProgress,
@@ -88,9 +72,7 @@ export function MeetingStatsScreen(): React.ReactElement {
     });
   };
 
-  const motivationalMessage = get90In90MotivationalMessage(
-    ninetyInNinetyProgress.daysCompleted
-  );
+  const motivationalMessage = get90In90MotivationalMessage(ninetyInNinetyProgress.daysCompleted);
 
   return (
     <View style={styles.container}>
@@ -186,12 +168,7 @@ export function MeetingStatsScreen(): React.ReactElement {
               {/* Progress Ring/Bar */}
               <View style={styles.progressContainer}>
                 <View style={styles.progressTrack}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      { width: `${percentComplete}%` },
-                    ]}
-                  >
+                  <View style={[styles.progressFill, { width: `${percentComplete}%` }]}>
                     <LinearGradient
                       colors={ACHIEVEMENT_COLORS.challenge.gradient}
                       start={{ x: 0, y: 0 }}
@@ -250,9 +227,7 @@ export function MeetingStatsScreen(): React.ReactElement {
               {achievements.slice(0, 4).map((achievement) => (
                 <Pressable
                   key={achievement.key}
-                  onPress={() =>
-                    achievement.unlocked && handleAchievementPress(achievement.key)
-                  }
+                  onPress={() => achievement.unlocked && handleAchievementPress(achievement.key)}
                   style={[
                     styles.achievementCard,
                     !achievement.unlocked && styles.achievementLocked,
@@ -299,11 +274,7 @@ export function MeetingStatsScreen(): React.ReactElement {
 
             {checkIns.length === 0 ? (
               <GlassCard style={styles.emptyCard}>
-                <MaterialIcons
-                  name="event-note"
-                  size={48}
-                  color={darkAccent.textMuted}
-                />
+                <MaterialIcons name="event-note" size={48} color={darkAccent.textMuted} />
                 <Text style={styles.emptyText}>No check-ins yet</Text>
                 <Text style={styles.emptySubtext}>
                   Start attending meetings to build your streak!

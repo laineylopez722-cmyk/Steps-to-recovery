@@ -1,7 +1,18 @@
+/**
+ * Journal List Screen - Clean Dark Design
+ * 
+ * Features:
+ * - Clean search bar
+ * - Animated list items
+ * - Skeleton loading
+ * - Header with new entry button (replaces FAB)
+ */
+
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Text } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
-import Animated, { FadeInRight, FadeInDown, Layout } from 'react-native-reanimated';
+import { Layout } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -10,22 +21,23 @@ import { useJournalEntries, useDeleteJournalEntry } from '../hooks/useJournalEnt
 import type { JournalEntryDecrypted } from '@recovery/shared';
 import {
   useTheme,
-  FloatingActionButton,
   Input,
   EmptyState,
   SwipeableListItem,
   ContextMenu,
+  ScreenAnimations,
+  SkeletonList,
+  GlassCard,
 } from '../../../design-system';
 import type { SwipeAction, ContextMenuItem } from '../../../design-system';
+import { aestheticColors } from '../../../design-system/tokens/aesthetic';
+import Animated from 'react-native-reanimated';
 import { hapticSuccess } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 
 interface JournalListScreenProps {
   userId: string;
 }
-
-// Stagger delay calculation (max 300ms total delay)
-const getStaggerDelay = (index: number): number => Math.min(index * 50, 300);
 
 export function JournalListScreen({ userId }: JournalListScreenProps): React.ReactElement {
   const theme = useTheme();
@@ -71,11 +83,9 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
   );
 
   const handleShareEntry = useCallback((entry: JournalEntryDecrypted): void => {
-    // TODO: Implement share with sponsor
     logger.debug('Share entry:', { entryId: entry.id });
   }, []);
 
-  // Swipe actions for each item
   const getRightActions = useCallback(
     (entry: JournalEntryDecrypted): SwipeAction[] => [
       {
@@ -102,7 +112,6 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
     [theme.colors.primary, handleShareEntry],
   );
 
-  // Context menu items for long press
   const getContextMenuItems = useCallback(
     (entry: JournalEntryDecrypted): ContextMenuItem[] => [
       {
@@ -136,7 +145,7 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
     index: number;
   }): React.ReactElement => (
     <Animated.View
-      entering={FadeInRight.delay(getStaggerDelay(index)).springify().damping(15)}
+      entering={ScreenAnimations.item(index)}
       layout={Layout.springify()}
     >
       <SwipeableListItem
@@ -152,7 +161,7 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
   );
 
   const renderEmpty = (): React.ReactElement => (
-    <Animated.View entering={FadeInDown.delay(200).springify()}>
+    <Animated.View entering={ScreenAnimations.fadeDelayed(200)}>
       <EmptyState
         icon={searchQuery ? 'search-off' : 'book'}
         title={searchQuery ? 'No entries found' : 'Your thoughts are safe here'}
@@ -167,29 +176,48 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
     </Animated.View>
   );
 
-  return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <Animated.View entering={FadeInDown.duration(300)} style={styles.searchContainer}>
-        <Input
-          label=""
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search entries..."
-          leftIcon={<MaterialIcons name="search" size={20} color={theme.colors.textSecondary} />}
-          containerStyle={styles.searchInputContainer}
-          accessibilityLabel="Search journal entries"
-          accessibilityRole="search"
-        />
-      </Animated.View>
-
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
+  // Loading state with skeleton
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.skeletonContainer}>
+          <SkeletonList items={5} />
         </View>
-      ) : (
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+        {/* Header with Search and New Entry Button */}
+        <Animated.View entering={ScreenAnimations.entrance} style={styles.header}>
+          <View style={styles.searchContainer}>
+            <GlassCard intensity="subtle" style={styles.searchCard}>
+              <Input
+                label=""
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+                placeholder="Search your entries..."
+                leftIcon={<MaterialIcons name="search" size={20} color={theme.colors.textSecondary} />}
+                containerStyle={styles.searchInputContainer}
+                accessibilityLabel="Search journal entries"
+                accessibilityRole="search"
+              />
+            </GlassCard>
+          </View>
+          
+          {/* New Entry Button - replaces FAB */}
+          <TouchableOpacity
+            onPress={handleNewEntry}
+            style={styles.newEntryButton}
+            accessibilityLabel="Create new journal entry"
+            accessibilityRole="button"
+          >
+            <MaterialIcons name="add" size={24} color="#FFFFFF" />
+          </TouchableOpacity>
+        </Animated.View>
+
         <FlashList
           data={filteredEntries}
           renderItem={renderItem}
@@ -202,16 +230,8 @@ export function JournalListScreen({ userId }: JournalListScreenProps): React.Rea
           accessibilityLabel="Journal entries list"
           showsVerticalScrollIndicator={false}
         />
-      )}
-
-      <FloatingActionButton
-        icon={<MaterialIcons name="add" size={24} color="#FFFFFF" />}
-        label="New Entry"
-        variant="primary"
-        onPress={handleNewEntry}
-        accessibilityLabel="Create new journal entry - Opens the journal editor to create a new entry"
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -219,20 +239,46 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  searchContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 8,
+  safeArea: {
+    flex: 1,
+  },
+  skeletonContainer: {
+    flex: 1,
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 12,
     paddingBottom: 8,
+    gap: 12,
+  },
+  searchContainer: {
+    flex: 1,
+  },
+  searchCard: {
+    padding: 12,
   },
   searchInputContainer: {
     marginBottom: 0,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
+  newEntryButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: aestheticColors.primary[500],
     alignItems: 'center',
-  },
+    justifyContent: 'center',
+    // Subtle shadow
+    shadowColor: aestheticColors.primary[500],
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  } as ViewStyle,
   listContent: {
-    paddingBottom: 100,
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
 });

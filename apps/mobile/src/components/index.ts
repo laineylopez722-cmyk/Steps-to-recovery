@@ -2,7 +2,7 @@
  * Components Export
  *
  * Central export point for all shared components.
- * Note: Button and Input have moved to ./ui/ for NativeWind support.
+ * Note: Button and Input are in ./ui/ for Uniwind support.
  * Use @/components/ui for the modern Button/Input components.
  */
 

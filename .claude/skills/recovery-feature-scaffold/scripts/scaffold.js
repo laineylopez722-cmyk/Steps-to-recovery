@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Feature Scaffold Script for Steps to Recovery
- * 
+ *
  * Usage: node scaffold.js <FeatureName>
  * Example: node scaffold.js GratitudeList
  */
@@ -44,17 +44,45 @@ const migrationNum = getMigrationNumber(paths);
 
 const files = [
   { path: path.join(featurePath, 'types.ts'), content: generateTypes(config) },
-  { path: path.join(featurePath, 'hooks', `use${config.pascalCase}.ts`), content: generateHooks(config) },
-  { path: path.join(featurePath, 'screens', `${config.pascalCase}ListScreen.tsx`), content: generateListScreen(config) },
-  { path: path.join(featurePath, 'screens', `${config.pascalCase}DetailScreen.tsx`), content: generateDetailScreen(config) },
-  { path: path.join(featurePath, 'components', `${config.pascalCase}Card.tsx`), content: generateCardComponent(config) },
-  { path: path.join(featurePath, '__tests__', `${config.camelCase}.test.ts`), content: generateTests(config) },
-  { path: path.join(paths.mobileSrc, 'lib/database/migrations', `${migrationNum}_add_${config.tableName}.sql`), content: generateSQLiteMigration(config) },
-  { path: path.join(paths.supabaseMigrations, `${migrationNum}_add_${config.tableName}.sql`), content: generateSupabaseMigration(config) },
-  { path: path.join(featurePath, 'NAVIGATION_SNIPPET.txt'), content: generateNavigationSnippet(config) },
+  {
+    path: path.join(featurePath, 'hooks', `use${config.pascalCase}.ts`),
+    content: generateHooks(config),
+  },
+  {
+    path: path.join(featurePath, 'screens', `${config.pascalCase}ListScreen.tsx`),
+    content: generateListScreen(config),
+  },
+  {
+    path: path.join(featurePath, 'screens', `${config.pascalCase}DetailScreen.tsx`),
+    content: generateDetailScreen(config),
+  },
+  {
+    path: path.join(featurePath, 'components', `${config.pascalCase}Card.tsx`),
+    content: generateCardComponent(config),
+  },
+  {
+    path: path.join(featurePath, '__tests__', `${config.camelCase}.test.ts`),
+    content: generateTests(config),
+  },
+  {
+    path: path.join(
+      paths.mobileSrc,
+      'lib/database/migrations',
+      `${migrationNum}_add_${config.tableName}.sql`,
+    ),
+    content: generateSQLiteMigration(config),
+  },
+  {
+    path: path.join(paths.supabaseMigrations, `${migrationNum}_add_${config.tableName}.sql`),
+    content: generateSupabaseMigration(config),
+  },
+  {
+    path: path.join(featurePath, 'NAVIGATION_SNIPPET.txt'),
+    content: generateNavigationSnippet(config),
+  },
 ];
 
-files.forEach(file => {
+files.forEach((file) => {
   fs.mkdirSync(path.dirname(file.path), { recursive: true });
   fs.writeFileSync(file.path, file.content);
   console.log(`   Created: ${path.relative(process.cwd(), file.path)}`);
@@ -67,11 +95,11 @@ console.log('2. Add navigation routes from NAVIGATION_SNIPPET.txt');
 console.log('3. Run app to apply SQLite migration');
 
 function toSnakeCase(str) {
-  return str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`).replace(/^_/, '');
+  return str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`).replace(/^_/, '');
 }
 
 function toKebabCase(str) {
-  return str.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`).replace(/^-/, '');
+  return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`).replace(/^-/, '');
 }
 
 function toCamelCase(str) {
@@ -81,12 +109,12 @@ function toCamelCase(str) {
 function getMigrationNumber(paths) {
   const migrationsDir = path.join(paths.mobileSrc, 'lib/database/migrations');
   if (!fs.existsSync(migrationsDir)) return '001';
-  
+
   const files = fs.readdirSync(migrationsDir);
   const numbers = files
-    .map(f => parseInt(f.match(/^(\d+)/)?.[1] || '0'))
-    .filter(n => !isNaN(n));
-  
+    .map((f) => parseInt(f.match(/^(\d+)/)?.[1] || '0'))
+    .filter((n) => !isNaN(n));
+
   const max = Math.max(0, ...numbers);
   return String(max + 1).padStart(3, '0');
 }

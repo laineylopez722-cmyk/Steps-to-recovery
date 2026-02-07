@@ -1,38 +1,37 @@
 /**
- * Evening Pulse Check Screen
- * Daily reflection, mood tracking, and craving assessment with premium animations
+ * Evening Reflection Screen
+ * 
+ * End of day check-in.
+ * Reflection, gratitude, mood, craving.
  */
 
 import React, { useState, useCallback } from 'react';
-import { ScrollView, StyleSheet, View, Text, Modal } from 'react-native';
+import { 
+  ScrollView, 
+  StyleSheet, 
+  View, 
+  Text, 
+  TextInput,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  Modal,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  FadeInUp,
-  FadeOut,
-  SlideOutDown,
-} from 'react-native-reanimated';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useCreateCheckIn, useTodayCheckIns } from '../hooks/useCheckIns';
-import { useTheme } from '../../../design-system/hooks/useTheme';
-import {
-  TextArea,
-  Button,
-  Card,
-  Toast,
-  AnimatedCheckmark,
-} from '../../../design-system/components';
-import { Slider } from '../../../components/Slider';
-import { hapticSuccess, hapticSelection, hapticError, hapticWarning } from '../../../utils/haptics';
+import { AnimatedCheckmark } from '../../../design-system/components';
+import { hapticSuccess, hapticSelection, hapticWarning } from '../../../utils/haptics';
+import { ds, palette } from '../../../design-system/tokens/ds';
 
-interface EveningPulseScreenProps {
+interface Props {
   userId: string;
 }
 
-export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.ReactElement {
+export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   const navigation = useNavigation();
-  const theme = useTheme();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
   const { morning } = useTodayCheckIns(userId);
 
@@ -40,46 +39,26 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
   const [gratitude, setGratitude] = useState('');
   const [mood, setMood] = useState(3);
   const [craving, setCraving] = useState(0);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState<'success' | 'error'>('success');
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  // Handle mood slider change with haptic feedback
-  const handleMoodChange = useCallback(
-    (value: number) => {
-      if (value !== mood) {
-        hapticSelection();
-      }
-      setMood(value);
-    },
-    [mood],
-  );
+  const handleMood = useCallback((val: number) => {
+    if (val !== mood) {
+      hapticSelection();
+      setMood(val);
+    }
+  }, [mood]);
 
-  // Handle craving slider change with haptic feedback
-  const handleCravingChange = useCallback(
-    (value: number) => {
-      if (value !== craving) {
-        hapticSelection();
-        // Warning haptic for high craving
-        if (value > 6 && craving <= 6) {
-          hapticWarning();
-        }
-      }
-      setCraving(value);
-    },
-    [craving],
-  );
+  const handleCraving = useCallback((val: number) => {
+    if (val !== craving) {
+      hapticSelection();
+      if (val >= 7 && craving < 7) hapticWarning();
+      setCraving(val);
+    }
+  }, [craving]);
 
-  // Handle successful completion animation
-  const handleSuccessAnimationComplete = useCallback(() => {
-    setTimeout(() => {
-      setShowSuccessModal(false);
-      navigation.goBack();
-    }, 300);
-  }, [navigation]);
-
-  const handleSubmit = async (): Promise<void> => {
+  const handleSubmit = async () => {
+    if (!reflection.trim() || isPending) return;
+    
     try {
       await createCheckIn({
         type: 'evening',
@@ -88,377 +67,371 @@ export function EveningPulseScreen({ userId }: EveningPulseScreenProps): React.R
         mood,
         craving,
       });
-
-      // Show success modal with animated checkmark
-      setShowSuccessModal(true);
       hapticSuccess();
-    } catch (_err) {
-      hapticError();
-      setToastMessage('Failed to save check-in. Please try again.');
-      setToastVariant('error');
-      setShowToast(true);
-    }
+      setShowSuccess(true);
+    } catch {}
   };
 
-  const moodEmojis = ['😢', '😔', '😐', '🙂', '😊'];
-  const moodLabels = ['Very Low', 'Low', 'Okay', 'Good', 'Great'];
-
-  const getCravingColor = (value: number): string => {
-    if (value === 0) return theme.colors.success;
-    if (value <= 3) return theme.colors.primary;
-    if (value <= 6) return '#FF9800'; // Orange
-    return theme.colors.danger;
+  const handleDone = () => {
+    setShowSuccess(false);
+    navigation.goBack();
   };
 
-  const getCravingLabel = (value: number): string => {
-    if (value === 0) return 'None';
-    if (value <= 3) return 'Mild';
-    if (value <= 6) return 'Moderate';
-    return 'Strong';
+  const getCravingColor = (v: number) => {
+    if (v <= 3) return ds.colors.success;
+    if (v <= 6) return ds.colors.warning;
+    return ds.colors.error;
   };
+
+  const canSubmit = reflection.trim().length > 0 && !isPending;
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header Card */}
-        <Animated.View entering={FadeInDown.delay(100).springify()}>
-          <Card variant="flat" style={styles.headerCard}>
-            <Text
-              style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 4 }]}
-              accessibilityRole="header"
-              accessibilityLabel="Good Evening"
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <KeyboardAvoidingView 
+          style={styles.kav}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
+              <Feather name="x" size={ds.sizes.iconLg} color={ds.colors.textSecondary} />
+            </Pressable>
+            
+            <Text style={styles.headerTitle}>Evening</Text>
+            
+            <Pressable 
+              onPress={handleSubmit}
+              disabled={!canSubmit}
+              style={[styles.saveBtn, !canSubmit && styles.saveBtnDisabled]}
             >
-              Good Evening
-            </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              Reflect on your day
-            </Text>
-          </Card>
-        </Animated.View>
-
-        {/* Morning Intention Reminder (if exists) */}
-        {morning?.intention && (
-          <Animated.View entering={FadeInDown.delay(150).springify()}>
-            <Card
-              variant="flat"
-              style={[styles.intentionCard, { backgroundColor: theme.colors.primaryLight }]}
-              accessibilityRole="text"
-              accessibilityLabel={`This morning's intention: ${morning.intention}`}
-            >
-              <Text
-                style={[theme.typography.caption, { color: theme.colors.primary, marginBottom: 4 }]}
-              >
-                This morning's intention:
+              <Text style={[styles.saveBtnText, !canSubmit && styles.saveBtnTextDisabled]}>
+                Save
               </Text>
-              <Text
-                style={[theme.typography.body, { color: theme.colors.text, fontStyle: 'italic' }]}
-              >
-                "{morning.intention}"
-              </Text>
-            </Card>
-          </Animated.View>
-        )}
+            </Pressable>
+          </View>
 
-        {/* Reflection Input */}
-        <Animated.View entering={FadeInDown.delay(200).springify()}>
-          <TextArea
-            label="How did your day go?"
-            value={reflection}
-            onChangeText={setReflection}
-            placeholder="I stayed present during difficult moments..."
-            minHeight={140}
-            maxLength={500}
-            showCharacterCount
-            accessibilityLabel="Daily reflection"
-            accessibilityHint="Reflect on your day"
-          />
-        </Animated.View>
-
-        {/* Gratitude Section */}
-        <Animated.View entering={FadeInDown.delay(250).springify()}>
-          <Card
-            variant="flat"
-            style={[styles.gratitudeCard, { backgroundColor: theme.colors.successLight }]}
+          <ScrollView 
+            style={styles.scroll}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.gratitudeHeader}>
-              <Text style={styles.gratitudeEmoji}>🙏</Text>
-              <Text style={[theme.typography.title3, { color: theme.colors.text }]}>Gratitude</Text>
-            </View>
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary, marginBottom: 12 },
-              ]}
-            >
-              What are you grateful for today? (optional)
-            </Text>
-            <TextArea
-              label=""
-              value={gratitude}
-              onChangeText={setGratitude}
-              placeholder="Today I'm grateful for..."
-              minHeight={80}
-              maxLength={300}
-              showCharacterCount
-              containerStyle={styles.gratitudeInput}
-              accessibilityLabel="Gratitude entry"
-              accessibilityHint="Write what you are grateful for today"
-            />
-          </Card>
-        </Animated.View>
-
-        {/* Mood Section */}
-        <Animated.View entering={FadeInDown.delay(300).springify()}>
-          <Card variant="flat" style={styles.sectionCard}>
-            <Text style={[theme.typography.title3, { color: theme.colors.text, marginBottom: 4 }]}>
-              How are you feeling now?
-            </Text>
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary, marginBottom: 20 },
-              ]}
-            >
-              {moodLabels[mood - 1]}
-            </Text>
-
-            {/* Mood Emoji Display */}
-            <Animated.View style={styles.emojiContainer} key={mood}>
-              <Animated.Text
-                entering={FadeInUp.springify().damping(8)}
-                exiting={FadeOut.duration(100)}
-                style={styles.emoji}
-              >
-                {moodEmojis[mood - 1]}
-              </Animated.Text>
+            {/* Date */}
+            <Animated.View entering={FadeInDown.duration(300)}>
+              <Text style={styles.date}>
+                {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </Text>
             </Animated.View>
 
-            {/* Slider */}
-            <Slider
-              value={mood}
-              onValueChange={handleMoodChange}
-              minimumValue={1}
-              maximumValue={5}
-              step={1}
-              minimumTrackTintColor={theme.colors.primary}
-              maximumTrackTintColor={theme.colors.border}
-              style={styles.slider}
-              accessibilityLabel={`Mood level: ${moodLabels[mood - 1]}`}
-              accessibilityRole="adjustable"
-              accessibilityHint="Slide to adjust your mood level from 1 to 5"
-            />
-          </Card>
-        </Animated.View>
-
-        {/* Craving Level Section */}
-        <Animated.View entering={FadeInDown.delay(400).springify()}>
-          <Card variant="flat" style={styles.sectionCard}>
-            <Text style={[theme.typography.title3, { color: theme.colors.text, marginBottom: 4 }]}>
-              Craving level
-            </Text>
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary, marginBottom: 20 },
-              ]}
-            >
-              {getCravingLabel(craving)} ({craving}/10)
-            </Text>
-
-            {/* Craving Value Display */}
-            <Animated.View style={styles.emojiContainer} key={`craving-${craving}`}>
-              <Animated.Text
-                entering={FadeInUp.springify().damping(8)}
-                style={[styles.cravingValue, { color: getCravingColor(craving) }]}
-              >
-                {craving}
-              </Animated.Text>
-            </Animated.View>
-
-            {/* Slider */}
-            <Slider
-              value={craving}
-              onValueChange={handleCravingChange}
-              minimumValue={0}
-              maximumValue={10}
-              step={1}
-              minimumTrackTintColor={getCravingColor(craving)}
-              maximumTrackTintColor={theme.colors.border}
-              style={styles.slider}
-              accessibilityLabel={`Craving level: ${getCravingLabel(craving)}, ${craving} out of 10`}
-              accessibilityRole="adjustable"
-              accessibilityHint="Slide to adjust your craving level from 0 to 10"
-            />
-
-            {/* High Craving Warning */}
-            {craving > 6 && (
-              <Animated.View
-                entering={FadeIn.duration(300)}
-                style={[styles.warningContainer, { backgroundColor: theme.colors.dangerLight }]}
-                accessibilityRole="alert"
-                accessibilityLabel="High craving warning"
-              >
-                <Text style={[theme.typography.caption, { color: theme.colors.danger }]}>
-                  Consider reaching out to your sponsor or attending a meeting if cravings are
-                  strong.
-                </Text>
+            {/* Morning Reminder */}
+            {morning?.intention && (
+              <Animated.View entering={FadeIn.duration(300)} style={styles.reminder}>
+                <Text style={styles.reminderLabel}>This morning:</Text>
+                <Text style={styles.reminderText}>"{morning.intention}"</Text>
               </Animated.View>
             )}
-          </Card>
-        </Animated.View>
 
-        {/* Submit Button */}
-        <Animated.View entering={FadeInUp.delay(500).springify()}>
-          <Button
-            variant="primary"
-            size="large"
-            onPress={handleSubmit}
-            disabled={!reflection.trim() || isPending}
-            loading={isPending}
-            accessibilityLabel="Submit evening check-in"
-            accessibilityRole="button"
-            accessibilityHint="Complete your evening check-in"
-            accessibilityState={{ disabled: !reflection.trim() || isPending }}
-            style={styles.submitButton}
-          >
-            Complete Day
-          </Button>
-        </Animated.View>
-      </ScrollView>
+            {/* Reflection */}
+            <Animated.View entering={FadeIn.delay(100).duration(400)}>
+              <Text style={styles.label}>How did today go?</Text>
+              <TextInput
+                style={styles.input}
+                value={reflection}
+                onChangeText={setReflection}
+                placeholder="Today was..."
+                placeholderTextColor={ds.colors.textQuaternary}
+                multiline
+                autoFocus
+                scrollEnabled={false}
+                textAlignVertical="top"
+              />
+            </Animated.View>
+
+            {/* Gratitude */}
+            <Animated.View entering={FadeIn.delay(150).duration(400)}>
+              <View style={styles.labelRow}>
+                <Text style={styles.label}>Gratitude</Text>
+                <Text style={styles.optional}>optional</Text>
+              </View>
+              <TextInput
+                style={[styles.input, { minHeight: 80 }]}
+                value={gratitude}
+                onChangeText={setGratitude}
+                placeholder="I'm grateful for..."
+                placeholderTextColor={ds.colors.textQuaternary}
+                multiline
+                scrollEnabled={false}
+                textAlignVertical="top"
+              />
+            </Animated.View>
+
+            {/* Divider */}
+            <View style={styles.divider} />
+
+            {/* Mood */}
+            <Animated.View entering={FadeInDown.delay(200).duration(400)}>
+              <Text style={styles.label}>Mood</Text>
+              <View style={styles.moodTrack}>
+                {[1, 2, 3, 4, 5].map((m) => (
+                  <Pressable
+                    key={m}
+                    onPress={() => handleMood(m)}
+                    style={[
+                      styles.moodDot,
+                      mood >= m && styles.moodDotActive,
+                    ]}
+                  />
+                ))}
+              </View>
+              <View style={styles.trackLabels}>
+                <Text style={styles.trackLabelText}>Low</Text>
+                <Text style={styles.trackLabelText}>Great</Text>
+              </View>
+            </Animated.View>
+
+            {/* Craving */}
+            <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.cravingSection}>
+              <View style={styles.cravingHeader}>
+                <Text style={styles.label}>Craving</Text>
+                <Text style={[styles.cravingValue, { color: getCravingColor(craving) }]}>
+                  {craving}
+                </Text>
+              </View>
+              <View style={styles.cravingTrack}>
+                {[...Array(11)].map((_, i) => (
+                  <Pressable
+                    key={i}
+                    onPress={() => handleCraving(i)}
+                    style={[
+                      styles.cravingDot,
+                      craving >= i && { backgroundColor: getCravingColor(i) },
+                    ]}
+                  />
+                ))}
+              </View>
+              <View style={styles.trackLabels}>
+                <Text style={styles.trackLabelText}>None</Text>
+                <Text style={styles.trackLabelText}>Intense</Text>
+              </View>
+            </Animated.View>
+
+            <View style={{ height: ds.space[16] }} />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
 
       {/* Success Modal */}
-      <Modal visible={showSuccessModal} transparent animationType="fade" statusBarTranslucent>
-        <View style={styles.successModalOverlay} accessible={false}>
-          <Animated.View
-            entering={FadeIn.duration(200)}
-            exiting={SlideOutDown.duration(300)}
-            style={[
-              styles.successModalContent,
-              {
-                backgroundColor: theme.colors.surface,
-                borderRadius: theme.radius.xl,
-                ...(theme.isDark ? theme.shadows.lgDark : theme.shadows.lg),
-              },
-            ]}
-            accessibilityRole="alert"
-            accessibilityLabel="Evening check-in completed successfully"
-          >
-            <AnimatedCheckmark
-              size={100}
-              color={theme.colors.success}
-              onAnimationComplete={handleSuccessAnimationComplete}
+      <Modal visible={showSuccess} transparent animationType="fade">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <AnimatedCheckmark 
+              size={64} 
+              color={ds.colors.success} 
+              onAnimationComplete={handleDone} 
             />
-            <Text
-              style={[
-                theme.typography.h2,
-                { color: theme.colors.text, marginTop: 20, textAlign: 'center' },
-              ]}
-              accessibilityRole="header"
-            >
-              Day Complete!
-            </Text>
-            <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.textSecondary, marginTop: 8, textAlign: 'center' },
-              ]}
-            >
-              Rest well tonight
-            </Text>
-          </Animated.View>
+            <Text style={styles.modalTitle}>Day complete</Text>
+            <Text style={styles.modalSub}>Rest well</Text>
+          </View>
         </View>
       </Modal>
-
-      {/* Toast Notification */}
-      <Toast
-        visible={showToast}
-        message={toastMessage}
-        variant={toastVariant}
-        duration={3000}
-        onDismiss={() => setShowToast(false)}
-      />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: ds.colors.bgPrimary,
   },
-  scrollView: {
+  safe: {
     flex: 1,
   },
-  contentContainer: {
-    padding: 20,
+  kav: {
+    flex: 1,
   },
-  headerCard: {
-    marginBottom: 24,
-  },
-  intentionCard: {
-    marginBottom: 24,
-    padding: 16,
-  },
-  gratitudeCard: {
-    marginBottom: 24,
-    padding: 16,
-  },
-  gratitudeHeader: {
+
+  // Header
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
-    gap: 8,
+    justifyContent: 'space-between',
+    height: ds.sizes.headerHeight,
+    paddingHorizontal: ds.sizes.contentPadding,
+    borderBottomWidth: 1,
+    borderBottomColor: ds.colors.divider,
   },
-  gratitudeEmoji: {
-    fontSize: 24,
-  },
-  gratitudeInput: {
-    marginBottom: 0,
-  },
-  sectionCard: {
-    marginBottom: 24,
-    padding: 20,
-  },
-  emojiContainer: {
-    alignItems: 'center',
-    marginBottom: 16,
-    height: 80,
+  headerBtn: {
+    width: ds.sizes.touchMin,
+    height: ds.sizes.touchMin,
     justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: -ds.space[2],
   },
-  emoji: {
-    fontSize: 64,
+  headerTitle: {
+    ...ds.typography.body,
+    fontWeight: ds.fontWeight.semibold,
+    color: ds.colors.textPrimary,
+  },
+  saveBtn: {
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[2],
+    backgroundColor: ds.colors.accent,
+    borderRadius: ds.radius.sm,
+  },
+  saveBtnDisabled: {
+    backgroundColor: ds.colors.bgTertiary,
+  },
+  saveBtnText: {
+    ...ds.typography.bodySm,
+    fontWeight: ds.fontWeight.semibold,
+    color: ds.colors.bgPrimary,
+  },
+  saveBtnTextDisabled: {
+    color: ds.colors.textQuaternary,
+  },
+
+  // Content
+  scroll: {
+    flex: 1,
+  },
+  content: {
+    paddingHorizontal: ds.sizes.contentPadding,
+    paddingTop: ds.space[6],
+  },
+
+  date: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginBottom: ds.space[6],
+  },
+
+  reminder: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.md,
+    padding: ds.space[4],
+    marginBottom: ds.space[6],
+  },
+  reminderLabel: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginBottom: ds.space[1],
+  },
+  reminderText: {
+    ...ds.typography.bodySm,
+    color: ds.colors.textSecondary,
+    fontStyle: 'italic',
+  },
+
+  label: {
+    ...ds.typography.caption,
+    color: ds.colors.textSecondary,
+    marginBottom: ds.space[3],
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: ds.space[3],
+  },
+  optional: {
+    ...ds.typography.micro,
+    color: ds.colors.textQuaternary,
+  },
+
+  input: {
+    ...ds.typography.h3,
+    color: ds.colors.textPrimary,
+    minHeight: 100,
+    marginBottom: ds.space[6],
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: ds.colors.divider,
+    marginVertical: ds.space[4],
+  },
+
+  // Mood
+  moodTrack: {
+    flexDirection: 'row',
+    gap: ds.space[2],
+    marginBottom: ds.space[2],
+  },
+  moodDot: {
+    flex: 1,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: ds.colors.bgTertiary,
+  },
+  moodDotActive: {
+    backgroundColor: ds.colors.accent,
+  },
+  trackLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: ds.space[6],
+  },
+  trackLabelText: {
+    ...ds.typography.micro,
+    color: ds.colors.textQuaternary,
+  },
+
+  // Craving
+  cravingSection: {
+    marginTop: ds.space[2],
+  },
+  cravingHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: ds.space[3],
   },
   cravingValue: {
-    fontSize: 64,
-    fontWeight: 'bold',
+    ...ds.typography.h2,
+    fontWeight: ds.fontWeight.bold,
   },
-  slider: {
-    height: 40,
+  cravingTrack: {
+    flexDirection: 'row',
+    gap: ds.space[1],
+    marginBottom: ds.space[2],
   },
-  warningContainer: {
-    marginTop: 16,
-    padding: 12,
-    borderRadius: 8,
-  },
-  submitButton: {
-    marginTop: 8,
-  },
-  successModalOverlay: {
+  cravingDot: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: ds.colors.bgTertiary,
+  },
+
+  // Modal
+  modalBg: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 40,
   },
-  successModalContent: {
-    padding: 40,
+  modalCard: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.xl,
+    paddingVertical: ds.space[12],
+    paddingHorizontal: ds.space[10],
     alignItems: 'center',
-    minWidth: 280,
+    minWidth: 240,
+  },
+  modalTitle: {
+    ...ds.typography.h2,
+    color: ds.colors.textPrimary,
+    marginTop: ds.space[6],
+  },
+  modalSub: {
+    ...ds.typography.body,
+    color: ds.colors.textSecondary,
+    marginTop: ds.space[2],
   },
 });

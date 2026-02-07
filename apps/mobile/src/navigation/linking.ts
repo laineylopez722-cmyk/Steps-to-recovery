@@ -5,16 +5,16 @@ import type * as types from './types';
 
 /**
  * Deep Linking Configuration
- * 
+ *
  * Handles navigation via deep links from:
  * - Push notifications
  * - External apps
  * - Universal links (iOS) / App Links (Android)
- * 
+ *
  * URL Schemes:
  * - recoveryapp:// (custom scheme)
  * - https://recovery.app/ (universal links)
- * 
+ *
  * Supported Paths:
  * - /home - Home screen
  * - /journal - Journal list
@@ -33,18 +33,14 @@ import type * as types from './types';
  */
 
 // Prefixes for deep linking
-const PREFIXES = [
-  Linking.createURL('/'),
-  'recoveryapp://',
-  'https://recovery.app',
-];
+const PREFIXES = [Linking.createURL('/'), 'recoveryapp://', 'https://recovery.app'];
 
 /**
  * Deep link configuration for React Navigation
  */
 export const linking: LinkingOptions<types.RootStackParamList> = {
   prefixes: PREFIXES,
-  
+
   // Configure how to handle incoming links
   config: {
     // Screen mapping for paths
@@ -78,7 +74,10 @@ export const linking: LinkingOptions<types.RootStackParamList> = {
                   mode: (mode: string) => mode as 'create' | 'edit',
                 },
               },
-            } as Record<string, string | { path: string; parse: Record<string, (value: string) => unknown> }>,
+            } as Record<
+              string,
+              string | { path: string; parse: Record<string, (value: string) => unknown> }
+            >,
           },
           Steps: {
             screens: {
@@ -95,7 +94,10 @@ export const linking: LinkingOptions<types.RootStackParamList> = {
                   stepNumber: (num: string) => parseInt(num, 10),
                 },
               },
-            } as Record<string, string | { path: string; parse: Record<string, (value: string) => unknown> }>,
+            } as Record<
+              string,
+              string | { path: string; parse: Record<string, (value: string) => unknown> }
+            >,
           },
           Meetings: {
             screens: {
@@ -125,11 +127,11 @@ export const linking: LinkingOptions<types.RootStackParamList> = {
   getInitialURL: async () => {
     // Check if app was opened from a deep link
     const url = await Linking.getInitialURL();
-    
+
     if (url) {
       logger.info('App opened via deep link', { url });
     }
-    
+
     return url;
   },
 
@@ -168,55 +170,55 @@ export function handleNotificationDeepLink(data: Record<string, unknown>): strin
         return `recoveryapp://home?milestone=${params.milestone}`;
       }
       return 'recoveryapp://home';
-    
+
     case 'MorningIntention':
       return 'recoveryapp://checkin/morning';
-    
+
     case 'EveningPulse':
       return 'recoveryapp://checkin/evening';
-    
+
     case 'Emergency':
       return 'recoveryapp://emergency';
-    
+
     case 'JournalEditor':
       if (params?.mode && params?.entryId) {
         return `recoveryapp://journal/edit/${params.entryId}`;
       }
       return 'recoveryapp://journal/create';
-    
+
     case 'JournalList':
       return 'recoveryapp://journal';
-    
+
     case 'MeetingDetail':
       if (params?.meetingId) {
         return `recoveryapp://meetings/${params.meetingId}`;
       }
       return 'recoveryapp://meetings';
-    
+
     case 'MeetingFinder':
       return 'recoveryapp://meetings';
-    
+
     case 'StepsOverview':
       return 'recoveryapp://steps';
-    
+
     case 'StepDetail':
       if (params?.stepNumber) {
         return `recoveryapp://steps/${params.stepNumber}`;
       }
       return 'recoveryapp://steps';
-    
+
     case 'ProfileHome':
       return 'recoveryapp://profile';
-    
+
     case 'Sponsor':
       return 'recoveryapp://profile/sponsor';
-    
+
     case 'DailyReading':
       return 'recoveryapp://reading';
-    
+
     case 'ProgressDashboard':
       return 'recoveryapp://progress';
-    
+
     default:
       logger.warn('Unknown notification screen', { screen });
       return null;
@@ -228,10 +230,10 @@ export function handleNotificationDeepLink(data: Record<string, unknown>): strin
  */
 export function createShareableLink(
   type: 'journal' | 'meeting' | 'step' | 'reading',
-  id?: string | number
+  id?: string | number,
 ): string {
   const baseUrl = 'https://recovery.app';
-  
+
   switch (type) {
     case 'journal':
       return id ? `${baseUrl}/journal/edit/${id}` : `${baseUrl}/journal`;
@@ -263,7 +265,7 @@ export function parseDeepLink(url: string): {
 } | null {
   try {
     const parsed = Linking.parse(url);
-    
+
     if (!parsed.path) {
       return null;
     }
@@ -297,7 +299,7 @@ export async function canOpenURL(url: string): Promise<boolean> {
 export async function openExternalURL(url: string): Promise<boolean> {
   try {
     const supported = await Linking.canOpenURL(url);
-    
+
     if (!supported) {
       logger.warn('URL not supported', { url });
       return false;
@@ -321,4 +323,3 @@ export async function openAppSettings(): Promise<void> {
     logger.error('Error opening app settings', { error });
   }
 }
-

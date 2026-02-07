@@ -1,29 +1,41 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { GradientButton } from './GradientButton';
-import { darkAccent, gradients, spacing, typography } from '../tokens/modern';
+/**
+ * Empty State Component with Illustrations
+ * Premium empty states that guide and delight
+ */
 
-type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import type { TextStyle, ViewStyle } from 'react-native';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTheme } from '../hooks/useTheme';
+import { aestheticColors } from '../tokens/aesthetic';
+import { Button } from './Button';
 
 export interface EmptyStateProps {
+  /** Visual icon name from MaterialCommunityIcons */
   icon: string;
+  /** Main title text */
   title: string;
+  /** Supporting description */
   description: string;
+  /** Optional action button label */
   actionLabel?: string;
+  /** Optional action handler */
   onAction?: () => void;
-  secondaryAction?: {
-    label: string;
-    onPress: () => void;
-  };
+  /** Variant style */
+  variant?: 'default' | 'glass' | 'minimal';
+  /** Custom style override */
+  style?: ViewStyle;
+}
+
+// Convenience exports for specific empty states
+export function EmptySearch(props: Omit<EmptyStateProps, 'icon'>): React.ReactElement {
+  return <EmptyState {...props} icon="magnify" />;
+}
+
+export function EmptyJournal(props: Omit<EmptyStateProps, 'icon'>): React.ReactElement {
+  return <EmptyState {...props} icon="book-open" />;
 }
 
 export function EmptyState({
@@ -32,124 +44,77 @@ export function EmptyState({
   description,
   actionLabel,
   onAction,
-  secondaryAction,
+  variant: _variant = 'default',
+  style,
 }: EmptyStateProps): React.ReactElement {
-  const scale = useSharedValue(0.8);
-  const opacity = useSharedValue(0);
-  const floatY = useSharedValue(0);
+  const theme = useTheme();
 
-  useEffect(() => {
-    scale.value = withSpring(1, { damping: 12 });
-    opacity.value = withTiming(1, { duration: 500 });
-    floatY.value = withRepeat(
-      withTiming(-10, { duration: 2000 }),
-      -1,
-      true
-    );
-  }, []);
+  const iconColors: Record<string, string> = {
+    'book': aestheticColors.primary[400],
+    'book-open': aestheticColors.primary[400],
+    'book-open-variant': aestheticColors.primary[400],
+    'calendar': aestheticColors.secondary[400],
+    'chart-line': aestheticColors.accent[400],
+    'check-circle': aestheticColors.success.DEFAULT,
+    'emoticon': aestheticColors.gold.DEFAULT,
+    'file-document': aestheticColors.primary[400],
+    'heart': aestheticColors.warning.DEFAULT,
+    'meditation': aestheticColors.secondary[400],
+    'note': aestheticColors.primary[400],
+    'notebook': aestheticColors.primary[400],
+    'phone': aestheticColors.warning.DEFAULT,
+    'search': theme.colors.textSecondary,
+    'search-off': theme.colors.textSecondary,
+    'shield': aestheticColors.success.DEFAULT,
+    'star': aestheticColors.gold.DEFAULT,
+    'users': aestheticColors.accent[400],
+    'default': theme.colors.primary,
+  };
 
-  const containerStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-    transform: [{ scale: scale.value }],
-  }));
-
-  const iconStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: floatY.value }],
-  }));
+  const iconColor = iconColors[icon] || iconColors.default;
 
   return (
-    <Animated.View style={[styles.container, containerStyle]}>
-      {/* Icon Container */}
-      <Animated.View style={[styles.iconContainer, iconStyle]}>
-        <LinearGradient
-          colors={gradients.primary}
-          style={styles.iconGradient}
-        >
-          <MaterialIcons name={icon as IconName} size={48} color="#FFF" />
-        </LinearGradient>
-        
-        {/* Decorative circles */}
-        <View style={[styles.decorCircle, styles.decorCircle1]} />
-        <View style={[styles.decorCircle, styles.decorCircle2]} />
-      </Animated.View>
+    <Animated.View 
+      entering={FadeInUp.duration(400)}
+      style={[styles.container, style]}
+    >
+      {/* Icon Container with Glow */}
+      <View style={[styles.iconContainer, { backgroundColor: iconColor + '15' }]}>
+        <MaterialCommunityIcons
+          name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+          size={48}
+          color={iconColor}
+        />
+        {/* Glow effect */}
+        <View 
+          style={[
+            styles.glow,
+            { backgroundColor: iconColor }
+          ]} 
+          pointerEvents="none" 
+        />
+      </View>
 
       {/* Title */}
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>
+        {title}
+      </Text>
 
       {/* Description */}
-      <Text style={styles.description}>{description}</Text>
+      <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
+        {description}
+      </Text>
 
-      {/* Actions */}
-      {(actionLabel || secondaryAction) && (
-        <View style={styles.actions}>
-          {actionLabel && onAction && (
-            <GradientButton
-              title={actionLabel}
-              variant="primary"
-              size="md"
-              onPress={onAction}
-            />
-          )}
-          {secondaryAction && (
-            <GradientButton
-              title={secondaryAction.label}
-              variant="ghost"
-              size="md"
-              onPress={secondaryAction.onPress}
-            />
-          )}
-        </View>
+      {/* Action Button */}
+      {actionLabel && onAction && (
+        <Button
+          title={actionLabel}
+          onPress={onAction}
+          variant="primary"
+          style={styles.actionButton}
+        />
       )}
     </Animated.View>
-  );
-}
-
-// Specialized empty states
-export function EmptySearch({ query, onClear }: { query: string; onClear: () => void }) {
-  return (
-    <EmptyState
-      icon="search-off"
-      title="No results found"
-      description={`We couldn't find anything matching "${query}". Try different keywords.`}
-      actionLabel="Clear Search"
-      onAction={onClear}
-    />
-  );
-}
-
-export function EmptyJournal({ onCreate }: { onCreate: () => void }) {
-  return (
-    <EmptyState
-      icon="auto-stories"
-      title="Start Your Journal"
-      description="Record your thoughts, track your mood, and monitor your cravings. Your entries are encrypted and private."
-      actionLabel="Write First Entry"
-      onAction={onCreate}
-    />
-  );
-}
-
-export function EmptyMeetings({ onRefresh }: { onRefresh: () => void }) {
-  return (
-    <EmptyState
-      icon="location-off"
-      title="No meetings nearby"
-      description="Try expanding your search radius or check back later for meetings in your area."
-      actionLabel="Search Again"
-      onAction={onRefresh}
-    />
-  );
-}
-
-export function EmptyStepWork({ stepNumber, onStart }: { stepNumber: number; onStart: () => void }) {
-  return (
-    <EmptyState
-      icon="format-list-numbered"
-      title={`Step ${stepNumber}`}
-      description="Begin working through this step by answering the reflection questions. Take your time - recovery is a journey."
-      actionLabel="Start Step Work"
-      onAction={onStart}
-    />
   );
 }
 
@@ -157,60 +122,42 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing[6],
-    minHeight: 400,
-  },
+    padding: 32,
+    minHeight: 300,
+  } as ViewStyle,
   iconContainer: {
-    position: 'relative',
-    marginBottom: spacing[4],
-  },
-  iconGradient: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: darkAccent.primary,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  decorCircle: {
+    marginBottom: 24,
+    position: 'relative',
+  } as ViewStyle,
+  glow: {
     position: 'absolute',
-    borderRadius: 100,
-    borderWidth: 2,
-    borderColor: `${darkAccent.primary}30`,
-  },
-  decorCircle1: {
-    width: 140,
-    height: 140,
-    top: -20,
-    left: -20,
-  },
-  decorCircle2: {
-    width: 180,
-    height: 180,
-    top: -40,
-    left: -40,
-    opacity: 0.5,
-  },
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    opacity: 0.3,
+    transform: [{ scale: 1.2 }],
+    blur: 20,
+  } as ViewStyle,
   title: {
-    ...typography.h3,
-    color: darkAccent.text,
+    fontSize: 20,
+    fontWeight: '600',
     textAlign: 'center',
-    marginBottom: spacing[2],
-  },
+    marginBottom: 8,
+    letterSpacing: -0.5,
+  } as TextStyle,
   description: {
-    ...typography.body,
-    color: darkAccent.textMuted,
+    fontSize: 15,
+    lineHeight: 22,
     textAlign: 'center',
-    maxWidth: 300,
-    marginBottom: spacing[4],
-    lineHeight: 24,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing[2],
+    marginBottom: 24,
+    maxWidth: 280,
+  } as TextStyle,
+  actionButton: {
+    minWidth: 160,
   },
 });

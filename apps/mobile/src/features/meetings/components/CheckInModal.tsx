@@ -26,12 +26,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { GlassCard } from '../../../design-system/components/GlassCard';
-import {
-  darkAccent,
-  radius,
-  spacing,
-  typography,
-} from '../../../design-system/tokens/modern';
+import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import type { MeetingWithDetails } from '../types/meeting';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -58,7 +53,7 @@ export function CheckInModal({
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onConfirm(notes.trim() || undefined);
     setNotes('');
-    
+
     // Show success animation briefly
     setShowSuccess(true);
     setTimeout(() => {
@@ -95,10 +90,7 @@ export function CheckInModal({
         />
 
         {showSuccess ? (
-          <Animated.View
-            entering={ZoomIn.springify().damping(15)}
-            style={styles.successContainer}
-          >
+          <Animated.View entering={ZoomIn.springify().damping(15)} style={styles.successContainer}>
             <View style={styles.successIcon}>
               <MaterialIcons name="check-circle" size={80} color="#10B981" />
             </View>
@@ -139,7 +131,7 @@ export function CheckInModal({
                     <MaterialIcons name="event" size={20} color={darkAccent.textMuted} />
                     <Text style={styles.meetingName}>{meeting.name}</Text>
                   </View>
-                  
+
                   {meeting.address && (
                     <View style={styles.infoRow}>
                       <MaterialIcons name="place" size={20} color={darkAccent.textMuted} />
@@ -157,9 +149,7 @@ export function CheckInModal({
 
                 {/* Optional Notes */}
                 <View style={styles.notesSection}>
-                  <Text style={styles.notesLabel}>
-                    Add Notes (Optional)
-                  </Text>
+                  <Text style={styles.notesLabel}>Add Notes (Optional)</Text>
                   <TextInput
                     style={styles.notesInput}
                     value={notes}

@@ -1,4 +1,5 @@
 # Meeting Reflections - Pre/Post Prompts Feature
+
 **Feature**: Meeting intention setting and post-meeting reflection  
 **Status**: ✅ Complete  
 **Implementation Time**: 2 hours (service + UI)
@@ -8,6 +9,7 @@
 ## 🎯 Overview
 
 Helps users maximize value from meeting attendance through structured reflection:
+
 - **Pre-meeting**: Set intention, mood baseline, hopes
 - **Post-meeting**: Capture takeaways, mood change, gratitude, application plans
 - **Mood lift tracking**: Visual feedback on emotional benefit
@@ -21,11 +23,12 @@ Helps users maximize value from meeting attendance through structured reflection
 **File**: `apps/mobile/src/services/meetingReflectionService.ts`
 
 **Functions**:
+
 ```typescript
 // Pre-meeting
 savePreMeetingReflection(userId, checkinId, prompts)
 
-// Post-meeting  
+// Post-meeting
 savePostMeetingReflection(userId, checkinId, prompts)
 
 // Query
@@ -46,9 +49,11 @@ getRandomPostPrompt(): string
 ### **UI Components**
 
 #### **PreMeetingReflectionModal**
+
 **File**: `apps/mobile/src/features/meetings/components/PreMeetingReflectionModal.tsx`
 
 **Props**:
+
 ```typescript
 {
   visible: boolean;
@@ -61,6 +66,7 @@ getRandomPostPrompt(): string
 ```
 
 **Fields**:
+
 - Mood (1-5 emoji buttons: 😔 😕 😐 🙂 😊)
 - Intention (text input, randomized prompt)
 - Hope (text input)
@@ -70,9 +76,11 @@ getRandomPostPrompt(): string
 ---
 
 #### **PostMeetingReflectionModal**
+
 **File**: `apps/mobile/src/features/meetings/components/PostMeetingReflectionModal.tsx`
 
 **Props**:
+
 ```typescript
 {
   visible: boolean;
@@ -86,12 +94,14 @@ getRandomPostPrompt(): string
 ```
 
 **Fields**:
+
 - Mood (1-5 emoji buttons)
 - Key takeaway (text input, randomized prompt)
 - Gratitude (text input)
 - Will apply (text input - actionable item)
 
 **Mood Lift**:
+
 - If `preMood` provided, shows visual indicator:
   - **Green ↑**: Mood improved (+1 to +4)
   - **Red ↓**: Mood declined (-1 to -4)
@@ -104,6 +114,7 @@ getRandomPostPrompt(): string
 ## 🎨 Design
 
 ### **Visual Style**:
+
 - Glassmorphic modals
 - Emoji mood selectors (56x56 circles)
 - Pre-meeting: Blue accent (🧠 psychology icon)
@@ -111,6 +122,7 @@ getRandomPostPrompt(): string
 - Smooth slide-in animation (400ms)
 
 ### **Mood Buttons**:
+
 ```
 😔     😕     😐     🙂     😊
 1      2      3      4      5
@@ -118,6 +130,7 @@ Low ←               → Great
 ```
 
 ### **Mood Lift Indicator** (Post-meeting):
+
 ```
 ┌──────────────────────────────┐
 │  📈 +2 from before meeting   │  ← Green if positive
@@ -139,24 +152,25 @@ CREATE TABLE meeting_reflections (
   id UUID PRIMARY KEY,
   user_id UUID → auth.users,
   checkin_id UUID → meeting_checkins (UNIQUE),
-  
+
   -- Pre-meeting
   pre_intention TEXT,
   pre_mood INTEGER (1-5),
   pre_hope TEXT,
-  
+
   -- Post-meeting
   post_key_takeaway TEXT,
   post_mood INTEGER (1-5),
   post_gratitude TEXT,
   post_will_apply TEXT,
-  
+
   created_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ
 );
 ```
 
 **Indexes**:
+
 - `user_id, created_at DESC`
 - `checkin_id`
 
@@ -167,6 +181,7 @@ CREATE TABLE meeting_reflections (
 ## 🔄 User Flow
 
 ### **Pre-Meeting Flow**:
+
 ```
 1. User taps "Check In" at meeting
 2. Pre-meeting modal appears
@@ -179,6 +194,7 @@ CREATE TABLE meeting_reflections (
 ```
 
 ### **Post-Meeting Flow**:
+
 ```
 1. User marks "Meeting Ended" (or auto-trigger after 2h)
 2. Post-meeting modal appears
@@ -197,12 +213,14 @@ CREATE TABLE meeting_reflections (
 ## 📊 Prompt Variations
 
 ### **Pre-Meeting Prompts** (Random):
+
 - "What do you hope to get from this meeting?"
 - "What's on your mind as you arrive?"
 - "What intention are you setting for this meeting?"
 - "What would make this meeting valuable for you?"
 
 ### **Post-Meeting Prompts** (Random):
+
 - "What's one thing you'll remember from today?"
 - "What resonated most with you?"
 - "What was your biggest takeaway?"
@@ -215,16 +233,19 @@ CREATE TABLE meeting_reflections (
 ## ♿ Accessibility
 
 ### **Modal Structure**:
+
 - Full screen reader support
 - Emoji buttons have text labels
 - Text inputs have descriptive labels
 - Skip button always available
 
 ### **Keyboard Navigation**:
+
 - Tab order: Mood → Intention → Hope → Save/Skip
 - Enter key submits form
 
 ### **Screen Reader Announcements**:
+
 ```
 Pre-meeting:
 "Before You Go modal. Set an intention for Thursday Night Meeting.
@@ -243,11 +264,13 @@ Key takeaway field. Required."
 ### **When to Show Modals**:
 
 **Pre-Meeting**:
+
 - Show when user checks in at meeting location
 - Show when user taps "I'm at a meeting" button
 - Skip if already completed for this checkin
 
 **Post-Meeting**:
+
 - Auto-show 2 hours after check-in
 - Show when user taps "End Meeting"
 - Show on next app open after meeting end time
@@ -266,7 +289,7 @@ const [showPostModal, setShowPostModal] = useState(false);
 const handleCheckin = async () => {
   // Create meeting checkin
   const checkin = await createMeetingCheckin(...);
-  
+
   // Show pre-meeting modal
   setShowPreModal(true);
 };
@@ -289,7 +312,7 @@ return (
         // Continue to meeting screen
       }}
     />
-    
+
     <PostMeetingReflectionModal
       visible={showPostModal}
       userId={userId}
@@ -312,12 +335,11 @@ return (
 ## 📈 Analytics & Insights
 
 ### **Mood Trends**:
+
 ```typescript
 // Calculate average mood lift
 const reflections = await getAllReflections(userId);
-const moodLifts = reflections
-  .map(r => calculateMoodLift(r))
-  .filter(lift => lift !== null);
+const moodLifts = reflections.map((r) => calculateMoodLift(r)).filter((lift) => lift !== null);
 
 const avgMoodLift = moodLifts.reduce((sum, l) => sum + l, 0) / moodLifts.length;
 
@@ -325,11 +347,13 @@ const avgMoodLift = moodLifts.reduce((sum, l) => sum + l, 0) / moodLifts.length;
 ```
 
 ### **Common Themes**:
+
 - Track most common words in intentions
 - Track gratitude patterns
 - Track action items (will apply)
 
 ### **Completion Rate**:
+
 - % of meetings with pre-reflection
 - % of meetings with post-reflection
 - % with both (full reflection)
@@ -339,6 +363,7 @@ const avgMoodLift = moodLifts.reduce((sum, l) => sum + l, 0) / moodLifts.length;
 ## 🧪 Testing
 
 ### **Manual Tests**:
+
 - [x] Pre-modal opens on meeting check-in
 - [x] Mood buttons select correctly
 - [x] Text inputs accept multiline
@@ -349,6 +374,7 @@ const avgMoodLift = moodLifts.reduce((sum, l) => sum + l, 0) / moodLifts.length;
 - [x] VoiceOver/TalkBack announces correctly
 
 ### **Edge Cases**:
+
 - [x] Network error during save (shows alert)
 - [x] Missing checkin_id (validation error)
 - [x] Modal shown twice (checks existing reflection)
@@ -359,6 +385,7 @@ const avgMoodLift = moodLifts.reduce((sum, l) => sum + l, 0) / moodLifts.length;
 ## 🚀 Future Enhancements
 
 ### **Potential Additions**:
+
 - [ ] Voice input for reflections (accessibility)
 - [ ] Photo attachment (meeting notes, speaker)
 - [ ] Share reflection with sponsor
@@ -370,21 +397,23 @@ const avgMoodLift = moodLifts.reduce((sum, l) => sum + l, 0) / moodLifts.length;
 
 ## 📱 Platform Support
 
-| Platform | Status | Notes |
-|----------|--------|-------|
-| iOS | ✅ Tested | Native emoji rendering |
-| Android | ✅ Tested | Material design compliant |
-| Web | ⚠️ Untested | Should work (modal compatible) |
+| Platform | Status      | Notes                          |
+| -------- | ----------- | ------------------------------ |
+| iOS      | ✅ Tested   | Native emoji rendering         |
+| Android  | ✅ Tested   | Material design compliant      |
+| Web      | ⚠️ Untested | Should work (modal compatible) |
 
 ---
 
 ## 🎯 Competitive Advantage
 
 ### **12-Step Companion** (Competitor):
+
 - No pre/post meeting reflection
 - Basic meeting attendance tracking only
 
 ### **Steps to Recovery** (Ours):
+
 - ✅ Pre-meeting intention setting
 - ✅ Post-meeting reflection
 - ✅ Mood lift visualization

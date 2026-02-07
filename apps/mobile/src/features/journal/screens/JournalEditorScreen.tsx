@@ -1,12 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import {
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Animated,
-  Platform,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -293,7 +286,12 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
               accessibilityLabel="High craving warning"
             >
               <View style={styles.warningContent}>
-                <MaterialIcons name="warning" size={20} color={theme.colors.danger} accessible={false} />
+                <MaterialIcons
+                  name="warning"
+                  size={20}
+                  color={theme.colors.danger}
+                  accessible={false}
+                />
                 <Text
                   style={[
                     theme.typography.caption,
@@ -375,7 +373,9 @@ export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React
           fullWidth
           accessibilityLabel={isEditMode ? 'Update journal entry' : 'Save journal entry'}
           accessibilityRole="button"
-          accessibilityHint={isEditMode ? 'Save changes to this journal entry' : 'Save this new journal entry'}
+          accessibilityHint={
+            isEditMode ? 'Save changes to this journal entry' : 'Save this new journal entry'
+          }
           accessibilityState={{ disabled: !body.trim() || isPending }}
         />
       </View>
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 24,
   },
   headerCard: {
     marginBottom: 16,

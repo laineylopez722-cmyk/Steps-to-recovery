@@ -12,7 +12,16 @@ import * as Haptics from 'expo-haptics';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const COLORS = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8'];
+const COLORS = [
+  '#FFD700',
+  '#FF6B6B',
+  '#4ECDC4',
+  '#45B7D1',
+  '#96CEB4',
+  '#FFEAA7',
+  '#DDA0DD',
+  '#98D8C8',
+];
 const SHAPES = ['circle', 'square', 'triangle'] as const;
 
 interface Particle {
@@ -21,7 +30,7 @@ interface Particle {
   y: number;
   color: string;
   size: number;
-  shape: typeof SHAPES[number];
+  shape: (typeof SHAPES)[number];
   rotation: number;
   velocityX: number;
   velocityY: number;
@@ -67,10 +76,7 @@ function ConfettiPiece({
 
   useEffect(() => {
     // Initial burst
-    scale.value = withDelay(
-      delay,
-      withSpring(1, { damping: 10, stiffness: 100 })
-    );
+    scale.value = withDelay(delay, withSpring(1, { damping: 10, stiffness: 100 }));
 
     // Physics simulation
     translateX.value = withDelay(
@@ -78,7 +84,7 @@ function ConfettiPiece({
       withTiming(particle.x + particle.velocityX, {
         duration,
         easing: Easing.out(Easing.quad),
-      })
+      }),
     );
 
     translateY.value = withDelay(
@@ -86,7 +92,7 @@ function ConfettiPiece({
       withTiming(particle.y + particle.velocityY + 400, {
         duration,
         easing: Easing.in(Easing.quad),
-      })
+      }),
     );
 
     rotation.value = withDelay(
@@ -94,14 +100,11 @@ function ConfettiPiece({
       withTiming(particle.rotation + Math.random() * 720 - 360, {
         duration,
         easing: Easing.linear,
-      })
+      }),
     );
 
     // Fade out at end
-    opacity.value = withDelay(
-      delay + duration * 0.7,
-      withTiming(0, { duration: duration * 0.3 })
-    );
+    opacity.value = withDelay(delay + duration * 0.7, withTiming(0, { duration: duration * 0.3 }));
   }, []);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -184,7 +187,7 @@ export function ConfettiCelebration({
     if (isActive && !showing) {
       setShowing(true);
       setParticles(createParticles(particleCount, origin));
-      
+
       // Haptic feedback
       if (Platform.OS !== 'web') {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -264,7 +267,7 @@ export function MilestoneCelebration({
         particleCount={100}
         origin={{ x: SCREEN_WIDTH / 2, y: SCREEN_HEIGHT / 3 }}
       />
-      
+
       <Animated.View style={[styles.celebrationCard, animatedStyle]}>
         <GlassCard intensity="heavy" glow glowColor="#FFD700">
           <View style={styles.celebrationContent}>

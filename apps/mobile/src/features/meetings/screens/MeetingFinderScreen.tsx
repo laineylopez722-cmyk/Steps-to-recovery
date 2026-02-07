@@ -2,22 +2,16 @@
  * MeetingFinderScreen
  * Main screen for finding nearby AA/NA meetings
  * Features: location-based search, filtering, offline caching
+ * Clean dark design with inline filter button
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  StyleSheet,
-  RefreshControl,
-  ActivityIndicator,
-  Pressable,
-} from 'react-native';
+import { View, StyleSheet, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { EmptyState } from '../../../design-system/components/EmptyState';
-import { FloatingActionButton } from '../../../design-system/components/FloatingActionButton';
 import { MeetingCard } from '../components/MeetingCard';
 import { MeetingFilters } from '../components/MeetingFilters';
 import { useNearbyMeetings } from '../hooks/useNearbyMeetings';
@@ -161,6 +155,24 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
 
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.emptyHeader}>
+          <Pressable
+            onPress={handleFilterPress}
+            accessibilityRole="button"
+            accessibilityLabel="Filter meetings"
+            hitSlop={12}
+            style={({ pressed }) => [
+              styles.filterButton,
+              {
+                backgroundColor: theme.colors.surface,
+                borderColor: theme.colors.border,
+                opacity: pressed ? 0.6 : 1,
+              },
+            ]}
+          >
+            <MaterialIcons name="filter-list" size={20} color={theme.colors.primary} />
+          </Pressable>
+        </View>
         <EmptyState
           icon="search-off"
           title="No meetings found"
@@ -171,11 +183,6 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
           }
           actionLabel={hasFilters ? 'Clear Filters' : 'Search Again'}
           onAction={hasFilters ? clearFilters : handleSearch}
-        />
-        <FloatingActionButton
-          icon={<MaterialIcons name="filter-list" size={24} color="#FFFFFF" />}
-          onPress={handleFilterPress}
-          accessibilityLabel="Filter meetings"
         />
       </View>
     );
@@ -207,14 +214,15 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
               accessibilityHint="Open filter options"
               hitSlop={12}
               style={({ pressed }) => [
-                styles.iconButton,
+                styles.filterButton,
                 {
                   backgroundColor: theme.colors.surface,
+                  borderColor: theme.colors.border,
                   opacity: pressed ? 0.6 : 1,
                 },
               ]}
             >
-              <MaterialIcons name="filter-list" size={24} color={theme.colors.primary} />
+              <MaterialIcons name="filter-list" size={20} color={theme.colors.primary} />
             </Pressable>
           </View>
         }
@@ -241,12 +249,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 8,
   },
+  emptyHeader: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
   iconButton: {
     minWidth: 44,
     minHeight: 44,
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  filterButton: {
+    minWidth: 44,
+    minHeight: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   filterHeader: {
     flexDirection: 'row',

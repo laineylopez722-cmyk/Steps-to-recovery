@@ -1,10 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, type ViewProps } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 
@@ -59,16 +55,12 @@ export function GlassListItem({
       onLongPress={onLongPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      style={[
-        styles.container,
-        animatedStyle,
-        style,
-      ]}
+      style={[styles.container, animatedStyle, style]}
       {...props}
     >
       {/* Glass Background */}
       <View style={styles.glassBackground} />
-      
+
       {/* Border Gradient */}
       <View style={styles.borderGradient} />
 
@@ -79,7 +71,7 @@ export function GlassListItem({
             <MaterialIcons name={icon as IconName} size={24} color={iconColor} />
           </View>
         )}
-        
+
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={1}>
             {title}
@@ -97,9 +89,10 @@ export function GlassListItem({
           {children}
         </View>
 
-        {rightElement || (showChevron && onPress && (
-          <MaterialIcons name="chevron-right" size={24} color={darkAccent.textSubtle} />
-        ))}
+        {rightElement ||
+          (showChevron && onPress && (
+            <MaterialIcons name="chevron-right" size={24} color={darkAccent.textSubtle} />
+          ))}
       </View>
     </AnimatedPressable>
   );

@@ -73,7 +73,12 @@ const CRISIS_HOTLINES: CrisisHotline[] = [
 ];
 
 interface SafetyPlanItem {
-  category: 'warning_signs' | 'coping_strategies' | 'support_people' | 'professional_help' | 'safe_environment';
+  category:
+    | 'warning_signs'
+    | 'coping_strategies'
+    | 'support_people'
+    | 'professional_help'
+    | 'safe_environment';
   title: string;
   items: string[];
 }
@@ -105,7 +110,9 @@ interface EmergencyAccessActions {
   /** Open phone's emergency dialer */
   callEmergencyServices: () => Promise<void>;
   /** Log emergency event for tracking */
-  logEmergencyEvent: (eventType: 'call_sponsor' | 'call_crisis_line' | 'view_safety_plan' | 'start_breathing') => void;
+  logEmergencyEvent: (
+    eventType: 'call_sponsor' | 'call_crisis_line' | 'view_safety_plan' | 'start_breathing',
+  ) => void;
 }
 
 export function useEmergencyAccess(): EmergencyAccessState & EmergencyAccessActions {
@@ -331,7 +338,9 @@ export function useEmergencyAccess(): EmergencyAccessState & EmergencyAccessActi
   }, [makePhoneCall]);
 
   const logEmergencyEvent = useCallback(
-    (eventType: 'call_sponsor' | 'call_crisis_line' | 'view_safety_plan' | 'start_breathing'): void => {
+    (
+      eventType: 'call_sponsor' | 'call_crisis_line' | 'view_safety_plan' | 'start_breathing',
+    ): void => {
       logger.info('Emergency event', { eventType, timestamp: new Date().toISOString() });
       // Could also track this for analytics/recovery patterns
     },

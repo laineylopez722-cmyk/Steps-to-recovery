@@ -1,6 +1,6 @@
 /**
  * CircularProgressRing Component
- * 
+ *
  * Beautiful circular progress visualization for clean time tracking.
  * Uses SVG rings with glassmorphic styling and smooth animations.
  */
@@ -78,25 +78,25 @@ export function CircularProgressRing({
   // Ring dimensions
   const centerX = size / 2;
   const centerY = size / 2;
-  
+
   // Ring radii (outer → inner)
   const dayRadius = size / 2 - 20;
   const hourRadius = size / 2 - 50;
   const minuteRadius = size / 2 - 80;
-  
+
   // Ring stroke widths
   const strokeWidth = 10;
-  
+
   // Circumferences
   const dayCircumference = 2 * Math.PI * dayRadius;
   const hourCircumference = 2 * Math.PI * hourRadius;
   const minuteCircumference = 2 * Math.PI * minuteRadius;
-  
+
   // Progress values (animated)
   const dayProgressValue = useSharedValue(0);
   const hourProgressValue = useSharedValue(0);
   const minuteProgressValue = useSharedValue(0);
-  
+
   // Animate on mount and when values change
   useEffect(() => {
     dayProgressValue.value = withTiming(getDayProgress(days), {
@@ -104,34 +104,34 @@ export function CircularProgressRing({
       easing: Easing.out(Easing.cubic),
     });
   }, [days]);
-  
+
   useEffect(() => {
     hourProgressValue.value = withTiming(getHourProgress(hours), {
       duration: 1000,
       easing: Easing.out(Easing.cubic),
     });
   }, [hours]);
-  
+
   useEffect(() => {
     minuteProgressValue.value = withTiming(getMinuteProgress(minutes), {
       duration: 800,
       easing: Easing.out(Easing.cubic),
     });
   }, [minutes]);
-  
+
   // Animated props for each ring
   const dayAnimatedProps = useAnimatedProps(() => ({
     strokeDashoffset: getStrokeDashoffset(dayProgressValue.value, dayCircumference),
   }));
-  
+
   const hourAnimatedProps = useAnimatedProps(() => ({
     strokeDashoffset: getStrokeDashoffset(hourProgressValue.value, hourCircumference),
   }));
-  
+
   const minuteAnimatedProps = useAnimatedProps(() => ({
     strokeDashoffset: getStrokeDashoffset(minuteProgressValue.value, minuteCircumference),
   }));
-  
+
   return (
     <View style={styles.container} accessible accessibilityLabel={accessibilityLabel}>
       <Svg width={size} height={size}>
@@ -141,20 +141,20 @@ export function CircularProgressRing({
             <Stop offset="0%" stopColor={darkAccent.primary} stopOpacity="1" />
             <Stop offset="100%" stopColor={darkAccent.info} stopOpacity="1" />
           </LinearGradient>
-          
+
           {/* Hour ring gradient */}
           <LinearGradient id="hourGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor={darkAccent.info} stopOpacity="0.8" />
             <Stop offset="100%" stopColor={darkAccent.success} stopOpacity="0.8" />
           </LinearGradient>
-          
+
           {/* Minute ring gradient */}
           <LinearGradient id="minuteGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor={darkAccent.success} stopOpacity="0.6" />
             <Stop offset="100%" stopColor={darkAccent.primary} stopOpacity="0.6" />
           </LinearGradient>
         </Defs>
-        
+
         <G rotation="-90" origin={`${centerX}, ${centerY}`}>
           {/* Day ring background */}
           <Circle
@@ -165,7 +165,7 @@ export function CircularProgressRing({
             strokeWidth={strokeWidth}
             fill="none"
           />
-          
+
           {/* Day ring progress */}
           <AnimatedCircle
             cx={centerX}
@@ -178,7 +178,7 @@ export function CircularProgressRing({
             fill="none"
             animatedProps={dayAnimatedProps}
           />
-          
+
           {/* Hour ring background */}
           <Circle
             cx={centerX}
@@ -188,7 +188,7 @@ export function CircularProgressRing({
             strokeWidth={strokeWidth}
             fill="none"
           />
-          
+
           {/* Hour ring progress */}
           <AnimatedCircle
             cx={centerX}
@@ -201,7 +201,7 @@ export function CircularProgressRing({
             fill="none"
             animatedProps={hourAnimatedProps}
           />
-          
+
           {/* Minute ring background */}
           <Circle
             cx={centerX}
@@ -211,7 +211,7 @@ export function CircularProgressRing({
             strokeWidth={strokeWidth}
             fill="none"
           />
-          
+
           {/* Minute ring progress */}
           <AnimatedCircle
             cx={centerX}
@@ -226,7 +226,7 @@ export function CircularProgressRing({
           />
         </G>
       </Svg>
-      
+
       {/* Center text */}
       <View style={styles.centerText}>
         <Text
@@ -236,13 +236,8 @@ export function CircularProgressRing({
         >
           {days}
         </Text>
-        <Text style={styles.daysLabel}>
-          {days === 1 ? 'DAY' : 'DAYS'}
-        </Text>
-        <Text
-          style={styles.timeText}
-          accessibilityLabel={`${hours} hours and ${minutes} minutes`}
-        >
+        <Text style={styles.daysLabel}>{days === 1 ? 'DAY' : 'DAYS'}</Text>
+        <Text style={styles.timeText} accessibilityLabel={`${hours} hours and ${minutes} minutes`}>
           {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}
         </Text>
       </View>

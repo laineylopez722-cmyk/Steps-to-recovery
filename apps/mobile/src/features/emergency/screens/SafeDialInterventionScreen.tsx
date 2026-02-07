@@ -1,9 +1,9 @@
 /**
  * Safe Dial Intervention Screen
- * 
+ *
  * CRITICAL: Full-screen intervention when user tries to call risky contact
  * Multi-step flow designed to interrupt autopilot behavior and offer alternatives
- * 
+ *
  * Psychological Design:
  * - Creates friction (forces conscious choice)
  * - Delays action (cravings peak ~15 min)
@@ -12,15 +12,7 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Alert,
-  BackHandler,
-  Linking,
-} from 'react-native';
+import { View, Text, StyleSheet, TextInput, Alert, BackHandler, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut, SlideInDown } from 'react-native-reanimated';
@@ -167,7 +159,7 @@ export function SafeDialInterventionScreen({
       setIsProcessing(true);
       await handleLogAction('called_sponsor', `Called sponsor instead of ${riskyContact.name}`);
       await Linking.openURL(`tel:${sponsorPhone}`);
-      
+
       setTimeout(() => {
         setStep('complete');
       }, 500);
@@ -188,8 +180,10 @@ export function SafeDialInterventionScreen({
       hapticSuccess();
       setIsProcessing(true);
       await handleLogAction('texted_sponsor', `Texted sponsor instead of ${riskyContact.name}`);
-      await Linking.openURL(`sms:${sponsorPhone}&body=I need help. I almost called ${riskyContact.name}.`);
-      
+      await Linking.openURL(
+        `sms:${sponsorPhone}&body=I need help. I almost called ${riskyContact.name}.`,
+      );
+
       setTimeout(() => {
         setStep('complete');
       }, 500);
@@ -203,7 +197,7 @@ export function SafeDialInterventionScreen({
   const handleWait20Minutes = async (): Promise<void> => {
     hapticSuccess();
     await handleLogAction('waited', 'Chose to wait 20 minutes');
-    
+
     Alert.alert(
       'Good Choice',
       "You decided to wait. Cravings usually pass in 15-20 minutes. We'll check in with you.",
@@ -212,14 +206,14 @@ export function SafeDialInterventionScreen({
           text: 'OK',
           onPress: () => setStep('complete'),
         },
-      ]
+      ],
     );
   };
 
   const handlePlayGame = async (): Promise<void> => {
     hapticSuccess();
     await handleLogAction('played_game', 'Chose distraction game');
-    
+
     Alert.alert(
       'Coming Soon',
       'Calming games will be available in the next update. For now, try the breathing exercise.',
@@ -228,7 +222,7 @@ export function SafeDialInterventionScreen({
           text: 'OK',
           onPress: () => setStep('complete'),
         },
-      ]
+      ],
     );
   };
 
@@ -275,12 +269,12 @@ export function SafeDialInterventionScreen({
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
           <MaterialCommunityIcons name="hand-back-right" size={120} color="#FFFFFF" />
-          
-          <Text style={[styles.bigText, { color: '#FFFFFF', marginTop: 32 }]}>
-            STOP
-          </Text>
 
-          <Text style={[styles.mediumText, { color: '#FFFFFF', marginTop: 24, textAlign: 'center' }]}>
+          <Text style={[styles.bigText, { color: '#FFFFFF', marginTop: 32 }]}>STOP</Text>
+
+          <Text
+            style={[styles.mediumText, { color: '#FFFFFF', marginTop: 24, textAlign: 'center' }]}
+          >
             Are you sure about this?
           </Text>
 
@@ -313,13 +307,13 @@ export function SafeDialInterventionScreen({
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <Text style={[styles.bigText, { color: '#FFFFFF' }]}>
-            Remember Why You Started
-          </Text>
+          <Text style={[styles.bigText, { color: '#FFFFFF' }]}>Remember Why You Started</Text>
 
           <View style={styles.whyContent}>
             <MaterialCommunityIcons name="heart" size={80} color="#FFFFFF" />
-            <Text style={[styles.bodyText, { color: '#FFFFFF', marginTop: 24, textAlign: 'center' }]}>
+            <Text
+              style={[styles.bodyText, { color: '#FFFFFF', marginTop: 24, textAlign: 'center' }]}
+            >
               {whyText}
             </Text>
           </View>
@@ -394,7 +388,10 @@ export function SafeDialInterventionScreen({
           </View>
 
           <Text
-            style={[styles.smallLink, { color: theme.colors.textSecondary, marginTop: 32, textAlign: 'center' }]}
+            style={[
+              styles.smallLink,
+              { color: theme.colors.textSecondary, marginTop: 32, textAlign: 'center' },
+            ]}
             onPress={handleInsistProceed}
           >
             I still want to make this call
@@ -424,12 +421,22 @@ export function SafeDialInterventionScreen({
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
           <MaterialCommunityIcons name="alert-octagon" size={80} color={theme.colors.danger} />
-          
-          <Text style={[styles.bigText, { color: theme.colors.danger, marginTop: 24, textAlign: 'center' }]}>
+
+          <Text
+            style={[
+              styles.bigText,
+              { color: theme.colors.danger, marginTop: 24, textAlign: 'center' },
+            ]}
+          >
             Last Chance to Choose Recovery
           </Text>
 
-          <Text style={[styles.bodyText, { color: theme.colors.text, marginTop: 16, textAlign: 'center' }]}>
+          <Text
+            style={[
+              styles.bodyText,
+              { color: theme.colors.text, marginTop: 16, textAlign: 'center' },
+            ]}
+          >
             This call could end your sobriety.{'\n'}
             Type "YES I AM RELAPSING" to proceed:
           </Text>
@@ -493,7 +500,7 @@ export function SafeDialInterventionScreen({
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
           <MaterialCommunityIcons name="check-circle" size={120} color="#FFFFFF" />
-          
+
           <Text style={[styles.bigText, { color: '#FFFFFF', marginTop: 32 }]}>
             You Made the Right Choice 💙
           </Text>

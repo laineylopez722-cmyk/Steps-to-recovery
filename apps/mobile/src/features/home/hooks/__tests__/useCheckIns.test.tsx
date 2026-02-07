@@ -361,7 +361,10 @@ describe('useCheckIns', () => {
 
       // Wait for the error to be logged
       await waitFor(() => {
-        expect(mockLogger.error).toHaveBeenCalledWith('Failed to create check-in', expect.any(Error));
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          'Failed to create check-in',
+          expect.any(Error),
+        );
       });
     });
 
@@ -466,7 +469,10 @@ describe('useCheckIns', () => {
 
       // Wait for the error to be logged
       await waitFor(() => {
-        expect(mockLogger.error).toHaveBeenCalledWith('Failed to update check-in', expect.any(Error));
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          'Failed to update check-in',
+          expect.any(Error),
+        );
       });
     });
   });
@@ -516,7 +522,10 @@ describe('useCheckIns', () => {
 
       // Wait for the error to be logged
       await waitFor(() => {
-        expect(mockLogger.error).toHaveBeenCalledWith('Failed to delete check-in', expect.any(Error));
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          'Failed to delete check-in',
+          expect.any(Error),
+        );
       });
     });
 

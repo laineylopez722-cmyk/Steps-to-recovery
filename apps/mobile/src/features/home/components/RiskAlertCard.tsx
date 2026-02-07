@@ -1,9 +1,9 @@
 /**
  * RiskAlertCard Component
- * 
+ *
  * Glassmorphic card displaying detected risk patterns
  * Appears at top of home screen when risks detected
- * 
+ *
  * Design: Amber/warning color, dismissible, with suggested actions
  */
 
@@ -75,12 +75,11 @@ export function RiskAlertCard({
   // Handle suggested action
   const handleAction = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    
+
     // Navigate to suggested route (cross-navigator navigation)
-    (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate(
-      pattern.actionRoute,
-      pattern.actionParams as Record<string, unknown> | undefined
-    );
+    (
+      navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }
+    ).navigate(pattern.actionRoute, pattern.actionParams as Record<string, unknown> | undefined);
   };
 
   // Handle dismiss
@@ -92,18 +91,18 @@ export function RiskAlertCard({
   // Handle notify sponsor
   const handleNotifySponsor = async () => {
     if (!onNotifySponsor) return;
-    
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsNotifying(true);
 
     const result = await onNotifySponsor();
-    
+
     setIsNotifying(false);
-    
+
     if (result.success) {
       setNotifySuccess(true);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      
+
       // Hide success message after 2 seconds
       setTimeout(() => {
         setNotifySuccess(false);
@@ -136,7 +135,9 @@ export function RiskAlertCard({
                 <View style={styles.headerLeft}>
                   <View style={[styles.iconContainer, { backgroundColor: `${colors.icon}20` }]}>
                     <MaterialCommunityIcons
-                      name={pattern.icon as React.ComponentProps<typeof MaterialCommunityIcons>['name']}
+                      name={
+                        pattern.icon as React.ComponentProps<typeof MaterialCommunityIcons>['name']
+                      }
                       size={24}
                       color={colors.icon}
                       accessible={false}
@@ -157,7 +158,7 @@ export function RiskAlertCard({
                     </Text>
                   </View>
                 </View>
-                
+
                 {/* Dismiss Button */}
                 <Pressable
                   onPress={handleDismiss}

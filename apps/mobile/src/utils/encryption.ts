@@ -22,11 +22,11 @@ import { secureStorage } from '../adapters/secureStorage';
 
 /**
  * Constant-time string comparison to prevent timing attacks
- * 
+ *
  * This function compares two strings in constant time, regardless of
  * where they differ. This prevents timing attacks that could leak
  * information about the expected MAC value.
- * 
+ *
  * @param a - First string to compare
  * @param b - Second string to compare
  * @returns true if strings are equal, false otherwise

@@ -93,17 +93,39 @@ export function BiometricPrompt({
         <GlassCard intensity="heavy" style={styles.card}>
           <View style={styles.iconContainer}>
             <Animated.View style={[styles.pulseRing, pulseStyle]} />
-            <LinearGradient colors={isScanning ? gradients.success : gradients.primary} style={styles.iconGradient}>
-              <MaterialIcons name={authType === 'Face ID' ? 'face' : 'fingerprint'} size={48} color="#FFF" />
+            <LinearGradient
+              colors={isScanning ? gradients.success : gradients.primary}
+              style={styles.iconGradient}
+            >
+              <MaterialIcons
+                name={authType === 'Face ID' ? 'face' : 'fingerprint'}
+                size={48}
+                color="#FFF"
+              />
             </LinearGradient>
           </View>
           <Text style={styles.title}>{authType}</Text>
           <Text style={styles.description}>
-            {isScanning ? `Scanning ${authType}...` : `Use ${authType} to unlock your recovery data`}
+            {isScanning
+              ? `Scanning ${authType}...`
+              : `Use ${authType} to unlock your recovery data`}
           </Text>
           <View style={styles.buttons}>
-            <GradientButton title={`Use ${authType}`} variant="primary" size="lg" fullWidth onPress={attemptAuth} loading={isScanning} />
-            <GradientButton title="Use Passcode" variant="ghost" size="md" fullWidth onPress={onFallback} />
+            <GradientButton
+              title={`Use ${authType}`}
+              variant="primary"
+              size="lg"
+              fullWidth
+              onPress={attemptAuth}
+              loading={isScanning}
+            />
+            <GradientButton
+              title="Use Passcode"
+              variant="ghost"
+              size="md"
+              fullWidth
+              onPress={onFallback}
+            />
             <GradientButton title="Cancel" variant="ghost" size="sm" fullWidth onPress={onCancel} />
           </View>
         </GlassCard>
@@ -127,14 +149,18 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
 
   const checkAuthType = async () => {
     const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-    if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) setAuthType('Face ID');
-    else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) setAuthType('Touch ID');
+    if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION))
+      setAuthType('Face ID');
+    else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT))
+      setAuthType('Touch ID');
   };
 
   const handleAuthenticate = async () => {
     setIsAuthenticating(true);
     try {
-      const result = await LocalAuthentication.authenticateAsync({ promptMessage: 'Unlock Steps to Recovery' });
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'Unlock Steps to Recovery',
+      });
       if (result.success) onUnlock();
     } finally {
       setIsAuthenticating(false);
@@ -152,9 +178,20 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
         </View>
         <Text style={styles.appName}>Steps to Recovery</Text>
         <Text style={styles.lockMessage}>Tap to unlock</Text>
-        <Pressable onPress={handleAuthenticate} style={styles.lockButton} disabled={isAuthenticating}>
-          <LinearGradient colors={isAuthenticating ? gradients.success : gradients.primary} style={styles.lockButtonGradient}>
-            <MaterialIcons name={authType === 'Face ID' ? 'face' : 'fingerprint'} size={32} color="#FFF" />
+        <Pressable
+          onPress={handleAuthenticate}
+          style={styles.lockButton}
+          disabled={isAuthenticating}
+        >
+          <LinearGradient
+            colors={isAuthenticating ? gradients.success : gradients.primary}
+            style={styles.lockButtonGradient}
+          >
+            <MaterialIcons
+              name={authType === 'Face ID' ? 'face' : 'fingerprint'}
+              size={32}
+              color="#FFF"
+            />
           </LinearGradient>
         </Pressable>
         <Text style={styles.lockHint}>Secure with {authType}</Text>
@@ -164,22 +201,64 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
 }
 
 const styles = StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 1000, justifyContent: 'center', alignItems: 'center', padding: 24 },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    zIndex: 1000,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
   container: { width: '100%', maxWidth: 320 },
   card: { padding: spacing[4], alignItems: 'center' },
-  iconContainer: { width: 100, height: 100, alignItems: 'center', justifyContent: 'center', marginBottom: spacing[4] },
-  pulseRing: { position: 'absolute', width: 100, height: 100, borderRadius: 50, backgroundColor: darkAccent.success },
-  iconGradient: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center' },
+  iconContainer: {
+    width: 100,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing[4],
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: darkAccent.success,
+  },
+  iconGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   title: { ...typography.h2, color: darkAccent.text, marginBottom: spacing[2] },
-  description: { ...typography.body, color: darkAccent.textMuted, textAlign: 'center', marginBottom: spacing[4] },
+  description: {
+    ...typography.body,
+    color: darkAccent.textMuted,
+    textAlign: 'center',
+    marginBottom: spacing[4],
+  },
   buttons: { width: '100%', gap: spacing[2] },
   lockContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   lockContent: { alignItems: 'center' },
   appIcon: { marginBottom: spacing[4] },
-  appIconGradient: { width: 100, height: 100, borderRadius: 24, alignItems: 'center', justifyContent: 'center' },
+  appIconGradient: {
+    width: 100,
+    height: 100,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   appName: { ...typography.h2, color: darkAccent.text, marginBottom: spacing[1] },
   lockMessage: { ...typography.body, color: darkAccent.textMuted, marginBottom: spacing[6] },
   lockButton: { marginBottom: spacing[3] },
-  lockButtonGradient: { width: 80, height: 80, borderRadius: 40, alignItems: 'center', justifyContent: 'center' },
+  lockButtonGradient: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   lockHint: { ...typography.bodySmall, color: darkAccent.textSubtle },
 });

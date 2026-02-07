@@ -62,7 +62,7 @@ export const useReadingStore = create<ReadingState & ReadingActions>((set, get) 
         isLoading: false,
       });
     } catch (error) {
-      logger.error('Failed to load today\'s reading', error);
+      logger.error("Failed to load today's reading", error);
       set({ error: 'Failed to load reading', isLoading: false });
     }
   },

@@ -1,20 +1,12 @@
 /**
  * PostMeetingReflectionModal
- * 
+ *
  * Modal shown after attending a meeting.
  * Captures key takeaway, mood change, gratitude, and application plans.
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  Pressable,
-  TextInput,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
@@ -58,48 +50,40 @@ export function PostMeetingReflectionModal({
   const [gratitude, setGratitude] = useState('');
   const [willApply, setWillApply] = useState('');
   const [saving, setSaving] = useState(false);
-  
+
   const takeawayPrompt = getRandomPostPrompt();
-  
+
   const moodLift = preMood ? mood - preMood : null;
-  
+
   const handleSave = async (): Promise<void> => {
     setSaving(true);
-    
+
     const prompts: PostMeetingPrompts = {
       keyTakeaway,
       mood,
       gratitude,
       willApply,
     };
-    
+
     const result = await savePostMeetingReflection(userId, checkinId, prompts);
-    
+
     setSaving(false);
-    
+
     if (result.success) {
       onComplete();
     }
   };
-  
+
   const handleSkip = (): void => {
     onClose();
   };
-  
+
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.backdrop}>
         <Pressable style={styles.backdropPress} onPress={onClose} />
-        
-        <Animated.View
-          entering={SlideInDown.duration(400)}
-          style={styles.modalContainer}
-        >
+
+        <Animated.View entering={SlideInDown.duration(400)} style={styles.modalContainer}>
           <GlassCard intensity="heavy" style={styles.modalCard}>
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header */}
@@ -108,29 +92,22 @@ export function PostMeetingReflectionModal({
                   <MaterialIcons name="favorite" size={32} color={darkAccent.success} />
                 </View>
                 <Text style={styles.title}>How Was It?</Text>
-                <Text style={styles.subtitle}>
-                  Reflect on {meetingName}
-                </Text>
+                <Text style={styles.subtitle}>Reflect on {meetingName}</Text>
               </View>
-              
+
               {/* Mood */}
               <View style={styles.section}>
                 <Text style={styles.label}>How are you feeling now?</Text>
                 <View style={styles.moodButtons}>
-                  {[1, 2, 3, 4, 5].map(value => (
+                  {[1, 2, 3, 4, 5].map((value) => (
                     <Pressable
                       key={value}
-                      style={[
-                        styles.moodButton,
-                        mood === value && styles.moodButtonSelected,
-                      ]}
+                      style={[styles.moodButton, mood === value && styles.moodButtonSelected]}
                       onPress={() => setMood(value)}
                       accessibilityLabel={`Mood ${value} out of 5`}
                       accessibilityRole="button"
                     >
-                      <Text style={styles.moodEmoji}>
-                        {getMoodEmoji(value)}
-                      </Text>
+                      <Text style={styles.moodEmoji}>{getMoodEmoji(value)}</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -138,7 +115,7 @@ export function PostMeetingReflectionModal({
                   <Text style={styles.moodLabel}>Low</Text>
                   <Text style={styles.moodLabel}>Great</Text>
                 </View>
-                
+
                 {/* Mood Lift Indicator */}
                 {moodLift !== null && moodLift !== 0 && (
                   <View style={styles.moodLiftContainer}>
@@ -153,12 +130,13 @@ export function PostMeetingReflectionModal({
                         { color: moodLift > 0 ? darkAccent.success : darkAccent.error },
                       ]}
                     >
-                      {moodLift > 0 ? '+' : ''}{moodLift} from before meeting
+                      {moodLift > 0 ? '+' : ''}
+                      {moodLift} from before meeting
                     </Text>
                   </View>
                 )}
               </View>
-              
+
               {/* Key Takeaway */}
               <View style={styles.section}>
                 <Text style={styles.label}>{takeawayPrompt}</Text>
@@ -173,7 +151,7 @@ export function PostMeetingReflectionModal({
                   accessibilityLabel="Key takeaway from meeting"
                 />
               </View>
-              
+
               {/* Gratitude */}
               <View style={styles.section}>
                 <Text style={styles.label}>What are you grateful for?</Text>
@@ -188,7 +166,7 @@ export function PostMeetingReflectionModal({
                   accessibilityLabel="Gratitude"
                 />
               </View>
-              
+
               {/* Application */}
               <View style={styles.section}>
                 <Text style={styles.label}>What will you apply this week?</Text>
@@ -203,7 +181,7 @@ export function PostMeetingReflectionModal({
                   accessibilityLabel="What you will apply"
                 />
               </View>
-              
+
               {/* Buttons */}
               <View style={styles.buttons}>
                 <GradientButton
@@ -212,7 +190,7 @@ export function PostMeetingReflectionModal({
                   disabled={saving || !keyTakeaway.trim()}
                   accessibilityLabel="Save post-meeting reflection"
                 />
-                
+
                 <Pressable
                   style={styles.skipButton}
                   onPress={handleSkip}

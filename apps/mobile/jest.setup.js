@@ -3,7 +3,8 @@
  * Mocks for Expo modules and React Native APIs
  */
 
-const { cleanup } = require('@testing-library/react-native');
+import { cleanup } from '@testing-library/react-native';
+import { createElement } from 'react';
 
 // Set up Supabase environment variables BEFORE any module imports
 // This prevents supabase.ts from throwing during initialization
@@ -24,24 +25,6 @@ process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key-for-jest';
 // These warnings don't indicate actual bugs in the component logic.
 const originalError = console.error;
 console.error = (...args) => {
-  // Filter out act() warnings for known async patterns
-  if (
-    typeof args[0] === 'string' &&
-    (args[0].includes('not wrapped in act') ||
-      args[0].includes('An update to') ||
-      args[0].includes('inside a test was not wrapped'))
-  ) {
-    return;
-  }
-  // Filter out key prop warnings from animated style arrays in tests
-  // These occur because react-test-renderer treats Animated.Value objects differently
-  // than the actual React Native runtime, causing false positive warnings
-  if (
-    typeof args[0] === 'string' &&
-    args[0].includes('Each child in a list should have a unique "key" prop')
-  ) {
-    return;
-  }
   originalError.apply(console, args);
 };
 
@@ -57,7 +40,7 @@ afterEach(() => {
 
 // Mock react-native-css-interop (NativeWind)
 jest.mock('react-native-css-interop/jsx-runtime', () => ({
-  jsx: jest.fn((type, props) => require('react').createElement(type, props)),
+  jsx: jest.fn((type, props) => createElement(type, props)),
   jsxs: jest.fn((type, props) => require('react').createElement(type, props)),
   Fragment: require('react').Fragment,
 }));

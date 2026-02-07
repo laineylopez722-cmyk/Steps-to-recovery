@@ -2,8 +2,7 @@
  * SobrietyCounter Component
  * Real-time counter displaying time since sobriety date with milestone tracking
  */
-
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { ProgressBar } from './ProgressBar';

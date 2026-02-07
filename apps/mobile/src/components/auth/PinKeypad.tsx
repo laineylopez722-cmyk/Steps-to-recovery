@@ -1,7 +1,14 @@
-import React, { memo } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { memo } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  type ViewStyle,
+  type TextStyle as RNTextStyle,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
+import type { ReactElement } from 'react';
 
 interface PinKeypadProps {
   onDigitPress: (digit: string) => void;
@@ -11,7 +18,11 @@ interface PinKeypadProps {
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
-function PinKeypadComponent({ onDigitPress, onBackspacePress, disabled }: PinKeypadProps) {
+export const PinKeypadComponent = memo(function PinKeypadComponent({
+  onDigitPress,
+  onBackspacePress,
+  disabled,
+}: PinKeypadProps): ReactElement {
   const rows = [
     [1, 2, 3],
     [4, 5, 6],
@@ -20,11 +31,17 @@ function PinKeypadComponent({ onDigitPress, onBackspacePress, disabled }: PinKey
   ];
 
   return (
-    <View className="w-full max-w-sm">
+    <View style={{ width: '100%', maxWidth: 200 } as ViewStyle}>
       {rows.map((row, rowIndex) => (
-        <View key={rowIndex} className="flex-row justify-center gap-6 mb-6">
+        <View
+          key={rowIndex}
+          style={
+            { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 6 } as ViewStyle
+          }
+        >
           {row.map((item, i) => {
-            if (item === '') return <View key={`spacer-${i}`} className="w-20 h-20" />;
+            if (item === '')
+              return <View key={`spacer-${i}`} style={{ width: 20, height: 20 } as ViewStyle} />;
 
             const isBackspace = item === 'backspace';
             const digit = typeof item === 'number' ? item.toString() : item;
@@ -41,18 +58,34 @@ function PinKeypadComponent({ onDigitPress, onBackspacePress, disabled }: PinKey
                     onDigitPress(digit as string);
                   }
                 }}
-                className={`w-20 h-20 items-center justify-center rounded-full ${
-                  isBackspace
-                    ? 'bg-transparent'
-                    : 'bg-white/5 active:bg-white/10 border border-white/10'
-                }`}
+                style={
+                  {
+                    width: 20,
+                    height: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: 10,
+                  } as ViewStyle
+                }
                 accessibilityRole="button"
                 accessibilityLabel={isBackspace ? 'Delete recent digit' : `Enter ${digit}`}
               >
                 {isBackspace ? (
                   <Feather name="delete" size={24} color="#94a3b8" />
                 ) : (
-                  <Text className="text-3xl text-white font-medium">{digit}</Text>
+                  <Text
+                    style={
+                      {
+                        fontSize: 24,
+                        color: 'white',
+                        fontWeight: '500' as RNTextStyle['fontWeight'],
+                      } as RNTextStyle
+                    }
+                    accessibilityLabel={`Enter ${digit}`}
+                    accessibilityRole="button"
+                  >
+                    {digit}
+                  </Text>
                 )}
               </AnimatedTouchableOpacity>
             );
@@ -61,6 +94,4 @@ function PinKeypadComponent({ onDigitPress, onBackspacePress, disabled }: PinKey
       ))}
     </View>
   );
-}
-
-export const PinKeypad = memo(PinKeypadComponent);
+});

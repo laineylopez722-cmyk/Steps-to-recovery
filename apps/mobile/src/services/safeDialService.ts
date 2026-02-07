@@ -1,9 +1,9 @@
 /**
  * Safe Dial Service
- * 
+ *
  * Core service for managing risky contacts and intervention logic.
  * Implements "Ulysses Pact" pattern - users pre-commit to protective measures.
- * 
+ *
  * Security: All operations enforce user-scoped access via RLS policies.
  * Privacy: Contact data encrypted at rest, never leaves user control.
  */
@@ -17,11 +17,11 @@ import { logger } from '../utils/logger';
 
 export type RelationshipType = 'dealer' | 'old_friend' | 'trigger_person' | 'other';
 
-export type ActionTaken = 
-  | 'called_sponsor' 
-  | 'texted_sponsor' 
-  | 'waited' 
-  | 'dismissed' 
+export type ActionTaken =
+  | 'called_sponsor'
+  | 'texted_sponsor'
+  | 'waited'
+  | 'dismissed'
   | 'proceeded'
   | 'played_game';
 
@@ -143,7 +143,7 @@ export function normalizePhoneNumber(phoneNumber: string): string {
 export async function addRiskyContact(params: AddRiskyContactParams): Promise<RiskyContact> {
   try {
     const normalizedPhone = normalizePhoneNumber(params.phoneNumber);
-    
+
     const { data, error } = await supabase
       .from('risky_contacts')
       .insert({
@@ -163,7 +163,10 @@ export async function addRiskyContact(params: AddRiskyContactParams): Promise<Ri
       throw error;
     }
 
-    logger.info('Risky contact added', { contactId: data.id, relationshipType: params.relationshipType });
+    logger.info('Risky contact added', {
+      contactId: data.id,
+      relationshipType: params.relationshipType,
+    });
     return mapToRiskyContact(data);
   } catch (error) {
     logger.error('Failed to add risky contact', error);
@@ -197,8 +200,8 @@ export async function getRiskyContacts(userId: string): Promise<RiskyContact[]> 
  * @returns The risky contact if found, null otherwise
  */
 export async function isRiskyContact(
-  userId: string, 
-  phoneNumber: string
+  userId: string,
+  phoneNumber: string,
 ): Promise<RiskyContact | null> {
   try {
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
@@ -225,14 +228,18 @@ export async function isRiskyContact(
  */
 export async function updateRiskyContact(
   contactId: string,
-  updates: Partial<Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>>
+  updates: Partial<
+    Pick<RiskyContact, 'name' | 'phoneNumber' | 'relationshipType' | 'notes' | 'isActive'>
+  >,
 ): Promise<RiskyContact> {
   try {
     const dbUpdates: Record<string, string | number | boolean | null> = {};
-    
+
     if (updates.name !== undefined) dbUpdates.name = updates.name;
-    if (updates.phoneNumber !== undefined) dbUpdates.phone_number = normalizePhoneNumber(updates.phoneNumber);
-    if (updates.relationshipType !== undefined) dbUpdates.relationship_type = updates.relationshipType;
+    if (updates.phoneNumber !== undefined)
+      dbUpdates.phone_number = normalizePhoneNumber(updates.phoneNumber);
+    if (updates.relationshipType !== undefined)
+      dbUpdates.relationship_type = updates.relationshipType;
     if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
     if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
 
@@ -278,10 +285,7 @@ export async function deleteRiskyContact(contactId: string): Promise<void> {
  */
 export async function permanentlyDeleteRiskyContact(contactId: string): Promise<void> {
   try {
-    const { error } = await supabase
-      .from('risky_contacts')
-      .delete()
-      .eq('id', contactId);
+    const { error } = await supabase.from('risky_contacts').delete().eq('id', contactId);
 
     if (error) throw error;
 
@@ -315,11 +319,11 @@ export async function logCloseCall(params: LogCloseCallParams): Promise<CloseCal
 
     if (error) throw error;
 
-    logger.info('Close call logged', { 
-      actionTaken: params.actionTaken, 
-      contactName: params.contactName 
+    logger.info('Close call logged', {
+      actionTaken: params.actionTaken,
+      contactName: params.contactName,
     });
-    
+
     return mapToCloseCall(data);
   } catch (error) {
     logger.error('Failed to log close call', error);
@@ -332,7 +336,7 @@ export async function logCloseCall(params: LogCloseCallParams): Promise<CloseCal
  */
 export async function getCloseCallHistory(
   userId: string,
-  limit: number = 50
+  limit: number = 50,
 ): Promise<CloseCall[]> {
   try {
     const { data, error } = await supabase
@@ -356,13 +360,12 @@ export async function getCloseCallHistory(
  */
 export async function getCloseCallStats(userId: string): Promise<CloseCallStats> {
   try {
-    const { data, error } = await supabase
-      .rpc('get_close_call_stats', { p_user_id: userId });
+    const { data, error } = await supabase.rpc('get_close_call_stats', { p_user_id: userId });
 
     if (error) throw error;
 
     const result = data[0];
-    
+
     return {
       totalCloseCalls: parseInt(result.total_close_calls) || 0,
       timesResisted: parseInt(result.times_resisted) || 0,
@@ -384,9 +387,7 @@ export async function getCloseCallStats(userId: string): Promise<CloseCallStats>
  * Add multiple risky contacts at once (e.g., from phone import)
  * Returns successful additions and failures separately
  */
-export async function addMultipleRiskyContacts(
-  contacts: AddRiskyContactParams[]
-): Promise<{
+export async function addMultipleRiskyContacts(contacts: AddRiskyContactParams[]): Promise<{
   successful: RiskyContact[];
   failed: Array<{ contact: AddRiskyContactParams; error: string }>;
 }> {
@@ -405,9 +406,9 @@ export async function addMultipleRiskyContacts(
     }
   }
 
-  logger.info('Batch risky contacts added', { 
-    successful: successful.length, 
-    failed: failed.length 
+  logger.info('Batch risky contacts added', {
+    successful: successful.length,
+    failed: failed.length,
   });
 
   return { successful, failed };

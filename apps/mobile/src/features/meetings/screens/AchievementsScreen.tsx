@@ -4,26 +4,14 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  RefreshControl,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
-import {
-  darkAccent,
-  radius,
-  spacing,
-  typography,
-} from '../../../design-system/tokens/modern';
+import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useAchievements } from '../hooks/useAchievements';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
 import { ACHIEVEMENT_COLORS } from '@recovery/shared';
@@ -39,12 +27,7 @@ export function AchievementsScreen(): React.ReactElement {
   const [showModal, setShowModal] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
 
-  const {
-    achievements,
-    isLoading: _isLoading,
-    unlockedCount,
-    totalCount,
-  } = useAchievements();
+  const { achievements, isLoading: _isLoading, unlockedCount, totalCount } = useAchievements();
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -59,14 +42,14 @@ export function AchievementsScreen(): React.ReactElement {
     return true;
   });
 
-  const handleAchievementPress = (achievement: typeof achievements[0]) => {
+  const handleAchievementPress = (achievement: (typeof achievements)[0]) => {
     if (achievement.unlocked) {
       setSelectedAchievement(achievement.key);
       setShowModal(true);
     }
   };
 
-  const getProgressBarColor = (category: typeof achievements[0]['category']) => {
+  const getProgressBarColor = (category: (typeof achievements)[0]['category']) => {
     return ACHIEVEMENT_COLORS[category].gradient;
   };
 
@@ -113,10 +96,7 @@ export function AchievementsScreen(): React.ReactElement {
             </View>
             <View style={styles.progressTrack}>
               <View
-                style={[
-                  styles.progressFill,
-                  { width: `${(unlockedCount / totalCount) * 100}%` },
-                ]}
+                style={[styles.progressFill, { width: `${(unlockedCount / totalCount) * 100}%` }]}
               />
             </View>
           </LinearGradient>
@@ -131,31 +111,20 @@ export function AchievementsScreen(): React.ReactElement {
             accessibilityRole="tab"
             accessibilityState={{ selected: filter === 'all' }}
           >
-            <Text
-              style={[
-                styles.filterTabText,
-                filter === 'all' && styles.filterTabTextActive,
-              ]}
-            >
+            <Text style={[styles.filterTabText, filter === 'all' && styles.filterTabTextActive]}>
               All ({totalCount})
             </Text>
           </Pressable>
 
           <Pressable
             onPress={() => setFilter('unlocked')}
-            style={[
-              styles.filterTab,
-              filter === 'unlocked' && styles.filterTabActive,
-            ]}
+            style={[styles.filterTab, filter === 'unlocked' && styles.filterTabActive]}
             accessibilityLabel="Show unlocked achievements"
             accessibilityRole="tab"
             accessibilityState={{ selected: filter === 'unlocked' }}
           >
             <Text
-              style={[
-                styles.filterTabText,
-                filter === 'unlocked' && styles.filterTabTextActive,
-              ]}
+              style={[styles.filterTabText, filter === 'unlocked' && styles.filterTabTextActive]}
             >
               Unlocked ({unlockedCount})
             </Text>
@@ -168,12 +137,7 @@ export function AchievementsScreen(): React.ReactElement {
             accessibilityRole="tab"
             accessibilityState={{ selected: filter === 'locked' }}
           >
-            <Text
-              style={[
-                styles.filterTabText,
-                filter === 'locked' && styles.filterTabTextActive,
-              ]}
-            >
+            <Text style={[styles.filterTabText, filter === 'locked' && styles.filterTabTextActive]}>
               Locked ({totalCount - unlockedCount})
             </Text>
           </Pressable>
@@ -194,10 +158,7 @@ export function AchievementsScreen(): React.ReactElement {
         >
           <View style={styles.grid}>
             {filteredAchievements.map((achievement, index) => (
-              <Animated.View
-                key={achievement.key}
-                entering={FadeInUp.delay(300 + index * 50)}
-              >
+              <Animated.View key={achievement.key} entering={FadeInUp.delay(300 + index * 50)}>
                 <Pressable
                   onPress={() => handleAchievementPress(achievement)}
                   style={[
@@ -206,9 +167,7 @@ export function AchievementsScreen(): React.ReactElement {
                   ]}
                   accessibilityLabel={`${achievement.title}${
                     achievement.unlocked
-                      ? ` - Unlocked on ${new Date(
-                          achievement.unlockedAt!
-                        ).toLocaleDateString()}`
+                      ? ` - Unlocked on ${new Date(achievement.unlockedAt!).toLocaleDateString()}`
                       : ` - Locked - ${achievement.progressText}`
                   }`}
                   accessibilityRole="button"
@@ -267,8 +226,7 @@ export function AchievementsScreen(): React.ReactElement {
                       <Text
                         style={[
                           styles.achievementDescription,
-                          !achievement.unlocked &&
-                            styles.achievementDescriptionLocked,
+                          !achievement.unlocked && styles.achievementDescriptionLocked,
                         ]}
                         numberOfLines={2}
                       >
@@ -279,10 +237,11 @@ export function AchievementsScreen(): React.ReactElement {
                       {achievement.unlocked ? (
                         <Text style={styles.unlockedDate}>
                           Unlocked{' '}
-                          {new Date(achievement.unlockedAt!).toLocaleDateString(
-                            'en-US',
-                            { month: 'short', day: 'numeric', year: 'numeric' }
-                          )}
+                          {new Date(achievement.unlockedAt!).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
                         </Text>
                       ) : (
                         <>
@@ -303,9 +262,7 @@ export function AchievementsScreen(): React.ReactElement {
                               </View>
                             </View>
                           </View>
-                          <Text style={styles.progressText}>
-                            {achievement.progressText}
-                          </Text>
+                          <Text style={styles.progressText}>{achievement.progressText}</Text>
                         </>
                       )}
                     </View>
@@ -314,11 +271,7 @@ export function AchievementsScreen(): React.ReactElement {
                     {achievement.unlocked && (
                       <View style={styles.shineOverlay}>
                         <LinearGradient
-                          colors={[
-                            'transparent',
-                            'rgba(255,255,255,0.1)',
-                            'transparent',
-                          ]}
+                          colors={['transparent', 'rgba(255,255,255,0.1)', 'transparent']}
                           start={{ x: 0, y: 0 }}
                           end={{ x: 1, y: 1 }}
                           style={StyleSheet.absoluteFill}
@@ -333,15 +286,9 @@ export function AchievementsScreen(): React.ReactElement {
 
           {filteredAchievements.length === 0 && (
             <View style={styles.emptyContainer}>
-              <MaterialIcons
-                name="emoji-events"
-                size={64}
-                color={darkAccent.textMuted}
-              />
+              <MaterialIcons name="emoji-events" size={64} color={darkAccent.textMuted} />
               <Text style={styles.emptyText}>
-                {filter === 'unlocked'
-                  ? 'No achievements unlocked yet'
-                  : 'No locked achievements'}
+                {filter === 'unlocked' ? 'No achievements unlocked yet' : 'No locked achievements'}
               </Text>
               <Text style={styles.emptySubtext}>
                 {filter === 'unlocked'

@@ -1,6 +1,8 @@
 /**
  * Daily Reading Screen
- * Full-screen display of today's daily reading with reflection capability
+ * 
+ * Clean reading experience.
+ * Focus on the content.
  */
 
 import React, { useState } from 'react';
@@ -13,21 +15,17 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import Animated, { FadeInUp, FadeIn } from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { GlassCard } from '../../../design-system/components/GlassCard';
-import { GradientButton } from '../../../design-system/components/GradientButton';
-import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
+import { AnimatedCheckmark } from '../../../design-system/components';
 import { useReading } from '../../../hooks/useReading';
-import { logger } from '../../../utils/logger';
+import { ds } from '../../../design-system/tokens/ds';
 import type { HomeStackScreenProps } from '../../../navigation/types';
-
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 export function DailyReadingScreen(): React.ReactElement {
   const navigation = useNavigation<HomeStackScreenProps<'DailyReading'>['navigation']>();
@@ -41,265 +39,166 @@ export function DailyReadingScreen(): React.ReactElement {
     isLoading,
   } = useReading();
 
-  const [reflectionText, setReflectionText] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [showReflectionInput, setShowReflectionInput] = useState(false);
+  const [text, setText] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [showInput, setShowInput] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleReflect = (): void => {
-    if (!todayReading) return;
-
-    // Navigate to journal with pre-filled content
-    // Cross-tab navigation requires casting the route name
-    (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Journal', {
-      screen: 'JournalEditor',
-      params: {
-        mode: 'create',
-        initialTitle: `Reflection: ${todayReading.title}`,
-        initialContent: `Today's Reading: "${todayReading.title}"\n\n"${todayReading.content}"\n\nMy Reflection:\n`,
-        tags: ['JFT Reflection'],
-      },
-    });
-  };
-
-  const handleQuickReflection = (): void => {
-    setShowReflectionInput(true);
+  const handleReflect = () => {
+    setShowInput(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const handleSaveReflection = async (): Promise<void> => {
-    if (!reflectionText.trim()) return;
-
+  const handleSave = async () => {
+    if (!text.trim() || saving) return;
+    
     try {
-      setIsSaving(true);
-      await submitReflection(reflectionText);
+      setSaving(true);
+      await submitReflection(text);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      setShowReflectionInput(false);
-      setReflectionText('');
-    } catch (error) {
-      logger.error('Failed to save reflection', error);
+      setShowInput(false);
+      setText('');
+      setShowSuccess(true);
+    } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     } finally {
-      setIsSaving(false);
+      setSaving(false);
     }
   };
 
-  const handleBack = (): void => {
-    navigation.goBack();
+  const handleSuccessDone = () => {
+    setShowSuccess(false);
   };
 
   if (isLoading || !todayReading) {
     return (
       <View style={styles.container}>
-        <LinearGradient
-          colors={[darkAccent.background, '#0a0f1c', darkAccent.surface]}
-          style={StyleSheet.absoluteFill}
-        />
-        <SafeAreaView style={styles.safeArea}>
-          <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText} accessibilityRole="text">
-              Loading today's reading...
-            </Text>
-          </View>
-        </SafeAreaView>
+        <View style={styles.loading}>
+          <Text style={styles.loadingText}>Loading...</Text>
+        </View>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Background Gradient */}
-      <LinearGradient
-        colors={[darkAccent.background, '#0a0f1c', darkAccent.surface]}
-        style={StyleSheet.absoluteFill}
-      />
-
-      {/* Decorative glow */}
-      <View style={styles.glowOrb} pointerEvents="none" />
-
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        {/* Header */}
-        <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
-          <Pressable
-            style={styles.backButton}
-            onPress={handleBack}
-            accessibilityLabel="Go back"
-            accessibilityRole="button"
-            accessibilityHint="Returns to home screen"
-          >
-            <MaterialIcons name="arrow-back" size={24} color={darkAccent.text} accessible={false} />
-          </Pressable>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle} accessibilityRole="header">
-              Daily Reading
-            </Text>
-            <Text style={styles.headerSubtitle} accessibilityRole="text">
-              {formattedDate}
-            </Text>
-          </View>
-          {readingStreak > 0 && (
-            <View
-              style={styles.headerStreak}
-              accessibilityLabel={streakMessage}
-              accessibilityRole="text"
-            >
-              <MaterialIcons name="local-fire-department" size={16} color="#FBBF24" accessible={false} />
-              <Text style={styles.headerStreakText}>{readingStreak}</Text>
-            </View>
-          )}
-        </Animated.View>
-
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoid}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={100}
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <KeyboardAvoidingView 
+          style={styles.kav}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <AnimatedScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+          {/* Header */}
+          <View style={styles.header}>
+            <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
+              <Feather name="arrow-left" size={ds.sizes.iconLg} color={ds.colors.textSecondary} />
+            </Pressable>
+            
+            <Text style={styles.headerTitle}>Reading</Text>
+            
+            {readingStreak > 0 ? (
+              <View style={styles.streakBadge}>
+                <Feather name="zap" size={14} color={ds.palette.warmGold} />
+                <Text style={styles.streakText}>{readingStreak}</Text>
+              </View>
+            ) : (
+              <View style={{ width: ds.sizes.touchMin }} />
+            )}
+          </View>
+
+          <ScrollView 
+            style={styles.scroll}
+            contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
           >
-            {/* Reading Card */}
-            <Animated.View entering={FadeInUp.delay(100).duration(600)}>
-              <GlassCard intensity="medium" glow glowColor={darkAccent.primary} style={styles.readingCard}>
-                {/* Icon */}
-                <View style={styles.iconContainer}>
-                  <MaterialIcons name="auto-stories" size={32} color={darkAccent.primary} accessible={false} />
-                </View>
-
-                {/* Title */}
-                <Text style={styles.title} accessibilityRole="header">
-                  {todayReading.title}
-                </Text>
-
-                {/* Source */}
-                <Text style={styles.source} accessibilityRole="text">
-                  Just For Today
-                </Text>
-
-                {/* Divider */}
-                <View style={styles.divider} />
-
-                {/* Content */}
-                <Text style={styles.content} accessibilityRole="text">
-                  {todayReading.content}
-                </Text>
-
-                {/* Reflection Prompt */}
-                {todayReading.reflectionPrompt && (
-                  <View style={styles.promptCard}>
-                    <Text style={styles.promptLabel} accessibilityRole="text">
-                      💭 Reflection Prompt
-                    </Text>
-                    <Text style={styles.promptText} accessibilityRole="text">
-                      {todayReading.reflectionPrompt}
-                    </Text>
-                  </View>
-                )}
-              </GlassCard>
+            {/* Date */}
+            <Animated.View entering={FadeIn.duration(300)}>
+              <Text style={styles.date}>{formattedDate}</Text>
             </Animated.View>
 
-            {/* Quick Reflection Input */}
-            {showReflectionInput && !hasReflectedToday && (
-              <Animated.View entering={FadeInUp.duration(400)}>
-                <GlassCard intensity="light" style={styles.reflectionCard}>
-                  <Text style={styles.reflectionLabel} accessibilityRole="header">
-                    Your Reflection
-                  </Text>
-                  <TextInput
-                    style={styles.reflectionInput}
-                    value={reflectionText}
-                    onChangeText={setReflectionText}
-                    placeholder="Write your thoughts about today's reading..."
-                    placeholderTextColor={darkAccent.textSubtle}
-                    multiline
-                    numberOfLines={6}
-                    textAlignVertical="top"
-                    autoFocus
-                    accessibilityLabel="Reflection text input"
-                    accessibilityHint="Enter your thoughts about today's reading"
-                  />
-                  <View style={styles.reflectionActions}>
-                    <Pressable
-                      style={styles.cancelButton}
-                      onPress={() => setShowReflectionInput(false)}
-                      accessibilityLabel="Cancel reflection"
-                      accessibilityRole="button"
-                    >
-                      <Text style={styles.cancelButtonText}>Cancel</Text>
-                    </Pressable>
-                    <GradientButton
-                      title={isSaving ? 'Saving...' : 'Save'}
-                      onPress={handleSaveReflection}
-                      disabled={!reflectionText.trim() || isSaving}
-                      size="sm"
-                      accessibilityLabel="Save reflection"
-                      accessibilityRole="button"
-                    />
-                  </View>
-                </GlassCard>
-              </Animated.View>
-            )}
+            {/* Title */}
+            <Animated.View entering={FadeIn.delay(100).duration(400)}>
+              <Text style={styles.title}>{todayReading.title}</Text>
+            </Animated.View>
 
-            {/* Completion Message */}
-            {hasReflectedToday && (
-              <Animated.View entering={FadeInUp.duration(400)}>
-                <GlassCard intensity="light" style={styles.completionCard}>
-                  <MaterialIcons name="check-circle" size={32} color={darkAccent.success} accessible={false} />
-                  <Text style={styles.completionTitle} accessibilityRole="text">
-                    Reflection Complete
-                  </Text>
-                  <Text style={styles.completionText} accessibilityRole="text">
-                    {streakMessage}
-                  </Text>
-                </GlassCard>
-              </Animated.View>
-            )}
+            {/* Content */}
+            <Animated.View entering={FadeIn.delay(200).duration(500)} style={styles.readingContainer}>
+              <View style={styles.readingBar} />
+              <Text style={styles.reading}>{todayReading.content}</Text>
+            </Animated.View>
 
-            <View style={{ height: 40 }} />
-          </AnimatedScrollView>
-        </KeyboardAvoidingView>
+            {/* Source */}
+            <Animated.View entering={FadeIn.delay(300).duration(400)}>
+              <Text style={styles.source}>— Just For Today</Text>
+            </Animated.View>
 
-        {/* Bottom Actions */}
-        {!showReflectionInput && (
-          <Animated.View entering={FadeIn.delay(300)} style={styles.bottomActions}>
-            {!hasReflectedToday ? (
-              <>
-                <GradientButton
-                  title="Quick Reflection"
-                  icon={<MaterialIcons name="edit" size={20} color="#fff" accessible={false} />}
-                  onPress={handleQuickReflection}
-                  variant="primary"
-                  size="lg"
-                  style={styles.actionButton}
-                  accessibilityLabel="Write quick reflection"
-                  accessibilityRole="button"
+            {/* Reflection */}
+            {showInput ? (
+              <Animated.View entering={FadeInDown.duration(300)} style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Your reflection</Text>
+                <TextInput
+                  style={styles.input}
+                  value={text}
+                  onChangeText={setText}
+                  placeholder="What does this mean to you?"
+                  placeholderTextColor={ds.colors.textQuaternary}
+                  multiline
+                  autoFocus
+                  scrollEnabled={false}
+                  textAlignVertical="top"
                 />
-                <GradientButton
-                  title="Journal Entry"
-                  icon={<MaterialIcons name="book" size={20} color="#fff" accessible={false} />}
-                  onPress={handleReflect}
-                  variant="secondary"
-                  size="lg"
-                  style={styles.actionButton}
-                  accessibilityLabel="Create full journal entry"
-                  accessibilityRole="button"
-                />
-              </>
+                
+                <View style={styles.inputActions}>
+                  <Pressable onPress={() => setShowInput(false)} style={styles.cancelBtn}>
+                    <Text style={styles.cancelText}>Cancel</Text>
+                  </Pressable>
+                  
+                  <Pressable 
+                    onPress={handleSave}
+                    disabled={!text.trim() || saving}
+                    style={[styles.saveBtn, (!text.trim() || saving) && styles.saveBtnDisabled]}
+                  >
+                    <Text style={[styles.saveBtnText, (!text.trim() || saving) && styles.saveBtnTextDisabled]}>
+                      {saving ? 'Saving...' : 'Save'}
+                    </Text>
+                  </Pressable>
+                </View>
+              </Animated.View>
+            ) : hasReflectedToday ? (
+              <Animated.View entering={FadeIn.delay(400).duration(400)} style={styles.doneContainer}>
+                <Feather name="check-circle" size={ds.sizes.iconLg} color={ds.colors.success} />
+                <View style={styles.doneContent}>
+                  <Text style={styles.doneTitle}>Reflected</Text>
+                  <Text style={styles.doneSub}>{streakMessage}</Text>
+                </View>
+              </Animated.View>
             ) : (
-              <GradientButton
-                title="View in Journal"
-                icon={<MaterialIcons name="book" size={20} color="#fff" accessible={false} />}
-                onPress={() => (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Journal', { screen: 'JournalList' })}
-                variant="secondary"
-                size="lg"
-                style={styles.actionButton}
-                accessibilityLabel="View journal entries"
-                accessibilityRole="button"
-              />
+              <Animated.View entering={FadeInDown.delay(400).duration(400)}>
+                <Pressable style={styles.reflectBtn} onPress={handleReflect}>
+                  <Feather name="edit-3" size={ds.sizes.iconMd} color={ds.colors.bgPrimary} />
+                  <Text style={styles.reflectText}>Add reflection</Text>
+                </Pressable>
+              </Animated.View>
             )}
-          </Animated.View>
-        )}
+
+            <View style={{ height: ds.space[16] }} />
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
+
+      {/* Success Modal */}
+      <Modal visible={showSuccess} transparent animationType="fade">
+        <View style={styles.modalBg}>
+          <View style={styles.modalCard}>
+            <AnimatedCheckmark 
+              size={64} 
+              color={ds.colors.success} 
+              onAnimationComplete={handleSuccessDone} 
+            />
+            <Text style={styles.modalTitle}>Saved</Text>
+            <Text style={styles.modalSub}>{streakMessage}</Text>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -307,195 +206,222 @@ export function DailyReadingScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: ds.colors.bgPrimary,
   },
-  safeArea: {
+  safe: {
     flex: 1,
   },
-  glowOrb: {
-    position: 'absolute',
-    top: -100,
-    right: -100,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: darkAccent.primary,
-    opacity: 0.08,
-  },
-  loadingContainer: {
+  kav: {
     flex: 1,
-    alignItems: 'center',
+  },
+  loading: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
+    ...ds.typography.body,
+    color: ds.colors.textTertiary,
   },
+
+  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
-    gap: spacing[2],
+    justifyContent: 'space-between',
+    height: ds.sizes.headerHeight,
+    paddingHorizontal: ds.sizes.contentPadding,
+    borderBottomWidth: 1,
+    borderBottomColor: ds.colors.divider,
   },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    alignItems: 'center',
+  headerBtn: {
+    width: ds.sizes.touchMin,
+    height: ds.sizes.touchMin,
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  headerCenter: {
-    flex: 1,
+    alignItems: 'center',
+    marginLeft: -ds.space[2],
   },
   headerTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
+    ...ds.typography.body,
+    fontWeight: ds.fontWeight.semibold,
+    color: ds.colors.textPrimary,
   },
-  headerSubtitle: {
-    fontSize: 13,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  headerStreak: {
+  streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(251, 191, 36, 0.15)',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: radius.full,
+    backgroundColor: ds.palette.warmGoldMuted,
+    paddingHorizontal: ds.space[3],
+    paddingVertical: ds.space[1],
+    borderRadius: ds.radius.full,
+    gap: ds.space[1],
   },
-  headerStreakText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#FBBF24',
+  streakText: {
+    ...ds.typography.caption,
+    fontWeight: ds.fontWeight.bold,
+    color: ds.palette.warmGold,
   },
-  keyboardAvoid: {
+
+  // Content
+  scroll: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
+  content: {
+    paddingHorizontal: ds.sizes.contentPadding,
+    paddingTop: ds.space[6],
   },
-  scrollContent: {
-    padding: spacing[3],
-    gap: spacing[3],
+
+  date: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginBottom: ds.space[3],
   },
-  readingCard: {
-    padding: spacing[4],
-  },
-  iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: radius.xl,
-    backgroundColor: 'rgba(99, 102, 241, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing[3],
-  },
+
   title: {
-    ...typography.h2,
-    color: darkAccent.text,
-    marginBottom: spacing[1],
+    ...ds.typography.h1,
+    color: ds.colors.textPrimary,
+    marginBottom: ds.space[8],
   },
+
+  readingContainer: {
+    flexDirection: 'row',
+    marginBottom: ds.space[6],
+  },
+  readingBar: {
+    width: 3,
+    backgroundColor: ds.palette.calmBlue,
+    borderRadius: 2,
+    marginRight: ds.space[4],
+  },
+  reading: {
+    flex: 1,
+    ...ds.typography.body,
+    fontSize: 19,
+    lineHeight: 32,
+    color: ds.colors.textPrimary,
+  },
+
   source: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: darkAccent.textMuted,
+    ...ds.typography.bodySm,
+    color: ds.colors.textTertiary,
+    fontStyle: 'italic',
+    marginBottom: ds.space[10],
+  },
+
+  // Input
+  inputContainer: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    padding: ds.space[5],
+  },
+  inputLabel: {
+    ...ds.typography.caption,
+    color: ds.colors.textSecondary,
+    marginBottom: ds.space[3],
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-  divider: {
-    height: 1,
-    backgroundColor: darkAccent.border,
-    marginVertical: spacing[3],
+  input: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+    minHeight: 100,
   },
-  content: {
-    ...typography.body,
-    fontSize: 18,
-    lineHeight: 28,
-    color: darkAccent.text,
-    marginBottom: spacing[3],
-  },
-  promptCard: {
-    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-    borderRadius: radius.lg,
-    padding: spacing[3],
-    borderWidth: 1,
-    borderColor: 'rgba(99, 102, 241, 0.2)',
-  },
-  promptLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: darkAccent.primary,
-    marginBottom: spacing[1],
-  },
-  promptText: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: darkAccent.text,
-    fontStyle: 'italic',
-  },
-  reflectionCard: {
-    padding: spacing[3],
-  },
-  reflectionLabel: {
-    ...typography.h4,
-    color: darkAccent.text,
-    marginBottom: spacing[2],
-  },
-  reflectionInput: {
-    ...typography.body,
-    color: darkAccent.text,
-    backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: radius.lg,
-    padding: spacing[3],
-    minHeight: 150,
-    borderWidth: 1,
-    borderColor: darkAccent.border,
-  },
-  reflectionActions: {
+  inputActions: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: spacing[2],
-    marginTop: spacing[2],
+    gap: ds.space[3],
+    marginTop: ds.space[4],
+    paddingTop: ds.space[4],
+    borderTopWidth: 1,
+    borderTopColor: ds.colors.divider,
   },
-  cancelButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+  cancelBtn: {
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[3],
   },
-  cancelButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: darkAccent.text,
+  cancelText: {
+    ...ds.typography.bodySm,
+    color: ds.colors.textSecondary,
   },
-  completionCard: {
-    padding: spacing[4],
+  saveBtn: {
+    paddingHorizontal: ds.space[5],
+    paddingVertical: ds.space[3],
+    backgroundColor: ds.colors.accent,
+    borderRadius: ds.radius.sm,
+  },
+  saveBtnDisabled: {
+    backgroundColor: ds.colors.bgQuaternary,
+  },
+  saveBtnText: {
+    ...ds.typography.bodySm,
+    fontWeight: ds.fontWeight.semibold,
+    color: ds.colors.bgPrimary,
+  },
+  saveBtnTextDisabled: {
+    color: ds.colors.textQuaternary,
+  },
+
+  // Done state
+  doneContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: ds.colors.successMuted,
+    borderRadius: ds.radius.md,
+    padding: ds.space[4],
+    gap: ds.space[3],
+  },
+  doneContent: {
+    flex: 1,
+  },
+  doneTitle: {
+    ...ds.typography.body,
+    fontWeight: ds.fontWeight.semibold,
+    color: ds.colors.success,
+  },
+  doneSub: {
+    ...ds.typography.caption,
+    color: ds.colors.textSecondary,
+    marginTop: 2,
+  },
+
+  // Reflect button
+  reflectBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: ds.colors.accent,
+    paddingVertical: ds.space[4],
+    borderRadius: ds.radius.md,
+    gap: ds.space[2],
+  },
+  reflectText: {
+    ...ds.typography.body,
+    fontWeight: ds.fontWeight.semibold,
+    color: ds.colors.bgPrimary,
+  },
+
+  // Modal
+  modalBg: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  completionTitle: {
-    ...typography.h3,
-    color: darkAccent.success,
-    marginTop: spacing[2],
+  modalCard: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.xl,
+    paddingVertical: ds.space[12],
+    paddingHorizontal: ds.space[10],
+    alignItems: 'center',
+    minWidth: 240,
   },
-  completionText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginTop: spacing[1],
+  modalTitle: {
+    ...ds.typography.h2,
+    color: ds.colors.textPrimary,
+    marginTop: ds.space[6],
   },
-  bottomActions: {
-    padding: spacing[3],
-    gap: spacing[2],
-    borderTopWidth: 1,
-    borderTopColor: darkAccent.border,
-  },
-  actionButton: {
-    width: '100%',
+  modalSub: {
+    ...ds.typography.body,
+    color: ds.colors.textSecondary,
+    marginTop: ds.space[2],
   },
 });

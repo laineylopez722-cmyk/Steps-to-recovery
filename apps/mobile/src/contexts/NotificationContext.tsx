@@ -201,7 +201,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       checkPermissionStatus,
       notificationsEnabled,
       setNotificationsEnabled,
-    ]
+    ],
   );
 
   return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;

@@ -3,7 +3,6 @@
  * Semantic text component that uses design system typography
  */
 
-import React from 'react';
 import { Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import type { TypographyStyle } from '../tokens/typography';

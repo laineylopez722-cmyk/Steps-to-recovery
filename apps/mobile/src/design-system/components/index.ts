@@ -8,7 +8,7 @@ export type { BadgeProps } from './Badge';
 export { Button } from './Button';
 export type { ButtonProps } from './Button';
 
-export { Card } from './Card';
+// Card is exported from GlassCard below as 'Card'
 export type { CardProps } from './Card';
 
 export { FloatingActionButton } from './FloatingActionButton';
@@ -25,6 +25,9 @@ export type { ToggleProps } from './Toggle';
 
 export { SobrietyCounter } from './SobrietyCounter';
 export type { SobrietyCounterProps, Milestone } from './SobrietyCounter';
+
+export { SobrietyCandle } from './SobrietyCandle';
+export type { SobrietyCandleProps } from './SobrietyCandle';
 
 export { Modal } from './Modal';
 export type { ModalProps, ModalAction, ModalVariant } from './Modal';
@@ -72,6 +75,7 @@ export type { BreathingCircleProps } from './BreathingCircle';
 export {
   Skeleton,
   SkeletonCard,
+  SkeletonList,
   SkeletonListItem,
   SkeletonStats,
   SkeletonHome,
@@ -80,8 +84,8 @@ export {
 export type { SkeletonProps } from './Skeleton';
 
 // Modern 2025 Components
-export { GlassCard } from './GlassCard';
-export type { GlassCardProps } from './GlassCard';
+export { GlassCard, GlassCard as Card } from './GlassCard';
+export type { GlassCardProps, GradientType } from './GlassCard';
 
 export { GradientButton } from './GradientButton';
 export type { GradientButtonProps } from './GradientButton';
@@ -103,12 +107,17 @@ export {
   BouncingBadge,
 } from './MicroInteractions';
 
-export { ThemeToggle, AnimatedThemeProvider } from './ThemeToggle';
+export { ThemeToggle, CompactThemeToggle } from './ThemeToggle';
 
 export { AsyncImage, Avatar, ZoomableImage } from './AsyncImage';
 export type { AsyncImageProps, AvatarProps, ZoomableImageProps } from './AsyncImage';
 
-export { SearchExperience, FilterChip, SearchResultsHeader, HighlightedText } from './SearchExperience';
+export {
+  SearchExperience,
+  FilterChip,
+  SearchResultsHeader,
+  HighlightedText,
+} from './SearchExperience';
 
 export {
   ScreenReaderText,
@@ -124,3 +133,28 @@ export {
   announce,
   isScreenReaderEnabled,
 } from './AccessibilityHelpers';
+
+// Themed Components (Organic Calming + Dark Luxury)
+export { AmberButton } from './AmberButton';
+export type { AmberButtonProps } from './AmberButton';
+
+export { TealCard } from './TealCard';
+export type { TealCardProps } from './TealCard';
+
+export { SageCard } from './SageCard';
+export type { SageCardProps } from './SageCard';
+
+export { LavenderCard } from './LavenderCard';
+export type { LavenderCardProps } from './LavenderCard';
+
+export { GoldButton } from './GoldButton';
+export type { GoldButtonProps } from './GoldButton';
+
+// Illustration System
+export {
+  Illustration,
+  OnboardingIllustration,
+  BadgeIllustration,
+  EmptyStateIllustration,
+} from './Illustration';
+export type { IllustrationProps } from './Illustration';

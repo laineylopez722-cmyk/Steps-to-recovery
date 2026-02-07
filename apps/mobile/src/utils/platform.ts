@@ -2,18 +2,18 @@ import { Platform, Dimensions, PixelRatio, StatusBar } from 'react-native';
 
 /**
  * Platform-Specific Utilities
- * 
+ *
  * Provides consistent patterns for handling platform differences:
  * - iOS vs Android specific code
  * - Device type detection (phone, tablet, TV)
  * - Screen dimensions and safe areas
  * - Platform-specific styling helpers
  * - Feature detection
- * 
+ *
  * @example
  * ```tsx
  * import { isIOS, isAndroid, isTablet, platformSelect } from './utils/platform';
- * 
+ *
  * const shadowStyle = platformSelect({
  *   ios: { shadowColor: '#000', shadowOpacity: 0.2 },
  *   android: { elevation: 4 },
@@ -120,16 +120,18 @@ export function normalize(size: number, factor: number = 0.5): number {
 
 // Safe area insets (for notched devices)
 export const safeAreaInsets = {
-  top: platformSelect({
-    ios: hasNotch ? 44 : 20,
-    android: StatusBar.currentHeight || 0,
-    default: 0,
-  }) || 0,
-  bottom: platformSelect({
-    ios: hasNotch ? 34 : 0,
-    android: 0,
-    default: 0,
-  }) || 0,
+  top:
+    platformSelect({
+      ios: hasNotch ? 44 : 20,
+      android: StatusBar.currentHeight || 0,
+      default: 0,
+    }) || 0,
+  bottom:
+    platformSelect({
+      ios: hasNotch ? 34 : 0,
+      android: 0,
+      default: 0,
+    }) || 0,
   left: 0,
   right: 0,
 };
@@ -398,7 +400,7 @@ export const keyboard = {
   /**
    * Behavior for KeyboardAvoidingView
    */
-  avoidingViewBehavior: platformSelect<"padding" | "height" | "position">({
+  avoidingViewBehavior: platformSelect<'padding' | 'height' | 'position'>({
     ios: 'padding',
     android: undefined, // Height on Android
     default: 'padding',

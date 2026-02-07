@@ -1,6 +1,6 @@
 /**
  * Meeting Reflection Service
- * 
+ *
  * Manages pre-meeting intentions and post-meeting reflections.
  * Helps users maximize value from meeting attendance.
  */
@@ -16,18 +16,18 @@ export interface MeetingReflection {
   id: string;
   user_id: string;
   checkin_id: string; // Links to meeting_checkins table
-  
+
   // Pre-meeting
   pre_intention?: string;
   pre_mood?: number; // 1-5
   pre_hope?: string; // What are you hoping for?
-  
+
   // Post-meeting
   post_key_takeaway?: string;
   post_mood?: number; // 1-5
   post_gratitude?: string;
   post_will_apply?: string; // What will you apply?
-  
+
   created_at: string;
   updated_at: string;
 }
@@ -55,20 +55,18 @@ export interface PostMeetingPrompts {
 export async function savePreMeetingReflection(
   userId: string,
   checkinId: string,
-  prompts: PreMeetingPrompts
+  prompts: PreMeetingPrompts,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
-      .from('meeting_reflections')
-      .insert({
-        user_id: userId,
-        checkin_id: checkinId,
-        pre_intention: prompts.intention,
-        pre_mood: prompts.mood,
-        pre_hope: prompts.hope,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
+    const { error } = await supabase.from('meeting_reflections').insert({
+      user_id: userId,
+      checkin_id: checkinId,
+      pre_intention: prompts.intention,
+      pre_mood: prompts.mood,
+      pre_hope: prompts.hope,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    });
 
     if (error) {
       logger.error('Meeting reflection: Pre-meeting save failed', { error });
@@ -93,7 +91,7 @@ export async function savePreMeetingReflection(
 export async function savePostMeetingReflection(
   userId: string,
   checkinId: string,
-  prompts: PostMeetingPrompts
+  prompts: PostMeetingPrompts,
 ): Promise<{ success: boolean; error?: string }> {
   try {
     const { error } = await supabase
@@ -130,7 +128,7 @@ export async function savePostMeetingReflection(
  */
 export async function getReflectionForCheckin(
   userId: string,
-  checkinId: string
+  checkinId: string,
 ): Promise<MeetingReflection | null> {
   try {
     const { data, error } = await supabase
@@ -155,9 +153,7 @@ export async function getReflectionForCheckin(
 /**
  * Get all reflections for user
  */
-export async function getAllReflections(
-  userId: string
-): Promise<MeetingReflection[]> {
+export async function getAllReflections(userId: string): Promise<MeetingReflection[]> {
   try {
     const { data, error } = await supabase
       .from('meeting_reflections')
@@ -180,10 +176,7 @@ export async function getAllReflections(
 /**
  * Check if reflection exists for check-in
  */
-export async function hasReflection(
-  userId: string,
-  checkinId: string
-): Promise<boolean> {
+export async function hasReflection(userId: string, checkinId: string): Promise<boolean> {
   const reflection = await getReflectionForCheckin(userId, checkinId);
   return reflection !== null;
 }
@@ -206,10 +199,10 @@ export function calculateMoodLift(reflection: MeetingReflection): number | null 
  * Pre-meeting intention prompts (random)
  */
 const PRE_INTENTION_PROMPTS = [
-  "What do you hope to get from this meeting?",
+  'What do you hope to get from this meeting?',
   "What's on your mind as you arrive?",
-  "What intention are you setting for this meeting?",
-  "What would make this meeting valuable for you?",
+  'What intention are you setting for this meeting?',
+  'What would make this meeting valuable for you?',
 ];
 
 /**
@@ -217,25 +210,21 @@ const PRE_INTENTION_PROMPTS = [
  */
 const POST_TAKEAWAY_PROMPTS = [
   "What's one thing you'll remember from today?",
-  "What resonated most with you?",
-  "What was your biggest takeaway?",
-  "What spoke to you today?",
+  'What resonated most with you?',
+  'What was your biggest takeaway?',
+  'What spoke to you today?',
 ];
 
 /**
  * Get random pre-meeting prompt
  */
 export function getRandomPrePrompt(): string {
-  return PRE_INTENTION_PROMPTS[
-    Math.floor(Math.random() * PRE_INTENTION_PROMPTS.length)
-  ];
+  return PRE_INTENTION_PROMPTS[Math.floor(Math.random() * PRE_INTENTION_PROMPTS.length)];
 }
 
 /**
  * Get random post-meeting prompt
  */
 export function getRandomPostPrompt(): string {
-  return POST_TAKEAWAY_PROMPTS[
-    Math.floor(Math.random() * POST_TAKEAWAY_PROMPTS.length)
-  ];
+  return POST_TAKEAWAY_PROMPTS[Math.floor(Math.random() * POST_TAKEAWAY_PROMPTS.length)];
 }

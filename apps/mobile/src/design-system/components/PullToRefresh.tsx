@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, type RefreshControlProps } from 'react-native';
+import { View, StyleSheet, type RefreshControlProps, type ViewStyle } from 'react-native';
 import Animated, {
   type SharedValue,
+  type AnimatedProps,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolate,
-  Extrapolate,
-} from 'react-native-reanimated';
+  Extrapolation,
+  } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius } from '../tokens/modern';
 
@@ -23,7 +24,6 @@ export function PullToRefresh({
   scrollY,
 }: PullToRefreshProps): React.ReactElement {
   const rotation = useSharedValue(0);
-  const _scale = useSharedValue(1);
 
   useEffect(() => {
     if (refreshing) {
@@ -36,36 +36,17 @@ export function PullToRefresh({
   const containerStyle = useAnimatedStyle(() => {
     const pullDistance = Math.max(0, -scrollY.value);
     const progress = Math.min(pullDistance / 100, 1);
-    
+
     return {
-      opacity: interpolate(
-        progress,
-        [0, 0.5, 1],
-        [0, 0.5, 1],
-        Extrapolate.CLAMP
-      ),
-      transform: [
-        {
-          translateY: interpolate(
-            progress,
-            [0, 1],
-            [-50, 20],
-            Extrapolate.CLAMP
-          ),
-        },
-        { scale: interpolate(progress, [0, 1], [0.5, 1]) },
-      ],
-    };
+      opacity: interpolate(progress, [0, 0.5, 1], [0, 0.5, 1], Extrapolation.CLAMP as Extrapolation),
+      transform: [{ translateY: interpolate(progress, [0, 1], [-50, 20], Extrapolation.CLAMP as Extrapolation) }, { scale: interpolate(progress, [0, 1], [0.5, 1], Extrapolation.CLAMP as Extrapolation) }],
+    } as ViewStyle & AnimatedProps<ViewStyle>;
   });
 
   const iconStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        rotate: `${interpolate(
-          rotation.value,
-          [0, 360],
-          [0, 360]
-        )}deg`,
+        rotate: `${interpolate(rotation.value, [0, 360], [0, 360])}deg`,
       },
     ],
   }));

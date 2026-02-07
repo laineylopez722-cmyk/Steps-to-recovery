@@ -20,6 +20,8 @@ export function RootNavigator() {
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [checkingProfile, setCheckingProfile] = useState(true);
   const instanceIdRef = useRef<number | null>(null);
+  const hasCheckedProfileRef = useRef(false);
+  
   if (instanceIdRef.current === null) {
     instanceIdRef.current = navigatorInstanceCounter++;
   }
@@ -85,35 +87,65 @@ export function RootNavigator() {
   }, [user, authLoading, needsOnboarding, checkingProfile, authInitialized, instanceId]);
 
   const checkOnboardingStatus = useCallback(async () => {
+    // Prevent multiple checks
+    if (hasCheckedProfileRef.current) {
+      return;
+    }
+    
     if (!user) {
       setCheckingProfile(false);
       return;
     }
 
+    hasCheckedProfileRef.current = true;
+    
     const timeoutId = setTimeout(() => {
-      logger.warn('Onboarding profile check timed out, falling back to onboarding');
-      setNeedsOnboarding(true);
+      logger.warn('Onboarding profile check timed out, skipping onboarding');
+      setNeedsOnboarding(false); // Skip onboarding on timeout
       setCheckingProfile(false);
     }, 8000);
 
     try {
-      // Check if user has completed onboarding by querying profiles table
+      // First check local storage (fallback for when Supabase table doesn't exist)
+      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+      const localComplete = await AsyncStorage.getItem(`onboarding_complete_${user.id}`);
+      
+      if (localComplete === 'true') {
+        logger.info('Onboarding already completed (from local storage)');
+        setNeedsOnboarding(false);
+        clearTimeout(timeoutId);
+        setCheckingProfile(false);
+        return;
+      }
+
+      // Then try Supabase profiles table
       const { data, error } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', user.id)
         .single();
 
-      if (error || !data) {
-        // No profile found, needs onboarding
-        setNeedsOnboarding(true);
-      } else {
-        // Profile exists, skip onboarding
+      if (error) {
+        // Table might not exist - check error code
+        if (error.code === 'PGRST205' || error.message?.includes('not find')) {
+          logger.warn('Profiles table does not exist in Supabase, checking local only');
+          // No local completion found either, needs onboarding
+          setNeedsOnboarding(true);
+        } else if (error.code === 'PGRST116') {
+          // No rows returned - profile doesn't exist
+          setNeedsOnboarding(true);
+        } else {
+          logger.error('Error checking profile', error);
+          setNeedsOnboarding(true);
+        }
+      } else if (data) {
+        // Profile exists in Supabase
         setNeedsOnboarding(false);
+      } else {
+        setNeedsOnboarding(true);
       }
     } catch (error) {
-      // On error, assume needs onboarding
-      logger.error('Error checking profile', error);
+      logger.error('Error checking onboarding status', error);
       setNeedsOnboarding(true);
     } finally {
       clearTimeout(timeoutId);
@@ -165,7 +197,9 @@ export function RootNavigator() {
             options={{ animationTypeForReplace: 'pop' }}
           />
         ) : needsOnboarding ? (
-          <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+          <Stack.Screen name="Onboarding">
+            {() => <OnboardingScreen onComplete={() => setNeedsOnboarding(false)} />}
+          </Stack.Screen>
         ) : (
           <Stack.Screen name="MainApp" component={MainNavigator} />
         )}

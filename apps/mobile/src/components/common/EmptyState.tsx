@@ -143,4 +143,3 @@ export const EMPTY_STATES = {
     actionLabel: 'Start Practice',
   },
 } as const;
-

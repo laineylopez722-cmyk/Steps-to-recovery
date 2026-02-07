@@ -68,11 +68,7 @@ export function SharedEntryCard({
         accessibilityLabel={`Shared entry: ${entry.title || 'Untitled'}`}
         accessibilityHint="Tap to view full entry details"
       >
-        <GlassCard
-          intensity="medium"
-          style={styles.card}
-          pressable
-        >
+        <GlassCard intensity="medium" style={styles.card} pressable>
           {/* Header Row */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
@@ -93,11 +89,7 @@ export function SharedEntryCard({
           <View style={styles.footer}>
             {entry.mood && (
               <View style={styles.moodChip}>
-                <MaterialIcons
-                  name="mood"
-                  size={14}
-                  color={getMoodColor(entry.mood)}
-                />
+                <MaterialIcons name="mood" size={14} color={getMoodColor(entry.mood)} />
                 <Text style={[styles.moodText, { color: getMoodColor(entry.mood) }]}>
                   {getMoodLabel(entry.mood)}
                 </Text>
