@@ -5,8 +5,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Linking, Modal } from 'react-native';
-import { Heart, Phone } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, Linking, Modal, Animated } from 'react-native';
+import { Heart, Phone, X } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
 import { Icon } from '@/components/ui/Icon';
 
 interface CrisisOverlayProps {
@@ -26,23 +27,33 @@ export function CrisisOverlay({
 }: CrisisOverlayProps) {
   const [canDismiss, setCanDismiss] = useState(false);
 
-  // Prevent panic dismissal - require 5 second wait
+  // Prevent panic dismissal - require 3 second wait
   useEffect(() => {
     if (visible) {
+      // Strong haptic to get attention
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+      
       setCanDismiss(false);
-      const timer = setTimeout(() => setCanDismiss(true), 5000);
+      const timer = setTimeout(() => setCanDismiss(true), 3000);
       return () => clearTimeout(timer);
     }
   }, [visible]);
 
   const callSponsor = () => {
     if (sponsorPhone) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
       Linking.openURL(`tel:${sponsorPhone}`);
     }
   };
 
   const callHotline = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
     Linking.openURL('tel:988'); // Suicide & Crisis Lifeline (US)
+  };
+
+  const handleDismiss = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    onDismiss();
   };
 
   return (
@@ -95,15 +106,15 @@ export function CrisisOverlay({
 
           {/* Dismiss */}
           <TouchableOpacity
-            onPress={onDismiss}
+            onPress={handleDismiss}
             disabled={!canDismiss}
             className={`py-3 ${canDismiss ? 'opacity-100' : 'opacity-30'}`}
             accessibilityRole="button"
             accessibilityLabel={canDismiss ? "I'm okay, dismiss" : 'Please wait'}
             accessibilityState={{ disabled: !canDismiss }}
           >
-            <Text className="text-gray-500 text-center">
-              {canDismiss ? "I'm okay, thanks" : 'Please wait...'}
+            <Text className="text-gray-500 text-center text-base">
+              {canDismiss ? "I'm okay, thanks" : 'Take a breath...'}
             </Text>
           </TouchableOpacity>
         </View>

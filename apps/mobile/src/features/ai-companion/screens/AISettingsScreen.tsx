@@ -3,7 +3,7 @@
  * Configure API key for AI companion.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -12,10 +12,13 @@ import {
   Alert,
   ScrollView,
   Linking,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, Eye, EyeOff, ExternalLink, Check, X } from 'lucide-react-native';
+import { ChevronLeft, Eye, EyeOff, ExternalLink, Check, Shield } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+import { Icon } from '../../../components/ui/Icon';
 import { getAIService } from '../services/aiService';
 
 export function AISettingsScreen() {
@@ -43,9 +46,10 @@ export function AISettingsScreen() {
     }
   };
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!apiKey.trim()) {
-      Alert.alert('Error', 'Please enter an API key');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      Alert.alert('Missing Key', 'Please enter an API key');
       return;
     }
 
@@ -56,33 +60,37 @@ export function AISettingsScreen() {
       setIsConfigured(true);
       setProvider(service.getProvider());
       setApiKey('');
-      Alert.alert('Success', 'API key saved successfully');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      Alert.alert('All Set! ✓', 'Your AI companion is ready to chat.');
     } catch (err) {
-      Alert.alert('Error', 'Failed to save API key');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      Alert.alert('Error', 'Failed to save API key. Please try again.');
     } finally {
       setIsSaving(false);
     }
-  };
+  }, [apiKey]);
 
-  const handleClear = async () => {
+  const handleClear = useCallback(async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     Alert.alert(
-      'Clear API Key',
-      'Are you sure you want to remove your API key? The AI companion will stop working.',
+      'Remove API Key?',
+      'The AI companion will stop working until you add a new key.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Clear',
+          text: 'Remove',
           style: 'destructive',
           onPress: async () => {
             const service = await getAIService();
             await service.clearApiKey();
             setIsConfigured(false);
             setProvider(null);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
           },
         },
       ]
     );
-  };
+  }, []);
 
   const openProviderSite = (url: string) => {
     Linking.openURL(url);
@@ -92,10 +100,15 @@ export function AISettingsScreen() {
     <SafeAreaView className="flex-1 bg-black">
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 border-b border-gray-800">
-        <TouchableOpacity onPress={() => navigation.goBack()} className="mr-3">
-          <ChevronLeft size={24} color="#fff" />
-        </TouchableOpacity>
-        <Text className="text-xl font-bold text-white">AI Companion Settings</Text>
+        <Pressable 
+          onPress={() => navigation.goBack()} 
+          className="mr-3 p-1"
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Icon as={ChevronLeft} size={24} className="text-white" />
+        </Pressable>
+        <Text className="text-xl font-bold text-white">AI Settings</Text>
       </View>
 
       <ScrollView className="flex-1 px-4 py-6">
@@ -216,13 +229,18 @@ export function AISettingsScreen() {
         </View>
 
         {/* Privacy Note */}
-        <View className="mt-8 p-4 bg-gray-900/50 rounded-xl">
-          <Text className="text-gray-400 text-sm leading-5">
-            💡 Your conversations are encrypted on your device. The AI provider only
-            sees your messages during the conversation - they don't store them.
-            Your API key stays on your phone.
-          </Text>
+        <View className="mt-8 p-4 bg-gray-900/50 rounded-xl flex-row">
+          <Icon as={Shield} size={20} className="text-green-500 mr-3 mt-0.5" />
+          <View className="flex-1">
+            <Text className="text-white font-medium mb-1">Privacy First</Text>
+            <Text className="text-gray-400 text-sm leading-5">
+              Your conversations are encrypted on-device. Your API key never leaves your phone.
+              The AI provider only sees messages during the chat — nothing is stored.
+            </Text>
+          </View>
         </View>
+
+        <View className="h-8" />
       </ScrollView>
     </SafeAreaView>
   );

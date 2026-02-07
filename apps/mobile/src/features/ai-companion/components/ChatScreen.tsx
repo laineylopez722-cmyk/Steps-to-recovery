@@ -148,9 +148,19 @@ export function ChatScreen({ userId }: ChatScreenProps) {
 
         {/* Error message */}
         {error && (
-          <View className="px-4 py-2 bg-red-900/50">
-            <Text className="text-red-300 text-sm">{error}</Text>
-          </View>
+          <Pressable 
+            onPress={() => {/* Could add retry here */}}
+            className="mx-4 mt-2 px-4 py-3 bg-red-950/50 rounded-xl border border-red-900/50"
+          >
+            <Text className="text-red-300 text-sm">
+              {error.includes('API key') || error.includes('configured')
+                ? '⚙️ Tap the settings icon to add your API key'
+                : error.includes('limit')
+                ? '⏳ Daily limit reached. Try again tomorrow or add your own API key.'
+                : `Something went wrong. ${error}`
+              }
+            </Text>
+          </Pressable>
         )}
 
         {/* Messages */}
@@ -167,14 +177,29 @@ export function ChatScreen({ userId }: ChatScreenProps) {
           accessibilityLabel="Chat messages"
           ListEmptyComponent={
             <View className="flex-1 justify-center items-center px-8">
-              <Text className="text-4xl mb-4">💬</Text>
-              <Text className="text-xl text-white text-center font-semibold mb-2">
-                Hey
-              </Text>
-              <Text className="text-gray-400 text-center text-base leading-6">
-                I don't know your story yet, but I'm here for it.{'\n'}
-                No pressure — just say what's on your mind.
-              </Text>
+              {isLoading || isStreaming ? (
+                // Loading state - waiting for welcome message
+                <View className="items-center">
+                  <Text className="text-4xl mb-4">💭</Text>
+                  <Text className="text-gray-500 text-center">
+                    {isStreaming ? '' : 'Starting conversation...'}
+                  </Text>
+                </View>
+              ) : (
+                // Empty state
+                <>
+                  <Text className="text-4xl mb-4">💬</Text>
+                  <Text className="text-xl text-white text-center font-semibold mb-2">
+                    {soberDays && soberDays > 0 
+                      ? `Day ${soberDays}. How you doing?` 
+                      : 'Hey there'}
+                  </Text>
+                  <Text className="text-gray-400 text-center text-base leading-6">
+                    I'm here to listen, not judge.{'\n'}
+                    Say whatever's on your mind.
+                  </Text>
+                </>
+              )}
             </View>
           }
         />

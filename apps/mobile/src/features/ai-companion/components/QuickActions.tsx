@@ -4,8 +4,9 @@
  * Shows different suggestions based on time of day.
  */
 
-import React, { useMemo } from 'react';
-import { ScrollView, TouchableOpacity, Text } from 'react-native';
+import React, { useMemo, useCallback } from 'react';
+import { ScrollView, TouchableOpacity, Text, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
 
 interface QuickAction {
   id: string;
@@ -114,31 +115,44 @@ export function QuickActions({ onSelect, disabled }: QuickActionsProps) {
   // Get time-based actions (memoized to avoid recalculating on every render)
   const actions = useMemo(() => getTimeBasedActions(), []);
 
+  const handleSelect = useCallback((message: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    onSelect(message);
+  }, [onSelect]);
+
   return (
-    <ScrollView
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      className="py-2 px-2"
-      contentContainerStyle={{ paddingHorizontal: 8 }}
-      accessibilityRole="list"
-      accessibilityLabel="Quick actions"
-    >
-      {actions.map((action) => (
-        <TouchableOpacity
-          key={action.id}
-          onPress={() => onSelect(action.message)}
-          disabled={disabled}
-          className={`
-            px-4 py-2 rounded-full mr-2 border
-            ${disabled ? 'border-gray-700 opacity-50' : 'border-gray-600 active:bg-gray-800'}
-          `}
-          accessibilityRole="button"
-          accessibilityLabel={action.label}
-          accessibilityState={{ disabled }}
-        >
-          <Text className="text-gray-300 text-sm">{action.label}</Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
+    <View className="border-t border-gray-800/50">
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="py-3"
+        contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
+        accessibilityRole="list"
+        accessibilityLabel="Quick actions"
+      >
+        {actions.map((action) => (
+          <TouchableOpacity
+            key={action.id}
+            onPress={() => handleSelect(action.message)}
+            disabled={disabled}
+            activeOpacity={0.7}
+            className={`
+              px-4 py-2.5 rounded-full border
+              ${disabled 
+                ? 'border-gray-800 opacity-40' 
+                : 'border-gray-700 bg-gray-900/50 active:bg-gray-800'
+              }
+            `}
+            accessibilityRole="button"
+            accessibilityLabel={action.label}
+            accessibilityState={{ disabled }}
+          >
+            <Text className={`text-sm ${disabled ? 'text-gray-600' : 'text-gray-300'}`}>
+              {action.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+    </View>
   );
 }
