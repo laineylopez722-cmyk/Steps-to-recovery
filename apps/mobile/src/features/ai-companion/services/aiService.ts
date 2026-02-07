@@ -1,13 +1,18 @@
 /**
  * AI Service
  * Abstraction layer for AI providers (OpenAI, Anthropic).
- * Supports streaming responses.
+ * Supports streaming responses and proxy mode for free tier.
  */
 
 import { secureStorage } from '../../../adapters/secureStorage';
+import { supabase } from '../../../lib/supabase';
 
 const API_KEY_STORAGE_KEY = 'ai_companion_api_key';
 const PROVIDER_STORAGE_KEY = 'ai_companion_provider';
+
+// Set to true once the Edge Function is deployed
+const PROXY_ENABLED = false;
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -142,7 +147,7 @@ export class AIServiceInstance {
   }
 
   /**
-   * Check if the service is configured with an API key
+   * Check if the service is configured (has API key or proxy is available)
    */
   async isConfigured(): Promise<boolean> {
     if (this.apiKey) return true;
@@ -154,7 +159,21 @@ export class AIServiceInstance {
       this.provider = detectProvider(key);
       return true;
     }
+
+    // Check if proxy mode is enabled and user is authenticated
+    if (PROXY_ENABLED) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) return true;
+    }
+
     return false;
+  }
+
+  /**
+   * Check if using proxy mode (no API key, using Edge Function)
+   */
+  async isUsingProxy(): Promise<boolean> {
+    return PROXY_ENABLED && !this.apiKey;
   }
 
   /**
@@ -191,12 +210,89 @@ export class AIServiceInstance {
   }
 
   /**
+   * Stream chat completion via proxy (for free tier)
+   */
+  private async *chatViaProxy(
+    messages: ChatMessage[],
+    options: ChatOptions = {}
+  ): AsyncGenerator<string, void, unknown> {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      throw new Error('Please sign in to use the AI companion.');
+    }
+
+    const response = await fetch(
+      `${SUPABASE_URL}/functions/v1/ai-chat`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          messages,
+          stream: options.stream ?? true,
+          model: options.model,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      if (errorBody.error === 'daily_limit_reached') {
+        throw new Error(errorBody.message || 'Daily message limit reached. Try again tomorrow.');
+      }
+      throw new Error(errorBody.message || `Proxy error: ${response.status}`);
+    }
+
+    // Stream response
+    const reader = response.body?.getReader();
+    if (!reader) {
+      throw new Error('Response body is not readable');
+    }
+
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith('data: ')) continue;
+        
+        const data = trimmed.slice(6);
+        if (data === '[DONE]') continue;
+        
+        try {
+          const parsed = JSON.parse(data);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) yield content;
+        } catch {
+          // Skip malformed chunks
+        }
+      }
+    }
+  }
+
+  /**
    * Stream chat completion
    */
   async *chat(
     messages: ChatMessage[],
     options: ChatOptions = {}
   ): AsyncGenerator<string, void, unknown> {
+    // Use proxy if no API key and proxy is enabled
+    if (!this.apiKey && PROXY_ENABLED) {
+      yield* this.chatViaProxy(messages, options);
+      return;
+    }
+
     if (!this.apiKey) {
       throw new Error('AI service not configured. Please set an API key.');
     }

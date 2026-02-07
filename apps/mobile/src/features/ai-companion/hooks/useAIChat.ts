@@ -31,6 +31,7 @@ export interface UseAIChatReturn {
 
   // Actions
   sendMessage: (content: string) => Promise<void>;
+  sendWelcomeMessage: () => Promise<void>;
   startNewConversation: (type?: ConversationType, stepNumber?: number) => Promise<void>;
   loadConversation: (conversationId: string) => Promise<void>;
   clearError: () => void;
@@ -420,6 +421,61 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     [currentConversation, startNewConversation, processQueue]
   );
 
+  /**
+   * Send a welcome message from the AI (for first-time users)
+   * Call this when starting a new conversation with no history
+   */
+  const sendWelcomeMessage = useCallback(async () => {
+    if (!currentConversation) return;
+    
+    try {
+      const service = await getAIService();
+      if (!(await service.isConfigured())) return;
+
+      setIsStreaming(true);
+      setStreamingContent('');
+
+      // Build a welcome prompt
+      const welcomePrompt = sobrietyDays && sobrietyDays > 0
+        ? `The user just opened the chat for the first time. They have ${sobrietyDays} days sober. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy or use recovery clichés. Just be real and curious about how they're doing. Don't mention the day count unless it's a milestone.`
+        : `The user just opened the chat for the first time. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy. Just be real - you're here to listen.`;
+
+      const systemPrompt = getRecoverySystemPrompt({
+        sobrietyDays,
+        currentStep,
+        userName,
+        sponsorName,
+      });
+
+      const aiMessages: ChatMessage[] = [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: welcomePrompt },
+      ];
+
+      let fullContent = '';
+      for await (const chunk of service.chat(aiMessages)) {
+        fullContent += chunk;
+        setStreamingContent(fullContent);
+      }
+
+      // Save the welcome message
+      if (fullContent.trim()) {
+        const welcomeMsg = await chatHistory.addMessage(
+          currentConversation.id,
+          'assistant',
+          fullContent.trim()
+        );
+        setMessages([welcomeMsg]);
+      }
+    } catch (err) {
+      // Silently fail - welcome message is optional
+      console.warn('Welcome message failed:', err);
+    } finally {
+      setIsStreaming(false);
+      setStreamingContent('');
+    }
+  }, [currentConversation, sobrietyDays, currentStep, userName, sponsorName, chatHistory]);
+
   return {
     // State
     messages,
@@ -431,6 +487,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
     // Actions
     sendMessage,
+    sendWelcomeMessage,
     startNewConversation,
     loadConversation,
     clearError,

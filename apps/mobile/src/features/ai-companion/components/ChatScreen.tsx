@@ -4,8 +4,11 @@
  */
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { View, FlatList, KeyboardAvoidingView, Platform, Text } from 'react-native';
+import { View, FlatList, KeyboardAvoidingView, Platform, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { ChevronLeft, Settings } from 'lucide-react-native';
+import { Icon } from '../../../components/ui/Icon';
 import { ChatBubble } from './ChatBubble';
 import { ChatInput } from './ChatInput';
 import { QuickActions } from './QuickActions';
@@ -20,6 +23,8 @@ interface ChatScreenProps {
 }
 
 export function ChatScreen({ userId }: ChatScreenProps) {
+  const navigation = useNavigation();
+  
   // Get user context for AI
   const { soberDays } = useSobriety();
   const { sponsor } = useSponsorInfo(userId);
@@ -39,6 +44,7 @@ export function ChatScreen({ userId }: ChatScreenProps) {
     isStreaming,
     streamingContent,
     sendMessage,
+    sendWelcomeMessage,
     startNewConversation,
     currentConversation,
     error,
@@ -50,12 +56,30 @@ export function ChatScreen({ userId }: ChatScreenProps) {
     onCrisisDetected: handleCrisisDetected,
   });
 
+  // Track if we've sent welcome
+  const welcomeSentRef = useRef(false);
+
   // Start a new conversation on mount if none exists
   useEffect(() => {
     if (!currentConversation && isAIConfigured) {
       startNewConversation('general');
     }
   }, [currentConversation, isAIConfigured, startNewConversation]);
+
+  // Send welcome message for new conversations
+  useEffect(() => {
+    if (
+      currentConversation &&
+      messages.length === 0 &&
+      isAIConfigured &&
+      !welcomeSentRef.current &&
+      !isLoading &&
+      !isStreaming
+    ) {
+      welcomeSentRef.current = true;
+      sendWelcomeMessage();
+    }
+  }, [currentConversation, messages.length, isAIConfigured, isLoading, isStreaming, sendWelcomeMessage]);
 
   const showQuickActions = messages.length === 0;
 
@@ -96,12 +120,30 @@ export function ChatScreen({ userId }: ChatScreenProps) {
       >
         {/* Header */}
         <View className="px-4 py-3 border-b border-gray-800 flex-row items-center justify-between">
-          <View>
-            <Text className="text-xl font-bold text-white">Chat</Text>
-            {!isAIConfigured && (
-              <Text className="text-sm text-amber-500">Set up in Profile → AI Companion</Text>
-            )}
+          <View className="flex-row items-center">
+            <Pressable
+              onPress={() => navigation.goBack()}
+              className="mr-3 p-1"
+              accessibilityRole="button"
+              accessibilityLabel="Go back"
+            >
+              <Icon as={ChevronLeft} size={24} className="text-white" />
+            </Pressable>
+            <View>
+              <Text className="text-xl font-bold text-white">Chat</Text>
+              {!isAIConfigured && (
+                <Text className="text-sm text-amber-500">Tap ⚙️ to set up</Text>
+              )}
+            </View>
           </View>
+          <Pressable
+            onPress={() => (navigation as any).navigate('ProfileStack', { screen: 'AISettings' })}
+            className="p-2"
+            accessibilityRole="button"
+            accessibilityLabel="AI Settings"
+          >
+            <Icon as={Settings} size={20} className="text-gray-400" />
+          </Pressable>
         </View>
 
         {/* Error message */}
