@@ -5,7 +5,7 @@
  * Clean, confident, professional.
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { 
   ScrollView, 
   StyleSheet, 
@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { useCleanTime } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
 import { ds } from '../../../design-system/tokens/ds';
@@ -99,11 +100,30 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const greeting = useMemo(() => getGreeting(), []);
   const date = useMemo(() => formatDate(), []);
 
-  const handleMorning = () => navigation.navigate('MorningIntention');
-  const handleReading = () => navigation.navigate('DailyReading');
-  const handleEvening = () => navigation.navigate('EveningPulse');
-  const handleCompanion = () => navigation.navigate('CompanionChat');
-  const handleProfile = () => navigation.getParent()?.navigate('Profile' as never);
+  const handleMorning = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    navigation.navigate('MorningIntention');
+  }, [navigation]);
+  
+  const handleReading = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    navigation.navigate('DailyReading');
+  }, [navigation]);
+  
+  const handleEvening = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    navigation.navigate('EveningPulse');
+  }, [navigation]);
+  
+  const handleCompanion = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    navigation.navigate('CompanionChat');
+  }, [navigation]);
+  
+  const handleProfile = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    navigation.getParent()?.navigate('Profile' as never);
+  }, [navigation]);
 
   if (loadingDays || loadingCheckins) {
     return (
