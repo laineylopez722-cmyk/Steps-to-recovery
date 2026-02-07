@@ -32,6 +32,8 @@ import {
   useUpdateJournalEntry,
   useJournalEntries,
 } from '../hooks/useJournalEntries';
+import { extractMemories } from '../utils/memoryExtraction';
+import { useMemoryStore } from '../../../hooks/useMemoryStore';
 
 interface Props {
   userId: string;
@@ -46,6 +48,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const { entries } = useJournalEntries(userId);
   const { createEntry, isPending: isCreating } = useCreateJournalEntry(userId);
   const { updateEntry, isPending: isUpdating } = useUpdateJournalEntry(userId);
+  const memoryStore = useMemoryStore(userId);
   
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -127,6 +130,18 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
       setIsSaved(true);
       originalTitle.current = title;
       originalBody.current = body;
+      
+      // Extract memories for AI companion (async, don't block)
+      const fullContent = `${trimmedTitle} ${trimmedBody}`;
+      extractMemories(fullContent, userId, entryId)
+        .then((memories) => {
+          if (memories.length > 0) {
+            memoryStore.addMemories(memories);
+          }
+        })
+        .catch((err) => {
+          console.warn('Memory extraction failed:', err);
+        });
     } catch (err) {
       console.error('Auto-save failed:', err);
     }
