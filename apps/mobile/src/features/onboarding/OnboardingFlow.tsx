@@ -37,24 +37,24 @@ interface OnboardingStep {
 
 const ONBOARDING_STEPS: OnboardingStep[] = [
   {
-    id: 'welcome',
-    icon: 'favorite',
-    title: 'Your recovery companion',
-    description: 'Track meetings, cravings, and progress with personalized support.',
+    id: 'companion',
+    icon: 'chat',
+    title: 'Someone who remembers',
+    description: "An AI companion that knows your story. Available 24/7, no judgment.",
     gradient: gradients.primary,
   },
   {
-    id: 'safety',
-    icon: 'health-and-safety',
-    title: 'Stay safe with check-ins',
-    description: 'One-tap meeting check-ins, safety plans, and sponsor notifications.',
+    id: 'privacy',
+    icon: 'lock',
+    title: 'Your story stays yours',
+    description: 'Everything is encrypted on your device. We never see your data.',
     gradient: gradients.success,
   },
   {
-    id: 'insights',
-    icon: 'insights',
-    title: 'Insights that guide you',
-    description: 'See patterns, celebrate wins, and get gentle nudges to stay on track.',
+    id: 'steps',
+    icon: 'format-list-numbered',
+    title: 'Real step work',
+    description: 'Guided tools for all 12 steps. Not just day counting — actual recovery.',
     gradient: gradients.aurora,
   },
 ];
