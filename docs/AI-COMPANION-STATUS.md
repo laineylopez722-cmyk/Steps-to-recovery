@@ -1,6 +1,6 @@
 # AI Companion - Implementation Status
 
-> **Last Updated:** 2026-02-08 02:30 AEDT
+> **Last Updated:** 2026-02-08 02:50 AEDT
 
 ## What's Built
 
@@ -38,6 +38,17 @@
 - Free tier: 20 messages/day
 - BYOK support for unlimited
 - Just needs deployment and `PROXY_ENABLED = true`
+
+### UI/UX Polish ✅
+- **Haptic feedback** throughout (send, navigate, crisis)
+- **Fade-in animations** for new messages
+- **Button scale animation** on send
+- **Focus state** accent border on input
+- **Selectable text** in chat bubbles
+- **Time-based quick actions** (morning/afternoon/evening/night)
+- **Auto-title conversations** from first message
+- **Sobriety-aware empty state** ("Day X. How you doing?")
+- **Friendly error messages** (not technical)
 
 ---
 
