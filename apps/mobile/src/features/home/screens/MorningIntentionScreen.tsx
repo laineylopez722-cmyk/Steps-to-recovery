@@ -25,6 +25,8 @@ import { useCreateCheckIn } from '../hooks/useCheckIns';
 import { AnimatedCheckmark } from '../../../design-system/components';
 import { hapticSuccess, hapticSelection } from '../../../utils/haptics';
 import { ds } from '../../../design-system/tokens/ds';
+import { extractMemories } from '../../journal/utils/memoryExtraction';
+import { useMemoryStore } from '../../../hooks/useMemoryStore';
 
 interface Props {
   userId: string;
@@ -33,6 +35,7 @@ interface Props {
 export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   const navigation = useNavigation();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
+  const memoryStore = useMemoryStore(userId);
 
   const [text, setText] = useState('');
   const [mood, setMood] = useState(3);
@@ -52,6 +55,15 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
       await createCheckIn({ type: 'morning', intention: text.trim(), mood });
       hapticSuccess();
       setShowSuccess(true);
+      
+      // Extract memories for AI companion (async)
+      extractMemories(text.trim(), userId)
+        .then((memories) => {
+          if (memories.length > 0) {
+            memoryStore.addMemories(memories);
+          }
+        })
+        .catch(() => {});
     } catch {}
   };
 

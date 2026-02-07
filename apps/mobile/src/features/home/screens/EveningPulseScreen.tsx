@@ -25,6 +25,8 @@ import { useCreateCheckIn, useTodayCheckIns } from '../hooks/useCheckIns';
 import { AnimatedCheckmark } from '../../../design-system/components';
 import { hapticSuccess, hapticSelection, hapticWarning } from '../../../utils/haptics';
 import { ds, palette } from '../../../design-system/tokens/ds';
+import { extractMemories } from '../../journal/utils/memoryExtraction';
+import { useMemoryStore } from '../../../hooks/useMemoryStore';
 
 interface Props {
   userId: string;
@@ -34,6 +36,7 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   const navigation = useNavigation();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
   const { morning } = useTodayCheckIns(userId);
+  const memoryStore = useMemoryStore(userId);
 
   const [reflection, setReflection] = useState('');
   const [gratitude, setGratitude] = useState('');
@@ -69,6 +72,16 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
       });
       hapticSuccess();
       setShowSuccess(true);
+      
+      // Extract memories for AI companion (async)
+      const content = [reflection.trim(), gratitude.trim()].filter(Boolean).join(' ');
+      extractMemories(content, userId)
+        .then((memories) => {
+          if (memories.length > 0) {
+            memoryStore.addMemories(memories);
+          }
+        })
+        .catch(() => {});
     } catch {}
   };
 
