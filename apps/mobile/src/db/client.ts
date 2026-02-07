@@ -129,10 +129,51 @@ export async function runMigrations() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
 
+    -- AI Companion: Chat Conversations
+    CREATE TABLE IF NOT EXISTS chat_conversations (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      title TEXT,
+      type TEXT NOT NULL DEFAULT 'general',
+      step_number INTEGER,
+      status TEXT DEFAULT 'active',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
+    -- AI Companion: Chat Messages
+    CREATE TABLE IF NOT EXISTS chat_messages (
+      id TEXT PRIMARY KEY,
+      conversation_id TEXT NOT NULL,
+      role TEXT NOT NULL,
+      content TEXT NOT NULL,
+      is_encrypted INTEGER DEFAULT 1,
+      metadata TEXT,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE
+    );
+
+    -- AI Companion: Step Work Entries
+    CREATE TABLE IF NOT EXISTS step_work_entries (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      step_number INTEGER NOT NULL,
+      entry_type TEXT NOT NULL,
+      data TEXT NOT NULL,
+      status TEXT DEFAULT 'draft',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    );
+
     -- Indexes for common queries
     CREATE INDEX IF NOT EXISTS idx_check_ins_user_date ON check_ins(user_id, date);
     CREATE INDEX IF NOT EXISTS idx_journal_user_created ON journal_entries(user_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_contacts_user ON contacts(user_id);
+    CREATE INDEX IF NOT EXISTS idx_chat_conversations_user ON chat_conversations(user_id);
+    CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation ON chat_messages(conversation_id);
+    CREATE INDEX IF NOT EXISTS idx_step_work_user ON step_work_entries(user_id);
   `);
 
   console.log('[DB] Migrations complete');

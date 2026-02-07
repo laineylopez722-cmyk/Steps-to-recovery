@@ -180,6 +180,46 @@ export const stepProgress = sqliteTable('step_progress', {
 });
 
 // ============================================================================
+// AI COMPANION - CHAT
+// ============================================================================
+
+export const chatConversations = sqliteTable('chat_conversations', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  title: text('title'),
+  type: text('type').notNull(), // 'general' | 'step_work' | 'crisis' | 'check_in'
+  stepNumber: integer('step_number'),
+  status: text('status').default('active'), // 'active' | 'archived'
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+export const chatMessages = sqliteTable('chat_messages', {
+  id: text('id').primaryKey(),
+  conversationId: text('conversation_id').notNull().references(() => chatConversations.id),
+  role: text('role').notNull(), // 'user' | 'assistant' | 'system'
+  content: text('content').notNull(),
+  isEncrypted: integer('is_encrypted', { mode: 'boolean' }).default(true),
+  metadata: text('metadata'), // JSON: tokens, model, latency, etc.
+  createdAt: text('created_at').notNull(),
+});
+
+// ============================================================================
+// AI COMPANION - STEP WORK
+// ============================================================================
+
+export const stepWorkEntries = sqliteTable('step_work_entries', {
+  id: text('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => users.id),
+  stepNumber: integer('step_number').notNull(),
+  entryType: text('entry_type').notNull(), // 'resentment' | 'fear' | 'amend' | 'reflection' | 'inventory'
+  data: text('data').notNull(), // Encrypted JSON
+  status: text('status').default('draft'), // 'draft' | 'complete' | 'discussed_with_sponsor'
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// ============================================================================
 // TYPE EXPORTS
 // ============================================================================
 
@@ -206,3 +246,12 @@ export type NewAchievement = typeof achievements.$inferInsert;
 
 export type StepProgress = typeof stepProgress.$inferSelect;
 export type NewStepProgress = typeof stepProgress.$inferInsert;
+
+export type ChatConversation = typeof chatConversations.$inferSelect;
+export type NewChatConversation = typeof chatConversations.$inferInsert;
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type NewChatMessage = typeof chatMessages.$inferInsert;
+
+export type StepWorkEntry = typeof stepWorkEntries.$inferSelect;
+export type NewStepWorkEntry = typeof stepWorkEntries.$inferInsert;

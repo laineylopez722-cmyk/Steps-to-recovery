@@ -1,461 +1,389 @@
-import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import { Slider } from '../../../components/Slider';
+/**
+ * Journal Editor - Apple Notes Style
+ * 
+ * Full-screen, distraction-free writing.
+ * Title is first line, large and bold.
+ * Bottom toolbar with actions.
+ */
+
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { 
+  FadeIn,
+  SlideInDown,
+} from 'react-native-reanimated';
+import { ds } from '../../../design-system/tokens/ds';
+import { hapticSuccess, hapticLight } from '../../../utils/haptics';
 import {
   useCreateJournalEntry,
   useUpdateJournalEntry,
   useJournalEntries,
 } from '../hooks/useJournalEntries';
-import {
-  useTheme,
-  Input,
-  Button,
-  Badge,
-  TextArea,
-  Toast,
-  Card,
-  Divider,
-} from '../../../design-system';
 
-const MOOD_LABELS: Record<number, string> = {
-  1: 'Very Sad',
-  2: 'Sad',
-  3: 'Neutral',
-  4: 'Good',
-  5: 'Great',
-};
-
-const MOOD_EMOJI: Record<number, string> = {
-  1: '😢',
-  2: '😔',
-  3: '😐',
-  4: '🙂',
-  5: '😊',
-};
-
-interface JournalEditorScreenProps {
+interface Props {
   userId: string;
 }
 
-export function JournalEditorScreen({ userId }: JournalEditorScreenProps): React.ReactElement {
-  const theme = useTheme();
+export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const navigation = useNavigation();
   const route = useRoute();
+  const insets = useSafeAreaInsets();
   const params = route.params as { mode?: 'create' | 'edit'; entryId?: string } | undefined;
-
+  
   const { entries } = useJournalEntries(userId);
   const { createEntry, isPending: isCreating } = useCreateJournalEntry(userId);
   const { updateEntry, isPending: isUpdating } = useUpdateJournalEntry(userId);
-
+  
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [mood, setMood] = useState<number | null>(3);
-  const [craving, setCraving] = useState<number | null>(0);
-  const [tags, setTags] = useState<string[]>([]);
-  const [tagInput, setTagInput] = useState('');
-
-  // Toast state
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info' | 'warning'>(
-    'success',
-  );
-
-  // Entrance animations
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [fadeAnim, slideAnim]);
-
+  const [isSaved, setIsSaved] = useState(true);
+  
+  const bodyRef = useRef<TextInput>(null);
+  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const originalTitle = useRef('');
+  const originalBody = useRef('');
+  
   const isEditMode = params?.mode === 'edit';
   const entryId = params?.entryId;
-
+  
+  // Load existing entry
   useEffect(() => {
     if (isEditMode && entryId) {
       const entry = entries.find((e) => e.id === entryId);
       if (entry) {
         setTitle(entry.title || '');
         setBody(entry.body);
-        setMood(entry.mood);
-        setCraving(entry.craving);
-        setTags(entry.tags);
+        originalTitle.current = entry.title || '';
+        originalBody.current = entry.body;
       }
     }
   }, [isEditMode, entryId, entries]);
-
-  const handleAddTag = (): void => {
-    if (tagInput.trim() && !tags.includes(tagInput.trim())) {
-      setTags([...tags, tagInput.trim()]);
-      setTagInput('');
+  
+  // Check if content changed
+  const hasChanges = title !== originalTitle.current || body !== originalBody.current;
+  
+  // Auto-save
+  useEffect(() => {
+    if (!hasChanges) {
+      setIsSaved(true);
+      return;
     }
-  };
-
-  const handleRemoveTag = (tag: string): void => {
-    setTags(tags.filter((t) => t !== tag));
-  };
-
-  const handleSave = async (): Promise<void> => {
-    if (!body.trim()) return;
-
+    
+    setIsSaved(false);
+    
+    if (saveTimeout.current) {
+      clearTimeout(saveTimeout.current);
+    }
+    
+    saveTimeout.current = setTimeout(() => {
+      handleAutoSave();
+    }, 2000);
+    
+    return () => {
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current);
+      }
+    };
+  }, [title, body]);
+  
+  const handleAutoSave = async () => {
+    const trimmedTitle = title.trim();
+    const trimmedBody = body.trim();
+    
+    if (!trimmedTitle && !trimmedBody) return;
+    
     try {
       if (isEditMode && entryId) {
         await updateEntry(entryId, {
-          title: title.trim() || null,
-          body: body.trim(),
-          mood,
-          craving,
-          tags,
+          title: trimmedTitle || null,
+          body: trimmedBody || trimmedTitle, // Use title as body if body is empty
+          mood: null,
+          craving: null,
+          tags: [],
         });
       } else {
-        await createEntry({ title: title.trim() || null, body: body.trim(), mood, craving, tags });
+        await createEntry({
+          title: trimmedTitle || null,
+          body: trimmedBody || trimmedTitle,
+          mood: null,
+          craving: null,
+          tags: [],
+        });
       }
-
-      // Success feedback
-      if (Platform.OS !== 'web') {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-      setToastMessage(isEditMode ? 'Entry updated successfully' : 'Entry saved successfully');
-      setToastVariant('success');
-      setShowToast(true);
-
-      // Navigate back after short delay
-      setTimeout(() => {
-        navigation.goBack();
-      }, 1000);
-    } catch (_err) {
-      setToastMessage('Failed to save entry. Please try again.');
-      setToastVariant('error');
-      setShowToast(true);
+      
+      setIsSaved(true);
+      originalTitle.current = title;
+      originalBody.current = body;
+    } catch (err) {
+      console.error('Auto-save failed:', err);
     }
   };
-
-  const isPending = isCreating || isUpdating;
-
+  
+  const handleBack = async () => {
+    // Save before leaving if there are changes
+    if (hasChanges && (title.trim() || body.trim())) {
+      await handleAutoSave();
+    }
+    hapticLight();
+    navigation.goBack();
+  };
+  
+  const handleShare = () => {
+    hapticLight();
+    // TODO: Implement share
+  };
+  
+  const handleMore = () => {
+    hapticLight();
+    // TODO: Show more options (delete, etc.)
+  };
+  
+  const handleTitleSubmit = () => {
+    bodyRef.current?.focus();
+  };
+  
+  const handleNewEntry = async () => {
+    // Save current entry first
+    if (hasChanges && (title.trim() || body.trim())) {
+      await handleAutoSave();
+    }
+    
+    // Reset for new entry
+    setTitle('');
+    setBody('');
+    originalTitle.current = '';
+    originalBody.current = '';
+    hapticLight();
+  };
+  
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <Toast
-        visible={showToast}
-        message={toastMessage}
-        variant={toastVariant}
-        onDismiss={() => setShowToast(false)}
-      />
-
-      <Animated.ScrollView
-        style={[
-          styles.scrollView,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
-        contentContainerStyle={styles.contentContainer}
-      >
-        <Card variant="elevated" style={styles.headerCard}>
-          <View style={styles.headerContent}>
-            <MaterialIcons name="lock" size={20} color={theme.colors.success} accessible={false} />
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary, marginLeft: 8 },
-              ]}
-            >
-              Your entry is encrypted and private
-            </Text>
-          </View>
-        </Card>
-
-        <Input
-          label="Title (optional)"
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Give your entry a title"
-          containerStyle={styles.inputContainer}
-          maxLength={100}
-          accessibilityLabel="Journal entry title"
-          accessibilityHint="Optional title for your journal entry"
-        />
-
-        <TextArea
-          label="Write your thoughts..."
-          value={body}
-          onChangeText={setBody}
-          placeholder="Share your thoughts, feelings, and progress on your recovery journey. Remember, this is a safe space for you."
-          containerStyle={styles.textAreaContainer}
-          minHeight={200}
-          maxLength={5000}
-          showCharacterCount
-          accessibilityLabel="Journal entry content"
-          accessibilityHint="Write your thoughts and feelings for this journal entry"
-        />
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
-            ]}
-            accessibilityRole="header"
-          >
-            How are you feeling? {mood !== null && MOOD_EMOJI[mood]}
-          </Text>
-          <View style={styles.sliderContainer}>
-            <Slider
-              value={mood || 3}
-              onValueChange={setMood}
-              minimumValue={1}
-              maximumValue={5}
-              step={1}
-              minimumTrackTintColor={theme.colors.primary}
-              maximumTrackTintColor={theme.colors.border}
-              accessibilityLabel={`Mood: ${mood !== null ? MOOD_LABELS[mood] : 'Not set'}`}
-              accessibilityRole="adjustable"
-              accessibilityHint="Slide to adjust your mood from 1 to 5"
-            />
-            <Text
-              style={[
-                theme.typography.caption,
-                { textAlign: 'center', marginTop: 8, color: theme.colors.textSecondary },
-              ]}
-            >
-              {mood !== null ? MOOD_LABELS[mood] : 'Not set'}
-            </Text>
-          </View>
-        </View>
-
-        <Divider style={styles.divider} />
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
-            ]}
-            accessibilityRole="header"
-          >
-            Craving level (0-10)
-          </Text>
-          <View style={styles.sliderContainer}>
-            <Slider
-              value={craving || 0}
-              onValueChange={setCraving}
-              minimumValue={0}
-              maximumValue={10}
-              step={1}
-              minimumTrackTintColor={
-                craving && craving > 5 ? theme.colors.danger : theme.colors.success
-              }
-              maximumTrackTintColor={theme.colors.border}
-              accessibilityLabel={`Craving level: ${craving || 0} out of 10`}
-              accessibilityRole="adjustable"
-              accessibilityHint="Slide to adjust your craving level from 0 to 10"
-            />
-            <Text
-              style={[
-                theme.typography.caption,
-                { textAlign: 'center', marginTop: 8, color: theme.colors.textSecondary },
-              ]}
-            >
-              {craving || 0}/10
-            </Text>
-          </View>
-          {craving !== null && craving >= 7 && (
-            <Card
-              variant="outlined"
-              style={[styles.warningCard, { borderColor: theme.colors.danger }]}
-              accessibilityRole="alert"
-              accessibilityLabel="High craving warning"
-            >
-              <View style={styles.warningContent}>
-                <MaterialIcons
-                  name="warning"
-                  size={20}
-                  color={theme.colors.danger}
-                  accessible={false}
-                />
-                <Text
-                  style={[
-                    theme.typography.caption,
-                    { color: theme.colors.danger, marginLeft: 8, flex: 1 },
-                  ]}
-                >
-                  High craving detected. Consider reaching out to your sponsor or using emergency
-                  tools.
-                </Text>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <KeyboardAvoidingView
+          style={styles.kav}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={0}
+        >
+          {/* Header */}
+          <View style={styles.header}>
+            {/* Back button */}
+            <Pressable onPress={handleBack} style={styles.backBtn}>
+              <View style={styles.backBtnInner}>
+                <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
               </View>
-            </Card>
-          )}
-        </View>
-
-        <View style={styles.section}>
-          <Text
-            style={[
-              theme.typography.h3,
-              { marginBottom: 12, fontWeight: '600', color: theme.colors.text },
-            ]}
-            accessibilityRole="header"
+            </Pressable>
+            
+            {/* Right actions pill */}
+            <View style={styles.actionsPill}>
+              <Pressable onPress={handleShare} style={styles.actionBtn}>
+                <Feather name="share" size={18} color={ds.colors.textPrimary} />
+              </Pressable>
+              <Pressable onPress={handleMore} style={styles.actionBtn}>
+                <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} />
+              </Pressable>
+            </View>
+          </View>
+          
+          {/* Content */}
+          <ScrollView 
+            style={styles.scroll}
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
           >
-            Tags
-          </Text>
-          <View style={styles.tagInputContainer}>
-            <Input
-              label=""
-              value={tagInput}
-              onChangeText={setTagInput}
-              onSubmitEditing={handleAddTag}
-              placeholder="Add a tag"
-              containerStyle={styles.tagInputField}
-              accessibilityLabel="Tag input"
-              accessibilityHint="Enter a tag and press add"
+            {/* Title - First line, large and bold */}
+            <TextInput
+              style={styles.titleInput}
+              value={title}
+              onChangeText={setTitle}
+              placeholder="Title"
+              placeholderTextColor={ds.colors.textQuaternary}
+              autoFocus={!isEditMode}
+              returnKeyType="next"
+              onSubmitEditing={handleTitleSubmit}
+              blurOnSubmit={false}
+              multiline={false}
+              maxLength={200}
             />
-            <Button
-              title="Add"
-              onPress={handleAddTag}
-              variant="primary"
-              size="medium"
-              style={styles.addTagButton}
-              accessibilityLabel="Add tag"
-              accessibilityRole="button"
-              accessibilityHint="Add the tag to this journal entry"
+            
+            {/* Body */}
+            <TextInput
+              ref={bodyRef}
+              style={styles.bodyInput}
+              value={body}
+              onChangeText={setBody}
+              placeholder="Start writing..."
+              placeholderTextColor={ds.colors.textQuaternary}
+              multiline
+              scrollEnabled={false}
+              textAlignVertical="top"
             />
-          </View>
-          <View style={styles.tagsContainer}>
-            {tags.map((tag, index) => (
-              <View key={index} style={styles.tagWrapper}>
-                <Badge variant="primary" size="medium">
-                  {tag}
-                </Badge>
-                <TouchableOpacity
-                  onPress={() => handleRemoveTag(tag)}
-                  style={styles.removeTagButton}
-                  accessibilityLabel={`Remove tag ${tag}`}
-                  accessibilityRole="button"
-                >
-                  <MaterialIcons name="close" size={16} color={theme.colors.danger} />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-        </View>
-      </Animated.ScrollView>
-
-      <View
-        style={[
-          styles.footer,
-          { backgroundColor: theme.colors.surface, borderTopColor: theme.colors.border },
-        ]}
-      >
-        <Button
-          title={isEditMode ? 'Update Entry' : 'Save Entry'}
-          onPress={handleSave}
-          disabled={!body.trim() || isPending}
-          loading={isPending}
-          variant="primary"
-          fullWidth
-          accessibilityLabel={isEditMode ? 'Update journal entry' : 'Save journal entry'}
-          accessibilityRole="button"
-          accessibilityHint={
-            isEditMode ? 'Save changes to this journal entry' : 'Save this new journal entry'
-          }
-          accessibilityState={{ disabled: !body.trim() || isPending }}
-        />
-      </View>
-    </SafeAreaView>
+          </ScrollView>
+          
+          {/* Bottom Toolbar */}
+          <Animated.View 
+            entering={SlideInDown.duration(300)}
+            style={[styles.toolbar, { paddingBottom: insets.bottom || ds.space[4] }]}
+          >
+            {/* Left tools */}
+            <View style={styles.toolsPill}>
+              <Pressable style={styles.toolBtn}>
+                <Feather name="check-square" size={20} color={ds.colors.textSecondary} />
+              </Pressable>
+              <Pressable style={styles.toolBtn}>
+                <Feather name="paperclip" size={20} color={ds.colors.textSecondary} />
+              </Pressable>
+              <Pressable style={styles.toolBtn}>
+                <Feather name="at-sign" size={20} color={ds.colors.textSecondary} />
+              </Pressable>
+            </View>
+            
+            {/* Saving indicator */}
+            <View style={styles.saveStatus}>
+              {!isSaved && (
+                <Animated.Text entering={FadeIn} style={styles.savingText}>
+                  Saving...
+                </Animated.Text>
+              )}
+            </View>
+            
+            {/* New note button */}
+            <Pressable onPress={handleNewEntry} style={styles.newNoteBtn}>
+              <Feather name="edit" size={20} color={ds.colors.textSecondary} />
+            </Pressable>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: ds.colors.bgSecondary,
   },
-  scrollView: {
+  safe: {
     flex: 1,
   },
-  contentContainer: {
-    padding: 16,
-    paddingBottom: 24,
+  kav: {
+    flex: 1,
   },
-  headerCard: {
-    marginBottom: 16,
-  },
-  headerContent: {
+  
+  // Header
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: ds.space[4],
+    paddingTop: ds.space[2],
+    paddingBottom: ds.space[3],
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
     justifyContent: 'center',
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  textAreaContainer: {
-    marginBottom: 16,
-  },
-  divider: {
-    marginVertical: 24,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sliderContainer: {
-    paddingHorizontal: 8,
-  },
-  warningCard: {
-    marginTop: 12,
-  },
-  warningContent: {
-    flexDirection: 'row',
     alignItems: 'center',
   },
-  tagInputContainer: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    gap: 8,
-    alignItems: 'flex-start',
+  backBtnInner: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: ds.colors.bgTertiary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  tagInputField: {
+  actionsPill: {
+    flexDirection: 'row',
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: 20,
+    paddingHorizontal: ds.space[2],
+    paddingVertical: ds.space[2],
+    gap: ds.space[1],
+  },
+  actionBtn: {
+    width: 36,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  // Content
+  scroll: {
     flex: 1,
-    marginBottom: 0,
   },
-  addTagButton: {
-    minWidth: 80,
+  scrollContent: {
+    paddingHorizontal: ds.sizes.contentPadding,
+    paddingTop: ds.space[2],
+    paddingBottom: ds.space[20],
   },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  titleInput: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: ds.colors.textPrimary,
+    marginBottom: ds.space[3],
+    paddingVertical: 0,
   },
-  tagWrapper: {
+  bodyInput: {
+    fontSize: 17,
+    lineHeight: 26,
+    color: ds.colors.textPrimary,
+    minHeight: 200,
+    paddingVertical: 0,
+  },
+  
+  // Toolbar
+  toolbar: {
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'relative',
+    justifyContent: 'space-between',
+    paddingHorizontal: ds.space[4],
+    paddingTop: ds.space[3],
+    backgroundColor: ds.colors.bgSecondary,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: ds.colors.divider,
   },
-  removeTagButton: {
-    marginLeft: -8,
-    marginTop: -8,
-    padding: 4,
-    backgroundColor: 'rgba(255,255,255,0.9)',
+  toolsPill: {
+    flexDirection: 'row',
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: 20,
+    paddingHorizontal: ds.space[3],
+    paddingVertical: ds.space[2],
+    gap: ds.space[3],
+  },
+  toolBtn: {
+    width: 32,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  saveStatus: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  savingText: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+  },
+  newNoteBtn: {
+    width: 44,
+    height: 44,
     borderRadius: 12,
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
+    backgroundColor: ds.colors.bgTertiary,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -29,6 +29,7 @@ export type HomeStackParamList = {
   DangerZone: undefined;
   SafeDialIntervention: { contactName: string; phoneNumber: string };
   BeforeYouUse: undefined;
+  CompanionChat: undefined;
 };
 
 // Journal Stack
@@ -60,6 +61,7 @@ export type ProfileStackParamList = {
   SharedEntries: { connectionId: string };
   ShareEntries: { entryId?: string } | undefined;
   NotificationSettings: undefined;
+  AISettings: undefined;
 };
 
 // Meetings Stack

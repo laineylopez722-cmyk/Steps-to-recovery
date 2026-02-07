@@ -30,6 +30,8 @@ import { ProgressDashboardScreen } from '../features/progress/screens';
 import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen';
 import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
 import BeforeYouUseScreen from '../features/crisis/screens/BeforeYouUseScreen';
+import { ChatScreen } from '../features/ai-companion/components/ChatScreen';
+import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScreen';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -167,6 +169,15 @@ function HomeStackNavigator(): React.ReactElement {
       >
         {() => <BeforeYouUseScreen userId={userId} />}
       </HomeStack.Screen>
+      <HomeStack.Screen
+        name="CompanionChat"
+        options={{
+          headerShown: false,
+          presentation: 'card',
+        }}
+      >
+        {() => <ChatScreen userId={userId} />}
+      </HomeStack.Screen>
     </HomeStack.Navigator>
   );
 }
@@ -268,6 +279,11 @@ function ProfileStackNavigator(): React.ReactElement {
         name="SharedEntries"
         component={SharedEntriesScreen}
         options={{ title: 'Shared Entries', headerBackTitle: 'Back' }}
+      />
+      <ProfileStack.Screen
+        name="AISettings"
+        component={AISettingsScreen}
+        options={{ headerShown: false }}
       />
     </ProfileStack.Navigator>
   );

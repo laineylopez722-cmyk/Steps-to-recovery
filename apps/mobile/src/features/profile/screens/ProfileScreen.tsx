@@ -221,6 +221,13 @@ export function ProfileScreen(): React.ReactElement {
             />
             <Divider />
             <ListItem
+              icon="robot"
+              title="AI Companion"
+              description="Configure your recovery companion"
+              onPress={() => navigation.navigate('AISettings')}
+            />
+            <Divider />
+            <ListItem
               icon="shield-lock"
               title="Privacy & Security"
               description="Biometrics, auto-lock, and encryption"

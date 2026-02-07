@@ -65,3 +65,7 @@ apps/mobile/bugreport-*.zip
 #Ignore vscode AI rules
 .github\instructions\codacy.instructions.md
 nul
+
+# Google Service Account Keys
+gen-lang-client-*.json
+*.serviceaccount.json

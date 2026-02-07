@@ -20,6 +20,9 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useCleanTime } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
 import { ds } from '../../../design-system/tokens/ds';
+import { SobrietyCandle } from '../../../design-system/components';
+import type { HomeStackParamList } from '../../../navigation/types';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 interface HomeScreenProps {
   userId: string;
@@ -89,16 +92,17 @@ function TaskItem({
 }
 
 export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const { days, isLoading: loadingDays } = useCleanTime(userId);
   const { morning, evening, isLoading: loadingCheckins } = useTodayCheckIns(userId);
 
   const greeting = useMemo(() => getGreeting(), []);
   const date = useMemo(() => formatDate(), []);
 
-  const handleMorning = () => navigation.navigate('MorningIntention' as never);
-  const handleReading = () => navigation.navigate('DailyReading' as never);
-  const handleEvening = () => navigation.navigate('EveningPulse' as never);
+  const handleMorning = () => navigation.navigate('MorningIntention');
+  const handleReading = () => navigation.navigate('DailyReading');
+  const handleEvening = () => navigation.navigate('EveningPulse');
+  const handleCompanion = () => navigation.navigate('CompanionChat');
   const handleProfile = () => navigation.getParent()?.navigate('Profile' as never);
 
   if (loadingDays || loadingCheckins) {
@@ -131,12 +135,39 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </Pressable>
           </Animated.View>
 
-          {/* Hero */}
+          {/* Hero - Candle Visualization */}
           <Animated.View entering={FadeIn.delay(200).duration(600)} style={styles.hero}>
-            <Text style={styles.dayCount}>{days}</Text>
-            <Text style={styles.dayLabel}>
-              {days === 1 ? 'day clean' : 'days clean'}
-            </Text>
+            <SobrietyCandle 
+              days={days} 
+              size={1.2}
+              maxDays={365}
+            />
+            <View style={styles.dayInfo}>
+              <Text style={styles.dayCount}>{days}</Text>
+              <Text style={styles.dayLabel}>
+                {days === 1 ? 'day' : 'days'}
+              </Text>
+            </View>
+          </Animated.View>
+
+          {/* Companion Card - Primary CTA */}
+          <Animated.View entering={FadeInDown.delay(250).duration(400)}>
+            <Pressable 
+              onPress={handleCompanion}
+              style={({ pressed }) => [
+                styles.companionCard,
+                pressed && styles.companionCardPressed,
+              ]}
+            >
+              <View style={styles.companionIcon}>
+                <Feather name="message-circle" size={24} color={ds.colors.textPrimary} />
+              </View>
+              <View style={styles.companionContent}>
+                <Text style={styles.companionTitle}>What's on your mind?</Text>
+                <Text style={styles.companionSubtitle}>Tap to chat</Text>
+              </View>
+              <Feather name="chevron-right" size={20} color={ds.colors.textQuaternary} />
+            </Pressable>
           </Animated.View>
 
           {/* Tasks */}
@@ -233,18 +264,24 @@ const styles = StyleSheet.create({
   // Hero
   hero: {
     alignItems: 'center',
-    paddingVertical: ds.space[12],
+    paddingVertical: ds.space[8],
+    paddingBottom: ds.space[6],
+  },
+  dayInfo: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: ds.space[4],
+    gap: ds.space[2],
   },
   dayCount: {
-    fontSize: 80,
-    fontWeight: '300',
+    fontSize: 48,
+    fontWeight: '600',
     color: ds.colors.textPrimary,
-    letterSpacing: -2,
+    letterSpacing: -1,
   },
   dayLabel: {
-    ...ds.typography.body,
+    ...ds.typography.h3,
     color: ds.colors.textSecondary,
-    marginTop: ds.space[1],
   },
 
   // Section
@@ -303,5 +340,40 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: ds.colors.divider,
     marginLeft: 40 + ds.space[4] + ds.space[3],
+  },
+
+  // Companion Card
+  companionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F59E0B', // Amber accent
+    borderRadius: ds.radius.xl,
+    padding: ds.space[4],
+    marginBottom: ds.space[6],
+  },
+  companionCardPressed: {
+    opacity: 0.9,
+  },
+  companionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: ds.radius.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  companionContent: {
+    flex: 1,
+    marginLeft: ds.space[3],
+  },
+  companionTitle: {
+    ...ds.typography.body,
+    fontWeight: '600',
+    color: '#000',
+  },
+  companionSubtitle: {
+    ...ds.typography.caption,
+    color: 'rgba(0, 0, 0, 0.6)',
+    marginTop: 2,
   },
 });
