@@ -3,6 +3,7 @@ export { ChatInput } from './ChatInput';
 export { ChatScreen } from './ChatScreen';
 export { QuickActions } from './QuickActions';
 export { CrisisOverlay } from './CrisisOverlay';
+export { ConversationList } from './ConversationList';
 
 // Step Work Components
 export { InventoryBuilder } from './InventoryBuilder';
