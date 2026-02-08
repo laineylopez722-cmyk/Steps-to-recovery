@@ -86,6 +86,7 @@ export const lightColors = {
       elevated: '#FFFFFF',
       interactive: '#F0F0EB',
       overlay: 'rgba(0, 0, 0, 0.4)',
+      overlayModal: 'rgba(0, 0, 0, 0.85)',
     },
     text: {
       primary: '#2C3E2C',
@@ -95,15 +96,22 @@ export const lightColors = {
       onPrimary: '#FFFFFF',
       onSecondary: '#FFFFFF',
       onAlert: '#FFFFFF',
+      onDark: '#FFFFFF',
       inverse: '#2C3E2C',
+    },
+    emergency: {
+      calm: '#7A9AAA',
+      calmMuted: 'rgba(122, 154, 170, 0.15)',
+      calmSubtle: 'rgba(122, 154, 170, 0.08)',
+      onCalm: '#FFFFFF',
     },
   },
 } as const;
 
 export const darkColors = {
-  // Primary accent - Soft Cream/White (for ring and accents)
-  primary: '#E8E0D0',           // Warm cream
-  primaryLight: '#F5EDE0',      // Bright cream
+  // Primary accent - Enhanced for OLED vibrancy
+  primary: '#F0E8D8',           // Vibrant warm cream (OLED-enhanced)
+  primaryLight: '#FFF8E8',      // Bright cream with subtle glow
   primaryDark: '#D4C8B8',       // Muted cream
 
   // Secondary - Olive/Sage (for subtle elements)
@@ -124,11 +132,11 @@ export const darkColors = {
   muted: '#A8A8AD',
   disabled: '#5A5A5C',
 
-  // Background colors - Olive gradient base
-  background: '#3A4A38',        // Deep olive
-  surface: 'rgba(255, 255, 255, 0.08)', // Frosted glass
-  surfaceElevated: 'rgba(255, 255, 255, 0.12)',
-  surfaceVariant: 'rgba(255, 255, 255, 0.06)',
+  // Background colors - OLED-optimized true blacks
+  background: '#000000',        // Pure black for OLED power savings
+  surface: 'rgba(255, 255, 255, 0.05)', // Subtle frosted glass
+  surfaceElevated: 'rgba(255, 255, 255, 0.08)',
+  surfaceVariant: 'rgba(255, 255, 255, 0.03)',
 
   // Text colors
   text: '#FFFFFF',
@@ -145,18 +153,18 @@ export const darkColors = {
   pressed: 'rgba(255, 255, 255, 0.08)',
   overlay: 'rgba(0, 0, 0, 0.5)',
 
-  // Glow colors - Soft cream
-  glow: 'rgba(232, 224, 208, 0.2)',
-  glowStrong: 'rgba(232, 224, 208, 0.4)',
-  glowRing: 'rgba(232, 224, 208, 0.6)',
+  // Glow colors - OLED-optimized soft cream (more vibrant against black)
+  glow: 'rgba(240, 232, 216, 0.25)',
+  glowStrong: 'rgba(240, 232, 216, 0.5)',
+  glowRing: 'rgba(240, 232, 216, 0.7)',
 
   // Semantic aliases (Phase 1)
   semantic: {
     intent: {
       primary: {
-        solid: '#E8E0D0',
-        muted: 'rgba(232, 224, 208, 0.15)',
-        subtle: 'rgba(232, 224, 208, 0.08)',
+        solid: '#F0E8D8',
+        muted: 'rgba(240, 232, 216, 0.15)',
+        subtle: 'rgba(240, 232, 216, 0.08)',
         onSolid: '#000000',
       },
       secondary: {
@@ -173,12 +181,13 @@ export const darkColors = {
       },
     },
     surface: {
-      app: '#3A4A38',
-      canvas: 'rgba(255, 255, 255, 0.08)',
-      card: 'rgba(255, 255, 255, 0.08)',
-      elevated: 'rgba(255, 255, 255, 0.12)',
-      interactive: 'rgba(255, 255, 255, 0.06)',
-      overlay: 'rgba(0, 0, 0, 0.5)',
+      app: '#000000',              // OLED true black
+      canvas: 'rgba(255, 255, 255, 0.05)',
+      card: 'rgba(255, 255, 255, 0.05)',
+      elevated: 'rgba(255, 255, 255, 0.08)',
+      interactive: 'rgba(255, 255, 255, 0.03)',
+      overlay: 'rgba(0, 0, 0, 0.7)',
+      overlayModal: 'rgba(0, 0, 0, 0.95)',  // Almost pure black for modals
     },
     text: {
       primary: '#FFFFFF',
@@ -188,7 +197,14 @@ export const darkColors = {
       onPrimary: '#000000',
       onSecondary: '#FFFFFF',
       onAlert: '#FFFFFF',
+      onDark: '#FFFFFF',
       inverse: '#2C3E2C',
+    },
+    emergency: {
+      calm: '#9DBDCD',
+      calmMuted: 'rgba(157, 189, 205, 0.15)',
+      calmSubtle: 'rgba(157, 189, 205, 0.08)',
+      onCalm: '#000000',
     },
   },
 } as const;
@@ -252,6 +268,7 @@ export type ColorPalette = {
       elevated: string;
       interactive: string;
       overlay: string;
+      overlayModal: string;
     };
     text: {
       primary: string;
@@ -261,7 +278,14 @@ export type ColorPalette = {
       onPrimary: string;
       onSecondary: string;
       onAlert: string;
+      onDark: string;
       inverse: string;
+    };
+    emergency: {
+      calm: string;
+      calmMuted: string;
+      calmSubtle: string;
+      onCalm: string;
     };
   };
 };

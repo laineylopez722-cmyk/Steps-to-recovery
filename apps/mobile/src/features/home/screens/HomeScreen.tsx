@@ -54,15 +54,25 @@ function ActionCard({
   onPress,
   style,
   delay = 0,
+  accessibilityLabel,
+  accessibilityHint,
 }: {
   children: React.ReactNode;
   onPress: () => void;
   style?: StyleProp<ViewStyle>;
   delay?: number;
+  accessibilityLabel: string;
+  accessibilityHint?: string;
 }) {
   return (
     <Animated.View entering={MotionTransitions.cardEnter(Math.floor(delay / 50))}>
-      <Action.Root onPress={onPress} contentStyle={style}>
+      <Action.Root
+        onPress={onPress}
+        contentStyle={style}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint={accessibilityHint}
+      >
         {children}
       </Action.Root>
     </Animated.View>
@@ -165,7 +175,12 @@ function ShortcutCard({
   onPress: () => void;
 }) {
   return (
-    <ActionCard onPress={onPress} style={styles.shortcutCard}>
+    <ActionCard
+      onPress={onPress}
+      style={styles.shortcutCard}
+      accessibilityLabel={title}
+      accessibilityHint={subtitle}
+    >
       <Action.Icon style={styles.shortcutIconWrap}>
         <Feather name={icon} size={18} color={ds.semantic.intent.primary.solid} />
       </Action.Icon>
@@ -314,7 +329,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
               onRefresh={handleRefresh}
               tintColor={ds.semantic.intent.primary.solid}
               colors={[ds.semantic.intent.primary.solid]}
-              progressBackgroundColor="rgba(20, 20, 22, 0.9)"
+              progressBackgroundColor={ds.semantic.surface.elevated}
             />
           }
         >
@@ -337,7 +352,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
           {hasError && (
             <Animated.View entering={FadeIn} style={styles.errorBanner}>
-              <Feather name="alert-circle" size={18} color="#ef4444" />
+              <Feather name="alert-circle" size={18} color={ds.semantic.intent.alert.solid} />
               <Text style={styles.errorText}>Unable to load some data. Pull to retry.</Text>
             </Animated.View>
           )}
@@ -357,11 +372,17 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
             <View style={styles.pillsRow}>
               {intentionPills.map((pill, index) => (
-                <Animated.View 
+                <Animated.View
                   key={pill.label}
                   entering={FadeInUp.delay(300 + index * 50)}
                 >
-                  <Action.Root onPress={pill.onPress} contentStyle={styles.intentionPill}>
+                  <Action.Root
+                    onPress={pill.onPress}
+                    contentStyle={styles.intentionPill}
+                    accessibilityRole="button"
+                    accessibilityLabel={pill.label}
+                    accessibilityHint="Set this as your daily intention"
+                  >
                     <Feather name={pill.icon} size={14} color={ds.semantic.intent.primary.solid} />
                     <Text style={styles.intentionPillText}>{pill.label}</Text>
                   </Action.Root>
@@ -370,16 +391,21 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </View>
           </Animated.View>
 
-          <ActionCard onPress={handleCompanion} delay={220}>
+          <ActionCard
+            onPress={handleCompanion}
+            delay={220}
+            accessibilityLabel="Talk to your companion"
+            accessibilityHint="Get support before things spiral"
+          >
             <View style={styles.companionCard}>
               <View style={styles.companionIcon}>
-                <Feather name="message-circle" size={24} color="#000" />
+                <Feather name="message-circle" size={24} color={ds.semantic.intent.primary.onSolid} />
               </View>
               <View style={styles.companionContent}>
                 <Text style={styles.companionTitle}>Talk to your companion</Text>
                 <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
               </View>
-              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.42)" />
+              <Feather name="arrow-right" size={20} color={ds.semantic.text.muted} />
             </View>
           </ActionCard>
 
@@ -452,17 +478,17 @@ const styles = StyleSheet.create({
   },
   skeletonLine: {
     height: 16,
-    backgroundColor: 'rgba(100, 116, 139, 0.2)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderRadius: 8,
   },
   skeletonAvatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(100, 116, 139, 0.2)',
+    width: ds.sizes.touchMin,
+    height: ds.sizes.touchMin,
+    borderRadius: ds.sizes.touchMin / 2,
+    backgroundColor: ds.semantic.surface.interactive,
   },
   skeletonHero: {
-    backgroundColor: 'rgba(100, 116, 139, 0.1)',
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.xl,
     padding: ds.space[5],
     marginTop: ds.space[4],
@@ -471,7 +497,7 @@ const styles = StyleSheet.create({
     width: 214,
     height: 214,
     borderRadius: 107,
-    backgroundColor: 'rgba(100, 116, 139, 0.15)',
+    backgroundColor: ds.semantic.surface.elevated,
     alignSelf: 'center',
     marginVertical: ds.space[4],
   },
@@ -482,7 +508,7 @@ const styles = StyleSheet.create({
   skeletonStat: {
     flex: 1,
     height: 50,
-    backgroundColor: 'rgba(100, 116, 139, 0.15)',
+    backgroundColor: ds.semantic.surface.elevated,
     borderRadius: ds.radius.lg,
   },
   skeletonPills: {
@@ -494,7 +520,7 @@ const styles = StyleSheet.create({
   skeletonPill: {
     width: 120,
     height: 36,
-    backgroundColor: 'rgba(100, 116, 139, 0.15)',
+    backgroundColor: ds.semantic.surface.elevated,
     borderRadius: ds.radius.full,
   },
 
@@ -502,7 +528,7 @@ const styles = StyleSheet.create({
   errorBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    backgroundColor: ds.semantic.intent.alert.subtle,
     borderRadius: ds.radius.lg,
     paddingHorizontal: ds.space[4],
     paddingVertical: ds.space[3],
@@ -511,7 +537,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     ...ds.typography.caption,
-    color: '#f87171',
+    color: ds.semantic.intent.alert.solid,
     flex: 1,
   },
 
@@ -522,7 +548,7 @@ const styles = StyleSheet.create({
     width: 260,
     height: 260,
     borderRadius: ds.radius.full,
-    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+    backgroundColor: ds.semantic.intent.secondary.subtle,
   },
   bgLayerMid: {
     position: 'absolute',
@@ -531,7 +557,7 @@ const styles = StyleSheet.create({
     width: 300,
     height: 300,
     borderRadius: ds.radius.full,
-    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+    backgroundColor: ds.semantic.intent.primary.subtle,
   },
   bgLayerBottom: {
     position: 'absolute',
@@ -540,7 +566,7 @@ const styles = StyleSheet.create({
     width: 360,
     height: 360,
     borderRadius: ds.radius.full,
-    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+    backgroundColor: ds.semantic.surface.interactive,
   },
 
   header: {
@@ -581,14 +607,14 @@ const styles = StyleSheet.create({
   },
 
   heroCard: {
-    backgroundColor: 'rgba(20, 20, 22, 0.9)',
+    backgroundColor: ds.semantic.surface.elevated,
     borderRadius: ds.radius.xl,
     paddingHorizontal: ds.space[5],
     paddingTop: ds.space[4],
     paddingBottom: ds.space[5],
     marginBottom: ds.space[5],
     borderWidth: 1,
-    borderColor: 'rgba(245, 158, 11, 0.2)',
+    borderColor: ds.semantic.intent.primary.muted,
     ...ds.shadows.lg,
   },
   heroTopRow: {
@@ -640,7 +666,7 @@ const styles = StyleSheet.create({
   },
   miniStatsRow: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    backgroundColor: ds.semantic.surface.overlay,
     borderRadius: ds.radius.lg,
     overflow: 'hidden',
     borderWidth: StyleSheet.hairlineWidth,
@@ -693,12 +719,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: ds.space[2],
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderRadius: ds.radius.full,
     paddingHorizontal: ds.space[4],
     paddingVertical: ds.space[2],
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(245, 158, 11, 0.35)',
+    borderColor: ds.semantic.intent.primary.muted,
   },
   intentionPillText: {
     ...ds.typography.caption,
@@ -762,7 +788,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: ds.radius.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: ds.semantic.surface.overlay,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -773,11 +799,11 @@ const styles = StyleSheet.create({
   companionTitle: {
     fontSize: 17,
     fontWeight: '700',
-    color: '#000',
+    color: ds.semantic.intent.primary.onSolid,
   },
   companionSubtitle: {
     ...ds.typography.caption,
-    color: 'rgba(0, 0, 0, 0.6)',
+    color: ds.semantic.text.muted,
     marginTop: 2,
   },
 });

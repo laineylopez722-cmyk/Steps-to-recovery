@@ -17,6 +17,7 @@ import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-rea
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useTheme, Button, BreathingCircle, GlassCard } from '../../../design-system';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import { hapticSelection } from '../../../utils/haptics';
 import { useNavigation } from '@react-navigation/native';
 
@@ -78,10 +79,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
   return (
     <View style={styles.container}>
-      {/* Calming Gradient Background */}
-      <LinearGradient 
-        colors={[gradients.background[0], '#1a1f35', gradients.background[1]]} 
-        style={StyleSheet.absoluteFill} 
+      {/* Calming Gradient Background - OLED-optimized */}
+      <LinearGradient
+        colors={[ds.semantic.surface.app, ds.semantic.emergency.calmSubtle, ds.semantic.surface.app]}
+        style={StyleSheet.absoluteFill}
       />
       
       {/* Soft Glow */}
@@ -102,9 +103,9 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
         >
           <Animated.View
             entering={FadeIn.duration(400).delay(200)}
-            style={[styles.iconContainer, { backgroundColor: theme.colors.danger + '20' }]}
+            style={[styles.iconContainer, { backgroundColor: ds.semantic.emergency.calmMuted }]}
           >
-            <MaterialCommunityIcons name="phone-alert" size={48} color={theme.colors.danger} />
+            <MaterialCommunityIcons name="phone-alert" size={48} color={ds.semantic.emergency.calm} />
           </Animated.View>
           <Animated.Text
             entering={FadeInDown.duration(400).delay(300)}
@@ -140,10 +141,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             <Button
               title="Call 988 now"
               onPress={() => handleCall('988')}
-              variant="danger"
+              variant="secondary"
               size="large"
               fullWidth
-              icon={<MaterialCommunityIcons name="phone" size={20} color="#FFFFFF" />}
+              icon={<MaterialCommunityIcons name="phone" size={20} color={ds.semantic.text.onDark} />}
               accessibilityLabel="Call 988 now"
             />
             <Button
@@ -189,7 +190,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     <MaterialCommunityIcons
                       name={hotline.icon}
                       size={32}
-                      color={theme.colors.danger}
+                      color={ds.semantic.emergency.calm}
                     />
                   </View>
                   <View style={styles.hotlineContent}>
@@ -212,10 +213,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     <Button
                       title={hotline.number}
                       onPress={() => handleCall(hotline.number)}
-                      variant="danger"
+                      variant="secondary"
                       size="large"
                       fullWidth
-                      icon={<MaterialCommunityIcons name="phone" size={20} color="#FFFFFF" />}
+                      icon={<MaterialCommunityIcons name="phone" size={20} color={ds.semantic.text.onDark} />}
                       accessibilityLabel={`Call ${hotline.name} at ${hotline.number}`}
                       accessibilityHint="Initiates a phone call to crisis support"
                     />
@@ -231,24 +232,24 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
           entering={FadeInDown.duration(400).delay(600)}
           style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
         >
-          <GlassCard 
+          <GlassCard
             intensity="modal"
             style={{
               marginBottom: theme.spacing.md,
-              backgroundColor: 'rgba(239,68,68,0.05)',
-              borderColor: theme.colors.danger,
+              backgroundColor: ds.semantic.emergency.calmSubtle,
+              borderColor: ds.semantic.emergency.calm,
               borderWidth: 2,
             }}
           >
             <View style={styles.crisisCheckpointCard}>
               <View style={styles.crisisCheckpointIcon}>
-                <MaterialCommunityIcons name="pause-circle" size={48} color={theme.colors.danger} />
+                <MaterialCommunityIcons name="pause-circle" size={48} color={ds.semantic.emergency.calm} />
               </View>
               <View style={styles.crisisCheckpointContent}>
                 <Text
                   style={[
                     theme.typography.h2,
-                    { color: theme.colors.danger, marginBottom: theme.spacing.xs },
+                    { color: ds.semantic.emergency.calm, marginBottom: theme.spacing.xs },
                   ]}
                 >
                   Before You Use
@@ -386,7 +387,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 { count: '4', sense: 'things you can touch', color: theme.colors.secondary },
                 { count: '3', sense: 'things you can hear', color: theme.colors.success },
                 { count: '2', sense: 'things you can smell', color: theme.colors.warning },
-                { count: '1', sense: 'thing you can taste', color: theme.colors.danger },
+                { count: '1', sense: 'thing you can taste', color: ds.semantic.emergency.calm },
               ].map((step, index) => (
                 <Animated.View
                   key={index}
@@ -593,6 +594,6 @@ const styles = StyleSheet.create({
   },
   quickCtaCard: {
     borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.35)',
+    borderColor: ds.semantic.emergency.calmMuted,
   },
 });

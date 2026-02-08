@@ -22,8 +22,8 @@ export const spacing = {
   // Double extra large spacing
   xxl: 48,
 
-  // Accessibility minimum touch target (WCAG 2.1 Level AA)
-  minTouchTarget: 44,
+  // Accessibility minimum touch target (WCAG 2.1 Level AAA)
+  minTouchTarget: 48,
 
   // Card specific spacing
   cardPadding: 16,
