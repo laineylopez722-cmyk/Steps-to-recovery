@@ -18,6 +18,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
+import { StepSectionHeader } from '../components/StepSectionHeader';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   useTheme,
@@ -266,35 +267,12 @@ export function StepDetailScreen(): React.ReactElement {
     ({ item }: ListRenderItemInfo<ListItem>) => {
       if (item.type === 'section') {
         return (
-          <Pressable
-            style={[styles.sectionHeader, { backgroundColor: theme.colors.primary + '10' }]}
-            onPress={() => scrollToQuestion(item.sectionStart)}
-            accessibilityRole="button"
-            accessibilityLabel={`${item.title}, ${item.questionRange}. Tap to jump to section.`}
-          >
-            <MaterialCommunityIcons
-              name="bookmark-outline"
-              size={20}
-              color={theme.colors.primary}
-              accessible={false}
-            />
-            <View style={styles.sectionHeaderContent}>
-              <Text
-                style={[theme.typography.h3, { color: theme.colors.primary, fontWeight: '600' }]}
-              >
-                {item.title}
-              </Text>
-              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}> 
-                {item.questionRange} • tap to jump
-              </Text>
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={18}
-              color={theme.colors.textSecondary}
-              accessible={false}
-            />
-          </Pressable>
+          <StepSectionHeader
+            title={item.title}
+            questionRange={item.questionRange}
+            sectionStart={item.sectionStart}
+            onJumpToQuestion={scrollToQuestion}
+          />
         );
       }
 
