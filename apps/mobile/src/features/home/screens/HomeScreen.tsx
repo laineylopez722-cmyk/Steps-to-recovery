@@ -1,8 +1,8 @@
 /**
  * Home Screen
  * 
- * Following design system strictly.
- * Clean, confident, professional.
+ * Apple-inspired design. Premium, minimal, confident.
+ * No visible borders. Depth through background layers.
  */
 
 import React, { useMemo, useCallback } from 'react';
@@ -16,7 +16,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import Animated, { 
+  FadeIn, 
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useCleanTime } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
@@ -29,7 +35,6 @@ interface HomeScreenProps {
   userId: string;
 }
 
-// Get greeting
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -37,7 +42,6 @@ function getGreeting(): string {
   return 'Good evening';
 }
 
-// Format date
 function formatDate(): string {
   return new Date().toLocaleDateString('en-US', { 
     weekday: 'long', 
@@ -46,48 +50,101 @@ function formatDate(): string {
   });
 }
 
-// Task Item Component
+// Animated Pressable Card
+function ActionCard({ 
+  children, 
+  onPress,
+  style,
+  delay = 0,
+}: { 
+  children: React.ReactNode;
+  onPress: () => void;
+  style?: any;
+  delay?: number;
+}) {
+  const scale = useSharedValue(1);
+  
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    scale.value = withSpring(0.98, ds.spring.snappy);
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, ds.spring.smooth);
+  };
+
+  return (
+    <Animated.View entering={FadeInDown.delay(delay).duration(400).springify()}>
+      <Pressable
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+      >
+        <Animated.View style={[style, animatedStyle]}>
+          {children}
+        </Animated.View>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
+// Task Item - No borders, subtle differentiation
 function TaskItem({ 
   icon, 
   label, 
   sublabel,
   done,
   onPress,
+  isLast,
 }: { 
   icon: keyof typeof Feather.glyphMap;
   label: string;
   sublabel: string;
   done?: boolean;
   onPress: () => void;
+  isLast?: boolean;
 }) {
+  const scale = useSharedValue(1);
+  
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
     <Pressable 
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.taskItem,
-        pressed && styles.taskItemPressed,
-      ]}
+      onPressIn={() => { scale.value = withSpring(0.98, ds.spring.snappy); }}
+      onPressOut={() => { scale.value = withSpring(1, ds.spring.smooth); }}
     >
-      <View style={[styles.taskIcon, done && styles.taskIconDone]}>
-        <Feather 
-          name={done ? 'check' : icon} 
-          size={ds.sizes.iconMd} 
-          color={done ? ds.colors.success : ds.colors.textSecondary} 
-        />
-      </View>
+      <Animated.View style={[styles.taskItem, animatedStyle]}>
+        <View style={[styles.taskIcon, done && styles.taskIconDone]}>
+          <Feather 
+            name={done ? 'check' : icon} 
+            size={ds.sizes.iconMd} 
+            color={done ? ds.colors.success : ds.colors.textTertiary} 
+          />
+        </View>
+        
+        <View style={styles.taskContent}>
+          <Text style={[styles.taskLabel, done && styles.taskLabelDone]}>
+            {label}
+          </Text>
+          <Text style={styles.taskSublabel}>{sublabel}</Text>
+        </View>
+        
+        <View style={styles.taskChevron}>
+          <Feather 
+            name="chevron-right" 
+            size={ds.sizes.iconSm} 
+            color={ds.colors.textQuaternary} 
+          />
+        </View>
+      </Animated.View>
       
-      <View style={styles.taskContent}>
-        <Text style={[styles.taskLabel, done && styles.taskLabelDone]}>
-          {label}
-        </Text>
-        <Text style={styles.taskSublabel}>{sublabel}</Text>
-      </View>
-      
-      <Feather 
-        name="chevron-right" 
-        size={ds.sizes.iconSm} 
-        color={ds.colors.textQuaternary} 
-      />
+      {!isLast && <View style={styles.taskDivider} />}
     </Pressable>
   );
 }
@@ -129,7 +186,9 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     return (
       <View style={styles.container}>
         <View style={styles.loading}>
-          <Text style={styles.loadingText}>Loading...</Text>
+          <Animated.View entering={FadeIn.duration(300)}>
+            <Text style={styles.loadingText}>...</Text>
+          </Animated.View>
         </View>
       </View>
     );
@@ -150,16 +209,22 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
               <Text style={styles.greeting}>{greeting}</Text>
             </View>
             
-            <Pressable onPress={handleProfile} style={styles.profileButton}>
+            <Pressable 
+              onPress={handleProfile} 
+              style={({ pressed }) => [
+                styles.profileButton,
+                pressed && styles.profileButtonPressed,
+              ]}
+            >
               <Feather name="user" size={ds.sizes.iconMd} color={ds.colors.textPrimary} />
             </Pressable>
           </Animated.View>
 
-          {/* Hero - Candle Visualization */}
-          <Animated.View entering={FadeIn.delay(200).duration(600)} style={styles.hero}>
+          {/* Hero - Day Counter */}
+          <Animated.View entering={FadeIn.delay(150).duration(600)} style={styles.hero}>
             <SobrietyCandle 
               days={days} 
-              size={1.2}
+              size={1.3}
               maxDays={365}
             />
             <View style={styles.dayInfo}>
@@ -171,26 +236,20 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           </Animated.View>
 
           {/* Companion Card - Primary CTA */}
-          <Animated.View entering={FadeInDown.delay(250).duration(400)}>
-            <Pressable 
-              onPress={handleCompanion}
-              style={({ pressed }) => [
-                styles.companionCard,
-                pressed && styles.companionCardPressed,
-              ]}
-            >
+          <ActionCard onPress={handleCompanion} delay={200}>
+            <View style={styles.companionCard}>
               <View style={styles.companionIcon}>
-                <Feather name="message-circle" size={24} color={ds.colors.textPrimary} />
+                <Feather name="message-circle" size={26} color="#000" />
               </View>
               <View style={styles.companionContent}>
                 <Text style={styles.companionTitle}>What's on your mind?</Text>
-                <Text style={styles.companionSubtitle}>Tap to chat</Text>
+                <Text style={styles.companionSubtitle}>Talk it through</Text>
               </View>
-              <Feather name="chevron-right" size={20} color={ds.colors.textQuaternary} />
-            </Pressable>
-          </Animated.View>
+              <Feather name="arrow-right" size={22} color="rgba(0,0,0,0.4)" />
+            </View>
+          </ActionCard>
 
-          {/* Tasks */}
+          {/* Today Section */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.section}>
             <Text style={styles.sectionTitle}>Today</Text>
             
@@ -198,28 +257,25 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
               <TaskItem
                 icon="sun"
                 label="Morning check-in"
-                sublabel={morning ? 'Completed' : 'Set your intention'}
+                sublabel={morning ? 'Done' : 'Set your intention'}
                 done={!!morning}
                 onPress={handleMorning}
               />
               
-              <View style={styles.taskDivider} />
-              
               <TaskItem
                 icon="book-open"
                 label="Daily reading"
-                sublabel="Reflect on today's wisdom"
+                sublabel="Today's reflection"
                 onPress={handleReading}
               />
-              
-              <View style={styles.taskDivider} />
               
               <TaskItem
                 icon="moon"
                 label="Evening reflection"
-                sublabel={evening ? 'Completed' : 'Review your day'}
+                sublabel={evening ? 'Done' : 'Review your day'}
                 done={!!evening}
                 onPress={handleEvening}
+                isLast
               />
             </View>
           </Animated.View>
@@ -251,8 +307,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    ...ds.typography.body,
-    color: ds.colors.textTertiary,
+    fontSize: 32,
+    color: ds.colors.textQuaternary,
+    letterSpacing: 4,
   },
 
   // Header
@@ -260,12 +317,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingTop: ds.space[4],
-    paddingBottom: ds.space[6],
+    paddingTop: ds.space[6],
+    paddingBottom: ds.space[4],
   },
   date: {
     ...ds.typography.caption,
     color: ds.colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
     marginBottom: ds.space[1],
   },
   greeting: {
@@ -280,41 +339,48 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  profileButtonPressed: {
+    backgroundColor: ds.colors.bgQuaternary,
+  },
 
   // Hero
   hero: {
     alignItems: 'center',
-    paddingVertical: ds.space[8],
-    paddingBottom: ds.space[6],
+    paddingTop: ds.space[6],
+    paddingBottom: ds.space[8],
   },
   dayInfo: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginTop: ds.space[4],
+    marginTop: ds.space[5],
     gap: ds.space[2],
   },
   dayCount: {
-    fontSize: 48,
-    fontWeight: '600',
+    fontSize: 64,
+    fontWeight: '700',
     color: ds.colors.textPrimary,
-    letterSpacing: -1,
+    letterSpacing: -2,
   },
   dayLabel: {
-    ...ds.typography.h3,
-    color: ds.colors.textSecondary,
+    fontSize: 24,
+    fontWeight: '500',
+    color: ds.colors.textTertiary,
   },
 
   // Section
   section: {
-    marginTop: ds.space[6],
+    marginTop: ds.space[4],
   },
   sectionTitle: {
-    ...ds.typography.h2,
-    color: ds.colors.textPrimary,
-    marginBottom: ds.space[4],
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 1.5,
+    marginBottom: ds.space[3],
+    marginLeft: ds.space[1],
   },
 
-  // Task List
+  // Task List - No borders
   taskList: {
     backgroundColor: ds.colors.bgTertiary,
     borderRadius: ds.radius.lg,
@@ -324,14 +390,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: ds.space[4],
-    paddingHorizontal: ds.space[4],
-  },
-  taskItemPressed: {
-    backgroundColor: ds.colors.bgQuaternary,
+    paddingHorizontal: ds.space[5],
   },
   taskIcon: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: ds.radius.md,
     backgroundColor: ds.colors.bgQuaternary,
     justifyContent: 'center',
@@ -342,11 +405,12 @@ const styles = StyleSheet.create({
   },
   taskContent: {
     flex: 1,
-    marginLeft: ds.space[3],
+    marginLeft: ds.space[4],
   },
   taskLabel: {
     ...ds.typography.body,
     color: ds.colors.textPrimary,
+    fontWeight: '500',
   },
   taskLabelDone: {
     color: ds.colors.textSecondary,
@@ -356,44 +420,49 @@ const styles = StyleSheet.create({
     color: ds.colors.textTertiary,
     marginTop: 2,
   },
+  taskChevron: {
+    width: 32,
+    height: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   taskDivider: {
-    height: 1,
+    height: StyleSheet.hairlineWidth,
     backgroundColor: ds.colors.divider,
-    marginLeft: 40 + ds.space[4] + ds.space[3],
+    marginLeft: 44 + ds.space[5] + ds.space[4],
   },
 
-  // Companion Card
+  // Companion Card - Premium amber
   companionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F59E0B', // Amber accent
+    backgroundColor: ds.colors.accent,
     borderRadius: ds.radius.xl,
-    padding: ds.space[4],
+    paddingVertical: ds.space[5],
+    paddingHorizontal: ds.space[5],
     marginBottom: ds.space[6],
-  },
-  companionCardPressed: {
-    opacity: 0.9,
+    ...ds.shadows.md,
   },
   companionIcon: {
-    width: 48,
-    height: 48,
+    width: 52,
+    height: 52,
     borderRadius: ds.radius.lg,
-    backgroundColor: 'rgba(0, 0, 0, 0.15)',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   companionContent: {
     flex: 1,
-    marginLeft: ds.space[3],
+    marginLeft: ds.space[4],
   },
   companionTitle: {
-    ...ds.typography.body,
+    fontSize: 18,
     fontWeight: '600',
     color: '#000',
   },
   companionSubtitle: {
     ...ds.typography.caption,
-    color: 'rgba(0, 0, 0, 0.6)',
+    color: 'rgba(0, 0, 0, 0.5)',
     marginTop: 2,
   },
 });

@@ -18,10 +18,10 @@
   :root {
     /* Dark theme (default) */
     @variant dark {
-      /* === Background Layers === */
+      /* === Background Layers (distinct for depth) === */
       --color-bg-primary: #000000;
-      --color-bg-secondary: #0C0C0E;
-      --color-bg-tertiary: #161618;
+      --color-bg-secondary: #0A0A0C;
+      --color-bg-tertiary: #141416;
       --color-bg-quaternary: #1C1C1E;
       
       /* === Text Hierarchy === */

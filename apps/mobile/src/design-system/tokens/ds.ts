@@ -1,12 +1,14 @@
 /**
  * Design System Tokens
  * 
- * Single source of truth for all design values.
- * Based on 4px grid, 1.25 type scale.
+ * Apple-inspired dark theme.
+ * Premium, minimal, confident.
+ * 
+ * 4px grid, 1.25 type scale.
  */
 
 // ============================================================================
-// SPACING (4px base)
+// SPACING (4px base, generous)
 // ============================================================================
 
 export const space = {
@@ -25,7 +27,7 @@ export const space = {
 } as const;
 
 // ============================================================================
-// TYPOGRAPHY
+// TYPOGRAPHY (Apple SF-style)
 // ============================================================================
 
 export const fontSize = {
@@ -35,8 +37,8 @@ export const fontSize = {
   body: 17,
   h3: 20,
   h2: 24,
-  h1: 32,
-  display: 40,
+  h1: 34, // Larger for impact
+  display: 48,
 } as const;
 
 export const fontWeight = {
@@ -53,28 +55,28 @@ export const lineHeight = {
   body: 26,
   h3: 28,
   h2: 32,
-  h1: 40,
-  display: 48,
+  h1: 42,
+  display: 56,
 } as const;
 
 export const typography = {
   display: {
     fontSize: fontSize.display,
-    fontWeight: fontWeight.semibold,
+    fontWeight: fontWeight.bold,
     lineHeight: lineHeight.display,
-    letterSpacing: -0.5,
+    letterSpacing: -1,
   },
   h1: {
     fontSize: fontSize.h1,
-    fontWeight: fontWeight.semibold,
+    fontWeight: fontWeight.bold,
     lineHeight: lineHeight.h1,
-    letterSpacing: -0.3,
+    letterSpacing: -0.5,
   },
   h2: {
     fontSize: fontSize.h2,
     fontWeight: fontWeight.semibold,
     lineHeight: lineHeight.h2,
-    letterSpacing: -0.2,
+    letterSpacing: -0.3,
   },
   h3: {
     fontSize: fontSize.h3,
@@ -109,47 +111,62 @@ export const typography = {
 } as const;
 
 // ============================================================================
-// COLORS
+// COLORS (Apple-inspired depth)
 // ============================================================================
 
 export const palette = {
-  // Backgrounds
+  // Backgrounds - more distinct layers
   black: '#000000',
-  gray950: '#0C0C0E',
-  gray900: '#161618',
-  gray850: '#1C1C1E',
-  gray800: '#2C2C2E',
+  gray950: '#0A0A0C', // Slightly visible
+  gray900: '#141416', // Cards
+  gray850: '#1C1C1E', // Elevated cards
+  gray800: '#2C2C2E', // Interactive elements
   gray700: '#3A3A3C',
+  gray600: '#48484A',
   
-  // Text
+  // Text - refined opacity
   white: '#FFFFFF',
-  gray100: 'rgba(255, 255, 255, 0.72)',
-  gray200: 'rgba(255, 255, 255, 0.48)',
-  gray300: 'rgba(255, 255, 255, 0.32)',
+  gray100: 'rgba(255, 255, 255, 0.85)', // More readable
+  gray200: 'rgba(255, 255, 255, 0.55)',
+  gray300: 'rgba(255, 255, 255, 0.35)',
   
-  // Accents (muted, sophisticated)
-  warmGold: '#E8A855',
-  warmGoldMuted: 'rgba(232, 168, 85, 0.12)',
+  // Accent - warm amber
+  amber: '#F5A623',
+  amberLight: '#FFB94D',
+  amberMuted: 'rgba(245, 166, 35, 0.15)',
+  amberSubtle: 'rgba(245, 166, 35, 0.08)',
   
-  calmBlue: '#6B9EBF',
-  calmBlueMuted: 'rgba(107, 158, 191, 0.12)',
+  // Semantic
+  green: '#32D74B',
+  greenMuted: 'rgba(50, 215, 75, 0.15)',
   
-  sageGreen: '#7BA873',
-  sageGreenMuted: 'rgba(123, 168, 115, 0.12)',
+  blue: '#0A84FF',
+  blueMuted: 'rgba(10, 132, 255, 0.15)',
   
-  dustyRose: '#C97B7B',
-  dustyRoseMuted: 'rgba(201, 123, 123, 0.12)',
+  red: '#FF453A',
+  redMuted: 'rgba(255, 69, 58, 0.15)',
   
-  softPurple: '#9B8FC7',
-  softPurpleMuted: 'rgba(155, 143, 199, 0.12)',
+  orange: '#FF9F0A',
+  orangeMuted: 'rgba(255, 159, 10, 0.15)',
+  
+  // Legacy aliases (backwards compatibility)
+  warmGold: '#F5A623',
+  warmGoldMuted: 'rgba(245, 166, 35, 0.15)',
+  calmBlue: '#0A84FF',
+  calmBlueMuted: 'rgba(10, 132, 255, 0.15)',
+  sageGreen: '#32D74B',
+  sageGreenMuted: 'rgba(50, 215, 75, 0.15)',
+  dustyRose: '#FF453A',
+  dustyRoseMuted: 'rgba(255, 69, 58, 0.15)',
 } as const;
 
 export const colors = {
-  // Background layers
+  // Background layers (distinct enough to avoid borders)
   bgPrimary: palette.black,
   bgSecondary: palette.gray950,
   bgTertiary: palette.gray900,
   bgQuaternary: palette.gray850,
+  bgElevated: palette.gray800,
   
   // Text hierarchy
   textPrimary: palette.white,
@@ -157,103 +174,123 @@ export const colors = {
   textTertiary: palette.gray200,
   textQuaternary: palette.gray300,
   
-  // Borders
-  borderSubtle: 'rgba(255, 255, 255, 0.06)',
-  borderDefault: 'rgba(255, 255, 255, 0.10)',
-  borderStrong: 'rgba(255, 255, 255, 0.16)',
-  divider: 'rgba(255, 255, 255, 0.08)',
+  // Borders (use sparingly)
+  borderSubtle: 'rgba(255, 255, 255, 0.04)',
+  borderDefault: 'rgba(255, 255, 255, 0.08)',
+  borderStrong: 'rgba(255, 255, 255, 0.12)',
+  divider: 'rgba(255, 255, 255, 0.06)',
   
-  // Accents
-  accent: palette.warmGold,
-  accentMuted: palette.warmGoldMuted,
+  // Accent
+  accent: palette.amber,
+  accentLight: palette.amberLight,
+  accentMuted: palette.amberMuted,
+  accentSubtle: palette.amberSubtle,
   
   // Semantic
-  success: palette.sageGreen,
-  successMuted: palette.sageGreenMuted,
-  warning: palette.warmGold,
-  warningMuted: palette.warmGoldMuted,
-  error: palette.dustyRose,
-  errorMuted: palette.dustyRoseMuted,
-  info: palette.calmBlue,
-  infoMuted: palette.calmBlueMuted,
+  success: palette.green,
+  successMuted: palette.greenMuted,
+  warning: palette.orange,
+  warningMuted: palette.orangeMuted,
+  error: palette.red,
+  errorMuted: palette.redMuted,
+  info: palette.blue,
+  infoMuted: palette.blueMuted,
 } as const;
 
 // ============================================================================
-// RADIUS
+// RADIUS (larger = more premium)
 // ============================================================================
 
 export const radius = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  xs: 6,
+  sm: 10,
+  md: 14,
+  lg: 20,    // Primary cards
+  xl: 28,    // Hero elements
+  '2xl': 36, // Modals
   full: 9999,
 } as const;
 
 // ============================================================================
-// SHADOWS
+// SHADOWS (subtle, layered)
 // ============================================================================
 
 export const shadows = {
   sm: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
     elevation: 2,
   },
   md: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
+    shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 4,
   },
   lg: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.5,
+    shadowOpacity: 0.3,
     shadowRadius: 24,
     elevation: 8,
+  },
+  glow: {
+    shadowColor: palette.amber,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 0,
   },
 } as const;
 
 // ============================================================================
-// COMPONENT SIZES
+// COMPONENT SIZES (generous touch targets)
 // ============================================================================
 
 export const sizes = {
-  // Touch targets
+  // Touch targets (Apple minimum)
   touchMin: 44,
-  touchLg: 52,
+  touchLg: 56,
   
   // Buttons
-  buttonHeight: 52,
-  buttonHeightSm: 40,
+  buttonHeight: 56,
+  buttonHeightSm: 44,
   
   // Inputs
-  inputHeight: 52,
+  inputHeight: 56,
   
   // Header
-  headerHeight: 56,
+  headerHeight: 60,
   
   // Icons
-  iconSm: 16,
-  iconMd: 20,
-  iconLg: 24,
+  iconSm: 18,
+  iconMd: 22,
+  iconLg: 28,
+  iconXl: 32,
   
   // Content
-  contentPadding: 20,
+  contentPadding: 24, // More breathing room
+  cardPadding: 20,
 } as const;
 
 // ============================================================================
-// ANIMATION
+// ANIMATION (spring-based for Apple feel)
 // ============================================================================
 
 export const timing = {
-  quick: 150,
-  standard: 250,
-  slow: 400,
+  instant: 100,
+  quick: 200,
+  standard: 300,
+  slow: 500,
+} as const;
+
+export const spring = {
+  snappy: { damping: 20, stiffness: 300 },
+  smooth: { damping: 15, stiffness: 150 },
+  bouncy: { damping: 10, stiffness: 200 },
 } as const;
 
 // ============================================================================
@@ -272,6 +309,7 @@ export const ds = {
   shadows,
   sizes,
   timing,
+  spring,
 } as const;
 
 export type DS = typeof ds;
