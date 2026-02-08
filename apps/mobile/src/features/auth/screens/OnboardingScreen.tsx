@@ -26,6 +26,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { AmberButton } from '../../../design-system/components/AmberButton';
 import { OnboardingIllustration } from '../../../design-system/components/Illustration';
@@ -299,8 +300,10 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                     styles.indicator,
                     index === currentStep && styles.indicatorActive,
                   ]}
-                  accessibilityLabel={`Go to step ${index + 1}`}
+                  accessibilityLabel={`Go to step ${index + 1}: ${steps[index].title}`}
                   accessibilityRole="button"
+                  accessibilityState={{ selected: index === currentStep }}
+                  accessibilityHint={index === currentStep ? "Current step" : "Tap to jump to this step"}
                 />
               ))}
             </View>
@@ -360,21 +363,21 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: ds.space[6],
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 16,
-    marginBottom: 24,
+    paddingTop: ds.space[4],
+    marginBottom: ds.space[6],
   },
   progressBackground: {
     flex: 1,
     height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderRadius: 2,
-    marginRight: 16,
+    marginRight: ds.space[4],
     overflow: 'hidden',
   },
   progressFill: {
@@ -383,8 +386,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   skipButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: ds.space[3],
+    paddingVertical: ds.space[1],
   },
   skipText: {
     fontSize: 14,
@@ -397,12 +400,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   illustrationContainer: {
-    marginBottom: 32,
+    marginBottom: ds.space[8],
     alignItems: 'center',
   },
   textContainer: {
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: ds.space[2],
   },
   subtitle: {
     fontSize: 14,
@@ -410,14 +413,14 @@ const styles = StyleSheet.create({
     color: aestheticColors.primary[500],
     textTransform: 'uppercase',
     letterSpacing: 1,
-    marginBottom: 12,
+    marginBottom: ds.space[3],
   },
   title: {
     fontSize: 32,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: ds.space[4],
     lineHeight: 40,
   },
   description: {
@@ -429,30 +432,30 @@ const styles = StyleSheet.create({
   },
   actionsContainer: {
     marginTop: 'auto',
-    marginBottom: 16,
+    marginBottom: ds.space[4],
   },
   actionCard: {
-    padding: 24,
-    borderRadius: 24,
+    padding: ds.space[6],
+    borderRadius: ds.radius.xl,
   },
   indicatorsContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 24,
-    gap: 8,
+    marginBottom: ds.space[6],
+    gap: ds.space[2],
   },
   indicator: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: ds.semantic.surface.overlay,
   },
   indicatorActive: {
     width: 24,
     backgroundColor: aestheticColors.primary[500],
   },
   primaryButton: {
-    marginBottom: 16,
+    marginBottom: ds.space[4],
   },
   secondaryButton: {
     alignItems: 'center',
