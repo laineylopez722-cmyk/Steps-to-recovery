@@ -88,6 +88,10 @@ export function StepDetailScreen(): React.ReactElement {
 
   const listItems = useMemo((): ListItem[] => buildStepListItems(stepData), [stepData]);
 
+  const answeredQuestionNumbers = useMemo(() => {
+    return new Set(questions.filter((q) => q.is_complete).map((q) => q.question_number));
+  }, [questions]);
+
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -239,9 +243,7 @@ export function StepDetailScreen(): React.ReactElement {
 
       // Question item
       const questionNumber = item.questionNumber;
-      const isAnswered = questions.find(
-        (q) => q.question_number === questionNumber && q.is_complete,
-      );
+      const isAnswered = answeredQuestionNumbers.has(questionNumber);
       const isSaving = savingQuestion === questionNumber;
 
       return (
@@ -257,7 +259,7 @@ export function StepDetailScreen(): React.ReactElement {
         />
       );
     },
-    [questions, savingQuestion, answers, theme, handleSaveAnswer, totalQuestions, scrollToQuestion],
+    [answeredQuestionNumbers, savingQuestion, answers, handleSaveAnswer, totalQuestions],
   );
 
   const keyExtractor = useCallback((item: ListItem, _index: number) => {
@@ -376,7 +378,7 @@ export function StepDetailScreen(): React.ReactElement {
     );
   }
 
-  const answeredCount = questions.filter((q) => q.is_complete).length;
+  const answeredCount = answeredQuestionNumbers.size;
   const hasUnanswered = answeredCount < totalQuestions;
   const progressPercent =
     totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
