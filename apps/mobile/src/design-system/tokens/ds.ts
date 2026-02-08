@@ -236,6 +236,7 @@ export const semantic = {
     elevated: colors.bgElevated,
     interactive: colors.bgQuaternary,
     overlay: 'rgba(0, 0, 0, 0.55)',
+    overlayModal: 'rgba(0, 0, 0, 0.72)',
   },
   text: {
     primary: colors.textPrimary,
@@ -245,7 +246,13 @@ export const semantic = {
     onPrimary: palette.black,
     onSecondary: palette.white,
     onAlert: palette.white,
+    onDark: palette.white,
     inverse: palette.black,
+  },
+  emergency: {
+    calm: palette.blue,
+    calmMuted: 'rgba(10, 132, 255, 0.15)',
+    calmSubtle: 'rgba(10, 132, 255, 0.08)',
   },
   elevation: {
     base: 'sm',
