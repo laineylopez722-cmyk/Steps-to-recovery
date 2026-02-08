@@ -3,7 +3,7 @@
  * Provides theme tokens and dark mode detection to the entire app
  */
 
-import { createContext, type ReactNode, useMemo } from 'react';
+import { createContext, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
 import { lightColors, darkColors, categoryColors, type ColorPalette } from '../tokens/colors';
 import { typography } from '../tokens/typography';
@@ -18,6 +18,9 @@ import {
   scales,
   opacities,
 } from '../tokens/animations';
+import { resolveRuntimeTheme } from '../runtime-theme/resolver';
+import { runtimeThemeFlags } from '../runtime-theme/flags';
+import { logger } from '@/utils/logger';
 
 /**
  * Complete theme object with all design tokens
@@ -67,10 +70,44 @@ export function ThemeProvider({ children, forcedColorScheme }: ThemeProviderProp
   const colorScheme = forcedColorScheme || deviceColorScheme || 'dark';
   const isDark = colorScheme === 'dark';
 
+  const defaultColors = isDark ? darkColors : lightColors;
+  const [resolvedColors, setResolvedColors] = useState<ColorPalette>(defaultColors);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const hydrateRuntimeTheme = async () => {
+      try {
+        const resolved = await resolveRuntimeTheme({
+          defaultColors,
+          isDark,
+          runtimeThemeEnabled: runtimeThemeFlags.runtimeThemeEnabled,
+        });
+
+        if (!cancelled) {
+          setResolvedColors(resolved.colors);
+        }
+      } catch (error) {
+        logger.warn('Theme resolver failed; using defaults', error);
+        if (!cancelled) {
+          setResolvedColors(defaultColors);
+        }
+      }
+    };
+
+    // Immediate safe fallback before async resolution.
+    setResolvedColors(defaultColors);
+    void hydrateRuntimeTheme();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [defaultColors, isDark]);
+
   // Memoize theme object to prevent unnecessary re-renders
   const theme: Theme = useMemo(
     () => ({
-      colors: isDark ? darkColors : lightColors,
+      colors: resolvedColors,
       categoryColors,
       typography,
       spacing,
@@ -86,7 +123,7 @@ export function ThemeProvider({ children, forcedColorScheme }: ThemeProviderProp
       },
       isDark,
     }),
-    [isDark],
+    [isDark, resolvedColors],
   );
 
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
