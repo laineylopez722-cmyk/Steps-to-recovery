@@ -281,8 +281,8 @@ export function StepDetailScreen(): React.ReactElement {
               >
                 {item.title}
               </Text>
-              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-                {item.questionRange}
+              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}> 
+                {item.questionRange} • tap to jump
               </Text>
             </View>
           </View>
