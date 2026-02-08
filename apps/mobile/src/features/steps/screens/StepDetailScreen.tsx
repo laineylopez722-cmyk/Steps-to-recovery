@@ -76,6 +76,16 @@ export function StepDetailScreen(): React.ReactElement {
 
   const listItems = useMemo((): ListItem[] => buildStepListItems(stepData), [stepData]);
 
+  const questionIndexMap = useMemo(() => {
+    const map = new Map<number, number>();
+    listItems.forEach((item, index) => {
+      if (item.type === 'question') {
+        map.set(item.questionNumber, index);
+      }
+    });
+    return map;
+  }, [listItems]);
+
   const answeredQuestionNumbers = useMemo(() => {
     return new Set(questions.filter((q) => q.is_complete).map((q) => q.question_number));
   }, [questions]);
@@ -139,11 +149,9 @@ export function StepDetailScreen(): React.ReactElement {
     (questionNumber: number) => {
       if (!flatListRef.current || !stepData) return;
 
-      const targetIndex = listItems.findIndex(
-        (item) => item.type === 'question' && item.questionNumber === questionNumber,
-      );
+      const targetIndex = questionIndexMap.get(questionNumber);
 
-      if (targetIndex !== -1) {
+      if (targetIndex !== undefined) {
         flatListRef.current.scrollToIndex({
           index: targetIndex,
           animated: true,
@@ -155,7 +163,7 @@ export function StepDetailScreen(): React.ReactElement {
         }
       }
     },
-    [listItems, stepData],
+    [questionIndexMap, stepData],
   );
 
   // Scroll to first unanswered question
