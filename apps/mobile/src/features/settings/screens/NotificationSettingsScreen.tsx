@@ -1,17 +1,26 @@
 /**
- * NotificationSettingsScreen - Manage Notification Preferences
- *
- * Allows users to:
- * - Enable/disable notifications
- * - Customize reminder times
- * - Send test notifications
- * - View scheduled notifications
+ * Notification Settings Screen
+ * 
+ * Apple Settings-inspired notification preferences.
  */
 
-import { useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, View } from 'react-native';
+import React, { useEffect, useState, useCallback } from 'react';
+import { 
+  Platform, 
+  ScrollView, 
+  StyleSheet, 
+  View, 
+  Text, 
+  Pressable,
+  Switch,
+  Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { useNotifications } from '../../../contexts/NotificationContext';
 import {
   cancelDailyReminders,
@@ -21,106 +30,175 @@ import {
   sendTestNotification,
   type DailyReminderConfig,
 } from '../../../services/notificationService';
-import { logger } from '../../../utils/logger';
-import {
-  Button,
-  Card,
-  Text,
-  Toast,
-  type ToastVariant,
-  Toggle,
-  useTheme,
-} from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 
-export function NotificationSettingsScreen(): React.ReactElement {
-  const theme = useTheme();
-  const { permissionStatus, requestPermissions, notificationsEnabled, setNotificationsEnabled } =
-    useNotifications();
+// Toggle Row Component
+function ToggleRow({ 
+  label, 
+  subtitle,
+  value, 
+  onValueChange,
+  disabled,
+}: {
+  label: string;
+  subtitle?: string;
+  value: boolean;
+  onValueChange: (val: boolean) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <View style={styles.toggleRow}>
+      <View style={styles.toggleContent}>
+        <Text style={styles.toggleLabel}>{label}</Text>
+        {subtitle && <Text style={styles.toggleSubtitle}>{subtitle}</Text>}
+      </View>
+      <Switch
+        value={value}
+        onValueChange={(val) => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+          onValueChange(val);
+        }}
+        disabled={disabled}
+        trackColor={{ false: ds.colors.bgQuaternary, true: ds.colors.success }}
+        thumbColor="#fff"
+      />
+    </View>
+  );
+}
 
-  const [toastVisible, setToastVisible] = useState<boolean>(false);
-  const [toastMessage, setToastMessage] = useState<string>('');
-  const [toastVariant, setToastVariant] = useState<ToastVariant>('info');
+// Time Picker Row
+function TimePickerRow({
+  label,
+  enabled,
+  hour,
+  minute,
+  onTimeChange,
+  onToggle,
+  disabled,
+}: {
+  label: string;
+  enabled: boolean;
+  hour: number;
+  minute: number;
+  onTimeChange: (h: number, m: number) => void;
+  onToggle: (val: boolean) => void;
+  disabled?: boolean;
+}) {
+  const [showPicker, setShowPicker] = useState(false);
 
-  const showToast = (message: string, variant: ToastVariant): void => {
-    setToastMessage(message);
-    setToastVariant(variant);
-    setToastVisible(true);
+  const formatTime = (h: number, m: number): string => {
+    const period = h >= 12 ? 'PM' : 'AM';
+    const displayHour = h % 12 || 12;
+    return `${displayHour}:${String(m).padStart(2, '0')} ${period}`;
   };
 
-  const [morningEnabled, setMorningEnabled] = useState<boolean>(true);
+  const handleChange = (event: DateTimePickerEvent, date?: Date) => {
+    if (Platform.OS === 'android') setShowPicker(false);
+    if (event.type === 'dismissed') return;
+    if (date) {
+      onTimeChange(date.getHours(), date.getMinutes());
+    }
+  };
+
+  const timeDate = new Date();
+  timeDate.setHours(hour, minute, 0);
+
+  return (
+    <View style={styles.timeRow}>
+      <View style={styles.timeHeader}>
+        <View style={styles.timeInfo}>
+          <Text style={styles.timeLabel}>{label}</Text>
+          {enabled && (
+            <Pressable onPress={() => setShowPicker(!showPicker)}>
+              <Text style={styles.timeValue}>{formatTime(hour, minute)}</Text>
+            </Pressable>
+          )}
+        </View>
+        <Switch
+          value={enabled}
+          onValueChange={onToggle}
+          disabled={disabled}
+          trackColor={{ false: ds.colors.bgQuaternary, true: ds.colors.success }}
+          thumbColor="#fff"
+        />
+      </View>
+
+      {enabled && showPicker && (
+        <View style={styles.pickerContainer}>
+          <DateTimePicker
+            value={timeDate}
+            mode="time"
+            display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+            onChange={handleChange}
+          />
+          {Platform.OS === 'ios' && (
+            <Pressable 
+              onPress={() => setShowPicker(false)}
+              style={styles.doneBtn}
+            >
+              <Text style={styles.doneBtnText}>Done</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
+    </View>
+  );
+}
+
+export function NotificationSettingsScreen(): React.ReactElement {
+  const navigation = useNavigation();
+  const { 
+    permissionStatus, 
+    requestPermissions, 
+    notificationsEnabled, 
+    setNotificationsEnabled 
+  } = useNotifications();
+
+  const [morningEnabled, setMorningEnabled] = useState(true);
   const [morningHour, setMorningHour] = useState<number>(DEFAULT_REMINDERS.morning.hour);
   const [morningMinute, setMorningMinute] = useState<number>(DEFAULT_REMINDERS.morning.minute);
 
-  const [eveningEnabled, setEveningEnabled] = useState<boolean>(true);
+  const [eveningEnabled, setEveningEnabled] = useState(true);
   const [eveningHour, setEveningHour] = useState<number>(DEFAULT_REMINDERS.evening.hour);
   const [eveningMinute, setEveningMinute] = useState<number>(DEFAULT_REMINDERS.evening.minute);
 
   const [scheduledCount, setScheduledCount] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isTogglingNotifications, setIsTogglingNotifications] = useState(false);
 
-  const [showMorningTimePicker, setShowMorningTimePicker] = useState(false);
-  const [showEveningTimePicker, setShowEveningTimePicker] = useState(false);
-
-  /**
-   * Load current notification count
-   */
   useEffect(() => {
     loadScheduledNotifications();
   }, []);
 
-  /**
-   * Get scheduled notification count
-   */
-  const loadScheduledNotifications = async (): Promise<void> => {
+  const loadScheduledNotifications = async () => {
     try {
       const scheduled = await getScheduledNotifications();
       setScheduledCount(scheduled.length);
-    } catch (error) {
-      logger.error('Failed to load scheduled notifications', error);
+    } catch {
       setScheduledCount(0);
     }
   };
 
-  /**
-   * Toggle master notification switch
-   */
-  const handleToggleNotifications = async (enabled: boolean): Promise<void> => {
-    if (isTogglingNotifications) return; // Prevent rapid toggling
-
-    setIsTogglingNotifications(true);
-
-    try {
-      if (enabled && permissionStatus !== 'granted') {
-        // Need to request permissions first
-        const granted = await requestPermissions();
-        if (!granted) {
-          showToast('Enable notifications in device settings to receive reminders.', 'warning');
-          return;
-        }
+  const handleToggleNotifications = useCallback(async (enabled: boolean) => {
+    if (enabled && permissionStatus !== 'granted') {
+      const granted = await requestPermissions();
+      if (!granted) {
+        Alert.alert('Notifications Disabled', 'Enable notifications in device settings.');
+        return;
       }
-
-      setNotificationsEnabled(enabled);
-
-      if (enabled) {
-        // Re-schedule daily reminders
-        await applyReminderSettings(true);
-      } else {
-        // Cancel all reminders
-        await cancelDailyReminders();
-        await loadScheduledNotifications();
-      }
-    } finally {
-      setIsTogglingNotifications(false);
     }
-  };
 
-  /**
-   * Apply current reminder settings
-   */
-  const applyReminderSettings = async (enabledOverride?: boolean): Promise<void> => {
-    const shouldApply = enabledOverride ?? notificationsEnabled;
-    if (!shouldApply) return;
+    setNotificationsEnabled(enabled);
+
+    if (enabled) {
+      await applySettings();
+    } else {
+      await cancelDailyReminders();
+      await loadScheduledNotifications();
+    }
+  }, [permissionStatus, requestPermissions, setNotificationsEnabled]);
+
+  const applySettings = async () => {
+    if (!notificationsEnabled) return;
 
     setIsUpdating(true);
     try {
@@ -129,7 +207,6 @@ export function NotificationSettingsScreen(): React.ReactElement {
         hour: morningHour,
         minute: morningMinute,
       };
-
       const evening: DailyReminderConfig = {
         enabled: eveningEnabled,
         hour: eveningHour,
@@ -138,503 +215,380 @@ export function NotificationSettingsScreen(): React.ReactElement {
 
       await scheduleDailyReminders(morning, evening);
       await loadScheduledNotifications();
-
-      showToast('Notification reminders updated.', 'success');
-    } catch (error) {
-      logger.error('Error updating reminders', error);
-      showToast('Failed to update reminders. Please try again.', 'error');
+      
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      Alert.alert('Error', 'Failed to update reminders.');
     } finally {
       setIsUpdating(false);
     }
   };
 
-  /**
-   * Send test notification
-   */
-  const handleSendTest = async (): Promise<void> => {
+  const handleSendTest = async () => {
     if (permissionStatus !== 'granted') {
-      showToast('Enable notifications to send a test notification.', 'warning');
+      Alert.alert('Notifications Disabled', 'Enable notifications first.');
       return;
     }
 
     try {
       await sendTestNotification(
-        '🔔 Test Notification',
-        'This is how your check-in reminders will look!',
+        'Test Notification',
+        'This is how your reminders will look!'
       );
-      showToast('Test notification sent.', 'success');
-    } catch (error) {
-      logger.error('Error sending test notification', error);
-      showToast('Failed to send test notification.', 'error');
-    }
-  };
-
-  /**
-   * Format time for display
-   */
-  const formatTime = (hour: number, minute: number): string => {
-    const period = hour >= 12 ? 'PM' : 'AM';
-    const displayHour = hour % 12 || 12;
-    const displayMinute = String(minute).padStart(2, '0');
-    return `${displayHour}:${displayMinute} ${period}`;
-  };
-
-  /**
-   * Create a Date object from hour and minute for DateTimePicker
-   */
-  const createTimeDate = (hour: number, minute: number): Date => {
-    const date = new Date();
-    date.setHours(hour);
-    date.setMinutes(minute);
-    date.setSeconds(0);
-    return date;
-  };
-
-  /**
-   * Handle morning time change
-   */
-  const handleMorningTimeChange = (event: DateTimePickerEvent, selectedDate?: Date): void => {
-    if (Platform.OS === 'android') {
-      setShowMorningTimePicker(false);
-    }
-
-    if (event.type === 'dismissed') return;
-
-    if (selectedDate) {
-      setMorningHour(selectedDate.getHours());
-      setMorningMinute(selectedDate.getMinutes());
-    }
-  };
-
-  /**
-   * Handle evening time change
-   */
-  const handleEveningTimeChange = (event: DateTimePickerEvent, selectedDate?: Date): void => {
-    if (Platform.OS === 'android') {
-      setShowEveningTimePicker(false);
-    }
-
-    if (event.type === 'dismissed') return;
-
-    if (selectedDate) {
-      setEveningHour(selectedDate.getHours());
-      setEveningMinute(selectedDate.getMinutes());
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    } catch {
+      Alert.alert('Error', 'Failed to send test notification.');
     }
   };
 
   const permissionGranted = permissionStatus === 'granted';
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <Toast
-        visible={toastVisible}
-        message={toastMessage}
-        variant={toastVariant}
-        onDismiss={() => setToastVisible(false)}
-      />
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Feather name="chevron-left" size={26} color={ds.colors.textPrimary} />
+          </Pressable>
+          <Text style={styles.headerTitle}>Notifications</Text>
+          <View style={styles.headerSpacer} />
+        </View>
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={[
-          styles.content,
-          {
-            paddingHorizontal: theme.spacing.md,
-            paddingBottom: theme.spacing.xl,
-          },
-        ]}
-        showsVerticalScrollIndicator={false}
-        accessibilityRole="scrollbar"
-        accessibilityLabel="Notification settings"
-      >
-        <Text
-          variant="title2"
-          style={{ marginTop: theme.spacing.sm, marginBottom: theme.spacing.md }}
+        <ScrollView 
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
         >
-          Notifications
-        </Text>
-
-        {permissionStatus === 'denied' && (
-          <Card
-            variant="outlined"
-            style={{
-              borderColor: theme.colors.warning,
-              backgroundColor: `${theme.colors.warning}15`,
-              marginBottom: theme.spacing.md,
-            }}
-            accessibilityRole="alert"
-            accessibilityLabel="Notifications disabled in device settings"
-          >
-            <Text variant="body" color="text">
-              Notifications are disabled in your device settings.
-            </Text>
-            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>
-              Enable them to receive check-in reminders and milestone celebrations.
-            </Text>
-          </Card>
-        )}
-
-        <Card variant="elevated" style={{ marginBottom: theme.spacing.md }}>
-          <Toggle
-            value={notificationsEnabled}
-            onValueChange={handleToggleNotifications}
-            label="Enable notifications"
-            disabled={isUpdating || isTogglingNotifications}
-            style={{ marginBottom: theme.spacing.xs }}
-          />
-          <Text variant="bodySmall" color="textSecondary">
-            Receive daily reminders for check-ins and milestone celebrations.
-          </Text>
-        </Card>
-
-        {notificationsEnabled && permissionGranted && (
-          <>
-            <Text
-              variant="h3"
-              style={{ marginTop: theme.spacing.sm, marginBottom: theme.spacing.sm }}
-              accessibilityRole="header"
-            >
-              Daily reminders
-            </Text>
-
-            <Card variant="elevated" style={{ marginBottom: theme.spacing.md }}>
-              <View style={styles.row}>
-                <View style={styles.grow}>
-                  <Text variant="labelLarge">Morning check-in</Text>
-                  <Text variant="caption" color="primary" style={{ marginTop: theme.spacing.xs }}>
-                    {formatTime(morningHour, morningMinute)}
-                  </Text>
-                </View>
-                <Toggle
-                  value={morningEnabled}
-                  onValueChange={setMorningEnabled}
-                  disabled={isUpdating}
-                  accessibilityLabel="Morning check-in reminder"
-                  accessibilityHint="Toggles the morning reminder on or off"
-                  style={{ width: 56 }}
-                />
+          {/* Permission Warning */}
+          {permissionStatus === 'denied' && (
+            <Animated.View entering={FadeIn.duration(300)} style={styles.warningCard}>
+              <Feather name="alert-circle" size={20} color={ds.colors.warning} />
+              <View style={styles.warningContent}>
+                <Text style={styles.warningTitle}>Notifications Disabled</Text>
+                <Text style={styles.warningText}>
+                  Enable in device settings to receive reminders.
+                </Text>
               </View>
+            </Animated.View>
+          )}
 
-              {morningEnabled && (
-                <View style={{ marginTop: theme.spacing.md }}>
-                  <Button
-                    title={showMorningTimePicker ? 'Close time picker' : 'Change time'}
-                    variant="outline"
-                    size="small"
-                    onPress={() => setShowMorningTimePicker(!showMorningTimePicker)}
-                    accessibilityLabel="Change morning reminder time"
-                    accessibilityHint="Opens time picker to customize morning check-in reminder"
-                  />
-
-                  {showMorningTimePicker && (
-                    <View style={{ marginTop: theme.spacing.sm }}>
-                      <DateTimePicker
-                        value={createTimeDate(morningHour, morningMinute)}
-                        mode="time"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={handleMorningTimeChange}
-                        testID="morning-time-picker"
-                      />
-                    </View>
-                  )}
-
-                  {Platform.OS === 'ios' && showMorningTimePicker && (
-                    <View style={{ marginTop: theme.spacing.sm }}>
-                      <Button
-                        title="Done"
-                        variant="primary"
-                        size="small"
-                        onPress={() => setShowMorningTimePicker(false)}
-                        accessibilityLabel="Done selecting morning time"
-                      />
-                    </View>
-                  )}
-                </View>
-              )}
-            </Card>
-
-            <Card variant="elevated" style={{ marginBottom: theme.spacing.md }}>
-              <View style={styles.row}>
-                <View style={styles.grow}>
-                  <Text variant="labelLarge">Evening check-in</Text>
-                  <Text variant="caption" color="primary" style={{ marginTop: theme.spacing.xs }}>
-                    {formatTime(eveningHour, eveningMinute)}
-                  </Text>
-                </View>
-                <Toggle
-                  value={eveningEnabled}
-                  onValueChange={setEveningEnabled}
-                  disabled={isUpdating}
-                  accessibilityLabel="Evening check-in reminder"
-                  accessibilityHint="Toggles the evening reminder on or off"
-                  style={{ width: 56 }}
-                />
-              </View>
-
-              {eveningEnabled && (
-                <View style={{ marginTop: theme.spacing.md }}>
-                  <Button
-                    title={showEveningTimePicker ? 'Close time picker' : 'Change time'}
-                    variant="outline"
-                    size="small"
-                    onPress={() => setShowEveningTimePicker(!showEveningTimePicker)}
-                    accessibilityLabel="Change evening reminder time"
-                    accessibilityHint="Opens time picker to customize evening check-in reminder"
-                  />
-
-                  {showEveningTimePicker && (
-                    <View style={{ marginTop: theme.spacing.sm }}>
-                      <DateTimePicker
-                        value={createTimeDate(eveningHour, eveningMinute)}
-                        mode="time"
-                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-                        onChange={handleEveningTimeChange}
-                        testID="evening-time-picker"
-                      />
-                    </View>
-                  )}
-
-                  {Platform.OS === 'ios' && showEveningTimePicker && (
-                    <View style={{ marginTop: theme.spacing.sm }}>
-                      <Button
-                        title="Done"
-                        variant="primary"
-                        size="small"
-                        onPress={() => setShowEveningTimePicker(false)}
-                        accessibilityLabel="Done selecting evening time"
-                      />
-                    </View>
-                  )}
-                </View>
-              )}
-            </Card>
-
-            <Button
-              title={isUpdating ? 'Updating...' : 'Apply settings'}
-              onPress={() => applyReminderSettings()}
-              variant="primary"
-              size="large"
+          {/* Master Toggle */}
+          <Animated.View entering={FadeInDown.duration(300)} style={styles.card}>
+            <ToggleRow
+              label="Enable Notifications"
+              subtitle="Daily reminders and milestones"
+              value={notificationsEnabled}
+              onValueChange={handleToggleNotifications}
               disabled={isUpdating}
-              loading={isUpdating}
-              accessibilityLabel="Apply notification settings"
             />
+          </Animated.View>
 
-            <View style={{ height: theme.spacing.md }} />
+          {/* Reminders Section */}
+          {notificationsEnabled && permissionGranted && (
+            <>
+              <Text style={styles.sectionHeader}>Reminders</Text>
+              
+              <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
+                <TimePickerRow
+                  label="Morning check-in"
+                  enabled={morningEnabled}
+                  hour={morningHour}
+                  minute={morningMinute}
+                  onTimeChange={(h, m) => {
+                    setMorningHour(h);
+                    setMorningMinute(m);
+                  }}
+                  onToggle={setMorningEnabled}
+                  disabled={isUpdating}
+                />
+                
+                <View style={styles.divider} />
+                
+                <TimePickerRow
+                  label="Evening reflection"
+                  enabled={eveningEnabled}
+                  hour={eveningHour}
+                  minute={eveningMinute}
+                  onTimeChange={(h, m) => {
+                    setEveningHour(h);
+                    setEveningMinute(m);
+                  }}
+                  onToggle={setEveningEnabled}
+                  disabled={isUpdating}
+                />
+              </Animated.View>
 
-            <Button
-              title="Send test notification"
-              onPress={handleSendTest}
-              variant="secondary"
-              size="large"
-              disabled={!permissionGranted || isUpdating}
-              accessibilityLabel="Send a test notification"
-            />
+              {/* Apply Button */}
+              <Animated.View entering={FadeInDown.delay(150).duration(300)}>
+                <Pressable
+                  onPress={applySettings}
+                  disabled={isUpdating}
+                  style={[styles.applyBtn, isUpdating && styles.applyBtnDisabled]}
+                >
+                  <Text style={styles.applyBtnText}>
+                    {isUpdating ? 'Updating...' : 'Apply Changes'}
+                  </Text>
+                </Pressable>
+              </Animated.View>
 
-            <Card
-              variant="outlined"
-              style={{
-                marginTop: theme.spacing.lg,
-                backgroundColor: `${theme.colors.primary}10`,
-                borderColor: theme.colors.border,
-              }}
-            >
-              <Text variant="labelLarge">Scheduled notifications</Text>
-              <Text
-                variant="bodySmall"
-                color="textSecondary"
-                style={{ marginTop: theme.spacing.xs }}
-              >
-                {scheduledCount} scheduled (daily reminders + milestone celebrations)
+              {/* Test Button */}
+              <Animated.View entering={FadeInDown.delay(200).duration(300)}>
+                <Pressable
+                  onPress={handleSendTest}
+                  style={styles.testBtn}
+                >
+                  <Text style={styles.testBtnText}>Send Test Notification</Text>
+                </Pressable>
+              </Animated.View>
+
+              {/* Info Card */}
+              <Animated.View entering={FadeInDown.delay(250).duration(300)} style={styles.infoCard}>
+                <Text style={styles.infoTitle}>{scheduledCount} notifications scheduled</Text>
+                <Text style={styles.infoText}>
+                  Includes daily reminders and milestone celebrations.
+                </Text>
+              </Animated.View>
+            </>
+          )}
+
+          {/* Request Permission */}
+          {permissionStatus === 'undetermined' && (
+            <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
+              <Text style={styles.permissionTitle}>Allow Notifications</Text>
+              <Text style={styles.permissionText}>
+                We'll send reminders for daily check-ins and celebrate your milestones.
               </Text>
-            </Card>
-          </>
-        )}
+              <Pressable onPress={requestPermissions} style={styles.permissionBtn}>
+                <Text style={styles.permissionBtnText}>Grant Permission</Text>
+              </Pressable>
+            </Animated.View>
+          )}
 
-        {!permissionGranted && permissionStatus === 'undetermined' && (
-          <Card variant="elevated" style={{ marginTop: theme.spacing.md }}>
-            <Text variant="labelLarge">Enable notifications</Text>
-            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>
-              Allow notifications to receive daily reminders.
-            </Text>
-            <View style={{ marginTop: theme.spacing.md }}>
-              <Button
-                title="Grant permission"
-                onPress={requestPermissions}
-                variant="primary"
-                size="large"
-                accessibilityLabel="Grant notification permission"
-              />
-            </View>
-          </Card>
-        )}
-
-        {!permissionGranted && permissionStatus === 'denied' && (
-          <Card
-            variant="elevated"
-            style={{ marginTop: theme.spacing.md, backgroundColor: theme.colors.surface }}
-          >
-            <Text variant="labelLarge">Enable notifications in Settings</Text>
-            <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>
-              iOS blocks prompts after denying permission. Open system settings to enable
-              notifications.
-            </Text>
-          </Card>
-        )}
-      </ScrollView>
-    </SafeAreaView>
+          <View style={{ height: ds.space[12] }} />
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: ds.colors.bgPrimary,
   },
-  scrollView: {
+  safe: {
+    flex: 1,
+  },
+  scroll: {
     flex: 1,
   },
   content: {
-    paddingTop: 4,
+    paddingHorizontal: ds.sizes.contentPadding,
+    paddingTop: ds.space[4],
   },
-  grow: {
-    flex: 1,
-    paddingRight: 12,
-  },
-  banner: {
-    backgroundColor: '#FFF3CD',
-    padding: 16,
-    margin: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#FFC107',
-  },
-  bannerText: {
-    color: '#856404',
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  section: {
-    backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginTop: 16,
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  row: {
+
+  // Header
+  header: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    paddingHorizontal: ds.space[3],
+    paddingVertical: ds.space[2],
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: ds.colors.borderSubtle,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  labelContainer: {
+  headerTitle: {
+    ...ds.typography.body,
+    fontWeight: '600',
+    color: ds.colors.textPrimary,
+  },
+  headerSpacer: {
+    width: 44,
+  },
+
+  // Warning Card
+  warningCard: {
+    flexDirection: 'row',
+    backgroundColor: ds.colors.warningMuted,
+    borderRadius: ds.radius.lg,
+    padding: ds.space[4],
+    marginBottom: ds.space[4],
+  },
+  warningContent: {
     flex: 1,
-    marginRight: 16,
+    marginLeft: ds.space[3],
   },
-  sectionTitle: {
-    fontSize: 18,
+  warningTitle: {
+    ...ds.typography.body,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+    color: ds.colors.warning,
   },
-  label: {
-    fontSize: 16,
+  warningText: {
+    ...ds.typography.caption,
+    color: ds.colors.textSecondary,
+    marginTop: 2,
+  },
+
+  // Card
+  card: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    marginBottom: ds.space[4],
+  },
+
+  // Toggle Row
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: ds.space[4],
+  },
+  toggleContent: {
+    flex: 1,
+    marginRight: ds.space[4],
+  },
+  toggleLabel: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+  },
+  toggleSubtitle: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: 2,
+  },
+
+  // Time Row
+  timeRow: {
+    padding: ds.space[4],
+  },
+  timeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  timeInfo: {
+    flex: 1,
+  },
+  timeLabel: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+  },
+  timeValue: {
+    ...ds.typography.caption,
+    color: ds.colors.accent,
+    marginTop: 4,
+  },
+  pickerContainer: {
+    marginTop: ds.space[4],
+    alignItems: 'center',
+  },
+  doneBtn: {
+    backgroundColor: ds.colors.accent,
+    paddingHorizontal: ds.space[6],
+    paddingVertical: ds.space[3],
+    borderRadius: ds.radius.md,
+    marginTop: ds.space[3],
+  },
+  doneBtnText: {
+    ...ds.typography.body,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 4,
+    color: '#000',
   },
-  description: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
+
+  divider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: ds.colors.divider,
+    marginHorizontal: ds.space[4],
   },
-  timeDisplay: {
-    fontSize: 14,
-    color: '#4CAF50',
+
+  // Section Header
+  sectionHeader: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginTop: ds.space[4],
+    marginBottom: ds.space[2],
+    marginLeft: ds.space[1],
+  },
+
+  // Buttons
+  applyBtn: {
+    backgroundColor: ds.colors.accent,
+    borderRadius: ds.radius.lg,
+    paddingVertical: ds.space[4],
+    alignItems: 'center',
+    marginBottom: ds.space[3],
+  },
+  applyBtnDisabled: {
+    backgroundColor: ds.colors.bgTertiary,
+  },
+  applyBtnText: {
+    ...ds.typography.body,
+    fontWeight: '600',
+    color: '#000',
+  },
+  testBtn: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    paddingVertical: ds.space[4],
+    alignItems: 'center',
+    marginBottom: ds.space[6],
+  },
+  testBtnText: {
+    ...ds.typography.body,
     fontWeight: '500',
+    color: ds.colors.textSecondary,
   },
-  timePicker: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#eee',
+
+  // Info Card
+  infoCard: {
+    backgroundColor: ds.colors.accentSubtle,
+    borderRadius: ds.radius.lg,
+    padding: ds.space[4],
   },
-  pickerNote: {
-    fontSize: 13,
-    color: '#666',
-    fontStyle: 'italic',
-  },
-  timeButton: {
-    backgroundColor: '#4CAF50',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  timeButtonText: {
-    color: '#fff',
-    fontSize: 14,
+  infoTitle: {
+    ...ds.typography.body,
     fontWeight: '600',
-  },
-  doneButton: {
-    backgroundColor: '#2196F3',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  doneButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  button: {
-    backgroundColor: '#4CAF50',
-    marginHorizontal: 16,
-    marginTop: 16,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  testButton: {
-    backgroundColor: '#2196F3',
-  },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  infoSection: {
-    marginHorizontal: 16,
-    marginTop: 24,
-    marginBottom: 32,
-    padding: 16,
-    backgroundColor: '#E3F2FD',
-    borderRadius: 8,
+    color: ds.colors.textPrimary,
   },
   infoText: {
-    fontSize: 14,
-    color: '#1565C0',
-    fontWeight: '500',
-    marginBottom: 4,
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: ds.space[1],
   },
-  infoSubtext: {
-    fontSize: 12,
-    color: '#1976D2',
-    lineHeight: 18,
+
+  // Permission
+  permissionTitle: {
+    ...ds.typography.h3,
+    color: ds.colors.textPrimary,
+    padding: ds.space[4],
+    paddingBottom: ds.space[2],
+  },
+  permissionText: {
+    ...ds.typography.body,
+    color: ds.colors.textTertiary,
+    paddingHorizontal: ds.space[4],
+    paddingBottom: ds.space[4],
+  },
+  permissionBtn: {
+    backgroundColor: ds.colors.accent,
+    margin: ds.space[4],
+    marginTop: 0,
+    paddingVertical: ds.space[4],
+    borderRadius: ds.radius.lg,
+    alignItems: 'center',
+  },
+  permissionBtnText: {
+    ...ds.typography.body,
+    fontWeight: '600',
+    color: '#000',
   },
 });
