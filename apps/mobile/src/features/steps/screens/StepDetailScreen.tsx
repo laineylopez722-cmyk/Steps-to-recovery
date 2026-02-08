@@ -21,6 +21,7 @@ import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
 import { buildStepListItems, type StepListItem, type QuestionItem } from '../utils/stepListItems';
+import { buildInitialAnswers, getFirstUnansweredQuestion } from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   useTheme,
@@ -73,24 +74,17 @@ export function StepDetailScreen(): React.ReactElement {
   // Get total question count
   const totalQuestions = stepData?.prompts.length ?? 0;
 
-  // Find first unanswered question
-  const firstUnansweredQuestion = useMemo(() => {
-    if (!stepData) return 1;
-    for (let i = 0; i < stepData.prompts.length; i++) {
-      const questionNumber = i + 1;
-      const answered = questions.find((q) => q.question_number === questionNumber && q.is_complete);
-      if (!answered) {
-        return questionNumber;
-      }
-    }
-    return stepData.prompts.length; // All answered, go to last
-  }, [stepData, questions]);
-
   const listItems = useMemo((): ListItem[] => buildStepListItems(stepData), [stepData]);
 
   const answeredQuestionNumbers = useMemo(() => {
     return new Set(questions.filter((q) => q.is_complete).map((q) => q.question_number));
   }, [questions]);
+
+  // Find first unanswered question
+  const firstUnansweredQuestion = useMemo(
+    () => getFirstUnansweredQuestion(stepData, answeredQuestionNumbers),
+    [stepData, answeredQuestionNumbers],
+  );
 
   useEffect(() => {
     Animated.parallel([
@@ -110,13 +104,7 @@ export function StepDetailScreen(): React.ReactElement {
   // Initialize answers from database
   useEffect(() => {
     if (questions.length > 0) {
-      const initialAnswers: Record<number, string> = {};
-      questions.forEach((q) => {
-        if (q.answer) {
-          initialAnswers[q.question_number] = q.answer;
-        }
-      });
-      setAnswers(initialAnswers);
+      setAnswers(buildInitialAnswers(questions));
     }
   }, [questions]);
 
