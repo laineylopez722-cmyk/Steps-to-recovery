@@ -21,7 +21,11 @@ import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
 import { buildStepListItems, type StepListItem, type QuestionItem } from '../utils/stepListItems';
-import { buildInitialAnswers, getFirstUnansweredQuestion } from '../utils/stepAnswers';
+import {
+  buildAnsweredQuestionSet,
+  buildInitialAnswers,
+  getFirstUnansweredQuestion,
+} from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   useTheme,
@@ -86,9 +90,7 @@ export function StepDetailScreen(): React.ReactElement {
     return map;
   }, [listItems]);
 
-  const answeredQuestionNumbers = useMemo(() => {
-    return new Set(questions.filter((q) => q.is_complete).map((q) => q.question_number));
-  }, [questions]);
+  const answeredQuestionNumbers = useMemo(() => buildAnsweredQuestionSet(questions), [questions]);
 
   // Find first unanswered question
   const firstUnansweredQuestion = useMemo(

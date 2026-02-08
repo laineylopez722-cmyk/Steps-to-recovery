@@ -9,6 +9,10 @@ export function buildInitialAnswers(questions: StepWorkDecrypted[]): Record<numb
   }, {});
 }
 
+export function buildAnsweredQuestionSet(questions: StepWorkDecrypted[]): Set<number> {
+  return new Set(questions.filter((q) => q.is_complete).map((q) => q.question_number));
+}
+
 export function getFirstUnansweredQuestion(
   stepData: StepPrompt | undefined,
   answeredQuestionNumbers: Set<number>,
