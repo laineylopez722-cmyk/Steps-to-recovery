@@ -16,9 +16,10 @@ import { useRoute, useNavigation, type RouteProp } from '@react-navigation/nativ
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared';
+import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
+import { buildStepListItems, type StepListItem, type QuestionItem } from '../utils/stepListItems';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   useTheme,
@@ -36,25 +37,9 @@ import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
 
-interface QuestionItem {
-  type: 'question';
-  questionNumber: number;
-  prompt: string;
-  sectionTitle?: string;
-}
+// Step list item types are defined in ../utils/stepListItems
 
-interface SectionHeaderItem {
-  type: 'section';
-  title: string;
-  questionRange: string;
-  sectionStart: number;
-}
-
-interface FooterItem {
-  type: 'footer';
-}
-
-type ListItem = QuestionItem | SectionHeaderItem | FooterItem;
+type ListItem = StepListItem;
 
 export function StepDetailScreen(): React.ReactElement {
   const route = useRoute<RouteProp<StepsStackParamList, 'StepDetail'>>();
@@ -102,54 +87,7 @@ export function StepDetailScreen(): React.ReactElement {
     return stepData.prompts.length; // All answered, go to last
   }, [stepData, questions]);
 
-  // Build list items with section headers
-  const listItems = useMemo((): ListItem[] => {
-    if (!stepData) return [];
-
-    const items: ListItem[] = [];
-
-    if (stepData.sections && stepData.sections.length > 0) {
-      // Build items with section headers
-      let questionIndex = 0;
-      stepData.sections.forEach((section: StepSection) => {
-        const sectionStart = questionIndex + 1;
-        const sectionEnd = questionIndex + section.prompts.length;
-
-        // Add section header
-        items.push({
-          type: 'section',
-          title: section.title,
-          questionRange: `Questions ${sectionStart}-${sectionEnd}`,
-          sectionStart,
-        });
-
-        // Add questions for this section
-        section.prompts.forEach((prompt: string) => {
-          questionIndex++;
-          items.push({
-            type: 'question',
-            questionNumber: questionIndex,
-            prompt,
-            sectionTitle: section.title,
-          });
-        });
-      });
-    } else {
-      // No sections, just add all prompts
-      stepData.prompts.forEach((prompt: string, index: number) => {
-        items.push({
-          type: 'question',
-          questionNumber: index + 1,
-          prompt,
-        });
-      });
-    }
-
-    // Add footer
-    items.push({ type: 'footer' });
-
-    return items;
-  }, [stepData]);
+  const listItems = useMemo((): ListItem[] => buildStepListItems(stepData), [stepData]);
 
   useEffect(() => {
     Animated.parallel([
