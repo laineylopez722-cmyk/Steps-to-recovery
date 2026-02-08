@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -32,6 +32,7 @@ import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDi
 import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 import { ChatScreen } from '../features/ai-companion/components/ChatScreen';
 import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScreen';
+import { ds } from '../design-system/tokens/ds';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -51,12 +52,12 @@ const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
 // Premium dark theme colors
 const themeColors = {
-  background: '#0A0A0A',
+  background: '#000000',
   surface: '#141416',
-  accent: '#F59E0B',
+  accent: ds.colors.accent,
   text: '#FFFFFF',
-  textMuted: 'rgba(255, 255, 255, 0.5)',
-  border: 'rgba(255, 255, 255, 0.08)',
+  textMuted: 'rgba(255, 255, 255, 0.56)',
+  border: 'rgba(245, 158, 11, 0.24)',
 };
 
 function SafeDialInterventionRouteScreen({
@@ -292,6 +293,24 @@ function ProfileStackNavigator(): React.ReactElement {
   );
 }
 
+function TabIcon({
+  focused,
+  color,
+  size,
+  name,
+}: {
+  focused: boolean;
+  color: string;
+  size: number;
+  name: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+}) {
+  return (
+    <View style={[styles.tabIconWrap, focused && styles.tabIconWrapFocused]}>
+      <MaterialCommunityIcons name={name} size={size} color={color} />
+    </View>
+  );
+}
+
 export function MainNavigator(): React.ReactElement {
   return (
     <Tab.Navigator
@@ -302,11 +321,11 @@ export function MainNavigator(): React.ReactElement {
         tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: themeColors.surface,
-          borderTopColor: 'rgba(245, 158, 11, 0.18)',
+          borderTopColor: themeColors.border,
           borderTopWidth: StyleSheet.hairlineWidth,
           paddingTop: 10,
-          paddingBottom: 10,
-          height: 74,
+          paddingBottom: 12,
+          height: 76,
         },
       }}
     >
@@ -314,8 +333,8 @@ export function MainNavigator(): React.ReactElement {
         name="Home"
         component={HomeStackNavigator}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" size={size} color={color} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon focused={focused} color={color} size={size} name="home" />
           ),
         }}
       />
@@ -323,8 +342,8 @@ export function MainNavigator(): React.ReactElement {
         name="Journal"
         component={JournalStackNavigator}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="book-open-variant" size={size} color={color} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon focused={focused} color={color} size={size} name="book-open-variant" />
           ),
         }}
       />
@@ -332,8 +351,8 @@ export function MainNavigator(): React.ReactElement {
         name="Steps"
         component={StepsStackNavigator}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="stairs" size={size} color={color} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon focused={focused} color={color} size={size} name="stairs" />
           ),
         }}
       />
@@ -341,8 +360,8 @@ export function MainNavigator(): React.ReactElement {
         name="Meetings"
         component={MeetingsStackNavigator}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="map-marker-multiple" size={size} color={color} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon focused={focused} color={color} size={size} name="map-marker-multiple" />
           ),
         }}
       />
@@ -351,8 +370,8 @@ export function MainNavigator(): React.ReactElement {
         component={ProfileStackNavigator}
         options={{
           headerShown: false,
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" size={size} color={color} />
+          tabBarIcon: ({ focused, color, size }) => (
+            <TabIcon focused={focused} color={color} size={size} name="account" />
           ),
         }}
       />
@@ -360,3 +379,17 @@ export function MainNavigator(): React.ReactElement {
   );
 }
 
+const styles = StyleSheet.create({
+  tabIconWrap: {
+    width: 38,
+    height: 30,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  tabIconWrapFocused: {
+    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(245, 158, 11, 0.34)',
+  },
+});

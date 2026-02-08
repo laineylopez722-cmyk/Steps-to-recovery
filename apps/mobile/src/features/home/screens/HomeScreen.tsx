@@ -1,7 +1,7 @@
 /**
  * Home Screen
  *
- * Premium, focused recovery dashboard.
+ * Serene Dark redesign: bold, premium, and accessible.
  */
 
 import React, { useMemo, useCallback } from 'react';
@@ -19,12 +19,12 @@ import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { Action } from '../../../design-system/primitives';
 import { useCleanTime } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
 import { ds } from '../../../design-system/tokens/ds';
-import { SobrietyCandle } from '../../../design-system/components';
 import type { HomeStackParamList } from '../../../navigation/types';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -67,44 +67,78 @@ function ActionCard({
   );
 }
 
-function TaskItem({
-  icon,
-  label,
-  sublabel,
-  done,
-  onPress,
-  isLast,
+function PremiumProgressHero({
+  days,
+  hours,
+  minutes,
+  completedToday,
 }: {
-  icon: keyof typeof Feather.glyphMap;
-  label: string;
-  sublabel: string;
-  done?: boolean;
-  onPress: () => void;
-  isLast?: boolean;
+  days: number;
+  hours: number;
+  minutes: number;
+  completedToday: number;
 }) {
+  const size = 214;
+  const stroke = 14;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const yearProgress = Math.min(days / 365, 1);
+  const strokeDashoffset = circumference * (1 - yearProgress);
+
   return (
-    <View>
-      <Action.Root onPress={onPress} contentStyle={styles.taskItem}>
-        <Action.Icon style={[styles.taskIcon, done && styles.taskIconDone]}>
-          <Feather
-            name={done ? 'check' : icon}
-            size={ds.sizes.iconMd}
-            color={done ? ds.colors.success : ds.semantic.text.tertiary}
+    <Animated.View entering={MotionTransitions.fadeDelayed(150)} style={styles.heroCard}>
+      <View style={styles.heroTopRow}>
+        <Text style={styles.heroTitle}>Clean Time</Text>
+        <View style={styles.heroBadge}>
+          <Text style={styles.heroBadgeText}>{days > 0 ? 'Streak intact' : 'Day zero, still progress'}</Text>
+        </View>
+      </View>
+
+      <View style={styles.ringWrap}>
+        <Svg width={size} height={size}>
+          <Defs>
+            <LinearGradient id="sereneRing" x1="0%" y1="0%" x2="100%" y2="100%">
+              <Stop offset="0%" stopColor={ds.colors.accentLight} />
+              <Stop offset="100%" stopColor={ds.colors.accent} />
+            </LinearGradient>
+          </Defs>
+
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={ds.colors.bgQuaternary}
+            strokeWidth={stroke}
+            fill="none"
           />
-        </Action.Icon>
 
-        <Action.Content style={styles.taskContent}>
-          <Action.Title style={[styles.taskLabel, done && styles.taskLabelDone]}>{label}</Action.Title>
-          <Action.Subtitle style={styles.taskSublabel}>{sublabel}</Action.Subtitle>
-        </Action.Content>
+          <Circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="url(#sereneRing)"
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            transform={`rotate(-90 ${size / 2} ${size / 2})`}
+          />
+        </Svg>
 
-        <Action.Trailing style={styles.taskChevron}>
-          <Feather name="chevron-right" size={ds.sizes.iconSm} color={ds.semantic.text.muted} />
-        </Action.Trailing>
-      </Action.Root>
+        <View style={styles.ringCenter}>
+          <Text style={styles.dayCount}>{days}</Text>
+          <Text style={styles.dayLabel}>{days === 1 ? 'day clean' : 'days clean'}</Text>
+          <Text style={styles.heroClock}>{String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}</Text>
+        </View>
+      </View>
 
-      {!isLast && <View style={styles.taskDivider} />}
-    </View>
+      <View style={styles.miniStatsRow}>
+        <MiniStat label="Check-ins" value={`${completedToday}/2`} tint={ds.semantic.intent.primary.solid} />
+        <MiniStat label="Year path" value={`${Math.round(yearProgress * 100)}%`} />
+        <MiniStat label="Current step" value="1/12" />
+      </View>
+    </Animated.View>
   );
 }
 
@@ -142,7 +176,7 @@ function ShortcutCard({
 
 export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const { days, isLoading: loadingDays } = useCleanTime(userId);
+  const { days, hours, minutes, isLoading: loadingDays } = useCleanTime(userId);
   const { morning, evening, isLoading: loadingCheckins } = useTodayCheckIns(userId);
 
   const greeting = useMemo(() => getGreeting(), []);
@@ -193,6 +227,13 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     navigation.getParent()?.navigate('Profile' as never);
   }, [navigation]);
 
+  const intentionPills = [
+    { label: 'Stay present', icon: 'sun' as const, onPress: handleMorning },
+    { label: 'Read one page', icon: 'book-open' as const, onPress: handleReading },
+    { label: 'Call support', icon: 'phone-call' as const, onPress: handleCompanion },
+    { label: 'Close day strong', icon: 'moon' as const, onPress: handleEvening },
+  ];
+
   if (loadingDays || loadingCheckins) {
     return (
       <View style={styles.container}>
@@ -207,6 +248,10 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
   return (
     <View style={styles.container}>
+      <View pointerEvents="none" style={styles.bgLayerTop} />
+      <View pointerEvents="none" style={styles.bgLayerMid} />
+      <View pointerEvents="none" style={styles.bgLayerBottom} />
+
       <SafeAreaView style={styles.safe} edges={['top']}>
         <ScrollView
           style={styles.scroll}
@@ -223,34 +268,33 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             <Pressable
               onPress={handleProfile}
               style={({ pressed }) => [styles.profileButton, pressed && styles.profileButtonPressed]}
+              accessibilityRole="button"
+              accessibilityLabel="Open profile"
             >
               <Feather name="user" size={ds.sizes.iconMd} color={ds.semantic.text.primary} />
             </Pressable>
           </Animated.View>
 
-          <Animated.View entering={MotionTransitions.fadeDelayed(150)} style={styles.heroCard}>
-            <View style={styles.heroTopRow}>
-              <Text style={styles.heroTitle}>Clean Time Streak</Text>
-              <View style={styles.heroBadge}>
-                <Text style={styles.heroBadgeText}>{days > 0 ? 'Streak intact' : 'Start today'}</Text>
-              </View>
+          <PremiumProgressHero
+            days={days}
+            hours={hours}
+            minutes={minutes}
+            completedToday={completedToday}
+          />
+
+          <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Daily intention</Text>
+              <Text style={styles.sectionHint}>Choose one now</Text>
             </View>
 
-            <SobrietyCandle days={days} size={1.15} maxDays={365} />
-
-            <View style={styles.dayInfo}>
-              <Text style={styles.dayCount}>{days}</Text>
-              <Text style={styles.dayLabel}>{days === 1 ? 'day clean' : 'days clean'}</Text>
-            </View>
-
-            <Text style={styles.heroMessage}>
-              {days < 7 ? 'One day at a time. You are doing this.' : 'Your consistency is building real momentum.'}
-            </Text>
-
-            <View style={styles.miniStatsRow}>
-              <MiniStat label="Today" value={`${completedToday}/2`} tint={ds.semantic.intent.primary.solid} />
-              <MiniStat label="Current step" value="1/12" />
-              <MiniStat label="Check-ins" value={String(completedToday)} />
+            <View style={styles.pillsRow}>
+              {intentionPills.map((pill) => (
+                <Action.Root key={pill.label} onPress={pill.onPress} contentStyle={styles.intentionPill}>
+                  <Feather name={pill.icon} size={14} color={ds.semantic.intent.primary.solid} />
+                  <Text style={styles.intentionPillText}>{pill.label}</Text>
+                </Action.Root>
+              ))}
             </View>
           </Animated.View>
 
@@ -263,11 +307,11 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
                 <Text style={styles.companionTitle}>Talk to your companion</Text>
                 <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
               </View>
-              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" />
+              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.42)" />
             </View>
           </ActionCard>
 
-          <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
+          <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Today shortcuts</Text>
               <Text style={styles.sectionHint}>Tap to open</Text>
@@ -300,29 +344,6 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </View>
           </Animated.View>
 
-          <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.section}>
-            <Text style={styles.sectionTitle}>Recovery rhythm</Text>
-
-            <View style={styles.taskList}>
-              <TaskItem
-                icon="sun"
-                label="Morning check-in"
-                sublabel={morning ? 'Done' : 'Set your intention'}
-                done={!!morning}
-                onPress={handleMorning}
-              />
-
-              <TaskItem
-                icon="moon"
-                label="Evening reflection"
-                sublabel={evening ? 'Done' : 'Review your day'}
-                done={!!evening}
-                onPress={handleEvening}
-                isLast
-              />
-            </View>
-          </Animated.View>
-
           <View style={{ height: ds.space[20] }} />
         </ScrollView>
       </SafeAreaView>
@@ -333,7 +354,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ds.semantic.surface.app,
+    backgroundColor: ds.colors.bgPrimary,
   },
   safe: {
     flex: 1,
@@ -353,6 +374,34 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: ds.semantic.text.muted,
     letterSpacing: 4,
+  },
+
+  bgLayerTop: {
+    position: 'absolute',
+    top: -120,
+    right: -70,
+    width: 260,
+    height: 260,
+    borderRadius: ds.radius.full,
+    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+  },
+  bgLayerMid: {
+    position: 'absolute',
+    top: 210,
+    left: -120,
+    width: 300,
+    height: 300,
+    borderRadius: ds.radius.full,
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+  },
+  bgLayerBottom: {
+    position: 'absolute',
+    bottom: -180,
+    right: -140,
+    width: 360,
+    height: 360,
+    borderRadius: ds.radius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.04)',
   },
 
   header: {
@@ -385,18 +434,23 @@ const styles = StyleSheet.create({
     backgroundColor: ds.semantic.surface.card,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: ds.colors.borderDefault,
   },
   profileButtonPressed: {
     backgroundColor: ds.semantic.surface.interactive,
   },
 
   heroCard: {
-    backgroundColor: ds.semantic.surface.canvas,
+    backgroundColor: 'rgba(20, 20, 22, 0.9)',
     borderRadius: ds.radius.xl,
     paddingHorizontal: ds.space[5],
     paddingTop: ds.space[4],
     paddingBottom: ds.space[5],
     marginBottom: ds.space[5],
+    borderWidth: 1,
+    borderColor: 'rgba(245, 158, 11, 0.2)',
+    ...ds.shadows.lg,
   },
   heroTopRow: {
     flexDirection: 'row',
@@ -406,48 +460,52 @@ const styles = StyleSheet.create({
   heroTitle: {
     ...ds.typography.body,
     color: ds.semantic.text.primary,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   heroBadge: {
-    backgroundColor: ds.colors.successMuted,
+    backgroundColor: ds.semantic.intent.primary.muted,
     paddingHorizontal: ds.space[3],
     paddingVertical: ds.space[1],
     borderRadius: ds.radius.full,
   },
   heroBadgeText: {
-    ...ds.typography.caption,
-    color: ds.colors.success,
-    fontWeight: '600',
+    ...ds.typography.micro,
+    color: ds.semantic.intent.primary.solid,
+    fontWeight: '700',
   },
-  dayInfo: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+  ringWrap: {
+    alignItems: 'center',
     justifyContent: 'center',
-    marginTop: ds.space[3],
-    gap: ds.space[2],
+    marginVertical: ds.space[4],
+  },
+  ringCenter: {
+    position: 'absolute',
+    alignItems: 'center',
   },
   dayCount: {
-    fontSize: 54,
+    fontSize: 52,
     fontWeight: '700',
     color: ds.semantic.text.primary,
-    letterSpacing: -1.5,
+    letterSpacing: -1,
   },
   dayLabel: {
-    ...ds.typography.body,
-    color: ds.semantic.text.tertiary,
-  },
-  heroMessage: {
     ...ds.typography.caption,
     color: ds.semantic.text.tertiary,
-    textAlign: 'center',
-    marginTop: ds.space[2],
-    marginBottom: ds.space[4],
+    marginTop: -2,
+  },
+  heroClock: {
+    ...ds.typography.micro,
+    color: ds.semantic.intent.primary.solid,
+    marginTop: ds.space[1],
+    letterSpacing: 0.4,
   },
   miniStatsRow: {
     flexDirection: 'row',
-    backgroundColor: ds.semantic.surface.card,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderRadius: ds.radius.lg,
     overflow: 'hidden',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: ds.colors.borderDefault,
   },
   miniStat: {
     flex: 1,
@@ -486,6 +544,29 @@ const styles = StyleSheet.create({
     color: ds.semantic.text.muted,
   },
 
+  pillsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: ds.space[2],
+    marginBottom: ds.space[3],
+  },
+  intentionPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: ds.space[2],
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderRadius: ds.radius.full,
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[2],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(245, 158, 11, 0.35)',
+  },
+  intentionPillText: {
+    ...ds.typography.caption,
+    color: ds.semantic.text.secondary,
+    fontWeight: '600',
+  },
+
   shortcutsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -500,7 +581,7 @@ const styles = StyleSheet.create({
     marginBottom: ds.space[3],
     minHeight: 112,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ds.colors.borderSubtle,
+    borderColor: ds.colors.borderDefault,
   },
   shortcutIconWrap: {
     width: 30,
@@ -528,57 +609,6 @@ const styles = StyleSheet.create({
     top: ds.space[3],
   },
 
-  taskList: {
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: ds.radius.lg,
-    overflow: 'hidden',
-  },
-  taskItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: ds.space[4],
-    paddingHorizontal: ds.space[5],
-  },
-  taskIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: ds.radius.md,
-    backgroundColor: ds.semantic.surface.interactive,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  taskIconDone: {
-    backgroundColor: ds.colors.successMuted,
-  },
-  taskContent: {
-    flex: 1,
-    marginLeft: ds.space[4],
-  },
-  taskLabel: {
-    ...ds.typography.body,
-    color: ds.semantic.text.primary,
-    fontWeight: '500',
-  },
-  taskLabelDone: {
-    color: ds.colors.textSecondary,
-  },
-  taskSublabel: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
-    marginTop: 2,
-  },
-  taskChevron: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  taskDivider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: ds.colors.divider,
-    marginLeft: 44 + ds.space[5] + ds.space[4],
-  },
-
   companionCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -603,12 +633,12 @@ const styles = StyleSheet.create({
   },
   companionTitle: {
     fontSize: 17,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#000',
   },
   companionSubtitle: {
     ...ds.typography.caption,
-    color: 'rgba(0, 0, 0, 0.55)',
+    color: 'rgba(0, 0, 0, 0.6)',
     marginTop: 2,
   },
 });
