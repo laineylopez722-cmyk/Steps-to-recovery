@@ -1,20 +1,28 @@
 /**
  * Chat Input Component
- * Text input with send button, haptics, and polish.
+ * 
+ * Clean input with animated send button.
+ * No harsh borders.
  */
 
 import React, { useState, useRef, useCallback } from 'react';
 import { 
   View, 
   TextInput, 
-  TouchableOpacity, 
+  Pressable, 
   ActivityIndicator,
   Keyboard,
-  Animated,
+  StyleSheet,
 } from 'react-native';
+import Animated, { 
+  useAnimatedStyle, 
+  useSharedValue, 
+  withSpring,
+} from 'react-native-reanimated';
 import { Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { Icon } from '@/components/ui/Icon';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -25,82 +33,74 @@ interface ChatInputProps {
 export function ChatInput({
   onSend,
   isLoading,
-  placeholder = "What's on your mind?",
+  placeholder = "Message...",
 }: ChatInputProps) {
   const [text, setText] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
   const handleSend = useCallback(() => {
     if (text.trim() && !isLoading) {
-      // Haptic feedback on send
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       
-      // Animate button
-      Animated.sequence([
-        Animated.timing(scaleAnim, {
-          toValue: 0.9,
-          duration: 50,
-          useNativeDriver: true,
-        }),
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 100,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      scale.value = withSpring(0.85, ds.spring.snappy);
+      setTimeout(() => {
+        scale.value = withSpring(1, ds.spring.smooth);
+      }, 100);
 
       onSend(text.trim());
       setText('');
       Keyboard.dismiss();
     }
-  }, [text, isLoading, onSend, scaleAnim]);
+  }, [text, isLoading, onSend, scale]);
 
   const canSend = text.trim().length > 0 && !isLoading;
 
   return (
-    <View 
-      className={`
-        flex-row items-end px-4 py-3 bg-black border-t
-        ${isFocused ? 'border-amber-500/30' : 'border-gray-800'}
-      `}
-    >
-      <TextInput
-        ref={inputRef}
-        value={text}
-        onChangeText={setText}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        placeholder={placeholder}
-        placeholderTextColor="#4B5563"
-        multiline
-        maxLength={2000}
-        className="flex-1 bg-gray-900 rounded-2xl px-4 py-3 text-white text-base max-h-32 min-h-[44px]"
-        style={{ textAlignVertical: 'center' }}
-        onSubmitEditing={handleSend}
-        blurOnSubmit={false}
-        returnKeyType="default"
-        editable={!isLoading}
-        accessibilityLabel="Message input"
-        accessibilityHint="Type your message here"
-      />
+    <View style={styles.container}>
+      <View style={[
+        styles.inputContainer,
+        isFocused && styles.inputContainerFocused,
+      ]}>
+        <TextInput
+          ref={inputRef}
+          value={text}
+          onChangeText={setText}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={placeholder}
+          placeholderTextColor={ds.colors.textQuaternary}
+          multiline
+          maxLength={2000}
+          style={styles.input}
+          onSubmitEditing={handleSend}
+          blurOnSubmit={false}
+          returnKeyType="default"
+          editable={!isLoading}
+          accessibilityLabel="Message input"
+          accessibilityHint="Type your message here"
+        />
+      </View>
 
-      <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-        <TouchableOpacity
+      <Animated.View style={animatedStyle}>
+        <Pressable
           onPress={handleSend}
           disabled={!canSend}
-          activeOpacity={0.7}
-          className={`
-            ml-3 w-11 h-11 rounded-full items-center justify-center
-            ${canSend ? 'bg-amber-500' : 'bg-gray-800'}
-          `}
+          style={[
+            styles.sendButton,
+            canSend ? styles.sendButtonActive : styles.sendButtonInactive,
+          ]}
           accessibilityRole="button"
           accessibilityLabel={isLoading ? 'Sending message' : 'Send message'}
           accessibilityState={{ disabled: !canSend }}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color="#9CA3AF" />
+            <ActivityIndicator size="small" color={ds.colors.textTertiary} />
           ) : (
             <Icon 
               as={Send} 
@@ -109,8 +109,52 @@ export function ChatInput({
               style={{ marginLeft: 2 }}
             />
           )}
-        </TouchableOpacity>
+        </Pressable>
       </Animated.View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[3],
+    backgroundColor: ds.colors.bgPrimary,
+    gap: ds.space[3],
+  },
+  
+  inputContainer: {
+    flex: 1,
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: 24,
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[3],
+    minHeight: 48,
+    maxHeight: 120,
+  },
+  inputContainerFocused: {
+    backgroundColor: ds.colors.bgQuaternary,
+  },
+  
+  input: {
+    fontSize: 17,
+    color: ds.colors.textPrimary,
+    lineHeight: 24,
+  },
+  
+  sendButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sendButtonActive: {
+    backgroundColor: ds.colors.accent,
+  },
+  sendButtonInactive: {
+    backgroundColor: ds.colors.bgTertiary,
+  },
+});

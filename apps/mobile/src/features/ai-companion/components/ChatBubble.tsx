@@ -1,11 +1,14 @@
 /**
  * Chat Bubble Component
- * Displays individual chat messages with typing indicator and animations.
+ * 
+ * Apple Messages-inspired bubbles.
+ * Smooth animations, no harsh edges.
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Easing } from 'react-native';
+import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../../design-system/tokens/ds';
 import type { Message } from '../types';
 
 interface ChatBubbleProps {
@@ -17,60 +20,66 @@ interface ChatBubbleProps {
 export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps) {
   const isUser = message.role === 'user';
   const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
-  const slideAnim = useRef(new Animated.Value(isNew ? 10 : 0)).current;
+  const scaleAnim = useRef(new Animated.Value(isNew ? 0.95 : 1)).current;
 
   useEffect(() => {
     if (isNew) {
-      // Subtle haptic for new AI messages
       if (!isUser) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
       }
       
-      // Fade and slide in
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
-          duration: 200,
+          duration: 250,
           useNativeDriver: true,
         }),
-        Animated.timing(slideAnim, {
-          toValue: 0,
-          duration: 200,
-          easing: Easing.out(Easing.ease),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          ...ds.spring.smooth,
           useNativeDriver: true,
         }),
       ]).start();
     }
-  }, [isNew, isUser, fadeAnim, slideAnim]);
+  }, [isNew, isUser, fadeAnim, scaleAnim]);
 
   return (
     <Animated.View
-      className={`flex-row ${isUser ? 'justify-end' : 'justify-start'} mb-3 px-4`}
-      style={{
-        opacity: fadeAnim,
-        transform: [{ translateY: slideAnim }],
-      }}
+      style={[
+        styles.container,
+        isUser ? styles.containerUser : styles.containerAssistant,
+        {
+          opacity: fadeAnim,
+          transform: [{ scale: scaleAnim }],
+        },
+      ]}
       accessibilityRole="text"
       accessibilityLabel={`${isUser ? 'You' : 'Companion'} said: ${message.content}`}
     >
       <View
-        className={`
-          max-w-[80%] rounded-2xl px-4 py-3 shadow-sm
-          ${isUser ? 'bg-amber-500 rounded-br-sm' : 'bg-gray-800/90 rounded-bl-sm'}
-        `}
+        style={[
+          styles.bubble,
+          isUser ? styles.bubbleUser : styles.bubbleAssistant,
+        ]}
       >
         {isTyping ? (
           <TypingDots />
         ) : (
           <Text 
-            className={`text-base leading-6 ${isUser ? 'text-black' : 'text-white'}`}
+            style={[
+              styles.text,
+              isUser ? styles.textUser : styles.textAssistant,
+            ]}
             selectable
           >
             {message.content}
           </Text>
         )}
 
-        <Text className={`text-xs mt-1.5 ${isUser ? 'text-black/40' : 'text-gray-500'}`}>
+        <Text style={[
+          styles.time,
+          isUser ? styles.timeUser : styles.timeAssistant,
+        ]}>
           {formatTime(message.createdAt)}
         </Text>
       </View>
@@ -120,12 +129,11 @@ function TypingDots() {
   }, [dot1, dot2, dot3]);
 
   return (
-    <View className="flex-row items-center h-6" accessibilityLabel="Typing...">
+    <View style={styles.dots} accessibilityLabel="Typing...">
       {[dot1, dot2, dot3].map((dot, i) => (
         <Animated.View
           key={i}
-          className="w-2 h-2 rounded-full bg-gray-400 mx-0.5"
-          style={{ transform: [{ translateY: dot }] }}
+          style={[styles.dot, { transform: [{ translateY: dot }] }]}
         />
       ))}
     </View>
@@ -133,5 +141,70 @@ function TypingDots() {
 }
 
 function formatTime(date: Date): string {
-  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginBottom: ds.space[3],
+    paddingHorizontal: ds.space[4],
+  },
+  containerUser: {
+    justifyContent: 'flex-end',
+  },
+  containerAssistant: {
+    justifyContent: 'flex-start',
+  },
+  
+  bubble: {
+    maxWidth: '80%',
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[3],
+  },
+  bubbleUser: {
+    backgroundColor: ds.colors.accent,
+    borderRadius: 22,
+    borderBottomRightRadius: 6,
+  },
+  bubbleAssistant: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: 22,
+    borderBottomLeftRadius: 6,
+  },
+  
+  text: {
+    fontSize: 17,
+    lineHeight: 24,
+  },
+  textUser: {
+    color: '#000',
+  },
+  textAssistant: {
+    color: ds.colors.textPrimary,
+  },
+  
+  time: {
+    fontSize: 11,
+    marginTop: ds.space[2],
+  },
+  timeUser: {
+    color: 'rgba(0,0,0,0.4)',
+  },
+  timeAssistant: {
+    color: ds.colors.textQuaternary,
+  },
+  
+  dots: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 24,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: ds.colors.textTertiary,
+    marginHorizontal: 2,
+  },
+});
