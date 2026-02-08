@@ -22,12 +22,10 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Feather } from '@expo/vector-icons';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  Layout,
-} from 'react-native-reanimated';
+import Animated, { Layout } from 'react-native-reanimated';
 import { useJournalEntries, useDeleteJournalEntry } from '../hooks/useJournalEntries';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
+import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
 import { ds } from '../../../design-system/tokens/ds';
 import { hapticLight } from '../../../utils/haptics';
 import type { JournalEntryDecrypted } from '@recovery/shared';
@@ -76,15 +74,19 @@ function EntryCard({
   const title = getTitle(entry);
   const preview = getPreview(entry);
   const time = formatTime(new Date(entry.created_at));
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress({ scaleTo: motionScale.pressCard });
   
   return (
     <Pressable
       onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       style={({ pressed }) => [
         styles.entryCard,
         pressed && styles.entryCardPressed,
       ]}
     >
+      <Animated.View style={animatedStyle}>
       <Text style={styles.entryTitle} numberOfLines={1}>
         {title}
       </Text>
@@ -94,6 +96,7 @@ function EntryCard({
           {preview}
         </Text>
       </View>
+      </Animated.View>
     </Pressable>
   );
 }
@@ -111,7 +114,7 @@ function SectionHeader({ title }: { title: string }) {
 function EmptyState({ isSearching }: { isSearching: boolean }) {
   return (
     <Animated.View 
-      entering={FadeIn.delay(200).duration(400)} 
+      entering={MotionTransitions.fadeDelayed(200)} 
       style={styles.empty}
     >
       <Feather 
@@ -222,7 +225,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
     
     return (
       <Animated.View
-        entering={FadeInDown.delay(index * 30).duration(300)}
+        entering={MotionTransitions.cardEnter(index)}
         layout={Layout.springify()}
       >
         <EntryCard
@@ -237,7 +240,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
-        <Animated.View entering={FadeIn.duration(300)} style={styles.header}>
+        <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
           {/* Back button */}
           <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
             <View style={styles.backBtnInner}>
@@ -338,7 +341,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: ds.space[4],
+    paddingHorizontal: ds.semantic.layout.screenPadding,
     paddingTop: ds.space[3],
     paddingBottom: ds.space[2],
   },
@@ -358,11 +361,13 @@ const styles = StyleSheet.create({
   },
   actionsPill: {
     flexDirection: 'row',
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 20,
+    backgroundColor: ds.semantic.surface.card,
+    borderRadius: ds.radius.full,
     paddingHorizontal: ds.space[2],
     paddingVertical: ds.space[2],
     gap: ds.space[1],
+    borderWidth: 1,
+    borderColor: ds.colors.borderSubtle,
   },
   actionBtn: {
     width: 36,
@@ -373,7 +378,7 @@ const styles = StyleSheet.create({
   
   // Title
   titleContainer: {
-    paddingHorizontal: ds.sizes.contentPadding,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
     paddingTop: ds.space[3],
     paddingBottom: ds.space[4],
   },
@@ -401,7 +406,7 @@ const styles = StyleSheet.create({
   
   // List
   listContent: {
-    paddingHorizontal: ds.sizes.contentPadding,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
     paddingBottom: ds.space[4],
   },
   
@@ -418,11 +423,11 @@ const styles = StyleSheet.create({
   
   // Entry card - Apple Notes style
   entryCard: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.md,
-    padding: ds.space[4],
+    backgroundColor: ds.semantic.surface.card,
+    borderRadius: ds.radius.lg,
+    padding: ds.semantic.layout.listItemPadding,
     marginBottom: ds.space[2],
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: ds.colors.borderSubtle,
   },
   entryCardPressed: {
@@ -474,10 +479,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: ds.space[3],
-    paddingHorizontal: ds.space[4],
+    paddingHorizontal: ds.semantic.layout.screenPadding,
     paddingTop: ds.space[3],
-    backgroundColor: ds.colors.bgSecondary,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    backgroundColor: ds.semantic.surface.canvas,
+    borderTopWidth: 1,
     borderTopColor: ds.colors.divider,
   },
   searchBar: {

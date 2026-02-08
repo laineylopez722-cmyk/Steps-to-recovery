@@ -9,7 +9,8 @@ import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { MotionTransitions } from '../../../design-system/tokens/motion';
+import { ds } from '../../../design-system/tokens/ds';
+import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
 import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { EmptyState } from '../../../design-system/components/EmptyState';
 import { MeetingCard } from '../components/MeetingCard';
@@ -23,8 +24,8 @@ type MeetingFinderScreenProps = NativeStackScreenProps<MeetingsStackParamList, '
 export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): React.ReactElement {
   const theme = useTheme();
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const { onPressIn: onFilterPressIn, onPressOut: onFilterPressOut, animatedStyle: filterAnimatedStyle } = useMotionPress();
-  const { onPressIn: onClosePressIn, onPressOut: onClosePressOut, animatedStyle: closeAnimatedStyle } = useMotionPress();
+  const { onPressIn: onFilterPressIn, onPressOut: onFilterPressOut, animatedStyle: filterAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
+  const { onPressIn: onClosePressIn, onPressOut: onClosePressOut, animatedStyle: closeAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
 
   const {
     meetings,
@@ -260,42 +261,48 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   listContent: {
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: ds.space[4],
+    paddingHorizontal: ds.semantic.layout.screenPadding,
+    gap: ds.space[2],
   },
   listHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: ds.space[3],
+    backgroundColor: ds.semantic.surface.card,
+    borderRadius: ds.radius.xl,
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[4],
+    borderWidth: 1,
+    borderColor: ds.colors.borderSubtle,
   },
   emptyHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
+    paddingTop: ds.space[4],
+    marginBottom: ds.space[3],
   },
   screenTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    letterSpacing: -0.4,
+    ...ds.semantic.typography.screenTitle,
   },
   screenSubtitle: {
-    fontSize: 13,
+    ...ds.semantic.typography.meta,
     marginTop: 2,
   },
   iconButton: {
-    minWidth: 44,
-    minHeight: 44,
-    borderRadius: 22,
+    minWidth: ds.semantic.layout.touchTarget,
+    minHeight: ds.semantic.layout.touchTarget,
+    borderRadius: ds.radius.full,
     alignItems: 'center',
     justifyContent: 'center',
   },
   filterButton: {
-    minWidth: 44,
-    minHeight: 44,
-    borderRadius: 22,
+    minWidth: ds.semantic.layout.touchTarget,
+    minHeight: ds.semantic.layout.touchTarget,
+    borderRadius: ds.radius.full,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
@@ -303,6 +310,8 @@ const styles = StyleSheet.create({
   filterHeader: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    padding: 16,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
+    paddingTop: ds.space[4],
+    paddingBottom: ds.space[2],
   },
 });

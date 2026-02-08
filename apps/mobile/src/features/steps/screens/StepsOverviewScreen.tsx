@@ -13,20 +13,20 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Animated, {
   FadeIn,
-  FadeInDown,
   useSharedValue,
   useAnimatedStyle,
   withRepeat,
   withTiming,
   withSequence,
   Easing,
-  withSpring,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import type { StepsStackParamList } from '../../../navigation/types';
 import { Modal } from '../../../design-system';
 import { useStepProgress } from '../hooks/useStepWork';
 import { STEP_PROMPTS } from '@recovery/shared';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
+import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
 import { ds } from '../../../design-system/tokens/ds';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList>;
@@ -106,25 +106,21 @@ function StepCard({
   onPress: () => void;
   delay: number;
 }) {
-  const scale = useSharedValue(1);
-
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress({ scaleTo: motionScale.pressCard });
 
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(400).springify()}>
+    <Animated.View entering={MotionTransitions.cardEnter(Math.max(0, Math.round((delay - 100) / 50)))}>
       <Pressable
         onPress={onPress}
-        onPressIn={() => { scale.value = withSpring(0.98, ds.spring.snappy); }}
-        onPressOut={() => { scale.value = withSpring(1, ds.spring.smooth); }}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
       >
         <Animated.View style={[
           styles.stepCard,
           isCurrent && styles.stepCardCurrent,
           isCompleted && styles.stepCardCompleted,
           isLocked && styles.stepCardLocked,
-          animStyle,
+          animatedStyle,
         ]}>
           {/* Number Badge */}
           <View style={styles.badgeWrap}>
@@ -225,7 +221,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
-        <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
+        <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
           <Text style={styles.headerEyebrow}>Step work</Text>
           <Text style={styles.headerTitle}>The 12 Steps</Text>
           <Text style={styles.headerSubtitle}>Your recovery journey, one honest action at a time.</Text>
@@ -279,7 +275,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
           })}
 
           {/* Info */}
-          <Animated.View entering={FadeIn.delay(800).duration(400)} style={styles.infoCard}>
+          <Animated.View entering={MotionTransitions.fadeDelayed(360)} style={styles.infoCard}>
             <Feather name="info" size={18} color={ds.colors.info} />
             <Text style={styles.infoText}>
               Step 1 is available now. Steps 2-12 unlock in a future update.
@@ -327,10 +323,10 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    paddingHorizontal: ds.sizes.contentPadding,
-    paddingTop: ds.space[6],
+    paddingHorizontal: ds.semantic.layout.screenPadding,
+    paddingTop: ds.space[5],
     paddingBottom: ds.space[6],
-    backgroundColor: ds.colors.bgSecondary,
+    backgroundColor: ds.semantic.surface.canvas,
   },
   headerEyebrow: {
     ...ds.typography.caption,
@@ -355,11 +351,11 @@ const styles = StyleSheet.create({
   progressCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.lg,
-    padding: ds.space[4],
+    backgroundColor: ds.semantic.surface.card,
+    borderRadius: ds.radius.xl,
+    padding: ds.semantic.layout.cardPadding,
     marginTop: ds.space[5],
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: ds.colors.borderSubtle,
   },
   progressCircle: {
@@ -405,18 +401,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: ds.sizes.contentPadding,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
     paddingTop: ds.space[4],
   },
 
   // Step Card
   stepCard: {
     flexDirection: 'row',
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
-    padding: ds.space[4],
+    padding: ds.semantic.layout.cardPadding,
     marginBottom: ds.space[3],
-    borderWidth: StyleSheet.hairlineWidth,
+    borderWidth: 1,
     borderColor: ds.colors.borderSubtle,
   },
   stepCardCurrent: {
