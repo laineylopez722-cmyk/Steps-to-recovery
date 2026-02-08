@@ -76,6 +76,7 @@ export function SafeDialInterventionScreen({
         if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
       };
     }
+    return undefined;
   }, [step]);
 
   // ========================================
@@ -91,6 +92,7 @@ export function SafeDialInterventionScreen({
         if (whyTimerRef.current) clearTimeout(whyTimerRef.current);
       };
     }
+    return undefined;
   }, [step]);
 
   // ========================================
@@ -113,6 +115,7 @@ export function SafeDialInterventionScreen({
         if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
       };
     }
+    return undefined;
   }, [step]);
 
   // ========================================

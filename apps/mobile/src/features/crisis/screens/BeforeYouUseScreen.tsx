@@ -49,7 +49,7 @@ interface BeforeYouUseScreenProps {
 // Component
 // ========================================
 
-export default function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactElement {
+export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactElement {
   const navigation = useNavigation<RNNavigationProp<RootStackParamList>>();
 
   const { sponsor, isLoading: sponsorLoading } = useSponsorInfo(userId);
@@ -91,8 +91,7 @@ export default function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps):
     }, 1000);
 
     return () => clearInterval(interval);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timerActive, secondsRemaining]);
+  }, [timerActive, secondsRemaining, handleTimerComplete]);
 
   // ========================================
   // Handlers
@@ -121,7 +120,7 @@ export default function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps):
     }
   };
 
-  const handleTimerComplete = async (): Promise<void> => {
+  async function handleTimerComplete(): Promise<void> {
     try {
       setTimerActive(false);
 
@@ -134,7 +133,7 @@ export default function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps):
       // Even if logging fails, continue the flow
       setStage('reflect');
     }
-  };
+  }
 
   const handleSkipTimer = (): void => {
     Alert.alert(

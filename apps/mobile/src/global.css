@@ -17,9 +17,8 @@
 @layer theme {
   :root {
     /* Dark theme (default) */
-    @variant dark {
-      /* === Background Layers (distinct for depth) === */
-      --color-bg-primary: #000000;
+    /* === Background Layers (distinct for depth) === */
+    --color-bg-primary: #000000;
       --color-bg-secondary: #0A0A0C;
       --color-bg-tertiary: #141416;
       --color-bg-quaternary: #1C1C1E;
@@ -70,12 +69,12 @@
       --destructive-foreground: #FFFFFF;
       --border: rgba(255, 255, 255, 0.10);
       --input: rgba(255, 255, 255, 0.10);
-      --ring: #E8A855;
-    }
+    --ring: #E8A855;
+  }
 
-    /* Light theme (for accessibility option) */
-    @variant light {
-      /* === Background Layers === */
+  /* Light theme (for accessibility option) */
+  .light, .light * {
+    /* === Background Layers === */
       --color-bg-primary: #FFFFFF;
       --color-bg-secondary: #F5F5F7;
       --color-bg-tertiary: #EBEBED;
@@ -127,8 +126,7 @@
       --destructive-foreground: #FFFFFF;
       --border: rgba(0, 0, 0, 0.10);
       --input: rgba(0, 0, 0, 0.10);
-      --ring: #C4872A;
-    }
+    --ring: #C4872A;
   }
 }
 

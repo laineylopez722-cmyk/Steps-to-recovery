@@ -81,7 +81,7 @@ export async function cacheMeetings(
       cacheRegion,
     });
   } catch (error) {
-    logger.error('Failed to cache meetings', error);
+    logger.warn('Failed to cache meetings', error);
     throw error;
   }
 }
@@ -109,7 +109,7 @@ export async function getCachedMeetings(
 
     return meetings;
   } catch (error) {
-    logger.error('Failed to get cached meetings', error);
+    logger.warn('Failed to get cached meetings', error);
     return [];
   }
 }
@@ -132,7 +132,7 @@ export async function getCachedMeetingById(
 
     return meeting;
   } catch (error) {
-    logger.error('Failed to get meeting by ID', error);
+    logger.warn('Failed to get meeting by ID', error);
     return null;
   }
 }
@@ -161,7 +161,7 @@ export async function isCacheStale(db: StorageAdapter, cacheRegion: string): Pro
 
     return daysSinceCached >= CACHE_TTL_DAYS;
   } catch (error) {
-    logger.error('Failed to check cache staleness', error);
+    logger.warn('Failed to check cache staleness', error);
     // Assume stale on error (will trigger refresh)
     return true;
   }
@@ -185,7 +185,7 @@ export async function clearStaleCache(db: StorageAdapter): Promise<void> {
       cutoffDate: cutoffDate.toISOString(),
     });
   } catch (error) {
-    logger.error('Failed to clear stale cache', error);
+    logger.warn('Failed to clear stale cache', error);
   }
 }
 
@@ -216,7 +216,7 @@ export function parseCacheRegionKey(cacheRegionKey: string): CacheRegion | null 
       radius_miles: parseInt(parts[2], 10),
     };
   } catch (error) {
-    logger.error('Failed to parse cache region key', error);
+    logger.warn('Failed to parse cache region key', error);
     return null;
   }
 }
@@ -234,7 +234,8 @@ export async function getAllCachedMeetings(db: StorageAdapter): Promise<CachedMe
 
     return meetings;
   } catch (error) {
-    logger.error('Failed to get all cached meetings', error);
+    logger.warn('Failed to get all cached meetings', error);
     return [];
   }
 }
+

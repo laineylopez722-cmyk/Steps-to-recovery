@@ -226,8 +226,9 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
         <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
+          <Text style={styles.headerEyebrow}>Step work</Text>
           <Text style={styles.headerTitle}>The 12 Steps</Text>
-          <Text style={styles.headerSubtitle}>Your recovery journey</Text>
+          <Text style={styles.headerSubtitle}>Your recovery journey, one honest action at a time.</Text>
 
           {/* Progress */}
           <View style={styles.progressCard}>
@@ -329,8 +330,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: ds.sizes.contentPadding,
     paddingTop: ds.space[6],
     paddingBottom: ds.space[6],
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: ds.colors.borderSubtle,
+    backgroundColor: ds.colors.bgSecondary,
+  },
+  headerEyebrow: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 1.2,
+    marginBottom: ds.space[1],
   },
   headerTitle: {
     fontSize: 34,
@@ -352,6 +359,8 @@ const styles = StyleSheet.create({
     borderRadius: ds.radius.lg,
     padding: ds.space[4],
     marginTop: ds.space[5],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: ds.colors.borderSubtle,
   },
   progressCircle: {
     width: 72,
@@ -407,6 +416,8 @@ const styles = StyleSheet.create({
     borderRadius: ds.radius.lg,
     padding: ds.space[4],
     marginBottom: ds.space[3],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: ds.colors.borderSubtle,
   },
   stepCardCurrent: {
     borderWidth: 2,

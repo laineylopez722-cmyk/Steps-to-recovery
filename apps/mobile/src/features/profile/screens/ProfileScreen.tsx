@@ -150,6 +150,7 @@ export function ProfileScreen(): React.ReactElement {
             {/* Header */}
             <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
               <Text style={styles.title}>Settings</Text>
+              <Text style={styles.subtitle}>Recovery profile, privacy, and app preferences</Text>
             </Animated.View>
 
             {/* Profile Card */}
@@ -308,6 +309,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: ds.colors.textPrimary,
     letterSpacing: -0.5,
+  },
+  subtitle: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: ds.space[1],
   },
 
   // Profile Card

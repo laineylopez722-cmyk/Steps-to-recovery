@@ -235,7 +235,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
 
         return notificationId;
       } catch (error) {
-        logger.error('Failed to schedule meeting reminder', error);
+        logger.warn('Failed to schedule meeting reminder', error);
         return null;
       }
     },
@@ -248,7 +248,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
       setReminders((prev) => prev.filter((r) => r.id !== reminderId));
       logger.info('Meeting reminder cancelled', { reminderId });
     } catch (error) {
-      logger.error('Failed to cancel meeting reminder', error);
+      logger.warn('Failed to cancel meeting reminder', error);
     }
   }, []);
 
@@ -292,7 +292,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
         if (!TaskManager.isTaskDefined(GEOFENCE_TASK_NAME)) {
           TaskManager.defineTask(GEOFENCE_TASK_NAME, async ({ data, error }) => {
             if (error) {
-              logger.error('Geofence task error', error);
+              logger.warn('Geofence task error', error);
               return;
             }
 
@@ -331,7 +331,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
         logger.info('Geofence set up', { meetingId: meeting.id, radius });
         return true;
       } catch (error) {
-        logger.error('Failed to set up geofence', error);
+        logger.warn('Failed to set up geofence', error);
         return false;
       }
     },
@@ -346,7 +346,7 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
       setIsGeofencingActive(false);
       logger.info('Geofence removed', { meetingId });
     } catch (error) {
-      logger.error('Failed to remove geofence', error);
+      logger.warn('Failed to remove geofence', error);
     }
   }, []);
 
@@ -367,3 +367,4 @@ export function useMeetingReminder(): MeetingReminderState & MeetingReminderActi
 }
 
 export type { Meeting, ReminderOptions, ScheduledReminder };
+

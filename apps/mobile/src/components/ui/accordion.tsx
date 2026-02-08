@@ -7,11 +7,11 @@ import { Platform, Pressable, View } from 'react-native';
 import Animated, {
   FadeOutUp,
   LayoutAnimationConfig,
-  LinearTransition,
   useAnimatedStyle,
   useDerivedValue,
   withTiming,
 } from 'react-native-reanimated';
+import { MotionTransitions, motionDuration } from '@/design-system/tokens/motion';
 
 function Accordion({
   children,
@@ -24,7 +24,7 @@ function Accordion({
         {...(props as AccordionPrimitive.RootProps)}
         asChild={Platform.OS !== 'web'}
       >
-        <Animated.View layout={LinearTransition.duration(200)}>{children}</Animated.View>
+        <Animated.View layout={MotionTransitions.accordionLayout()}>{children}</Animated.View>
       </AccordionPrimitive.Root>
     </LayoutAnimationConfig>
   );
@@ -49,7 +49,7 @@ function AccordionItem({
     >
       <Animated.View
         className="native:overflow-hidden"
-        layout={Platform.select({ native: LinearTransition.duration(200) })}
+        layout={Platform.select({ native: MotionTransitions.accordionLayout() })}
       >
         {children}
       </Animated.View>
@@ -69,7 +69,10 @@ function AccordionTrigger({
   const { isExpanded } = AccordionPrimitive.useItemContext();
 
   const progress = useDerivedValue(
-    () => (isExpanded ? withTiming(1, { duration: 250 }) : withTiming(0, { duration: 200 })),
+    () =>
+      isExpanded
+        ? withTiming(1, { duration: motionDuration.standard })
+        : withTiming(0, { duration: motionDuration.fast }),
     [isExpanded],
   );
   const chevronStyle = useAnimatedStyle(
@@ -132,7 +135,7 @@ function AccordionContent({
         {...props}
       >
         <Animated.View
-          exiting={Platform.select({ native: FadeOutUp.duration(200) })}
+          exiting={Platform.select({ native: FadeOutUp.duration(motionDuration.fast) })}
           className={cn('pb-4', className)}
         >
           {children}

@@ -66,7 +66,7 @@ export async function checkInToMeeting(
       .single();
 
     if (checkInError) {
-      logger.error('Error checking in:', checkInError);
+      logger.warn('Error checking in:', checkInError);
       return null;
     }
 
@@ -96,7 +96,7 @@ export async function checkInToMeeting(
       newAchievements,
     };
   } catch (error) {
-    logger.error('Error in checkInToMeeting:', error);
+    logger.warn('Error in checkInToMeeting:', error);
     return null;
   }
 }
@@ -122,7 +122,7 @@ export async function getMeetingCheckIns(
     const { data, error } = await query;
 
     if (error) {
-      logger.error('Error fetching check-ins:', error);
+      logger.warn('Error fetching check-ins:', error);
       return [];
     }
 
@@ -139,7 +139,7 @@ export async function getMeetingCheckIns(
       createdAt: item.created_at,
     }));
   } catch (error) {
-    logger.error('Error in getMeetingCheckIns:', error);
+    logger.warn('Error in getMeetingCheckIns:', error);
     return [];
   }
 }
@@ -154,13 +154,13 @@ export async function calculateStreak(userId: string): Promise<number> {
     });
 
     if (error) {
-      logger.error('Error calculating streak:', error);
+      logger.warn('Error calculating streak:', error);
       return 0;
     }
 
     return data || 0;
   } catch (error) {
-    logger.error('Error in calculateStreak:', error);
+    logger.warn('Error in calculateStreak:', error);
     return 0;
   }
 }
@@ -175,13 +175,13 @@ export async function calculateTotal(userId: string): Promise<number> {
     });
 
     if (error) {
-      logger.error('Error calculating total:', error);
+      logger.warn('Error calculating total:', error);
       return 0;
     }
 
     return data || 0;
   } catch (error) {
-    logger.error('Error in calculateTotal:', error);
+    logger.warn('Error in calculateTotal:', error);
     return 0;
   }
 }
@@ -196,7 +196,7 @@ export async function check90In90Progress(userId: string): Promise<NinetyInNinet
     });
 
     if (error) {
-      logger.error('Error getting 90-in-90 progress:', error);
+      logger.warn('Error getting 90-in-90 progress:', error);
       return {
         daysCompleted: 0,
         daysRemaining: 90,
@@ -216,7 +216,7 @@ export async function check90In90Progress(userId: string): Promise<NinetyInNinet
       daysElapsed: data.daysElapsed || 0,
     };
   } catch (error) {
-    logger.error('Error in check90In90Progress:', error);
+    logger.warn('Error in check90In90Progress:', error);
     return {
       daysCompleted: 0,
       daysRemaining: 90,
@@ -240,7 +240,7 @@ export async function getAchievements(userId: string): Promise<Achievement[]> {
       .order('unlocked_at', { ascending: false });
 
     if (error) {
-      logger.error('Error fetching achievements:', error);
+      logger.warn('Error fetching achievements:', error);
       return [];
     }
 
@@ -251,7 +251,7 @@ export async function getAchievements(userId: string): Promise<Achievement[]> {
       unlockedAt: item.unlocked_at,
     }));
   } catch (error) {
-    logger.error('Error in getAchievements:', error);
+    logger.warn('Error in getAchievements:', error);
     return [];
   }
 }
@@ -276,7 +276,7 @@ export async function getMeetingStats(userId: string): Promise<MeetingStats> {
       longestStreak,
     };
   } catch (error) {
-    logger.error('Error in getMeetingStats:', error);
+    logger.warn('Error in getMeetingStats:', error);
     return {
       totalMeetings: 0,
       currentStreak: 0,
@@ -327,13 +327,13 @@ export async function hasCheckedInToday(userId: string): Promise<boolean> {
       .limit(1);
 
     if (error) {
-      logger.error("Error checking today's check-in:", error);
+      logger.warn("Error checking today's check-in:", error);
       return false;
     }
 
     return (data?.length || 0) > 0;
   } catch (error) {
-    logger.error('Error in hasCheckedInToday:', error);
+    logger.warn('Error in hasCheckedInToday:', error);
     return false;
   }
 }
@@ -356,13 +356,14 @@ export async function hasCheckedInToMeetingToday(
       .limit(1);
 
     if (error) {
-      logger.error('Error checking meeting check-in:', error);
+      logger.warn('Error checking meeting check-in:', error);
       return false;
     }
 
     return (data?.length || 0) > 0;
   } catch (error) {
-    logger.error('Error in hasCheckedInToMeetingToday:', error);
+    logger.warn('Error in hasCheckedInToMeetingToday:', error);
     return false;
   }
 }
+

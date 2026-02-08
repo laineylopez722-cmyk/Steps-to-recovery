@@ -221,7 +221,7 @@ export function useFavoriteMeetings(): UseFavoriteMeetingsReturn {
         const decrypted = await decryptContent(favorite.encrypted_notes);
         return decrypted;
       } catch (error) {
-        logger.error('Failed to decrypt favorite notes', error);
+        logger.warn('Failed to decrypt favorite notes', error);
         return null;
       }
     },
@@ -254,3 +254,4 @@ export function useFavoriteMeetings(): UseFavoriteMeetingsReturn {
     getFavoriteNotes,
   };
 }
+

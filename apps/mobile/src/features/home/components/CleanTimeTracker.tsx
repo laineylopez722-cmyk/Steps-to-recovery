@@ -11,26 +11,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Card, ProgressBar, Badge, CircularProgress } from '../../../design-system/components';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import type { MilestoneDefinition as Milestone } from '@recovery/shared';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useCleanTime } from '../hooks/useCleanTime';
 
-interface CleanTimeTrackerProps {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  nextMilestone: Milestone | null;
-  isLoading: boolean;
-}
-
-export function CleanTimeTracker({
-  days,
-  hours,
-  minutes,
-  seconds,
-  nextMilestone,
-  isLoading,
-}: CleanTimeTrackerProps): React.ReactElement {
+export function CleanTimeTracker(): React.ReactElement {
   const theme = useTheme();
+  const { user } = useAuth();
+  const userId = user?.id ?? '';
+  const { days, hours, minutes, seconds, nextMilestone, isLoading } = useCleanTime(userId);
   const [displayDays, setDisplayDays] = useState(0);
 
   // Animation values

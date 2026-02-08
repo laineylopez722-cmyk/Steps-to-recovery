@@ -117,7 +117,7 @@ We don't recover perfectly. We recover imperfectly, one messy day at a time. And
     id: 'halt',
     text: 'HALT: Hungry, Angry, Lonely, Tired',
     explanation: `HALT is an acronym that reminds us of four danger zones:
-    
+
 • Hungry - When we don't take care of our physical needs
 • Angry - When we let resentments build up
 • Lonely - When we isolate from others

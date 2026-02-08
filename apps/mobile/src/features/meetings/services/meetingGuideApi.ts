@@ -73,7 +73,23 @@ export async function searchMeetings(params: MeetingSearchParams): Promise<Cache
         throw new Error(errorMessage);
       }
 
-      const data: MeetingGuideResponse[] = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      const rawBody = await response.text();
+
+      if (!contentType.toLowerCase().includes('application/json')) {
+        throw new Error('Meeting search service returned a non-JSON response');
+      }
+
+      let data: unknown;
+      try {
+        data = JSON.parse(rawBody);
+      } catch {
+        throw new Error('Meeting search service returned invalid JSON');
+      }
+
+      if (!Array.isArray(data)) {
+        throw new Error('Meeting search service returned an unexpected payload');
+      }
 
       logger.info('Meeting search successful', {
         count: data.length,
@@ -81,7 +97,9 @@ export async function searchMeetings(params: MeetingSearchParams): Promise<Cache
       });
 
       // Transform API response to internal schema
-      return data.map(transformMeetingGuideToInternal);
+      return data
+        .filter((item): item is MeetingGuideResponse => !!item && typeof item === 'object')
+        .map(transformMeetingGuideToInternal);
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
 
@@ -101,7 +119,10 @@ export async function searchMeetings(params: MeetingSearchParams): Promise<Cache
 
   // All retries failed
   const errorMessage = `Failed to fetch meetings after ${MAX_RETRIES} attempts: ${lastError?.message}`;
-  logger.error('Meeting search failed', lastError);
+  logger.warn('Meeting search failed after retries', {
+    error: lastError?.message,
+    retries: MAX_RETRIES,
+  });
   throw new Error(errorMessage);
 }
 
@@ -114,19 +135,19 @@ function transformMeetingGuideToInternal(meeting: MeetingGuideResponse): CachedM
   const now = new Date().toISOString();
 
   return {
-    id: meeting.id,
-    name: meeting.name,
-    location: meeting.location,
-    address: meeting.address,
-    city: meeting.city,
+    id: String(meeting.id || `meeting-${now}`),
+    name: meeting.name?.trim() || 'Unnamed meeting',
+    location: meeting.location?.trim() || 'Location details unavailable',
+    address: meeting.address?.trim() || 'Address unavailable',
+    city: meeting.city?.trim() || 'City unavailable',
     state: meeting.state || null,
     postal_code: meeting.postal_code || null,
     country: meeting.country || 'US',
-    latitude: meeting.latitude,
-    longitude: meeting.longitude,
-    day_of_week: meeting.day,
+    latitude: Number.isFinite(meeting.latitude) ? meeting.latitude : 0,
+    longitude: Number.isFinite(meeting.longitude) ? meeting.longitude : 0,
+    day_of_week: typeof meeting.day === 'number' ? meeting.day : null,
     time: meeting.time || null,
-    types: JSON.stringify(meeting.types || []),
+    types: JSON.stringify(Array.isArray(meeting.types) ? meeting.types : []),
     notes: meeting.notes || null,
     cached_at: now,
     cache_region: '', // Will be set by cache service

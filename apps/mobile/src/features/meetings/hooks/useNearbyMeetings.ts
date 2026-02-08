@@ -122,7 +122,9 @@ export function useNearbyMeetings(): UseNearbyMeetingsReturn {
 
         setSearchError(errorMessage);
         setIsSearching(false);
-        logger.error('Nearby meeting search failed', error);
+        logger.warn('Nearby meeting search failed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
       }
     },
     [db, locationHook, searchHook],

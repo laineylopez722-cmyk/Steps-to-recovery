@@ -81,7 +81,9 @@ export {
 
 export { ThemeProvider } from './context/ThemeContext';
 export { useTheme, useColors, useIsDark } from './hooks/useTheme';
+export { useMotionPress } from './hooks/useMotionPress';
 export { ScreenAnimations } from './tokens/screen-animations';
+export { MotionTransitions, motionDuration, motionSpring, motionScale, motionTiming, motionShimmer } from './tokens/motion';
 export { glass, glow, glassGradients } from './tokens/glass';
 export {
   aestheticColors,

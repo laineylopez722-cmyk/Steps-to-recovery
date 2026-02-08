@@ -1,8 +1,8 @@
 import React from 'react';
+import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useRoute, useNavigation } from '@react-navigation/native';
 import { useAuth } from '../contexts/AuthContext';
 import { HomeScreen } from '../features/home/screens/HomeScreen';
 import { JournalListScreen } from '../features/journal/screens/JournalListScreen';
@@ -29,7 +29,7 @@ import { DailyReadingScreen } from '../features/readings/screens';
 import { ProgressDashboardScreen } from '../features/progress/screens';
 import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen';
 import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
-import BeforeYouUseScreen from '../features/crisis/screens/BeforeYouUseScreen';
+import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 import { ChatScreen } from '../features/ai-companion/components/ChatScreen';
 import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScreen';
 import type {
@@ -39,6 +39,7 @@ import type {
   StepsStackParamList,
   MeetingsStackParamList,
   ProfileStackParamList,
+  HomeStackScreenProps,
 } from './types';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -48,16 +49,39 @@ const StepsStack = createNativeStackNavigator<StepsStackParamList>();
 const MeetingsStack = createNativeStackNavigator<MeetingsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
-// Serene Olive theme colors
+// Premium dark theme colors
 const themeColors = {
-  background: '#2E3E2C',        // Deep olive
-  surface: 'rgba(255, 255, 255, 0.08)',
-  accent: '#E8E0D0',            // Warm cream
+  background: '#0A0A0A',
+  surface: '#141416',
+  accent: '#F59E0B',
   text: '#FFFFFF',
   textMuted: 'rgba(255, 255, 255, 0.5)',
-  border: 'rgba(255, 255, 255, 0.1)',
+  border: 'rgba(255, 255, 255, 0.08)',
 };
 
+function SafeDialInterventionRouteScreen({
+  route,
+  navigation,
+}: HomeStackScreenProps<'SafeDialIntervention'>): React.ReactElement {
+  const { user } = useAuth();
+  const { contactName, phoneNumber } = route.params;
+
+  return (
+    <SafeDialInterventionScreen
+      riskyContact={{
+        id: '',
+        userId: user?.id || '',
+        name: contactName,
+        phoneNumber,
+        relationshipType: 'other',
+        notes: '',
+        addedAt: new Date().toISOString(),
+        isActive: true,
+      }}
+      onDismiss={() => navigation.goBack()}
+    />
+  );
+}
 // Dark header style for all stacks
 const darkHeaderOptions = {
   headerStyle: {
@@ -68,8 +92,9 @@ const darkHeaderOptions = {
     fontWeight: '600' as const,
     fontSize: 17,
   },
-  headerShadowVisible: false,
+  headerShadowVisible: true,
   headerBackTitleVisible: false,
+  headerLargeTitle: false,
 };
 
 function HomeStackNavigator(): React.ReactElement {
@@ -128,36 +153,14 @@ function HomeStackNavigator(): React.ReactElement {
       />
       <HomeStack.Screen
         name="SafeDialIntervention"
+        component={SafeDialInterventionRouteScreen}
         options={{
           title: 'Stop',
           headerShown: false,
           presentation: 'fullScreenModal',
           gestureEnabled: false,
         }}
-      >
-        {() => {
-          const route = useRoute();
-          const navigation = useNavigation();
-          const { user } = useAuth();
-          const params = route.params as { contactName: string; phoneNumber: string };
-
-          return (
-            <SafeDialInterventionScreen
-              riskyContact={{
-                id: '',
-                userId: user?.id || '',
-                name: params.contactName,
-                phoneNumber: params.phoneNumber,
-                relationshipType: 'other',
-                notes: '',
-                addedAt: new Date().toISOString(),
-                isActive: true,
-              }}
-              onDismiss={() => navigation.goBack()}
-            />
-          );
-        }}
-      </HomeStack.Screen>
+      />
       <HomeStack.Screen
         name="BeforeYouUse"
         options={{
@@ -188,12 +191,12 @@ function JournalStackNavigator(): React.ReactElement {
 
   return (
     <JournalStack.Navigator screenOptions={darkHeaderOptions}>
-      <JournalStack.Screen name="JournalList" options={{ title: 'Journal' }}>
+      <JournalStack.Screen name="JournalList" options={{ headerShown: false }}>
         {() => <JournalListScreen userId={userId} />}
       </JournalStack.Screen>
       <JournalStack.Screen
         name="JournalEditor"
-        options={{ title: 'Journal Entry', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       >
         {() => <JournalEditorScreen userId={userId} />}
       </JournalStack.Screen>
@@ -207,7 +210,7 @@ function StepsStackNavigator(): React.ReactElement {
 
   return (
     <StepsStack.Navigator screenOptions={darkHeaderOptions}>
-      <StepsStack.Screen name="StepsOverview" options={{ title: '12 Steps' }}>
+      <StepsStack.Screen name="StepsOverview" options={{ headerShown: false }}>
         {() => <StepsOverviewScreen userId={userId} />}
       </StepsStack.Screen>
       <StepsStack.Screen
@@ -298,12 +301,12 @@ export function MainNavigator(): React.ReactElement {
         tabBarInactiveTintColor: themeColors.textMuted,
         tabBarShowLabel: false,
         tabBarStyle: {
-          backgroundColor: themeColors.background,
-          borderTopColor: themeColors.border,
-          borderTopWidth: 1,
-          paddingTop: 12,
-          paddingBottom: 8,
-          height: 70,
+          backgroundColor: themeColors.surface,
+          borderTopColor: 'rgba(245, 158, 11, 0.18)',
+          borderTopWidth: StyleSheet.hairlineWidth,
+          paddingTop: 10,
+          paddingBottom: 10,
+          height: 74,
         },
       }}
     >
@@ -356,3 +359,4 @@ export function MainNavigator(): React.ReactElement {
     </Tab.Navigator>
   );
 }
+

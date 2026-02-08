@@ -6,20 +6,12 @@
 
 import React, { memo, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  interpolate,
-  Easing,
-  FadeIn,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, interpolate, Easing } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MotionTransitions, motionDuration, motionShimmer } from '@/design-system/tokens/motion';
 
 // Constants
 const PRIMARY_COLOR = '#3B82F6';
-const SHIMMER_DURATION = 1500;
 const STAGGER_DELAY = 100;
 
 // Types
@@ -50,7 +42,7 @@ function useShimmerAnimation(delay: number = 0) {
     const timer = setTimeout(() => {
       translateX.value = withRepeat(
         withTiming(1, {
-          duration: SHIMMER_DURATION,
+          duration: motionShimmer.duration,
           easing: Easing.linear,
         }),
         -1,
@@ -62,7 +54,12 @@ function useShimmerAnimation(delay: number = 0) {
   }, [delay]);
 
   const animatedStyle = useAnimatedStyle(() => {
-    const translateXValue = interpolate(translateX.value, [-1, 1], [-200, 200], 'clamp');
+    const translateXValue = interpolate(
+      translateX.value,
+      [-1, 1],
+      [motionShimmer.initialX, motionShimmer.travelX],
+      'clamp',
+    );
 
     return {
       transform: [{ translateX: translateXValue }],
@@ -90,7 +87,7 @@ const ShimmerBar = memo(function ShimmerBar({
 
   return (
     <Animated.View
-      entering={FadeIn.duration(300).delay(delay)}
+      entering={MotionTransitions.skeletonEnter(Math.floor(delay / STAGGER_DELAY))}
       className={`bg-surface-200 dark:bg-surface-700 rounded overflow-hidden ${widthClassName} ${className}`}
       style={[{ height }, widthStyle]}
     >
@@ -125,7 +122,7 @@ export const LoadingState = memo(function LoadingState({
   if (variant === 'inline') {
     return (
       <Animated.View
-        entering={FadeIn.duration(300)}
+        entering={MotionTransitions.fade()}
         className={`flex-row items-center justify-center py-4 ${className}`}
       >
         <ActivityIndicator size={size} color={PRIMARY_COLOR} />
@@ -137,18 +134,18 @@ export const LoadingState = memo(function LoadingState({
   if (variant === 'fullscreen') {
     return (
       <Animated.View
-        entering={FadeIn.duration(400)}
+        entering={MotionTransitions.fade()}
         className={`flex-1 items-center justify-center bg-surface-50 dark:bg-surface-900 ${className}`}
       >
         <Animated.View
-          entering={FadeIn.duration(500).springify()}
+          entering={MotionTransitions.cardEnter()}
           className="w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 items-center justify-center mb-4"
         >
           <ActivityIndicator size={size} color={PRIMARY_COLOR} />
         </Animated.View>
         {message && (
           <Animated.Text
-            entering={FadeIn.duration(400).delay(200)}
+            entering={MotionTransitions.fadeDelayed(motionDuration.fast)}
             className="text-surface-600 dark:text-surface-400 text-base"
           >
             {message}
@@ -161,13 +158,13 @@ export const LoadingState = memo(function LoadingState({
   // Default variant
   return (
     <Animated.View
-      entering={FadeIn.duration(300)}
+      entering={MotionTransitions.fade()}
       className={`items-center justify-center py-12 ${className}`}
     >
       <ActivityIndicator size={size} color={PRIMARY_COLOR} />
       {message && (
         <Animated.Text
-          entering={FadeIn.duration(300).delay(200)}
+          entering={MotionTransitions.fadeDelayed(motionDuration.fast)}
           className="text-surface-500 mt-4 text-center px-6"
         >
           {message}
@@ -185,7 +182,7 @@ export const SkeletonCard = memo(function SkeletonCard({
 }: SkeletonCardProps) {
   return (
     <Animated.View
-      entering={FadeIn.duration(300).delay(delay)}
+      entering={MotionTransitions.skeletonEnter(Math.floor(delay / STAGGER_DELAY))}
       className={`bg-white dark:bg-surface-800 rounded-xl p-4 mb-3 ${className}`}
       accessibilityLabel="Loading"
     >

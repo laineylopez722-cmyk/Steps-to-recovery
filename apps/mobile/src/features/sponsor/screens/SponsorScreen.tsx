@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Share } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, Share, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -86,7 +86,7 @@ export function SponsorScreen(): React.ReactElement {
       setInviteCode(result.code);
       showToast('Invite created. Share it with your sponsor.', 'success');
     } catch (error) {
-      logger.error('Failed to create invite', error);
+      logger.warn('Failed to create invite', error);
       showToast('Unable to create invite. Try again.', 'error');
     } finally {
       setInviteLoading(false);
@@ -109,7 +109,7 @@ export function SponsorScreen(): React.ReactElement {
       setConnectModalVisible(false);
       showToast('Connection ready. Send confirmation back.', 'success');
     } catch (error) {
-      logger.error('Failed to connect as sponsor', error);
+      logger.warn('Failed to connect as sponsor', error);
       showToast('Unable to connect. Check the invite code.', 'error');
     } finally {
       setConnectLoading(false);
@@ -130,7 +130,7 @@ export function SponsorScreen(): React.ReactElement {
       setConfirmModalVisible(false);
       showToast('Sponsor confirmed!', 'success');
     } catch (error) {
-      logger.error('Failed to confirm sponsor', error);
+      logger.warn('Failed to confirm sponsor', error);
       showToast('Confirmation failed. Please check the code.', 'error');
     } finally {
       setConfirmLoading(false);
@@ -142,7 +142,7 @@ export function SponsorScreen(): React.ReactElement {
       await removeConnection(connectionId);
       showToast('Connection removed', 'success');
     } catch (error) {
-      logger.error('Failed to remove connection', error);
+      logger.warn('Failed to remove connection', error);
       showToast('Unable to remove connection', 'error');
     }
   };
@@ -192,7 +192,7 @@ export function SponsorScreen(): React.ReactElement {
       setCommentImportVisible(false);
       showToast('Comment imported into your journal.', 'success');
     } catch (error) {
-      logger.error('Failed to import comment', error);
+      logger.warn('Failed to import comment', error);
       showToast('Unable to import comment.', 'error');
     } finally {
       setCommentLoading(false);
@@ -234,9 +234,17 @@ export function SponsorScreen(): React.ReactElement {
     <>
       <SafeAreaView
         style={[styles.container, { backgroundColor: theme.colors.background }]}
-        edges={['bottom']}
+        edges={['top', 'bottom']}
       >
-        <View style={[styles.content, { paddingHorizontal: theme.spacing.md }]}>
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={{
+            paddingHorizontal: theme.spacing.md,
+            paddingTop: 16,
+            paddingBottom: theme.spacing.xl,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={[styles.header, { marginBottom: theme.spacing.lg }]}>
             <Text
               style={[theme.typography.h1, { color: theme.colors.text }]}
@@ -423,7 +431,7 @@ export function SponsorScreen(): React.ReactElement {
               ))}
             </View>
           )}
-        </View>
+        </ScrollView>
       </SafeAreaView>
 
       <Toast
@@ -605,7 +613,6 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 16,
   },
   header: {
     // spacing inline
@@ -622,3 +629,4 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
+

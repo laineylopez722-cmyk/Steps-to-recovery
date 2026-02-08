@@ -32,11 +32,12 @@ export function CrisisOverlay({
     if (visible) {
       // Strong haptic to get attention
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
-      
+
       setCanDismiss(false);
       const timer = setTimeout(() => setCanDismiss(true), 3000);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [visible]);
 
   const callSponsor = () => {

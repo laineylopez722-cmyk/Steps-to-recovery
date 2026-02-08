@@ -9,6 +9,7 @@
 import { scheduleJitaiNotification } from './notifications';
 import type { JitaiTrigger, JitaiIntervention, JitaiContext, TriggerPriority } from './types';
 import { logger } from '../utils/logger';
+import { unknown } from 'zod/v4/mini';
 
 /**
  * Define all intervention triggers
@@ -46,27 +47,9 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
     name: 'Missed Check-ins',
     description: 'User has missed check-ins for multiple days',
     type: 'pattern',
-    condition: (ctx) => ctx.daysSinceLastCheckin >= 3,
+    condition: (ctx) => ctx.daysSinceLastCheckin >= 2,
     priority: 'high',
     cooldownHours: 48,
-  },
-  {
-    id: 'declining-mood',
-    name: 'Declining Mood Trend',
-    description: 'User mood has been declining over the past week',
-    type: 'pattern',
-    condition: (ctx) => ctx.moodTrend === 'declining' && ctx.averageMood7Days < 5,
-    priority: 'high',
-    cooldownHours: 72,
-  },
-  {
-    id: 'rising-cravings',
-    name: 'Rising Craving Levels',
-    description: 'User craving levels have been increasing',
-    type: 'pattern',
-    condition: (ctx) => ctx.cravingTrend === 'rising' && ctx.averageCraving7Days > 6,
-    priority: 'urgent',
-    cooldownHours: 24,
   },
   {
     id: 'meeting-gap',
@@ -82,7 +65,7 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
     name: 'Sponsor Contact Gap',
     description: "User hasn't contacted sponsor in over a week",
     type: 'pattern',
-    condition: (ctx) => ctx.hasSponsor && ctx.daysSinceLastSponsorContact >= 7,
+    condition: (ctx) => ctx.daysSinceLastSponsorContact >= 7,
     priority: 'medium',
     cooldownHours: 72,
   },
@@ -130,7 +113,7 @@ export const JITAI_TRIGGERS: JitaiTrigger[] = [
     name: 'HALT Check Reminder',
     description: 'Remind user to check HALT states when mood is low',
     type: 'pattern',
-    condition: (ctx) => ctx.lastMoodReported !== null && ctx.lastMoodReported <= 4,
+    condition: (ctx) => ctx.soberDays <= 4 && ctx.soberDays > 0,
     priority: 'medium',
     cooldownHours: 12,
   },
@@ -240,27 +223,27 @@ export function getInterventionForTrigger(
 }
 
 /**
- * Get next milestone days
+ * Get next milestone (days) for messaging
  */
 function getNextMilestone(currentDays: number): number {
   const milestones = [30, 60, 90, 180, 365, 730, 1095];
-  return milestones.find((m) => m > currentDays) || currentDays + 365;
+  return milestones.find((m) => m > currentDays) ?? currentDays + 730;
 }
 
 /**
  * Get encouraging message for early recovery
  */
-function getEarlyRecoveryMessage(days: number): string {
-  if (days <= 7) {
-    return `Day ${days}! The first week is the hardest. You're doing incredible work. One moment at a time.`;
-  } else if (days <= 30) {
-    return `${days} days! You're building new habits every day. Keep reaching out and going to meetings.`;
-  } else if (days <= 60) {
-    return `${days} days! You're past the first month. The fog is lifting. Keep working your program.`;
+function getEarlyRecoveryMessage(soberDays: number): string {
+  if (soberDays <= 7) {
+    return `Day ${soberDays}! The first week is the hardest. You're doing incredible work. One day at a time.`;
+  } else if (soberDays <= 30) {
+    return `${soberDays} days! You're building new habits every day. Keep reaching out and going to meetings.`;
+  } else if (soberDays <= 60) {
+    return `${soberDays} days! You're past the first month. The fog is lifting. Keep working your program.`;
   } else {
-    return `${days} days! You're approaching 90 days. This is when real change takes root. Keep going!`;
+    return `${soberDays} days! You're approaching 90 days. This is when real change takes root. Keep going!`;
   }
-}
+} 
 
 /**
  * Track last trigger times to enforce cooldowns

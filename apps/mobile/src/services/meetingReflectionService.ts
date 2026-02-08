@@ -69,14 +69,14 @@ export async function savePreMeetingReflection(
     });
 
     if (error) {
-      logger.error('Meeting reflection: Pre-meeting save failed', { error });
+      logger.warn('Meeting reflection: Pre-meeting save failed', { error });
       return { success: false, error: error.message };
     }
 
     logger.info('Meeting reflection: Pre-meeting saved', { userId, checkinId });
     return { success: true };
   } catch (error) {
-    logger.error('Meeting reflection: Pre-meeting error', { error });
+    logger.warn('Meeting reflection: Pre-meeting error', { error });
     return { success: false, error: 'Unexpected error' };
   }
 }
@@ -107,14 +107,14 @@ export async function savePostMeetingReflection(
       .eq('user_id', userId);
 
     if (error) {
-      logger.error('Meeting reflection: Post-meeting save failed', { error });
+      logger.warn('Meeting reflection: Post-meeting save failed', { error });
       return { success: false, error: error.message };
     }
 
     logger.info('Meeting reflection: Post-meeting saved', { userId, checkinId });
     return { success: true };
   } catch (error) {
-    logger.error('Meeting reflection: Post-meeting error', { error });
+    logger.warn('Meeting reflection: Post-meeting error', { error });
     return { success: false, error: 'Unexpected error' };
   }
 }
@@ -139,13 +139,13 @@ export async function getReflectionForCheckin(
       .single();
 
     if (error) {
-      logger.error('Meeting reflection: Query failed', { error });
+      logger.warn('Meeting reflection: Query failed', { error });
       return null;
     }
 
     return data as MeetingReflection;
   } catch (error) {
-    logger.error('Meeting reflection: Query error', { error });
+    logger.warn('Meeting reflection: Query error', { error });
     return null;
   }
 }
@@ -162,13 +162,13 @@ export async function getAllReflections(userId: string): Promise<MeetingReflecti
       .order('created_at', { ascending: false });
 
     if (error) {
-      logger.error('Meeting reflection: Get all failed', { error });
+      logger.warn('Meeting reflection: Get all failed', { error });
       return [];
     }
 
     return data as MeetingReflection[];
   } catch (error) {
-    logger.error('Meeting reflection: Get all error', { error });
+    logger.warn('Meeting reflection: Get all error', { error });
     return [];
   }
 }
@@ -228,3 +228,4 @@ export function getRandomPrePrompt(): string {
 export function getRandomPostPrompt(): string {
   return POST_TAKEAWAY_PROMPTS[Math.floor(Math.random() * POST_TAKEAWAY_PROMPTS.length)];
 }
+

@@ -117,7 +117,7 @@ export const typography = {
 export const palette = {
   // Backgrounds - more distinct layers
   black: '#000000',
-  gray950: '#0A0A0C', // Slightly visible
+  gray950: '#0A0A0A', // True black for OLED depth
   gray900: '#141416', // Cards
   gray850: '#1C1C1E', // Elevated cards
   gray800: '#2C2C2E', // Interactive elements
@@ -131,14 +131,14 @@ export const palette = {
   gray300: 'rgba(255, 255, 255, 0.35)',
   
   // Accent - warm amber
-  amber: '#F5A623',
-  amberLight: '#FFB94D',
-  amberMuted: 'rgba(245, 166, 35, 0.15)',
-  amberSubtle: 'rgba(245, 166, 35, 0.08)',
+  amber: '#F59E0B',
+  amberLight: '#FBBF24',
+  amberMuted: 'rgba(245, 158, 11, 0.15)',
+  amberSubtle: 'rgba(245, 158, 11, 0.08)',
   
-  // Semantic
-  green: '#32D74B',
-  greenMuted: 'rgba(50, 215, 75, 0.15)',
+  // Semantic (avoid green cast in dark UI)
+  green: '#FBBF24',
+  greenMuted: 'rgba(251, 191, 36, 0.15)',
   
   blue: '#0A84FF',
   blueMuted: 'rgba(10, 132, 255, 0.15)',

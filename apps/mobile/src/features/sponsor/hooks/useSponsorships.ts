@@ -33,7 +33,7 @@ export function useSponsorships() {
       setSponsorships(data || []);
       setError(null);
     } catch (err) {
-      logger.error('Failed to fetch sponsorships', err);
+      logger.warn('Failed to fetch sponsorships', err);
       setError(err instanceof Error ? err : new Error('Failed to fetch'));
     } finally {
       setLoading(false);
@@ -76,7 +76,7 @@ export function useSponsorships() {
         await fetchSponsorships();
         logger.info('Sponsor request sent successfully');
       } catch (err) {
-        logger.error('Failed to send sponsor request', err);
+        logger.warn('Failed to send sponsor request', err);
         throw err;
       }
     },
@@ -96,7 +96,7 @@ export function useSponsorships() {
         await fetchSponsorships();
         logger.info('Sponsor request accepted');
       } catch (err) {
-        logger.error('Failed to accept request', err);
+        logger.warn('Failed to accept request', err);
         throw err;
       }
     },
@@ -116,7 +116,7 @@ export function useSponsorships() {
         await fetchSponsorships();
         logger.info('Sponsor request declined');
       } catch (err) {
-        logger.error('Failed to decline request', err);
+        logger.warn('Failed to decline request', err);
         throw err;
       }
     },
@@ -133,7 +133,7 @@ export function useSponsorships() {
         await fetchSponsorships();
         logger.info('Sponsor removed');
       } catch (err) {
-        logger.error('Failed to remove sponsor', err);
+        logger.warn('Failed to remove sponsor', err);
         throw err;
       }
     },
@@ -170,3 +170,4 @@ export function useSponsorships() {
     refresh: fetchSponsorships,
   };
 }
+

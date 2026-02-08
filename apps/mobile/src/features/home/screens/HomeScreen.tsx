@@ -1,23 +1,24 @@
 /**
  * Home Screen
- * 
- * Apple-inspired design. Premium, minimal, confident.
- * No visible borders. Depth through background layers.
+ *
+ * Premium, focused recovery dashboard.
  */
 
 import React, { useMemo, useCallback } from 'react';
-import { 
-  ScrollView, 
-  StyleSheet, 
-  View, 
-  Text, 
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
   Pressable,
+  type StyleProp,
+  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { 
-  FadeIn, 
+import Animated, {
+  FadeIn,
   FadeInDown,
   useAnimatedStyle,
   useSharedValue,
@@ -43,27 +44,26 @@ function getGreeting(): string {
 }
 
 function formatDate(): string {
-  return new Date().toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    month: 'long', 
-    day: 'numeric' 
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
   });
 }
 
-// Animated Pressable Card
-function ActionCard({ 
-  children, 
+function ActionCard({
+  children,
   onPress,
   style,
   delay = 0,
-}: { 
+}: {
   children: React.ReactNode;
   onPress: () => void;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   delay?: number;
 }) {
   const scale = useSharedValue(1);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
@@ -78,28 +78,21 @@ function ActionCard({
 
   return (
     <Animated.View entering={FadeInDown.delay(delay).duration(400).springify()}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-      >
-        <Animated.View style={[style, animatedStyle]}>
-          {children}
-        </Animated.View>
+      <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
+        <Animated.View style={[style, animatedStyle]}>{children}</Animated.View>
       </Pressable>
     </Animated.View>
   );
 }
 
-// Task Item - No borders, subtle differentiation
-function TaskItem({ 
-  icon, 
-  label, 
+function TaskItem({
+  icon,
+  label,
   sublabel,
   done,
   onPress,
   isLast,
-}: { 
+}: {
   icon: keyof typeof Feather.glyphMap;
   label: string;
   sublabel: string;
@@ -108,44 +101,74 @@ function TaskItem({
   isLast?: boolean;
 }) {
   const scale = useSharedValue(1);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
 
   return (
-    <Pressable 
+    <Pressable
       onPress={onPress}
-      onPressIn={() => { scale.value = withSpring(0.98, ds.spring.snappy); }}
-      onPressOut={() => { scale.value = withSpring(1, ds.spring.smooth); }}
+      onPressIn={() => {
+        scale.value = withSpring(0.98, ds.spring.snappy);
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, ds.spring.smooth);
+      }}
     >
       <Animated.View style={[styles.taskItem, animatedStyle]}>
         <View style={[styles.taskIcon, done && styles.taskIconDone]}>
-          <Feather 
-            name={done ? 'check' : icon} 
-            size={ds.sizes.iconMd} 
-            color={done ? ds.colors.success : ds.colors.textTertiary} 
+          <Feather
+            name={done ? 'check' : icon}
+            size={ds.sizes.iconMd}
+            color={done ? ds.colors.success : ds.colors.textTertiary}
           />
         </View>
-        
+
         <View style={styles.taskContent}>
-          <Text style={[styles.taskLabel, done && styles.taskLabelDone]}>
-            {label}
-          </Text>
+          <Text style={[styles.taskLabel, done && styles.taskLabelDone]}>{label}</Text>
           <Text style={styles.taskSublabel}>{sublabel}</Text>
         </View>
-        
+
         <View style={styles.taskChevron}>
-          <Feather 
-            name="chevron-right" 
-            size={ds.sizes.iconSm} 
-            color={ds.colors.textQuaternary} 
-          />
+          <Feather name="chevron-right" size={ds.sizes.iconSm} color={ds.colors.textQuaternary} />
         </View>
       </Animated.View>
-      
+
       {!isLast && <View style={styles.taskDivider} />}
     </Pressable>
+  );
+}
+
+function MiniStat({ label, value, tint }: { label: string; value: string; tint?: string }) {
+  return (
+    <View style={styles.miniStat}>
+      <Text style={[styles.miniStatValue, tint ? { color: tint } : null]}>{value}</Text>
+      <Text style={styles.miniStatLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function ShortcutCard({
+  icon,
+  title,
+  subtitle,
+  onPress,
+}: {
+  icon: keyof typeof Feather.glyphMap;
+  title: string;
+  subtitle: string;
+  onPress: () => void;
+}) {
+  return (
+    <ActionCard onPress={onPress} style={styles.shortcutCard}>
+      <View style={styles.shortcutIconWrap}>
+        <Feather name={icon} size={18} color={ds.colors.accent} />
+      </View>
+      <Text style={styles.shortcutTitle}>{title}</Text>
+      <Text style={styles.shortcutSubtitle}>{subtitle}</Text>
+      <Feather name="arrow-up-right" size={14} color={ds.colors.textQuaternary} style={styles.shortcutArrow} />
+    </ActionCard>
   );
 }
 
@@ -156,29 +179,49 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
   const greeting = useMemo(() => getGreeting(), []);
   const date = useMemo(() => formatDate(), []);
+  const completedToday = Number(Boolean(morning)) + Number(Boolean(evening));
+
+  const hapticLight = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+  };
 
   const handleMorning = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    hapticLight();
     navigation.navigate('MorningIntention');
   }, [navigation]);
-  
+
   const handleReading = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    hapticLight();
     navigation.navigate('DailyReading');
   }, [navigation]);
-  
+
   const handleEvening = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    hapticLight();
     navigation.navigate('EveningPulse');
   }, [navigation]);
-  
+
   const handleCompanion = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     navigation.navigate('CompanionChat');
   }, [navigation]);
-  
+
+  const handleEmergency = useCallback(() => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+    navigation.navigate('Emergency');
+  }, [navigation]);
+
+  const handleProgress = useCallback(() => {
+    hapticLight();
+    navigation.navigate('ProgressDashboard');
+  }, [navigation]);
+
+  const handleSteps = useCallback(() => {
+    hapticLight();
+    navigation.getParent()?.navigate('Steps' as never);
+  }, [navigation]);
+
   const handleProfile = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    hapticLight();
     navigation.getParent()?.navigate('Profile' as never);
   }, [navigation]);
 
@@ -197,62 +240,101 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <ScrollView 
+        <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header */}
           <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
             <View>
               <Text style={styles.date}>{date}</Text>
               <Text style={styles.greeting}>{greeting}</Text>
+              <Text style={styles.subtitle}>Welcome back — keep your next right move simple.</Text>
             </View>
-            
-            <Pressable 
-              onPress={handleProfile} 
-              style={({ pressed }) => [
-                styles.profileButton,
-                pressed && styles.profileButtonPressed,
-              ]}
+
+            <Pressable
+              onPress={handleProfile}
+              style={({ pressed }) => [styles.profileButton, pressed && styles.profileButtonPressed]}
             >
               <Feather name="user" size={ds.sizes.iconMd} color={ds.colors.textPrimary} />
             </Pressable>
           </Animated.View>
 
-          {/* Hero - Day Counter */}
-          <Animated.View entering={FadeIn.delay(150).duration(600)} style={styles.hero}>
-            <SobrietyCandle 
-              days={days} 
-              size={1.3}
-              maxDays={365}
-            />
+          <Animated.View entering={FadeIn.delay(150).duration(600)} style={styles.heroCard}>
+            <View style={styles.heroTopRow}>
+              <Text style={styles.heroTitle}>Clean Time Streak</Text>
+              <View style={styles.heroBadge}>
+                <Text style={styles.heroBadgeText}>{days > 0 ? 'Streak intact' : 'Start today'}</Text>
+              </View>
+            </View>
+
+            <SobrietyCandle days={days} size={1.15} maxDays={365} />
+
             <View style={styles.dayInfo}>
               <Text style={styles.dayCount}>{days}</Text>
-              <Text style={styles.dayLabel}>
-                {days === 1 ? 'day' : 'days'}
-              </Text>
+              <Text style={styles.dayLabel}>{days === 1 ? 'day clean' : 'days clean'}</Text>
+            </View>
+
+            <Text style={styles.heroMessage}>
+              {days < 7 ? 'One day at a time. You are doing this.' : 'Your consistency is building real momentum.'}
+            </Text>
+
+            <View style={styles.miniStatsRow}>
+              <MiniStat label="Today" value={`${completedToday}/2`} tint={ds.colors.accent} />
+              <MiniStat label="Current step" value="1/12" />
+              <MiniStat label="Check-ins" value={String(completedToday)} />
             </View>
           </Animated.View>
 
-          {/* Companion Card - Primary CTA */}
-          <ActionCard onPress={handleCompanion} delay={200}>
+          <ActionCard onPress={handleCompanion} delay={220}>
             <View style={styles.companionCard}>
               <View style={styles.companionIcon}>
-                <Feather name="message-circle" size={26} color="#000" />
+                <Feather name="message-circle" size={24} color="#000" />
               </View>
               <View style={styles.companionContent}>
-                <Text style={styles.companionTitle}>What's on your mind?</Text>
-                <Text style={styles.companionSubtitle}>Talk it through</Text>
+                <Text style={styles.companionTitle}>Talk to your companion</Text>
+                <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
               </View>
-              <Feather name="arrow-right" size={22} color="rgba(0,0,0,0.4)" />
+              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" />
             </View>
           </ActionCard>
 
-          {/* Today Section */}
-          <Animated.View entering={FadeInDown.delay(300).duration(400)} style={styles.section}>
-            <Text style={styles.sectionTitle}>Today</Text>
-            
+          <Animated.View entering={FadeInDown.delay(280).duration(400)} style={styles.section}>
+            <View style={styles.sectionHeaderRow}>
+              <Text style={styles.sectionTitle}>Today shortcuts</Text>
+              <Text style={styles.sectionHint}>Tap to open</Text>
+            </View>
+            <View style={styles.shortcutsGrid}>
+              <ShortcutCard
+                icon="book-open"
+                title="Step work"
+                subtitle="Continue where you left off"
+                onPress={handleSteps}
+              />
+              <ShortcutCard
+                icon="book"
+                title="Daily reading"
+                subtitle="Ground yourself now"
+                onPress={handleReading}
+              />
+              <ShortcutCard
+                icon="bar-chart-2"
+                title="Insights"
+                subtitle="See your pattern"
+                onPress={handleProgress}
+              />
+              <ShortcutCard
+                icon="alert-triangle"
+                title="Emergency"
+                subtitle="Open support instantly"
+                onPress={handleEmergency}
+              />
+            </View>
+          </Animated.View>
+
+          <Animated.View entering={FadeInDown.delay(330).duration(400)} style={styles.section}>
+            <Text style={styles.sectionTitle}>Recovery rhythm</Text>
+
             <View style={styles.taskList}>
               <TaskItem
                 icon="sun"
@@ -261,14 +343,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
                 done={!!morning}
                 onPress={handleMorning}
               />
-              
-              <TaskItem
-                icon="book-open"
-                label="Daily reading"
-                sublabel="Today's reflection"
-                onPress={handleReading}
-              />
-              
+
               <TaskItem
                 icon="moon"
                 label="Evening reflection"
@@ -312,7 +387,6 @@ const styles = StyleSheet.create({
     letterSpacing: 4,
   },
 
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -331,6 +405,11 @@ const styles = StyleSheet.create({
     ...ds.typography.h1,
     color: ds.colors.textPrimary,
   },
+  subtitle: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: ds.space[1],
+  },
   profileButton: {
     width: ds.sizes.touchMin,
     height: ds.sizes.touchMin,
@@ -343,44 +422,144 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.bgQuaternary,
   },
 
-  // Hero
-  hero: {
+  heroCard: {
+    backgroundColor: ds.colors.bgSecondary,
+    borderRadius: ds.radius.xl,
+    paddingHorizontal: ds.space[5],
+    paddingTop: ds.space[4],
+    paddingBottom: ds.space[5],
+    marginBottom: ds.space[5],
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: ds.space[6],
-    paddingBottom: ds.space[8],
+  },
+  heroTitle: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+    fontWeight: '600',
+  },
+  heroBadge: {
+    backgroundColor: ds.colors.successMuted,
+    paddingHorizontal: ds.space[3],
+    paddingVertical: ds.space[1],
+    borderRadius: ds.radius.full,
+  },
+  heroBadgeText: {
+    ...ds.typography.caption,
+    color: ds.colors.success,
+    fontWeight: '600',
   },
   dayInfo: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginTop: ds.space[5],
+    justifyContent: 'center',
+    marginTop: ds.space[3],
     gap: ds.space[2],
   },
   dayCount: {
-    fontSize: 64,
+    fontSize: 54,
     fontWeight: '700',
     color: ds.colors.textPrimary,
-    letterSpacing: -2,
+    letterSpacing: -1.5,
   },
   dayLabel: {
-    fontSize: 24,
-    fontWeight: '500',
+    ...ds.typography.body,
     color: ds.colors.textTertiary,
   },
+  heroMessage: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    textAlign: 'center',
+    marginTop: ds.space[2],
+    marginBottom: ds.space[4],
+  },
+  miniStatsRow: {
+    flexDirection: 'row',
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    overflow: 'hidden',
+  },
+  miniStat: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: ds.space[3],
+  },
+  miniStatValue: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+    fontWeight: '700',
+  },
+  miniStatLabel: {
+    ...ds.typography.caption,
+    color: ds.colors.textQuaternary,
+    marginTop: 2,
+  },
 
-  // Section
   section: {
-    marginTop: ds.space[4],
+    marginTop: ds.space[2],
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: ds.space[3],
+    marginLeft: ds.space[1],
   },
   sectionTitle: {
     ...ds.typography.caption,
     color: ds.colors.textTertiary,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
-    marginBottom: ds.space[3],
-    marginLeft: ds.space[1],
+  },
+  sectionHint: {
+    ...ds.typography.micro,
+    color: ds.colors.textQuaternary,
   },
 
-  // Task List - No borders
+  shortcutsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: ds.space[2],
+  },
+  shortcutCard: {
+    width: '48.5%',
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    padding: ds.space[4],
+    marginBottom: ds.space[3],
+    minHeight: 112,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: ds.colors.borderSubtle,
+  },
+  shortcutIconWrap: {
+    width: 30,
+    height: 30,
+    borderRadius: ds.radius.md,
+    backgroundColor: ds.colors.accentMuted,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: ds.space[2],
+  },
+  shortcutTitle: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+    fontWeight: '600',
+  },
+  shortcutSubtitle: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: ds.space[1],
+    paddingRight: ds.space[4],
+  },
+  shortcutArrow: {
+    position: 'absolute',
+    right: ds.space[3],
+    top: ds.space[3],
+  },
+
   taskList: {
     backgroundColor: ds.colors.bgTertiary,
     borderRadius: ds.radius.lg,
@@ -432,7 +611,6 @@ const styles = StyleSheet.create({
     marginLeft: 44 + ds.space[5] + ds.space[4],
   },
 
-  // Companion Card - Premium amber
   companionCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -440,12 +618,12 @@ const styles = StyleSheet.create({
     borderRadius: ds.radius.xl,
     paddingVertical: ds.space[5],
     paddingHorizontal: ds.space[5],
-    marginBottom: ds.space[6],
+    marginBottom: ds.space[2],
     ...ds.shadows.md,
   },
   companionIcon: {
-    width: 52,
-    height: 52,
+    width: 48,
+    height: 48,
     borderRadius: ds.radius.lg,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     justifyContent: 'center',
@@ -456,13 +634,13 @@ const styles = StyleSheet.create({
     marginLeft: ds.space[4],
   },
   companionTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
     color: '#000',
   },
   companionSubtitle: {
     ...ds.typography.caption,
-    color: 'rgba(0, 0, 0, 0.5)',
+    color: 'rgba(0, 0, 0, 0.55)',
     marginTop: 2,
   },
 });

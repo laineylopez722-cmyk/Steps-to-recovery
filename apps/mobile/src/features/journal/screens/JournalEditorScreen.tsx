@@ -195,18 +195,34 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
           {/* Header */}
           <View style={styles.header}>
             {/* Back button */}
-            <Pressable onPress={handleBack} style={styles.backBtn}>
+            <Pressable
+              onPress={handleBack}
+              style={styles.backBtn}
+              accessibilityLabel="Go back"
+              accessibilityRole="button"
+            >
               <View style={styles.backBtnInner}>
                 <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
               </View>
             </Pressable>
-            
+
             {/* Right actions pill */}
             <View style={styles.actionsPill}>
-              <Pressable onPress={handleShare} style={styles.actionBtn}>
+              <Pressable
+                onPress={handleShare}
+                style={styles.actionBtn}
+                accessibilityLabel="Share journal entry"
+                accessibilityRole="button"
+              >
                 <Feather name="share" size={18} color={ds.colors.textPrimary} />
               </Pressable>
-              <Pressable onPress={handleMore} style={styles.actionBtn}>
+              <Pressable
+                onPress={handleMore}
+                style={styles.actionBtn}
+                accessibilityLabel="More options"
+                accessibilityRole="button"
+                accessibilityHint="Opens menu with additional entry options"
+              >
                 <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} />
               </Pressable>
             </View>
@@ -255,13 +271,26 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
           >
             {/* Left tools */}
             <View style={styles.toolsPill}>
-              <Pressable style={styles.toolBtn}>
+              <Pressable
+                style={styles.toolBtn}
+                accessibilityLabel="Add checklist"
+                accessibilityRole="button"
+              >
                 <Feather name="check-square" size={20} color={ds.colors.textSecondary} />
               </Pressable>
-              <Pressable style={styles.toolBtn}>
+              <Pressable
+                style={styles.toolBtn}
+                accessibilityLabel="Attach file"
+                accessibilityRole="button"
+              >
                 <Feather name="paperclip" size={20} color={ds.colors.textSecondary} />
               </Pressable>
-              <Pressable style={styles.toolBtn}>
+              <Pressable
+                style={styles.toolBtn}
+                accessibilityLabel="Add mention"
+                accessibilityRole="button"
+                accessibilityHint="Mention a person or tag"
+              >
                 <Feather name="at-sign" size={20} color={ds.colors.textSecondary} />
               </Pressable>
             </View>
@@ -277,7 +306,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
             
             {/* New note button */}
             <Pressable onPress={handleNewEntry} style={styles.newNoteBtn}>
-              <Feather name="edit" size={20} color={ds.colors.textSecondary} />
+              <Feather name="edit" size={20} color={ds.colors.accent} />
             </Pressable>
           </Animated.View>
         </KeyboardAvoidingView>
@@ -289,7 +318,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ds.colors.bgSecondary,
+    backgroundColor: ds.colors.bgPrimary,
   },
   safe: {
     flex: 1,
@@ -367,7 +396,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: ds.space[4],
     paddingTop: ds.space[3],
-    backgroundColor: ds.colors.bgSecondary,
+    backgroundColor: ds.colors.bgPrimary,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: ds.colors.divider,
   },
@@ -397,7 +426,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.colors.accentMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },

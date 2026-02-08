@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert, Pressable, Linking, Share } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Button } from '../../../design-system/components/Button';
@@ -95,6 +95,43 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
     }
   }, [isFavorited, meetingId, notes, updateNotes]);
 
+  const handleOpenDirections = useCallback(async (): Promise<void> => {
+    if (!meeting) return;
+
+    const query = [meeting.address, meeting.city, meeting.state, meeting.postal_code]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+
+    if (!query) {
+      Alert.alert('Unavailable', 'Address details are missing for this meeting.');
+      return;
+    }
+
+    const encoded = encodeURIComponent(query);
+    const url = `https://maps.google.com/?q=${encoded}`;
+
+    const supported = await Linking.canOpenURL(url);
+    if (!supported) {
+      Alert.alert('Unavailable', 'Could not open maps on this device.');
+      return;
+    }
+
+    await Linking.openURL(url);
+  }, [meeting]);
+
+  const handleShareMeeting = useCallback(async (): Promise<void> => {
+    if (!meeting) return;
+
+    const summary = [meeting.name, meeting.address, [meeting.city, meeting.state].filter(Boolean).join(', ')]
+      .filter(Boolean)
+      .join('\n');
+
+    await Share.share({
+      message: `Meeting details:\n${summary}`,
+    });
+  }, [meeting]);
+
   if (isLoading) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
@@ -121,6 +158,13 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
 
   const timeText = meeting.time ? formatMeetingTime(meeting.time) : 'Time varies';
   const dayText = meeting.day_of_week !== null ? formatDayOfWeek(meeting.day_of_week) : 'Daily';
+  const meetingName = meeting.name?.trim() || 'Unnamed meeting';
+  const meetingLocation = meeting.location?.trim() || 'Location details unavailable';
+  const meetingAddress = meeting.address?.trim() || 'Address unavailable';
+  const meetingCityState = [meeting.city, meeting.state, meeting.postal_code]
+    .filter(Boolean)
+    .join(' ');
+  const meetingCityStateLine = meetingCityState || 'City details unavailable';
 
   return (
     <ScrollView
@@ -129,18 +173,33 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
     >
       {/* Meeting Name */}
       <View style={styles.header}>
-        <Text style={[theme.typography.h1, { color: theme.colors.text }]}>{meeting.name}</Text>
-        <Button
-          variant={isFavorited ? 'danger' : 'primary'}
-          onPress={handleToggleFavorite}
+        <Text style={[theme.typography.h1, { color: theme.colors.text, flex: 1 }]}>{meetingName}</Text>
+        <Pressable
+          onPress={() => void handleToggleFavorite()}
           accessibilityLabel={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-          style={styles.favoriteButton}
+          style={({ pressed }) => [
+            styles.favoriteIconButton,
+            {
+              backgroundColor: isFavorited ? theme.colors.danger : theme.colors.surface,
+              borderColor: theme.colors.border,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
         >
           <MaterialIcons
             name={isFavorited ? 'favorite' : 'favorite-border'}
-            size={24}
-            color="#FFFFFF"
+            size={22}
+            color={isFavorited ? '#FFFFFF' : theme.colors.text}
           />
+        </Pressable>
+      </View>
+
+      <View style={styles.actionRow}>
+        <Button variant="primary" onPress={() => void handleOpenDirections()} style={styles.actionButton}>
+          Directions
+        </Button>
+        <Button variant="outline" onPress={() => void handleShareMeeting()} style={styles.actionButton}>
+          Share
         </Button>
       </View>
 
@@ -168,13 +227,13 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
               Where
             </Text>
             <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
-              {meeting.location}
+              {meetingLocation}
             </Text>
             <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              {meeting.address}
+              {meetingAddress}
             </Text>
             <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              {meeting.city}, {meeting.state} {meeting.postal_code}
+              {meetingCityStateLine}
             </Text>
           </View>
         </View>
@@ -262,10 +321,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 24,
+    marginBottom: 12,
+    gap: 12,
   },
-  favoriteButton: {
-    marginLeft: 12,
+  favoriteIconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  actionButton: {
+    flex: 1,
   },
   section: {
     marginBottom: 16,

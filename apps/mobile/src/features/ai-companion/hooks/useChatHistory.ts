@@ -9,6 +9,26 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
 import type { Conversation, Message, ConversationType, ConversationStatus } from '../types';
 
+interface ConversationRow {
+  id: string;
+  user_id: string;
+  title: string;
+  type: string;
+  step_number: number | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface MessageRow {
+  id: string;
+  conversation_id: string;
+  role: string;
+  encrypted_content: string;
+  created_at: string;
+  metadata: string | null;
+}
+
 export interface UseChatHistoryReturn {
   conversations: Conversation[];
   isLoading: boolean;
@@ -42,7 +62,7 @@ async function generateId(): Promise<string> {
 /**
  * Convert database row to Conversation object
  */
-function rowToConversation(row: any): Conversation {
+function rowToConversation(row: ConversationRow): Conversation {
   return {
     id: row.id,
     userId: row.user_id,
@@ -58,7 +78,7 @@ function rowToConversation(row: any): Conversation {
 /**
  * Convert database row to Message object (content needs decryption separately)
  */
-function rowToMessage(row: any, decryptedContent: string): Message {
+function rowToMessage(row: MessageRow, decryptedContent: string): Message {
   return {
     id: row.id,
     conversationId: row.conversation_id,

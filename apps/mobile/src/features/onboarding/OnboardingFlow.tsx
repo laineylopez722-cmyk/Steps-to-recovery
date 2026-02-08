@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Pressable, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   type SharedValue,
@@ -142,7 +142,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
     },
   });
 
-  const handleMomentumEnd = (event: any) => {
+  const handleMomentumEnd = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newIndex = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
     setCurrentIndex(newIndex);
   };

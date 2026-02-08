@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, type ReactElement } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import type { StyleProp, TextStyle } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,

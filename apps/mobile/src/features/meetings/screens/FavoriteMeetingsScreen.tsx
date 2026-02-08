@@ -86,7 +86,7 @@ export function FavoriteMeetingsScreen({
 
         setMeetings(validMeetings);
       } catch (error) {
-        logger.error('Failed to load favorite meetings', error);
+        logger.warn('Failed to load favorite meetings', error);
         setMeetings([]);
       } finally {
         setIsLoadingMeetings(false);
@@ -123,7 +123,7 @@ export function FavoriteMeetingsScreen({
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <EmptyState
-          icon="favorite-border"
+          icon="heart-outline"
           title="No Favorite Meetings"
           description="Favorite meetings to access them quickly offline."
           actionLabel="Find Meetings"
@@ -165,3 +165,4 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
 });
+

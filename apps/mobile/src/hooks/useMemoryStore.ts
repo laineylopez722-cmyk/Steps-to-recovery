@@ -10,6 +10,22 @@ import { useState, useCallback, useEffect } from 'react';
 import { useDatabase } from '../contexts/DatabaseContext';
 import type { Memory, MemoryType } from '../features/journal/utils/memoryExtraction';
 
+type MemorySource = Memory['source'];
+
+interface MemoryRow {
+  id: string;
+  user_id: string;
+  type: string;
+  content: string;
+  context: string;
+  confidence: number;
+  source: string;
+  source_id: string;
+  key: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Memory summary for AI context
 export interface MemorySummary {
   // Key people in user's life
@@ -174,9 +190,9 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
   
   const getAllMemories = useCallback(async (): Promise<Memory[]> => {
     if (!db || !isReady) return [];
-    
+
     try {
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<MemoryRow>(
         'SELECT * FROM memories WHERE user_id = ? ORDER BY created_at DESC',
         [userId]
       );
@@ -186,12 +202,12 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
       return [];
     }
   }, [db, isReady, userId]);
-  
+
   const getMemoriesByType = useCallback(async (type: MemoryType): Promise<Memory[]> => {
     if (!db || !isReady) return [];
-    
+
     try {
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<MemoryRow>(
         'SELECT * FROM memories WHERE user_id = ? AND type = ? ORDER BY created_at DESC',
         [userId, type]
       );
@@ -201,15 +217,15 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
       return [];
     }
   }, [db, isReady, userId]);
-  
+
   const getRecentMemories = useCallback(async (days = 7): Promise<Memory[]> => {
     if (!db || !isReady) return [];
-    
+
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
-    
+
     try {
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<MemoryRow>(
         'SELECT * FROM memories WHERE user_id = ? AND created_at > ? ORDER BY created_at DESC',
         [userId, cutoff.toISOString()]
       );
@@ -219,13 +235,13 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
       return [];
     }
   }, [db, isReady, userId]);
-  
+
   const searchMemories = useCallback(async (query: string): Promise<Memory[]> => {
     if (!db || !isReady || !query.trim()) return [];
-    
+
     try {
-      const rows = await db.getAllAsync<any>(
-        `SELECT * FROM memories 
+      const rows = await db.getAllAsync<MemoryRow>(
+        `SELECT * FROM memories
         WHERE user_id = ? AND (content LIKE ? OR context LIKE ?)
         ORDER BY confidence DESC, created_at DESC
         LIMIT 20`,
@@ -423,7 +439,14 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
 
 // Helpers
 
-function rowToMemory(row: any): Memory {
+function toMemorySource(source: string): MemorySource {
+  if (source === 'journal' || source === 'checkin' || source === 'chat') {
+    return source;
+  }
+  return 'journal';
+}
+
+function rowToMemory(row: MemoryRow): Memory {
   return {
     id: row.id,
     userId: row.user_id,
@@ -431,7 +454,7 @@ function rowToMemory(row: any): Memory {
     content: row.content,
     context: row.context,
     confidence: row.confidence,
-    source: row.source,
+    source: toMemorySource(row.source),
     sourceId: row.source_id,
     key: row.key,
     createdAt: new Date(row.created_at),

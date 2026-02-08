@@ -7,6 +7,7 @@ import {
   Platform,
   Animated,
   TouchableOpacity,
+  Pressable,
   type ListRenderItemInfo,
   type ViewToken,
 } from 'react-native';
@@ -69,6 +70,7 @@ export function StepDetailScreen(): React.ReactElement {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [savingQuestion, setSavingQuestion] = useState<number | null>(null);
   const [currentVisibleQuestion, setCurrentVisibleQuestion] = useState(1);
+  const [showGuidance, setShowGuidance] = useState(false);
 
   // Toast state
   const [showToast, setShowToast] = useState(false);
@@ -289,12 +291,12 @@ export function StepDetailScreen(): React.ReactElement {
 
       if (item.type === 'footer') {
         return (
-          <Card variant="outlined" style={[styles.infoCard, { borderColor: theme.colors.success }]}>
+          <Card variant="outlined" style={[styles.infoCard, { borderColor: theme.colors.primary }]}>
             <View style={styles.infoContent}>
               <MaterialCommunityIcons
                 name="lock"
                 size={24}
-                color={theme.colors.success}
+                color={theme.colors.primary}
                 accessible={false}
               />
               <Text
@@ -325,7 +327,7 @@ export function StepDetailScreen(): React.ReactElement {
               style={[
                 styles.questionNumber,
                 isAnswered
-                  ? { backgroundColor: theme.colors.success }
+                  ? { backgroundColor: theme.colors.primary }
                   : {
                       backgroundColor: theme.colors.surface,
                       borderWidth: 2,
@@ -615,31 +617,45 @@ export function StepDetailScreen(): React.ReactElement {
             </View>
           </Card>
 
-          {/* Description */}
+          {/* Guidance */}
           <Card
             variant="outlined"
-            style={[styles.descriptionCard, { borderColor: theme.colors.primary }]}
+            style={[styles.descriptionCard, { borderColor: theme.colors.border }]}
           >
-            <View style={styles.descriptionHeader}>
-              <MaterialCommunityIcons
-                name="lightbulb-outline"
-                size={24}
-                color={theme.colors.primary}
-              />
-              <Text
-                style={[theme.typography.label, { color: theme.colors.primary, marginLeft: 8 }]}
-              >
-                STEP GUIDANCE
-              </Text>
-            </View>
-            <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.text, lineHeight: 24, fontStyle: 'italic' },
-              ]}
+            <Pressable
+              onPress={() => setShowGuidance((prev) => !prev)}
+              style={styles.guidanceToggle}
+              accessibilityRole="button"
+              accessibilityLabel={showGuidance ? 'Hide step guidance' : 'Show step guidance'}
             >
-              "{stepData.description}"
-            </Text>
+              <View style={styles.descriptionHeader}>
+                <MaterialCommunityIcons
+                  name="lightbulb-outline"
+                  size={20}
+                  color={theme.colors.primary}
+                />
+                <Text
+                  style={[theme.typography.label, { color: theme.colors.primary, marginLeft: 8 }]}
+                >
+                  STEP GUIDANCE
+                </Text>
+              </View>
+              <MaterialCommunityIcons
+                name={showGuidance ? 'chevron-up' : 'chevron-down'}
+                size={20}
+                color={theme.colors.textSecondary}
+              />
+            </Pressable>
+            {showGuidance && (
+              <Text
+                style={[
+                  theme.typography.body,
+                  { color: theme.colors.text, lineHeight: 24, fontStyle: 'italic' },
+                ]}
+              >
+                "{stepData.description}"
+              </Text>
+            )}
           </Card>
 
           {/* Question Counter */}
@@ -752,7 +768,7 @@ const styles = StyleSheet.create({
   progressSection: {
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.05)',
+    borderTopColor: 'rgba(255,255,255,0.08)',
   },
   progressHeader: {
     flexDirection: 'row',
@@ -769,7 +785,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     marginTop: 12,
   },
   descriptionCard: {
@@ -779,14 +795,19 @@ const styles = StyleSheet.create({
   descriptionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+  },
+  guidanceToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
   questionCounter: {
-    paddingVertical: 8,
+    paddingVertical: 10,
     paddingHorizontal: 16,
     marginHorizontal: 16,
     marginBottom: 8,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
   },
   contentContainer: {
@@ -799,7 +820,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     marginBottom: 12,
-    borderRadius: 8,
+    borderRadius: 12,
   },
   sectionHeaderContent: {
     marginLeft: 12,

@@ -12,28 +12,57 @@
  * ```
  */
 
+import {
+  DailyCheckIn,
+  DailyCheckInDecrypted,
+  JournalEntryDecrypted,
+  MilestoneDefinition,
+  StepWork,
+  SyncQueueItem,
+  SyncStatus,
+  UserProfile,
+} from '../types';
+
 // Export only non-conflicting types from ./types
 export type {
   SyncStatus,
-  CheckInType,
-  SyncOperation,
   SyncQueueItem,
   UserProfile as DbUserProfile,
+  UserProfile,
   DailyCheckIn as DbDailyCheckIn,
+  DailyCheckIn,
+  DailyCheckInDecrypted,
+  JournalEntryDecrypted,
+  MilestoneDefinition,
   StepWork as DbStepWork,
-} from './types';
+  StepWork,
+  StepWorkDecrypted,
+  CheckInType,
+} from '../types';
 
-// Main application types (camelCase properties)
-export * from '../types';
+// Export application types (camelCase)
+export type {
+  JournalEntry,
+  JournalType,
+  JournalEntryDb,
+  MeetingLog,
+  MeetingType,
+  DailyCheckin,
+  AppSettings,
+  TimeCapsule,
+  ContactRole,
+  RecoveryContact,
+  RegularMeeting,
+  RegularMeetingType,
+  PhoneCallLog,
+  FourthStepType,
+  AmendsType,
+  AmendsStatus,
+  StepProgress,
+} from '../types';
+
 
 // Explicit exports from constants to avoid naming conflicts
-export {
-  DEFAULT_EMOTIONS,
-  type EmotionTag as EmotionTagConstant,
-  getEmotionByName,
-  isValidEmotionName,
-} from '../constants';
-
 export {
   TIME_MILESTONES,
   type TimeMilestone,

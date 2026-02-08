@@ -138,8 +138,10 @@ export function Illustration({
         return () => clearTimeout(timer);
       } else {
         lottieRef.current?.play();
+        return undefined;
       }
     }
+    return undefined;
   }, [playOnMount, playDelay, opacity, scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({

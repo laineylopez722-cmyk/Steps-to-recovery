@@ -72,6 +72,10 @@ export function EmptyState({
   };
 
   const iconColor = iconColors[icon] || iconColors.default;
+  const fallbackIcon: keyof typeof MaterialCommunityIcons.glyphMap = 'alert-circle-outline';
+  const resolvedIcon = (icon in MaterialCommunityIcons.glyphMap
+    ? icon
+    : fallbackIcon) as keyof typeof MaterialCommunityIcons.glyphMap;
 
   return (
     <Animated.View 
@@ -79,19 +83,19 @@ export function EmptyState({
       style={[styles.container, style]}
     >
       {/* Icon Container with Glow */}
-      <View style={[styles.iconContainer, { backgroundColor: iconColor + '15' }]}>
+      <View style={[styles.iconContainer, { backgroundColor: iconColor + '15' }]}> 
         <MaterialCommunityIcons
-          name={icon as keyof typeof MaterialCommunityIcons.glyphMap}
+          name={resolvedIcon}
           size={48}
           color={iconColor}
         />
         {/* Glow effect */}
-        <View 
+        <View
           style={[
             styles.glow,
             { backgroundColor: iconColor }
-          ]} 
-          pointerEvents="none" 
+          ]}
+          pointerEvents="none"
         />
       </View>
 

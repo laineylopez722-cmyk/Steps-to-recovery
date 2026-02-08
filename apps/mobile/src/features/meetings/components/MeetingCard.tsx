@@ -34,7 +34,9 @@ export function MeetingCard({
 
   // Format distance
   const distanceText =
-    meeting.distance_miles !== null ? `${meeting.distance_miles.toFixed(1)} mi` : '';
+    meeting.distance_miles !== null && Number.isFinite(meeting.distance_miles)
+      ? `${meeting.distance_miles.toFixed(1)} mi`
+      : '';
 
   // Format time
   const timeText = meeting.time ? formatMeetingTime(meeting.time) : 'Time varies';
@@ -42,8 +44,9 @@ export function MeetingCard({
   // Format day
   const dayText = meeting.day_of_week !== null ? formatDayOfWeek(meeting.day_of_week) : 'Daily';
 
-  // Get primary meeting type (first in array, usually most relevant)
-  const _primaryType = meetingTypes.length > 0 ? meetingTypes[0] : null;
+  const meetingName = meeting.name?.trim() || 'Unnamed meeting';
+  const locationName = meeting.location?.trim() || 'Location details unavailable';
+  const addressLine = [meeting.address, meeting.city].filter(Boolean).join(', ') || 'Address unavailable';
 
   return (
     <Pressable
@@ -58,7 +61,7 @@ export function MeetingCard({
         pressed && { opacity: 0.6 },
       ]}
       accessibilityRole="button"
-      accessibilityLabel={`${meeting.name}, ${distanceText} away, ${dayText} at ${timeText}`}
+      accessibilityLabel={`${meetingName}, ${dayText} at ${timeText}${distanceText ? `, ${distanceText} away` : ''}`}
       accessibilityHint="Tap to view meeting details"
     >
       {/* Header Row: Name and Distance */}
@@ -68,7 +71,7 @@ export function MeetingCard({
             style={[theme.typography.h3, { color: theme.colors.text }, styles.title]}
             numberOfLines={1}
           >
-            {meeting.name}
+            {meetingName}
           </Text>
           {showFavoriteIcon && meeting.is_favorite && (
             <MaterialIcons
@@ -112,13 +115,13 @@ export function MeetingCard({
             style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
             numberOfLines={1}
           >
-            {meeting.location}
+            {locationName}
           </Text>
           <Text
             style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
             numberOfLines={1}
           >
-            {meeting.address}, {meeting.city}
+            {addressLine}
           </Text>
         </View>
       </View>

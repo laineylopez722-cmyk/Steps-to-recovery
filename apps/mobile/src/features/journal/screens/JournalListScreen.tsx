@@ -15,12 +15,15 @@ import {
   TextInput,
   FlatList,
   Keyboard,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Feather } from '@expo/vector-icons';
-import Animated, { 
-  FadeIn, 
+import Animated, {
+  FadeIn,
   FadeInDown,
   Layout,
 } from 'react-native-reanimated';
@@ -28,6 +31,7 @@ import { useJournalEntries, useDeleteJournalEntry } from '../hooks/useJournalEnt
 import { ds } from '../../../design-system/tokens/ds';
 import { hapticLight } from '../../../utils/haptics';
 import type { JournalEntryDecrypted } from '@recovery/shared';
+import type { JournalStackParamList } from '../../../navigation/types';
 
 interface Props {
   userId: string;
@@ -129,10 +133,10 @@ function EmptyState({ isSearching }: { isSearching: boolean }) {
 }
 
 export function JournalListScreen({ userId }: Props): React.ReactElement {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<JournalStackParamList>>();
   const insets = useSafeAreaInsets();
   const { entries, isLoading, refetch } = useJournalEntries(userId);
-  const { deleteEntry } = useDeleteJournalEntry(userId);
+  useDeleteJournalEntry(userId);
   
   const [search, setSearch] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -185,8 +189,12 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
   }, [filteredEntries]);
   
   // Flatten for FlatList
+  type FlatListItem =
+    | { type: 'header'; data: string; id: string }
+    | { type: 'entry'; data: JournalEntryDecrypted; id: string };
+
   const flatData = useMemo(() => {
-    const items: Array<{ type: 'header' | 'entry'; data: any; id: string }> = [];
+    const items: FlatListItem[] = [];
     for (const group of groupedEntries) {
       items.push({ type: 'header', data: group.title, id: `header-${group.title}` });
       for (const entry of group.data) {
@@ -199,15 +207,15 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
   const handleNewEntry = () => {
     hapticLight();
     Keyboard.dismiss();
-    (navigation.navigate as any)('JournalEditor', { userId, mode: 'create' });
+    navigation.navigate('JournalEditor', { mode: 'create' });
   };
-  
+
   const handleEntryPress = (entry: JournalEntryDecrypted) => {
     Keyboard.dismiss();
-    (navigation.navigate as any)('JournalEditor', { userId, mode: 'edit', entryId: entry.id });
+    navigation.navigate('JournalEditor', { mode: 'edit', entryId: entry.id });
   };
-  
-  const renderItem = useCallback(({ item, index }: { item: any; index: number }) => {
+
+  const renderItem = useCallback(({ item, index }: { item: FlatListItem; index: number }) => {
     if (item.type === 'header') {
       return <SectionHeader title={item.data} />;
     }
@@ -251,10 +259,11 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
         {/* Title */}
         <View style={styles.titleContainer}>
           <Text style={styles.mainTitle}>Journal</Text>
-          <Text style={styles.subtitle}>
+          <View style={styles.subtitleRow}>
             <Feather name="lock" size={12} color={ds.colors.textTertiary} />
-            {'  '}End-to-end encrypted
-          </Text>
+            <Text style={styles.subtitle}>End-to-end encrypted</Text>
+            <Text style={styles.entryCount}>{filteredEntries.length} entries</Text>
+          </View>
         </View>
         
         {/* List */}
@@ -289,14 +298,25 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
               onBlur={() => setIsSearchFocused(false)}
               returnKeyType="search"
             />
-            <Pressable style={styles.micBtn}>
+            <Pressable
+              style={styles.micBtn}
+              accessibilityLabel="Voice input"
+              accessibilityRole="button"
+              accessibilityHint="Activate voice input for search"
+            >
               <Feather name="mic" size={18} color={ds.colors.textTertiary} />
             </Pressable>
           </View>
-          
+
           {/* New note button */}
-          <Pressable onPress={handleNewEntry} style={styles.newNoteBtn}>
-            <Feather name="edit" size={20} color={ds.colors.textSecondary} />
+          <Pressable
+            onPress={handleNewEntry}
+            style={styles.newNoteBtn}
+            accessibilityLabel="Create new journal entry"
+            accessibilityRole="button"
+          >
+            <Feather name="edit-3" size={18} color={ds.colors.accent} />
+            <Text style={styles.newNoteText}>New</Text>
           </Pressable>
         </View>
       </SafeAreaView>
@@ -307,7 +327,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ds.colors.bgSecondary,
+    backgroundColor: ds.colors.bgPrimary,
   },
   safe: {
     flex: 1,
@@ -319,7 +339,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: ds.space[4],
-    paddingTop: ds.space[2],
+    paddingTop: ds.space[3],
     paddingBottom: ds.space[2],
   },
   backBtn: {
@@ -354,7 +374,7 @@ const styles = StyleSheet.create({
   // Title
   titleContainer: {
     paddingHorizontal: ds.sizes.contentPadding,
-    paddingTop: ds.space[2],
+    paddingTop: ds.space[3],
     paddingBottom: ds.space[4],
   },
   mainTitle: {
@@ -363,10 +383,20 @@ const styles = StyleSheet.create({
     color: ds.colors.textPrimary,
     letterSpacing: -0.5,
   },
+  subtitleRow: {
+    marginTop: ds.space[1],
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: ds.space[2],
+  },
   subtitle: {
     ...ds.typography.caption,
     color: ds.colors.textTertiary,
-    marginTop: ds.space[1],
+  },
+  entryCount: {
+    ...ds.typography.micro,
+    color: ds.colors.textQuaternary,
+    marginLeft: 'auto',
   },
   
   // List
@@ -389,9 +419,11 @@ const styles = StyleSheet.create({
   // Entry card - Apple Notes style
   entryCard: {
     backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 12,
+    borderRadius: ds.radius.md,
     padding: ds.space[4],
     marginBottom: ds.space[2],
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: ds.colors.borderSubtle,
   },
   entryCardPressed: {
     backgroundColor: ds.colors.bgQuaternary,
@@ -460,6 +492,8 @@ const styles = StyleSheet.create({
   },
   searchBarFocused: {
     backgroundColor: ds.colors.bgQuaternary,
+    borderWidth: 1,
+    borderColor: ds.colors.accentMuted,
   },
   searchInput: {
     flex: 1,
@@ -474,11 +508,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   newNoteBtn: {
-    width: 44,
     height: 44,
     borderRadius: 12,
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.colors.accentMuted,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    paddingHorizontal: ds.space[3],
+    gap: ds.space[1],
+  },
+  newNoteText: {
+    ...ds.typography.caption,
+    color: ds.colors.accent,
+    fontWeight: '700',
   },
 });

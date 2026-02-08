@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, StyleSheet, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -121,7 +121,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <EmptyState
-          icon="error-outline"
+          icon="alert-circle-outline"
           title="Unable to find meetings"
           description={error}
           actionLabel="Try Again"
@@ -136,7 +136,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <EmptyState
-          icon="location-off"
+          icon="map-marker-off-outline"
           title="Location Access Needed"
           description={locationError}
           actionLabel="Enable Location"
@@ -156,6 +156,10 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
         <View style={styles.emptyHeader}>
+          <View>
+            <Text style={[styles.screenTitle, { color: theme.colors.text }]}>Meeting finder</Text>
+            <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>Find nearby support right now</Text>
+          </View>
           <Pressable
             onPress={handleFilterPress}
             accessibilityRole="button"
@@ -207,6 +211,12 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
         }
         ListHeaderComponent={
           <View style={styles.listHeader}>
+            <View>
+              <Text style={[styles.screenTitle, { color: theme.colors.text }]}>Meeting finder</Text>
+              <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>
+                {meetings.length} meetings nearby
+              </Text>
+            </View>
             <Pressable
               onPress={handleFilterPress}
               accessibilityRole="button"
@@ -242,18 +252,29 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingVertical: 16,
+    paddingHorizontal: 16,
   },
   listHeader: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 16,
-    marginBottom: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   emptyHeader: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 16,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    letterSpacing: -0.4,
+  },
+  screenSubtitle: {
+    fontSize: 13,
+    marginTop: 2,
   },
   iconButton: {
     minWidth: 44,

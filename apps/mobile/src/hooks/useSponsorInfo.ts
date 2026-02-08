@@ -23,6 +23,11 @@ interface UseSponsorInfoResult {
   refetch: () => Promise<void>;
 }
 
+function isMissingTableError(error: unknown): boolean {
+  const code = (error as { code?: string } | null)?.code;
+  return code === 'PGRST205' || code === '42P01';
+}
+
 export function useSponsorInfo(userId: string): UseSponsorInfoResult {
   const [sponsor, setSponsor] = useState<SponsorInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -50,7 +55,18 @@ export function useSponsorInfo(userId: string): UseSponsorInfoResult {
         .maybeSingle();
 
       if (sponsorshipError) {
-        logger.error('Sponsor relationship fetch failed', { error: sponsorshipError });
+        // In some environments this table is not provisioned yet.
+        // Treat as unavailable rather than a hard runtime error.
+        if (isMissingTableError(sponsorshipError)) {
+          logger.warn('Sponsor relationships table not available; skipping sponsor fetch', {
+            code: (sponsorshipError as { code?: string }).code,
+          });
+          setSponsor(null);
+          setError(null);
+          return;
+        }
+
+        logger.warn('Sponsor relationship fetch failed', { error: sponsorshipError });
         setError(sponsorshipError.message);
         setSponsor(null);
         return;
@@ -70,7 +86,16 @@ export function useSponsorInfo(userId: string): UseSponsorInfoResult {
         .maybeSingle();
 
       if (profileError) {
-        logger.error('Sponsor profile fetch failed', { error: profileError });
+        if (isMissingTableError(profileError)) {
+          logger.warn('Profiles table not available; skipping sponsor profile fetch', {
+            code: (profileError as { code?: string }).code,
+          });
+          setSponsor(null);
+          setError(null);
+          return;
+        }
+
+        logger.warn('Sponsor profile fetch failed', { error: profileError });
         setError(profileError.message);
         setSponsor(null);
         return;
@@ -92,7 +117,7 @@ export function useSponsorInfo(userId: string): UseSponsorInfoResult {
       });
       setError(null);
     } catch (err) {
-      logger.error('Sponsor fetch error', { error: err });
+      logger.warn('Sponsor fetch error', { error: err });
       setError('Failed to load sponsor');
       setSponsor(null);
     } finally {
@@ -111,3 +136,4 @@ export function useSponsorInfo(userId: string): UseSponsorInfoResult {
     refetch: fetchSponsor,
   };
 }
+

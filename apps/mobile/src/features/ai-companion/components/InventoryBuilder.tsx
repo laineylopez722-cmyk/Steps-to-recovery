@@ -22,7 +22,7 @@ const AFFECTS_OPTIONS = [
   { id: 'sex_relations', label: 'Sex Relations' },
 ];
 
-export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBuilderProps) {
+export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBuilderProps): React.ReactElement {
   const [entry, setEntry] = useState<Partial<ResentmentEntry>>({
     who: initialEntry?.who || '',
     cause: initialEntry?.cause || '',
@@ -31,11 +31,11 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
   });
   const [step, setStep] = useState(1); // 1: Who, 2: Cause, 3: Affects, 4: My Part
   
-  const updateField = (field: keyof ResentmentEntry, value: any) => {
+  const updateField = (field: keyof ResentmentEntry, value: string | string[]): void => {
     setEntry(prev => ({ ...prev, [field]: value }));
   };
-  
-  const toggleAffects = (id: string) => {
+
+  const toggleAffects = (id: string): void => {
     setEntry(prev => ({
       ...prev,
       affects: prev.affects?.includes(id)
@@ -43,8 +43,8 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
         : [...(prev.affects || []), id],
     }));
   };
-  
-  const canProceed = () => {
+
+  const canProceed = (): boolean => {
     switch (step) {
       case 1: return !!entry.who?.trim();
       case 2: return !!entry.cause?.trim();
@@ -53,13 +53,13 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
       default: return false;
     }
   };
-  
-  const handleNext = () => {
+
+  const handleNext = (): void => {
     if (step < 4) setStep(step + 1);
     else handleSave();
   };
-  
-  const handleSave = async () => {
+
+  const handleSave = async (): Promise<void> => {
     if (entry.who && entry.cause && entry.affects?.length && entry.myPart) {
       await onSave(entry as ResentmentEntry);
     }

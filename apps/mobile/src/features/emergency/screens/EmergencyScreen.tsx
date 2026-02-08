@@ -87,7 +87,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
       {/* Soft Glow */}
       <View style={styles.glowOrb} pointerEvents="none" />
 
-      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
@@ -129,6 +129,37 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
           >
             You're not alone. Help is available 24/7.
           </Animated.Text>
+        </Animated.View>
+
+        <Animated.View
+          entering={FadeInDown.duration(400).delay(480)}
+          style={[styles.section, { paddingHorizontal: theme.spacing.md, marginTop: theme.spacing.sm }]}
+        >
+          <GlassCard intensity="modal" style={styles.quickCtaCard}>
+            <Text style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: theme.spacing.sm }]}>Immediate help</Text>
+            <Button
+              title="Call 988 now"
+              onPress={() => handleCall('988')}
+              variant="danger"
+              size="large"
+              fullWidth
+              icon={<MaterialCommunityIcons name="phone" size={20} color="#FFFFFF" />}
+              accessibilityLabel="Call 988 now"
+            />
+            <Button
+              title="Start Before You Use"
+              onPress={() => {
+                hapticSelection();
+                navigation.navigate('BeforeYouUse' as never);
+              }}
+              variant="outline"
+              size="large"
+              fullWidth
+              style={{ marginTop: theme.spacing.sm }}
+              icon={<MaterialCommunityIcons name="pause-circle" size={20} color={theme.colors.text} />}
+              accessibilityLabel="Start Before You Use"
+            />
+          </GlassCard>
         </Animated.View>
 
         {/* Crisis Hotlines Section */}
@@ -559,5 +590,9 @@ const styles = StyleSheet.create({
   },
   reminderCard: {
     alignItems: 'center',
+  },
+  quickCtaCard: {
+    borderWidth: 1,
+    borderColor: 'rgba(239,68,68,0.35)',
   },
 });

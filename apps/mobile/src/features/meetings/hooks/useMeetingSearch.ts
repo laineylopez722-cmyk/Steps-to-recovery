@@ -121,7 +121,9 @@ export function useMeetingSearch(options: UseMeetingSearchOptions = {}): UseMeet
           throw apiError;
         }
       } catch (error) {
-        logger.error('Meeting search failed', error);
+        logger.warn('Meeting search failed', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
         throw error;
       }
     },

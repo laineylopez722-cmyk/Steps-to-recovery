@@ -4,10 +4,6 @@ import { Platform } from 'react-native';
 import { logger } from '../utils/logger';
 import { processSyncQueue } from './syncService';
 import type { StorageAdapter } from '../adapters/storage/types';
-// Note: Import your actual auth utility here
-// import { getStoredUserId } from '../utils/auth';
-// Note: Import your actual database utility here
-// import { openDatabase } from '../utils/database';
 
 const BACKGROUND_SYNC_TASK = 'background-sync-task';
 
@@ -234,13 +230,41 @@ export async function setupBackgroundSync(): Promise<void> {
   }
 }
 
-// Placeholder implementations - replace with your actual utilities
+/**
+ * Get the currently logged-in user's ID from Supabase session
+ * Used by background sync task to identify which user's data to sync
+ */
 async function getStoredUserId(): Promise<string | null> {
-  // TODO: Implement based on your auth storage (secureStorage, etc.)
-  return null;
+  try {
+    // Import supabase client dynamically to avoid circular dependencies
+    const { supabase } = await import('../lib/supabase');
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return session?.user?.id ?? null;
+  } catch (error) {
+    logger.error('Failed to get stored user ID', error);
+    return null;
+  }
 }
 
+/**
+ * Open a database connection for background sync operations
+ * Creates a new storage adapter instance for the background task
+ */
 async function openDatabase(): Promise<StorageAdapter | null> {
-  // TODO: Implement based on your DatabaseContext
-  return null;
+  try {
+    // Import storage adapter dynamically to avoid circular dependencies
+    const { createStorageAdapter } = await import('../adapters/storage');
+    const adapter = await createStorageAdapter();
+
+    // Initialize database schema if needed
+    const { initDatabase } = await import('../utils/database');
+    await initDatabase(adapter);
+
+    return adapter;
+  } catch (error) {
+    logger.error('Failed to open database for background sync', error);
+    return null;
+  }
 }
