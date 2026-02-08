@@ -453,6 +453,30 @@ export const borderRadius = {
   input: 8,
 };
 
+export const semanticAliases = {
+  elevation: {
+    base: 'sm',
+    raised: 'md',
+    overlay: 'lg',
+    focus: 'glow',
+  },
+  layout: {
+    screenPadding: spacing.screen,
+    sectionGap: spacing.section,
+    cardPadding: spacing.card,
+    listItemPadding: spacing.base,
+    touchTarget: 44,
+  },
+  typography: {
+    screenTitle: typography.title1,
+    sectionLabel: typography.caption1,
+    body: typography.body,
+    bodySmall: typography.subhead,
+    meta: typography.caption2,
+    button: typography.button,
+  },
+} as const;
+
 // ============================================================================
 // THEME TYPE
 // ============================================================================
@@ -465,6 +489,34 @@ export interface Theme {
   shadows: typeof darkShadows;
   borderRadius: typeof borderRadius;
   radius: typeof borderRadius;
+  semantic: {
+    intent: {
+      primary: { solid: string; muted: string; subtle: string; onSolid: string };
+      secondary: { solid: string; muted: string; subtle: string; onSolid: string };
+      alert: { solid: string; muted: string; subtle: string; onSolid: string };
+    };
+    surface: {
+      app: string;
+      canvas: string;
+      card: string;
+      elevated: string;
+      interactive: string;
+      overlay: string;
+    };
+    text: {
+      primary: string;
+      secondary: string;
+      tertiary: string;
+      muted: string;
+      onPrimary: string;
+      onSecondary: string;
+      onAlert: string;
+      inverse: string;
+    };
+    elevation: typeof semanticAliases.elevation;
+    layout: typeof semanticAliases.layout;
+    typography: typeof semanticAliases.typography;
+  };
 }
 
 // ============================================================================
@@ -474,15 +526,59 @@ export interface Theme {
 export function useTheme(): Theme {
   const colorScheme = useColorScheme();
   const isDark = colorScheme !== 'light';
+  const activeColors = isDark ? darkColors : lightColors;
 
   return {
     isDark,
-    colors: isDark ? darkColors : lightColors,
+    colors: activeColors,
     spacing,
     typography,
     shadows: isDark ? darkShadows : lightShadows,
     borderRadius,
     radius: borderRadius,
+    semantic: {
+      intent: {
+        primary: {
+          solid: isDark ? activeColors.primary[500] : activeColors.primary[600],
+          muted: isDark ? 'rgba(232, 224, 208, 0.15)' : 'rgba(107, 123, 94, 0.15)',
+          subtle: isDark ? 'rgba(232, 224, 208, 0.08)' : 'rgba(107, 123, 94, 0.08)',
+          onSolid: isDark ? '#000000' : '#FFFFFF',
+        },
+        secondary: {
+          solid: isDark ? activeColors.info : lightColors.info,
+          muted: isDark ? 'rgba(122, 154, 170, 0.15)' : 'rgba(90, 122, 138, 0.15)',
+          subtle: isDark ? 'rgba(122, 154, 170, 0.08)' : 'rgba(90, 122, 138, 0.08)',
+          onSolid: '#FFFFFF',
+        },
+        alert: {
+          solid: activeColors.error,
+          muted: isDark ? 'rgba(212, 116, 116, 0.15)' : 'rgba(196, 92, 92, 0.15)',
+          subtle: isDark ? 'rgba(212, 116, 116, 0.08)' : 'rgba(196, 92, 92, 0.08)',
+          onSolid: '#FFFFFF',
+        },
+      },
+      surface: {
+        app: activeColors.background.primary,
+        canvas: activeColors.background.secondary,
+        card: activeColors.background.tertiary,
+        elevated: activeColors.background.elevated,
+        interactive: activeColors.glass.subtle,
+        overlay: isDark ? 'rgba(0, 0, 0, 0.5)' : 'rgba(0, 0, 0, 0.4)',
+      },
+      text: {
+        primary: activeColors.text.primary,
+        secondary: activeColors.text.secondary,
+        tertiary: activeColors.text.tertiary,
+        muted: activeColors.text.tertiary,
+        onPrimary: isDark ? '#000000' : '#FFFFFF',
+        onSecondary: '#FFFFFF',
+        onAlert: '#FFFFFF',
+        inverse: activeColors.text.inverse,
+      },
+      elevation: semanticAliases.elevation,
+      layout: semanticAliases.layout,
+      typography: semanticAliases.typography,
+    },
   };
 }
 

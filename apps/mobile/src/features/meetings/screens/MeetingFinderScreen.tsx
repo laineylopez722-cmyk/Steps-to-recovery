@@ -1,16 +1,16 @@
 /**
  * MeetingFinderScreen
- * Main screen for finding nearby AA/NA meetings
- * Features: location-based search, filtering, offline caching
- * Clean dark design with inline filter button
  */
 
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { MotionTransitions } from '../../../design-system/tokens/motion';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { EmptyState } from '../../../design-system/components/EmptyState';
 import { MeetingCard } from '../components/MeetingCard';
 import { MeetingFilters } from '../components/MeetingFilters';
@@ -23,6 +23,8 @@ type MeetingFinderScreenProps = NativeStackScreenProps<MeetingsStackParamList, '
 export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): React.ReactElement {
   const theme = useTheme();
   const [showFilters, setShowFilters] = useState<boolean>(false);
+  const { onPressIn: onFilterPressIn, onPressOut: onFilterPressOut, animatedStyle: filterAnimatedStyle } = useMotionPress();
+  const { onPressIn: onClosePressIn, onPressOut: onClosePressOut, animatedStyle: closeAnimatedStyle } = useMotionPress();
 
   const {
     meetings,
@@ -38,9 +40,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
 
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 
-  // Initial search on mount
   React.useEffect(() => {
-    handleSearch();
+    void handleSearch();
   }, []);
 
   const handleSearch = useCallback(async (): Promise<void> => {
@@ -77,25 +78,28 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     setShowFilters(false);
   }, [clearFilters]);
 
-  // Render filter modal
   if (showFilters) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.filterHeader}>
           <Pressable
             onPress={() => setShowFilters(false)}
+            onPressIn={onClosePressIn}
+            onPressOut={onClosePressOut}
             accessibilityRole="button"
             accessibilityLabel="Close filters"
             hitSlop={12}
             style={({ pressed }) => [
               styles.iconButton,
               {
-                backgroundColor: theme.colors.surface,
+                backgroundColor: theme.colors.semantic.surface.card,
                 opacity: pressed ? 0.6 : 1,
               },
             ]}
           >
-            <MaterialIcons name="close" size={24} color={theme.colors.text} />
+            <Animated.View style={closeAnimatedStyle}>
+              <MaterialIcons name="close" size={24} color={theme.colors.semantic.text.primary} />
+            </Animated.View>
           </Pressable>
         </View>
         <MeetingFilters
@@ -107,19 +111,17 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     );
   }
 
-  // Loading state (initial load only)
   if (isLoading && meetings.length === 0) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+      <View style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}>
+        <ActivityIndicator size="large" color={theme.colors.semantic.intent.primary.solid} />
       </View>
     );
   }
 
-  // Error state
   if (error && meetings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <EmptyState
           icon="alert-circle-outline"
           title="Unable to find meetings"
@@ -131,10 +133,9 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     );
   }
 
-  // Location permission denied state
   if (locationError && meetings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <EmptyState
           icon="map-marker-off-outline"
           title="Location Access Needed"
@@ -146,7 +147,6 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     );
   }
 
-  // Empty state (no meetings found)
   if (meetings.length === 0) {
     const hasFilters =
       currentFilters.day_of_week !== null ||
@@ -154,29 +154,35 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
       currentFilters.meeting_types.length > 0;
 
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <View style={styles.emptyHeader}>
+      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+        <Animated.View entering={MotionTransitions.fade()} style={styles.emptyHeader}>
           <View>
-            <Text style={[styles.screenTitle, { color: theme.colors.text }]}>Meeting finder</Text>
-            <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>Find nearby support right now</Text>
+            <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>Meeting finder</Text>
+            <Text style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}>
+              Find nearby support right now
+            </Text>
           </View>
           <Pressable
             onPress={handleFilterPress}
+            onPressIn={onFilterPressIn}
+            onPressOut={onFilterPressOut}
             accessibilityRole="button"
             accessibilityLabel="Filter meetings"
             hitSlop={12}
             style={({ pressed }) => [
               styles.filterButton,
               {
-                backgroundColor: theme.colors.surface,
+                backgroundColor: theme.colors.semantic.surface.card,
                 borderColor: theme.colors.border,
                 opacity: pressed ? 0.6 : 1,
               },
             ]}
           >
-            <MaterialIcons name="filter-list" size={20} color={theme.colors.primary} />
+            <Animated.View style={filterAnimatedStyle}>
+              <MaterialIcons name="filter-list" size={20} color={theme.colors.semantic.intent.primary.solid} />
+            </Animated.View>
           </Pressable>
-        </View>
+        </Animated.View>
         <EmptyState
           icon="search-off"
           title="No meetings found"
@@ -192,9 +198,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     );
   }
 
-  // List view with meetings
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
       <FlashList
         data={meetings}
         keyExtractor={(item) => item.id}
@@ -206,19 +211,21 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={theme.colors.primary}
+            tintColor={theme.colors.semantic.intent.primary.solid}
           />
         }
         ListHeaderComponent={
-          <View style={styles.listHeader}>
+          <Animated.View entering={MotionTransitions.fade()} style={styles.listHeader}>
             <View>
-              <Text style={[styles.screenTitle, { color: theme.colors.text }]}>Meeting finder</Text>
-              <Text style={[styles.screenSubtitle, { color: theme.colors.textSecondary }]}>
+              <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>Meeting finder</Text>
+              <Text style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}>
                 {meetings.length} meetings nearby
               </Text>
             </View>
             <Pressable
               onPress={handleFilterPress}
+              onPressIn={onFilterPressIn}
+              onPressOut={onFilterPressOut}
               accessibilityRole="button"
               accessibilityLabel="Filter meetings"
               accessibilityHint="Open filter options"
@@ -226,15 +233,17 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
               style={({ pressed }) => [
                 styles.filterButton,
                 {
-                  backgroundColor: theme.colors.surface,
+                  backgroundColor: theme.colors.semantic.surface.card,
                   borderColor: theme.colors.border,
                   opacity: pressed ? 0.6 : 1,
                 },
               ]}
             >
-              <MaterialIcons name="filter-list" size={20} color={theme.colors.primary} />
+              <Animated.View style={filterAnimatedStyle}>
+                <MaterialIcons name="filter-list" size={20} color={theme.colors.semantic.intent.primary.solid} />
+              </Animated.View>
             </Pressable>
-          </View>
+          </Animated.View>
         }
       />
     </View>

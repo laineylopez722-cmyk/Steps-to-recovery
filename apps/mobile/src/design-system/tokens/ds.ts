@@ -167,25 +167,25 @@ export const colors = {
   bgTertiary: palette.gray900,
   bgQuaternary: palette.gray850,
   bgElevated: palette.gray800,
-  
+
   // Text hierarchy
   textPrimary: palette.white,
   textSecondary: palette.gray100,
   textTertiary: palette.gray200,
   textQuaternary: palette.gray300,
-  
+
   // Borders (use sparingly)
   borderSubtle: 'rgba(255, 255, 255, 0.04)',
   borderDefault: 'rgba(255, 255, 255, 0.08)',
   borderStrong: 'rgba(255, 255, 255, 0.12)',
   divider: 'rgba(255, 255, 255, 0.06)',
-  
+
   // Accent
   accent: palette.amber,
   accentLight: palette.amberLight,
   accentMuted: palette.amberMuted,
   accentSubtle: palette.amberSubtle,
-  
+
   // Semantic
   success: palette.green,
   successMuted: palette.greenMuted,
@@ -195,6 +195,68 @@ export const colors = {
   errorMuted: palette.redMuted,
   info: palette.blue,
   infoMuted: palette.blueMuted,
+} as const;
+
+export const semantic = {
+  intent: {
+    primary: {
+      solid: colors.accent,
+      muted: colors.accentMuted,
+      subtle: colors.accentSubtle,
+      onSolid: palette.black,
+    },
+    secondary: {
+      solid: colors.info,
+      muted: colors.infoMuted,
+      subtle: 'rgba(10, 132, 255, 0.08)',
+      onSolid: palette.white,
+    },
+    alert: {
+      solid: colors.error,
+      muted: colors.errorMuted,
+      subtle: 'rgba(255, 69, 58, 0.08)',
+      onSolid: palette.white,
+    },
+  },
+  surface: {
+    app: colors.bgPrimary,
+    canvas: colors.bgSecondary,
+    card: colors.bgTertiary,
+    elevated: colors.bgElevated,
+    interactive: colors.bgQuaternary,
+    overlay: 'rgba(0, 0, 0, 0.55)',
+  },
+  text: {
+    primary: colors.textPrimary,
+    secondary: colors.textSecondary,
+    tertiary: colors.textTertiary,
+    muted: colors.textQuaternary,
+    onPrimary: palette.black,
+    onSecondary: palette.white,
+    onAlert: palette.white,
+    inverse: palette.black,
+  },
+  elevation: {
+    base: 'sm',
+    raised: 'md',
+    overlay: 'lg',
+    focus: 'glow',
+  },
+  layout: {
+    screenPadding: space[6],
+    sectionGap: space[6],
+    cardPadding: space[5],
+    listItemPadding: space[4],
+    touchTarget: 44,
+  },
+  typography: {
+    screenTitle: typography.h1,
+    sectionLabel: typography.caption,
+    body: typography.body,
+    bodySmall: typography.bodySm,
+    meta: typography.micro,
+    button: typography.body,
+  },
 } as const;
 
 // ============================================================================
@@ -304,6 +366,7 @@ export const ds = {
   fontWeight,
   lineHeight,
   colors,
+  semantic,
   palette,
   radius,
   shadows,

@@ -15,19 +15,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import Animated, { 
-  FadeIn, 
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CompositeNavigationProp } from '@react-navigation/native';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Modal } from '../../../design-system';
+import { MotionTransitions } from '../../../design-system/tokens/motion';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { ds } from '../../../design-system/tokens/ds';
 import type { ProfileStackParamList, MainTabParamList } from '../../../navigation/types';
 
@@ -54,11 +50,7 @@ function ListItem({
   iconColor?: string;
   isLast?: boolean;
 }) {
-  const scale = useSharedValue(1);
-  
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
 
   const handlePress = () => {
     if (onPress && !disabled) {
@@ -70,16 +62,16 @@ function ListItem({
   return (
     <Pressable
       onPress={handlePress}
-      onPressIn={() => { if (!disabled) scale.value = withSpring(0.98, ds.spring.snappy); }}
-      onPressOut={() => { scale.value = withSpring(1, ds.spring.smooth); }}
+      onPressIn={disabled ? undefined : onPressIn}
+      onPressOut={onPressOut}
       disabled={disabled}
     >
       <Animated.View style={[styles.listItem, disabled && styles.listItemDisabled, animatedStyle]}>
-        <View style={[styles.listItemIcon, { backgroundColor: iconColor ? `${iconColor}20` : ds.colors.accentMuted }]}>
+        <View style={[styles.listItemIcon, { backgroundColor: iconColor ? `${iconColor}20` : ds.semantic.intent.primary.muted }]}>
           <Feather 
             name={icon} 
             size={20} 
-            color={iconColor || ds.colors.accent} 
+            color={iconColor || ds.semantic.intent.primary.solid} 
           />
         </View>
         
@@ -89,7 +81,7 @@ function ListItem({
         </View>
         
         {!disabled && (
-          <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} />
+          <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} />
         )}
       </Animated.View>
       
@@ -101,7 +93,7 @@ function ListItem({
 // Section Header
 function SectionHeader({ title, delay = 0 }: { title: string; delay?: number }) {
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(300)}>
+    <Animated.View entering={MotionTransitions.fadeDelayed(delay)}>
       <Text style={styles.sectionHeader}>{title}</Text>
     </Animated.View>
   );
@@ -111,7 +103,7 @@ function SectionHeader({ title, delay = 0 }: { title: string; delay?: number }) 
 function CardGroup({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   return (
     <Animated.View 
-      entering={FadeInDown.delay(delay).duration(400).springify()}
+      entering={MotionTransitions.cardEnter(Math.floor(delay / 50))}
       style={styles.cardGroup}
     >
       {children}
@@ -148,7 +140,7 @@ export function ProfileScreen(): React.ReactElement {
             showsVerticalScrollIndicator={false}
           >
             {/* Header */}
-            <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
+            <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
               <Text style={styles.title}>Settings</Text>
               <Text style={styles.subtitle}>Recovery profile, privacy, and app preferences</Text>
             </Animated.View>
@@ -157,7 +149,7 @@ export function ProfileScreen(): React.ReactElement {
             <CardGroup delay={100}>
               <View style={styles.profileCard}>
                 <View style={styles.avatar}>
-                  <Feather name="user" size={32} color={ds.colors.accent} />
+                  <Feather name="user" size={32} color={ds.semantic.intent.primary.solid} />
                 </View>
                 <View style={styles.profileInfo}>
                   <Text style={styles.profileEmail} numberOfLines={1}>
@@ -165,7 +157,7 @@ export function ProfileScreen(): React.ReactElement {
                   </Text>
                   <Text style={styles.profileLabel}>Personal Account</Text>
                 </View>
-                <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} />
+                <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} />
               </View>
             </CardGroup>
 
@@ -219,11 +211,11 @@ export function ProfileScreen(): React.ReactElement {
 
             {/* Privacy Banner */}
             <Animated.View 
-              entering={FadeInDown.delay(350).duration(400)}
+              entering={MotionTransitions.cardEnter(5)}
               style={styles.privacyBanner}
             >
               <View style={styles.privacyIcon}>
-                <Feather name="lock" size={20} color={ds.colors.success} />
+                <Feather name="lock" size={20} color={ds.semantic.intent.secondary.solid} />
               </View>
               <View style={styles.privacyContent}>
                 <Text style={styles.privacyTitle}>End-to-End Encrypted</Text>
@@ -234,7 +226,7 @@ export function ProfileScreen(): React.ReactElement {
             </Animated.View>
 
             {/* Sign Out */}
-            <Animated.View entering={FadeInDown.delay(400).duration(400)}>
+            <Animated.View entering={MotionTransitions.cardEnter(6)}>
               <Pressable 
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
@@ -287,7 +279,7 @@ export function ProfileScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
+    backgroundColor: ds.semantic.surface.app,
   },
   safe: {
     flex: 1,
@@ -296,7 +288,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: ds.sizes.contentPadding,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
   },
 
   // Header
@@ -307,12 +299,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 34,
     fontWeight: '700',
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
     letterSpacing: -0.5,
   },
   subtitle: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     marginTop: ds.space[1],
   },
 
@@ -326,7 +318,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: ds.colors.accentMuted,
+    backgroundColor: ds.semantic.intent.primary.muted,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -337,18 +329,18 @@ const styles = StyleSheet.create({
   profileEmail: {
     ...ds.typography.body,
     fontWeight: '600',
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
   },
   profileLabel: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     marginTop: 2,
   },
 
   // Section Header
   sectionHeader: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginTop: ds.space[6],
@@ -358,7 +350,7 @@ const styles = StyleSheet.create({
 
   // Card Group
   cardGroup: {
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
     overflow: 'hidden',
   },
@@ -386,11 +378,11 @@ const styles = StyleSheet.create({
   },
   listItemTitle: {
     ...ds.typography.body,
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
   },
   listItemSubtitle: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     marginTop: 1,
   },
   listItemDivider: {
@@ -403,7 +395,7 @@ const styles = StyleSheet.create({
   privacyBanner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: ds.colors.successMuted,
+    backgroundColor: ds.semantic.intent.secondary.muted,
     borderRadius: ds.radius.lg,
     padding: ds.space[4],
     marginTop: ds.space[6],
@@ -423,37 +415,38 @@ const styles = StyleSheet.create({
   privacyTitle: {
     ...ds.typography.body,
     fontWeight: '600',
-    color: ds.colors.success,
+    color: ds.semantic.intent.secondary.solid,
   },
   privacyText: {
     ...ds.typography.caption,
-    color: ds.colors.textSecondary,
+    color: ds.semantic.text.secondary,
     marginTop: ds.space[1],
     lineHeight: 18,
   },
 
   // Sign Out
   signOutButton: {
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
     paddingVertical: ds.space[4],
     marginTop: ds.space[6],
     alignItems: 'center',
   },
   signOutButtonPressed: {
-    backgroundColor: ds.colors.bgQuaternary,
+    backgroundColor: ds.semantic.surface.interactive,
   },
   signOutText: {
     ...ds.typography.body,
-    color: ds.colors.error,
+    color: ds.semantic.intent.alert.solid,
     fontWeight: '500',
   },
 
   // Footer
   footer: {
     ...ds.typography.caption,
-    color: ds.colors.textQuaternary,
+    color: ds.semantic.text.muted,
     textAlign: 'center',
     marginTop: ds.space[6],
   },
 });
+

@@ -476,7 +476,7 @@ const styles = StyleSheet.create({
     marginLeft: ds.space[1],
   },
   sectionTitle: {
-    ...ds.typography.caption,
+    ...ds.semantic.typography.sectionLabel,
     color: ds.semantic.text.tertiary,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
