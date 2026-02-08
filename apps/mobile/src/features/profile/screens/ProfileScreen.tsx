@@ -1,105 +1,133 @@
 /**
  * Profile Screen
- * User settings, privacy information, and account management
- * Design: iOS-style with design system components
+ * 
+ * Apple Settings-inspired design.
+ * Clean groups, no visible borders.
  */
 
-import { useState } from 'react';
-import { ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { 
+  ScrollView, 
+  StyleSheet, 
+  View, 
+  Text, 
+  Pressable,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Feather } from '@expo/vector-icons';
+import Animated, { 
+  FadeIn, 
+  FadeInDown,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 import { useNavigation } from '@react-navigation/native';
-import { useAuth } from '../../../contexts/AuthContext';
-import { useTheme, Card, Button, Modal } from '../../../design-system';
-import { Text } from 'react-native';
-import type { ProfileStackParamList, MainTabParamList } from '../../../navigation/types';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CompositeNavigationProp } from '@react-navigation/native';
-import { SkeletonCard } from '../../../design-system/components/Skeleton';
+import { useAuth } from '../../../contexts/AuthContext';
+import { Modal } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
+import type { ProfileStackParamList, MainTabParamList } from '../../../navigation/types';
 
 type ProfileScreenNavigationProp = CompositeNavigationProp<
   NativeStackNavigationProp<ProfileStackParamList>,
   NativeStackNavigationProp<MainTabParamList>
 >;
 
-interface ListItemProps {
-  icon: keyof typeof MaterialCommunityIcons.glyphMap;
+// Animated List Item
+function ListItem({ 
+  icon, 
+  title, 
+  subtitle,
+  onPress,
+  disabled,
+  iconColor,
+  isLast,
+}: { 
+  icon: keyof typeof Feather.glyphMap;
   title: string;
-  description: string;
+  subtitle?: string;
   onPress?: () => void;
   disabled?: boolean;
   iconColor?: string;
-}
+  isLast?: boolean;
+}) {
+  const scale = useSharedValue(1);
+  
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
 
-function ListItem({
-  icon,
-  title,
-  description,
-  onPress,
-  disabled = false,
-  iconColor,
-}: ListItemProps): React.ReactElement {
-  const theme = useTheme();
+  const handlePress = () => {
+    if (onPress && !disabled) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      onPress();
+    }
+  };
 
-  const content = (
-    <View style={[styles.listItem, { opacity: disabled ? 0.6 : 1 }]}>
-      <View style={[styles.listItemIcon, { marginRight: theme.spacing.md }]}>
-        <MaterialCommunityIcons name={icon} size={24} color={iconColor || theme.colors.primary} />
-      </View>
-      <View style={styles.listItemContent}>
-        <Text style={[theme.typography.label, { color: theme.colors.text }]}>{title}</Text>
-        <Text
-          style={[theme.typography.bodySmall, { color: theme.colors.textSecondary, marginTop: 2 }]}
-        >
-          {description}
-        </Text>
-      </View>
-      <MaterialCommunityIcons name="chevron-right" size={20} color={theme.colors.textSecondary} />
-    </View>
-  );
-
-  if (onPress && !disabled) {
-    return (
-      <TouchableOpacity
-        onPress={onPress}
-        activeOpacity={0.7}
-        accessibilityLabel={title}
-        accessibilityRole="button"
-        accessibilityHint={description}
-      >
-        {content}
-      </TouchableOpacity>
-    );
-  }
-
-  return <View accessibilityLabel={`${title} - ${description}`}>{content}</View>;
-}
-
-function Divider(): React.ReactElement {
-  const theme = useTheme();
   return (
-    <View
-      style={{
-        height: 1,
-        backgroundColor: theme.colors.divider,
-        marginVertical: theme.spacing.xs,
-      }}
-    />
+    <Pressable
+      onPress={handlePress}
+      onPressIn={() => { if (!disabled) scale.value = withSpring(0.98, ds.spring.snappy); }}
+      onPressOut={() => { scale.value = withSpring(1, ds.spring.smooth); }}
+      disabled={disabled}
+    >
+      <Animated.View style={[styles.listItem, disabled && styles.listItemDisabled, animatedStyle]}>
+        <View style={[styles.listItemIcon, { backgroundColor: iconColor ? `${iconColor}20` : ds.colors.accentMuted }]}>
+          <Feather 
+            name={icon} 
+            size={20} 
+            color={iconColor || ds.colors.accent} 
+          />
+        </View>
+        
+        <View style={styles.listItemContent}>
+          <Text style={styles.listItemTitle}>{title}</Text>
+          {subtitle && <Text style={styles.listItemSubtitle}>{subtitle}</Text>}
+        </View>
+        
+        {!disabled && (
+          <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} />
+        )}
+      </Animated.View>
+      
+      {!isLast && <View style={styles.listItemDivider} />}
+    </Pressable>
+  );
+}
+
+// Section Header
+function SectionHeader({ title, delay = 0 }: { title: string; delay?: number }) {
+  return (
+    <Animated.View entering={FadeInDown.delay(delay).duration(300)}>
+      <Text style={styles.sectionHeader}>{title}</Text>
+    </Animated.View>
+  );
+}
+
+// Card Group
+function CardGroup({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  return (
+    <Animated.View 
+      entering={FadeInDown.delay(delay).duration(400).springify()}
+      style={styles.cardGroup}
+    >
+      {children}
+    </Animated.View>
   );
 }
 
 export function ProfileScreen(): React.ReactElement {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
-  const theme = useTheme();
   const { user, signOut, loading } = useAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
-  // Show skeleton while user data is loading
-  const isLoading = loading && !user;
-
-  const handleSignOut = async (): Promise<void> => {
+  const handleSignOut = useCallback(async () => {
     setSigningOut(true);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
     try {
       await signOut();
     } catch (_error) {
@@ -108,270 +136,145 @@ export function ProfileScreen(): React.ReactElement {
       setSigningOut(false);
       setShowSignOutModal(false);
     }
-  };
+  }, [signOut]);
 
   return (
     <>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-        edges={['bottom']}
-      >
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={[styles.contentContainer, { paddingHorizontal: theme.spacing.md }]}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* User Profile Card */}
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.lg }}>
-            <View style={styles.userProfile}>
-              {isLoading ? (
-                <SkeletonCard />
-              ) : (
-                <>
-                  <View
-                    style={[
-                      styles.avatarContainer,
-                      {
-                        backgroundColor: theme.colors.primary + '20',
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
-                        marginBottom: theme.spacing.md,
-                      },
-                    ]}
-                  >
-                    <MaterialCommunityIcons
-                      name="account-circle"
-                      size={64}
-                      color={theme.colors.primary}
-                    />
-                  </View>
-                  {user && (
-                    <Text
-                      style={[
-                        theme.typography.body,
-                        { color: theme.colors.textSecondary, textAlign: 'center' },
-                      ]}
-                    >
-                      {user.email}
-                    </Text>
-                  )}
-                </>
-              )}
-            </View>
-          </Card>
-
-          {/* App Settings Section */}
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: theme.spacing.sm },
-            ]}
-            accessibilityRole="header"
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safe} edges={['top']}>
+          <ScrollView 
+            style={styles.scroll}
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
           >
-            Settings
-          </Text>
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.lg }}>
-            <ListItem
-              icon="account-supervisor"
-              title="Sponsor"
-              description="Connect with sponsor or sponsees"
-              onPress={() => navigation.navigate('Sponsor')}
-            />
-            <Divider />
-            <ListItem
-              icon="calendar-check"
-              title="Meeting Stats"
-              description="Track attendance and view achievements"
-              onPress={() =>
-                navigation.navigate('Home', {
-                  screen: 'MeetingStats',
-                })
-              }
-            />
-            <Divider />
-            <ListItem
-              icon="trophy"
-              title="Achievements"
-              description="View your recovery milestones"
-              onPress={() =>
-                navigation.navigate('Home', {
-                  screen: 'Achievements',
-                })
-              }
-            />
-            <Divider />
-            <ListItem
-              icon="shield-account"
-              title="Trigger Protection"
-              description="Manage risky contacts and close calls"
-              onPress={() =>
-                navigation.navigate('Home', {
-                  screen: 'DangerZone',
-                })
-              }
-              iconColor={theme.colors.warning}
-            />
-            <Divider />
-            <ListItem
-              icon="bell"
-              title="Notifications"
-              description="Manage notification preferences"
-              onPress={() => navigation.navigate('NotificationSettings')}
-            />
-            <Divider />
-            <ListItem
-              icon="robot"
-              title="AI Companion"
-              description="Configure your recovery companion"
-              onPress={() => navigation.navigate('AISettings')}
-            />
-            <Divider />
-            <ListItem
-              icon="shield-lock"
-              title="Privacy & Security"
-              description="Biometrics, auto-lock, and encryption"
-              disabled
-            />
-            <Divider />
-            <ListItem
-              icon="download"
-              title="Data Export"
-              description="Download your encrypted data"
-              disabled
-            />
-          </Card>
+            {/* Header */}
+            <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
+              <Text style={styles.title}>Settings</Text>
+            </Animated.View>
 
-          {/* Support & Resources Section */}
-          <Text
-            style={[
-              theme.typography.h3,
-              { color: theme.colors.text, marginBottom: theme.spacing.sm },
-            ]}
-            accessibilityRole="header"
-          >
-            Support & Resources
-          </Text>
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.lg }}>
-            <ListItem
-              icon="phone-alert"
-              title="Emergency Support"
-              description="Crisis hotlines and resources"
-              iconColor={theme.colors.danger}
-              disabled
-            />
-            <Divider />
-            <ListItem
-              icon="information"
-              title="About"
-              description="Version 0.1.0 (Phase 2 Alpha)"
-              disabled
-            />
-          </Card>
-
-          {/* Privacy Info Card */}
-          <Card
-            variant="elevated"
-            style={{
-              backgroundColor: theme.colors.success + '15',
-              marginBottom: theme.spacing.lg,
-            }}
-          >
-            <View style={styles.privacyInfo}>
-              <View
-                style={[
-                  styles.privacyIcon,
-                  {
-                    backgroundColor: theme.colors.success + '20',
-                    width: 48,
-                    height: 48,
-                    borderRadius: 24,
-                    marginBottom: theme.spacing.sm,
-                  },
-                ]}
-              >
-                <MaterialCommunityIcons name="lock" size={28} color={theme.colors.success} />
+            {/* Profile Card */}
+            <CardGroup delay={100}>
+              <View style={styles.profileCard}>
+                <View style={styles.avatar}>
+                  <Feather name="user" size={32} color={ds.colors.accent} />
+                </View>
+                <View style={styles.profileInfo}>
+                  <Text style={styles.profileEmail} numberOfLines={1}>
+                    {user?.email || 'Loading...'}
+                  </Text>
+                  <Text style={styles.profileLabel}>Personal Account</Text>
+                </View>
+                <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} />
               </View>
-              <Text
-                style={[
-                  theme.typography.label,
-                  {
-                    color: theme.colors.success,
-                    marginBottom: theme.spacing.xs,
-                    textAlign: 'center',
-                  },
+            </CardGroup>
+
+            {/* Recovery Section */}
+            <SectionHeader title="Recovery" delay={150} />
+            <CardGroup delay={200}>
+              <ListItem
+                icon="users"
+                title="Sponsor"
+                subtitle="Connect with your sponsor"
+                onPress={() => navigation.navigate('Sponsor')}
+              />
+              <ListItem
+                icon="calendar"
+                title="Meeting Stats"
+                subtitle="Track your attendance"
+                onPress={() => navigation.navigate('Home', { screen: 'MeetingStats' })}
+              />
+              <ListItem
+                icon="award"
+                title="Achievements"
+                subtitle="View your milestones"
+                onPress={() => navigation.navigate('Home', { screen: 'Achievements' })}
+                isLast
+              />
+            </CardGroup>
+
+            {/* App Section */}
+            <SectionHeader title="App" delay={250} />
+            <CardGroup delay={300}>
+              <ListItem
+                icon="message-circle"
+                title="AI Companion"
+                subtitle="Configure your companion"
+                onPress={() => navigation.navigate('AISettings')}
+              />
+              <ListItem
+                icon="bell"
+                title="Notifications"
+                subtitle="Manage alerts"
+                onPress={() => navigation.navigate('NotificationSettings')}
+              />
+              <ListItem
+                icon="shield"
+                title="Privacy & Security"
+                subtitle="Biometrics and encryption"
+                disabled
+                isLast
+              />
+            </CardGroup>
+
+            {/* Privacy Banner */}
+            <Animated.View 
+              entering={FadeInDown.delay(350).duration(400)}
+              style={styles.privacyBanner}
+            >
+              <View style={styles.privacyIcon}>
+                <Feather name="lock" size={20} color={ds.colors.success} />
+              </View>
+              <View style={styles.privacyContent}>
+                <Text style={styles.privacyTitle}>End-to-End Encrypted</Text>
+                <Text style={styles.privacyText}>
+                  Your journal and step work are encrypted with AES-256. Only you can read them.
+                </Text>
+              </View>
+            </Animated.View>
+
+            {/* Sign Out */}
+            <Animated.View entering={FadeInDown.delay(400).duration(400)}>
+              <Pressable 
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+                  setShowSignOutModal(true);
+                }}
+                style={({ pressed }) => [
+                  styles.signOutButton,
+                  pressed && styles.signOutButtonPressed,
                 ]}
               >
-                Your Privacy is Protected
-              </Text>
-              <Text
-                style={[
-                  theme.typography.bodySmall,
-                  {
-                    color: theme.colors.text,
-                    textAlign: 'center',
-                    lineHeight: 20,
-                  },
-                ]}
-              >
-                All your journal entries and step work are encrypted with AES-256 encryption before
-                being stored. Only you can decrypt and read your data.
-              </Text>
-            </View>
-          </Card>
+                <Text style={styles.signOutText}>Sign Out</Text>
+              </Pressable>
+            </Animated.View>
 
-          {/* Sign Out Button */}
-          <Button
-            title="Sign Out"
-            onPress={() => setShowSignOutModal(true)}
-            variant="outline"
-            size="large"
-            fullWidth
-            loading={signingOut}
-            disabled={signingOut}
-            icon={<MaterialCommunityIcons name="logout" size={20} color={theme.colors.danger} />}
-            textStyle={{ color: theme.colors.danger }}
-            style={{ marginBottom: theme.spacing.md }}
-            accessibilityLabel="Sign out of your account"
-            accessibilityHint="Requires confirmation"
-          />
+            {/* Footer */}
+            <Text style={styles.footer}>
+              Made with care for the recovery community
+            </Text>
 
-          {/* Footer */}
-          <Text
-            style={[
-              theme.typography.caption,
-              {
-                color: theme.colors.textSecondary,
-                textAlign: 'center',
-                marginTop: theme.spacing.sm,
-                marginBottom: theme.spacing.xl,
-              },
-            ]}
-          >
-            Made with care for the recovery community
-          </Text>
-        </ScrollView>
-      </SafeAreaView>
+            <View style={{ height: ds.space[20] }} />
+          </ScrollView>
+        </SafeAreaView>
+      </View>
 
-      {/* Sign Out Confirmation Modal */}
+      {/* Sign Out Modal */}
       <Modal
         visible={showSignOutModal}
         onClose={() => setShowSignOutModal(false)}
         title="Sign Out"
-        message="Are you sure you want to sign out? Any unsynced data will be uploaded before signing out."
+        message="Are you sure you want to sign out?"
         variant="center"
         actions={[
           {
             title: 'Cancel',
             onPress: () => {},
             variant: 'outline',
-            accessibilityLabel: 'Cancel sign out',
           },
           {
             title: 'Sign Out',
             onPress: handleSignOut,
             variant: 'danger',
-            accessibilityLabel: 'Confirm sign out',
           },
         ]}
         dismissable
@@ -383,39 +286,168 @@ export function ProfileScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: ds.colors.bgPrimary,
   },
-  scrollView: {
+  safe: {
     flex: 1,
   },
-  contentContainer: {
-    paddingTop: 16,
+  scroll: {
+    flex: 1,
   },
-  userProfile: {
+  content: {
+    paddingHorizontal: ds.sizes.contentPadding,
+  },
+
+  // Header
+  header: {
+    paddingTop: ds.space[6],
+    paddingBottom: ds.space[4],
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: '700',
+    color: ds.colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+
+  // Profile Card
+  profileCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
+    padding: ds.space[4],
   },
-  avatarContainer: {
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: ds.colors.accentMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  profileInfo: {
+    flex: 1,
+    marginLeft: ds.space[4],
+  },
+  profileEmail: {
+    ...ds.typography.body,
+    fontWeight: '600',
+    color: ds.colors.textPrimary,
+  },
+  profileLabel: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: 2,
+  },
+
+  // Section Header
+  sectionHeader: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginTop: ds.space[6],
+    marginBottom: ds.space[2],
+    marginLeft: ds.space[1],
+  },
+
+  // Card Group
+  cardGroup: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    overflow: 'hidden',
+  },
+
+  // List Item
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: ds.space[4],
+    paddingHorizontal: ds.space[4],
+  },
+  listItemDisabled: {
+    opacity: 0.5,
   },
   listItemIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: ds.radius.sm,
     justifyContent: 'center',
     alignItems: 'center',
   },
   listItemContent: {
     flex: 1,
+    marginLeft: ds.space[3],
   },
-  privacyInfo: {
-    alignItems: 'center',
-    paddingVertical: 8,
+  listItemTitle: {
+    ...ds.typography.body,
+    color: ds.colors.textPrimary,
+  },
+  listItemSubtitle: {
+    ...ds.typography.caption,
+    color: ds.colors.textTertiary,
+    marginTop: 1,
+  },
+  listItemDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: ds.colors.divider,
+    marginLeft: 36 + ds.space[4] + ds.space[3],
+  },
+
+  // Privacy Banner
+  privacyBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: ds.colors.successMuted,
+    borderRadius: ds.radius.lg,
+    padding: ds.space[4],
+    marginTop: ds.space[6],
   },
   privacyIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(50, 215, 75, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  privacyContent: {
+    flex: 1,
+    marginLeft: ds.space[3],
+  },
+  privacyTitle: {
+    ...ds.typography.body,
+    fontWeight: '600',
+    color: ds.colors.success,
+  },
+  privacyText: {
+    ...ds.typography.caption,
+    color: ds.colors.textSecondary,
+    marginTop: ds.space[1],
+    lineHeight: 18,
+  },
+
+  // Sign Out
+  signOutButton: {
+    backgroundColor: ds.colors.bgTertiary,
+    borderRadius: ds.radius.lg,
+    paddingVertical: ds.space[4],
+    marginTop: ds.space[6],
+    alignItems: 'center',
+  },
+  signOutButtonPressed: {
+    backgroundColor: ds.colors.bgQuaternary,
+  },
+  signOutText: {
+    ...ds.typography.body,
+    color: ds.colors.error,
+    fontWeight: '500',
+  },
+
+  // Footer
+  footer: {
+    ...ds.typography.caption,
+    color: ds.colors.textQuaternary,
+    textAlign: 'center',
+    marginTop: ds.space[6],
   },
 });
