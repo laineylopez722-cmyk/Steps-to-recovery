@@ -19,17 +19,16 @@ import * as Haptics from 'expo-haptics';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
+import { StepQuestionCard } from '../components/StepQuestionCard';
 import { buildStepListItems, type StepListItem, type QuestionItem } from '../utils/stepListItems';
 import { useAuth } from '../../../contexts/AuthContext';
 import {
   useTheme,
   Card,
   Button,
-  TextArea,
   ProgressBar,
   Badge,
   Toast,
-  Divider,
   Text,
   Skeleton,
 } from '../../../design-system';
@@ -246,71 +245,16 @@ export function StepDetailScreen(): React.ReactElement {
       const isSaving = savingQuestion === questionNumber;
 
       return (
-        <Card variant="elevated" style={styles.questionCard}>
-          <View style={styles.questionHeader}>
-            <View
-              style={[
-                styles.questionNumber,
-                isAnswered
-                  ? { backgroundColor: theme.colors.primary }
-                  : {
-                      backgroundColor: theme.colors.surface,
-                      borderWidth: 2,
-                      borderColor: theme.colors.border,
-                    },
-              ]}
-            >
-              {isAnswered ? (
-                <MaterialCommunityIcons name="check" size={20} color="#FFFFFF" />
-              ) : (
-                <Text
-                  style={[
-                    theme.typography.body,
-                    { color: theme.colors.textSecondary, fontWeight: '600' },
-                  ]}
-                >
-                  {questionNumber}
-                </Text>
-              )}
-            </View>
-            <Text
-              style={[theme.typography.h3, { color: theme.colors.text, flex: 1, lineHeight: 24 }]}
-            >
-              {item.prompt}
-            </Text>
-          </View>
-
-          <Divider style={styles.questionDivider} />
-
-          <TextArea
-            label=""
-            value={answers[questionNumber] || ''}
-            onChangeText={(text) => setAnswers((prev) => ({ ...prev, [questionNumber]: text }))}
-            placeholder="Take your time to reflect and write your answer here. Remember, this is a private space for your personal growth."
-            containerStyle={styles.answerTextArea}
-            minHeight={150}
-            maxLength={2000}
-            showCharacterCount
-            editable={!isSaving}
-            accessibilityLabel={`Answer for question ${questionNumber} of ${totalQuestions}`}
-            accessibilityHint={`Write your answer to: ${item.prompt}`}
-          />
-
-          <Button
-            title={isSaving ? 'Saving...' : isAnswered ? 'Update Answer' : 'Save Answer'}
-            onPress={() => handleSaveAnswer(questionNumber)}
-            disabled={!answers[questionNumber]?.trim() || isSaving}
-            loading={isSaving}
-            variant="primary"
-            fullWidth
-            accessibilityLabel={
-              isSaving ? 'Saving answer' : isAnswered ? 'Update answer' : 'Save answer'
-            }
-            accessibilityRole="button"
-            accessibilityHint="Save your answer to this step question"
-            accessibilityState={{ disabled: !answers[questionNumber]?.trim() || isSaving }}
-          />
-        </Card>
+        <StepQuestionCard
+          questionNumber={questionNumber}
+          prompt={item.prompt}
+          answer={answers[questionNumber] || ''}
+          totalQuestions={totalQuestions}
+          isAnswered={Boolean(isAnswered)}
+          isSaving={isSaving}
+          onChangeAnswer={(text) => setAnswers((prev) => ({ ...prev, [questionNumber]: text }))}
+          onSave={() => handleSaveAnswer(questionNumber)}
+        />
       );
     },
     [questions, savingQuestion, answers, theme, handleSaveAnswer, totalQuestions, scrollToQuestion],
