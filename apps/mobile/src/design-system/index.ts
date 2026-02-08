@@ -82,6 +82,7 @@ export {
 export { ThemeProvider } from './context/ThemeContext';
 export { useTheme, useColors, useIsDark } from './hooks/useTheme';
 export { useMotionPress } from './hooks/useMotionPress';
+export { Action, useActionMotion } from './primitives';
 export { ScreenAnimations } from './tokens/screen-animations';
 export { MotionTransitions, motionDuration, motionSpring, motionScale, motionTiming, motionShimmer } from './tokens/motion';
 export { glass, glow, glassGradients } from './tokens/glass';
@@ -98,6 +99,7 @@ export {
 } from './tokens/aesthetic';
 export { useTheme as useThemeTokens, darkColors, lightColors, spacing as themeSpacing, typography as themeTypography, borderRadius as themeBorderRadius } from './tokens/theme';
 export type { Theme } from './tokens/theme';
+export type { ActionRootProps, UseActionMotionOptions } from './primitives';
 export {
   pressAnimation,
   hoverAnimation,

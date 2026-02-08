@@ -17,14 +17,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import Animated, {
-  FadeIn,
-  FadeInDown,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import Animated from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { MotionTransitions } from '../../../design-system/tokens/motion';
+import { Action } from '../../../design-system/primitives';
 import { useCleanTime } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
 import { ds } from '../../../design-system/tokens/ds';
@@ -62,25 +58,11 @@ function ActionCard({
   style?: StyleProp<ViewStyle>;
   delay?: number;
 }) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.98, ds.spring.snappy);
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, ds.spring.smooth);
-  };
-
   return (
-    <Animated.View entering={FadeInDown.delay(delay).duration(400).springify()}>
-      <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
-        <Animated.View style={[style, animatedStyle]}>{children}</Animated.View>
-      </Pressable>
+    <Animated.View entering={MotionTransitions.cardEnter(Math.floor(delay / 50))}>
+      <Action.Root onPress={onPress} contentStyle={style}>
+        {children}
+      </Action.Root>
     </Animated.View>
   );
 }
@@ -100,43 +82,29 @@ function TaskItem({
   onPress: () => void;
   isLast?: boolean;
 }) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
   return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={() => {
-        scale.value = withSpring(0.98, ds.spring.snappy);
-      }}
-      onPressOut={() => {
-        scale.value = withSpring(1, ds.spring.smooth);
-      }}
-    >
-      <Animated.View style={[styles.taskItem, animatedStyle]}>
-        <View style={[styles.taskIcon, done && styles.taskIconDone]}>
+    <View>
+      <Action.Root onPress={onPress} contentStyle={styles.taskItem}>
+        <Action.Icon style={[styles.taskIcon, done && styles.taskIconDone]}>
           <Feather
             name={done ? 'check' : icon}
             size={ds.sizes.iconMd}
-            color={done ? ds.colors.success : ds.colors.textTertiary}
+            color={done ? ds.colors.success : ds.semantic.text.tertiary}
           />
-        </View>
+        </Action.Icon>
 
-        <View style={styles.taskContent}>
-          <Text style={[styles.taskLabel, done && styles.taskLabelDone]}>{label}</Text>
-          <Text style={styles.taskSublabel}>{sublabel}</Text>
-        </View>
+        <Action.Content style={styles.taskContent}>
+          <Action.Title style={[styles.taskLabel, done && styles.taskLabelDone]}>{label}</Action.Title>
+          <Action.Subtitle style={styles.taskSublabel}>{sublabel}</Action.Subtitle>
+        </Action.Content>
 
-        <View style={styles.taskChevron}>
-          <Feather name="chevron-right" size={ds.sizes.iconSm} color={ds.colors.textQuaternary} />
-        </View>
-      </Animated.View>
+        <Action.Trailing style={styles.taskChevron}>
+          <Feather name="chevron-right" size={ds.sizes.iconSm} color={ds.semantic.text.muted} />
+        </Action.Trailing>
+      </Action.Root>
 
       {!isLast && <View style={styles.taskDivider} />}
-    </Pressable>
+    </View>
   );
 }
 
@@ -162,12 +130,12 @@ function ShortcutCard({
 }) {
   return (
     <ActionCard onPress={onPress} style={styles.shortcutCard}>
-      <View style={styles.shortcutIconWrap}>
-        <Feather name={icon} size={18} color={ds.colors.accent} />
-      </View>
-      <Text style={styles.shortcutTitle}>{title}</Text>
-      <Text style={styles.shortcutSubtitle}>{subtitle}</Text>
-      <Feather name="arrow-up-right" size={14} color={ds.colors.textQuaternary} style={styles.shortcutArrow} />
+      <Action.Icon style={styles.shortcutIconWrap}>
+        <Feather name={icon} size={18} color={ds.semantic.intent.primary.solid} />
+      </Action.Icon>
+      <Action.Title style={styles.shortcutTitle}>{title}</Action.Title>
+      <Action.Subtitle style={styles.shortcutSubtitle}>{subtitle}</Action.Subtitle>
+      <Feather name="arrow-up-right" size={14} color={ds.semantic.text.muted} style={styles.shortcutArrow} />
     </ActionCard>
   );
 }
@@ -229,7 +197,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     return (
       <View style={styles.container}>
         <View style={styles.loading}>
-          <Animated.View entering={FadeIn.duration(300)}>
+          <Animated.View entering={MotionTransitions.fade()}>
             <Text style={styles.loadingText}>...</Text>
           </Animated.View>
         </View>
@@ -245,7 +213,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View entering={FadeInDown.duration(400)} style={styles.header}>
+          <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
             <View>
               <Text style={styles.date}>{date}</Text>
               <Text style={styles.greeting}>{greeting}</Text>
@@ -256,11 +224,11 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
               onPress={handleProfile}
               style={({ pressed }) => [styles.profileButton, pressed && styles.profileButtonPressed]}
             >
-              <Feather name="user" size={ds.sizes.iconMd} color={ds.colors.textPrimary} />
+              <Feather name="user" size={ds.sizes.iconMd} color={ds.semantic.text.primary} />
             </Pressable>
           </Animated.View>
 
-          <Animated.View entering={FadeIn.delay(150).duration(600)} style={styles.heroCard}>
+          <Animated.View entering={MotionTransitions.fadeDelayed(150)} style={styles.heroCard}>
             <View style={styles.heroTopRow}>
               <Text style={styles.heroTitle}>Clean Time Streak</Text>
               <View style={styles.heroBadge}>
@@ -280,7 +248,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </Text>
 
             <View style={styles.miniStatsRow}>
-              <MiniStat label="Today" value={`${completedToday}/2`} tint={ds.colors.accent} />
+              <MiniStat label="Today" value={`${completedToday}/2`} tint={ds.semantic.intent.primary.solid} />
               <MiniStat label="Current step" value="1/12" />
               <MiniStat label="Check-ins" value={String(completedToday)} />
             </View>
@@ -299,7 +267,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </View>
           </ActionCard>
 
-          <Animated.View entering={FadeInDown.delay(280).duration(400)} style={styles.section}>
+          <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Today shortcuts</Text>
               <Text style={styles.sectionHint}>Tap to open</Text>
@@ -332,7 +300,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </View>
           </Animated.View>
 
-          <Animated.View entering={FadeInDown.delay(330).duration(400)} style={styles.section}>
+          <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.section}>
             <Text style={styles.sectionTitle}>Recovery rhythm</Text>
 
             <View style={styles.taskList}>
@@ -365,7 +333,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
+    backgroundColor: ds.semantic.surface.app,
   },
   safe: {
     flex: 1,
@@ -374,7 +342,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    paddingHorizontal: ds.sizes.contentPadding,
+    paddingHorizontal: ds.semantic.layout.screenPadding,
   },
   loading: {
     flex: 1,
@@ -383,7 +351,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 32,
-    color: ds.colors.textQuaternary,
+    color: ds.semantic.text.muted,
     letterSpacing: 4,
   },
 
@@ -396,34 +364,34 @@ const styles = StyleSheet.create({
   },
   date: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: ds.space[1],
   },
   greeting: {
-    ...ds.typography.h1,
-    color: ds.colors.textPrimary,
+    ...ds.semantic.typography.screenTitle,
+    color: ds.semantic.text.primary,
   },
   subtitle: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     marginTop: ds.space[1],
   },
   profileButton: {
     width: ds.sizes.touchMin,
     height: ds.sizes.touchMin,
     borderRadius: ds.radius.full,
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     justifyContent: 'center',
     alignItems: 'center',
   },
   profileButtonPressed: {
-    backgroundColor: ds.colors.bgQuaternary,
+    backgroundColor: ds.semantic.surface.interactive,
   },
 
   heroCard: {
-    backgroundColor: ds.colors.bgSecondary,
+    backgroundColor: ds.semantic.surface.canvas,
     borderRadius: ds.radius.xl,
     paddingHorizontal: ds.space[5],
     paddingTop: ds.space[4],
@@ -437,7 +405,7 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     ...ds.typography.body,
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
     fontWeight: '600',
   },
   heroBadge: {
@@ -461,23 +429,23 @@ const styles = StyleSheet.create({
   dayCount: {
     fontSize: 54,
     fontWeight: '700',
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
     letterSpacing: -1.5,
   },
   dayLabel: {
     ...ds.typography.body,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
   },
   heroMessage: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     textAlign: 'center',
     marginTop: ds.space[2],
     marginBottom: ds.space[4],
   },
   miniStatsRow: {
     flexDirection: 'row',
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
     overflow: 'hidden',
   },
@@ -488,12 +456,12 @@ const styles = StyleSheet.create({
   },
   miniStatValue: {
     ...ds.typography.body,
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
     fontWeight: '700',
   },
   miniStatLabel: {
     ...ds.typography.caption,
-    color: ds.colors.textQuaternary,
+    color: ds.semantic.text.muted,
     marginTop: 2,
   },
 
@@ -509,13 +477,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     textTransform: 'uppercase',
     letterSpacing: 1.5,
   },
   sectionHint: {
     ...ds.typography.micro,
-    color: ds.colors.textQuaternary,
+    color: ds.semantic.text.muted,
   },
 
   shortcutsGrid: {
@@ -526,7 +494,7 @@ const styles = StyleSheet.create({
   },
   shortcutCard: {
     width: '48.5%',
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
     padding: ds.space[4],
     marginBottom: ds.space[3],
@@ -538,19 +506,19 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: ds.radius.md,
-    backgroundColor: ds.colors.accentMuted,
+    backgroundColor: ds.semantic.intent.primary.muted,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: ds.space[2],
   },
   shortcutTitle: {
     ...ds.typography.body,
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
     fontWeight: '600',
   },
   shortcutSubtitle: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     marginTop: ds.space[1],
     paddingRight: ds.space[4],
   },
@@ -561,7 +529,7 @@ const styles = StyleSheet.create({
   },
 
   taskList: {
-    backgroundColor: ds.colors.bgTertiary,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
     overflow: 'hidden',
   },
@@ -575,7 +543,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: ds.radius.md,
-    backgroundColor: ds.colors.bgQuaternary,
+    backgroundColor: ds.semantic.surface.interactive,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -588,7 +556,7 @@ const styles = StyleSheet.create({
   },
   taskLabel: {
     ...ds.typography.body,
-    color: ds.colors.textPrimary,
+    color: ds.semantic.text.primary,
     fontWeight: '500',
   },
   taskLabelDone: {
@@ -596,7 +564,7 @@ const styles = StyleSheet.create({
   },
   taskSublabel: {
     ...ds.typography.caption,
-    color: ds.colors.textTertiary,
+    color: ds.semantic.text.tertiary,
     marginTop: 2,
   },
   taskChevron: {
@@ -614,7 +582,7 @@ const styles = StyleSheet.create({
   companionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: ds.colors.accent,
+    backgroundColor: ds.semantic.intent.primary.solid,
     borderRadius: ds.radius.xl,
     paddingVertical: ds.space[5],
     paddingHorizontal: ds.space[5],
