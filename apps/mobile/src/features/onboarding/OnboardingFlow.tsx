@@ -1,4 +1,10 @@
-// @ts-nocheck
+/**
+ * Onboarding Flow
+ * 
+ * Apple-inspired introduction.
+ * Bold statements, minimal decoration.
+ */
+
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,54 +14,44 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   interpolate,
-  Extrapolate,
+  Extrapolation,
   useAnimatedScrollHandler,
 } from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import { GradientButton } from '../../design-system/components/GradientButton';
-import {
-  darkAccent,
-  gradients,
-  spacing,
-  typography,
-  radius,
-} from '../../design-system/tokens/modern';
-import { useHaptics } from '../../hooks/useHaptics';
-
-type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
+import { Feather } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 interface OnboardingStep {
   id: string;
-  icon: string;
+  icon: keyof typeof Feather.glyphMap;
   title: string;
   description: string;
-  gradient: readonly string[];
+  color: string;
 }
 
-const ONBOARDING_STEPS: OnboardingStep[] = [
+const STEPS: OnboardingStep[] = [
   {
     id: 'companion',
-    icon: 'chat',
-    title: 'Someone who remembers',
-    description: "An AI companion that knows your story. Available 24/7, no judgment.",
-    gradient: gradients.primary,
+    icon: 'message-circle',
+    title: 'An AI that\nremembers you',
+    description: 'Available 24/7. Knows your story.\nNo judgment, just support.',
+    color: ds.colors.accent,
   },
   {
     id: 'privacy',
     icon: 'lock',
-    title: 'Your story stays yours',
-    description: 'Everything is encrypted on your device. We never see your data.',
-    gradient: gradients.success,
+    title: 'Your story\nstays yours',
+    description: 'End-to-end encrypted.\nWe never see your data.',
+    color: ds.colors.success,
   },
   {
     id: 'steps',
-    icon: 'format-list-numbered',
+    icon: 'compass',
     title: 'Real step work',
-    description: 'Guided tools for all 12 steps. Not just day counting — actual recovery.',
-    gradient: gradients.aurora,
+    description: 'Guided tools for all 12 steps.\nNot day counting — actual recovery.',
+    color: ds.colors.info,
   },
 ];
 
@@ -68,38 +64,36 @@ function OnboardingPage({
   index: number;
   scrollX: SharedValue<number>;
 }) {
-  const inputRange = [(index - 1) * SCREEN_WIDTH, index * SCREEN_WIDTH, (index + 1) * SCREEN_WIDTH];
+  const inputRange = [
+    (index - 1) * SCREEN_WIDTH, 
+    index * SCREEN_WIDTH, 
+    (index + 1) * SCREEN_WIDTH
+  ];
 
-  const imageStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolate.CLAMP),
+  const iconStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolation.CLAMP),
     transform: [
-      { scale: interpolate(scrollX.value, inputRange, [0.8, 1, 0.8], Extrapolate.CLAMP) },
+      { scale: interpolate(scrollX.value, inputRange, [0.7, 1, 0.7], Extrapolation.CLAMP) },
+      { translateY: interpolate(scrollX.value, inputRange, [30, 0, 30], Extrapolation.CLAMP) },
     ],
   }));
 
   const textStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolate.CLAMP),
+    opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolation.CLAMP),
     transform: [
-      {
-        translateX: interpolate(
-          scrollX.value,
-          inputRange,
-          [SCREEN_WIDTH * 0.3, 0, -SCREEN_WIDTH * 0.3],
-          Extrapolate.CLAMP,
-        ),
-      },
+      { translateY: interpolate(scrollX.value, inputRange, [20, 0, 20], Extrapolation.CLAMP) },
     ],
   }));
 
   return (
     <View style={styles.page}>
-      <Animated.View style={[styles.iconContainer, imageStyle]}>
-        <LinearGradient colors={step.gradient} style={styles.iconGradient}>
-          <MaterialIcons name={step.icon as IconName} size={64} color="#FFF" />
-        </LinearGradient>
-        <View style={[styles.glowOrb, { backgroundColor: step.gradient[0] }]} />
+      <Animated.View style={[styles.iconWrap, iconStyle]}>
+        <View style={[styles.iconBg, { backgroundColor: `${step.color}15` }]}>
+          <Feather name={step.icon} size={56} color={step.color} />
+        </View>
       </Animated.View>
-      <Animated.View style={[styles.textContainer, textStyle]}>
+      
+      <Animated.View style={[styles.textWrap, textStyle]}>
         <Text style={styles.title}>{step.title}</Text>
         <Text style={styles.description}>{step.description}</Text>
       </Animated.View>
@@ -107,7 +101,7 @@ function OnboardingPage({
   );
 }
 
-function PaginationDot({
+function Dot({
   index,
   currentIndex,
   onPress,
@@ -117,64 +111,79 @@ function PaginationDot({
   onPress: () => void;
 }) {
   const isActive = index === currentIndex;
-  const scale = useSharedValue(1);
-  const width = useSharedValue(isActive ? 24 : 8);
-
-  React.useEffect(() => {
-    width.value = withSpring(isActive ? 24 : 8);
-    scale.value = withSpring(isActive ? 1.2 : 1);
-  }, [isActive]);
-
-  const style = useAnimatedStyle(() => ({
-    width: width.value,
-    transform: [{ scale: scale.value }],
-    backgroundColor: isActive ? darkAccent.primary : darkAccent.subtle,
+  
+  const animStyle = useAnimatedStyle(() => ({
+    width: withSpring(isActive ? 28 : 8, ds.spring.snappy),
+    backgroundColor: withSpring(
+      isActive ? ds.colors.accent : ds.colors.bgQuaternary,
+      ds.spring.snappy
+    ),
   }));
 
   return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={`Go to step ${index + 1}`}
-    >
-      <Animated.View style={[styles.paginationDot, style]} />
+    <Pressable onPress={onPress} hitSlop={12}>
+      <Animated.View style={[styles.dot, animStyle]} />
     </Pressable>
   );
 }
 
-export function OnboardingFlow(): React.ReactElement {
+interface OnboardingFlowProps {
+  onComplete?: () => void;
+}
+
+export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.ReactElement {
   const scrollX = useSharedValue(0);
-  const currentIndex = useSharedValue(0);
-  const [_, forceRender] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const scrollRef = useRef<Animated.FlatList<OnboardingStep>>(null);
-  const { medium } = useHaptics();
 
   const onScroll = useAnimatedScrollHandler({
     onScroll: (event) => {
       scrollX.value = event.contentOffset.x;
-      currentIndex.value = Math.round(event.contentOffset.x / SCREEN_WIDTH);
     },
   });
 
-  const handleNext = () => {
-    const nextIndex = Math.min(currentIndex.value + 1, ONBOARDING_STEPS.length - 1);
-    scrollRef.current?.scrollToIndex({ index: nextIndex, animated: true });
-    medium();
-    forceRender((v) => v + 1);
+  const handleMomentumEnd = (event: any) => {
+    const newIndex = Math.round(event.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+    setCurrentIndex(newIndex);
   };
 
-  const handleDotPress = (index: number) => {
+  const scrollTo = (index: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     scrollRef.current?.scrollToIndex({ index, animated: true });
-    medium();
-    forceRender((v) => v + 1);
+    setCurrentIndex(index);
   };
+
+  const handleContinue = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    
+    if (currentIndex < STEPS.length - 1) {
+      scrollTo(currentIndex + 1);
+    } else {
+      onComplete?.();
+    }
+  };
+
+  const isLast = currentIndex === STEPS.length - 1;
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safe}>
+        {/* Skip button */}
+        {!isLast && (
+          <View style={styles.skipWrap}>
+            <Pressable 
+              onPress={onComplete}
+              style={({ pressed }) => [styles.skipBtn, pressed && styles.skipBtnPressed]}
+            >
+              <Text style={styles.skipText}>Skip</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Pages */}
         <Animated.FlatList
           ref={scrollRef}
-          data={ONBOARDING_STEPS}
+          data={STEPS}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
             <OnboardingPage step={item} index={index} scrollX={scrollX} />
@@ -183,33 +192,37 @@ export function OnboardingFlow(): React.ReactElement {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onScroll={onScroll}
+          onMomentumScrollEnd={handleMomentumEnd}
           scrollEventThrottle={16}
         />
 
+        {/* Footer */}
         <View style={styles.footer}>
-          <View style={styles.pagination}>
-            {ONBOARDING_STEPS.map((_, index) => (
-              <PaginationDot
+          <View style={styles.dots}>
+            {STEPS.map((_, index) => (
+              <Dot
                 key={index}
                 index={index}
-                currentIndex={currentIndex.value}
-                onPress={() => handleDotPress(index)}
+                currentIndex={currentIndex}
+                onPress={() => scrollTo(index)}
               />
             ))}
           </View>
-          <GradientButton
-            title={currentIndex.value === ONBOARDING_STEPS.length - 1 ? 'Get Started' : 'Continue'}
-            variant="primary"
-            size="lg"
-            fullWidth
-            icon={
-              currentIndex.value === ONBOARDING_STEPS.length - 1 ? undefined : (
-                <MaterialIcons name="arrow-forward" size={20} color="#FFF" />
-              )
-            }
-            iconPosition="right"
-            onPress={handleNext}
-          />
+
+          <Pressable
+            onPress={handleContinue}
+            style={({ pressed }) => [
+              styles.continueBtn,
+              pressed && styles.continueBtnPressed,
+            ]}
+          >
+            <Text style={styles.continueText}>
+              {isLast ? 'Get Started' : 'Continue'}
+            </Text>
+            {!isLast && (
+              <Feather name="arrow-right" size={20} color="#000" style={{ marginLeft: 8 }} />
+            )}
+          </Pressable>
         </View>
       </SafeAreaView>
     </View>
@@ -219,65 +232,100 @@ export function OnboardingFlow(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: darkAccent.background,
+    backgroundColor: ds.colors.bgPrimary,
   },
-  safeArea: {
+  safe: {
     flex: 1,
   },
+
+  // Skip
+  skipWrap: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    zIndex: 10,
+    paddingTop: 60,
+    paddingRight: ds.space[5],
+  },
+  skipBtn: {
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[2],
+    borderRadius: ds.radius.full,
+  },
+  skipBtnPressed: {
+    backgroundColor: ds.colors.bgTertiary,
+  },
+  skipText: {
+    ...ds.typography.body,
+    color: ds.colors.textTertiary,
+  },
+
+  // Page
   page: {
     width: SCREEN_WIDTH,
-    padding: spacing[3],
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: ds.space[8],
+  },
+  iconWrap: {
+    marginBottom: ds.space[10],
+  },
+  iconBg: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  iconContainer: {
-    width: 160,
-    height: 160,
-    borderRadius: radius['2xl'],
-    backgroundColor: darkAccent.surfaceHigh,
+  textWrap: {
     alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing[4],
-  },
-  iconGradient: {
-    ...StyleSheet.absoluteFillObject,
-    borderRadius: radius['2xl'],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  glowOrb: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    opacity: 0.15,
-  },
-  textContainer: {
-    alignItems: 'center',
-    gap: spacing[2],
   },
   title: {
-    ...typography.h1,
-    color: darkAccent.text,
+    fontSize: 36,
+    fontWeight: '700',
+    color: ds.colors.textPrimary,
     textAlign: 'center',
+    letterSpacing: -0.5,
+    lineHeight: 44,
+    marginBottom: ds.space[4],
   },
   description: {
-    ...typography.body,
-    color: darkAccent.textMuted,
+    ...ds.typography.body,
+    color: ds.colors.textTertiary,
     textAlign: 'center',
+    lineHeight: 26,
   },
-  pagination: {
-    flexDirection: 'row',
-    gap: spacing[2],
-    marginBottom: spacing[3],
-    justifyContent: 'center',
-  },
-  paginationDot: {
-    height: 8,
-    borderRadius: radius.full,
-  },
+
+  // Footer
   footer: {
-    padding: spacing[3],
-    gap: spacing[2],
+    paddingHorizontal: ds.sizes.contentPadding,
+    paddingBottom: ds.space[8],
+  },
+  dots: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: ds.space[2],
+    marginBottom: ds.space[6],
+  },
+  dot: {
+    height: 8,
+    borderRadius: 4,
+  },
+  continueBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: ds.colors.accent,
+    height: 56,
+    borderRadius: 28,
+  },
+  continueBtnPressed: {
+    opacity: 0.9,
+  },
+  continueText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
   },
 });
