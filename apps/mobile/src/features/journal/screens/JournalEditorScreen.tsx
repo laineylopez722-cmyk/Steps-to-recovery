@@ -27,6 +27,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ds } from '../../../design-system/tokens/ds';
 import { hapticSuccess, hapticLight } from '../../../utils/haptics';
+import { logger } from '../../../utils/logger';
 import {
   useCreateJournalEntry,
   useUpdateJournalEntry,
@@ -140,10 +141,10 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
           }
         })
         .catch((err) => {
-          console.warn('Memory extraction failed:', err);
+          logger.warn('Memory extraction failed', err);
         });
     } catch (err) {
-      console.error('Auto-save failed:', err);
+logger.error('Auto-save failed', err);
     }
   };
   

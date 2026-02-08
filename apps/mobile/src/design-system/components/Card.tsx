@@ -24,6 +24,7 @@ export interface CardProps {
   animate?: boolean;
   style?: StyleProp<ViewStyle>;
   testID?: string;
+  accessible?: boolean;
   accessibilityRole?: AccessibilityRole;
   accessibilityLabel?: string;
   accessibilityHint?: string;
@@ -36,6 +37,7 @@ export function Card({
   animate = false,
   style,
   testID,
+  accessible,
   accessibilityRole,
   accessibilityLabel,
   accessibilityHint,
@@ -107,6 +109,7 @@ export function Card({
         onPressIn={() => variant === 'interactive' && animatePress(true)}
         onPressOut={() => variant === 'interactive' && animatePress(false)}
         activeOpacity={variant === 'interactive' ? 0.95 : 0.7}
+        accessible={accessible}
         accessibilityRole={accessibilityRole || 'button'}
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
@@ -122,6 +125,7 @@ export function Card({
     <Animated.View
       style={[cardStyle, combinedAnimatedStyle, style]}
       testID={testID}
+      accessible={accessible}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}

@@ -104,12 +104,33 @@ const variantMap: Record<
   danger: 'destructive',
 };
 
-function Button({ className, variant, size, title, children, ...props }: ButtonProps) {
+function Button({
+  className,
+  variant,
+  size,
+  title,
+  children,
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityState,
+  ...props
+}: ButtonProps & {
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
+  accessibilityState?: {
+    disabled?: boolean;
+    busy?: boolean;
+    selected?: boolean;
+  };
+}) {
   // Map legacy variant names
   const mappedVariant = variant ? variantMap[variant as string] || variant : 'default';
 
   // Support both title prop (legacy) and children (new)
   const content = title || children;
+
+  // Build accessibility label from content if not provided
+  const label = accessibilityLabel || (typeof content === 'string' ? content : undefined);
 
   return (
     <TextClassContext.Provider
@@ -122,6 +143,13 @@ function Button({ className, variant, size, title, children, ...props }: ButtonP
           className,
         )}
         role="button"
+        accessibilityLabel={label}
+        accessibilityHint={accessibilityHint}
+        accessibilityState={{
+          disabled: props.disabled || false,
+          busy: accessibilityState?.busy || false,
+          selected: accessibilityState?.selected || false,
+        }}
         {...props}
       >
         {content}

@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { join } from 'path';
+const { existsSync, readFileSync, writeFileSync } = require('fs');
+const { join } = require('path');
 
 /**
  * Workaround for a broken publish of @react-native-community/datetimepicker where

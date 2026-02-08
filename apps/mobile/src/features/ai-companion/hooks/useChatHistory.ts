@@ -1,12 +1,18 @@
 /**
  * Chat History Hook
  * Manages persistent, encrypted chat conversations.
+ *
+ * SECURITY NOTE: Chat conversations and messages are ONLY stored locally
+ * in SQLite (mobile) or IndexedDB (web). They are NEVER synced to Supabase.
+ * This ensures maximum privacy for AI companion interactions.
+ * All message content is encrypted before storage using AES-256-CBC.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
+import { logger } from '../../../utils/logger';
 import type { Conversation, Message, ConversationType, ConversationStatus } from '../types';
 
 interface ConversationRow {
@@ -123,7 +129,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
             id TEXT PRIMARY KEY,
             conversation_id TEXT NOT NULL,
             role TEXT NOT NULL,
-            content TEXT NOT NULL,
+            encrypted_content TEXT NOT NULL,
             metadata TEXT,
             created_at TEXT NOT NULL,
             FOREIGN KEY (conversation_id) REFERENCES chat_conversations(id) ON DELETE CASCADE
@@ -131,7 +137,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
           CREATE INDEX IF NOT EXISTS idx_chat_messages_conversation ON chat_messages(conversation_id);
         `);
       } catch (err) {
-        console.error('Failed to initialize chat tables:', err);
+        logger.error('Failed to initialize chat tables', err);
       }
     };
 
@@ -154,7 +160,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       );
       setConversations(rows.map(rowToConversation));
     } catch (err) {
-      console.error('Failed to load conversations:', err);
+      logger.error('Failed to load conversations', err);
     } finally {
       setIsLoading(false);
     }
@@ -219,7 +225,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
 
         return conversation;
       } catch (err) {
-        console.error('Failed to create conversation:', err);
+        logger.error('Failed to create conversation', err);
         throw err;
       }
     },
@@ -242,7 +248,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         if (!row) return null;
         return rowToConversation(row);
       } catch (err) {
-        console.error('Failed to get conversation:', err);
+        logger.error('Failed to get conversation', err);
         return null;
       }
     },
@@ -265,7 +271,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         // Update local state
         setConversations(prev => prev.filter(c => c.id !== id));
       } catch (err) {
-        console.error('Failed to archive conversation:', err);
+        logger.error('Failed to archive conversation', err);
         throw err;
       }
     },
@@ -303,7 +309,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
 
       try {
         await db.runAsync(
-          `INSERT INTO chat_messages (id, conversation_id, role, content, metadata, created_at)
+          `INSERT INTO chat_messages (id, conversation_id, role, encrypted_content, metadata, created_at)
            VALUES (?, ?, ?, ?, ?, ?)`,
           [id, conversationId, role, encryptedContent, metadata ? JSON.stringify(metadata) : null, now]
         );
@@ -333,7 +339,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
 
         return message;
       } catch (err) {
-        console.error('Failed to add message:', err);
+        logger.error('Failed to add message', err);
         throw err;
       }
     },
@@ -364,17 +370,17 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         const messages: Message[] = [];
         for (const row of rows) {
           try {
-            const decryptedContent = await decryptContent(row.content);
+            const decryptedContent = await decryptContent(row.encrypted_content);
             messages.push(rowToMessage(row, decryptedContent));
           } catch (decryptErr) {
-            console.error('Failed to decrypt message:', decryptErr);
+            logger.error('Failed to decrypt message', decryptErr);
             // Skip corrupted messages
           }
         }
 
         return messages;
       } catch (err) {
-        console.error('Failed to get messages:', err);
+        logger.error('Failed to get messages', err);
         return [];
       }
     },
@@ -399,7 +405,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
           prev.map(c => (c.id === conversationId ? { ...c, title } : c))
         );
       } catch (err) {
-        console.error('Failed to update conversation title:', err);
+        logger.error('Failed to update conversation title', err);
         throw err;
       }
     },

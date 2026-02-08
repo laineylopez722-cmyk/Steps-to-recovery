@@ -9,6 +9,7 @@ import { useChatHistory } from './useChatHistory';
 import { getAIService, getRecoverySystemPrompt, type ChatMessage } from '../services/aiService';
 import { extractMemoriesFromMessage } from '../services/memoryExtractor';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
+import { logger } from '../../../utils/logger';
 import type { Message, Conversation, ConversationType, CrisisSignal } from '../types';
 
 export interface UseAIChatOptions {
@@ -415,7 +416,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           }
         } catch (memErr) {
           // Don't fail the chat if memory extraction fails
-          console.warn('Memory extraction failed:', memErr);
+          logger.warn('Memory extraction failed', memErr);
         }
       }
     } catch (err) {
@@ -519,7 +520,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
     } catch (err) {
       // Silently fail - welcome message is optional
-      console.warn('Welcome message failed:', err);
+logger.warn('Welcome message failed', err);
     } finally {
       setIsStreaming(false);
       setStreamingContent('');

@@ -181,7 +181,6 @@ export function Heading({ level, children, style: _style }: HeadingProps): React
 
   return (
     <Text style={headingStyles[level]} accessibilityRole="header">
-      accessibilityRole="header"
       {children}
     </Text>
   );

@@ -15,6 +15,7 @@
 
 import { memo, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { Card } from '../../design-system/components';
 import { useTheme } from '../../design-system/hooks/useTheme';
 import type { Achievement } from '../../types';
@@ -250,16 +251,55 @@ export const AchievementBadge = memo(function AchievementBadge({
    */
   onPress?: () => void;
 }): ReactElement | null {
+  const isUnlocked = achievement.status === 'unlocked';
+  const isLocked = achievement.status === 'locked';
+
   return (
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`items-center p-2 ${achievement.status !== 'unlocked' ? 'opacity-40' : ''}`}
-      accessibilityLabel={`Achievement icon: ${achievement.icon || 'unknown'}`}
+      className={`items-center p-2 ${isLocked ? 'opacity-40' : ''}`}
+      accessibilityLabel={`${achievement.title || 'Unnamed achievement'}${isUnlocked ? ', unlocked' : isLocked ? ', locked' : ', in progress'}`}
       accessibilityRole={onPress ? 'button' : 'image'}
-      accessibilityState={{ disabled: false }}
+      accessibilityState={{ disabled: isLocked || !onPress }}
       accessibilityHint={onPress ? 'Tap to view achievement details' : undefined}
-    />
+    >
+      {/* Achievement Icon Container */}
+      <View
+        className={`w-14 h-14 rounded-full items-center justify-center relative ${
+          isUnlocked
+            ? 'bg-secondary-100 dark:bg-secondary-900'
+            : 'bg-surface-100 dark:bg-surface-700'
+        }`}
+      >
+        <Text className="text-2xl" accessibilityElementsHidden>
+          {achievement.icon || '🏆'}
+        </Text>
+
+        {/* Unlocked Indicator */}
+        {isUnlocked && (
+          <View
+            className="absolute -top-1 -right-1 w-5 h-5 bg-success-500 rounded-full items-center justify-center"
+            accessibilityElementsHidden
+          >
+            <Feather name="check" size={12} color="white" />
+          </View>
+        )}
+      </View>
+
+      {/* Achievement Title (compact) */}
+      <Text
+        className={`text-xs mt-1 text-center max-w-[70px] ${
+          isUnlocked
+            ? 'text-surface-900 dark:text-surface-100 font-medium'
+            : 'text-surface-500'
+        }`}
+        numberOfLines={2}
+        ellipsizeMode="tail"
+      >
+        {achievement.title || 'Unnamed'}
+      </Text>
+    </TouchableOpacity>
   );
 });
 

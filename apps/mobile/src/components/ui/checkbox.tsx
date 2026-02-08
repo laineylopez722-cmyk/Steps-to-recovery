@@ -6,18 +6,25 @@ import { Platform } from 'react-native';
 
 const DEFAULT_HIT_SLOP = 24;
 
+interface CheckboxProps extends CheckboxPrimitive.RootProps {
+  /** Accessible label describing what the checkbox controls */
+  accessibilityLabel?: string;
+  /** Hint text explaining the checkbox action */
+  accessibilityHint?: string;
+  checkedClassName?: string;
+  indicatorClassName?: string;
+  iconClassName?: string;
+}
+
 function Checkbox({
   className,
   checkedClassName,
   indicatorClassName,
   iconClassName,
+  accessibilityLabel,
+  accessibilityHint,
   ...props
-}: CheckboxPrimitive.RootProps &
-  React.RefAttributes<CheckboxPrimitive.RootRef> & {
-    checkedClassName?: string;
-    indicatorClassName?: string;
-    iconClassName?: string;
-  }) {
+}: CheckboxProps & React.RefAttributes<CheckboxPrimitive.RootRef>) {
   return (
     <CheckboxPrimitive.Root
       className={cn(
@@ -31,6 +38,13 @@ function Checkbox({
         className,
       )}
       hitSlop={DEFAULT_HIT_SLOP}
+      accessibilityRole="checkbox"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      accessibilityState={{
+        checked: props.checked,
+        disabled: props.disabled,
+      }}
       {...props}
     >
       <CheckboxPrimitive.Indicator
@@ -41,6 +55,7 @@ function Checkbox({
           size={12}
           strokeWidth={Platform.OS === 'web' ? 2.5 : 3.5}
           className={cn('text-primary-foreground', iconClassName)}
+          accessibilityElementsHidden
         />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
@@ -48,3 +63,4 @@ function Checkbox({
 }
 
 export { Checkbox };
+export type { CheckboxProps };

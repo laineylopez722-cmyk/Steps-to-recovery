@@ -1,16 +1,28 @@
 /**
  * UpcomingMeetingWidget Component
  * Shows the next scheduled meeting on the home page
+ *
+ * Features:
+ * - Design system integration (GlassCard)
+ * - Loading skeleton state
+ * - Empty state CTA
+ * - Today meeting highlight
+ * - Share prep quick action
+ * - Accessibility optimized
  */
 
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
-import { LegacyCard as Card } from '../ui';
+import { GlassCard } from '../../design-system/components/GlassCard';
 import { useRegularMeetings } from '../../hooks/useRegularMeetings';
+import * as Haptics from 'expo-haptics';
 
 interface UpcomingMeetingWidgetProps {
-  className?: string;
+  /** Delay index for staggered entrance animation */
+  enteringDelay?: number;
 }
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -22,7 +34,7 @@ function formatTime(time: string): string {
   return `${hour12}:${String(minutes).padStart(2, '0')} ${period}`;
 }
 
-export function UpcomingMeetingWidget({ className = '' }: UpcomingMeetingWidgetProps) {
+export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidgetProps) {
   const router = useRouterCompat();
   const { nextMeeting, todayMeetings, meetings, isLoading, loadMeetings, getDaysUntil } =
     useRegularMeetings();
@@ -31,91 +43,161 @@ export function UpcomingMeetingWidget({ className = '' }: UpcomingMeetingWidgetP
     if (meetings.length === 0 && !isLoading) {
       loadMeetings();
     }
-  }, []);
+  }, [meetings.length, isLoading, loadMeetings]);
 
-  // Don't render if no meetings
-  if (meetings.length === 0) {
-    return null;
+  const handleViewAll = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push('/my-meetings');
+  }, [router]);
+
+  const handlePrepareShare = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push('/share-prep');
+  }, [router]);
+
+  const handleLogAttendance = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push('/meetings/new');
+  }, [router]);
+
+  const handleAddMeeting = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push('/my-meetings/add');
+  }, [router]);
+
+  const handleMeetingPress = useCallback((meetingId: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push(`/my-meetings/${meetingId}`);
+  }, [router]);
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+        <GlassCard gradient="card" style={styles.card}>
+          <View style={styles.skeleton}>
+            <View style={styles.skeletonHeader} />
+            <View style={styles.skeletonContent} />
+          </View>
+        </GlassCard>
+      </Animated.View>
+    );
   }
 
-  const handleViewAll = () => {
-    router.push('/my-meetings');
-  };
-
-  const handlePrepareShare = () => {
-    router.push('/share-prep');
-  };
+  // Empty state - no meetings
+  if (meetings.length === 0) {
+    return (
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+        <TouchableOpacity
+          onPress={handleAddMeeting}
+          accessibilityRole="button"
+          accessibilityLabel="No meetings scheduled. Tap to add your first meeting."
+          accessibilityHint="Opens add meeting screen"
+        >
+          <GlassCard gradient="card" style={[styles.card, styles.emptyCard]}>
+            <View style={styles.emptyContent}>
+              <View style={styles.emptyIconContainer}>
+                <Feather name="calendar" size={24} color="#3b82f6" />
+              </View>
+              <Text style={styles.emptyTitle}>No Meetings Scheduled</Text>
+              <Text style={styles.emptySubtitle}>
+                Add your home group to get reminders and track attendance
+              </Text>
+              <View style={styles.addButton}>
+                <Text style={styles.addButtonText}>Add Meeting →</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </TouchableOpacity>
+      </Animated.View>
+    );
+  }
 
   // Show today's meetings if any
   if (todayMeetings.length > 0) {
     const nextTodayMeeting = todayMeetings[0];
 
     return (
-      <Card
-        variant="default"
-        className={`bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 ${className}`}
-      >
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <Text className="text-lg mr-2">📅</Text>
-            <Text className="text-base font-semibold text-green-800 dark:text-green-200">
-              Meeting Today!
-            </Text>
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+        <GlassCard gradient="elevated" style={[styles.card, styles.todayCard]}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <View style={styles.todayIconContainer}>
+                <Feather name="calendar" size={20} color="#22c55e" />
+              </View>
+              <Text style={styles.todayHeaderTitle}>Meeting Today!</Text>
+            </View>
+            <TouchableOpacity
+              onPress={handleViewAll}
+              accessibilityRole="button"
+              accessibilityLabel="View all meetings"
+            >
+              <Text style={styles.viewAllText}>All Meetings →</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={handleViewAll}>
-            <Text className="text-sm text-green-600 dark:text-green-400">All Meetings →</Text>
-          </TouchableOpacity>
-        </View>
 
-        <View className="bg-white dark:bg-surface-800 rounded-lg p-3 mb-3">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
-              <View className="flex-row items-center gap-2">
-                <Text className="font-semibold text-surface-900 dark:text-surface-100">
+          {/* Today's Meeting */}
+          <TouchableOpacity
+            onPress={() => handleMeetingPress(nextTodayMeeting.id)}
+            style={styles.todayMeetingContainer}
+            accessibilityRole="button"
+            accessibilityLabel={`${nextTodayMeeting.name} today at ${formatTime(nextTodayMeeting.time)}${nextTodayMeeting.isHomeGroup ? ', Home Group' : ''}`}
+            accessibilityHint="Tap to view meeting details"
+          >
+            <View style={styles.todayMeetingContent}>
+              <View style={styles.todayMeetingHeader}>
+                <Text style={styles.todayMeetingName} numberOfLines={1}>
                   {nextTodayMeeting.name}
                 </Text>
                 {nextTodayMeeting.isHomeGroup && (
-                  <Text className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded">
-                    🏠 Home
-                  </Text>
+                  <View style={styles.todayHomeBadge}>
+                    <Feather name="home" size={10} color="#f59e0b" />
+                    <Text style={styles.todayHomeText}>Home</Text>
+                  </View>
                 )}
               </View>
-              <Text className="text-sm text-surface-500 mt-0.5">
+              <Text style={styles.todayMeetingMeta}>
                 {formatTime(nextTodayMeeting.time)}
                 {nextTodayMeeting.location ? ` • ${nextTodayMeeting.location}` : ''}
               </Text>
             </View>
-            <View className="bg-green-100 dark:bg-green-900/30 px-3 py-1.5 rounded-full">
-              <Text className="text-sm font-medium text-green-700 dark:text-green-300">Today</Text>
+            <View style={styles.todayBadge}>
+              <Text style={styles.todayBadgeText}>Today</Text>
             </View>
-          </View>
-        </View>
-
-        {/* More meetings today */}
-        {todayMeetings.length > 1 && (
-          <Text className="text-sm text-green-600 dark:text-green-400 mb-3">
-            + {todayMeetings.length - 1} more meeting{todayMeetings.length > 2 ? 's' : ''} today
-          </Text>
-        )}
-
-        {/* Quick Actions */}
-        <View className="flex-row gap-2">
-          <TouchableOpacity
-            onPress={handlePrepareShare}
-            className="flex-1 bg-green-600 dark:bg-green-700 py-2.5 rounded-lg"
-          >
-            <Text className="text-white font-medium text-center text-sm">✍️ Prepare to Share</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push('/meetings/new')}
-            className="flex-1 bg-white dark:bg-surface-700 border border-green-300 dark:border-green-700 py-2.5 rounded-lg"
-          >
-            <Text className="text-green-700 dark:text-green-300 font-medium text-center text-sm">
-              Log Attendance
+
+          {/* More meetings today */}
+          {todayMeetings.length > 1 && (
+            <Text style={styles.moreMeetingsText}>
+              + {todayMeetings.length - 1} more meeting{todayMeetings.length > 2 ? 's' : ''} today
             </Text>
-          </TouchableOpacity>
-        </View>
-      </Card>
+          )}
+
+          {/* Quick Actions */}
+          <View style={styles.actions}>
+            <TouchableOpacity
+              onPress={handlePrepareShare}
+              style={styles.shareButton}
+              accessibilityRole="button"
+              accessibilityLabel="Prepare to share"
+              accessibilityHint="Opens share preparation screen"
+            >
+              <Feather name="edit-3" size={16} color="#ffffff" style={styles.buttonIcon} />
+              <Text style={styles.shareButtonText}>Prepare to Share</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleLogAttendance}
+              style={styles.logButton}
+              accessibilityRole="button"
+              accessibilityLabel="Log attendance"
+              accessibilityHint="Opens attendance logging screen"
+            >
+              <Text style={styles.logButtonText}>Log Attendance</Text>
+            </TouchableOpacity>
+          </View>
+        </GlassCard>
+      </Animated.View>
     );
   }
 
@@ -124,50 +206,294 @@ export function UpcomingMeetingWidget({ className = '' }: UpcomingMeetingWidgetP
     const daysUntil = getDaysUntil(nextMeeting);
 
     return (
-      <Card variant="default" className={className}>
-        <View className="flex-row items-center justify-between mb-3">
-          <View className="flex-row items-center">
-            <Text className="text-lg mr-2">📅</Text>
-            <Text className="text-base font-semibold text-surface-900 dark:text-surface-100">
-              Next Meeting
-            </Text>
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+        <GlassCard gradient="card" style={styles.card}>
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <Feather name="calendar" size={20} color="#60a5fa" />
+              <Text style={styles.headerTitle}>Next Meeting</Text>
+            </View>
+            <TouchableOpacity
+              onPress={handleViewAll}
+              accessibilityRole="button"
+              accessibilityLabel="View all meetings"
+            >
+              <Text style={styles.viewAllText}>All Meetings →</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity onPress={handleViewAll}>
-            <Text className="text-sm text-primary-600 dark:text-primary-400">All Meetings →</Text>
-          </TouchableOpacity>
-        </View>
 
-        <TouchableOpacity
-          onPress={() => router.push(`/my-meetings/${nextMeeting.id}`)}
-          className="bg-surface-50 dark:bg-surface-800 rounded-lg p-3"
-          activeOpacity={0.7}
-        >
-          <View className="flex-row items-center justify-between">
-            <View className="flex-1">
-              <View className="flex-row items-center gap-2">
-                <Text className="font-semibold text-surface-900 dark:text-surface-100">
+          {/* Next Meeting */}
+          <TouchableOpacity
+            onPress={() => handleMeetingPress(nextMeeting.id)}
+            style={styles.nextMeetingContainer}
+            accessibilityRole="button"
+            accessibilityLabel={`${nextMeeting.name}, ${DAY_NAMES[nextMeeting.dayOfWeek]} at ${formatTime(nextMeeting.time)}, ${daysUntil === 1 ? 'tomorrow' : `in ${daysUntil} days`}`}
+            accessibilityHint="Tap to view meeting details"
+          >
+            <View style={styles.nextMeetingContent}>
+              <View style={styles.nextMeetingHeader}>
+                <Text style={styles.nextMeetingName} numberOfLines={1}>
                   {nextMeeting.name}
                 </Text>
                 {nextMeeting.isHomeGroup && (
-                  <Text className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-1.5 py-0.5 rounded">
-                    🏠
-                  </Text>
+                  <View style={styles.nextHomeBadge}>
+                    <Feather name="home" size={10} color="#f59e0b" />
+                  </View>
                 )}
               </View>
-              <Text className="text-sm text-surface-500 mt-0.5">
+              <Text style={styles.nextMeetingMeta}>
                 {DAY_NAMES[nextMeeting.dayOfWeek]} at {formatTime(nextMeeting.time)}
               </Text>
             </View>
-            <View className="bg-primary-100 dark:bg-primary-900/30 px-3 py-1.5 rounded-full">
-              <Text className="text-sm font-medium text-primary-700 dark:text-primary-300">
+            <View style={styles.daysUntilBadge}>
+              <Text style={styles.daysUntilText}>
                 {daysUntil === 1 ? 'Tomorrow' : `In ${daysUntil} days`}
               </Text>
             </View>
-          </View>
-        </TouchableOpacity>
-      </Card>
+          </TouchableOpacity>
+        </GlassCard>
+      </Animated.View>
     );
   }
 
   return null;
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    padding: 16,
+  },
+  todayCard: {
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+    borderWidth: 1,
+  },
+  emptyCard: {
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderWidth: 1,
+  },
+  skeleton: {
+    opacity: 0.5,
+  },
+  skeletonHeader: {
+    height: 20,
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    borderRadius: 4,
+    width: '40%',
+    marginBottom: 12,
+  },
+  skeletonContent: {
+    height: 60,
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    borderRadius: 8,
+  },
+  emptyContent: {
+    alignItems: 'center',
+    padding: 8,
+  },
+  emptyIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  addButton: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  addButtonText: {
+    color: '#60a5fa',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  todayHeaderTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#4ade80',
+  },
+  todayIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: '#60a5fa',
+  },
+  todayMeetingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 8,
+  },
+  todayMeetingContent: {
+    flex: 1,
+  },
+  todayMeetingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  todayMeetingName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+    flex: 1,
+  },
+  todayHomeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    gap: 4,
+  },
+  todayHomeText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#fbbf24',
+  },
+  todayMeetingMeta: {
+    fontSize: 14,
+    color: '#94a3b8',
+    marginTop: 2,
+  },
+  todayBadge: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginLeft: 8,
+  },
+  todayBadgeText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#4ade80',
+  },
+  moreMeetingsText: {
+    fontSize: 14,
+    color: '#22c55e',
+    marginBottom: 12,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  shareButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#22c55e',
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  shareButtonText: {
+    color: '#ffffff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  logButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.3)',
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  logButtonText: {
+    color: '#4ade80',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  nextMeetingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 12,
+  },
+  nextMeetingContent: {
+    flex: 1,
+  },
+  nextMeetingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  nextMeetingName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+    flex: 1,
+  },
+  nextHomeBadge: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+  },
+  nextMeetingMeta: {
+    fontSize: 14,
+    color: '#94a3b8',
+    marginTop: 2,
+  },
+  daysUntilBadge: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginLeft: 8,
+  },
+  daysUntilText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#60a5fa',
+  },
+});

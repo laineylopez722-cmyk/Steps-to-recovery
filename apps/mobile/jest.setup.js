@@ -4,7 +4,6 @@
  */
 
 import { cleanup } from '@testing-library/react-native';
-import { createElement } from 'react';
 
 // Set up Supabase environment variables BEFORE any module imports
 // This prevents supabase.ts from throwing during initialization
@@ -40,7 +39,7 @@ afterEach(() => {
 
 // Mock react-native-css-interop (NativeWind)
 jest.mock('react-native-css-interop/jsx-runtime', () => ({
-  jsx: jest.fn((type, props) => createElement(type, props)),
+  jsx: jest.fn((type, props) => require('react').createElement(type, props)),
   jsxs: jest.fn((type, props) => require('react').createElement(type, props)),
   Fragment: require('react').Fragment,
 }));

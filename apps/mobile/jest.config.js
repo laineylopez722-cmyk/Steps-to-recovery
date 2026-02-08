@@ -4,10 +4,12 @@
  * @see https://docs.expo.dev/develop/unit-testing/
  */
 
-import { resolve } from 'path';
-import expoPreset, { transform as _transform, setupFilesAfterEnv as _setupFilesAfterEnv, moduleNameMapper as _moduleNameMapper } from 'jest-expo/jest-preset';
+const { resolve } = require('path');
+const expoPreset = require('jest-expo/jest-preset');
 
-export default {
+const { transform: _transform, setupFilesAfterEnv: _setupFilesAfterEnv, moduleNameMapper: _moduleNameMapper } = expoPreset;
+
+module.exports = {
   ...expoPreset,
   // Explicitly pin rootDir so Jest resolves Babel config and module paths from apps/mobile
   rootDir: __dirname,

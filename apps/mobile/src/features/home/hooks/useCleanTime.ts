@@ -84,10 +84,11 @@ export function useCleanTime(userId: string): {
   recentMilestones: Milestone[];
   isLoading: boolean;
   error: Error | null;
+  refetch: () => Promise<unknown>;
 } {
   const { db, isReady } = useDatabase();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['clean_time', userId],
     queryFn: async () => {
       if (!db || !isReady) {
@@ -155,6 +156,7 @@ export function useCleanTime(userId: string): {
     recentMilestones: data?.recentMilestones || [],
     isLoading,
     error: error as Error | null,
+    refetch,
   };
 }
 

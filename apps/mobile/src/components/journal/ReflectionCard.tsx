@@ -1,75 +1,150 @@
 /**
  * Reflection Card Component
  * Shows past journal entries for reflection ("Look Back")
+ *
+ * Features:
+ * - Design system integration (GlassCard)
+ * - Loading skeleton state
+ * - Empty state with CTA
+ * - Proper decryption error handling
+ * - Accessibility optimized
+ * - Haptic feedback on interaction
  */
 
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
-import { LegacyCard as Card } from '../ui';
+import { GlassCard } from '../../design-system/components/GlassCard';
 import { useJournalStore } from '@recovery/shared';
 import { decryptContent } from '../../utils/encryption';
 import type { JournalEntry } from '@recovery/shared';
+import * as Haptics from 'expo-haptics';
+import { logger } from '../../utils/logger';
 
 interface ReflectionCardProps {
-  daysAgo?: number; // Default 30
-  className?: string;
+  /** Number of days ago to look back (default: 30) */
+  daysAgo?: number;
+  /** Delay index for staggered entrance animation */
+  enteringDelay?: number;
 }
 
-export function ReflectionCard({ daysAgo = 30, className = '' }: ReflectionCardProps) {
+export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCardProps) {
   const router = useRouterCompat();
   const { entries } = useJournalStore();
   const [pastEntry, setPastEntry] = useState<JournalEntry | null>(null);
   const [excerpt, setExcerpt] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const findPastEntry = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Calculate target date range (within 2 days of the target)
+      const targetDate = new Date();
+      targetDate.setDate(targetDate.getDate() - daysAgo);
+
+      const rangeStart = new Date(targetDate);
+      rangeStart.setDate(rangeStart.getDate() - 2);
+
+      const rangeEnd = new Date(targetDate);
+      rangeEnd.setDate(rangeEnd.getDate() + 2);
+
+      // Find entries in that range
+      const entriesInRange = entries.filter((entry) => {
+        const entryDate = new Date(entry.createdAt);
+        return entryDate >= rangeStart && entryDate <= rangeEnd;
+      });
+
+      if (entriesInRange.length > 0) {
+        // Pick a random entry from that time
+        const entry = entriesInRange[Math.floor(Math.random() * entriesInRange.length)];
+        setPastEntry(entry);
+
+        // Decrypt and get excerpt
+        try {
+          const decrypted = await decryptContent(entry.content);
+          // Get first 120 characters
+          const truncated = decrypted.length > 120 ? decrypted.substring(0, 120) + '...' : decrypted;
+          setExcerpt(truncated);
+        } catch {
+          setExcerpt('(Unable to decrypt content)');
+          setError('decrypt');
+        }
+      } else {
+        setPastEntry(null);
+        setExcerpt('');
+      }
+    } catch (err) {
+      logger.error('Failed to find past entry', err);
+      setError('load');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [entries, daysAgo]);
 
   useEffect(() => {
     findPastEntry();
-  }, [entries, daysAgo]);
+  }, [findPastEntry]);
 
-  const findPastEntry = async () => {
-    setIsLoading(true);
+  const handlePress = useCallback(() => {
+    if (!pastEntry) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push(`/journal/${pastEntry.id}`);
+  }, [pastEntry, router]);
 
-    // Calculate target date range (within 2 days of the target)
-    const targetDate = new Date();
-    targetDate.setDate(targetDate.getDate() - daysAgo);
+  const handleWriteEntry = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    router.push('/journal');
+  }, [router]);
 
-    const rangeStart = new Date(targetDate);
-    rangeStart.setDate(rangeStart.getDate() - 2);
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+        <GlassCard gradient="card" style={styles.card}>
+          <View style={styles.skeleton}>
+            <View style={styles.skeletonIcon} />
+            <View style={styles.skeletonContent}>
+              <View style={styles.skeletonLine} />
+              <View style={styles.skeletonLineShort} />
+            </View>
+          </View>
+        </GlassCard>
+      </Animated.View>
+    );
+  }
 
-    const rangeEnd = new Date(targetDate);
-    rangeEnd.setDate(rangeEnd.getDate() + 2);
-
-    // Find entries in that range
-    const entriesInRange = entries.filter((entry) => {
-      const entryDate = new Date(entry.createdAt);
-      return entryDate >= rangeStart && entryDate <= rangeEnd;
-    });
-
-    if (entriesInRange.length > 0) {
-      // Pick a random entry from that time
-      const entry = entriesInRange[Math.floor(Math.random() * entriesInRange.length)];
-      setPastEntry(entry);
-
-      // Decrypt and get excerpt
-      try {
-        const decrypted = await decryptContent(entry.content);
-        // Get first 100 characters
-        const truncated = decrypted.length > 100 ? decrypted.substring(0, 100) + '...' : decrypted;
-        setExcerpt(truncated);
-      } catch {
-        setExcerpt('(Encrypted content)');
-      }
-    } else {
-      setPastEntry(null);
-      setExcerpt('');
-    }
-
-    setIsLoading(false);
-  };
-
-  if (isLoading || !pastEntry) {
-    return null;
+  // Empty state - show CTA to write first entry
+  if (!pastEntry) {
+    return (
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+        <TouchableOpacity
+          onPress={handleWriteEntry}
+          accessibilityRole="button"
+          accessibilityLabel={`No journal entry from ${daysAgo} days ago. Tap to write your first entry.`}
+          accessibilityHint="Opens journal editor"
+        >
+          <GlassCard gradient="card" style={[styles.card, styles.emptyCard]}>
+            <View style={styles.emptyContent}>
+              <View style={styles.emptyIconContainer}>
+                <Feather name="book-open" size={24} color="#8b5cf6" />
+              </View>
+              <View style={styles.emptyTextContainer}>
+                <Text style={styles.emptyTitle}>Look Back • {daysAgo} days ago</Text>
+                <Text style={styles.emptySubtitle}>
+                  No journal entry found from this time
+                </Text>
+                <Text style={styles.emptyCta}>Write your first entry →</Text>
+              </View>
+            </View>
+          </GlassCard>
+        </TouchableOpacity>
+      </Animated.View>
+    );
   }
 
   const entryDate = new Date(pastEntry.createdAt);
@@ -78,34 +153,162 @@ export function ReflectionCard({ daysAgo = 30, className = '' }: ReflectionCardP
   );
 
   return (
-    <Card
-      variant="outlined"
-      className={`border-secondary-200 dark:border-secondary-800 ${className}`}
-    >
-      <View className="flex-row items-start gap-3">
-        <View className="w-10 h-10 rounded-full bg-secondary-100 dark:bg-secondary-900/30 items-center justify-center">
-          <Text className="text-lg">📖</Text>
-        </View>
+    <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={`Look back at journal entry from ${actualDaysAgo} days ago. ${error ? 'Content unavailable' : excerpt.substring(0, 50)}...`}
+        accessibilityHint="Opens the full journal entry for reflection"
+      >
+        <GlassCard gradient="card" style={styles.card}>
+          <View style={styles.container}>
+            <View style={styles.iconContainer}>
+              <Feather name="book-open" size={20} color="#8b5cf6" />
+            </View>
 
-        <View className="flex-1">
-          <Text className="text-sm text-secondary-600 dark:text-secondary-400 mb-1">
-            Look Back • {actualDaysAgo} days ago
-          </Text>
+            <View style={styles.content}>
+              <Text style={styles.header}>
+                Look Back • {actualDaysAgo} days ago
+              </Text>
 
-          <Text className="text-surface-700 dark:text-surface-300 text-sm mb-2" numberOfLines={2}>
-            "{excerpt}"
-          </Text>
+              {error ? (
+                <View style={styles.errorContainer}>
+                  <Feather name="lock" size={14} color="#64748b" />
+                  <Text style={styles.errorText}>Encrypted content</Text>
+                </View>
+              ) : (
+                <Text style={styles.excerpt} numberOfLines={2}>
+                  "{excerpt}"
+                </Text>
+              )}
 
-          <TouchableOpacity
-            onPress={() => router.push(`/journal/${pastEntry.id}`)}
-            className="self-start"
-          >
-            <Text className="text-secondary-600 dark:text-secondary-400 text-sm font-medium">
-              Read & Reflect →
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Card>
+              <View style={styles.ctaContainer}>
+                <Text style={styles.ctaText}>Read & Reflect</Text>
+                <Feather name="arrow-right" size={14} color="#8b5cf6" />
+              </View>
+            </View>
+          </View>
+        </GlassCard>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 16,
+    marginVertical: 8,
+    padding: 16,
+  },
+  emptyCard: {
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderWidth: 1,
+  },
+  skeleton: {
+    flexDirection: 'row',
+    opacity: 0.5,
+  },
+  skeletonIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    marginRight: 12,
+  },
+  skeletonContent: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  skeletonLine: {
+    height: 16,
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  skeletonLineShort: {
+    height: 16,
+    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    borderRadius: 4,
+    width: '60%',
+  },
+  emptyContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  emptyIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  emptyTextContainer: {
+    flex: 1,
+  },
+  emptyTitle: {
+    fontSize: 14,
+    color: '#a78bfa',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  emptyCta: {
+    fontSize: 14,
+    color: '#8b5cf6',
+    fontWeight: '600',
+  },
+  container: {
+    flexDirection: 'row',
+  },
+  iconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  content: {
+    flex: 1,
+  },
+  header: {
+    fontSize: 14,
+    color: '#a78bfa',
+    marginBottom: 8,
+  },
+  excerpt: {
+    fontSize: 14,
+    color: '#e2e8f0',
+    lineHeight: 20,
+    marginBottom: 8,
+    fontStyle: 'italic',
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  errorText: {
+    fontSize: 14,
+    color: '#64748b',
+  },
+  ctaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+  },
+  ctaText: {
+    fontSize: 14,
+    color: '#a78bfa',
+    fontWeight: '600',
+  },
+});

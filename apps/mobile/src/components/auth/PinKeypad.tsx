@@ -18,6 +18,10 @@ interface PinKeypadProps {
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
+// WCAG AAA compliant touch target: 48x48dp minimum
+const BUTTON_SIZE = 56; // 56dp for comfortable tapping
+const BUTTON_RADIUS = BUTTON_SIZE / 2;
+
 export const PinKeypadComponent = memo(function PinKeypadComponent({
   onDigitPress,
   onBackspacePress,
@@ -31,17 +35,27 @@ export const PinKeypadComponent = memo(function PinKeypadComponent({
   ];
 
   return (
-    <View style={{ width: '100%', maxWidth: 200 } as ViewStyle}>
+    <View style={{ width: '100%', maxWidth: 280 } as ViewStyle}>
       {rows.map((row, rowIndex) => (
         <View
           key={rowIndex}
           style={
-            { flexDirection: 'row', justifyContent: 'center', gap: 6, marginBottom: 6 } as ViewStyle
+            {
+              flexDirection: 'row',
+              justifyContent: 'center',
+              gap: 12,
+              marginBottom: 12,
+            } as ViewStyle
           }
         >
           {row.map((item, i) => {
             if (item === '')
-              return <View key={`spacer-${i}`} style={{ width: 20, height: 20 } as ViewStyle} />;
+              return (
+                <View
+                  key={`spacer-${i}`}
+                  style={{ width: BUTTON_SIZE, height: BUTTON_SIZE } as ViewStyle}
+                />
+              );
 
             const isBackspace = item === 'backspace';
             const digit = typeof item === 'number' ? item.toString() : item;
@@ -60,15 +74,20 @@ export const PinKeypadComponent = memo(function PinKeypadComponent({
                 }}
                 style={
                   {
-                    width: 20,
-                    height: 20,
+                    width: BUTTON_SIZE,
+                    height: BUTTON_SIZE,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRadius: 10,
+                    borderRadius: BUTTON_RADIUS,
+                    backgroundColor: disabled ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
                   } as ViewStyle
                 }
                 accessibilityRole="button"
                 accessibilityLabel={isBackspace ? 'Delete recent digit' : `Enter ${digit}`}
+                accessibilityHint={isBackspace ? 'Removes the last entered digit' : `Adds ${digit} to your PIN`}
+                accessibilityState={{ disabled: disabled === true }}
+                // Additional hit slop for motor accessibility
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
                 {isBackspace ? (
                   <Feather name="delete" size={24} color="#94a3b8" />
@@ -77,12 +96,10 @@ export const PinKeypadComponent = memo(function PinKeypadComponent({
                     style={
                       {
                         fontSize: 24,
-                        color: 'white',
+                        color: disabled ? '#64748b' : 'white',
                         fontWeight: '500' as RNTextStyle['fontWeight'],
                       } as RNTextStyle
                     }
-                    accessibilityLabel={`Enter ${digit}`}
-                    accessibilityRole="button"
                   >
                     {digit}
                   </Text>

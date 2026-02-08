@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
+import { logger } from '../../../utils/logger';
 import type {
   StepWorkEntry,
   StepWorkEntryType,
@@ -84,7 +85,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
           CREATE INDEX IF NOT EXISTS idx_step_work_step ON step_work_entries(step_number);
         `);
       } catch (err) {
-        console.error('Failed to init step work table:', err);
+        logger.error('Failed to init step work table', err);
       }
     };
 
@@ -122,7 +123,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
       setResentments(entries);
     } catch (err) {
-      console.error('Failed to load resentments:', err);
+      logger.error('Failed to load resentments', err);
       setError('Failed to load resentments');
     }
   }, [db, isReady, userId]);
@@ -150,7 +151,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
       setAmends(entries);
     } catch (err) {
-      console.error('Failed to load amends:', err);
+      logger.error('Failed to load amends', err);
       setError('Failed to load amends');
     }
   }, [db, isReady, userId]);
@@ -179,7 +180,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
           [id, userId, stepNumber, type, encrypted, status, now, now]
         );
       } catch (err) {
-        console.error('Failed to save step work entry:', err);
+        logger.error('Failed to save step work entry', err);
         setError('Failed to save entry');
         throw err;
       } finally {
@@ -199,7 +200,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
           userId,
         ]);
       } catch (err) {
-        console.error('Failed to delete entry:', err);
+        logger.error('Failed to delete entry', err);
         setError('Failed to delete entry');
       }
     },
@@ -384,7 +385,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
         return entries;
       } catch (err) {
-        console.error('Failed to get step entries:', err);
+        logger.error('Failed to get step entries', err);
         return [];
       }
     },

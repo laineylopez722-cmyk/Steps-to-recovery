@@ -2,22 +2,24 @@
  * Home Screen
  *
  * Serene Dark redesign: bold, premium, and accessible.
+ * Enhanced with pull-to-refresh, smooth scroll animations, and error handling.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
   View,
   Text,
   Pressable,
+  RefreshControl,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
@@ -174,10 +176,53 @@ function ShortcutCard({
   );
 }
 
+// Shimmer loading placeholder
+function HomeScreenSkeleton() {
+  return (
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safe} edges={['top']}>
+        <View style={styles.loadingContainer}>
+          {/* Header skeleton */}
+          <View style={styles.skeletonHeader}>
+            <View>
+              <View style={[styles.skeletonLine, { width: 120, marginBottom: 8 }]} />
+              <View style={[styles.skeletonLine, { width: 200, height: 32 }]} />
+              <View style={[styles.skeletonLine, { width: 180, marginTop: 8 }]} />
+            </View>
+            <View style={styles.skeletonAvatar} />
+          </View>
+
+          {/* Hero skeleton */}
+          <View style={styles.skeletonHero}>
+            <View style={[styles.skeletonLine, { width: 100, alignSelf: 'center' }]} />
+            <View style={styles.skeletonRing} />
+            <View style={styles.skeletonStats}>
+              <View style={styles.skeletonStat} />
+              <View style={styles.skeletonStat} />
+              <View style={styles.skeletonStat} />
+            </View>
+          </View>
+
+          {/* Section skeletons */}
+          <View style={[styles.skeletonLine, { width: 150, marginTop: 24 }]} />
+          <View style={styles.skeletonPills}>
+            <View style={styles.skeletonPill} />
+            <View style={styles.skeletonPill} />
+            <View style={styles.skeletonPill} />
+            <View style={styles.skeletonPill} />
+          </View>
+        </View>
+      </SafeAreaView>
+    </View>
+  );
+}
+
 export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const { days, hours, minutes, isLoading: loadingDays } = useCleanTime(userId);
-  const { morning, evening, isLoading: loadingCheckins } = useTodayCheckIns(userId);
+  const { days, hours, minutes, isLoading: loadingDays, error: daysError, refetch: refetchDays } = useCleanTime(userId);
+  const { morning, evening, isLoading: loadingCheckins, error: checkinsError, refetch: refetchCheckins } = useTodayCheckIns(userId);
+  
+  const [refreshing, setRefreshing] = useState(false);
 
   const greeting = useMemo(() => getGreeting(), []);
   const date = useMemo(() => formatDate(), []);
@@ -186,6 +231,17 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const hapticLight = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
   };
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    
+    try {
+      await Promise.all([refetchDays?.(), refetchCheckins?.()]);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchDays, refetchCheckins]);
 
   const handleMorning = useCallback(() => {
     hapticLight();
@@ -234,17 +290,12 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     { label: 'Close day strong', icon: 'moon' as const, onPress: handleEvening },
   ];
 
+  // Show skeleton while loading
   if (loadingDays || loadingCheckins) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.loading}>
-          <Animated.View entering={MotionTransitions.fade()}>
-            <Text style={styles.loadingText}>...</Text>
-          </Animated.View>
-        </View>
-      </View>
-    );
+    return <HomeScreenSkeleton />;
   }
+
+  const hasError = daysError || checkinsError;
 
   return (
     <View style={styles.container}>
@@ -257,6 +308,15 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           style={styles.scroll}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor={ds.semantic.intent.primary.solid}
+              colors={[ds.semantic.intent.primary.solid]}
+              progressBackgroundColor="rgba(20, 20, 22, 0.9)"
+            />
+          }
         >
           <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
             <View>
@@ -275,6 +335,13 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </Pressable>
           </Animated.View>
 
+          {hasError && (
+            <Animated.View entering={FadeIn} style={styles.errorBanner}>
+              <Feather name="alert-circle" size={18} color="#ef4444" />
+              <Text style={styles.errorText}>Unable to load some data. Pull to retry.</Text>
+            </Animated.View>
+          )}
+
           <PremiumProgressHero
             days={days}
             hours={hours}
@@ -289,11 +356,16 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             </View>
 
             <View style={styles.pillsRow}>
-              {intentionPills.map((pill) => (
-                <Action.Root key={pill.label} onPress={pill.onPress} contentStyle={styles.intentionPill}>
-                  <Feather name={pill.icon} size={14} color={ds.semantic.intent.primary.solid} />
-                  <Text style={styles.intentionPillText}>{pill.label}</Text>
-                </Action.Root>
+              {intentionPills.map((pill, index) => (
+                <Animated.View 
+                  key={pill.label}
+                  entering={FadeInUp.delay(300 + index * 50)}
+                >
+                  <Action.Root onPress={pill.onPress} contentStyle={styles.intentionPill}>
+                    <Feather name={pill.icon} size={14} color={ds.semantic.intent.primary.solid} />
+                    <Text style={styles.intentionPillText}>{pill.label}</Text>
+                  </Action.Root>
+                </Animated.View>
               ))}
             </View>
           </Animated.View>
@@ -365,15 +437,82 @@ const styles = StyleSheet.create({
   content: {
     paddingHorizontal: ds.semantic.layout.screenPadding,
   },
-  loading: {
+
+  // Loading skeleton styles
+  loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: ds.semantic.layout.screenPadding,
+    paddingTop: ds.space[6],
   },
-  loadingText: {
-    fontSize: 32,
-    color: ds.semantic.text.muted,
-    letterSpacing: 4,
+  skeletonHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingBottom: ds.space[4],
+  },
+  skeletonLine: {
+    height: 16,
+    backgroundColor: 'rgba(100, 116, 139, 0.2)',
+    borderRadius: 8,
+  },
+  skeletonAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(100, 116, 139, 0.2)',
+  },
+  skeletonHero: {
+    backgroundColor: 'rgba(100, 116, 139, 0.1)',
+    borderRadius: ds.radius.xl,
+    padding: ds.space[5],
+    marginTop: ds.space[4],
+  },
+  skeletonRing: {
+    width: 214,
+    height: 214,
+    borderRadius: 107,
+    backgroundColor: 'rgba(100, 116, 139, 0.15)',
+    alignSelf: 'center',
+    marginVertical: ds.space[4],
+  },
+  skeletonStats: {
+    flexDirection: 'row',
+    gap: ds.space[2],
+  },
+  skeletonStat: {
+    flex: 1,
+    height: 50,
+    backgroundColor: 'rgba(100, 116, 139, 0.15)',
+    borderRadius: ds.radius.lg,
+  },
+  skeletonPills: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: ds.space[2],
+    marginTop: ds.space[3],
+  },
+  skeletonPill: {
+    width: 120,
+    height: 36,
+    backgroundColor: 'rgba(100, 116, 139, 0.15)',
+    borderRadius: ds.radius.full,
+  },
+
+  // Error banner
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: ds.radius.lg,
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[3],
+    marginBottom: ds.space[4],
+    gap: ds.space[2],
+  },
+  errorText: {
+    ...ds.typography.caption,
+    color: '#f87171',
+    flex: 1,
   },
 
   bgLayerTop: {

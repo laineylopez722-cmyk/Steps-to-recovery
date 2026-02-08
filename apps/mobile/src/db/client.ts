@@ -7,6 +7,7 @@
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
 import * as schema from './schema';
+import { logger } from '../utils/logger';
 
 // Database name
 const DATABASE_NAME = 'recovery.db';
@@ -142,12 +143,12 @@ export async function runMigrations() {
       FOREIGN KEY (user_id) REFERENCES users(id)
     );
 
-    -- AI Companion: Chat Messages
+    -- AI Companion: Chat Messages (SQLite-only, never synced to Supabase)
     CREATE TABLE IF NOT EXISTS chat_messages (
       id TEXT PRIMARY KEY,
       conversation_id TEXT NOT NULL,
       role TEXT NOT NULL,
-      content TEXT NOT NULL,
+      encrypted_content TEXT NOT NULL,
       is_encrypted INTEGER DEFAULT 1,
       metadata TEXT,
       created_at TEXT NOT NULL,
@@ -176,7 +177,7 @@ export async function runMigrations() {
     CREATE INDEX IF NOT EXISTS idx_step_work_user ON step_work_entries(user_id);
   `);
 
-  console.log('[DB] Migrations complete');
+  logger.info('Database migrations complete');
 }
 
 // ============================================================================

@@ -23,6 +23,10 @@
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
     "paths": {
       "@/*": ["./src/*"],
+      "@/lib/utils": ["./src/lib/utils.ts"],
+      "@/components/ui/text": ["./src/components/ui/text.tsx"],
+      "@/components/ui/Icon": ["./src/components/ui/Icon.tsx"],
+      "@/components/ui/*": ["./src/components/ui/*"],
       "@/components/*": ["./src/components/*"],
       "@/contexts/*": ["./src/contexts/*"],
       "@/features/*": ["./src/features/*"],

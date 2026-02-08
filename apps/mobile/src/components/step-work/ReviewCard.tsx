@@ -1,11 +1,21 @@
 /**
  * Review Card
  * Display card for 10th step nightly reviews
+ *
+ * Features:
+ * - Design system integration (GlassCard)
+ * - Visual indicators for each question type
+ * - Today/Yesterday highlighting
+ * - Progress dots for quick visual scan
+ * - Full accessibility support
  */
 
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { LegacyCard as Card } from '../ui';
+import React, { useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { GlassCard } from '../../design-system/components/GlassCard';
+import * as Haptics from 'expo-haptics';
 
 interface ReviewCardProps {
   date: Date;
@@ -17,7 +27,18 @@ interface ReviewCardProps {
   hasBetter?: boolean;
   hasGratitude?: boolean;
   onPress?: () => void;
+  enteringDelay?: number;
 }
+
+const REVIEW_ITEMS = [
+  { key: 'resentful', color: '#ef4444', label: 'Resentful' },
+  { key: 'selfish', color: '#f59e0b', label: 'Selfish' },
+  { key: 'dishonest', color: '#f97316', label: 'Dishonest' },
+  { key: 'afraid', color: '#a855f7', label: 'Afraid' },
+  { key: 'apology', color: '#3b82f6', label: 'Apology' },
+  { key: 'better', color: '#6366f1', label: 'Better' },
+  { key: 'gratitude', color: '#22c55e', label: 'Gratitude' },
+] as const;
 
 export function ReviewCard({
   date,
@@ -29,19 +50,23 @@ export function ReviewCard({
   hasBetter,
   hasGratitude,
   onPress,
+  enteringDelay = 0,
 }: ReviewCardProps) {
-  const answeredCount = [
-    hasResentful,
-    hasSelfish,
-    hasDishonest,
-    hasAfraid,
-    hasApology,
-    hasBetter,
-    hasGratitude,
-  ].filter(Boolean).length;
+  const answeredStatuses = {
+    resentful: hasResentful,
+    selfish: hasSelfish,
+    dishonest: hasDishonest,
+    afraid: hasAfraid,
+    apology: hasApology,
+    better: hasBetter,
+    gratitude: hasGratitude,
+  };
+
+  const answeredCount = Object.values(answeredStatuses).filter(Boolean).length;
+  const totalQuestions = 7;
 
   const isToday = date.toDateString() === new Date().toDateString();
-  const isYesterday = date.toDateString() === new Date(Date.now() - 86400000).toDateString();
+  const isYesterday = date.toDateString() === new Date(Date.now() - 86400000).getTime().toString();
 
   const getDateLabel = () => {
     if (isToday) return 'Today';
@@ -53,66 +78,134 @@ export function ReviewCard({
     });
   };
 
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      accessibilityRole="button"
-      accessibilityLabel={`Nightly review for ${getDateLabel()}, ${answeredCount} of 7 questions answered`}
-      accessibilityHint="Opens review details"
-    >
-      <Card
-        variant="default"
-        className={`mb-3 ${isToday ? 'bg-green-50 dark:bg-green-900/20' : ''}`}
-      >
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center gap-3">
-            <View
-              className={`w-10 h-10 rounded-full ${
-                isToday ? 'bg-green-500' : 'bg-surface-200 dark:bg-surface-700'
-              } items-center justify-center`}
-            >
-              {isToday ? (
-                <Text className="text-white">✓</Text>
-              ) : (
-                <Text className="text-surface-500 text-sm">{date.getDate()}</Text>
-              )}
-            </View>
-            <View>
-              <Text className="text-base font-medium text-surface-900 dark:text-surface-100">
-                {getDateLabel()}
-              </Text>
-              <Text className="text-sm text-surface-500">{answeredCount}/7 questions answered</Text>
-            </View>
-          </View>
-          <Text className="text-surface-400">→</Text>
-        </View>
+  const handlePress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    onPress?.();
+  }, [onPress]);
 
-        {/* Quick indicators */}
-        <View className="flex-row gap-1 mt-3">
-          <View
-            className={`w-2 h-2 rounded-full ${hasResentful ? 'bg-red-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-          <View
-            className={`w-2 h-2 rounded-full ${hasSelfish ? 'bg-amber-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-          <View
-            className={`w-2 h-2 rounded-full ${hasDishonest ? 'bg-orange-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-          <View
-            className={`w-2 h-2 rounded-full ${hasAfraid ? 'bg-purple-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-          <View
-            className={`w-2 h-2 rounded-full ${hasApology ? 'bg-blue-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-          <View
-            className={`w-2 h-2 rounded-full ${hasBetter ? 'bg-indigo-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-          <View
-            className={`w-2 h-2 rounded-full ${hasGratitude ? 'bg-green-400' : 'bg-surface-200 dark:bg-surface-700'}`}
-          />
-        </View>
-      </Card>
-    </TouchableOpacity>
+  const accessibilityLabel = `Nightly review for ${getDateLabel()}, ${answeredCount} of ${totalQuestions} questions answered`;
+
+  return (
+    <Animated.View entering={FadeIn.delay(enteringDelay * 30)}>
+      <TouchableOpacity
+        onPress={handlePress}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint="Opens review details"
+      >
+        <GlassCard
+          gradient={isToday ? 'elevated' : 'card'}
+          style={[styles.card, isToday && styles.todayCard]}
+        >
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <View
+                style={[
+                  styles.dateCircle,
+                  isToday ? styles.dateCircleToday : styles.dateCircleDefault,
+                ]}
+              >
+                {isToday ? (
+                  <Feather name="check" size={18} color="#ffffff" />
+                ) : (
+                  <Text style={styles.dateNumber}>{date.getDate()}</Text>
+                )}
+              </View>
+              <View>
+                <Text style={[styles.dateLabel, isToday && styles.dateLabelToday]}>
+                  {getDateLabel()}
+                </Text>
+                <Text style={styles.answeredText}>
+                  {answeredCount}/{totalQuestions} questions
+                </Text>
+              </View>
+            </View>
+            <Feather name="chevron-right" size={20} color="#64748b" />
+          </View>
+
+          {/* Progress dots */}
+          <View style={styles.dotsContainer}>
+            {REVIEW_ITEMS.map((item, index) => {
+              const isAnswered = answeredStatuses[item.key as keyof typeof answeredStatuses];
+              return (
+                <View
+                  key={item.key}
+                  style={[
+                    styles.dot,
+                    { backgroundColor: isAnswered ? item.color : 'rgba(51, 65, 85, 0.5)' },
+                  ]}
+                  accessibilityLabel={`${item.label}: ${isAnswered ? 'answered' : 'not answered'}`}
+                />
+              );
+            })}
+          </View>
+        </GlassCard>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 16,
+    marginVertical: 6,
+    padding: 14,
+  },
+  todayCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: '#22c55e',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dateCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  dateCircleDefault: {
+    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+  },
+  dateCircleToday: {
+    backgroundColor: '#22c55e',
+  },
+  dateNumber: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#94a3b8',
+  },
+  dateLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  dateLabelToday: {
+    color: '#4ade80',
+  },
+  answeredText: {
+    fontSize: 14,
+    color: '#64748b',
+    marginTop: 2,
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    gap: 6,
+    marginTop: 14,
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    flex: 1,
+  },
+});

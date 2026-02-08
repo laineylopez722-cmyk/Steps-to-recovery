@@ -1,14 +1,18 @@
 /**
  * Memory Store Hook
- * 
+ *
  * Manages the AI companion's memory of the user.
  * Stores extracted memories from journal entries, check-ins, and chats.
  * Provides query functions for the AI to retrieve relevant context.
+ *
+ * SECURITY: All memory content and context are encrypted before storage.
  */
 
 import { useState, useCallback, useEffect } from 'react';
 import { useDatabase } from '../contexts/DatabaseContext';
 import type { Memory, MemoryType } from '../features/journal/utils/memoryExtraction';
+import { encryptContent, decryptContent } from '../utils/encryption';
+import { logger } from '../utils/logger';
 
 type MemorySource = Memory['source'];
 
@@ -16,8 +20,8 @@ interface MemoryRow {
   id: string;
   user_id: string;
   type: string;
-  content: string;
-  context: string;
+  encrypted_content: string;
+  encrypted_context: string | null;
   confidence: number;
   source: string;
   source_id: string;
@@ -109,8 +113,8 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
             id TEXT PRIMARY KEY,
             user_id TEXT NOT NULL,
             type TEXT NOT NULL,
-            content TEXT NOT NULL,
-            context TEXT,
+            encrypted_content TEXT NOT NULL,
+            encrypted_context TEXT,
             confidence REAL DEFAULT 0.5,
             source TEXT DEFAULT 'journal',
             source_id TEXT,
@@ -123,7 +127,9 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
           CREATE INDEX IF NOT EXISTS idx_memories_key ON memories(key);
         `);
       } catch (err) {
-        console.error('Failed to init memory table:', err);
+        logger.error('Failed to init memory table', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
       }
     };
     
@@ -144,14 +150,17 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
           );
           
           if (existing) {
-            // Update existing memory
+            // Update existing memory - encrypt before storing
+            const encryptedContent = await encryptContent(memory.content);
+            const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
+
             await db.runAsync(
-              `UPDATE memories SET 
-                content = ?, context = ?, confidence = ?, updated_at = ?
+              `UPDATE memories SET
+                encrypted_content = ?, encrypted_context = ?, confidence = ?, updated_at = ?
               WHERE id = ?`,
               [
-                memory.content,
-                memory.context || null,
+                encryptedContent,
+                encryptedContext,
                 memory.confidence,
                 new Date().toISOString(),
                 existing.id,
@@ -160,18 +169,21 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
             continue;
           }
         }
-        
-        // Insert new memory
+
+        // Insert new memory - encrypt before storing
+        const encryptedContent = await encryptContent(memory.content);
+        const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
+
         await db.runAsync(
-          `INSERT INTO memories 
-            (id, user_id, type, content, context, confidence, source, source_id, key, created_at, updated_at)
+          `INSERT INTO memories
+            (id, user_id, type, encrypted_content, encrypted_context, confidence, source, source_id, key, created_at, updated_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             memory.id,
             userId,
             memory.type,
-            memory.content,
-            memory.context || null,
+            encryptedContent,
+            encryptedContext,
             memory.confidence,
             memory.source,
             memory.sourceId || null,
@@ -182,7 +194,9 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         );
       }
     } catch (err) {
-      console.error('Failed to add memories:', err);
+      logger.error('Failed to add memories', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
     } finally {
       setIsLoading(false);
     }
@@ -196,9 +210,11 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         'SELECT * FROM memories WHERE user_id = ? ORDER BY created_at DESC',
         [userId]
       );
-      return rows.map(rowToMemory);
+      return Promise.all(rows.map(rowToMemory));
     } catch (err) {
-      console.error('Failed to get memories:', err);
+      logger.error('Failed to get memories', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
       return [];
     }
   }, [db, isReady, userId]);
@@ -211,9 +227,11 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         'SELECT * FROM memories WHERE user_id = ? AND type = ? ORDER BY created_at DESC',
         [userId, type]
       );
-      return rows.map(rowToMemory);
+      return Promise.all(rows.map(rowToMemory));
     } catch (err) {
-      console.error('Failed to get memories by type:', err);
+      logger.error('Failed to get memories by type', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
       return [];
     }
   }, [db, isReady, userId]);
@@ -229,9 +247,11 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         'SELECT * FROM memories WHERE user_id = ? AND created_at > ? ORDER BY created_at DESC',
         [userId, cutoff.toISOString()]
       );
-      return rows.map(rowToMemory);
+      return Promise.all(rows.map(rowToMemory));
     } catch (err) {
-      console.error('Failed to get recent memories:', err);
+      logger.error('Failed to get recent memories', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
       return [];
     }
   }, [db, isReady, userId]);
@@ -240,16 +260,27 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
     if (!db || !isReady || !query.trim()) return [];
 
     try {
+      // NOTE: Search on encrypted columns won't work - we need to decrypt all and filter
+      // For MVP, we'll fetch all memories and filter in memory
+      // TODO: Future optimization - use FTS (Full-Text Search) with encrypted index
       const rows = await db.getAllAsync<MemoryRow>(
-        `SELECT * FROM memories
-        WHERE user_id = ? AND (content LIKE ? OR context LIKE ?)
-        ORDER BY confidence DESC, created_at DESC
-        LIMIT 20`,
-        [userId, `%${query}%`, `%${query}%`]
+        'SELECT * FROM memories WHERE user_id = ? ORDER BY confidence DESC, created_at DESC',
+        [userId]
       );
-      return rows.map(rowToMemory);
+
+      const memories = await Promise.all(rows.map(rowToMemory));
+
+      // Filter decrypted memories by query
+      const lowerQuery = query.toLowerCase();
+      return memories.filter(
+        (m) =>
+          m.content.toLowerCase().includes(lowerQuery) ||
+          (m.context && m.context.toLowerCase().includes(lowerQuery))
+      ).slice(0, 20);
     } catch (err) {
-      console.error('Failed to search memories:', err);
+      logger.error('Failed to search memories', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
       return [];
     }
   }, [db, isReady, userId]);
@@ -339,7 +370,9 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
       
       return summary;
     } catch (err) {
-      console.error('Failed to get memory summary:', err);
+      logger.error('Failed to get memory summary', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
       return emptyMemorySummary();
     }
   }, [db, isReady, getAllMemories]);
@@ -382,34 +415,42 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
   
   const updateMemory = useCallback(async (id: string, updates: Partial<Memory>) => {
     if (!db || !isReady) return;
-    
+
     try {
       const fields: string[] = [];
       const values: any[] = [];
-      
+
+      // Encrypt content if updated
       if (updates.content !== undefined) {
-        fields.push('content = ?');
-        values.push(updates.content);
+        fields.push('encrypted_content = ?');
+        const encryptedContent = await encryptContent(updates.content);
+        values.push(encryptedContent);
       }
+
+      // Encrypt context if updated
       if (updates.context !== undefined) {
-        fields.push('context = ?');
-        values.push(updates.context);
+        fields.push('encrypted_context = ?');
+        const encryptedContext = updates.context ? await encryptContent(updates.context) : null;
+        values.push(encryptedContext);
       }
+
       if (updates.confidence !== undefined) {
         fields.push('confidence = ?');
         values.push(updates.confidence);
       }
-      
+
       fields.push('updated_at = ?');
       values.push(new Date().toISOString());
       values.push(id);
-      
+
       await db.runAsync(
         `UPDATE memories SET ${fields.join(', ')} WHERE id = ?`,
         values
       );
     } catch (err) {
-      console.error('Failed to update memory:', err);
+      logger.error('Failed to update memory', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
     }
   }, [db, isReady]);
   
@@ -419,7 +460,9 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
     try {
       await db.runAsync('DELETE FROM memories WHERE id = ?', [id]);
     } catch (err) {
-      console.error('Failed to delete memory:', err);
+      logger.error('Failed to delete memory', {
+      errorType: err instanceof Error ? err.name : 'Unknown',
+    });
     }
   }, [db, isReady]);
   
@@ -446,13 +489,17 @@ function toMemorySource(source: string): MemorySource {
   return 'journal';
 }
 
-function rowToMemory(row: MemoryRow): Memory {
+async function rowToMemory(row: MemoryRow): Promise<Memory> {
+  // Decrypt content and context
+  const content = await decryptContent(row.encrypted_content);
+  const context = row.encrypted_context ? await decryptContent(row.encrypted_context) : undefined;
+
   return {
     id: row.id,
     userId: row.user_id,
     type: row.type as MemoryType,
-    content: row.content,
-    context: row.context,
+    content,
+    context,
     confidence: row.confidence,
     source: toMemorySource(row.source),
     sourceId: row.source_id,

@@ -1,14 +1,25 @@
 /**
  * MeetingCard Component
- * Display card for regular meetings
+ * Display card for regular meetings with design system integration
  * Memoized for FlatList performance
+ *
+ * Features:
+ * - Design system integration (GlassCard)
+ * - Compact and full variants
+ * - Reminder toggle with accessibility
+ * - Meeting type icons
+ * - Days until indicator
+ * - Home group badge
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
-import { LegacyCard as Card } from '../ui';
+import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RegularMeeting, RegularMeetingType } from '@recovery/shared';
+import * as Haptics from 'expo-haptics';
 
 interface MeetingCardProps {
   meeting: RegularMeeting;
@@ -16,7 +27,7 @@ interface MeetingCardProps {
   showDaysUntil?: boolean;
   daysUntil?: number;
   compact?: boolean;
-  className?: string;
+  enteringDelay?: number;
 }
 
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -29,16 +40,29 @@ function formatTime(time: string): string {
   return `${hour12}:${String(minutes).padStart(2, '0')} ${period}`;
 }
 
-function getTypeIcon(type: RegularMeetingType): string {
+function getTypeIcon(type: RegularMeetingType): React.ComponentProps<typeof Feather>['name'] {
   switch (type) {
     case 'in-person':
-      return '📍';
+      return 'map-pin';
     case 'online':
-      return '💻';
+      return 'video';
     case 'hybrid':
-      return '🔄';
+      return 'refresh-cw';
     default:
-      return '📍';
+      return 'map-pin';
+  }
+}
+
+function getTypeColor(type: RegularMeetingType): string {
+  switch (type) {
+    case 'in-person':
+      return '#22c55e';
+    case 'online':
+      return '#3b82f6';
+    case 'hybrid':
+      return '#8b5cf6';
+    default:
+      return '#22c55e';
   }
 }
 
@@ -61,13 +85,32 @@ function MeetingCardComponent({
   showDaysUntil = false,
   daysUntil,
   compact = false,
-  className = '',
+  enteringDelay = 0,
 }: MeetingCardProps) {
   const router = useRouterCompat();
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = useCallback(() => {
+    scale.value = withSpring(0.98, { damping: 15, stiffness: 300 });
+  }, [scale]);
+
+  const handlePressOut = useCallback(() => {
+    scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+  }, [scale]);
 
   const handlePress = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     router.push(`/my-meetings/${meeting.id}`);
   }, [router, meeting.id]);
+
+  const handleToggleReminder = useCallback((value: boolean) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    onToggleReminder?.(meeting.id, value);
+  }, [onToggleReminder, meeting.id]);
 
   const getDaysUntilText = useCallback(() => {
     if (daysUntil === undefined) return null;
@@ -76,133 +119,145 @@ function MeetingCardComponent({
     return `In ${daysUntil} days`;
   }, [daysUntil]);
 
+  const typeIcon = getTypeIcon(meeting.type);
+  const typeColor = getTypeColor(meeting.type);
+
+  // Accessibility label
+  const accessibilityLabel = `${meeting.name}, ${getTypeLabel(meeting.type)}, ${DAY_NAMES[meeting.dayOfWeek]} at ${formatTime(meeting.time)}${meeting.isHomeGroup ? ', Home Group' : ''}${daysUntil !== undefined ? `, ${getDaysUntilText()}` : ''}`;
+
   if (compact) {
     return (
-      <TouchableOpacity
-        onPress={handlePress}
-        className={`bg-surface-100 dark:bg-surface-800 rounded-xl p-3 ${className}`}
-        accessibilityRole="button"
-        accessibilityLabel={`${meeting.name} on ${DAY_NAMES[meeting.dayOfWeek]} at ${formatTime(meeting.time)}`}
-      >
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center flex-1">
-            <Text className="text-lg mr-2">{getTypeIcon(meeting.type)}</Text>
-            <View className="flex-1">
-              <View className="flex-row items-center gap-1">
-                <Text
-                  className="font-semibold text-surface-900 dark:text-surface-100"
-                  numberOfLines={1}
-                >
+      <Animated.View entering={FadeIn.delay(enteringDelay * 50)} style={animatedStyle}>
+        <TouchableOpacity
+          onPress={handlePress}
+          onPressIn={handlePressIn}
+          onPressOut={handlePressOut}
+          style={styles.compactContainer}
+          accessibilityRole="button"
+          accessibilityLabel={accessibilityLabel}
+          accessibilityHint="Tap to view meeting details"
+          activeOpacity={0.8}
+        >
+          <View style={styles.compactContent}>
+            <View style={[styles.typeIconContainer, { backgroundColor: `${typeColor}20` }]}>
+              <Feather name={typeIcon} size={18} color={typeColor} />
+            </View>
+            <View style={styles.compactInfo}>
+              <View style={styles.compactHeader}>
+                <Text style={styles.compactName} numberOfLines={1}>
                   {meeting.name}
                 </Text>
                 {meeting.isHomeGroup && (
-                  <Text className="text-xs bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 px-1.5 py-0.5 rounded">
-                    Home
-                  </Text>
+                  <View style={styles.homeBadge}>
+                    <Text style={styles.homeBadgeText}>Home</Text>
+                  </View>
                 )}
               </View>
-              <Text className="text-sm text-surface-500">
+              <Text style={styles.compactMeta}>
                 {SHORT_DAY_NAMES[meeting.dayOfWeek]} • {formatTime(meeting.time)}
               </Text>
             </View>
           </View>
           {showDaysUntil && daysUntil !== undefined && (
-            <View className="bg-primary-100 dark:bg-primary-900/30 px-2 py-1 rounded-full">
-              <Text className="text-xs font-medium text-primary-700 dark:text-primary-300">
+            <View style={[styles.daysBadge, daysUntil === 0 && styles.daysBadgeToday]}>
+              <Text style={[styles.daysText, daysUntil === 0 && styles.daysTextToday]}>
                 {getDaysUntilText()}
               </Text>
             </View>
           )}
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </Animated.View>
     );
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
-      <Card variant="default" className={className}>
-        {/* Header Row */}
-        <View className="flex-row items-start justify-between mb-2">
-          <View className="flex-row items-center flex-1">
-            <View className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-900/30 items-center justify-center mr-3">
-              <Text className="text-xl">{getTypeIcon(meeting.type)}</Text>
-            </View>
-            <View className="flex-1">
-              <View className="flex-row items-center gap-2">
-                <Text
-                  className="text-lg font-semibold text-surface-900 dark:text-surface-100"
-                  numberOfLines={1}
-                >
-                  {meeting.name}
-                </Text>
-                {meeting.isHomeGroup && (
-                  <View className="bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded-full">
-                    <Text className="text-xs font-medium text-amber-700 dark:text-amber-300">
-                      🏠 Home Group
-                    </Text>
-                  </View>
-                )}
+    <Animated.View entering={FadeIn.delay(enteringDelay * 50)}>
+      <TouchableOpacity
+        onPress={handlePress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={0.9}
+        accessibilityRole="button"
+        accessibilityLabel={accessibilityLabel}
+        accessibilityHint="Tap to view meeting details"
+      >
+        <GlassCard gradient="card" style={styles.card}>
+          {/* Header Row */}
+          <View style={styles.header}>
+            <View style={styles.headerLeft}>
+              <View style={[styles.iconContainer, { backgroundColor: `${typeColor}20` }]}>
+                <Feather name={typeIcon} size={20} color={typeColor} />
               </View>
-              <Text className="text-sm text-surface-500">{getTypeLabel(meeting.type)}</Text>
+              <View style={styles.headerInfo}>
+                <View style={styles.headerTitleRow}>
+                  <Text style={styles.meetingName} numberOfLines={1}>
+                    {meeting.name}
+                  </Text>
+                  {meeting.isHomeGroup && (
+                    <View style={styles.homeGroupBadge}>
+                      <Feather name="home" size={10} color="#f59e0b" />
+                      <Text style={styles.homeGroupText}>Home</Text>
+                    </View>
+                  )}
+                </View>
+                <Text style={styles.typeLabel}>{getTypeLabel(meeting.type)}</Text>
+              </View>
             </View>
+
+            {showDaysUntil && daysUntil !== undefined && (
+              <View style={[styles.daysUntilBadge, daysUntil === 0 && styles.daysUntilBadgeToday]}>
+                <Text style={[styles.daysUntilText, daysUntil === 0 && styles.daysUntilTextToday]}>
+                  {getDaysUntilText()}
+                </Text>
+              </View>
+            )}
           </View>
 
-          {showDaysUntil && daysUntil !== undefined && (
-            <View
-              className={`px-3 py-1.5 rounded-full ${
-                daysUntil === 0
-                  ? 'bg-green-100 dark:bg-green-900/30'
-                  : 'bg-surface-100 dark:bg-surface-700'
-              }`}
-            >
-              <Text
-                className={`text-sm font-medium ${
-                  daysUntil === 0
-                    ? 'text-green-700 dark:text-green-300'
-                    : 'text-surface-600 dark:text-surface-400'
-                }`}
-              >
-                {getDaysUntilText()}
+          {/* Details */}
+          <View style={styles.details}>
+            <View style={styles.detailRow}>
+              <Feather name="clock" size={14} color="#64748b" style={styles.detailIcon} />
+              <Text style={styles.detailLabel}>When</Text>
+              <Text style={styles.detailValue}>
+                {DAY_NAMES[meeting.dayOfWeek]} at {formatTime(meeting.time)}
               </Text>
             </View>
-          )}
-        </View>
 
-        {/* Details */}
-        <View className="ml-13 space-y-1">
-          <View className="flex-row items-center">
-            <Text className="text-surface-500 w-20">When</Text>
-            <Text className="text-surface-900 dark:text-surface-100 font-medium">
-              {DAY_NAMES[meeting.dayOfWeek]} at {formatTime(meeting.time)}
-            </Text>
+            {meeting.location && (
+              <View style={styles.detailRow}>
+                <Feather name="map-pin" size={14} color="#64748b" style={styles.detailIcon} />
+                <Text style={styles.detailLabel}>Where</Text>
+                <Text style={styles.detailValue} numberOfLines={1}>
+                  {meeting.location}
+                </Text>
+              </View>
+            )}
           </View>
 
-          {meeting.location && (
-            <View className="flex-row items-center">
-              <Text className="text-surface-500 w-20">Where</Text>
-              <Text className="text-surface-900 dark:text-surface-100">{meeting.location}</Text>
+          {/* Reminder Toggle */}
+          {onToggleReminder && (
+            <View style={styles.reminderContainer}>
+              <View style={styles.reminderLeft}>
+                <Feather name="bell" size={16} color="#64748b" />
+                <Text style={styles.reminderText}>
+                  Reminder ({meeting.reminderMinutesBefore} min before)
+                </Text>
+              </View>
+              <Switch
+                value={meeting.reminderEnabled}
+                onValueChange={handleToggleReminder}
+                trackColor={{ false: 'rgba(100, 116, 139, 0.3)', true: 'rgba(59, 130, 246, 0.3)' }}
+                thumbColor={meeting.reminderEnabled ? '#3b82f6' : '#64748b'}
+                accessibilityLabel={`Toggle reminder for ${meeting.name}`}
+                accessibilityHint={`Sets a reminder ${meeting.reminderMinutesBefore} minutes before the meeting`}
+                accessibilityRole="switch"
+                accessibilityState={{ checked: meeting.reminderEnabled }}
+              />
             </View>
           )}
-        </View>
-
-        {/* Reminder Toggle */}
-        {onToggleReminder && (
-          <View className="flex-row items-center justify-between mt-4 pt-3 border-t border-surface-100 dark:border-surface-700">
-            <View className="flex-row items-center">
-              <Text className="text-surface-700 dark:text-surface-300">
-                🔔 Reminder ({meeting.reminderMinutesBefore} min before)
-              </Text>
-            </View>
-            <Switch
-              value={meeting.reminderEnabled}
-              onValueChange={(value) => onToggleReminder(meeting.id, value)}
-              trackColor={{ false: '#cbd5e1', true: '#93c5fd' }}
-              thumbColor={meeting.reminderEnabled ? '#3b82f6' : '#f4f4f5'}
-            />
-          </View>
-        )}
-      </Card>
-    </TouchableOpacity>
+        </GlassCard>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
@@ -216,4 +271,194 @@ export const MeetingCard = memo(MeetingCardComponent, (prevProps, nextProps) => 
     prevProps.showDaysUntil === nextProps.showDaysUntil &&
     prevProps.compact === nextProps.compact
   );
+});
+
+const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 16,
+    marginVertical: 6,
+    padding: 16,
+  },
+  compactContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    borderRadius: 12,
+    padding: 12,
+    marginHorizontal: 16,
+    marginVertical: 4,
+  },
+  compactContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  typeIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  compactInfo: {
+    flex: 1,
+  },
+  compactHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  compactName: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#ffffff',
+    flex: 1,
+  },
+  homeBadge: {
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  homeBadgeText: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#fbbf24',
+  },
+  compactMeta: {
+    fontSize: 13,
+    color: '#64748b',
+    marginTop: 2,
+  },
+  daysBadge: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginLeft: 8,
+  },
+  daysBadgeToday: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  daysText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#60a5fa',
+  },
+  daysTextToday: {
+    color: '#4ade80',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flex: 1,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  meetingName: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#ffffff',
+    flex: 1,
+  },
+  homeGroupBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    gap: 4,
+  },
+  homeGroupText: {
+    fontSize: 11,
+    fontWeight: '500',
+    color: '#fbbf24',
+  },
+  typeLabel: {
+    fontSize: 13,
+    color: '#64748b',
+    marginTop: 2,
+  },
+  daysUntilBadge: {
+    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    marginLeft: 8,
+  },
+  daysUntilBadgeToday: {
+    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+  },
+  daysUntilText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#60a5fa',
+  },
+  daysUntilTextToday: {
+    color: '#4ade80',
+  },
+  details: {
+    marginLeft: 56,
+    gap: 8,
+    marginBottom: 12,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailIcon: {
+    marginRight: 8,
+  },
+  detailLabel: {
+    fontSize: 14,
+    color: '#64748b',
+    width: 50,
+  },
+  detailValue: {
+    fontSize: 14,
+    color: '#e2e8f0',
+    fontWeight: '500',
+    flex: 1,
+  },
+  reminderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(51, 65, 85, 0.5)',
+  },
+  reminderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  reminderText: {
+    fontSize: 14,
+    color: '#94a3b8',
+  },
 });

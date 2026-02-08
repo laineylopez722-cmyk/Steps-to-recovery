@@ -13,6 +13,7 @@ import type { ReactNode, ReactElement } from 'react';
 import { TouchableOpacity, StyleSheet, type ViewStyle, Animated, View, Text } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
+import { logger } from '../../utils/logger';
 import { hapticImpact } from '../../utils/haptics';
 
 type FABVariant = 'primary' | 'danger';
@@ -56,9 +57,9 @@ export function FloatingActionButton({
 
   // Log deprecation warning in development
   if (__DEV__) {
-    console.warn(
-      'FloatingActionButton is deprecated. Use AmberButton or inline buttons instead.'
-    );
+    logger.warn('FloatingActionButton is deprecated', {
+      alternative: 'Use AmberButton or inline buttons instead',
+    });
   }
 
   const backgroundColor = variant === 'danger' ? theme.colors.danger : theme.colors.primary;

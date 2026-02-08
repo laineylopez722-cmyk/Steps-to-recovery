@@ -28,6 +28,11 @@ import type {
   LinkingStatic,
   AppStateStatic,
   PlatformStatic,
+  PlatformIOSStatic,
+  PlatformAndroidStatic,
+  PlatformWindowsOSStatic,
+  PlatformMacOSStatic,
+  PlatformWebStatic,
   Dimensions,
   StyleProp,
   AccessibilityInfoStatic,
@@ -112,8 +117,13 @@ declare module 'react-native' {
   // Fix Image component
   export const Image: React.ComponentType<any & { children?: ReactNode }>;
 
-  // Fix Platform
-  export const Platform: PlatformStatic;
+  // Fix Platform - export as union to include OS property
+  export const Platform:
+    | PlatformIOSStatic
+    | PlatformAndroidStatic
+    | PlatformWindowsOSStatic
+    | PlatformMacOSStatic
+    | PlatformWebStatic;
 
   // Fix Linking
   export const Linking: LinkingStatic;

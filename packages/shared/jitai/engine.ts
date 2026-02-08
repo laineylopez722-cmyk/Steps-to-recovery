@@ -9,7 +9,6 @@
 import { scheduleJitaiNotification } from './notifications';
 import type { JitaiTrigger, JitaiIntervention, JitaiContext, TriggerPriority } from './types';
 import { logger } from '../utils/logger';
-import { unknown } from 'zod/v4/mini';
 
 /**
  * Define all intervention triggers
