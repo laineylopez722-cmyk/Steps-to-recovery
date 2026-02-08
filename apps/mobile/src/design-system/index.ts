@@ -84,6 +84,17 @@ export { useTheme, useColors, useIsDark } from './hooks/useTheme';
 export { useMotionPress } from './hooks/useMotionPress';
 export { Action, useActionMotion } from './primitives';
 export { ScreenAnimations } from './tokens/screen-animations';
+export {
+  serene,
+  sereneGlow,
+  serenePillRow,
+  sereneRing,
+  premiumTypographyAliases,
+  backgroundTexture,
+  getSereneProgressBarStyles,
+  getSereneRingMetrics,
+  getSereneTextureOverlay,
+} from './tokens/serene';
 export { MotionTransitions, motionDuration, motionSpring, motionScale, motionTiming, motionShimmer } from './tokens/motion';
 export { glass, glow, glassGradients } from './tokens/glass';
 export {

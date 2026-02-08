@@ -1,3 +1,8 @@
+import {
+  premiumTypographyAliases,
+  serene,
+} from './serene';
+
 /**
  * Design System Tokens
  * 
@@ -108,6 +113,12 @@ export const typography = {
     lineHeight: lineHeight.micro,
     letterSpacing: 0.2,
   },
+
+  // Serene premium aliases (backward compatible additive aliases)
+  hero: premiumTypographyAliases.hero,
+  displayTight: premiumTypographyAliases.displayTight,
+  stat: premiumTypographyAliases.stat,
+  labelStrong: premiumTypographyAliases.labelStrong,
 } as const;
 
 // ============================================================================
@@ -373,6 +384,7 @@ export const ds = {
   sizes,
   timing,
   spring,
+  serene,
 } as const;
 
 export type DS = typeof ds;
