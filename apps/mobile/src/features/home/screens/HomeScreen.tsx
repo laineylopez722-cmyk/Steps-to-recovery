@@ -735,15 +735,14 @@ const styles = StyleSheet.create({
   shortcutsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    gap: ds.space[3],
     marginBottom: ds.space[2],
   },
   shortcutCard: {
-    width: '48.5%',
+    width: '48%',
     backgroundColor: ds.semantic.surface.card,
     borderRadius: ds.radius.lg,
     padding: ds.space[4],
-    marginBottom: ds.space[3],
     minHeight: 112,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: ds.colors.borderDefault,

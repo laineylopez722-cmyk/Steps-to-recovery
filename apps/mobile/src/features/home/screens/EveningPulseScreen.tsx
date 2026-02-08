@@ -107,16 +107,26 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={styles.headerBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Close evening reflection"
+              accessibilityHint="Returns to home screen"
+            >
               <Feather name="x" size={ds.sizes.iconLg} color={ds.colors.textSecondary} />
             </Pressable>
             
             <Text style={styles.headerTitle}>Evening</Text>
             
-            <Pressable 
+            <Pressable
               onPress={handleSubmit}
               disabled={!canSubmit}
               style={[styles.saveBtn, !canSubmit && styles.saveBtnDisabled]}
+              accessibilityRole="button"
+              accessibilityLabel="Save evening reflection"
+              accessibilityState={{ disabled: !canSubmit }}
+              accessibilityHint="Saves your reflection, gratitude, mood, and craving level"
             >
               <Text style={[styles.saveBtnText, !canSubmit && styles.saveBtnTextDisabled]}>
                 Save
@@ -162,6 +172,8 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
                 autoFocus
                 scrollEnabled={false}
                 textAlignVertical="top"
+                accessibilityLabel="Evening reflection input"
+                accessibilityHint="Describe how your day went"
               />
             </Animated.View>
 
@@ -180,6 +192,8 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
                 multiline
                 scrollEnabled={false}
                 textAlignVertical="top"
+                accessibilityLabel="Gratitude input"
+                accessibilityHint="Optional: What are you grateful for today?"
               />
             </Animated.View>
 
@@ -198,6 +212,10 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
                       styles.moodDot,
                       mood >= m && styles.moodDotActive,
                     ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Set mood level ${m} of 5`}
+                    accessibilityState={{ selected: mood === m }}
+                    accessibilityHint="Tap to select this mood level"
                   />
                 ))}
               </View>
@@ -224,6 +242,10 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
                       styles.cravingDot,
                       craving >= i && { backgroundColor: getCravingColor(i) },
                     ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Set craving level ${i} of 10`}
+                    accessibilityState={{ selected: craving === i }}
+                    accessibilityHint={i >= 7 ? "High craving level - consider emergency support" : "Tap to select this craving level"}
                   />
                 ))}
               </View>
@@ -425,7 +447,7 @@ const styles = StyleSheet.create({
   // Modal
   modalBg: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: ds.semantic.surface.overlayModal,
     justifyContent: 'center',
     alignItems: 'center',
   },

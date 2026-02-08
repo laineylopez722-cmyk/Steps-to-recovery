@@ -91,16 +91,26 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Pressable onPress={() => navigation.goBack()} style={styles.headerBtn}>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={styles.headerBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Close morning intention"
+              accessibilityHint="Returns to home screen"
+            >
               <Feather name="x" size={ds.sizes.iconLg} color={ds.colors.textSecondary} />
             </Pressable>
             
             <Text style={styles.headerTitle}>Morning</Text>
             
-            <Pressable 
+            <Pressable
               onPress={handleSubmit}
               disabled={!canSubmit}
               style={[styles.saveBtn, !canSubmit && styles.saveBtnDisabled]}
+              accessibilityRole="button"
+              accessibilityLabel="Save morning intention"
+              accessibilityState={{ disabled: !canSubmit }}
+              accessibilityHint="Saves your intention and mood for today"
             >
               <Text style={[styles.saveBtnText, !canSubmit && styles.saveBtnTextDisabled]}>
                 Save
@@ -138,6 +148,8 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
                 autoFocus
                 scrollEnabled={false}
                 textAlignVertical="top"
+                accessibilityLabel="Morning intention input"
+                accessibilityHint="Type your intention for today"
               />
             </Animated.View>
 
@@ -155,6 +167,10 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
                       styles.moodDot,
                       mood >= m.val && styles.moodDotActive,
                     ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Set mood to ${m.label}`}
+                    accessibilityState={{ selected: mood === m.val }}
+                    accessibilityHint={`Tap to select ${m.label} mood`}
                   />
                 ))}
               </View>
@@ -307,7 +323,7 @@ const styles = StyleSheet.create({
   // Modal
   modalBg: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: ds.semantic.surface.overlayModal,
     justifyContent: 'center',
     alignItems: 'center',
   },
