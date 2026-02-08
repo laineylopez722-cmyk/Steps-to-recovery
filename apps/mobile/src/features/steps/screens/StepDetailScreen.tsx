@@ -46,6 +46,7 @@ interface SectionHeaderItem {
   type: 'section';
   title: string;
   questionRange: string;
+  sectionStart: number;
 }
 
 interface FooterItem {
@@ -118,6 +119,7 @@ export function StepDetailScreen(): React.ReactElement {
           type: 'section',
           title: section.title,
           questionRange: `Questions ${sectionStart}-${sectionEnd}`,
+          sectionStart,
         });
 
         // Add questions for this section
@@ -264,10 +266,11 @@ export function StepDetailScreen(): React.ReactElement {
     ({ item }: ListRenderItemInfo<ListItem>) => {
       if (item.type === 'section') {
         return (
-          <View
+          <Pressable
             style={[styles.sectionHeader, { backgroundColor: theme.colors.primary + '10' }]}
-            accessibilityRole="header"
-            accessibilityLabel={`${item.title}, ${item.questionRange}`}
+            onPress={() => scrollToQuestion(item.sectionStart)}
+            accessibilityRole="button"
+            accessibilityLabel={`${item.title}, ${item.questionRange}. Tap to jump to section.`}
           >
             <MaterialCommunityIcons
               name="bookmark-outline"
@@ -285,7 +288,13 @@ export function StepDetailScreen(): React.ReactElement {
                 {item.questionRange} • tap to jump
               </Text>
             </View>
-          </View>
+            <MaterialCommunityIcons
+              name="chevron-right"
+              size={18}
+              color={theme.colors.textSecondary}
+              accessible={false}
+            />
+          </Pressable>
         );
       }
 
@@ -388,7 +397,7 @@ export function StepDetailScreen(): React.ReactElement {
         </Card>
       );
     },
-    [questions, savingQuestion, answers, theme, handleSaveAnswer, totalQuestions],
+    [questions, savingQuestion, answers, theme, handleSaveAnswer, totalQuestions, scrollToQuestion],
   );
 
   const keyExtractor = useCallback((item: ListItem, _index: number) => {
