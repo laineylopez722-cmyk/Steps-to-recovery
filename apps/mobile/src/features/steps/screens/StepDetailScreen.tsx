@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
+import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { StepLockedState } from '../components/StepLockedState';
 import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
@@ -15,11 +16,7 @@ import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
 import { StepDetailQuestionsList } from '../components/StepDetailQuestionsList';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { buildQuestionIndexMap, buildStepListItems, type StepListItem } from '../utils/stepListItems';
-import {
-  buildAnsweredQuestionSet,
-  buildInitialAnswers,
-  getFirstUnansweredQuestion,
-} from '../utils/stepAnswers';
+import { buildAnsweredQuestionSet, getFirstUnansweredQuestion } from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Toast, useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
@@ -43,7 +40,6 @@ export function StepDetailScreen(): React.ReactElement {
   const { saveAnswer } = useSaveStepAnswer(userId);
   const isLocked = stepNumber > 1;
 
-  const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showGuidance, setShowGuidance] = useState(false);
 
   // Refs
@@ -80,16 +76,7 @@ export function StepDetailScreen(): React.ReactElement {
     ]).start();
   }, [fadeAnim, slideAnim]);
 
-  // Initialize answers from database
-  useEffect(() => {
-    if (questions.length > 0) {
-      setAnswers(buildInitialAnswers(questions));
-    }
-  }, [questions]);
-
-  const handleAnswerChange = useCallback((questionNumber: number, text: string) => {
-    setAnswers((prev) => ({ ...prev, [questionNumber]: text }));
-  }, []);
+  const { answers, handleAnswerChange } = useStepAnswersState(questions);
 
   const {
     savingQuestion,
