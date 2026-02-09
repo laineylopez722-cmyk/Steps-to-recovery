@@ -1,5 +1,5 @@
 import React from 'react';
-import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
@@ -11,6 +11,7 @@ import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigation
 import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
 import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
 import { useStepDetailData } from '../hooks/useStepDetailData';
+import { useStepDetailRouteParams } from '../hooks/useStepDetailRouteParams';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -20,9 +21,8 @@ import type { StepsStackParamList } from '../../../navigation/types';
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
 
 export function StepDetailScreen(): React.ReactElement {
-  const route = useRoute<RouteProp<StepsStackParamList, 'StepDetail'>>();
   const navigation = useNavigation<NavigationProp>();
-  const { stepNumber, initialQuestion } = route.params;
+  const { stepNumber, initialQuestion } = useStepDetailRouteParams();
   const { user } = useAuth();
   const userId = user?.id || '';
   const theme = useTheme();
