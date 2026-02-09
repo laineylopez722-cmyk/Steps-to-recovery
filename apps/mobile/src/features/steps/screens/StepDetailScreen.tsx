@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
@@ -22,6 +22,8 @@ import { StepQuestionCard } from '../components/StepQuestionCard';
 import { StepLockedState } from '../components/StepLockedState';
 import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
+import { StepQuestionCounter } from '../components/StepQuestionCounter';
+import { StepPrivacyInfoCard } from '../components/StepPrivacyInfoCard';
 import {
   buildQuestionIndexMap,
   buildStepListItems,
@@ -186,27 +188,7 @@ export function StepDetailScreen(): React.ReactElement {
       }
 
       if (item.type === 'footer') {
-        return (
-          <Card variant="outlined" style={[styles.infoCard, { borderColor: ds.colors.borderSubtle }]}>
-            <View style={styles.infoContent}>
-              <MaterialCommunityIcons
-                name="lock"
-                size={24}
-                color={ds.colors.accent}
-                accessible={false}
-              />
-              <Text
-                style={[
-                  theme.typography.caption,
-                  { color: theme.colors.textSecondary, marginLeft: 12, flex: 1, lineHeight: 18 },
-                ]}
-              >
-                Your answers are encrypted and stored securely on your device. Only you can read
-                them. Your progress is private and safe.
-              </Text>
-            </View>
-          </Card>
-        );
+        return <StepPrivacyInfoCard />;
       }
 
       // Question item
@@ -357,11 +339,10 @@ export function StepDetailScreen(): React.ReactElement {
           />
 
           {/* Question Counter */}
-          <View style={[styles.questionCounter, { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle }]}>
-            <Text style={[theme.typography.label, { color: theme.colors.textSecondary }]}>
-              Question {currentVisibleQuestion} of {totalQuestions}
-            </Text>
-          </View>
+          <StepQuestionCounter
+            currentQuestion={currentVisibleQuestion}
+            totalQuestions={totalQuestions}
+          />
 
           {/* Questions List */}
           <FlatList
@@ -442,27 +423,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
 
-  questionCounter: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
   contentContainer: {
     padding: 16,
     paddingTop: 0,
     paddingBottom: 32,
-  },
-
-  infoCard: {
-    marginTop: 8,
-  },
-  infoContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
 });
 
