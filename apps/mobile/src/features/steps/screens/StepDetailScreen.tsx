@@ -85,33 +85,53 @@ export function StepDetailScreen(): React.ReactElement {
     setShowGuidance((prev) => !prev);
   }, []);
 
+  const handleBackToStepOne = useCallback(() => {
+    navigation.navigate('StepDetail', { stepNumber: 1 });
+  }, [navigation]);
+
+  const handleBackToSteps = useCallback(() => {
+    navigation.navigate('StepsOverview');
+  }, [navigation]);
+
   const mainContentProps = useStepDetailMainContentProps({
-    fadeAnim,
-    slideAnim,
-    stepNumber,
-    title: stepData?.title ?? '',
-    principle: stepData?.principle ?? '',
-    description: stepData?.description ?? '',
-    totalQuestions,
-    answeredCount,
-    progressPercent,
-    hasUnanswered,
-    firstUnansweredQuestion,
-    onContinue: scrollToFirstUnanswered,
-    onReviewAnswers: handleReviewAnswers,
-    showGuidance,
-    onToggleGuidance: handleToggleGuidance,
-    currentVisibleQuestion,
-    listRef: flatListRef,
-    listItems,
-    answeredQuestionNumbers,
-    savingQuestion,
-    answers,
-    onAnswerChange: handleAnswerChange,
-    onSaveAnswer: handleSaveAnswer,
-    onJumpToQuestion: scrollToQuestion,
-    onViewableItemsChanged,
-    viewabilityConfig,
+    animation: {
+      fadeAnim,
+      slideAnim,
+    },
+    step: {
+      stepNumber,
+      stepData,
+    },
+    progress: {
+      totalQuestions,
+      answeredCount,
+      progressPercent,
+      hasUnanswered,
+      firstUnansweredQuestion,
+    },
+    guidance: {
+      showGuidance,
+      onToggleGuidance: handleToggleGuidance,
+    },
+    headerActions: {
+      onContinue: scrollToFirstUnanswered,
+      onReviewAnswers: handleReviewAnswers,
+    },
+    questionNavigation: {
+      currentVisibleQuestion,
+      onJumpToQuestion: scrollToQuestion,
+      onViewableItemsChanged,
+      viewabilityConfig,
+    },
+    questionList: {
+      listRef: flatListRef,
+      listItems,
+      answeredQuestionNumbers,
+      savingQuestion,
+      answers,
+      onAnswerChange: handleAnswerChange,
+      onSaveAnswer: handleSaveAnswer,
+    },
   });
 
   if (!stepData) {
@@ -125,8 +145,8 @@ export function StepDetailScreen(): React.ReactElement {
       state={contentState}
       backgroundColor={theme.colors.background}
       stepNumber={stepNumber}
-      onBackToStepOne={() => navigation.navigate('StepDetail', { stepNumber: 1 })}
-      onBackToSteps={() => navigation.navigate('StepsOverview')}
+      onBackToStepOne={handleBackToStepOne}
+      onBackToSteps={handleBackToSteps}
       toastVisible={toastVisible}
       toastMessage={toastMessage}
       toastVariant={toastVariant}
