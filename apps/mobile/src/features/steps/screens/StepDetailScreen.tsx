@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
@@ -11,6 +10,7 @@ import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
 import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
 import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
+import { useStepDetailMeta } from '../hooks/useStepDetailMeta';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -27,10 +27,9 @@ export function StepDetailScreen(): React.ReactElement {
   const userId = user?.id || '';
   const theme = useTheme();
 
-  const stepData = STEP_PROMPTS.find((s: StepPrompt) => s.step === stepNumber);
+  const { stepData, isLocked } = useStepDetailMeta(stepNumber);
   const { questions, isLoading } = useStepWork(userId, stepNumber);
   const { saveAnswer } = useSaveStepAnswer(userId);
-  const isLocked = stepNumber > 1;
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
