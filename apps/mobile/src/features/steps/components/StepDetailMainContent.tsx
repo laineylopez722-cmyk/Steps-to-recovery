@@ -13,7 +13,7 @@ import { StepQuestionCounter } from './StepQuestionCounter';
 import { StepDetailQuestionsList } from './StepDetailQuestionsList';
 import type { StepListItem } from '../utils/stepListItems';
 
-interface StepDetailMainContentProps {
+export interface StepDetailMainContentProps {
   fadeAnim: Animated.Value;
   slideAnim: Animated.Value;
   stepNumber: number;

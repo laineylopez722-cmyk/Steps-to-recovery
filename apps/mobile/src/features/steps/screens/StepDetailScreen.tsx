@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
@@ -8,6 +8,7 @@ import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
+import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -76,6 +77,43 @@ export function StepDetailScreen(): React.ReactElement {
     questionIndexMap,
   });
 
+  const handleReviewAnswers = useCallback(() => {
+    navigation.navigate('StepReview', { stepNumber });
+  }, [navigation, stepNumber]);
+
+  const handleToggleGuidance = useCallback(() => {
+    setShowGuidance((prev) => !prev);
+  }, []);
+
+  const mainContentProps = useStepDetailMainContentProps({
+    fadeAnim,
+    slideAnim,
+    stepNumber,
+    title: stepData?.title ?? '',
+    principle: stepData?.principle ?? '',
+    description: stepData?.description ?? '',
+    totalQuestions,
+    answeredCount,
+    progressPercent,
+    hasUnanswered,
+    firstUnansweredQuestion,
+    onContinue: scrollToFirstUnanswered,
+    onReviewAnswers: handleReviewAnswers,
+    showGuidance,
+    onToggleGuidance: handleToggleGuidance,
+    currentVisibleQuestion,
+    listRef: flatListRef,
+    listItems,
+    answeredQuestionNumbers,
+    savingQuestion,
+    answers,
+    onAnswerChange: handleAnswerChange,
+    onSaveAnswer: handleSaveAnswer,
+    onJumpToQuestion: scrollToQuestion,
+    onViewableItemsChanged,
+    viewabilityConfig,
+  });
+
   if (!stepData) {
     return <StepDetailErrorState />;
   }
@@ -93,34 +131,7 @@ export function StepDetailScreen(): React.ReactElement {
       toastMessage={toastMessage}
       toastVariant={toastVariant}
       onDismissToast={dismissToast}
-      mainContentProps={{
-        fadeAnim,
-        slideAnim,
-        stepNumber,
-        title: stepData.title,
-        principle: stepData.principle,
-        description: stepData.description,
-        totalQuestions,
-        answeredCount,
-        progressPercent,
-        hasUnanswered,
-        firstUnansweredQuestion,
-        onContinue: scrollToFirstUnanswered,
-        onReviewAnswers: () => navigation.navigate('StepReview', { stepNumber }),
-        showGuidance,
-        onToggleGuidance: () => setShowGuidance((prev) => !prev),
-        currentVisibleQuestion,
-        listRef: flatListRef,
-        listItems,
-        answeredQuestionNumbers,
-        savingQuestion,
-        answers,
-        onAnswerChange: handleAnswerChange,
-        onSaveAnswer: handleSaveAnswer,
-        onJumpToQuestion: scrollToQuestion,
-        onViewableItemsChanged,
-        viewabilityConfig,
-      }}
+      mainContentProps={mainContentProps}
     />
   );
 }
