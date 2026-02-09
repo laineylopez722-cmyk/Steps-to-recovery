@@ -20,7 +20,12 @@ import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
-import { buildStepListItems, type StepListItem, type QuestionItem } from '../utils/stepListItems';
+import {
+  buildQuestionIndexMap,
+  buildStepListItems,
+  type StepListItem,
+  type QuestionItem,
+} from '../utils/stepListItems';
 import {
   buildAnsweredQuestionSet,
   buildInitialAnswers,
@@ -80,15 +85,7 @@ export function StepDetailScreen(): React.ReactElement {
 
   const listItems = useMemo((): ListItem[] => buildStepListItems(stepData), [stepData]);
 
-  const questionIndexMap = useMemo(() => {
-    const map = new Map<number, number>();
-    listItems.forEach((item, index) => {
-      if (item.type === 'question') {
-        map.set(item.questionNumber, index);
-      }
-    });
-    return map;
-  }, [listItems]);
+  const questionIndexMap = useMemo(() => buildQuestionIndexMap(listItems), [listItems]);
 
   const answeredQuestionNumbers = useMemo(() => buildAnsweredQuestionSet(questions), [questions]);
 

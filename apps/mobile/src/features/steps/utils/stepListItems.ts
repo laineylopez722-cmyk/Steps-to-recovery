@@ -20,6 +20,18 @@ export interface FooterItem {
 
 export type StepListItem = QuestionItem | SectionHeaderItem | FooterItem;
 
+export function buildQuestionIndexMap(items: StepListItem[]): Map<number, number> {
+  const map = new Map<number, number>();
+
+  items.forEach((item, index) => {
+    if (item.type === 'question') {
+      map.set(item.questionNumber, index);
+    }
+  });
+
+  return map;
+}
+
 export function buildStepListItems(stepData?: StepPrompt): StepListItem[] {
   if (!stepData) return [];
 
