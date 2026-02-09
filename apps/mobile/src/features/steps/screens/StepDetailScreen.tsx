@@ -6,7 +6,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  TouchableOpacity,
   type ListRenderItemInfo,
   type ViewToken,
 } from 'react-native';
@@ -21,6 +20,7 @@ import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
 import { StepLockedState } from '../components/StepLockedState';
 import { StepGuidanceCard } from '../components/StepGuidanceCard';
+import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
 import {
   buildQuestionIndexMap,
   buildStepListItems,
@@ -34,16 +34,7 @@ import {
   getFirstUnansweredQuestion,
 } from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
-import {
-  useTheme,
-  Card,
-  Button,
-  ProgressBar,
-  Badge,
-  Toast,
-  Text,
-  Skeleton,
-} from '../../../design-system';
+import { useTheme, Card, Toast, Text, Skeleton } from '../../../design-system';
 import { ds } from '../../../design-system/tokens/ds';
 import type { StepsStackParamList } from '../../../navigation/types';
 
@@ -374,83 +365,18 @@ export function StepDetailScreen(): React.ReactElement {
           ]}
         >
           {/* Header */}
-          <Card variant="elevated" style={styles.headerCard}>
-            <View style={styles.header}>
-              <View style={[styles.stepBadge, { backgroundColor: ds.colors.accent }]}>
-                <Text style={styles.stepBadgeText}>{stepNumber}</Text>
-              </View>
-              <View style={styles.headerContent}>
-                <Text
-                  style={[theme.typography.h2, { color: theme.colors.text, fontWeight: '600' }]}
-                >
-                  Step {stepNumber}: {stepData.title}
-                </Text>
-                <View style={styles.badgeRow}>
-                  <Badge variant="primary" size="medium" style={styles.principleBadge}>
-                    {stepData.principle}
-                  </Badge>
-                  <Text
-                    style={[
-                      theme.typography.caption,
-                      { color: theme.colors.textSecondary, marginLeft: 8 },
-                    ]}
-                  >
-                    {totalQuestions} questions
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Progress */}
-            <View style={styles.progressSection}>
-              <View style={styles.progressHeader}>
-                <Text style={[theme.typography.label, { color: theme.colors.textSecondary }]}>
-                  Your Progress ({answeredCount}/{totalQuestions})
-                </Text>
-                <Text
-                  style={[theme.typography.h3, { color: ds.colors.accent, fontWeight: '600' }]}
-                >
-                  {progressPercent}%
-                </Text>
-              </View>
-              <ProgressBar progress={progressPercent / 100} style={styles.progressBar} />
-            </View>
-
-            {/* Continue Button */}
-            {hasUnanswered && answeredCount > 0 && (
-              <TouchableOpacity
-                style={[styles.continueButton, { backgroundColor: ds.colors.accentMuted }]}
-                onPress={scrollToFirstUnanswered}
-                accessibilityLabel={`Continue at question ${firstUnansweredQuestion}`}
-                accessibilityRole="button"
-              >
-                <MaterialCommunityIcons
-                  name="play-circle-outline"
-                  size={20}
-                  color={ds.colors.accent}
-                />
-                <Text
-                  style={[
-                    theme.typography.body,
-                    { color: ds.colors.accent, marginLeft: 8, fontWeight: '600' },
-                  ]}
-                >
-                  Continue at Question {firstUnansweredQuestion}
-                </Text>
-              </TouchableOpacity>
-            )}
-
-            <View style={{ marginTop: theme.spacing.sm }}>
-              <Button
-                title="Review answers"
-                variant="secondary"
-                size="small"
-                onPress={() => navigation.navigate('StepReview', { stepNumber })}
-                accessibilityLabel="Review all answers"
-                accessibilityHint="Opens the step review screen"
-              />
-            </View>
-          </Card>
+          <StepDetailHeaderCard
+            stepNumber={stepNumber}
+            title={stepData.title}
+            principle={stepData.principle}
+            totalQuestions={totalQuestions}
+            answeredCount={answeredCount}
+            progressPercent={progressPercent}
+            showContinue={hasUnanswered && answeredCount > 0}
+            firstUnansweredQuestion={firstUnansweredQuestion}
+            onContinue={scrollToFirstUnanswered}
+            onReviewAnswers={() => navigation.navigate('StepReview', { stepNumber })}
+          />
 
           {/* Guidance */}
           <StepGuidanceCard
@@ -531,53 +457,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  stepBadge: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  stepBadgeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: ds.semantic.text.onDark,
-  },
   headerContent: {
     flex: 1,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  principleBadge: {
-    alignSelf: 'flex-start',
   },
   progressSection: {
     paddingTop: 16,
     borderTopWidth: 1,
     borderTopColor: ds.colors.borderSubtle,
   },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: 8,
-  },
-  continueButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginTop: 12,
-  },
+
   descriptionCard: {
     marginHorizontal: 16,
     marginBottom: 8,
@@ -606,6 +494,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
 
 
 
