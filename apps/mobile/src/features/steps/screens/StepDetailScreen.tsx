@@ -7,7 +7,6 @@ import {
   Platform,
   Animated,
   TouchableOpacity,
-  Pressable,
   type ListRenderItemInfo,
   type ViewToken,
 } from 'react-native';
@@ -21,6 +20,7 @@ import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
 import { StepLockedState } from '../components/StepLockedState';
+import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import {
   buildQuestionIndexMap,
   buildStepListItems,
@@ -453,45 +453,11 @@ export function StepDetailScreen(): React.ReactElement {
           </Card>
 
           {/* Guidance */}
-          <Card
-            variant="outlined"
-            style={[styles.descriptionCard, { borderColor: ds.colors.borderSubtle }]}
-          >
-            <Pressable
-              onPress={() => setShowGuidance((prev) => !prev)}
-              style={styles.guidanceToggle}
-              accessibilityRole="button"
-              accessibilityLabel={showGuidance ? 'Hide step guidance' : 'Show step guidance'}
-            >
-              <View style={styles.descriptionHeader}>
-                <MaterialCommunityIcons
-                  name="lightbulb-outline"
-                  size={20}
-                  color={ds.colors.accent}
-                />
-                <Text
-                  style={[theme.typography.label, { color: ds.colors.accent, marginLeft: 8 }]}
-                >
-                  STEP GUIDANCE
-                </Text>
-              </View>
-              <MaterialCommunityIcons
-                name={showGuidance ? 'chevron-up' : 'chevron-down'}
-                size={20}
-                color={theme.colors.textSecondary}
-              />
-            </Pressable>
-            {showGuidance && (
-              <Text
-                style={[
-                  theme.typography.body,
-                  { color: theme.colors.text, lineHeight: 24, fontStyle: 'italic' },
-                ]}
-              >
-                "{stepData.description}"
-              </Text>
-            )}
-          </Card>
+          <StepGuidanceCard
+            showGuidance={showGuidance}
+            description={stepData.description}
+            onToggle={() => setShowGuidance((prev) => !prev)}
+          />
 
           {/* Question Counter */}
           <View style={[styles.questionCounter, { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle }]}>
@@ -616,16 +582,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 8,
   },
-  descriptionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  guidanceToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
+
   questionCounter: {
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -649,6 +606,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
 
 
 
