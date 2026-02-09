@@ -12,9 +12,9 @@ import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
 import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
 import { useStepDetailData } from '../hooks/useStepDetailData';
 import { useStepDetailRouteParams } from '../hooks/useStepDetailRouteParams';
+import { useCurrentUserId } from '../hooks/useCurrentUserId';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
-import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
@@ -23,8 +23,7 @@ type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail
 export function StepDetailScreen(): React.ReactElement {
   const navigation = useNavigation<NavigationProp>();
   const { stepNumber, initialQuestion } = useStepDetailRouteParams();
-  const { user } = useAuth();
-  const userId = user?.id || '';
+  const userId = useCurrentUserId();
   const theme = useTheme();
 
   const { stepData, isLocked, questions, isLoading, saveAnswer } = useStepDetailData({
