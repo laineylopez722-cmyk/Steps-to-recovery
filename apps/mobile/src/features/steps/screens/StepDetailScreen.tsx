@@ -126,12 +126,15 @@ export function StepDetailScreen(): React.ReactElement {
 
   const handleSaveAnswer = useCallback(
     async (questionNumber: number) => {
+      if (savingQuestion === questionNumber) return;
+
       const answer = answers[questionNumber];
-      if (!answer?.trim()) return;
+      const normalizedAnswer = answer?.trim();
+      if (!normalizedAnswer) return;
 
       setSavingQuestion(questionNumber);
       try {
-        await saveAnswer(stepNumber, questionNumber, answer, true);
+        await saveAnswer(stepNumber, questionNumber, normalizedAnswer, true);
 
         // Success feedback
         if (Platform.OS !== 'web') {
@@ -148,7 +151,7 @@ export function StepDetailScreen(): React.ReactElement {
         setSavingQuestion(null);
       }
     },
-    [answers, saveAnswer, stepNumber],
+    [answers, saveAnswer, savingQuestion, stepNumber],
   );
 
   const scrollToQuestion = useCallback(
@@ -217,12 +220,12 @@ export function StepDetailScreen(): React.ReactElement {
 
       if (item.type === 'footer') {
         return (
-          <Card variant="outlined" style={[styles.infoCard, { borderColor: theme.colors.primary }]}>
+          <Card variant="outlined" style={[styles.infoCard, { borderColor: ds.colors.borderSubtle }]}>
             <View style={styles.infoContent}>
               <MaterialCommunityIcons
                 name="lock"
                 size={24}
-                color={theme.colors.primary}
+                color={ds.colors.accent}
                 accessible={false}
               />
               <Text
@@ -315,7 +318,7 @@ export function StepDetailScreen(): React.ReactElement {
           {/* Description skeleton */}
           <Card
             variant="outlined"
-            style={[styles.descriptionCard, { borderColor: theme.colors.border }]}
+            style={[styles.descriptionCard, { borderColor: ds.colors.borderSubtle }]}
           >
             <Skeleton width="40%" height={12} />
             <View style={{ height: 8 }} />
@@ -368,7 +371,7 @@ export function StepDetailScreen(): React.ReactElement {
           {/* Header */}
           <Card variant="elevated" style={styles.headerCard}>
             <View style={styles.header}>
-              <View style={[styles.stepBadge, { backgroundColor: theme.colors.primary }]}>
+              <View style={[styles.stepBadge, { backgroundColor: ds.colors.accent }]}>
                 <Text style={styles.stepBadgeText}>{stepNumber}</Text>
               </View>
               <View style={styles.headerContent}>
@@ -400,7 +403,7 @@ export function StepDetailScreen(): React.ReactElement {
                   Your Progress ({answeredCount}/{totalQuestions})
                 </Text>
                 <Text
-                  style={[theme.typography.h3, { color: theme.colors.primary, fontWeight: '600' }]}
+                  style={[theme.typography.h3, { color: ds.colors.accent, fontWeight: '600' }]}
                 >
                   {progressPercent}%
                 </Text>
@@ -411,7 +414,7 @@ export function StepDetailScreen(): React.ReactElement {
             {/* Continue Button */}
             {hasUnanswered && answeredCount > 0 && (
               <TouchableOpacity
-                style={[styles.continueButton, { backgroundColor: theme.colors.primary + '15' }]}
+                style={[styles.continueButton, { backgroundColor: ds.colors.accentMuted }]}
                 onPress={scrollToFirstUnanswered}
                 accessibilityLabel={`Continue at question ${firstUnansweredQuestion}`}
                 accessibilityRole="button"
@@ -419,12 +422,12 @@ export function StepDetailScreen(): React.ReactElement {
                 <MaterialCommunityIcons
                   name="play-circle-outline"
                   size={20}
-                  color={theme.colors.primary}
+                  color={ds.colors.accent}
                 />
                 <Text
                   style={[
                     theme.typography.body,
-                    { color: theme.colors.primary, marginLeft: 8, fontWeight: '600' },
+                    { color: ds.colors.accent, marginLeft: 8, fontWeight: '600' },
                   ]}
                 >
                   Continue at Question {firstUnansweredQuestion}
@@ -447,7 +450,7 @@ export function StepDetailScreen(): React.ReactElement {
           {/* Guidance */}
           <Card
             variant="outlined"
-            style={[styles.descriptionCard, { borderColor: theme.colors.border }]}
+            style={[styles.descriptionCard, { borderColor: ds.colors.borderSubtle }]}
           >
             <Pressable
               onPress={() => setShowGuidance((prev) => !prev)}
@@ -459,10 +462,10 @@ export function StepDetailScreen(): React.ReactElement {
                 <MaterialCommunityIcons
                   name="lightbulb-outline"
                   size={20}
-                  color={theme.colors.primary}
+                  color={ds.colors.accent}
                 />
                 <Text
-                  style={[theme.typography.label, { color: theme.colors.primary, marginLeft: 8 }]}
+                  style={[theme.typography.label, { color: ds.colors.accent, marginLeft: 8 }]}
                 >
                   STEP GUIDANCE
                 </Text>
@@ -486,7 +489,7 @@ export function StepDetailScreen(): React.ReactElement {
           </Card>
 
           {/* Question Counter */}
-          <View style={[styles.questionCounter, { backgroundColor: theme.colors.surface }]}>
+          <View style={[styles.questionCounter, { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle }]}>
             <Text style={[theme.typography.label, { color: theme.colors.textSecondary }]}>
               Question {currentVisibleQuestion} of {totalQuestions}
             </Text>
@@ -624,6 +627,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 8,
     borderRadius: 12,
+    borderWidth: 1,
     alignItems: 'center',
   },
   contentContainer: {
