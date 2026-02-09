@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
@@ -9,6 +9,7 @@ import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
+import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { StepLockedState } from '../components/StepLockedState';
 import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
@@ -16,17 +17,11 @@ import { StepQuestionCounter } from '../components/StepQuestionCounter';
 import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
 import { StepDetailQuestionsList } from '../components/StepDetailQuestionsList';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
-import { buildQuestionIndexMap, buildStepListItems, type StepListItem } from '../utils/stepListItems';
-import { buildAnsweredQuestionSet, getFirstUnansweredQuestion } from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Toast, useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
-
-// Step list item types are defined in ../utils/stepListItems
-
-type ListItem = StepListItem;
 
 export function StepDetailScreen(): React.ReactElement {
   const route = useRoute<RouteProp<StepsStackParamList, 'StepDetail'>>();
@@ -45,20 +40,19 @@ export function StepDetailScreen(): React.ReactElement {
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
-  // Get total question count
-  const totalQuestions = stepData?.prompts.length ?? 0;
-
-  const listItems = useMemo((): ListItem[] => buildStepListItems(stepData), [stepData]);
-
-  const questionIndexMap = useMemo(() => buildQuestionIndexMap(listItems), [listItems]);
-
-  const answeredQuestionNumbers = useMemo(() => buildAnsweredQuestionSet(questions), [questions]);
-
-  // Find first unanswered question
-  const firstUnansweredQuestion = useMemo(
-    () => getFirstUnansweredQuestion(stepData, answeredQuestionNumbers),
-    [stepData, answeredQuestionNumbers],
-  );
+  const {
+    totalQuestions,
+    listItems,
+    questionIndexMap,
+    answeredQuestionNumbers,
+    firstUnansweredQuestion,
+    answeredCount,
+    hasUnanswered,
+    progressPercent,
+  } = useStepDetailDerivedState({
+    stepData,
+    questions,
+  });
 
   const { answers, handleAnswerChange } = useStepAnswersState(questions);
 
@@ -113,11 +107,6 @@ export function StepDetailScreen(): React.ReactElement {
   if (isLoading) {
     return <StepDetailLoadingState />;
   }
-
-  const answeredCount = answeredQuestionNumbers.size;
-  const hasUnanswered = answeredCount < totalQuestions;
-  const progressPercent =
-    totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
 
   return (
     <SafeAreaView
