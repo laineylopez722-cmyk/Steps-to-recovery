@@ -18,6 +18,7 @@ import { NotificationSettingsScreen } from '../features/settings/screens/Notific
 import { SponsorScreen } from '../features/sponsor/screens/SponsorScreen';
 import { InviteSponsorScreen } from '../features/sponsor/screens/InviteSponsorScreen';
 import { SharedEntriesScreen } from '../features/sponsor/screens/SharedEntriesScreen';
+import { ShareEntriesScreen } from '../features/sponsor/screens/ShareEntriesScreen';
 import {
   MeetingFinderScreen,
   MeetingDetailScreen,
@@ -50,14 +51,14 @@ const StepsStack = createNativeStackNavigator<StepsStackParamList>();
 const MeetingsStack = createNativeStackNavigator<MeetingsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
-// Premium dark theme colors
+// OLED-optimized dark theme colors using design tokens
 const themeColors = {
-  background: '#000000',
-  surface: '#141416',
+  background: ds.semantic.surface.app,
+  surface: ds.semantic.surface.elevated,
   accent: ds.colors.accent,
-  text: '#FFFFFF',
-  textMuted: 'rgba(255, 255, 255, 0.56)',
-  border: 'rgba(245, 158, 11, 0.24)',
+  text: ds.semantic.text.primary,
+  textMuted: ds.semantic.text.muted,
+  border: ds.semantic.intent.primary.muted,
 };
 
 function SafeDialInterventionRouteScreen({
@@ -285,6 +286,11 @@ function ProfileStackNavigator(): React.ReactElement {
         options={{ title: 'Shared Entries', headerBackTitle: 'Back' }}
       />
       <ProfileStack.Screen
+        name="ShareEntries"
+        component={ShareEntriesScreen}
+        options={{ title: 'Share Entries', headerBackTitle: 'Back' }}
+      />
+      <ProfileStack.Screen
         name="AISettings"
         component={AISettingsScreen}
         options={{ headerShown: false }}
@@ -323,8 +329,8 @@ export function MainNavigator(): React.ReactElement {
           backgroundColor: themeColors.surface,
           borderTopColor: themeColors.border,
           borderTopWidth: StyleSheet.hairlineWidth,
-          paddingTop: 10,
-          paddingBottom: 12,
+          paddingTop: ds.space[2],
+          paddingBottom: ds.space[3],
           height: 76,
         },
       }}
@@ -336,6 +342,8 @@ export function MainNavigator(): React.ReactElement {
           tabBarIcon: ({ focused, color, size }) => (
             <TabIcon focused={focused} color={color} size={size} name="home" />
           ),
+          tabBarAccessibilityLabel: 'Home',
+          tabBarLabel: 'Home',
         }}
       />
       <Tab.Screen
@@ -345,6 +353,8 @@ export function MainNavigator(): React.ReactElement {
           tabBarIcon: ({ focused, color, size }) => (
             <TabIcon focused={focused} color={color} size={size} name="book-open-variant" />
           ),
+          tabBarAccessibilityLabel: 'Journal',
+          tabBarLabel: 'Journal',
         }}
       />
       <Tab.Screen
@@ -354,6 +364,8 @@ export function MainNavigator(): React.ReactElement {
           tabBarIcon: ({ focused, color, size }) => (
             <TabIcon focused={focused} color={color} size={size} name="stairs" />
           ),
+          tabBarAccessibilityLabel: 'Steps',
+          tabBarLabel: 'Steps',
         }}
       />
       <Tab.Screen
@@ -363,6 +375,8 @@ export function MainNavigator(): React.ReactElement {
           tabBarIcon: ({ focused, color, size }) => (
             <TabIcon focused={focused} color={color} size={size} name="map-marker-multiple" />
           ),
+          tabBarAccessibilityLabel: 'Meetings',
+          tabBarLabel: 'Meetings',
         }}
       />
       <Tab.Screen
@@ -373,6 +387,8 @@ export function MainNavigator(): React.ReactElement {
           tabBarIcon: ({ focused, color, size }) => (
             <TabIcon focused={focused} color={color} size={size} name="account" />
           ),
+          tabBarAccessibilityLabel: 'Profile',
+          tabBarLabel: 'Profile',
         }}
       />
     </Tab.Navigator>
@@ -383,13 +399,13 @@ const styles = StyleSheet.create({
   tabIconWrap: {
     width: 38,
     height: 30,
-    borderRadius: 14,
+    borderRadius: ds.radius.md,
     justifyContent: 'center',
     alignItems: 'center',
   },
   tabIconWrapFocused: {
-    backgroundColor: 'rgba(245, 158, 11, 0.14)',
+    backgroundColor: ds.semantic.intent.primary.subtle,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(245, 158, 11, 0.34)',
+    borderColor: ds.semantic.intent.primary.muted,
   },
 });
