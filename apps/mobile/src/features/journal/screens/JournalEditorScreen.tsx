@@ -249,6 +249,8 @@ logger.error('Auto-save failed', err);
               blurOnSubmit={false}
               multiline={false}
               maxLength={200}
+              accessibilityLabel="Journal entry title"
+              accessibilityHint="Enter a title for your journal entry, maximum 200 characters"
             />
             
             {/* Body */}
@@ -262,6 +264,8 @@ logger.error('Auto-save failed', err);
               multiline
               scrollEnabled={false}
               textAlignVertical="top"
+              accessibilityLabel="Journal entry content"
+              accessibilityHint="Write your thoughts, feelings, and reflections"
             />
           </ScrollView>
           
@@ -306,7 +310,13 @@ logger.error('Auto-save failed', err);
             </View>
             
             {/* New note button */}
-            <Pressable onPress={handleNewEntry} style={styles.newNoteBtn}>
+            <Pressable
+              onPress={handleNewEntry}
+              style={styles.newNoteBtn}
+              accessibilityLabel="Create new journal entry"
+              accessibilityRole="button"
+              accessibilityHint="Saves current entry and starts a new one"
+            >
               <Feather name="edit" size={20} color={ds.colors.accent} />
             </Pressable>
           </Animated.View>

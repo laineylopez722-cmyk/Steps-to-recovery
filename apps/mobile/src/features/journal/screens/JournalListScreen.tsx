@@ -85,6 +85,9 @@ function EntryCard({
         styles.entryCard,
         pressed && styles.entryCardPressed,
       ]}
+      accessibilityRole="button"
+      accessibilityLabel={`Journal entry: ${title}`}
+      accessibilityHint={`Opens entry from ${time}. ${preview}`}
     >
       <Animated.View style={animatedStyle}>
       <Text style={styles.entryTitle} numberOfLines={1}>
@@ -242,7 +245,13 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
         {/* Header */}
         <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
           {/* Back button */}
-          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.backBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            accessibilityHint="Returns to previous screen"
+          >
             <View style={styles.backBtnInner}>
               <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
             </View>
@@ -250,10 +259,20 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
           
           {/* Right actions */}
           <View style={styles.actionsPill}>
-            <Pressable style={styles.actionBtn}>
+            <Pressable
+              style={styles.actionBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Share journal entries"
+              accessibilityHint="Share selected entries with sponsor or export"
+            >
               <Feather name="share" size={18} color={ds.colors.textPrimary} />
             </Pressable>
-            <Pressable style={styles.actionBtn}>
+            <Pressable
+              style={styles.actionBtn}
+              accessibilityRole="button"
+              accessibilityLabel="More options"
+              accessibilityHint="Opens menu with additional journal options"
+            >
               <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} />
             </Pressable>
           </View>
@@ -300,6 +319,8 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
               returnKeyType="search"
+              accessibilityLabel="Search journal entries"
+              accessibilityHint="Type to filter your journal entries by title or content"
             />
             <Pressable
               style={styles.micBtn}
