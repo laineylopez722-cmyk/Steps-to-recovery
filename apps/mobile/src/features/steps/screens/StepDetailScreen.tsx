@@ -1,7 +1,6 @@
 import React from 'react';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { useStepAnswersState } from '../hooks/useStepAnswersState';
@@ -10,8 +9,8 @@ import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
 import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
 import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
-import { useStepDetailMeta } from '../hooks/useStepDetailMeta';
 import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
+import { useStepDetailData } from '../hooks/useStepDetailData';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -28,9 +27,10 @@ export function StepDetailScreen(): React.ReactElement {
   const userId = user?.id || '';
   const theme = useTheme();
 
-  const { stepData, isLocked } = useStepDetailMeta(stepNumber);
-  const { questions, isLoading } = useStepWork(userId, stepNumber);
-  const { saveAnswer } = useSaveStepAnswer(userId);
+  const { stepData, isLocked, questions, isLoading, saveAnswer } = useStepDetailData({
+    userId,
+    stepNumber,
+  });
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
