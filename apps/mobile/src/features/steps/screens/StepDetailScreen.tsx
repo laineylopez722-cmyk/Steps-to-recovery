@@ -124,6 +124,15 @@ export function StepDetailScreen(): React.ReactElement {
     setAnswers((prev) => ({ ...prev, [questionNumber]: text }));
   }, []);
 
+  const presentToast = useCallback(
+    (message: string, variant: 'success' | 'error' | 'info' | 'warning') => {
+      setToastMessage(message);
+      setToastVariant(variant);
+      setShowToast(true);
+    },
+    [],
+  );
+
   const handleSaveAnswer = useCallback(
     async (questionNumber: number) => {
       if (savingQuestion === questionNumber) return;
@@ -140,18 +149,14 @@ export function StepDetailScreen(): React.ReactElement {
         if (Platform.OS !== 'web') {
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
-        setToastMessage('Answer saved successfully');
-        setToastVariant('success');
-        setShowToast(true);
+        presentToast('Answer saved successfully', 'success');
       } catch (_error) {
-        setToastMessage('Failed to save answer. Please try again.');
-        setToastVariant('error');
-        setShowToast(true);
+        presentToast('Failed to save answer. Please try again.', 'error');
       } finally {
         setSavingQuestion(null);
       }
     },
-    [answers, saveAnswer, savingQuestion, stepNumber],
+    [answers, presentToast, saveAnswer, savingQuestion, stepNumber],
   );
 
   const scrollToQuestion = useCallback(
