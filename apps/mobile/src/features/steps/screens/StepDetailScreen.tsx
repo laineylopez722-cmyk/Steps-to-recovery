@@ -7,7 +7,6 @@ import {
   Platform,
   Animated,
   type ListRenderItemInfo,
-  type ViewToken,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
@@ -17,6 +16,7 @@ import * as Haptics from 'expo-haptics';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
+import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
 import { StepLockedState } from '../components/StepLockedState';
@@ -61,11 +61,9 @@ export function StepDetailScreen(): React.ReactElement {
   const isLocked = stepNumber > 1;
 
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [currentVisibleQuestion, setCurrentVisibleQuestion] = useState(1);
   const [showGuidance, setShowGuidance] = useState(false);
 
   // Refs
-  const flatListRef = useRef<FlatList<ListItem>>(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -123,56 +121,19 @@ export function StepDetailScreen(): React.ReactElement {
     saveAnswer,
   });
 
-  const scrollToQuestion = useCallback(
-    (questionNumber: number) => {
-      if (!flatListRef.current || !stepData) return;
-
-      const targetIndex = questionIndexMap.get(questionNumber);
-
-      if (targetIndex !== undefined) {
-        flatListRef.current.scrollToIndex({
-          index: targetIndex,
-          animated: true,
-          viewPosition: 0,
-        });
-
-        if (Platform.OS !== 'web') {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        }
-      }
-    },
-    [questionIndexMap, stepData],
-  );
-
-  // Scroll to first unanswered question
-  const scrollToFirstUnanswered = useCallback(() => {
-    scrollToQuestion(firstUnansweredQuestion);
-  }, [firstUnansweredQuestion, scrollToQuestion]);
-
-  // Track visible question for counter
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const firstVisibleQuestionNumber = getFirstVisibleQuestionNumber(viewableItems);
-    if (firstVisibleQuestionNumber !== null) {
-      setCurrentVisibleQuestion(firstVisibleQuestionNumber);
-    }
-  }, []);
-
-  const viewabilityConfig = useMemo(
-    () => ({
-      itemVisiblePercentThreshold: 50,
-    }),
-    [],
-  );
-
-  useEffect(() => {
-    if (!initialQuestion || !stepData) return;
-
-    const timer = setTimeout(() => {
-      scrollToQuestion(initialQuestion);
-    }, 350);
-
-    return () => clearTimeout(timer);
-  }, [initialQuestion, scrollToQuestion, stepData]);
+  const {
+    flatListRef,
+    currentVisibleQuestion,
+    scrollToQuestion,
+    scrollToFirstUnanswered,
+    onViewableItemsChanged,
+    viewabilityConfig,
+  } = useStepQuestionNavigation({
+    hasStepData: Boolean(stepData),
+    initialQuestion,
+    firstUnansweredQuestion,
+    questionIndexMap,
+  });
 
   const renderItem = useCallback(
     ({ item }: ListRenderItemInfo<ListItem>) => {
@@ -429,6 +390,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
 });
+
 
 
 
