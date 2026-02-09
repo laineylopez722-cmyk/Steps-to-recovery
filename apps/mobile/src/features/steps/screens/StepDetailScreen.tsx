@@ -12,7 +12,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
@@ -24,6 +23,7 @@ import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
 import { StepQuestionCounter } from '../components/StepQuestionCounter';
 import { StepPrivacyInfoCard } from '../components/StepPrivacyInfoCard';
+import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
 import {
   buildQuestionIndexMap,
   buildStepListItems,
@@ -205,46 +205,7 @@ export function StepDetailScreen(): React.ReactElement {
   }
 
   if (isLoading) {
-    return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-        edges={['bottom']}
-      >
-        <View style={styles.loadingSkeletonContainer}>
-          {/* Header skeleton */}
-          <Card variant="elevated" style={styles.headerCard}>
-            <View style={styles.header}>
-              <Skeleton width={50} height={50} borderRadius={25} />
-              <View style={[styles.headerContent, { gap: 8 }]}>
-                <Skeleton width="80%" height={20} />
-                <Skeleton width="50%" height={14} />
-              </View>
-            </View>
-            <View style={styles.progressSection}>
-              <Skeleton width="100%" height={8} borderRadius={4} />
-            </View>
-          </Card>
-
-          {/* Description skeleton */}
-          <Card
-            variant="outlined"
-            style={[styles.descriptionCard, { borderColor: ds.colors.borderSubtle }]}
-          >
-            <Skeleton width="40%" height={12} />
-            <View style={{ height: 8 }} />
-            <Skeleton width="100%" height={14} />
-            <View style={{ height: 4 }} />
-            <Skeleton width="90%" height={14} />
-          </Card>
-
-          {/* Question cards skeleton */}
-          <View style={{ padding: 16, gap: 16 }}>
-            <Skeleton width="100%" height={100} borderRadius={8} />
-            <Skeleton width="100%" height={100} borderRadius={8} />
-          </View>
-        </View>
-      </SafeAreaView>
-    );
+    return <StepDetailLoadingState />;
   }
 
   const answeredCount = answeredQuestionNumbers.size;
@@ -357,32 +318,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
   },
-  loadingSkeletonContainer: {
-    flex: 1,
-  },
-  headerCard: {
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  progressSection: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-
-  descriptionCard: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-  },
 
   contentContainer: {
     padding: 16,
@@ -390,6 +325,8 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
 });
+
+
 
 
 
