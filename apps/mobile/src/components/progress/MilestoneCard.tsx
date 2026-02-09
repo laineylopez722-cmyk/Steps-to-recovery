@@ -17,6 +17,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { TimeMilestone } from '@recovery/shared';
+import { ds } from '../../design-system/tokens/ds';
 
 interface MilestoneCardProps {
   milestone: TimeMilestone;
@@ -60,7 +61,7 @@ export const MilestoneCard = memo(function MilestoneCard({
             </Text>
             {isAchieved && (
               <View style={styles.checkBadge}>
-                <Feather name="check" size={12} color="#ffffff" />
+                <Feather name="check" size={12} color={ds.semantic.text.onDark} />
               </View>
             )}
           </View>
@@ -73,7 +74,7 @@ export const MilestoneCard = memo(function MilestoneCard({
 
             {isAchieved ? (
               <View style={styles.achievedRow}>
-                <Feather name="check-circle" size={14} color="#4ade80" />
+                <Feather name="check-circle" size={14} color={ds.colors.success} />
                 <Text style={styles.achievedText}>
                   {achievedAt
                     ? `Achieved on ${achievedAt.toLocaleDateString('en-US', {
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
   },
   achievedCard: {
     borderLeftWidth: 4,
-    borderLeftColor: '#4ade80',
+    borderLeftColor: ds.colors.success,
   },
   container: {
     flexDirection: 'row',
@@ -131,14 +132,14 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
     position: 'relative',
   },
   emojiContainerAchieved: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: ds.colors.successMuted,
   },
   emoji: {
     fontSize: 28,
@@ -150,11 +151,11 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#0f172a',
+    borderColor: ds.colors.bgPrimary,
   },
   content: {
     flex: 1,
@@ -162,11 +163,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginBottom: 4,
   },
   titleAchieved: {
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   achievedRow: {
     flexDirection: 'row',
@@ -175,40 +176,40 @@ const styles = StyleSheet.create({
   },
   achievedText: {
     fontSize: 14,
-    color: '#4ade80',
+    color: ds.colors.success,
     fontWeight: '500',
   },
   daysUntilText: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
   progressContainer: {
     marginTop: 12,
   },
   progressTrack: {
     height: 6,
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 3,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: ds.colors.info,
     borderRadius: 3,
   },
   progressText: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 4,
     textAlign: 'right',
   },
   message: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     marginTop: 10,
     lineHeight: 20,
   },
   messageAchieved: {
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
 });

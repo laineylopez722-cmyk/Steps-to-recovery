@@ -18,6 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
 import { hapticThreshold, hapticImpact } from '../../utils/haptics';
+import { ds } from '../tokens/ds';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ACTION_WIDTH = 80;
@@ -223,7 +224,7 @@ export function SwipeableListItem({
         >
           {action.icon}
           {action.label && (
-            <Text style={[styles.actionLabel, { color: '#FFFFFF' }]}>{action.label}</Text>
+            <Text style={[styles.actionLabel, { color: ds.semantic.text.onDark }]}>{action.label}</Text>
           )}
         </View>
       </Animated.View>

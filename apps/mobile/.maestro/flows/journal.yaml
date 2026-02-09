@@ -1,0 +1,167 @@
+# E2E Test: Journal Flow
+# Tests: Create entry → Edit entry → View list
+
+appId: com.recovery.stepstorecovery
+tags:
+  - journal
+  - critical
+
+env:
+  ENTRY_TITLE: "Test Journal Entry"
+  ENTRY_CONTENT: "This is a test journal entry created during E2E testing. I'm grateful for my recovery journey."
+  ENTRY_CONTENT_EDITED: "This is an edited test journal entry. Recovery is possible one day at a time."
+
+---
+
+# Launch app
+- launchApp
+
+- waitForAnimationToEnd
+
+# ============================================
+# Navigate to Journal Tab
+# ============================================
+
+# Ensure we're logged in
+- runFlow:
+    when:
+      visible: "Welcome Back"
+    commands:
+      - tapOn: "Sign Up"
+      - tapOn:
+          id: "signup-email-input"
+      - inputText: "journal.{{RANDOM}}@test.com"
+      - tapOn:
+          id: "signup-password-input"
+      - inputText: "TestPass123!"
+      - tapOn:
+          id: "signup-confirm-password-input"
+      - inputText: "TestPass123!"
+      - tapOn:
+          id: "signup-submit-button"
+      - extendedWaitUntil:
+          visible: "Clean Time"
+          timeout: 30000
+
+# Navigate to Journal tab
+- tapOn: "Journal"
+
+- extendedWaitUntil:
+    visible: "Journal"
+    timeout: 10000
+
+# Verify journal screen loaded
+- assertVisible: "End-to-end encrypted"
+
+# ============================================
+# Create New Journal Entry
+# ============================================
+
+# Tap New button
+- tapOn:
+    id: "journal-new-entry-button"
+
+# Wait for editor (auto-save is enabled, no save button needed)
+- waitForAnimationToEnd
+
+# Enter title
+- tapOn:
+    id: "journal-title-input"
+- inputText: "${ENTRY_TITLE}"
+
+# Enter content
+- tapOn:
+    id: "journal-content-input"
+- inputText: "${ENTRY_CONTENT}"
+
+# Wait for auto-save (2 second delay in app)
+- extendedWaitUntil:
+    visible: "Saving..."
+    timeout: 5000
+
+# Wait for save to complete
+- waitForAnimationToEnd
+
+# Go back to list (entry auto-saves)
+- tapOn:
+    id: "journal-back-button"
+    optional: true
+- tapOn: "Go back"
+    optional: true
+
+# Alternative: Tap back button using chevron
+- tapOn:
+    id: "back-button"
+    optional: true
+
+# Wait for return to list
+- extendedWaitUntil:
+    visible: "Journal"
+    timeout: 15000
+
+# Verify entry appears in list
+- assertVisible: "${ENTRY_TITLE}"
+
+# Take screenshot
+- takeScreenshot: journal-entry-created
+
+# ============================================
+# Edit Journal Entry
+# ============================================
+
+# Tap on the entry to edit
+- tapOn: "${ENTRY_TITLE}"
+
+# Wait for editor
+- waitForAnimationToEnd
+
+# Update content
+- tapOn:
+    id: "journal-content-input"
+- eraseText
+- inputText: "${ENTRY_CONTENT_EDITED}"
+
+# Wait for auto-save
+- extendedWaitUntil:
+    visible: "Saving..."
+    timeout: 5000
+
+# Wait for save to complete
+- waitForAnimationToEnd
+
+# Go back to list
+- tapOn: "Go back"
+    optional: true
+
+# Wait for return to list
+- extendedWaitUntil:
+    visible: "Journal"
+    timeout: 15000
+
+# Verify edited content preview appears
+- assertVisible: "edited test journal"
+
+# Take screenshot
+- takeScreenshot: journal-entry-edited
+
+# ============================================
+# Search Journal Entries
+# ============================================
+
+# Tap search bar
+- tapOn:
+    id: "journal-search-input"
+
+# Search for the entry
+- inputText: "recovery"
+
+# Verify search results
+- assertVisible: "${ENTRY_TITLE}"
+
+# Clear search by clearing text
+- tapOn:
+    id: "journal-search-input"
+- eraseText
+
+# Take final screenshot
+- takeScreenshot: journal-flow-complete

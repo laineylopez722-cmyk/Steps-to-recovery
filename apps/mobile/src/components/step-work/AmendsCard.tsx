@@ -17,6 +17,7 @@ import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from '
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { AmendsStatus, AmendsType } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 const STATUS_CONFIG: Record<
   AmendsStatus,
@@ -30,37 +31,37 @@ const STATUS_CONFIG: Record<
 > = {
   not_willing: {
     label: 'Not Yet Willing',
-    color: '#f87171',
-    bgColor: 'rgba(239, 68, 68, 0.15)',
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    color: ds.semantic.intent.alert.solid,
+    bgColor: ds.semantic.intent.alert.subtle,
+    borderColor: ds.semantic.intent.alert.solid,
     icon: 'x-circle',
   },
   willing: {
     label: 'Willing',
-    color: '#fbbf24',
-    bgColor: 'rgba(245, 158, 11, 0.15)',
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    color: ds.colors.warning,
+    bgColor: ds.colors.warningMuted,
+    borderColor: ds.colors.warning,
     icon: 'heart',
   },
   planned: {
     label: 'Planned',
-    color: '#60a5fa',
-    bgColor: 'rgba(59, 130, 246, 0.15)',
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    color: ds.colors.info,
+    bgColor: ds.colors.infoMuted,
+    borderColor: ds.colors.info,
     icon: 'calendar',
   },
   in_progress: {
     label: 'In Progress',
-    color: '#a78bfa',
-    bgColor: 'rgba(139, 92, 246, 0.15)',
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    color: ds.colors.accent,
+    bgColor: ds.colors.accentMuted,
+    borderColor: ds.colors.accent,
     icon: 'loader',
   },
   made: {
     label: 'Made',
-    color: '#4ade80',
-    bgColor: 'rgba(34, 197, 94, 0.15)',
-    borderColor: 'rgba(34, 197, 94, 0.3)',
+    color: ds.colors.success,
+    bgColor: ds.colors.successMuted,
+    borderColor: ds.colors.success,
     icon: 'check-circle',
   },
 };
@@ -163,7 +164,7 @@ export function AmendsCard({
               )}
             </View>
             <Animated.View style={iconAnimatedStyle}>
-              <Feather name="chevron-down" size={20} color="#64748b" />
+              <Feather name="chevron-down" size={20} color={ds.colors.textSecondary} />
             </Animated.View>
           </View>
 
@@ -180,7 +181,7 @@ export function AmendsCard({
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Type of Amends</Text>
                 <View style={styles.typeContainer}>
-                  <Feather name={TYPE_ICONS[amendsType]} size={16} color="#64748b" />
+                  <Feather name={TYPE_ICONS[amendsType]} size={16} color={ds.colors.textSecondary} />
                   <Text style={styles.typeText}>{TYPE_LABELS[amendsType]}</Text>
                 </View>
               </View>
@@ -196,7 +197,7 @@ export function AmendsCard({
                 <View style={styles.section}>
                   <Text style={styles.sectionTitle}>Made On</Text>
                   <View style={styles.madeOnContainer}>
-                    <Feather name="check-circle" size={16} color="#4ade80" />
+                    <Feather name="check-circle" size={16} color={ds.colors.success} />
                     <Text style={styles.madeOnText}>{madeAt.toLocaleDateString()}</Text>
                   </View>
                 </View>
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
   personName: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   statusBadge: {
     flexDirection: 'row',
@@ -248,14 +249,14 @@ const styles = StyleSheet.create({
   },
   harmPreview: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 6,
   },
   expandedContent: {
     marginTop: 16,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(51, 65, 85, 0.5)',
+    borderTopColor: ds.colors.bgTertiary,
   },
   section: {
     marginBottom: 16,
@@ -263,14 +264,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 6,
   },
   sectionText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: ds.colors.textPrimary,
     lineHeight: 20,
   },
   typeContainer: {
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
   },
   typeText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: ds.colors.textPrimary,
   },
   madeOnContainer: {
     flexDirection: 'row',
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
   },
   madeOnText: {
     fontSize: 14,
-    color: '#4ade80',
+    color: ds.colors.success,
     fontWeight: '500',
   },
 });

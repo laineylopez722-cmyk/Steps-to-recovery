@@ -9,11 +9,12 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import type { TextStyle, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ds } from '../tokens/ds';
 
 // Accent colors - iOS green
-const ACCENT = '#30D158';
-const ACCENT_BG = 'rgba(48, 209, 88, 0.1)';
-const SURFACE = '#1C1C1E';
+const ACCENT = ds.colors.success;
+const ACCENT_BG = ds.colors.successMuted;
+const SURFACE = ds.colors.bgSecondary;
 
 export interface SageCardProps {
   title?: string;
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     // iOS shadow
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -113,12 +114,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     letterSpacing: -0.1,
   } as TextStyle,
   description: {
     fontSize: 15,
     lineHeight: 20,
-    color: '#8E8E93',
+    color: ds.colors.textSecondary,
   } as TextStyle,
 });

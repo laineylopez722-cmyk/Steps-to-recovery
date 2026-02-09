@@ -1,0 +1,111 @@
+# E2E Test: Onboarding Flow
+# Tests: Sign up → Set sobriety date → Complete onboarding
+
+appId: com.recovery.stepstorecovery
+tags:
+  - onboarding
+  - critical
+  - auth
+
+---
+
+# Launch app and verify initial state
+- launchApp:
+    clearState: true
+
+# Wait for app to fully load
+- waitForAnimationToEnd
+
+# ============================================
+# Auth Screen - Navigate to Sign Up
+# ============================================
+
+# Check if we're on the login screen
+- assertVisible: "Welcome Back"
+
+# Navigate to Sign Up
+- tapOn: "Sign Up"
+
+# Wait for sign up screen
+- assertVisible: "Create Account"
+
+# Alternative: Check for the header testID
+- assertVisible:
+    id: "signup-header-title"
+
+# ============================================
+# Sign Up Flow
+# ============================================
+
+# Enter email (using a test email with timestamp for uniqueness)
+- tapOn:
+    id: "signup-email-input"
+- inputText: "testuser.*{{RANDOM}}@example.com"
+
+# Enter password
+- tapOn:
+    id: "signup-password-input"
+- inputText: "TestPassword123!"
+
+# Confirm password
+- tapOn:
+    id: "signup-confirm-password-input"
+- inputText: "TestPassword123!"
+
+# Tap Create Account button
+- tapOn:
+    id: "signup-submit-button"
+
+# Wait for onboarding to appear (or main app if onboarding skipped)
+- extendedWaitUntil:
+    visible:
+      oneOf:
+        - "Welcome to Recovery"
+        - "Good morning"
+    timeout: 30000
+
+# ============================================
+# Onboarding Flow (if presented)
+# ============================================
+
+- runFlow:
+    when:
+      visible: "Welcome to Recovery"
+    commands:
+      # Step 1: Welcome
+      - assertVisible: "Your journey starts here"
+      - tapOn: "Continue"
+      - waitForAnimationToEnd
+
+      # Step 2: Privacy
+      - assertVisible: "Privacy First"
+      - assertVisible: "Your data stays yours"
+      - tapOn: "I Understand"
+      - waitForAnimationToEnd
+
+      # Step 3: Ready to Begin
+      - assertVisible: "Ready to Begin"
+      - assertVisible: "One day at a time"
+      - tapOn: "Get Started"
+      - waitForAnimationToEnd
+
+# ============================================
+# Verify Main App Loaded
+# ============================================
+
+# Should now be on Home screen
+- assertVisible:
+    id: "home-screen"
+
+# Verify clean time tracker is visible
+- assertVisible: "Clean Time"
+
+# Verify tab navigation is present
+- assertVisible: "Home"
+- assertVisible: "Journal"
+- assertVisible: "Steps"
+- assertVisible: "Meetings"
+- assertVisible: "Profile"
+
+# Take success screenshot
+- takeScreenshot: onboarding-flow-complete

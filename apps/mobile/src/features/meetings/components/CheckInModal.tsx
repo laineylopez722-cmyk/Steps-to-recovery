@@ -36,7 +36,7 @@ interface CheckInModalProps {
   visible: boolean;
   meeting: MeetingWithDetails | null;
   onClose: () => void;
-  onConfirm: (notes?: string) => void;
+  onConfirm: (notes?: string) => Promise<boolean | void>;
   isLoading?: boolean;
 }
 
@@ -50,9 +50,16 @@ export function CheckInModal({
   const [notes, setNotes] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleConfirm = () => {
+  const handleConfirm = async (): Promise<void> => {
+    if (isLoading) {
+      return;
+    }
+
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    onConfirm(notes.trim() || undefined);
+    const success = await onConfirm(notes.trim() || undefined);
+    if (success === false) {
+      return;
+    }
     setNotes('');
 
     // Show success animation briefly

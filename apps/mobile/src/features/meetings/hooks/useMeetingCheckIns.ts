@@ -59,6 +59,7 @@ export function useMeetingCheckIns() {
     error,
     refetch,
     checkIn: checkInMutation.mutate,
+    checkInAsync: checkInMutation.mutateAsync,
     isCheckingIn: checkInMutation.isPending,
     checkInError: checkInMutation.error,
     lastCheckInResult: checkInMutation.data,

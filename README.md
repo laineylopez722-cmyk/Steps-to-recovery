@@ -1,5 +1,9 @@
 # Steps to Recovery
 
+[![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
+[![Coverage](https://img.shields.io/badge/coverage-75%25%2B-brightgreen)]()
+[![License](https://img.shields.io/badge/license-MIT-blue)]()
+
 A privacy-first 12-Step Recovery Companion mobile application built with React Native and Expo.
 
 ## 🎯 Mission
@@ -20,9 +24,10 @@ To provide a secure, supportive digital companion for individuals in recovery, e
 - 📔 **Encrypted Personal Journal** - Daily reflections with mood tracking
 - 📝 **12-Step Work Tracker** - Guided forms for each step
 - 🤝 **Sponsor Connection** - Secure sharing with your sponsor
-- 📍 **Meeting Geofencing** - Location-based reminders
-- 🔥 **Sobriety Streaks** - Track milestones and celebrate progress
+- 📍 **Meeting Finder** - Location-based meeting discovery
+- 🔥 **Sobriety Tracker** - Track milestones and celebrate progress
 - 🔔 **Smart Notifications** - Just-in-time support and reminders
+- 🤖 **AI Companion** - Local-first AI support
 
 ### User Experience
 
@@ -35,14 +40,26 @@ To provide a secure, supportive digital companion for individuals in recovery, e
 
 - **Frontend**: React Native + Expo (TypeScript)
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Offline Storage**: SQLite with SQLCipher encryption
+- **Offline Storage**: SQLite with encryption
 - **State Management**: React Query + Zustand
 - **Navigation**: React Navigation
 - **Monorepo**: Turborepo
 
 ## 📁 Project Structure
 
-See [SETUP.md](./SETUP.md) for detailed structure and setup instructions.
+```
+apps/
+  mobile/           # Expo React Native app
+    src/
+      features/     # Feature-based modules
+      components/   # Shared UI components
+      contexts/     # React contexts
+      utils/        # Utilities (encryption, etc.)
+      design-system/# Design tokens & components
+    .maestro/       # E2E test flows
+packages/
+  shared/           # Shared types and utilities
+```
 
 ## 🚀 Quick Start
 
@@ -59,14 +76,90 @@ npm start
 
 See [SETUP.md](./SETUP.md) for complete setup instructions.
 
+## 🧪 Testing
+
+### Unit Tests
+
+```bash
+# Run all tests
+cd apps/mobile
+npm test
+
+# Run with coverage
+npm run test:coverage
+
+# Run encryption tests (critical)
+npm run test:encryption
+```
+
+**Current Coverage:**
+- Journal Hooks: 96% (37 tests)
+- Sync Service: 75% (28 tests)
+- Encryption: 94% (12 tests)
+- **Overall: 75%+**
+
+### E2E Tests
+
+```bash
+# Install Maestro
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+# Run all E2E tests
+cd apps/mobile
+maestro test .maestro/flows/
+
+# Run specific flow
+maestro test .maestro/flows/onboarding.yaml
+```
+
+See [Maestro README](apps/mobile/.maestro/README.md) for details.
+
+## 📦 Building
+
+### Prerequisites
+- Expo account
+- EAS CLI: `npm install -g eas-cli`
+- Apple Developer account (for iOS)
+- Google Play Console account (for Android)
+
+### Environment Setup
+
+Create `apps/mobile/.env`:
+```bash
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+EXPO_PUBLIC_SENTRY_DSN=optional-sentry-dsn
+```
+
+### Development Build
+
+```bash
+cd apps/mobile
+eas build --profile development --platform ios
+eas build --profile development --platform android
+```
+
+### Production Build
+
+```bash
+cd apps/mobile
+eas build --profile production --platform all
+
+# Submit to stores
+eas submit --platform ios --latest
+eas submit --platform android --latest
+```
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
 ## 📋 Development Roadmap
 
 - ✅ **Phase 0**: Project scaffolding and setup
-- ⏳ **Phase 1**: Core architecture & user authentication
-- ⏳ **Phase 2**: Journaling & step work features
-- ⏳ **Phase 3**: Sponsor connection & sharing
-- ⏳ **Phase 4**: Notifications, geofencing & streaks
-- ⏳ **Phase 5**: Polish, accessibility, testing
+- ✅ **Phase 1**: Core architecture & user authentication
+- ✅ **Phase 2**: Journaling & step work features
+- ✅ **Phase 3**: Sponsor connection & sharing
+- ✅ **Phase 4**: Notifications & AI companion
+- ⏳ **Phase 5**: Beta testing & polish
 
 ## 🔒 Privacy & Security
 
@@ -77,18 +170,22 @@ This app is built with privacy as a fundamental principle:
 - Zero-knowledge architecture where possible
 - Supabase Row-Level Security enforced
 - No collection of personal data beyond what's necessary
-- Optional anonymous usage mode
+
+See [Privacy Policy](./docs/PRIVACY_POLICY.md) and [Security Policy](./SECURITY.md).
 
 ## 📖 Documentation
 
-- [Setup Guide](./SETUP.md) - Complete setup and installation
-- [Development Plan](./plan.txt) - Detailed MVP implementation plan
-- [Tech Stack Guide](./tech%20stack.txt) - In-depth technology decisions
-- [Claude Prompts](./.claude/) - Feature-specific implementation guides
-- [API & Data Model](./docs/API.md) - Local schema, sync, and Supabase overview
-- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and fixes
-- [Privacy Policy (Draft)](./docs/PRIVACY_POLICY.md) - Review before release
-- [Terms of Service (Draft)](./docs/TERMS_OF_SERVICE.md) - Review before release
+| Document | Description |
+|----------|-------------|
+| [Setup Guide](./SETUP.md) | Complete setup and installation |
+| [Testing Guide](./TESTING.md) | Testing strategy and commands |
+| [Deployment Guide](./DEPLOYMENT.md) | Build and release process |
+| [Beta Release Checklist](./docs/BETA_RELEASE_CHECKLIST.md) | Pre-release verification |
+| [Status Report](./docs/STATUS_REPORT.md) | Current project status |
+| [Privacy Policy](./docs/PRIVACY_POLICY.md) | User privacy information |
+| [Terms of Service](./docs/TERMS_OF_SERVICE.md) | Legal terms |
+| [API & Data Model](./docs/API.md) | Technical documentation |
+| [Troubleshooting](./TROUBLESHOOTING.md) | Common issues and fixes |
 
 ## 🤝 Contributing
 

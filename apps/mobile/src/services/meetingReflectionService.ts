@@ -94,21 +94,44 @@ export async function savePostMeetingReflection(
   prompts: PostMeetingPrompts,
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await supabase
+    const now = new Date().toISOString();
+
+    const { data: updatedRows, error: updateError } = await supabase
       .from('meeting_reflections')
       .update({
         post_key_takeaway: prompts.keyTakeaway,
         post_mood: prompts.mood,
         post_gratitude: prompts.gratitude,
         post_will_apply: prompts.willApply,
-        updated_at: new Date().toISOString(),
+        updated_at: now,
       })
       .eq('checkin_id', checkinId)
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .select('id');
 
-    if (error) {
-      logger.warn('Meeting reflection: Post-meeting save failed', { error });
-      return { success: false, error: error.message };
+    if (updateError) {
+      logger.warn('Meeting reflection: Post-meeting save failed', { error: updateError });
+      return { success: false, error: updateError.message };
+    }
+
+    if (!updatedRows || updatedRows.length === 0) {
+      const { error: insertError } = await supabase.from('meeting_reflections').insert({
+        user_id: userId,
+        checkin_id: checkinId,
+        post_key_takeaway: prompts.keyTakeaway,
+        post_mood: prompts.mood,
+        post_gratitude: prompts.gratitude,
+        post_will_apply: prompts.willApply,
+        created_at: now,
+        updated_at: now,
+      });
+
+      if (insertError) {
+        logger.warn('Meeting reflection: Post-meeting insert fallback failed', {
+          error: insertError,
+        });
+        return { success: false, error: insertError.message };
+      }
     }
 
     logger.info('Meeting reflection: Post-meeting saved', { userId, checkinId });

@@ -11,6 +11,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, spacing, typography } from '../tokens/modern';
+import { ds } from '../tokens/ds';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -240,16 +241,17 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h1,
-    color: '#FFF',
-    textShadowColor: 'rgba(0,0,0,0.3)',
+    color: ds.semantic.text.onDark,
+    textShadowColor: ds.colors.shadow,
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 4,
   },
   subtitle: {
     ...typography.bodyLarge,
-    color: 'rgba(255,255,255,0.8)',
+    color: ds.semantic.text.onDark,
+    opacity: 0.8,
     marginTop: spacing[1],
-    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowColor: ds.colors.shadow,
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },

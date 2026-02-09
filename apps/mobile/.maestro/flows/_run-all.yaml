@@ -1,0 +1,20 @@
+# Master Test Suite: Run All Critical Path Tests
+# This flow orchestrates all E2E tests in sequence
+
+appId: com.recovery.stepstorecovery
+tags:
+  - suite
+  - all
+
+---
+
+# Run all critical path tests in order
+- runFlow: onboarding.yaml
+- runFlow: login.yaml
+- runFlow: daily-checkin.yaml
+- runFlow: journal.yaml
+- runFlow: step-work.yaml
+- runFlow: offline-sync.yaml
+
+# Success notification
+- evalScript: ${console.log("✅ All E2E tests passed!")}

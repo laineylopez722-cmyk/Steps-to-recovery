@@ -1,0 +1,26 @@
+# Maestro E2E Configuration for Steps to Recovery App
+# https://maestro.mobile.dev
+
+# Base configuration for all flows
+appId: com.recovery.stepstorecovery
+
+# Default timeout for element lookups (milliseconds)
+# Maestro automatically waits for elements - this is the maximum wait time
+timeout: 15000
+
+# Default animation handling
+# Maestro is smart about waiting for animations to complete
+animations:
+  enabled: true
+
+# Execution configuration
+executionOrder:
+  # Continue on failure to get full test results
+  continueOnFailure: false
+
+# Optional: Screenshot configuration for debugging
+screenshots:
+  # Take screenshots on failure
+  onFailure: true
+  # Screenshot format
+  format: png

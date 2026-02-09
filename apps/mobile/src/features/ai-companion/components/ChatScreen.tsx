@@ -146,7 +146,7 @@ export function ChatScreen({ userId }: ChatScreenProps) {
             </View>
             
             <Pressable
-              onPress={() => (navigation as any).navigate('ProfileStack', { screen: 'AISettings' })}
+              onPress={() => (navigation as any).navigate('Profile', { screen: 'AISettings' })}
               style={({ pressed }) => [
                 styles.headerButton,
                 pressed && styles.headerButtonPressed,

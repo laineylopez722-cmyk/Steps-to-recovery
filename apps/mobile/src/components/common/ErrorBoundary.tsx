@@ -9,6 +9,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { logger } from '../../utils/logger';
+import { ds } from '../../design-system/tokens/ds';
 
 interface Props {
   children: ReactNode;
@@ -71,7 +72,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <View className="items-center">
               {/* Error Icon */}
               <View className="w-20 h-20 rounded-full bg-amber-500/20 items-center justify-center mb-6">
-                <Feather name="alert-triangle" size={40} color="#fbbf24" />
+                <Feather name="alert-triangle" size={40} color={ds.colors.warning} />
               </View>
 
               {/* Error Message */}
@@ -99,7 +100,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 accessibilityRole="button"
                 accessibilityLabel="Try again"
               >
-                <Feather name="refresh-cw" size={20} color="#fff" />
+                <Feather name="refresh-cw" size={20} color={ds.semantic.text.onDark} />
                 <Text className="text-white font-semibold text-lg">Try Again</Text>
               </TouchableOpacity>
 

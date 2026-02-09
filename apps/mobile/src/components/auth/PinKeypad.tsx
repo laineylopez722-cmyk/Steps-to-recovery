@@ -9,6 +9,7 @@ import {
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import type { ReactElement } from 'react';
+import { ds } from '../../design-system/tokens/ds';
 
 interface PinKeypadProps {
   onDigitPress: (digit: string) => void;
@@ -79,7 +80,7 @@ export const PinKeypadComponent = memo(function PinKeypadComponent({
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRadius: BUTTON_RADIUS,
-                    backgroundColor: disabled ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)',
+                    backgroundColor: disabled ? ds.colors.bgTertiary : ds.colors.bgSecondary,
                   } as ViewStyle
                 }
                 accessibilityRole="button"
@@ -90,13 +91,13 @@ export const PinKeypadComponent = memo(function PinKeypadComponent({
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
                 {isBackspace ? (
-                  <Feather name="delete" size={24} color="#94a3b8" />
+                  <Feather name="delete" size={24} color={ds.colors.textTertiary} />
                 ) : (
                   <Text
                     style={
                       {
                         fontSize: 24,
-                        color: disabled ? '#64748b' : 'white',
+                        color: disabled ? ds.colors.textSecondary : ds.semantic.text.onDark,
                         fontWeight: '500' as RNTextStyle['fontWeight'],
                       } as RNTextStyle
                     }

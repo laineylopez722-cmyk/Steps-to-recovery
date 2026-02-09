@@ -124,9 +124,18 @@ export function SyncStatusIndicator() {
 
   const status = getStatus();
 
+  // Determine testID based on sync state
+  const getTestID = () => {
+    if (!isOnline) return 'sync-offline-indicator';
+    if (isSyncing) return 'sync-syncing-indicator';
+    if (hasError) return 'sync-error-indicator';
+    if (totalPending > 0) return 'sync-pending-indicator';
+    return 'sync-completed-indicator';
+  };
+
   return (
     <TouchableOpacity
-      testID="sync-status-indicator"
+      testID={getTestID()}
       style={[styles.container, { backgroundColor: theme.colors.surface }]}
       onPress={handlePress}
       disabled={isSyncing || !isOnline}

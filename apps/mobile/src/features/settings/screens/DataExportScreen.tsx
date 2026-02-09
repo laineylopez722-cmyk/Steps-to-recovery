@@ -9,6 +9,7 @@ import { GradientButton } from '../../../design-system/components/GradientButton
 import { AnimatedCheckbox } from '../../../design-system/components/MicroInteractions';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useToast } from '../../../design-system/components/ToastProvider';
+import { ds } from '../../../design-system/tokens/ds';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -169,7 +170,7 @@ export function DataExportScreen(): React.ReactElement {
                 variant="primary"
                 size="lg"
                 fullWidth
-                icon={<MaterialIcons name="download" size={20} color="#FFF" />}
+                icon={<MaterialIcons name="download" size={20} color={ds.semantic.text.onDark} />}
                 onPress={handleExport}
               />
             )}
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
   },
   formatCardSelected: {
     borderColor: darkAccent.primary,
-    backgroundColor: `${darkAccent.primary}15`,
+    backgroundColor: ds.colors.accentMuted,
   },
   formatLabel: {
     ...typography.body,
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
   privacyNotice: {
     flexDirection: 'row',
     gap: spacing[2],
-    backgroundColor: `${darkAccent.info}15`,
+    backgroundColor: ds.colors.infoMuted,
     padding: spacing[3],
     borderRadius: radius.lg,
   },

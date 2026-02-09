@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { darkAccent, gradients, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
+import { ds } from '../tokens/ds';
 
 // Animated Checkbox
 interface AnimatedCheckboxProps {
@@ -70,7 +71,7 @@ export function AnimatedCheckbox({
     >
       <Animated.View style={[styles.checkbox, animatedStyle]}>
         <Animated.View style={checkStyle}>
-          <MaterialIcons name="check" size={18} color="#FFF" />
+          <MaterialIcons name="check" size={18} color={ds.semantic.text.onDark} />
         </Animated.View>
       </Animated.View>
       {label && (
@@ -224,7 +225,7 @@ export function SuccessCheckmark({
           colors={gradients.success}
           style={[styles.checkmarkBackground, { borderRadius: size / 2 }]}
         >
-          <MaterialIcons name="check" size={size * 0.5} color="#FFF" />
+          <MaterialIcons name="check" size={size * 0.5} color={ds.semantic.text.onDark} />
         </LinearGradient>
       </View>
     </Animated.View>
@@ -297,7 +298,7 @@ export function FavoriteButton({
         <MaterialIcons
           name={isFavorite ? 'favorite' : 'favorite-border'}
           size={size}
-          color={isFavorite ? '#EF4444' : darkAccent.textMuted}
+          color={isFavorite ? ds.semantic.intent.alert.solid : darkAccent.textMuted}
         />
       </Animated.View>
     </Pressable>
@@ -372,7 +373,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,

@@ -1,0 +1,195 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Steps to Recovery - Performance Budget",
+  "description": "Performance targets and budgets for the mobile application",
+  "version": "1.0.0",
+  "lastUpdated": "2026-02-09",
+  "budgets": {
+    "bundleSize": {
+      "max": 5242880,
+      "target": 4194304,
+      "unit": "bytes",
+      "maxFormatted": "5MB",
+      "targetFormatted": "4MB",
+      "description": "Total JavaScript bundle size",
+      "breakdown": {
+        "mainBundle": {
+          "max": 3145728,
+          "target": 2097152,
+          "description": "Main app bundle"
+        },
+        "vendorBundle": {
+          "max": 2097152,
+          "target": 1572864,
+          "description": "Third-party dependencies"
+        },
+        "asyncChunks": {
+          "max": 1048576,
+          "target": 524288,
+          "description": "Lazy-loaded chunks per route"
+        }
+      }
+    },
+    "coldStart": {
+      "max": 3000,
+      "target": 2000,
+      "unit": "milliseconds",
+      "description": "Time from app launch to interactive",
+      "stages": {
+        "jsExecution": {
+          "max": 1000,
+          "target": 500,
+          "description": "JavaScript bundle execution"
+        },
+        "nativeInit": {
+          "max": 1500,
+          "target": 1000,
+          "description": "Native module initialization"
+        },
+        "render": {
+          "max": 500,
+          "target": 300,
+          "description": "First render completion"
+        }
+      }
+    },
+    "screenLoad": {
+      "max": 500,
+      "target": 300,
+      "unit": "milliseconds",
+      "description": "Time to render screen content",
+      "exceptions": {
+        "dataHeavy": {
+          "max": 1000,
+          "target": 800,
+          "description": "Screens with heavy data loading"
+        }
+      }
+    },
+    "renderTime": {
+      "max": 33,
+      "target": 16,
+      "unit": "milliseconds",
+      "description": "Component render time per frame (60fps = 16ms, 30fps = 33ms)"
+    },
+    "memory": {
+      "max": 134217728,
+      "target": 100663296,
+      "unit": "bytes",
+      "maxFormatted": "128MB",
+      "targetFormatted": "96MB",
+      "description": "Maximum JavaScript heap size",
+      "warnings": {
+        "yellow": 104857600,
+        "red": 134217728
+      }
+    },
+    "listPerformance": {
+      "scrollFrameTime": {
+        "max": 16,
+        "target": 8,
+        "unit": "milliseconds",
+        "description": "Time to render a frame during scroll"
+      },
+      "initialRender": {
+        "max": 100,
+        "target": 50,
+        "unit": "milliseconds",
+        "description": "Time to render initial list items"
+      }
+    },
+    "apiResponse": {
+      "max": 5000,
+      "target": 2000,
+      "unit": "milliseconds",
+      "description": "API call response time",
+      "breakdown": {
+        "dns": {
+          "max": 500,
+          "target": 200
+        },
+        "connection": {
+          "max": 500,
+          "target": 200
+        },
+        "ttfb": {
+          "max": 1000,
+          "target": 500,
+          "description": "Time to first byte"
+        },
+        "download": {
+          "max": 3000,
+          "target": 1100
+        }
+      }
+    },
+    "assetLoading": {
+      "image": {
+        "max": 500,
+        "target": 200,
+        "unit": "milliseconds",
+        "description": "Time to load and display an image"
+      },
+      "font": {
+        "max": 1000,
+        "target": 500,
+        "unit": "milliseconds",
+        "description": "Time to load custom fonts"
+      }
+    }
+  },
+  "thresholds": {
+    "largeDependency": {
+      "size": 102400,
+      "description": "Dependencies larger than 100KB should be reviewed"
+    },
+    "largeComponent": {
+      "lines": 200,
+      "description": "Components larger than 200 lines should be split"
+    },
+    "largeFunction": {
+      "lines": 50,
+      "description": "Functions larger than 50 lines should be refactored"
+    },
+    "largeFile": {
+      "lines": 300,
+      "description": "Files larger than 300 lines should be modularized"
+    }
+  },
+  "monitoring": {
+    "enabled": true,
+    "sampleRate": 1.0,
+    "metrics": [
+      "renderTime",
+      "screenLoad",
+      "coldStart",
+      "memoryUsage",
+      "bundleSize"
+    ],
+    "alerting": {
+      "enabled": true,
+      "channels": ["console", "sentry"],
+      "thresholds": {
+        "error": 0.9,
+        "warning": 0.75
+      }
+    }
+  },
+  "optimization": {
+    "lazyLoading": {
+      "screens": true,
+      "components": true,
+      "libraries": ["@sentry/react-native", "expo-print", "expo-sharing"]
+    },
+    "caching": {
+      "images": true,
+      "apiResponses": true,
+      "computation": true
+    },
+    "memoization": {
+      "components": true,
+      "expensiveComputations": true,
+      "callbacks": true
+    }
+  }
+}

@@ -15,6 +15,11 @@ import { GradientButton } from '../design-system/components/GradientButton';
 import { PreMeetingReflectionModal } from '../features/meetings/components/PreMeetingReflectionModal';
 import { PostMeetingReflectionModal } from '../features/meetings/components/PostMeetingReflectionModal';
 import { checkInToMeeting } from '../services/meetingCheckInService';
+import { ds } from '../design-system/tokens/ds';
+import {
+  savePreMeetingReflection,
+  type PreMeetingPrompts,
+} from '../services/meetingReflectionService';
 
 interface QuickMeetingCheckInProps {
   userId: string;
@@ -28,7 +33,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
   const [showPreModal, setShowPreModal] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
   const [currentCheckin, setCurrentCheckin] = useState<MeetingCheckIn | null>(null);
-  const [_preMood, _setPreMood] = useState<number | undefined>();
+  const [preMood, setPreMood] = useState<number | undefined>();
 
   const handleQuickCheckIn = async () => {
     if (!meetingName.trim()) {
@@ -66,10 +71,19 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
     }
   };
 
-  const handlePreComplete = () => {
+  const handlePreComplete = async (prompts: PreMeetingPrompts): Promise<void> => {
+    if (!currentCheckin) {
+      setShowPreModal(false);
+      return;
+    }
+
+    const result = await savePreMeetingReflection(userId, currentCheckin.id, prompts);
+    if (!result.success) {
+      Alert.alert('Saved check-in', 'Your check-in was saved, but pre-meeting reflection was not.');
+    } else {
+      setPreMood(prompts.mood);
+    }
     setShowPreModal(false);
-    // Store pre-mood for post-modal
-    // In real implementation, fetch from reflection service
   };
 
   const handleShowPostModal = () => {
@@ -143,10 +157,9 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
       {currentCheckin && (
         <PreMeetingReflectionModal
           visible={showPreModal}
-          userId={userId}
-          checkinId={currentCheckin.id}
           meetingName={currentCheckin.meetingName || meetingName}
           onClose={() => setShowPreModal(false)}
+          onSkip={() => setShowPreModal(false)}
           onComplete={handlePreComplete}
         />
       )}
@@ -158,7 +171,7 @@ export function QuickMeetingCheckIn({ userId }: QuickMeetingCheckInProps): React
           userId={userId}
           checkinId={currentCheckin.id}
           meetingName={currentCheckin.meetingName || meetingName}
-          preMood={_preMood}
+          preMood={preMood}
           onClose={() => setShowPostModal(false)}
           onComplete={() => {
             setShowPostModal(false);
@@ -176,17 +189,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: spacing[3],
-    backgroundColor: 'rgba(52,211,153,0.1)',
+    backgroundColor: ds.colors.successMuted,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(52,211,153,0.3)',
+    borderColor: ds.colors.success,
+    opacity: 0.3,
     gap: spacing[3],
   },
   checkInIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(52,211,153,0.15)',
+    backgroundColor: ds.colors.successMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -212,13 +226,14 @@ const styles = StyleSheet.create({
     color: darkAccent.text,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.colors.bgSecondary,
+    opacity: 0.05,
     borderRadius: radius.lg,
     padding: spacing[3],
     color: darkAccent.text,
     ...typography.body,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -228,11 +243,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: spacing[3],
     borderRadius: radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.colors.bgSecondary,
+    opacity: 0.05,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
   },
   cancelButtonText: {
     ...typography.body,

@@ -1,0 +1,117 @@
+# E2E Test: Step Work Flow
+# Tests: Navigate to step → Answer questions → View progress
+
+appId: com.recovery.stepstorecovery
+tags:
+  - steps
+  - step-work
+  - critical
+
+env:
+  ANSWER_1: "I admitted I was powerless over my addiction"
+  ANSWER_2: "My life had become unmanageable and I needed help"
+
+---
+
+# Launch app
+- launchApp
+
+- waitForAnimationToEnd
+
+# ============================================
+# Navigate to Steps Tab
+# ============================================
+
+# Ensure we're logged in
+- runFlow:
+    when:
+      visible: "Welcome Back"
+    commands:
+      - tapOn: "Sign Up"
+      - tapOn:
+          id: "signup-email-input"
+      - inputText: "steps.{{RANDOM}}@test.com"
+      - tapOn:
+          id: "signup-password-input"
+      - inputText: "TestPass123!"
+      - tapOn:
+          id: "signup-confirm-password-input"
+      - inputText: "TestPass123!"
+      - tapOn:
+          id: "signup-submit-button"
+      - extendedWaitUntil:
+          visible: "Clean Time"
+          timeout: 30000
+
+# Navigate to Steps tab
+- tapOn: "Steps"
+
+- extendedWaitUntil:
+    visible: "12 Steps"
+    timeout: 10000
+
+# Verify steps overview loaded
+- assertVisible: "Step 1"
+- assertVisible: "Step 2"
+- assertVisible: "Step 3"
+
+# ============================================
+# Open Step 1
+# ============================================
+
+# Tap on Step 1
+- tapOn: "Step 1"
+
+- extendedWaitUntil:
+    visible: "We admitted we were powerless"
+    timeout: 10000
+
+# Verify step content
+- assertVisible: "Step 1"
+
+# ============================================
+# Answer Step Questions
+# ============================================
+
+# Scroll to questions if needed
+- scrollUntilVisible:
+    element:
+      text: "Reflection Questions"
+    direction: DOWN
+
+# Answer first question
+- tapOn:
+    id: "step-question-1-input"
+- inputText: "${ANSWER_1}"
+
+# Answer second question
+- tapOn:
+    id: "step-question-2-input"
+- inputText: "${ANSWER_2}"
+
+# Save progress
+- tapOn: "Save Progress"
+
+# Verify save confirmation
+- assertVisible: "Progress saved"
+
+# Take screenshot
+- takeScreenshot: step-work-saved
+
+# ============================================
+# View Progress
+# ============================================
+
+# Go back to steps overview
+- tapOn: "Back"
+
+- extendedWaitUntil:
+    visible: "12 Steps"
+    timeout: 10000
+
+# Verify Step 1 shows progress indicator
+- assertVisible:
+    id: "step-1-progress"
+
+# Take final screenshot
+- takeScreenshot: step-work-complete

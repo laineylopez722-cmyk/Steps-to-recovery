@@ -13,6 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { GlassCard } from './GlassCard';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
+import { ds } from '../tokens/ds';
 
 interface SearchSuggestion {
   id: string;
@@ -360,7 +361,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   chipLabelSelected: {
-    color: '#FFF',
+    color: ds.semantic.text.onDark,
     fontWeight: '600',
   },
   chipCount: {
@@ -370,7 +371,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   chipCountSelected: {
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    backgroundColor: ds.colors.bgSecondary,
   },
   chipCountText: {
     ...typography.caption,
@@ -378,7 +379,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   chipCountTextSelected: {
-    color: '#FFF',
+    color: ds.semantic.text.onDark,
   },
   resultsHeader: {
     flexDirection: 'row',
@@ -409,7 +410,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   highlight: {
-    backgroundColor: `${darkAccent.primary}40`,
+    backgroundColor: ds.colors.accentMuted,
     color: darkAccent.text,
     fontWeight: '600',
   },

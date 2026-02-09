@@ -220,7 +220,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
               {isLast ? 'Get Started' : 'Continue'}
             </Text>
             {!isLast && (
-              <Feather name="arrow-right" size={20} color="#000" style={{ marginLeft: 8 }} />
+              <Feather name="arrow-right" size={20} color={ds.colors.text} style={{ marginLeft: 8 }} />
             )}
           </Pressable>
         </View>
@@ -326,6 +326,6 @@ const styles = StyleSheet.create({
   continueText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#000',
+    color: ds.colors.text,
   },
 });

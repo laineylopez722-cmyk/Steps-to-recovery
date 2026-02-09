@@ -250,7 +250,7 @@ export function ShareEntryModal({
                   title="Send to Sponsor"
                   variant="primary"
                   size="md"
-                  icon={<MaterialIcons name="send" size={20} color="#FFF" />}
+                  icon={<MaterialIcons name="send" size={20} color={ds.semantic.text.onDark} />}
                   iconPosition="left"
                   onPress={handleShareViaApp}
                   fullWidth

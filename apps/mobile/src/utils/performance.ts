@@ -1,4 +1,4 @@
-import { InteractionManager } from 'react-native';
+import { InteractionManager, type EventSubscription } from 'react-native';
 import { logger } from './logger';
 
 /**
@@ -10,6 +10,9 @@ import { logger } from './logger';
  * - Interaction completion tracking
  * - Memory usage monitoring (where available)
  * - FPS monitoring helpers
+ * - Cold start measurement
+ * - Database initialization tracking
+ * - Performance metrics reporting
  *
  * Usage:
  * ```tsx
@@ -23,11 +26,52 @@ import { logger } from './logger';
  * const duration = await measureAsync('fetchData', async () => {
  *   return await fetchData();
  * });
+ *
+ * // Measure cold start
+ * measureColdStart();
+ *
+ * // Measure screen load
+ * measureScreenLoad('HomeScreen');
  * ```
  */
 
 // Store for active performance measurements
 const activeMeasurements = new Map<string, number>();
+
+// Store for performance metrics history
+interface PerformanceMetric {
+  name: string;
+  duration: number;
+  timestamp: number;
+  type: 'render' | 'async' | 'sync' | 'screen' | 'database' | 'cold_start';
+  metadata?: Record<string, unknown>;
+}
+
+const metricsHistory: PerformanceMetric[] = [];
+const MAX_METRICS_HISTORY = 100;
+
+// Cold start tracking
+let coldStartTime: number | null = null;
+let isColdStartComplete = false;
+
+// Screen load tracking
+const screenLoadTimes = new Map<string, number>();
+
+// Database initialization tracking
+let databaseInitStartTime: number | null = null;
+let databaseInitEndTime: number | null = null;
+
+/**
+ * Add metric to history
+ */
+function addMetric(metric: PerformanceMetric): void {
+  metricsHistory.push(metric);
+  
+  // Keep only last N metrics
+  if (metricsHistory.length > MAX_METRICS_HISTORY) {
+    metricsHistory.shift();
+  }
+}
 
 /**
  * Track component render time
@@ -38,6 +82,13 @@ export function trackRenderTime(componentName: string): () => void {
 
   return () => {
     const duration = performance.now() - startTime;
+
+    addMetric({
+      name: componentName,
+      duration,
+      timestamp: Date.now(),
+      type: 'render',
+    });
 
     // Only log slow renders (> 16ms for 60fps, > 33ms for 30fps)
     if (duration > 16) {
@@ -60,6 +111,13 @@ export async function measureAsync<T>(
   try {
     const result = await operation();
     const duration = performance.now() - startTime;
+
+    addMetric({
+      name: operationName,
+      duration,
+      timestamp: Date.now(),
+      type: 'async',
+    });
 
     logger.debug(`Async operation: ${operationName} took ${duration.toFixed(2)}ms`);
 
@@ -85,6 +143,13 @@ export function measureSync<T>(operationName: string, operation: () => T): T {
   try {
     const result = operation();
     const duration = performance.now() - startTime;
+
+    addMetric({
+      name: operationName,
+      duration,
+      timestamp: Date.now(),
+      type: 'sync',
+    });
 
     logger.debug(`Sync operation: ${operationName} took ${duration.toFixed(2)}ms`);
 
@@ -128,6 +193,101 @@ export function endMeasurement(measurementName: string): number {
   logger.debug(`Measurement: ${measurementName} took ${duration.toFixed(2)}ms`);
 
   return duration;
+}
+
+/**
+ * Measure app cold start time
+ * Call this at app launch and when app becomes interactive
+ */
+export function measureColdStart(): void {
+  if (isColdStartComplete) {
+    return; // Only measure once
+  }
+
+  if (coldStartTime === null) {
+    // First call - mark start
+    coldStartTime = performance.now();
+    logger.debug('Cold start measurement began');
+  } else {
+    // Second call - calculate duration
+    const duration = performance.now() - coldStartTime;
+    isColdStartComplete = true;
+
+    addMetric({
+      name: 'cold_start',
+      duration,
+      timestamp: Date.now(),
+      type: 'cold_start',
+    });
+
+    // Check against budget (2 seconds target)
+    if (duration > 3000) {
+      logger.error(`Cold start too slow: ${duration.toFixed(2)}ms (target: <2000ms)`);
+    } else if (duration > 2000) {
+      logger.warn(`Cold start slow: ${duration.toFixed(2)}ms (target: <2000ms)`);
+    } else {
+      logger.info(`Cold start: ${duration.toFixed(2)}ms ✅`);
+    }
+  }
+}
+
+/**
+ * Measure screen load time
+ * Call when screen mounts and when content is ready
+ */
+export function measureScreenLoad(screenName: string, stage: 'start' | 'end' = 'start'): void {
+  const key = `screen_${screenName}`;
+
+  if (stage === 'start') {
+    screenLoadTimes.set(key, performance.now());
+    logger.debug(`Screen load started: ${screenName}`);
+  } else {
+    const startTime = screenLoadTimes.get(key);
+    if (startTime) {
+      const duration = performance.now() - startTime;
+      screenLoadTimes.delete(key);
+
+      addMetric({
+        name: `screen_${screenName}`,
+        duration,
+        timestamp: Date.now(),
+        type: 'screen',
+      });
+
+      // Check against budget (300ms target)
+      if (duration > 500) {
+        logger.warn(`Screen load slow: ${screenName} took ${duration.toFixed(2)}ms (target: <300ms)`);
+      } else {
+        logger.debug(`Screen load: ${screenName} took ${duration.toFixed(2)}ms`);
+      }
+    }
+  }
+}
+
+/**
+ * Measure database initialization time
+ */
+export function measureDatabaseInit(stage: 'start' | 'end' = 'start'): void {
+  if (stage === 'start') {
+    databaseInitStartTime = performance.now();
+    logger.debug('Database initialization started');
+  } else if (databaseInitStartTime !== null) {
+    databaseInitEndTime = performance.now();
+    const duration = databaseInitEndTime - databaseInitStartTime;
+
+    addMetric({
+      name: 'database_init',
+      duration,
+      timestamp: Date.now(),
+      type: 'database',
+    });
+
+    if (duration > 1000) {
+      logger.warn(`Database init slow: ${duration.toFixed(2)}ms`);
+    } else {
+      logger.info(`Database init: ${duration.toFixed(2)}ms ✅`);
+    }
+  }
 }
 
 /**
@@ -242,6 +402,8 @@ const PERFORMANCE_BUDGETS = {
   screenTransition: 300, // Screen transition should feel instant
   asyncOperation: 1000, // Async operations should complete quickly
   listScroll: 16, // List scrolling must be 60fps
+  coldStart: 2000, // App cold start target
+  databaseInit: 500, // Database initialization target
 };
 
 /**
@@ -330,6 +492,149 @@ export function monitorMemoryUsage(thresholdPercent: number = 80): void {
 
     if (usagePercent > thresholdPercent) {
       logger.warn(`High memory usage detected: ${usagePercent.toFixed(1)}%`);
+    }
+  }
+}
+
+/**
+ * Report all collected performance metrics
+ */
+export function reportPerformanceMetrics(): {
+  metrics: PerformanceMetric[];
+  summary: {
+    totalMetrics: number;
+    averageRenderTime: number;
+    averageScreenLoadTime: number;
+    slowestOperation: PerformanceMetric | null;
+    coldStartTime: number | null;
+  };
+} {
+  const renderMetrics = metricsHistory.filter(m => m.type === 'render');
+  const screenMetrics = metricsHistory.filter(m => m.type === 'screen');
+  
+  const averageRenderTime = renderMetrics.length > 0
+    ? renderMetrics.reduce((sum, m) => sum + m.duration, 0) / renderMetrics.length
+    : 0;
+  
+  const averageScreenLoadTime = screenMetrics.length > 0
+    ? screenMetrics.reduce((sum, m) => sum + m.duration, 0) / screenMetrics.length
+    : 0;
+  
+  const slowestOperation = metricsHistory.length > 0
+    ? metricsHistory.reduce((slowest, current) => 
+        current.duration > slowest.duration ? current : slowest
+      )
+    : null;
+
+  const report = {
+    metrics: [...metricsHistory],
+    summary: {
+      totalMetrics: metricsHistory.length,
+      averageRenderTime,
+      averageScreenLoadTime,
+      slowestOperation,
+      coldStartTime: isColdStartComplete && coldStartTime !== null
+        ? performance.now() - coldStartTime
+        : null,
+    },
+  };
+
+  logger.info('Performance Report:', {
+    totalMetrics: report.summary.totalMetrics,
+    averageRenderTime: `${averageRenderTime.toFixed(2)}ms`,
+    averageScreenLoadTime: `${averageScreenLoadTime.toFixed(2)}ms`,
+    slowestOperation: slowestOperation
+      ? `${slowestOperation.name} (${slowestOperation.duration.toFixed(2)}ms)`
+      : 'N/A',
+  });
+
+  return report;
+}
+
+/**
+ * Setup periodic memory monitoring
+ */
+export function setupMemoryMonitoring(intervalMs: number = 30000): () => void {
+  const intervalId = setInterval(() => {
+    monitorMemoryUsage(85);
+    logMemoryUsage();
+  }, intervalMs);
+
+  return () => clearInterval(intervalId);
+}
+
+/**
+ * Measure function execution time (decorator pattern)
+ */
+export function measureFunction<T extends (...args: unknown[]) => unknown>(
+  fn: T,
+  fnName: string = fn.name,
+): (...args: Parameters<T>) => ReturnType<T> {
+  return (...args: Parameters<T>): ReturnType<T> => {
+    const startTime = performance.now();
+    
+    const result = fn(...args);
+    
+    // Handle both sync and async functions
+    if (result instanceof Promise) {
+      return result.finally(() => {
+        const duration = performance.now() - startTime;
+        logger.debug(`Function ${fnName} took ${duration.toFixed(2)}ms`);
+      }) as ReturnType<T>;
+    } else {
+      const duration = performance.now() - startTime;
+      logger.debug(`Function ${fnName} took ${duration.toFixed(2)}ms`);
+      return result as ReturnType<T>;
+    }
+  };
+}
+
+/**
+ * Frame rate monitoring
+ */
+export class FrameRateMonitor {
+  private frameCount = 0;
+  private lastTime = performance.now();
+  private isRunning = false;
+  private rafId: number | null = null;
+  private onFPSUpdate: (fps: number) => void;
+
+  constructor(onFPSUpdate: (fps: number) => void) {
+    this.onFPSUpdate = onFPSUpdate;
+  }
+
+  start(): void {
+    if (this.isRunning) return;
+    
+    this.isRunning = true;
+    this.frameCount = 0;
+    this.lastTime = performance.now();
+    
+    const measureFrame = (): void => {
+      if (!this.isRunning) return;
+      
+      this.frameCount++;
+      const currentTime = performance.now();
+      const elapsed = currentTime - this.lastTime;
+      
+      // Update FPS every second
+      if (elapsed >= 1000) {
+        const fps = Math.round((this.frameCount * 1000) / elapsed);
+        this.onFPSUpdate(fps);
+        this.frameCount = 0;
+        this.lastTime = currentTime;
+      }
+      
+      this.rafId = requestAnimationFrame(measureFrame);
+    };
+    
+    this.rafId = requestAnimationFrame(measureFrame);
+  }
+
+  stop(): void {
+    this.isRunning = false;
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
     }
   }
 }

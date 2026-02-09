@@ -15,6 +15,7 @@ import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
 import { logger } from '../../utils/logger';
 import { hapticImpact } from '../../utils/haptics';
+import { ds } from '../tokens/ds';
 
 type FABVariant = 'primary' | 'danger';
 
@@ -96,7 +97,7 @@ export function FloatingActionButton({
       >
         <View style={styles.iconContainer}>{icon}</View>
         {label && (
-          <Text style={[styles.label, theme.typography.label, { color: '#FFFFFF' }]}>{label}</Text>
+          <Text style={[styles.label, theme.typography.label, { color: ds.semantic.text.onDark }]}>{label}</Text>
         )}
       </Animated.View>
     </TouchableOpacity>
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // Simplified shadow
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,

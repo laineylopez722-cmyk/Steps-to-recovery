@@ -29,6 +29,7 @@ import { Feather } from '@expo/vector-icons';
 import { hapticLight } from '../../utils/haptics';
 import { aestheticColors } from '../tokens/aesthetic';
 import { FadeIn, withSequence } from 'react-native-reanimated';
+import { ds } from '../tokens/ds';
 
 // ============================================================================
 // TYPES
@@ -193,13 +194,13 @@ export function ThemeToggle({
           <Feather
             name="sun"
             size={config.icon}
-            color={isDark ? '#64748B' : '#F59E0B'}
+            color={isDark ? ds.colors.textTertiary : ds.colors.warning}
             style={styles.leftIcon}
           />
           <Feather
             name="moon"
             size={config.icon}
-            color={isDark ? '#14B8A6' : '#64748B'}
+            color={isDark ? ds.colors.info : ds.colors.textTertiary}
             style={styles.rightIcon}
           />
         </View>
@@ -211,8 +212,8 @@ export function ThemeToggle({
             config.knob,
             knobStyle,
             {
-              backgroundColor: isDark ? '#1E293B' : '#FFFFFF',
-              shadowColor: isDark ? '#000' : '#000',
+              backgroundColor: isDark ? ds.colors.bgSecondary : ds.semantic.text.onDark,
+              shadowColor: ds.colors.shadow,
               shadowOffset: { width: 0, height: 2 },
               shadowOpacity: isDark ? 0.5 : 0.15,
               shadowRadius: isDark ? 4 : 3,
@@ -224,7 +225,7 @@ export function ThemeToggle({
             <Feather
               name={isDark ? 'moon' : 'sun'}
               size={config.icon - 2}
-              color={isDark ? '#14B8A6' : '#F59E0B'}
+              color={isDark ? ds.colors.info : ds.colors.warning}
             />
           </Animated.View>
         </Animated.View>
@@ -322,7 +323,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: ds.colors.borderSubtle,
   },
   iconsContainer: {
     ...StyleSheet.absoluteFillObject,
@@ -354,7 +355,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: ds.colors.bgSecondary,
+    opacity: 0.05,
   },
 });
 

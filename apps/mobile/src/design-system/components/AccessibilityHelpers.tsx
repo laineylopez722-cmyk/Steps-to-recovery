@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, AccessibilityInfo, type ViewProps } from 'react-native';
 import type { StyleProp, TextStyle } from 'react-native';
 import { darkAccent, spacing, typography } from '../tokens/modern';
+import { ds } from '../tokens/ds';
 
 // Screen reader only text
 export function ScreenReaderText({ children }: { children: string }): React.ReactElement {
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
     zIndex: 9999,
   },
   skipLinkText: {
-    color: '#FFF',
+    color: ds.semantic.text.onDark,
     ...typography.body,
     fontWeight: '600',
   },

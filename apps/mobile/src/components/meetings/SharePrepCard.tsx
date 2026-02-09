@@ -18,6 +18,7 @@ import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useSharePrepStore } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface SharePrepCardProps {
   compact?: boolean;
@@ -57,7 +58,7 @@ export function SharePrepCard({ compact = false, enteringDelay = 0 }: SharePrepC
           accessibilityHint="Opens share preparation screen"
         >
           <View style={styles.compactIconContainer}>
-            <Feather name="edit-3" size={20} color="#fbbf24" />
+            <Feather name="edit-3" size={20} color={ds.colors.warning} />
           </View>
           <View style={styles.compactContent}>
             <Text style={styles.compactTitle}>Prepare to Share</Text>
@@ -87,7 +88,7 @@ export function SharePrepCard({ compact = false, enteringDelay = 0 }: SharePrepC
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <View style={styles.iconContainer}>
-                <Feather name="edit-3" size={22} color="#fbbf24" />
+                <Feather name="edit-3" size={22} color={ds.colors.warning} />
               </View>
               <View style={styles.headerInfo}>
                 <Text style={styles.title}>Prepare to Share</Text>
@@ -100,7 +101,7 @@ export function SharePrepCard({ compact = false, enteringDelay = 0 }: SharePrepC
             </View>
             <View style={styles.headerRight}>
               {hasContent() && <View style={styles.readyIndicatorLarge} />}
-              <Feather name="chevron-right" size={20} color="#60a5fa" />
+              <Feather name="chevron-right" size={20} color={ds.colors.info} />
             </View>
           </View>
 
@@ -133,7 +134,7 @@ const styles = StyleSheet.create({
   compactContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -155,18 +156,18 @@ const styles = StyleSheet.create({
   compactTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   compactSubtitle: {
     fontSize: 13,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   readyIndicator: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
   },
   // Full styles
   card: {
@@ -188,7 +189,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
@@ -199,11 +200,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   headerRight: {
@@ -215,35 +216,35 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
   },
   progressContainer: {
     marginTop: 14,
   },
   progressTrack: {
     height: 4,
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#fbbf24',
+    backgroundColor: ds.colors.warning,
     borderRadius: 2,
   },
   previewContainer: {
     marginTop: 14,
     paddingTop: 14,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(51, 65, 85, 0.5)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   previewLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginBottom: 4,
   },
   previewText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: ds.colors.text,
   },
 });

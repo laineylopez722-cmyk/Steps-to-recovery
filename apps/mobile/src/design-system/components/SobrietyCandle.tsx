@@ -23,6 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import Svg, { Path, Defs, RadialGradient, Stop, Ellipse } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ds } from '../tokens/ds';
 
 const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
 
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
   candleBody: {
     overflow: 'hidden',
     // Subtle shadow for depth
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 2, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -313,13 +314,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -5,
     width: 8,
-    backgroundColor: '#FFF8E7',
+    backgroundColor: ds.colors.bgPrimary,
     borderBottomLeftRadius: 4,
     borderBottomRightRadius: 4,
   },
   wick: {
     position: 'absolute',
-    backgroundColor: '#3E2723',
+    backgroundColor: ds.colors.bgQuaternary,
     borderRadius: 1,
     alignSelf: 'center',
   },
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 4,
     height: 4,
-    backgroundColor: '#FFEB3B',
+    backgroundColor: ds.colors.warning,
     borderRadius: 2,
     alignSelf: 'center',
   },

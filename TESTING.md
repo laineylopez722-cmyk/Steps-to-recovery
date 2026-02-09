@@ -2,6 +2,16 @@
 
 This guide covers the testing strategy, how to run tests, and how to write new tests for the Steps to Recovery app.
 
+## 🧪 Test Types Overview
+
+| Test Type | Framework | Purpose | Location |
+|-----------|-----------|---------|----------|
+| **Unit Tests** | Jest + React Native Testing Library | Test individual functions, hooks, components | `**/__tests__/*.test.ts` |
+| **Integration Tests** | Jest + React Native Testing Library | Test feature interactions | `src/features/**/__tests__/*.test.ts` |
+| **E2E Tests** | Maestro | Test complete user flows | `.maestro/flows/*.yaml` |
+
+---
+
 ## 📊 Current Test Coverage
 
 **Overall Test Suite**: 117/127 tests passing (**92% pass rate**)
@@ -545,6 +555,411 @@ export function validateEmail(email: string): boolean {
 
 ---
 
-**Last Updated**: January 2026
-**Test Suite Version**: v1.0
+---
+
+## 🎭 E2E Testing with Maestro
+
+We use [Maestro](https://maestro.mobile.dev) for end-to-end testing. Maestro is a modern, YAML-based mobile UI testing framework that is fast, reliable, and easy to write.
+
+### Why Maestro?
+
+- **Declarative YAML syntax** - No code required for test flows
+- **Smart waiting** - Automatically waits for animations and network requests
+- **Fast execution** - Parallel execution and intelligent retries
+- **Cross-platform** - Works with both iOS and Android
+- **Great React Native support** - Understands RN component hierarchy
+
+### Installation
+
+#### macOS
+```bash
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+```
+
+#### Linux
+```bash
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+export PATH="$PATH:$HOME/.maestro/bin"
+```
+
+#### Windows
+```powershell
+# Using PowerShell
+$progressPreference = 'silentlyContinue'
+Invoke-WebRequest -Uri "https://get.maestro.mobile.dev" -OutFile "install.ps1"
+.\install.ps1
+```
+
+Verify installation:
+```bash
+maestro --version
+```
+
+### Running E2E Tests Locally
+
+#### Prerequisites
+
+1. **Build the app** (development build required)
+```bash
+cd apps/mobile
+npx expo prebuild
+
+# Android
+npx expo run:android
+
+# iOS (macOS only)
+npx expo run:ios
+```
+
+2. **Start Metro bundler**
+```bash
+npm start
+```
+
+#### Run All E2E Tests
+```bash
+cd apps/mobile
+npm run e2e
+```
+
+#### Run Specific Test Flows
+```bash
+# Onboarding flow
+npm run e2e:onboarding
+
+# Login flow
+npm run e2e:login
+
+# Daily check-in flow
+npm run e2e:checkin
+
+# Journal flow
+npm run e2e:journal
+
+# Step work flow
+npm run e2e:steps
+
+# Offline/online sync flow
+npm run e2e:sync
+```
+
+#### Validate Test Flows (Syntax Check)
+```bash
+npm run e2e:validate
+```
+
+### Critical Path E2E Tests
+
+#### 1. Onboarding Flow (`onboarding.yaml`)
+Tests the complete new user journey:
+```
+Sign Up → Email verification → Onboarding screens → Main app
+```
+
+**Key assertions:**
+- Sign up form validation
+- Onboarding slides display correctly
+- Progress indicators work
+- Navigation to main app completes
+
+#### 2. Login Flow (`login.yaml`)
+Tests existing user authentication:
+```
+Launch app → Enter credentials → Navigate to main app
+```
+
+**Key assertions:**
+- Login form accepts valid credentials
+- Error messages for invalid credentials
+- Navigation to home screen
+- Session persistence
+
+#### 3. Daily Check-in Flow (`daily-checkin.yaml`)
+Tests the daily recovery check-in feature:
+```
+Home → Morning Intention → Save → Evening Pulse → Save
+```
+
+**Key assertions:**
+- Check-in forms load
+- Intention and gratitude inputs work
+- Evening reflection saves
+- Progress indicator updates (1/2 → 2/2)
+
+#### 4. Journal Flow (`journal.yaml`)
+Tests encrypted journaling functionality:
+```
+Journal tab → New Entry → Write content → Save → Edit → Verify
+```
+
+**Key assertions:**
+- Entry creation with title and body
+- Encryption/decryption works
+- Entry appears in list
+- Search functionality
+- Edit and save updates
+
+#### 5. Step Work Flow (`step-work.yaml`)
+Tests 12-step program progress:
+```
+Steps tab → Select Step → Answer questions → Save progress
+```
+
+**Key assertions:**
+- Step overview loads
+- Individual step navigation
+- Question responses save
+- Progress indicators update
+
+#### 6. Offline/Online Sync (`offline-sync.yaml`)
+Tests offline-first architecture:
+```
+Create entry (offline) → Go online → Verify sync
+```
+
+**Key assertions:**
+- Entries created offline persist locally
+- Sync queue shows pending items
+- Manual sync triggers upload
+- Sync status indicators update
+
+### Writing E2E Tests
+
+#### Basic Flow Structure
+```yaml
+appId: com.recovery.stepstorecovery
+tags:
+  - feature-name
+  - critical
+
+---
+
+# Launch app
+- launchApp:
+    clearState: true  # Clear app data before test
+
+# Wait for animations
+- waitForAnimationToEnd
+
+# Assert element is visible
+- assertVisible: "Welcome Back"
+
+# Tap on element
+- tapOn: "Sign Up"
+
+# Input text
+- tapOn:
+    id: "signup-email-input"
+- inputText: "test@example.com"
+
+# Extended wait with timeout
+- extendedWaitUntil:
+    visible: "Clean Time"
+    timeout: 30000
+```
+
+#### Using testIDs
+Always prefer `testID` over text for element selection:
+
+```yaml
+# ✅ Good - reliable
+- tapOn:
+    id: "login-submit-button"
+
+# ⚠️ Okay - but text may change
+- tapOn: "Log In"
+
+# ❌ Bad - brittle, relies on position
+- tapOn:
+    point: "50%,50%"
+```
+
+#### Adding testIDs to Components
+
+```tsx
+// React Native component with testID
+<Button
+  title="Save Entry"
+  onPress={handleSave}
+  testID="journal-save-button"
+  accessibilityLabel="Save journal entry"
+/>
+
+// Input with testID
+<TextInput
+  value={title}
+  onChangeText={setTitle}
+  testID="journal-title-input"
+  accessibilityLabel="Journal entry title"
+/>
+```
+
+#### Conditional Flows
+Use `runFlow` with `when` for conditional logic:
+
+```yaml
+# Check if onboarding is needed
+- runFlow:
+    when:
+      visible: "Welcome to Recovery"
+    commands:
+      - tapOn: "Continue"
+      - tapOn: "I Understand"
+      - tapOn: "Get Started"
+```
+
+#### Environment Variables
+Use env vars for test data:
+
+```yaml
+env:
+  TEST_EMAIL: "test@example.com"
+  TEST_PASSWORD: "TestPass123!"
+
+---
+
+- tapOn:
+    id: "email-input"
+- inputText: "${TEST_EMAIL}"
+```
+
+Pass env vars when running:
+```bash
+maestro test -e TEST_EMAIL=user@test.com flow.yaml
+```
+
+### E2E Best Practices
+
+1. **Use clear test names**
+   ```yaml
+   # Good
+   name: "Journal Entry Creation Flow"
+   
+   # Bad
+   name: "Test 1"
+   ```
+
+2. **Add tags for filtering**
+   ```yaml
+   tags:
+     - critical      # Must pass before release
+     - smoke         # Quick sanity check
+     - regression    # Full test suite
+   ```
+
+3. **Take screenshots on key steps**
+   ```yaml
+   - takeScreenshot: onboarding-complete
+   ```
+
+4. **Use appropriate wait strategies**
+   ```yaml
+   # For animations
+   - waitForAnimationToEnd
+   
+   # For network requests
+   - extendedWaitUntil:
+       visible: "Content loaded"
+       timeout: 15000
+   ```
+
+5. **Clean up after tests**
+   ```yaml
+   - launchApp:
+       clearState: true  # Resets app state
+   ```
+
+### E2E Test Configuration
+
+#### Maestro Config (`apps/mobile/.maestro/config.yaml`)
+```yaml
+appId: com.recovery.stepstorecovery
+timeout: 15000  # Default timeout in ms
+
+animations:
+  enabled: true  # Wait for animations
+
+screenshots:
+  onFailure: true  # Auto-screenshot on failure
+```
+
+### CI/CD Integration
+
+E2E tests run automatically on:
+- Pull requests (via Maestro Cloud)
+- Push to main (via self-hosted emulator)
+- Manual workflow dispatch
+
+See `.github/workflows/e2e.yml` for configuration.
+
+#### Running E2E in CI
+
+The CI workflow:
+1. Builds debug APK
+2. Starts Android emulator
+3. Installs Maestro
+4. Runs test flows
+5. Uploads results and screenshots
+
+### Troubleshooting E2E Tests
+
+#### Element Not Found
+```
+Assertion failed: Element not found: "Login"
+```
+**Solution:**
+- Add `waitForAnimationToEnd` before assertion
+- Use `extendedWaitUntil` with timeout
+- Check testID exists in component
+
+#### Test Flakiness
+**Solutions:**
+- Use `retryTapIfNoChange: true`
+- Add explicit waits for async operations
+- Disable animations in test builds
+
+```yaml
+- tapOn:
+    text: "Submit"
+    retryTapIfNoChange: true
+```
+
+#### Metro Bundler Issues
+**Solution:** Ensure Metro is running before tests:
+```bash
+npm start &  # Start in background
+maestro test flow.yaml
+```
+
+#### Screenshots and Logs
+Maestro automatically saves:
+- Screenshots on failure: `~/.maestro/tests/`
+- Device logs: `maestro logs`
+
+View results:
+```bash
+# List test runs
+maestro test results
+
+# View specific run
+maestro test results <run-id>
+```
+
+### E2E Test Checklist
+
+Before adding new E2E tests:
+
+- [ ] Add testIDs to all interactive elements
+- [ ] Test flow works manually first
+- [ ] Use appropriate wait strategies
+- [ ] Add tags for filtering
+- [ ] Include assertions for success state
+- [ ] Test on both iOS and Android
+- [ ] Validate with `maestro test --dry-run`
+
+---
+
+**Last Updated**: February 2026
+**Test Suite Version**: v1.1
 **Coverage Target**: 92% (Current), 95% (Goal)
+**E2E Tests**: 6 critical flows

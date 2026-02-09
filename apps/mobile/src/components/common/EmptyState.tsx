@@ -16,6 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface EmptyStateProps {
   /** Emoji to display (or use icon) */
@@ -41,7 +42,7 @@ interface EmptyStateProps {
 export const EmptyState = memo(function EmptyState({
   emoji = '📭',
   icon,
-  iconColor = '#60a5fa',
+  iconColor = ds.colors.info,
   title,
   message,
   actionLabel,
@@ -109,7 +110,7 @@ export const EmptyState = memo(function EmptyState({
               accessibilityLabel={actionLabel}
             >
               <Text style={styles.cardButtonText}>{actionLabel}</Text>
-              <Feather name="arrow-right" size={16} color="#60a5fa" />
+              <Feather name="arrow-right" size={16} color={ds.colors.info} />
             </TouchableOpacity>
           )}
         </GlassCard>
@@ -143,7 +144,7 @@ export const EmptyState = memo(function EmptyState({
       {/* Encouraging message for recovery context */}
       {variant === 'encouraging' && (
         <GlassCard gradient="card" style={styles.encouragementCard}>
-          <Feather name="heart" size={16} color="#22c55e" style={styles.heartIcon} />
+          <Feather name="heart" size={16} color={ds.colors.success} style={styles.heartIcon} />
           <Text style={styles.encouragementText}>
             Every step forward is progress in your recovery journey.
           </Text>
@@ -169,14 +170,14 @@ export const EmptyState = memo(function EmptyState({
 export const EMPTY_STATES = {
   journal: {
     icon: 'book-open' as const,
-    iconColor: '#8b5cf6',
+    iconColor: ds.colors.accent,
     title: 'Start Your Journal',
     message: 'Writing about your recovery journey can be a powerful tool for healing and growth.',
     actionLabel: 'Write First Entry',
   },
   vault: {
     icon: 'lock' as const,
-    iconColor: '#f59e0b',
+    iconColor: ds.colors.warning,
     title: 'Your Motivation Vault',
     message:
       'Save photos, quotes, and reminders of why recovery matters to you. Access them when you need strength.',
@@ -184,14 +185,14 @@ export const EMPTY_STATES = {
   },
   meetings: {
     icon: 'map-pin' as const,
-    iconColor: '#22c55e',
+    iconColor: ds.colors.success,
     title: 'Track Your Meetings',
     message: 'Log your meeting attendance and reflections. Connection is key to recovery.',
     actionLabel: 'Log First Meeting',
   },
   capsules: {
     icon: 'mail' as const,
-    iconColor: '#ec4899',
+    iconColor: ds.colors.accent,
     title: 'Write to Your Future Self',
     message:
       'Create time capsules with messages of hope. They unlock at milestones in your journey.',
@@ -199,27 +200,27 @@ export const EMPTY_STATES = {
   },
   search: {
     icon: 'search' as const,
-    iconColor: '#64748b',
+    iconColor: ds.colors.textSecondary,
     title: 'No Results Found',
     message: 'Try a different search term or clear filters to see all entries.',
     actionLabel: 'Clear Search',
   },
   checkins: {
     icon: 'activity' as const,
-    iconColor: '#3b82f6',
+    iconColor: ds.colors.info,
     title: 'No Check-ins Yet',
     message: "Regular check-ins help you understand your patterns. Start with today's reflection.",
     actionLabel: 'Check In Now',
   },
   milestones: {
     icon: 'award' as const,
-    iconColor: '#f59e0b',
+    iconColor: ds.colors.warning,
     title: 'Your Milestones Await',
     message: 'Every day sober is an achievement. Your first milestone is just around the corner.',
   },
   scenarios: {
     icon: 'target' as const,
-    iconColor: '#ef4444',
+    iconColor: ds.semantic.intent.alert.solid,
     title: 'Practice Scenarios',
     message:
       'Prepare for challenging situations by practicing healthy responses. Build confidence in your coping skills.',
@@ -227,7 +228,7 @@ export const EMPTY_STATES = {
   },
   contacts: {
     icon: 'users' as const,
-    iconColor: '#22c55e',
+    iconColor: ds.colors.success,
     title: 'No Contacts Yet',
     message: 'Add your sponsor and recovery contacts for quick access to support.',
     actionLabel: 'Add Contact',
@@ -254,7 +255,7 @@ const styles = StyleSheet.create({
   },
   messageText: {
     fontSize: 16,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textAlign: 'center',
     paddingHorizontal: 24,
   },
@@ -262,11 +263,11 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: 'rgba(96, 165, 250, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 20,
   },
   minimalButtonText: {
-    color: '#60a5fa',
+    color: ds.colors.info,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -298,12 +299,12 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginBottom: 2,
   },
   cardMessage: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
   cardButton: {
     flexDirection: 'row',
@@ -312,10 +313,10 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(51, 65, 85, 0.5)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   cardButtonText: {
-    color: '#60a5fa',
+    color: ds.colors.info,
     fontWeight: '600',
     fontSize: 14,
     marginRight: 6,
@@ -341,13 +342,13 @@ const styles = StyleSheet.create({
   mainTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     textAlign: 'center',
     marginBottom: 8,
   },
   mainMessage: {
     fontSize: 16,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
     paddingHorizontal: 16,
@@ -367,18 +368,18 @@ const styles = StyleSheet.create({
   },
   encouragementText: {
     flex: 1,
-    color: '#4ade80',
+    color: ds.colors.success,
     fontSize: 14,
     lineHeight: 20,
   },
   mainButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: ds.colors.info,
     paddingHorizontal: 28,
     paddingVertical: 14,
     borderRadius: 12,
   },
   mainButtonText: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontWeight: '700',
     fontSize: 16,
   },

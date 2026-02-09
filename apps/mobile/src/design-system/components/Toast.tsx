@@ -8,6 +8,7 @@ import { View, Text, StyleSheet, Animated, type ViewStyle, Platform } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { useTheme } from '../hooks/useTheme';
+import { ds } from '../tokens/ds';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
 
@@ -94,19 +95,19 @@ export function Toast({
         return {
           backgroundColor: theme.colors.success,
           icon: 'check-circle',
-          iconColor: '#ffffff',
+          iconColor: ds.semantic.text.onDark,
         };
       case 'error':
         return {
           backgroundColor: theme.colors.danger,
           icon: 'error',
-          iconColor: '#ffffff',
+          iconColor: ds.semantic.text.onDark,
         };
       case 'warning':
         return {
-          backgroundColor: '#FF9800', // Orange for warnings
+          backgroundColor: ds.colors.warning,
           icon: 'warning',
-          iconColor: '#ffffff',
+          iconColor: ds.semantic.text.onDark,
         };
       case 'info':
       default:
@@ -139,7 +140,7 @@ export function Toast({
       accessible={true}
     >
       <MaterialIcons name={config.icon} size={20} color={config.iconColor} />
-      <Text style={[styles.message, theme.typography.body, { color: '#ffffff' }]}>{message}</Text>
+      <Text style={[styles.message, theme.typography.body, { color: ds.semantic.text.onDark }]}>{message}</Text>
     </Animated.View>
   );
 }

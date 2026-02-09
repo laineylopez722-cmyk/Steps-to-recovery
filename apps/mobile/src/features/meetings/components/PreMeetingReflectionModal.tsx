@@ -13,11 +13,7 @@ import { darkAccent, spacing, radius, typography } from '../../../design-system/
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { ds } from '../../../design-system/tokens/ds';
 import { GradientButton } from '../../../design-system/components/GradientButton';
-import {
-  savePreMeetingReflection,
-  getRandomPrePrompt,
-  type PreMeetingPrompts,
-} from '../../../services/meetingReflectionService';
+import { getRandomPrePrompt, type PreMeetingPrompts } from '../../../services/meetingReflectionService';
 
 // ========================================
 // Types
@@ -25,11 +21,10 @@ import {
 
 interface PreMeetingReflectionModalProps {
   visible: boolean;
-  userId: string;
-  checkinId: string;
   meetingName: string;
   onClose: () => void;
-  onComplete: () => void;
+  onSkip?: () => void;
+  onComplete: (prompts: PreMeetingPrompts) => void | Promise<void>;
 }
 
 // ========================================
@@ -38,38 +33,32 @@ interface PreMeetingReflectionModalProps {
 
 export function PreMeetingReflectionModal({
   visible,
-  userId,
-  checkinId,
   meetingName,
   onClose,
+  onSkip,
   onComplete,
 }: PreMeetingReflectionModalProps): React.ReactElement {
   const [intention, setIntention] = useState('');
   const [mood, setMood] = useState(3);
   const [hope, setHope] = useState('');
-  const [saving, setSaving] = useState(false);
 
   const intentionPrompt = getRandomPrePrompt();
 
-  const handleSave = async (): Promise<void> => {
-    setSaving(true);
-
+  const handleSave = (): void => {
     const prompts: PreMeetingPrompts = {
       intention,
       mood,
       hope,
     };
 
-    const result = await savePreMeetingReflection(userId, checkinId, prompts);
-
-    setSaving(false);
-
-    if (result.success) {
-      onComplete();
-    }
+    void onComplete(prompts);
   };
 
   const handleSkip = (): void => {
+    if (onSkip) {
+      onSkip();
+      return;
+    }
     onClose();
   };
 
@@ -145,9 +134,9 @@ export function PreMeetingReflectionModal({
               {/* Buttons */}
               <View style={styles.buttons}>
                 <GradientButton
-                  title={saving ? 'Saving...' : 'Save & Go'}
+                  title="Save & Continue"
                   onPress={handleSave}
-                  disabled={saving || !intention.trim()}
+                  disabled={!intention.trim()}
                   accessibilityLabel="Save reflection and continue"
                 />
 

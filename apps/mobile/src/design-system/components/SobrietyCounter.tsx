@@ -17,6 +17,7 @@ import { Feather } from '@expo/vector-icons';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { Card } from './Card';
+import { ds } from '../tokens/ds';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -97,8 +98,8 @@ function CircularProgress({
       <Svg width={size} height={size}>
         <Defs>
           <LinearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <Stop offset="0%" stopColor="#14b8a6" />
-            <Stop offset="100%" stopColor="#22c55e" />
+            <Stop offset="0%" stopColor={ds.colors.accent} />
+            <Stop offset="100%" stopColor={ds.colors.success} />
           </LinearGradient>
         </Defs>
         {/* Background circle */}
@@ -106,7 +107,7 @@ function CircularProgress({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="rgba(51, 65, 85, 0.4)"
+          stroke={ds.colors.bgTertiary}
           strokeWidth={strokeWidth}
           fill="transparent"
         />
@@ -146,7 +147,7 @@ function StatItem({
       accessibilityRole="text"
     >
       <View style={styles.statIconContainer}>
-        <Feather name={icon} size={14} color="#64748b" />
+        <Feather name={icon} size={14} color={ds.colors.textSecondary} />
       </View>
       <Text style={styles.statValue}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
@@ -283,7 +284,7 @@ export function SobrietyCounter({
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Feather name="clock" size={18} color="#60a5fa" />
+          <Feather name="clock" size={18} color={ds.colors.info} />
           <View style={styles.headerText}>
             <Text style={styles.headerTitle}>Clean Time Streak</Text>
             <Text style={styles.headerSubtitle}>Continuous, from your last reset</Text>
@@ -292,7 +293,7 @@ export function SobrietyCounter({
 
         {/* Streak Badge */}
         <View style={styles.streakBadge}>
-          <Feather name="zap" size={14} color="#4ade80" />
+          <Feather name="zap" size={14} color={ds.colors.success} />
           <Text style={styles.streakText}>Streak Intact</Text>
         </View>
       </View>
@@ -302,7 +303,7 @@ export function SobrietyCounter({
         <View style={styles.circleContainer}>
           <CircularProgress progress={progress} size={circleSize} strokeWidth={12} />
           <View style={styles.circleContent}>
-            <Feather name="award" size={24} color="#14b8a6" style={styles.awardIcon} />
+            <Feather name="award" size={24} color={ds.colors.accent} style={styles.awardIcon} />
             <Text style={styles.daysNumber}>{timeElapsed.days}</Text>
             <Text style={styles.daysLabel}>Days Clean</Text>
           </View>
@@ -339,7 +340,7 @@ export function SobrietyCounter({
           accessibilityRole="button"
           accessibilityHint="Opens share dialog to celebrate your achievement"
         >
-          <Feather name="share-2" size={16} color="#60a5fa" />
+          <Feather name="share-2" size={16} color={ds.colors.info} />
           <Text style={styles.shareText}>Share Progress</Text>
         </TouchableOpacity>
       )}
@@ -351,11 +352,11 @@ const styles = StyleSheet.create({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
-    backgroundColor: 'rgba(30, 41, 59, 0.4)', // navy-800/40
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(51, 65, 85, 0.3)', // surface-700/30
+    borderColor: ds.colors.borderSubtle,
   },
   header: {
     flexDirection: 'row',
@@ -372,19 +373,19 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontSize: 16,
     fontWeight: '600',
   },
   headerSubtitle: {
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     fontSize: 12,
   },
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(74, 222, 128, 0.2)',
+    backgroundColor: ds.colors.successMuted,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -411,19 +412,19 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   daysNumber: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontSize: 48,
     fontWeight: 'bold',
   },
   daysLabel: {
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     fontSize: 14,
     fontWeight: '500',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   encouragementText: {
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     fontSize: 14,
     textAlign: 'center',
     marginTop: 16,
@@ -431,7 +432,7 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(15, 23, 42, 0.4)', // navy-900/40
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 12,
     padding: 12,
     marginTop: 8,
@@ -444,24 +445,24 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   statValue: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontSize: 20,
     fontWeight: 'bold',
   },
   statLabel: {
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     fontSize: 12,
   },
   statDivider: {
     width: 1,
-    backgroundColor: 'rgba(51, 65, 85, 0.3)',
+    backgroundColor: ds.colors.borderSubtle,
   },
   milestoneContainer: {
     marginTop: 12,
     alignItems: 'center',
   },
   milestoneText: {
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     fontSize: 12,
   },
   shareButton: {
@@ -471,7 +472,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: 'rgba(96, 165, 250, 0.2)',
+    backgroundColor: ds.colors.infoMuted,
     borderRadius: 20,
     alignSelf: 'center',
   },

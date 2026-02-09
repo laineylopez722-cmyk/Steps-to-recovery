@@ -1,13 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  View,
-  KeyboardAvoidingView,
-  Platform,
-  Animated,
-  type ListRenderItemInfo,
-} from 'react-native';
+import { StyleSheet, View, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,29 +8,20 @@ import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
-import { StepSectionHeader } from '../components/StepSectionHeader';
-import { StepQuestionCard } from '../components/StepQuestionCard';
 import { StepLockedState } from '../components/StepLockedState';
 import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
 import { StepQuestionCounter } from '../components/StepQuestionCounter';
-import { StepPrivacyInfoCard } from '../components/StepPrivacyInfoCard';
 import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
-import {
-  buildQuestionIndexMap,
-  buildStepListItems,
-  type StepListItem,
-} from '../utils/stepListItems';
-import { getFirstVisibleQuestionNumber } from '../utils/stepViewability';
-import { getStepListItemLayout, stepListKeyExtractor } from '../utils/stepListConfig';
+import { StepDetailQuestionsList } from '../components/StepDetailQuestionsList';
+import { buildQuestionIndexMap, buildStepListItems, type StepListItem } from '../utils/stepListItems';
 import {
   buildAnsweredQuestionSet,
   buildInitialAnswers,
   getFirstUnansweredQuestion,
 } from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTheme, Card, Toast, Text, Skeleton } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useTheme, Toast, Text } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
@@ -135,46 +118,7 @@ export function StepDetailScreen(): React.ReactElement {
     questionIndexMap,
   });
 
-  const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<ListItem>) => {
-      if (item.type === 'section') {
-        return (
-          <StepSectionHeader
-            title={item.title}
-            questionRange={item.questionRange}
-            sectionStart={item.sectionStart}
-            onJumpToQuestion={scrollToQuestion}
-          />
-        );
-      }
-
-      if (item.type === 'footer') {
-        return <StepPrivacyInfoCard />;
-      }
-
-      // Question item
-      const questionNumber = item.questionNumber;
-      const isAnswered = answeredQuestionNumbers.has(questionNumber);
-      const isSaving = savingQuestion === questionNumber;
-
-      return (
-        <StepQuestionCard
-          questionNumber={questionNumber}
-          prompt={item.prompt}
-          answer={answers[questionNumber] || ''}
-          totalQuestions={totalQuestions}
-          isAnswered={Boolean(isAnswered)}
-          isSaving={isSaving}
-          onChangeAnswer={(text) => handleAnswerChange(questionNumber, text)}
-          onSave={() => handleSaveAnswer(questionNumber)}
-        />
-      );
-    },
-    [answeredQuestionNumbers, savingQuestion, answers, handleAnswerChange, handleSaveAnswer, totalQuestions],
-  );
-
-  const keyExtractor = stepListKeyExtractor;
-  const getItemLayout = getStepListItemLayout;
+  // list rendering handled by StepDetailQuestionsList
 
   if (!stepData) {
     return (
@@ -267,34 +211,18 @@ export function StepDetailScreen(): React.ReactElement {
           />
 
           {/* Questions List */}
-          <FlatList
-            ref={flatListRef}
-            data={listItems}
-            renderItem={renderItem}
-            keyExtractor={keyExtractor}
-            contentContainerStyle={styles.contentContainer}
-            keyboardShouldPersistTaps="handled"
+          <StepDetailQuestionsList
+            listRef={flatListRef}
+            listItems={listItems}
+            answeredQuestionNumbers={answeredQuestionNumbers}
+            savingQuestion={savingQuestion}
+            answers={answers}
+            totalQuestions={totalQuestions}
+            onAnswerChange={handleAnswerChange}
+            onSaveAnswer={handleSaveAnswer}
+            onJumpToQuestion={scrollToQuestion}
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={viewabilityConfig}
-            getItemLayout={getItemLayout}
-            // Performance optimizations for Android
-            initialNumToRender={Platform.OS === 'android' ? 8 : 5}
-            maxToRenderPerBatch={Platform.OS === 'android' ? 8 : 5}
-            updateCellsBatchingPeriod={Platform.OS === 'android' ? 30 : 50}
-            windowSize={Platform.OS === 'android' ? 7 : 5}
-            removeClippedSubviews={Platform.OS !== 'web'}
-            showsVerticalScrollIndicator={true}
-            // Reduce memory usage on Android
-            maintainVisibleContentPosition={undefined}
-            onScrollToIndexFailed={(info) => {
-              // Fallback for scroll failure
-              setTimeout(() => {
-                flatListRef.current?.scrollToOffset({
-                  offset: info.averageItemLength * info.index,
-                  animated: true,
-                });
-              }, 100);
-            }}
           />
         </Animated.View>
       </KeyboardAvoidingView>
@@ -319,12 +247,8 @@ const styles = StyleSheet.create({
     padding: 40,
   },
 
-  contentContainer: {
-    padding: 16,
-    paddingTop: 0,
-    paddingBottom: 32,
-  },
 });
+
 
 
 

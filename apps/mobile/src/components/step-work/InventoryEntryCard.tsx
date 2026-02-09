@@ -17,24 +17,25 @@ import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from '
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { FourthStepType } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 const TYPE_CONFIG: Record<FourthStepType, { bg: string; text: string; border: string; icon: React.ComponentProps<typeof Feather>['name'] }> = {
   resentment: {
-    bg: 'rgba(239, 68, 68, 0.15)',
-    text: '#f87171',
-    border: 'rgba(239, 68, 68, 0.3)',
+    bg: ds.semantic.intent.alert.subtle,
+    text: ds.semantic.intent.alert.solid,
+    border: ds.semantic.intent.alert.solid,
     icon: 'frown',
   },
   fear: {
-    bg: 'rgba(245, 158, 11, 0.15)',
-    text: '#fbbf24',
-    border: 'rgba(245, 158, 11, 0.3)',
+    bg: ds.colors.warningMuted,
+    text: ds.colors.warning,
+    border: ds.colors.warning,
     icon: 'alert-circle',
   },
   sex_conduct: {
-    bg: 'rgba(139, 92, 246, 0.15)',
-    text: '#a78bfa',
-    border: 'rgba(139, 92, 246, 0.3)',
+    bg: ds.colors.accentMuted,
+    text: ds.colors.accent,
+    border: ds.colors.accent,
     icon: 'heart',
   },
 };
@@ -127,7 +128,7 @@ export function InventoryEntryCard({
               )}
             </View>
             <Animated.View style={iconAnimatedStyle}>
-              <Feather name="chevron-down" size={20} color="#64748b" />
+              <Feather name="chevron-down" size={20} color={ds.colors.textSecondary} />
             </Animated.View>
           </View>
 
@@ -199,18 +200,18 @@ const styles = StyleSheet.create({
   whoText: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   causePreview: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 4,
   },
   expandedContent: {
     marginTop: 16,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(51, 65, 85, 0.5)',
+    borderTopColor: ds.colors.bgTertiary,
   },
   section: {
     marginBottom: 16,
@@ -218,14 +219,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginBottom: 6,
   },
   sectionText: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: ds.colors.textPrimary,
     lineHeight: 20,
   },
   affectsContainer: {
@@ -234,13 +235,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   affectBadge: {
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgTertiary,
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 8,
   },
   affectText: {
     fontSize: 12,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
   },
 });

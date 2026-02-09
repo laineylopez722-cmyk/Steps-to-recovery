@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, type ViewProps } from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
+import { ds } from '../tokens/ds';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -107,7 +108,8 @@ const styles = StyleSheet.create({
   },
   glassBackground: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(30,41,59,0.6)',
+    backgroundColor: ds.colors.bgSecondary,
+    opacity: 0.6,
     borderRadius: radius.lg,
   },
   borderGradient: {

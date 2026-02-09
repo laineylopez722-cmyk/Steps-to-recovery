@@ -17,6 +17,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { TimeCapsule } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface CapsuleCardProps {
   capsule: TimeCapsule;
@@ -41,31 +42,31 @@ function CapsuleCardComponent({ capsule, onPress, enteringDelay = 0 }: CapsuleCa
     if (capsule.isUnlocked) {
       return {
         icon: 'book-open' as const,
-        iconColor: '#4ade80',
-        bgColor: 'rgba(34, 197, 94, 0.15)',
+        iconColor: ds.colors.success,
+        bgColor: ds.colors.successMuted,
         statusText: `Opened ${capsule.unlockedAt?.toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
           year: 'numeric',
         })}`,
-        statusColor: '#4ade80',
+        statusColor: ds.colors.success,
       };
     }
     if (isReady) {
       return {
         icon: 'gift' as const,
-        iconColor: '#fbbf24',
-        bgColor: 'rgba(245, 158, 11, 0.15)',
+        iconColor: ds.colors.warning,
+        bgColor: ds.colors.warningMuted,
         statusText: 'Ready to open!',
-        statusColor: '#fbbf24',
+        statusColor: ds.colors.warning,
       };
     }
     return {
       icon: 'lock' as const,
-      iconColor: '#64748b',
-      bgColor: 'rgba(100, 116, 139, 0.15)',
+      iconColor: ds.colors.textSecondary,
+      bgColor: ds.colors.bgTertiary,
       statusText: `Unlocks in ${daysUntilUnlock} day${daysUntilUnlock !== 1 ? 's' : ''}`,
-      statusColor: '#64748b',
+      statusColor: ds.colors.textSecondary,
     };
   };
 
@@ -130,7 +131,7 @@ function CapsuleCardComponent({ capsule, onPress, enteringDelay = 0 }: CapsuleCa
               <Feather
                 name="chevron-right"
                 size={20}
-                color={isReady && !capsule.isUnlocked ? '#fbbf24' : '#64748b'}
+                color={isReady && !capsule.isUnlocked ? ds.colors.warning : ds.colors.textSecondary}
               />
             </View>
           </View>
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     padding: 14,
   },
   readyCard: {
-    borderColor: 'rgba(245, 158, 11, 0.4)',
+    borderColor: ds.colors.warning,
     borderWidth: 1,
   },
   container: {
@@ -170,7 +171,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginBottom: 4,
   },
   statusText: {
@@ -180,14 +181,14 @@ const styles = StyleSheet.create({
   },
   createdText: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
   statusIndicator: {
     alignItems: 'flex-end',
   },
   unlockDate: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginBottom: 4,
   },
 });

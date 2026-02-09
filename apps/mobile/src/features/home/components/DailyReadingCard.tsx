@@ -131,7 +131,7 @@ export function DailyReadingCard({ userId: _userId }: DailyReadingCardProps): Re
               <MaterialIcons
                 name={hasReflectedToday ? 'check-circle' : 'create'}
                 size={18}
-                color={hasReflectedToday ? darkAccent.success : '#fff'}
+                color={hasReflectedToday ? darkAccent.success : ds.semantic.text.onDark}
                 accessible={false}
               />
               <Text
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   reflectButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#fff',
+    color: ds.semantic.text.onDark,
   },
   reflectButtonTextCompleted: {
     color: darkAccent.success,

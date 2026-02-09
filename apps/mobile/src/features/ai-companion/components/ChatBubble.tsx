@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   textUser: {
-    color: '#000',
+    color: ds.colors.text,
   },
   textAssistant: {
     color: ds.colors.textPrimary,

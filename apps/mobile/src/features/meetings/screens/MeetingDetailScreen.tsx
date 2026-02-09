@@ -3,8 +3,18 @@
  * Detailed view of a single meeting with favorite toggle and personal notes
  */
 
-import { useState, useCallback, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert, Pressable, Linking, Share } from 'react-native';
+import { useState, useCallback, useEffect, useMemo } from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  Linking,
+  Share,
+} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { ds } from '../../../design-system/tokens/ds';
@@ -13,18 +23,27 @@ import { Badge } from '../../../design-system/components/Badge';
 import { TextArea } from '../../../design-system/components/TextArea';
 import { Card } from '../../../design-system/components/Card';
 import { useDatabase } from '../../../contexts/DatabaseContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { useFavoriteMeetings } from '../hooks/useFavoriteMeetings';
+import { useMeetingCheckIns, useMeetingCheckInStatus } from '../hooks/useMeetingCheckIns';
+import { CheckInModal } from '../components/CheckInModal';
+import { PreMeetingReflectionModal } from '../components/PreMeetingReflectionModal';
+import { PostMeetingReflectionModal } from '../components/PostMeetingReflectionModal';
 import { getCachedMeetingById } from '../services/meetingCacheService';
+import { savePreMeetingReflection, type PreMeetingPrompts } from '../../../services/meetingReflectionService';
 import type { CachedMeeting } from '../types/meeting';
 import { formatMeetingTime, formatDayOfWeek, getMeetingTypeLabel } from '../types/meeting';
 import type { MeetingsStackScreenProps } from '../../../navigation/types';
 
 type MeetingDetailScreenProps = MeetingsStackScreenProps<'MeetingDetail'>;
 
-export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.ReactElement {
+export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenProps): React.ReactElement {
   const theme = useTheme();
   const { db } = useDatabase();
+  const { user } = useAuth();
   const { meetingId } = route.params;
+  const { checkInAsync, isCheckingIn } = useMeetingCheckIns();
+  const { hasCheckedIn, isLoading: isCheckInStatusLoading } = useMeetingCheckInStatus(meetingId);
 
   const { isFavorite, addFavorite, removeFavorite, updateNotes, getFavoriteNotes } =
     useFavoriteMeetings();
@@ -34,6 +53,13 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
   const [notes, setNotes] = useState<string>('');
   const [isSavingNotes, setIsSavingNotes] = useState<boolean>(false);
   const [isFavorited, setIsFavorited] = useState<boolean>(false);
+  const [isPreReflectionVisible, setIsPreReflectionVisible] = useState<boolean>(false);
+  const [isCheckInModalVisible, setIsCheckInModalVisible] = useState<boolean>(false);
+  const [isPostReflectionVisible, setIsPostReflectionVisible] = useState<boolean>(false);
+  const [pendingPrePrompts, setPendingPrePrompts] = useState<PreMeetingPrompts | null>(null);
+  const [latestCheckInId, setLatestCheckInId] = useState<string | null>(null);
+  const [preMeetingMood, setPreMeetingMood] = useState<number | undefined>(undefined);
+  const [shouldOpenPostReflection, setShouldOpenPostReflection] = useState<boolean>(false);
 
   // Load meeting details
   useEffect(() => {
@@ -133,6 +159,129 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
     });
   }, [meeting]);
 
+  const meetingForCheckIn = useMemo(() => {
+    if (!meeting) {
+      return null;
+    }
+
+    return {
+      ...meeting,
+      is_favorite: isFavorited,
+      distance_miles: null as number | null,
+    };
+  }, [meeting, isFavorited]);
+
+  const handleOpenFavorites = useCallback((): void => {
+    navigation.navigate('FavoriteMeetings');
+  }, [navigation]);
+
+  const handleStartCheckInFlow = useCallback((): void => {
+    if (!user) {
+      Alert.alert('Sign in required', 'Please sign in to check in to meetings.');
+      return;
+    }
+
+    if (hasCheckedIn) {
+      Alert.alert('Already checked in', 'You have already checked in to this meeting today.');
+      return;
+    }
+
+    setPendingPrePrompts(null);
+    setLatestCheckInId(null);
+    setPreMeetingMood(undefined);
+    setShouldOpenPostReflection(false);
+    setIsPreReflectionVisible(true);
+  }, [user, hasCheckedIn]);
+
+  const handlePreReflectionComplete = useCallback((prompts: PreMeetingPrompts): void => {
+    setPendingPrePrompts(prompts);
+    setPreMeetingMood(prompts.mood);
+    setIsPreReflectionVisible(false);
+    setIsCheckInModalVisible(true);
+  }, []);
+
+  const handlePreReflectionSkip = useCallback((): void => {
+    setPendingPrePrompts(null);
+    setPreMeetingMood(undefined);
+    setIsPreReflectionVisible(false);
+    setIsCheckInModalVisible(true);
+  }, []);
+
+  const handleCheckInConfirm = useCallback(
+    async (checkInNotes?: string): Promise<boolean> => {
+      if (!meeting || !user) {
+        Alert.alert('Unable to check in', 'Meeting data is unavailable right now.');
+        return false;
+      }
+
+      try {
+        const checkInResult = await checkInAsync({
+          meetingId: meeting.id,
+          meetingName: meeting.name?.trim() || 'Recovery meeting',
+          meetingAddress: meeting.address || undefined,
+          checkInType: 'manual',
+          notes: checkInNotes,
+        });
+
+        if (!checkInResult?.checkIn?.id) {
+          Alert.alert('Check-in failed', 'Please try again.');
+          return false;
+        }
+
+        setLatestCheckInId(checkInResult.checkIn.id);
+        setShouldOpenPostReflection(true);
+
+        if (pendingPrePrompts) {
+          const preSaveResult = await savePreMeetingReflection(
+            user.id,
+            checkInResult.checkIn.id,
+            pendingPrePrompts,
+          );
+
+          if (!preSaveResult.success) {
+            Alert.alert(
+              'Partial save',
+              'Check-in was saved, but we could not save your pre-meeting reflection.',
+            );
+          }
+        }
+
+        if (checkInResult.newAchievements.length > 0) {
+          const achievementCount = checkInResult.newAchievements.length;
+          Alert.alert(
+            'Achievement unlocked',
+            `You unlocked ${achievementCount} achievement${achievementCount === 1 ? '' : 's'}!`,
+          );
+        }
+
+        setPendingPrePrompts(null);
+        return true;
+      } catch (_error) {
+        Alert.alert('Check-in failed', 'Please try again.');
+        return false;
+      }
+    },
+    [checkInAsync, meeting, pendingPrePrompts, user],
+  );
+
+  const handleCheckInModalClose = useCallback((): void => {
+    setIsCheckInModalVisible(false);
+
+    if (shouldOpenPostReflection && latestCheckInId) {
+      setShouldOpenPostReflection(false);
+      setIsPostReflectionVisible(true);
+      return;
+    }
+
+    setShouldOpenPostReflection(false);
+  }, [latestCheckInId, shouldOpenPostReflection]);
+
+  const handlePostReflectionComplete = useCallback((): void => {
+    setIsPostReflectionVisible(false);
+    setLatestCheckInId(null);
+    Alert.alert('Reflection saved', 'Great work showing up for your recovery today.');
+  }, []);
+
   if (isLoading) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
@@ -168,10 +317,11 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
   const meetingCityStateLine = meetingCityState || 'City details unavailable';
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      contentContainerStyle={styles.content}
-    >
+    <>
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        contentContainerStyle={styles.content}
+      >
       {/* Meeting Name */}
       <View style={styles.header}>
         <Text style={[theme.typography.h1, { color: theme.colors.text, flex: 1 }]}>{meetingName}</Text>
@@ -216,6 +366,35 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
           accessibilityHint="Opens share sheet to share meeting details with others"
         >
           Share
+        </Button>
+      </View>
+
+      <View style={styles.actionRow}>
+        <Button
+          variant="outline"
+          onPress={handleOpenFavorites}
+          style={styles.actionButton}
+          accessibilityLabel="View favorite meetings"
+          accessibilityHint="Opens your saved meetings list"
+        >
+          Favorites
+        </Button>
+        <Button
+          variant="primary"
+          onPress={handleStartCheckInFlow}
+          disabled={isCheckInStatusLoading || hasCheckedIn || isCheckingIn}
+          style={styles.actionButton}
+          accessibilityLabel={hasCheckedIn ? 'Already checked in today' : 'Check in to meeting'}
+          accessibilityHint={
+            hasCheckedIn
+              ? 'You have already checked in to this meeting today'
+              : 'Start pre-meeting reflection and check in flow'
+          }
+          accessibilityState={{
+            disabled: isCheckInStatusLoading || hasCheckedIn || isCheckingIn,
+          }}
+        >
+          {isCheckingIn ? 'Checking In...' : hasCheckedIn ? 'Checked In Today' : 'Check In'}
         </Button>
       </View>
 
@@ -284,40 +463,70 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
       )}
 
       {/* Personal Notes */}
-      <Card style={styles.section}>
-        <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
-          Personal Notes
-        </Text>
-        <TextArea
-          label="Personal Notes"
-          value={notes}
-          onChangeText={setNotes}
-          placeholder={
-            isFavorited
-              ? 'Add your personal notes about this meeting...'
-              : 'Favorite this meeting to add personal notes'
-          }
-          editable={isFavorited}
-          accessibilityLabel="Personal notes"
-          accessibilityHint={
-            isFavorited
-              ? 'Enter your thoughts about this meeting'
-              : 'Favorite this meeting first to add notes'
-          }
-        />
-        {isFavorited && notes.trim() !== '' && (
-          <Button
-            variant="primary"
-            onPress={handleSaveNotes}
-            disabled={isSavingNotes}
-            style={styles.saveButton}
-            accessibilityLabel="Save notes"
-          >
-            {isSavingNotes ? 'Saving...' : 'Save Notes'}
-          </Button>
-        )}
-      </Card>
-    </ScrollView>
+        <Card style={styles.section}>
+          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+            Personal Notes
+          </Text>
+          <TextArea
+            label="Personal Notes"
+            value={notes}
+            onChangeText={setNotes}
+            placeholder={
+              isFavorited
+                ? 'Add your personal notes about this meeting...'
+                : 'Favorite this meeting to add personal notes'
+            }
+            editable={isFavorited}
+            accessibilityLabel="Personal notes"
+            accessibilityHint={
+              isFavorited
+                ? 'Enter your thoughts about this meeting'
+                : 'Favorite this meeting first to add notes'
+            }
+          />
+          {isFavorited && notes.trim() !== '' && (
+            <Button
+              variant="primary"
+              onPress={handleSaveNotes}
+              disabled={isSavingNotes}
+              style={styles.saveButton}
+              accessibilityLabel="Save notes"
+            >
+              {isSavingNotes ? 'Saving...' : 'Save Notes'}
+            </Button>
+          )}
+        </Card>
+      </ScrollView>
+
+      <PreMeetingReflectionModal
+        visible={isPreReflectionVisible}
+        meetingName={meetingName}
+        onClose={() => setIsPreReflectionVisible(false)}
+        onSkip={handlePreReflectionSkip}
+        onComplete={handlePreReflectionComplete}
+      />
+
+      <CheckInModal
+        visible={isCheckInModalVisible}
+        meeting={meetingForCheckIn}
+        onClose={handleCheckInModalClose}
+        onConfirm={handleCheckInConfirm}
+        isLoading={isCheckingIn}
+      />
+
+      <PostMeetingReflectionModal
+        visible={isPostReflectionVisible && !!latestCheckInId}
+        userId={user?.id ?? ''}
+        checkinId={latestCheckInId ?? ''}
+        meetingName={meetingName}
+        preMood={preMeetingMood}
+        onClose={() => {
+          setIsPostReflectionVisible(false);
+          setLatestCheckInId(null);
+        }}
+        onComplete={handlePostReflectionComplete}
+      />
+    </>
   );
 }
 

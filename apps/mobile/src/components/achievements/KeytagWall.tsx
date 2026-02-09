@@ -17,7 +17,8 @@ import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from '
 import { GlassCard } from '../../design-system/components';
 import type { KeytagWithStatus } from '@recovery/shared';
 import type { ReactElement } from 'react';
-import * as Haptics from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface KeytagWallProps {
   keytags: KeytagWithStatus[];
@@ -39,7 +40,7 @@ export const KeytagWall = memo(function KeytagWall({
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Feather name="award" size={20} color="#f59e0b" />
+            <Feather name="award" size={20} color={ds.colors.warning} />
             <Text style={styles.headerTitle}>Keytags</Text>
           </View>
           <View style={styles.headerBadge}>
@@ -101,7 +102,7 @@ export const KeytagItem = memo(function KeytagItem({
   }, [scale]);
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onPress?.();
   }, [onPress]);
 
@@ -141,10 +142,10 @@ export const KeytagItem = memo(function KeytagItem({
             {
               width: currentSize.container,
               height: currentSize.container,
-              backgroundColor: isEarned ? hexColor : '#6b7280',
+              backgroundColor: isEarned ? hexColor : ds.colors.textSecondary,
               opacity: isEarned ? 1 : 0.5,
               borderWidth: isWhite && isEarned ? 2 : 0,
-              borderColor: '#e5e7eb',
+              borderColor: ds.colors.borderSubtle,
             },
           ]}
         >
@@ -157,7 +158,7 @@ export const KeytagItem = memo(function KeytagItem({
               styles.keytagText,
               {
                 fontSize: currentSize.font,
-                color: needsDarkText ? '#1f2937' : '#ffffff',
+                color: needsDarkText ? ds.colors.text : ds.semantic.text.onDark,
               },
             ]}
           >
@@ -167,7 +168,7 @@ export const KeytagItem = memo(function KeytagItem({
           {/* Earned indicator */}
           {isEarned && (
             <View style={styles.earnedBadge}>
-              <Feather name="check" size={currentSize.font * 0.6} color="#ffffff" />
+              <Feather name="check" size={currentSize.font * 0.6} color={ds.semantic.text.onDark} />
             </View>
           )}
         </View>
@@ -178,7 +179,7 @@ export const KeytagItem = memo(function KeytagItem({
             styles.keytagLabel,
             {
               fontSize: currentSize.label,
-              color: isEarned ? '#ffffff' : '#64748b',
+              color: isEarned ? ds.semantic.text.onDark : ds.colors.textSecondary,
             },
           ]}
           numberOfLines={1}
@@ -218,7 +219,7 @@ export const FeaturedKeytag = memo(function FeaturedKeytag({
   if (!current) return null as unknown as ReactElement;
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onPress?.();
   }, [onPress]);
 
@@ -236,7 +237,7 @@ export const FeaturedKeytag = memo(function FeaturedKeytag({
           <KeytagItem keytag={current} size="large" />
           {next && (
             <View style={styles.nextContainer}>
-              <Feather name="arrow-right" size={14} color="#64748b" style={styles.nextIcon} />
+              <Feather name="arrow-right" size={14} color={ds.colors.textSecondary} style={styles.nextIcon} />
               <Text style={styles.nextText}>
                 Next: {next.title} in {next.daysUntil} days
               </Text>
@@ -275,10 +276,10 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   headerBadge: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
   headerCount: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#fbbf24',
+    color: ds.colors.warning,
   },
   grid: {
     flexDirection: 'row',
@@ -312,7 +313,8 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: ds.colors.shadow,
+    opacity: 0.3,
   },
   keytagText: {
     fontWeight: 'bold',
@@ -326,7 +328,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -4,
     right: -4,
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
     borderRadius: 10,
     width: 20,
     height: 20,
@@ -340,13 +342,13 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 4,
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 2,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: ds.colors.info,
     borderRadius: 2,
   },
   featuredContainer: {
@@ -357,7 +359,7 @@ const styles = StyleSheet.create({
   },
   featuredTitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginBottom: 12,
   },
   nextContainer: {
@@ -370,6 +372,6 @@ const styles = StyleSheet.create({
   },
   nextText: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
   },
 });

@@ -1,0 +1,11 @@
+# Maestro local files
+.env
+*.log
+screenshots/
+results/
+
+# Maestro Cloud uploads (generated)
+uploads/
+
+# Local test runs
+test-results/

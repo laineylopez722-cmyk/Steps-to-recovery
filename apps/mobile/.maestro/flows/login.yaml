@@ -1,0 +1,72 @@
+# E2E Test: Login Flow
+# Tests: Existing user login → Navigate to main app
+
+appId: com.recovery.stepstorecovery
+tags:
+  - login
+  - auth
+  - critical
+
+---
+
+# Launch app with clear state
+- launchApp:
+    clearState: true
+
+- waitForAnimationToEnd
+
+# ============================================
+# Login Screen
+# ============================================
+
+# Verify login screen loaded
+- assertVisible: "Welcome Back"
+- assertVisible: "Your recovery journey continues here"
+
+# Enter email
+- tapOn:
+    id: "login-email-input"
+- inputText: "{{TEST_USER_EMAIL}}"
+
+# Enter password
+- tapOn:
+    id: "login-password-input"
+- inputText: "{{TEST_USER_PASSWORD}}"
+
+# Tap login button
+- tapOn:
+    id: "login-submit-button"
+
+# Wait for main app to load
+- extendedWaitUntil:
+    visible:
+      oneOf:
+        - "Clean Time"
+        - "Welcome to Recovery"
+    timeout: 20000
+
+# ============================================
+# Handle Onboarding if Needed (new test user)
+# ============================================
+
+- runFlow:
+    when:
+      visible: "Welcome to Recovery"
+    commands:
+      - tapOn: "Skip"
+      - waitForAnimationToEnd
+
+# ============================================
+# Verify Main App
+# ============================================
+
+# Verify we're on home screen
+- assertVisible: "Clean Time"
+
+# Verify bottom tabs
+- assertVisible: "Home"
+
+# Verify daily intention section
+- assertVisible: "Daily intention"
+
+- takeScreenshot: login-flow-complete

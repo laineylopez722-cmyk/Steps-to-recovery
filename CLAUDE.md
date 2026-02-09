@@ -1040,23 +1040,125 @@ Steps-to-recovery/
 
 **Test Files**: Co-located with source code in `__tests__/` directories
 
+### Unit Tests
+
 ```bash
-# Unit tests
+# Run all tests
+cd apps/mobile
 npm test
 
-# Test encryption (critical)
-cd apps/mobile && npm run test:encryption
+# Run with coverage
+npm run test:coverage
 
-# Component tests (React Native Testing Library)
+# Test encryption (critical)
+npm run test:encryption
+
+# Component tests in watch mode
 npm run test:watch
+
+# Run specific test file
+npm test -- useJournalEntries
 ```
+
+**Test Coverage Targets**:
+
+| Module | Target | Current |
+|--------|--------|---------|
+| Encryption | 90% | 94% |
+| Sync Service | 70% | 75% |
+| Journal Hooks | 90% | 96% |
+| **Overall** | 75% | 75%+ |
 
 **Test Coverage Focus**:
 
 - Encryption/decryption functions (CRITICAL)
 - Sync service logic
+- React Query hooks (useJournalEntries, etc.)
 - Database migrations
 - Error boundaries
+
+### E2E Tests (Maestro)
+
+End-to-end tests are in `apps/mobile/.maestro/flows/`:
+
+```bash
+# Install Maestro
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+# Run all E2E tests
+cd apps/mobile
+maestro test .maestro/flows/
+
+# Run specific flow
+maestro test .maestro/flows/onboarding.yaml
+maestro test .maestro/flows/login.yaml
+maestro test .maestro/flows/journal.yaml
+maestro test .maestro/flows/daily-checkin.yaml
+
+# Validate flow syntax
+maestro test --dry-run .maestro/flows/onboarding.yaml
+```
+
+**E2E Test Flows**:
+
+| Flow | Description | File |
+|------|-------------|------|
+| Onboarding | Sign up → Set sobriety date → Complete onboarding | `onboarding.yaml` |
+| Login | Existing user authentication | `login.yaml` |
+| Daily Check-in | Morning intention + Evening pulse | `daily-checkin.yaml` |
+| Journal | Create → Edit → Search entries | `journal.yaml` |
+| Step Work | 12-step progress tracking | `step-work.yaml` |
+| Offline Sync | Offline → Online sync test | `offline-sync.yaml` |
+
+**CI/CD**: E2E tests run automatically via GitHub Actions (`.github/workflows/e2e.yml`)
+
+### Writing Tests
+
+**Hook Testing Pattern** (React Native Testing Library):
+
+```typescript
+import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Mock dependencies
+jest.mock('../../../../contexts/DatabaseContext', () => ({
+  useDatabase: () => ({ db: mockDb, isReady: true }),
+}));
+
+// Create wrapper with QueryClient
+const createWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } }
+  });
+  return ({ children }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
+// Test hook
+const { result } = renderHook(() => useJournalEntries(userId), {
+  wrapper: createWrapper(),
+});
+
+await waitFor(() => expect(result.current.isLoading).toBe(false));
+```
+
+**Encryption Testing**:
+
+```typescript
+it('should encrypt and decrypt to return original text', async () => {
+  const plaintext = 'Sensitive recovery journal entry';
+  const encrypted = await encryptContent(plaintext);
+
+  // Verify encrypted (not plaintext)
+  expect(encrypted).not.toBe(plaintext);
+  expect(encrypted).toContain(':'); // IV:ciphertext format
+
+  // Decrypt and verify
+  const decrypted = await decryptContent(encrypted);
+  expect(decrypted).toBe(plaintext);
+});
+```
 
 ## Git Workflow
 
@@ -1216,6 +1318,91 @@ This project follows **Build-Measure-Analyze-Decide** methodology:
 **Symptom**: Build fails with type errors
 **Fix**: Never use `any`, add explicit return types, handle null/undefined
 **Common**: Database query results can be undefined, always check before using
+
+## Build Process
+
+### Environment Setup
+
+Create `apps/mobile/.env`:
+```bash
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+EXPO_PUBLIC_SENTRY_DSN=optional-sentry-dsn
+```
+
+### EAS Build Profiles
+
+| Profile | Use Case | Distribution |
+|---------|----------|--------------|
+| `development` | Local development | Internal (simulator) |
+| `development-device` | Device testing | Internal (physical) |
+| `preview` | QA testing | Internal testing |
+| `production` | App Store / Play Store | Public stores |
+
+### Build Commands
+
+```bash
+cd apps/mobile
+
+# Development builds
+eas build --profile development --platform ios
+eas build --profile development --platform android
+
+# Preview builds (for QA)
+eas build --profile preview --platform ios
+eas build --profile preview --platform android
+
+# Production builds
+eas build --profile production --platform ios
+eas build --profile production --platform android
+
+# Build all platforms
+eas build --profile production --platform all
+```
+
+### Store Submission
+
+```bash
+# Submit iOS to App Store Connect
+eas submit --platform ios --latest
+
+# Submit Android to Play Console
+eas submit --platform android --latest
+
+# Submit both
+eas submit --platform all --latest
+```
+
+### EAS Secrets Management
+
+```bash
+# Create secrets for production
+cd apps/mobile
+
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL \
+  --value "https://your-project.supabase.co"
+
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY \
+  --value "your-anon-key"
+
+# List secrets
+eas secret:list
+
+# Delete secret
+eas secret:delete --name SECRET_NAME
+```
+
+### Pre-Build Checklist
+
+- [ ] `npm test` - All tests passing
+- [ ] `npm run type-check` - 0 TypeScript errors
+- [ ] `npm run lint` - 0 ESLint warnings
+- [ ] `.env` file properly configured
+- [ ] Version bumped in `package.json` and `app.json`
+- [ ] Changelog updated
+- [ ] EAS secrets configured (for production)
+
+See [BUILD_CHECKLIST.md](docs/BUILD_CHECKLIST.md) for detailed checklist.
 
 ---
 

@@ -22,6 +22,7 @@ import { useContacts } from '../../hooks/useContacts';
 import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
 import { logger } from '../../utils/logger';
+import { ds } from '../../design-system/tokens/ds';
 
 interface PhoneWidgetProps {
   /** Delay index for staggered entrance animation */
@@ -39,9 +40,9 @@ function ProgressBar({
   sublabel: string;
 }) {
   const getProgressColor = () => {
-    if (progress >= 1) return '#22c55e'; // green-500
-    if (progress >= 0.5) return '#f59e0b'; // amber-500
-    return '#60a5fa'; // primary-400
+    if (progress >= 1) return ds.colors.success;
+    if (progress >= 0.5) return ds.colors.warning;
+    return ds.colors.info;
   };
 
   return (
@@ -202,7 +203,7 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
       <Animated.View entering={FadeIn.delay(enteringDelay * 100)}>
         <GlassCard gradient="card" style={[styles.card, styles.errorCard]}>
           <View style={styles.errorContent}>
-            <Feather name="alert-circle" size={24} color="#f87171" />
+            <Feather name="alert-circle" size={24} color={ds.semantic.intent.alert.solid} />
             <Text style={styles.errorTitle}>Couldn't load calls</Text>
             <TouchableOpacity onPress={() => {}} accessibilityRole="button" accessibilityLabel="Retry loading">
               <Text style={styles.errorSubtitle}>Tap to retry</Text>
@@ -246,7 +247,7 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
             {todayCalls.slice(0, 3).map((call: PhoneCallLog, index: number) => (
               <View key={call.id} style={[styles.callItem, index < todayCalls.length - 1 && styles.callItemBorder]}>
                 <View style={styles.callIconContainer}>
-                  <Feather name="check" size={14} color="#22c55e" />
+                  <Feather name="check" size={14} color={ds.colors.success} />
                 </View>
                 <View style={styles.callInfo}>
                   <Text style={styles.callName}>{call.contactName}</Text>
@@ -314,7 +315,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   errorCard: {
-    borderColor: 'rgba(248, 113, 113, 0.3)',
+    borderColor: ds.semantic.intent.alert.solid,
     borderWidth: 1,
   },
   errorContent: {
@@ -322,13 +323,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   errorTitle: {
-    color: '#f87171',
+    color: ds.semantic.intent.alert.solid,
     fontSize: 16,
     fontWeight: '600',
     marginTop: 8,
   },
   errorSubtitle: {
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     fontSize: 14,
     marginTop: 4,
   },
@@ -337,20 +338,20 @@ const styles = StyleSheet.create({
   },
   skeletonHeader: {
     height: 20,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     width: '50%',
     marginBottom: 16,
   },
   skeletonProgress: {
     height: 8,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     marginBottom: 16,
   },
   skeletonButtons: {
     height: 60,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 8,
   },
   header: {
@@ -367,11 +368,11 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   viewAllText: {
     fontSize: 14,
-    color: '#60a5fa',
+    color: ds.colors.info,
   },
   progressContainer: {
     marginBottom: 16,
@@ -384,16 +385,16 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
   },
   progressValue: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   progressTrack: {
     height: 8,
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 4,
     overflow: 'hidden',
   },
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
   },
   goalReachedText: {
     fontSize: 12,
-    color: '#22c55e',
+    color: ds.colors.success,
     marginTop: 4,
   },
   callsSection: {
@@ -412,7 +413,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textTransform: 'uppercase',
     marginBottom: 8,
   },
@@ -423,13 +424,13 @@ const styles = StyleSheet.create({
   },
   callItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(51, 65, 85, 0.3)',
+    borderBottomColor: ds.colors.borderSubtle,
   },
   callIconContainer: {
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: ds.colors.successMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -440,11 +441,11 @@ const styles = StyleSheet.create({
   callName: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   callMeta: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   suggestedSection: {
@@ -458,7 +459,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   quickCallButton: {
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 12,
     padding: 12,
     alignItems: 'center',
@@ -470,19 +471,19 @@ const styles = StyleSheet.create({
   quickCallName: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     textAlign: 'center',
   },
   sponsorButton: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     marginTop: 8,
   },
   sponsorName: {
-    color: '#fbbf24',
+    color: ds.colors.warning,
   },
   sponsorLabel: {
     fontSize: 10,
-    color: '#f59e0b',
+    color: ds.colors.warning,
     marginTop: 2,
   },
   emptyState: {
@@ -490,18 +491,18 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   emptyText: {
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     fontSize: 14,
     marginBottom: 12,
   },
   addButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: ds.colors.info,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
   },
   addButtonText: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontWeight: '500',
     fontSize: 14,
   },

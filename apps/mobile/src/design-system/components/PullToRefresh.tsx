@@ -11,6 +11,7 @@ import Animated, {
   } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius } from '../tokens/modern';
+import { ds } from '../tokens/ds';
 
 export interface PullToRefreshProps extends RefreshControlProps {
   scrollY: SharedValue<number>;
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: darkAccent.surfaceHigh,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,

@@ -179,6 +179,8 @@ export const colors = {
   bgQuaternary: palette.gray850,
   bgElevated: palette.gray800,
   bgOverlay: 'rgba(0, 0, 0, 0.55)',
+  overlay: 'rgba(0, 0, 0, 0.55)',
+  transparent: 'transparent',
 
   // Text hierarchy
   textPrimary: palette.white,
@@ -193,6 +195,7 @@ export const colors = {
   borderDefault: 'rgba(255, 255, 255, 0.08)',
   borderStrong: 'rgba(255, 255, 255, 0.12)',
   divider: 'rgba(255, 255, 255, 0.06)',
+  shadow: 'rgba(0, 0, 0, 0.35)',
 
   // Accent
   accent: palette.amber,

@@ -14,6 +14,7 @@ import { Feather } from '@expo/vector-icons';
 import { useSettingsStore } from '@recovery/shared';
 import { getCrisisResources, type CrisisResource } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 export function CrisisButton() {
   const [showQuickHelp, setShowQuickHelp] = useState(false);
@@ -80,7 +81,7 @@ export function CrisisButton() {
         accessibilityHint="Opens quick access to emergency hotlines, support resources, and coping tools"
         accessibilityState={{ busy: false }}
         style={{
-          shadowColor: '#000',
+          shadowColor: ds.colors.shadow,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
@@ -89,13 +90,13 @@ export function CrisisButton() {
       >
         {/* Use amber-500 instead of danger-500 for calming effect */}
         <View className="bg-amber-500 rounded-full w-14 h-14 items-center justify-center border-2 border-amber-400">
-          <Feather name="heart" size={28} color="#fff" />
+          <Feather name="heart" size={28} color={ds.semantic.text.onDark} />
         </View>
         {/* Soft pulse indicator - teal for hope */}
         <View
           className="absolute -top-1 -right-1 bg-white rounded-full w-4 h-4 items-center justify-center"
           style={{
-            shadowColor: '#000',
+            shadowColor: ds.colors.shadow,
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
@@ -162,7 +163,7 @@ export function CrisisButton() {
                     <Text className="text-white font-bold text-lg">{resource.title}</Text>
                     <Text className="text-white/80">{resource.subtitle}</Text>
                   </View>
-                  <Feather name="phone" size={20} color="#fff" />
+                  <Feather name="phone" size={20} color={ds.semantic.text.onDark} />
                 </TouchableOpacity>
               ))}
             </View>

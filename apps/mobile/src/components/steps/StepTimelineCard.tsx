@@ -3,6 +3,7 @@ import { memo } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ds } from '../../design-system/tokens/ds';
 
 interface StepTimelineCardProps {
   step: {
@@ -54,9 +55,9 @@ export const StepTimelineCard = memo(function StepTimelineCard({
           }`}
         >
           {isCompleted ? (
-            <Feather name="check" size={20} color="#22c55e" />
+            <Feather name="check" size={20} color={ds.colors.success} />
           ) : isLocked ? (
-            <Feather name="lock" size={16} color="#475569" />
+            <Feather name="lock" size={16} color={ds.colors.textSecondary} />
           ) : (
             <Text className={`font-bold ${isCurrent ? 'text-primary-400' : 'text-white'}`}>
               {step.step}
@@ -122,7 +123,7 @@ export const StepTimelineCard = memo(function StepTimelineCard({
                 >
                   {isCompleted ? 'Review Step' : 'Continue Step Work'}
                 </Text>
-                <Feather name="arrow-right" size={14} color={isCurrent ? '#60a5fa' : '#64748b'} />
+                <Feather name="arrow-right" size={14} color={isCurrent ? ds.colors.info : ds.colors.textSecondary} />
               </View>
             )}
           </BlurView>

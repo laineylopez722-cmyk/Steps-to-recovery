@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { ThemeContext } from '../design-system/context/ThemeContext';
 import { logger } from '../utils/logger';
 import { captureException } from '../lib/sentry';
+import { ds } from '../design-system/tokens/ds';
 
 interface Props {
   children: ReactNode;
@@ -92,11 +93,11 @@ interface ErrorFallbackProps {
 }
 
 const FALLBACK_COLORS = {
-  background: '#0f172a',
-  danger: '#ef4444',
-  primary: '#2563eb',
-  text: '#f8fafc',
-  textSecondary: '#94a3b8',
+  background: ds.colors.bgPrimary,
+  danger: ds.semantic.intent.alert.solid,
+  primary: ds.colors.info,
+  text: ds.semantic.text.onDark,
+  textSecondary: ds.colors.textTertiary,
 } as const;
 
 function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React.ReactElement {
@@ -131,7 +132,7 @@ function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React
             accessibilityRole="button"
             accessibilityLabel="Try again"
           >
-            <MaterialIcons name="refresh" size={20} color="#FFFFFF" />
+            <MaterialIcons name="refresh" size={20} color={ds.semantic.text.onDark} />
             <Text style={styles.buttonText}>Try Again</Text>
           </TouchableOpacity>
         </View>
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -243,7 +244,7 @@ const styles = StyleSheet.create({
     maxHeight: 300,
     marginTop: 16,
     padding: 16,
-    backgroundColor: '#1a1a2e',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 12,
   },
   detailsTitle: {

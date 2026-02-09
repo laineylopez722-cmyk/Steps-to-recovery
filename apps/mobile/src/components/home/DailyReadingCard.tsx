@@ -18,6 +18,7 @@ import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useReading } from '../../hooks/useReading';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface DailyReadingCardProps {
   /** Delay index for staggered entrance animation */
@@ -67,7 +68,7 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
         >
           <GlassCard gradient="card" style={[styles.card, styles.errorCard]}>
             <View style={styles.errorContent}>
-              <Feather name="alert-circle" size={24} color="#f87171" />
+              <Feather name="alert-circle" size={24} color={ds.semantic.intent.alert.solid} />
               <Text style={styles.errorTitle}>Couldn't load reading</Text>
               <Text style={styles.errorSubtitle}>Tap to retry</Text>
             </View>
@@ -114,7 +115,7 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
             <View style={styles.footerLeft}>
               {hasReflectedToday ? (
                 <View style={styles.reflectedBadge}>
-                  <Feather name="check-circle" size={14} color="#22c55e" />
+                  <Feather name="check-circle" size={14} color={ds.colors.success} />
                   <Text style={styles.reflectedText}>Reflected</Text>
                 </View>
               ) : (
@@ -131,7 +132,7 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
                   </Text>
                 </View>
               )}
-              <Feather name="arrow-right" size={16} color="#60a5fa" style={styles.arrow} />
+              <Feather name="arrow-right" size={16} color={ds.colors.info} style={styles.arrow} />
             </View>
           </View>
         </GlassCard>
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   errorCard: {
-    borderColor: 'rgba(248, 113, 113, 0.3)',
+    borderColor: ds.semantic.intent.alert.solid,
     borderWidth: 1,
   },
   errorContent: {
@@ -155,13 +156,13 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   errorTitle: {
-    color: '#f87171',
+    color: ds.semantic.intent.alert.solid,
     fontSize: 16,
     fontWeight: '600',
     marginTop: 8,
   },
   errorSubtitle: {
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     fontSize: 14,
     marginTop: 4,
   },
@@ -170,21 +171,21 @@ const styles = StyleSheet.create({
   },
   skeletonHeader: {
     height: 16,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     width: '30%',
     marginBottom: 12,
   },
   skeletonTitle: {
     height: 24,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     width: '70%',
     marginBottom: 12,
   },
   skeletonLine: {
     height: 16,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     marginBottom: 8,
   },
@@ -202,28 +203,28 @@ const styles = StyleSheet.create({
   headerLabel: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
   dateText: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginBottom: 8,
     lineHeight: 28,
   },
   preview: {
     fontSize: 16,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     lineHeight: 24,
     marginBottom: 16,
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.borderSubtle,
     marginBottom: 12,
   },
   footer: {
@@ -241,11 +242,11 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   reflectedText: {
-    color: '#22c55e',
+    color: ds.colors.success,
     fontSize: 14,
   },
   tapHint: {
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     fontSize: 14,
   },
   footerRight: {
@@ -256,14 +257,14 @@ const styles = StyleSheet.create({
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     gap: 4,
   },
   streakText: {
-    color: '#f59e0b',
+    color: ds.colors.warning,
     fontSize: 12,
     fontWeight: '500',
   },

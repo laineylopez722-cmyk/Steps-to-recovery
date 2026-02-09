@@ -20,7 +20,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import {
+  impactAsync,
+  ImpactFeedbackStyle,
+  notificationAsync,
+  NotificationFeedbackType,
+} from 'expo-haptics';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { Action } from '../../../design-system/primitives';
@@ -49,7 +54,7 @@ function formatDate(): string {
   });
 }
 
-function ActionCard({
+const ActionCard = React.memo(function ActionCard({
   children,
   onPress,
   style,
@@ -77,7 +82,7 @@ function ActionCard({
       </Action.Root>
     </Animated.View>
   );
-}
+});
 
 function PremiumProgressHero({
   days,
@@ -194,7 +199,7 @@ function ShortcutCard({
 // Shimmer loading placeholder
 function HomeScreenSkeleton() {
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="home-screen">
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.loadingContainer}>
           {/* Header skeleton */}
@@ -244,12 +249,12 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const completedToday = Number(Boolean(morning)) + Number(Boolean(evening));
 
   const hapticLight = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
   };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     
     try {
       await Promise.all([refetchDays?.(), refetchCheckins?.()]);
@@ -274,12 +279,12 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   }, [navigation]);
 
   const handleCompanion = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Medium).catch(() => {});
     navigation.navigate('CompanionChat');
   }, [navigation]);
 
   const handleEmergency = useCallback(() => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+    notificationAsync(NotificationFeedbackType.Warning).catch(() => {});
     navigation.navigate('Emergency');
   }, [navigation]);
 

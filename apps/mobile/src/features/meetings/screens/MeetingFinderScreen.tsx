@@ -25,6 +25,11 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   const theme = useTheme();
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const { onPressIn: onFilterPressIn, onPressOut: onFilterPressOut, animatedStyle: filterAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
+  const {
+    onPressIn: onFavoritesPressIn,
+    onPressOut: onFavoritesPressOut,
+    animatedStyle: favoritesAnimatedStyle,
+  } = useMotionPress({ scaleTo: motionScale.pressButton });
   const { onPressIn: onClosePressIn, onPressOut: onClosePressOut, animatedStyle: closeAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
 
   const {
@@ -65,6 +70,10 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   const handleFilterPress = useCallback((): void => {
     setShowFilters(true);
   }, []);
+
+  const handleFavoritesPress = useCallback((): void => {
+    navigation.navigate('FavoriteMeetings');
+  }, [navigation]);
 
   const handleApplyFilters = useCallback(
     (filters: Parameters<typeof applyFilters>[0]): void => {
@@ -164,27 +173,58 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
               Find nearby support right now
             </Text>
           </View>
-          <Pressable
-            onPress={handleFilterPress}
-            onPressIn={onFilterPressIn}
-            onPressOut={onFilterPressOut}
-            accessibilityRole="button"
-            accessibilityLabel="Filter meetings"
-            accessibilityHint="Open filter options to refine meeting search"
-            hitSlop={12}
-            style={({ pressed }) => [
-              styles.filterButton,
-              {
-                backgroundColor: theme.colors.semantic.surface.card,
-                borderColor: theme.colors.border,
-                opacity: pressed ? 0.6 : 1,
-              },
-            ]}
-          >
-            <Animated.View style={filterAnimatedStyle}>
-              <MaterialIcons name="filter-list" size={20} color={theme.colors.semantic.intent.primary.solid} />
-            </Animated.View>
-          </Pressable>
+          <View style={styles.headerActions}>
+            <Pressable
+              onPress={handleFavoritesPress}
+              onPressIn={onFavoritesPressIn}
+              onPressOut={onFavoritesPressOut}
+              accessibilityRole="button"
+              accessibilityLabel="Open favorite meetings"
+              accessibilityHint="Shows meetings you have favorited"
+              hitSlop={12}
+              style={({ pressed }) => [
+                styles.filterButton,
+                {
+                  backgroundColor: theme.colors.semantic.surface.card,
+                  borderColor: theme.colors.border,
+                  opacity: pressed ? 0.6 : 1,
+                },
+              ]}
+            >
+              <Animated.View style={favoritesAnimatedStyle}>
+                <MaterialIcons
+                  name="favorite"
+                  size={20}
+                  color={theme.colors.semantic.intent.primary.solid}
+                />
+              </Animated.View>
+            </Pressable>
+            <Pressable
+              onPress={handleFilterPress}
+              onPressIn={onFilterPressIn}
+              onPressOut={onFilterPressOut}
+              accessibilityRole="button"
+              accessibilityLabel="Filter meetings"
+              accessibilityHint="Open filter options to refine meeting search"
+              hitSlop={12}
+              style={({ pressed }) => [
+                styles.filterButton,
+                {
+                  backgroundColor: theme.colors.semantic.surface.card,
+                  borderColor: theme.colors.border,
+                  opacity: pressed ? 0.6 : 1,
+                },
+              ]}
+            >
+              <Animated.View style={filterAnimatedStyle}>
+                <MaterialIcons
+                  name="filter-list"
+                  size={20}
+                  color={theme.colors.semantic.intent.primary.solid}
+                />
+              </Animated.View>
+            </Pressable>
+          </View>
         </Animated.View>
         <EmptyState
           icon="search-off"
@@ -225,27 +265,58 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                 {meetings.length} meetings nearby
               </Text>
             </View>
-            <Pressable
-              onPress={handleFilterPress}
-              onPressIn={onFilterPressIn}
-              onPressOut={onFilterPressOut}
-              accessibilityRole="button"
-              accessibilityLabel="Filter meetings"
-              accessibilityHint="Open filter options"
-              hitSlop={12}
-              style={({ pressed }) => [
-                styles.filterButton,
-                {
-                  backgroundColor: theme.colors.semantic.surface.card,
-                  borderColor: theme.colors.border,
-                  opacity: pressed ? 0.6 : 1,
-                },
-              ]}
-            >
-              <Animated.View style={filterAnimatedStyle}>
-                <MaterialIcons name="filter-list" size={20} color={theme.colors.semantic.intent.primary.solid} />
-              </Animated.View>
-            </Pressable>
+            <View style={styles.headerActions}>
+              <Pressable
+                onPress={handleFavoritesPress}
+                onPressIn={onFavoritesPressIn}
+                onPressOut={onFavoritesPressOut}
+                accessibilityRole="button"
+                accessibilityLabel="Open favorite meetings"
+                accessibilityHint="Shows meetings you have favorited"
+                hitSlop={12}
+                style={({ pressed }) => [
+                  styles.filterButton,
+                  {
+                    backgroundColor: theme.colors.semantic.surface.card,
+                    borderColor: theme.colors.border,
+                    opacity: pressed ? 0.6 : 1,
+                  },
+                ]}
+              >
+                <Animated.View style={favoritesAnimatedStyle}>
+                  <MaterialIcons
+                    name="favorite"
+                    size={20}
+                    color={theme.colors.semantic.intent.primary.solid}
+                  />
+                </Animated.View>
+              </Pressable>
+              <Pressable
+                onPress={handleFilterPress}
+                onPressIn={onFilterPressIn}
+                onPressOut={onFilterPressOut}
+                accessibilityRole="button"
+                accessibilityLabel="Filter meetings"
+                accessibilityHint="Open filter options"
+                hitSlop={12}
+                style={({ pressed }) => [
+                  styles.filterButton,
+                  {
+                    backgroundColor: theme.colors.semantic.surface.card,
+                    borderColor: theme.colors.border,
+                    opacity: pressed ? 0.6 : 1,
+                  },
+                ]}
+              >
+                <Animated.View style={filterAnimatedStyle}>
+                  <MaterialIcons
+                    name="filter-list"
+                    size={20}
+                    color={theme.colors.semantic.intent.primary.solid}
+                  />
+                </Animated.View>
+              </Pressable>
+            </View>
           </Animated.View>
         }
       />
@@ -308,6 +379,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    gap: ds.space[2],
+    alignItems: 'center',
   },
   filterHeader: {
     flexDirection: 'row',

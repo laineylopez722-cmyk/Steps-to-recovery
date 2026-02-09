@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.bgTertiary,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,

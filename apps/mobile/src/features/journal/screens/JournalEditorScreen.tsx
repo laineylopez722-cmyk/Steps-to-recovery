@@ -201,6 +201,7 @@ logger.error('Auto-save failed', err);
               style={styles.backBtn}
               accessibilityLabel="Go back"
               accessibilityRole="button"
+              testID="journal-back-button"
             >
               <View style={styles.backBtnInner}>
                 <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
@@ -251,6 +252,7 @@ logger.error('Auto-save failed', err);
               maxLength={200}
               accessibilityLabel="Journal entry title"
               accessibilityHint="Enter a title for your journal entry, maximum 200 characters"
+              testID="journal-title-input"
             />
             
             {/* Body */}
@@ -266,6 +268,7 @@ logger.error('Auto-save failed', err);
               textAlignVertical="top"
               accessibilityLabel="Journal entry content"
               accessibilityHint="Write your thoughts, feelings, and reflections"
+              testID="journal-content-input"
             />
           </ScrollView>
           

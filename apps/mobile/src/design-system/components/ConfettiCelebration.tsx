@@ -159,13 +159,13 @@ function ConfettiPiece({
           position: 'absolute',
           width: 0,
           height: 0,
-          backgroundColor: 'transparent',
+          backgroundColor: ds.colors.transparent,
           borderStyle: 'solid',
           borderLeftWidth: particle.size / 2,
           borderRightWidth: particle.size / 2,
           borderBottomWidth: particle.size,
-          borderLeftColor: 'transparent',
-          borderRightColor: 'transparent',
+          borderLeftColor: ds.colors.transparent,
+          borderRightColor: ds.colors.transparent,
           borderBottomColor: particle.color,
         },
       ]}
@@ -234,6 +234,7 @@ import { GlassCard } from './GlassCard';
 import { GradientButton } from './GradientButton';
 import { darkAccent, typography } from '../tokens/modern';
 import { Platform } from 'react-native';
+import { ds } from '../tokens/ds';
 
 export function MilestoneCelebration({
   milestone,
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: ds.colors.overlay,
     zIndex: 999,
     justifyContent: 'center',
     alignItems: 'center',
@@ -325,7 +326,7 @@ const styles = StyleSheet.create({
   },
   celebrationMilestone: {
     ...typography.h3,
-    color: '#FFD700',
+    color: ds.colors.warning,
     marginBottom: 4,
   },
   celebrationDays: {

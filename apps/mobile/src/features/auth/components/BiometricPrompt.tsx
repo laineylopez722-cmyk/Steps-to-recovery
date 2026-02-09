@@ -101,7 +101,7 @@ export function BiometricPrompt({
               <MaterialIcons
                 name={authType === 'Face ID' ? 'face' : 'fingerprint'}
                 size={48}
-                color="#FFF"
+                color={ds.semantic.text.onDark}
               />
             </LinearGradient>
           </View>
@@ -174,7 +174,7 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
       <View style={styles.lockContent}>
         <View style={styles.appIcon}>
           <LinearGradient colors={gradients.primary} style={styles.appIconGradient}>
-            <MaterialIcons name="self-improvement" size={48} color="#FFF" />
+            <MaterialIcons name="self-improvement" size={48} color={ds.semantic.text.onDark} />
           </LinearGradient>
         </View>
         <Text style={styles.appName}>Steps to Recovery</Text>
@@ -191,7 +191,7 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
             <MaterialIcons
               name={authType === 'Face ID' ? 'face' : 'fingerprint'}
               size={32}
-              color="#FFF"
+              color={ds.semantic.text.onDark}
             />
           </LinearGradient>
         </Pressable>

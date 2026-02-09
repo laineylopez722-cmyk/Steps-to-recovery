@@ -380,7 +380,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
                   accessibilityLabel="Call sponsor"
                   accessibilityRole="button"
                 >
-                  <MaterialIcons name="call" size={24} color="#fff" />
+                  <MaterialIcons name="call" size={24} color={ds.semantic.text.onDark} />
                   <Text style={styles.contactButtonText}>Call</Text>
                 </Pressable>
 
@@ -390,7 +390,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
                   accessibilityLabel="Text sponsor"
                   accessibilityRole="button"
                 >
-                  <MaterialIcons name="message" size={24} color="#fff" />
+                  <MaterialIcons name="message" size={24} color={ds.semantic.text.onDark} />
                   <Text style={styles.contactButtonText}>Text</Text>
                 </Pressable>
               </View>
@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   emotionChipTextSelected: {
-    color: '#fff',
+    color: ds.semantic.text.onDark,
     fontWeight: '600',
   },
 
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
   },
   callButton: { backgroundColor: darkAccent.success },
   textButton: { backgroundColor: darkAccent.primary },
-  contactButtonText: { ...typography.body, color: '#fff', fontWeight: '600' },
+  contactButtonText: { ...typography.body, color: ds.semantic.text.onDark, fontWeight: '600' },
 
   noSponsorCard: {
     backgroundColor: ds.semantic.surface.interactive,

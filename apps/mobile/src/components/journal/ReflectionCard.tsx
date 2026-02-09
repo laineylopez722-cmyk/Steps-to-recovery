@@ -22,6 +22,7 @@ import { decryptContent } from '../../utils/encryption';
 import type { JournalEntry } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
 import { logger } from '../../utils/logger';
+import { ds } from '../../design-system/tokens/ds';
 
 interface ReflectionCardProps {
   /** Number of days ago to look back (default: 30) */
@@ -131,7 +132,7 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
           <GlassCard gradient="card" style={[styles.card, styles.emptyCard]}>
             <View style={styles.emptyContent}>
               <View style={styles.emptyIconContainer}>
-                <Feather name="book-open" size={24} color="#8b5cf6" />
+                <Feather name="book-open" size={24} color={ds.colors.accent} />
               </View>
               <View style={styles.emptyTextContainer}>
                 <Text style={styles.emptyTitle}>Look Back • {daysAgo} days ago</Text>
@@ -164,7 +165,7 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
         <GlassCard gradient="card" style={styles.card}>
           <View style={styles.container}>
             <View style={styles.iconContainer}>
-              <Feather name="book-open" size={20} color="#8b5cf6" />
+              <Feather name="book-open" size={20} color={ds.colors.accent} />
             </View>
 
             <View style={styles.content}>
@@ -174,7 +175,7 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
 
               {error ? (
                 <View style={styles.errorContainer}>
-                  <Feather name="lock" size={14} color="#64748b" />
+                  <Feather name="lock" size={14} color={ds.colors.textSecondary} />
                   <Text style={styles.errorText}>Encrypted content</Text>
                 </View>
               ) : (
@@ -185,7 +186,7 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
 
               <View style={styles.ctaContainer}>
                 <Text style={styles.ctaText}>Read & Reflect</Text>
-                <Feather name="arrow-right" size={14} color="#8b5cf6" />
+                <Feather name="arrow-right" size={14} color={ds.colors.accent} />
               </View>
             </View>
           </View>
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   emptyCard: {
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: ds.colors.accent,
     borderWidth: 1,
   },
   skeleton: {
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     marginRight: 12,
   },
   skeletonContent: {
@@ -222,13 +223,13 @@ const styles = StyleSheet.create({
   },
   skeletonLine: {
     height: 16,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     marginBottom: 8,
   },
   skeletonLineShort: {
     height: 16,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     width: '60%',
   },
@@ -240,7 +241,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -250,17 +251,17 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 14,
-    color: '#a78bfa',
+    color: ds.colors.accent,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginBottom: 4,
   },
   emptyCta: {
     fontSize: 14,
-    color: '#8b5cf6',
+    color: ds.colors.accent,
     fontWeight: '600',
   },
   container: {
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -280,12 +281,12 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 14,
-    color: '#a78bfa',
+    color: ds.colors.accent,
     marginBottom: 8,
   },
   excerpt: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: ds.colors.text,
     lineHeight: 20,
     marginBottom: 8,
     fontStyle: 'italic',
@@ -298,7 +299,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
   ctaContainer: {
     flexDirection: 'row',
@@ -308,7 +309,7 @@ const styles = StyleSheet.create({
   },
   ctaText: {
     fontSize: 14,
-    color: '#a78bfa',
+    color: ds.colors.accent,
     fontWeight: '600',
   },
 });

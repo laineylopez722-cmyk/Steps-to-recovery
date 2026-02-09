@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
+import { ds } from '../tokens/ds';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -180,7 +181,7 @@ export function ActionSheetDivider(): React.ReactElement {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: ds.colors.overlay,
   },
   sheet: {
     position: 'absolute',
@@ -191,7 +192,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: radius['2xl'],
     borderTopRightRadius: radius['2xl'],
     maxHeight: SCREEN_HEIGHT * 0.85,
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 0.3,
     shadowRadius: 20,

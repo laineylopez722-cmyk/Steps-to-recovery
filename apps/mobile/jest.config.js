@@ -78,7 +78,7 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.(spec|test).[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
 
   // Files to ignore
-  testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/', '/.expo/'],
+  testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/', '/.expo/', '/.claude/', '/.codex/', '/.cursor/'],
 
   // Coverage configuration
   collectCoverageFrom: [

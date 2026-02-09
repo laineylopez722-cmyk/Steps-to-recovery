@@ -16,6 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface ReviewCardProps {
   date: Date;
@@ -31,13 +32,13 @@ interface ReviewCardProps {
 }
 
 const REVIEW_ITEMS = [
-  { key: 'resentful', color: '#ef4444', label: 'Resentful' },
-  { key: 'selfish', color: '#f59e0b', label: 'Selfish' },
-  { key: 'dishonest', color: '#f97316', label: 'Dishonest' },
-  { key: 'afraid', color: '#a855f7', label: 'Afraid' },
-  { key: 'apology', color: '#3b82f6', label: 'Apology' },
-  { key: 'better', color: '#6366f1', label: 'Better' },
-  { key: 'gratitude', color: '#22c55e', label: 'Gratitude' },
+  { key: 'resentful', color: ds.semantic.intent.alert.solid, label: 'Resentful' },
+  { key: 'selfish', color: ds.colors.warning, label: 'Selfish' },
+  { key: 'dishonest', color: ds.colors.warning, label: 'Dishonest' },
+  { key: 'afraid', color: ds.colors.accent, label: 'Afraid' },
+  { key: 'apology', color: ds.colors.info, label: 'Apology' },
+  { key: 'better', color: ds.colors.info, label: 'Better' },
+  { key: 'gratitude', color: ds.colors.success, label: 'Gratitude' },
 ] as const;
 
 export function ReviewCard({
@@ -107,7 +108,7 @@ export function ReviewCard({
                 ]}
               >
                 {isToday ? (
-                  <Feather name="check" size={18} color="#ffffff" />
+                  <Feather name="check" size={18} color={ds.semantic.text.onDark} />
                 ) : (
                   <Text style={styles.dateNumber}>{date.getDate()}</Text>
                 )}
@@ -121,7 +122,7 @@ export function ReviewCard({
                 </Text>
               </View>
             </View>
-            <Feather name="chevron-right" size={20} color="#64748b" />
+            <Feather name="chevron-right" size={20} color={ds.colors.textSecondary} />
           </View>
 
           {/* Progress dots */}
@@ -133,7 +134,7 @@ export function ReviewCard({
                   key={item.key}
                   style={[
                     styles.dot,
-                    { backgroundColor: isAnswered ? item.color : 'rgba(51, 65, 85, 0.5)' },
+                    { backgroundColor: isAnswered ? item.color : ds.colors.bgTertiary },
                   ]}
                   accessibilityLabel={`${item.label}: ${isAnswered ? 'answered' : 'not answered'}`}
                 />
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
   },
   todayCard: {
     borderLeftWidth: 4,
-    borderLeftColor: '#22c55e',
+    borderLeftColor: ds.colors.success,
   },
   header: {
     flexDirection: 'row',
@@ -174,27 +175,27 @@ const styles = StyleSheet.create({
     marginRight: 14,
   },
   dateCircleDefault: {
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgTertiary,
   },
   dateCircleToday: {
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
   },
   dateNumber: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
   },
   dateLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   dateLabelToday: {
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   answeredText: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   dotsContainer: {

@@ -19,6 +19,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RecoveryContact, ContactRole } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface ContactCardProps {
   contact: RecoveryContact;
@@ -36,32 +37,32 @@ const ROLE_CONFIG: Record<
 > = {
   sponsor: {
     icon: 'star',
-    color: '#fbbf24',
-    bgColor: 'rgba(245, 158, 11, 0.2)',
+    color: ds.colors.warning,
+    bgColor: ds.colors.warningMuted,
     label: 'Sponsor',
   },
   emergency: {
     icon: 'alert-circle',
-    color: '#ef4444',
-    bgColor: 'rgba(239, 68, 68, 0.2)',
+    color: ds.semantic.intent.alert.solid,
+    bgColor: ds.semantic.intent.alert.subtle,
     label: 'Emergency',
   },
   sponsee: {
     icon: 'heart',
-    color: '#4ade80',
-    bgColor: 'rgba(34, 197, 94, 0.2)',
+    color: ds.colors.success,
+    bgColor: ds.colors.successMuted,
     label: 'Sponsee',
   },
   home_group: {
     icon: 'home',
-    color: '#60a5fa',
-    bgColor: 'rgba(59, 130, 246, 0.2)',
+    color: ds.colors.info,
+    bgColor: ds.colors.bgSecondary,
     label: 'Home Group',
   },
   fellowship: {
     icon: 'users',
-    color: '#a78bfa',
-    bgColor: 'rgba(139, 92, 246, 0.2)',
+    color: ds.colors.accent,
+    bgColor: ds.colors.bgSecondary,
     label: 'Fellowship',
   },
 };
@@ -79,7 +80,7 @@ function ContactCardComponent({
 
   const getDaysSinceContact = useCallback((): { text: string; color: string } => {
     if (!contact.lastContactedAt) {
-      return { text: 'Not contacted yet', color: '#64748b' };
+      return { text: 'Not contacted yet', color: ds.colors.textSecondary };
     }
 
     const now = new Date();
@@ -92,22 +93,22 @@ function ContactCardComponent({
 
     if (diffDays === 0) {
       text = 'Contacted today';
-      color = '#22c55e';
+      color = ds.colors.success;
     } else if (diffDays === 1) {
       text = 'Contacted yesterday';
-      color = '#22c55e';
+      color = ds.colors.success;
     } else if (diffDays < 7) {
       text = `${diffDays} days ago`;
-      color = '#22c55e';
+      color = ds.colors.success;
     } else if (diffDays < 14) {
       text = '1 week ago';
-      color = '#f59e0b';
+      color = ds.colors.warning;
     } else if (diffDays < 30) {
       text = `${Math.floor(diffDays / 7)} weeks ago`;
-      color = '#f59e0b';
+      color = ds.colors.warning;
     } else {
       text = `${Math.floor(diffDays / 30)} months ago`;
-      color = '#ef4444';
+      color = ds.semantic.intent.alert.solid;
     }
 
     return { text, color };
@@ -188,7 +189,7 @@ function ContactCardComponent({
                   accessibilityLabel={`Text ${contact.name}`}
                   accessibilityHint="Opens messaging app"
                 >
-                  <Feather name="message-circle" size={20} color="#60a5fa" />
+                  <Feather name="message-circle" size={20} color={ds.colors.info} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleCall}
@@ -197,7 +198,7 @@ function ContactCardComponent({
                   accessibilityLabel={`Call ${contact.name}`}
                   accessibilityHint="Initiates phone call"
                 >
-                  <Feather name="phone" size={20} color="#22c55e" />
+                  <Feather name="phone" size={20} color={ds.colors.success} />
                 </TouchableOpacity>
               </View>
             )}
@@ -255,10 +256,10 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   sponsorBadge: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
@@ -266,11 +267,11 @@ const styles = StyleSheet.create({
   sponsorText: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#fbbf24',
+    color: ds.colors.warning,
   },
   phone: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginBottom: 4,
   },
   statusRow: {
@@ -298,9 +299,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   textButton: {
-    backgroundColor: 'rgba(59, 130, 246, 0.15)',
+    backgroundColor: ds.colors.bgSecondary,
   },
   callButton: {
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    backgroundColor: ds.colors.successMuted,
   },
 });

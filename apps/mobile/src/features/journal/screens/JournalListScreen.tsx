@@ -13,11 +13,11 @@ import {
   StyleSheet,
   Pressable,
   TextInput,
-  FlatList,
   Keyboard,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
+import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -221,6 +221,15 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
     navigation.navigate('JournalEditor', { mode: 'edit', entryId: entry.id });
   };
 
+  const handleShareEntries = () => {
+    Keyboard.dismiss();
+    hapticLight();
+    const parentNavigation = navigation.getParent();
+    if (parentNavigation) {
+      (parentNavigation as any).navigate('Profile', { screen: 'ShareEntries' });
+    }
+  };
+
   const renderItem = useCallback(({ item, index }: { item: FlatListItem; index: number }) => {
     if (item.type === 'header') {
       return <SectionHeader title={item.data} />;
@@ -251,6 +260,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
             accessibilityRole="button"
             accessibilityLabel="Go back"
             accessibilityHint="Returns to previous screen"
+            testID="journal-list-back-button"
           >
             <View style={styles.backBtnInner}>
               <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
@@ -261,6 +271,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
           <View style={styles.actionsPill}>
             <Pressable
               style={styles.actionBtn}
+              onPress={handleShareEntries}
               accessibilityRole="button"
               accessibilityLabel="Share journal entries"
               accessibilityHint="Share selected entries with sponsor or export"
@@ -288,8 +299,8 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
           </View>
         </View>
         
-        {/* List */}
-        <FlatList
+        {/* List - Using FlashList for better performance with recycling */}
+        <FlashList
           data={flatData}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
@@ -300,6 +311,11 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
           }
           refreshing={isLoading}
           onRefresh={refetch}
+          // @ts-expect-error - estimatedItemSize is valid for FlashList but type definition may be outdated
+          estimatedItemSize={80}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          windowSize={5}
         />
         
         {/* Bottom Toolbar */}
@@ -321,6 +337,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
               returnKeyType="search"
               accessibilityLabel="Search journal entries"
               accessibilityHint="Type to filter your journal entries by title or content"
+              testID="journal-search-input"
             />
             <Pressable
               style={styles.micBtn}
@@ -338,6 +355,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
             style={styles.newNoteBtn}
             accessibilityLabel="Create new journal entry"
             accessibilityRole="button"
+            testID="journal-new-entry-button"
           >
             <Feather name="edit-3" size={18} color={ds.colors.accent} />
             <Text style={styles.newNoteText}>New</Text>

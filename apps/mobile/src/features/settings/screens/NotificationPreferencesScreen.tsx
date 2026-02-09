@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { AnimatedToggle } from '../../../design-system/components/MicroInteractions';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -102,7 +103,7 @@ export function NotificationPreferencesScreen(): React.ReactElement {
                 <View key={channel.id}>
                   <View style={styles.channelRow}>
                     <View
-                      style={[styles.channelIcon, { backgroundColor: `${darkAccent.primary}15` }]}
+                      style={[styles.channelIcon, { backgroundColor: ds.colors.accentMuted }]}
                     >
                       <MaterialIcons
                         name={channel.icon as IconName}
@@ -163,7 +164,7 @@ export function NotificationPreferencesScreen(): React.ReactElement {
             <View style={styles.previewCard}>
               <View style={styles.previewHeader}>
                 <View style={styles.previewAppIcon}>
-                  <MaterialIcons name="self-improvement" size={16} color="#FFF" />
+                  <MaterialIcons name="self-improvement" size={16} color={ds.semantic.text.onDark} />
                 </View>
                 <Text style={styles.previewAppName}>Steps to Recovery</Text>
                 <Text style={styles.previewTime}>Now</Text>
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: radius.lg,
-    backgroundColor: `${darkAccent.primary}15`,
+    backgroundColor: ds.colors.accentMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -17,6 +17,7 @@ import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from '
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface StatItemProps {
   value: string | number;
@@ -49,10 +50,10 @@ function StatItem({ value, label, icon, color = 'primary', onPress, isLoading, d
   }, [onPress]);
 
   const colorMap = {
-    primary: '#60a5fa',
-    amber: '#f59e0b',
-    green: '#22c55e',
-    blue: '#3b82f6',
+    primary: ds.colors.info,
+    amber: ds.colors.warning,
+    green: ds.colors.success,
+    blue: ds.colors.info,
   };
 
   const iconColor = colorMap[color];
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   skeleton: {
@@ -203,20 +204,20 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     marginBottom: 4,
   },
   skeletonValue: {
     width: 40,
     height: 28,
     borderRadius: 4,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     marginBottom: 4,
   },
   skeletonLabel: {
     width: 50,
     height: 14,
     borderRadius: 4,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
   },
 });

@@ -18,6 +18,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GradientButton } from '../../design-system/components';
 import type { KeytagWithStatus } from '@recovery/shared';
+import { ds } from '../../design-system/tokens/ds';
 
 interface KeytagModalProps {
   keytag: KeytagWithStatus | null;
@@ -79,8 +80,8 @@ export const KeytagModal = memo(function KeytagModal({
                   !isEarned ? 'opacity-40' : ''
                 }`}
                 style={[
-                  { backgroundColor: isEarned ? hexColor : '#9CA3AF' },
-                  isWhite && isEarned ? { borderWidth: 3, borderColor: '#D1D5DB' } : undefined,
+                  { backgroundColor: isEarned ? hexColor : ds.colors.textTertiary },
+                  isWhite && isEarned ? { borderWidth: 3, borderColor: ds.colors.borderSubtle } : undefined,
                 ]}
               >
                 {/* Keytag hole */}
@@ -161,7 +162,7 @@ export const KeytagModal = memo(function KeytagModal({
                       value={reflection}
                       onChangeText={setReflection}
                       placeholder="Write your reflection..."
-                      placeholderTextColor="#9CA3AF"
+                      placeholderTextColor={ds.colors.textTertiary}
                       multiline
                       numberOfLines={4}
                       className="bg-surface-100 dark:bg-surface-800 rounded-xl p-4 text-surface-900 dark:text-surface-100 min-h-[120px]"

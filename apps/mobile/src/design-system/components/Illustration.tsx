@@ -45,6 +45,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 
 import { aestheticColors } from '../tokens/aesthetic';
+import { ds } from '../tokens/ds';
 
 // ============================================================================
 // TYPES
@@ -357,7 +358,7 @@ const emptyStateColors = {
   meetings: aestheticColors.success.DEFAULT,
   notifications: aestheticColors.accent[500],
   offline: aestheticColors.navy[300],
-  error: '#EF4444',
+  error: ds.semantic.intent.alert.solid,
 };
 
 export function EmptyStateIllustration({
@@ -408,7 +409,8 @@ const styles = StyleSheet.create({
   fallbackView: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: ds.colors.bgSecondary,
+    opacity: 0.05,
     borderRadius: 20,
   },
   fallbackIcon: {

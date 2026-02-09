@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
 import { getGradients } from '../tokens/theme';
+import { ds } from '../tokens/ds';
 
 export type GradientType = 'none' | 'card' | 'elevated' | 'surface' | 'inset' | 'highlight' | 'button' | 'header';
 
@@ -129,7 +130,7 @@ export function GlassCard({
     backgroundColor: useGradient ? 'transparent' : (elevated ? theme.colors.surfaceElevated : theme.colors.surface),
     borderRadius: 12,
     // Subtle shadow for elevation (iOS style)
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: theme.isDark ? 0.3 : 0.08,
     shadowRadius: 4,

@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     width: 50,
   },
   detailValue: {

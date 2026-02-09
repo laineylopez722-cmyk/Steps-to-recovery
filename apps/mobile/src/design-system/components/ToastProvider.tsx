@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, radius, spacing, typography } from '../tokens/modern';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ds } from '../tokens/ds';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -129,8 +130,8 @@ function ToastItem({
     { icon: IconName; color: string; gradient: readonly string[] }
   > = {
     success: { icon: 'check-circle', color: darkAccent.success, gradient: gradients.success },
-    error: { icon: 'error', color: darkAccent.error, gradient: ['#DC2626', '#EF4444'] },
-    warning: { icon: 'warning', color: darkAccent.warning, gradient: ['#D97706', '#F59E0B'] },
+    error: { icon: 'error', color: darkAccent.error, gradient: [ds.semantic.intent.alert.solid, darkAccent.error] },
+    warning: { icon: 'warning', color: darkAccent.warning, gradient: [ds.colors.warning, darkAccent.warning] },
     info: { icon: 'info', color: darkAccent.primary, gradient: gradients.primary },
   };
 
@@ -147,7 +148,7 @@ function ToastItem({
       />
 
       <View style={[styles.iconContainer, { backgroundColor: color }]}>
-        <MaterialIcons name={icon as IconName} size={20} color="#FFF" />
+        <MaterialIcons name={icon as IconName} size={20} color={ds.semantic.text.onDark} />
       </View>
 
       <View style={styles.content}>
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
     backgroundColor: darkAccent.surface,
     borderRadius: radius.lg,
     padding: spacing[2.5],
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,

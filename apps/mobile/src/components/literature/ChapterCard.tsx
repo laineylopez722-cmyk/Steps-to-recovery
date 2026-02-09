@@ -17,6 +17,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { Chapter } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface ChapterCardProps {
   chapter: Chapter;
@@ -62,7 +63,7 @@ function ChapterCardComponent({
               ]}
             >
               {isCompleted ? (
-                <Feather name="check" size={20} color="#ffffff" />
+                <Feather name="check" size={20} color={ds.semantic.text.onDark} />
               ) : (
                 <Text style={styles.numberText}>{chapter.number}</Text>
               )}
@@ -83,14 +84,14 @@ function ChapterCardComponent({
               </Text>
               {hasNotes && (
                 <View style={styles.notesRow}>
-                  <Feather name="edit-3" size={12} color="#64748b" />
+                  <Feather name="edit-3" size={12} color={ds.colors.textSecondary} />
                   <Text style={styles.notesText}>Notes saved</Text>
                 </View>
               )}
             </View>
 
             {/* Arrow */}
-            <Feather name="chevron-right" size={20} color="#64748b" />
+            <Feather name="chevron-right" size={20} color={ds.colors.textSecondary} />
           </View>
         </GlassCard>
       </TouchableOpacity>
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   },
   completedCard: {
     borderLeftWidth: 4,
-    borderLeftColor: '#22c55e',
+    borderLeftColor: ds.colors.success,
   },
   container: {
     flexDirection: 'row',
@@ -123,15 +124,15 @@ const styles = StyleSheet.create({
     marginRight: 14,
   },
   numberContainerDefault: {
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgTertiary,
   },
   numberContainerCompleted: {
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
   },
   numberText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
   },
   content: {
     flex: 1,
@@ -139,19 +140,19 @@ const styles = StyleSheet.create({
   },
   chapterLabel: {
     fontSize: 13,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginBottom: 2,
   },
   chapterLabelCompleted: {
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   title: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   titleCompleted: {
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   notesRow: {
     flexDirection: 'row',
@@ -161,6 +162,6 @@ const styles = StyleSheet.create({
   },
   notesText: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
   },
 });

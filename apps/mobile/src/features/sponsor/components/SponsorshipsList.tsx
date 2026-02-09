@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 
 export interface SponsorConnection {
   id: string;
@@ -87,7 +88,7 @@ export function SponsorshipsList({
                   />
                   {connection.status === 'pending' && (
                     <View style={[styles.statusBadge, styles.pendingBadge]}>
-                      <MaterialCommunityIcons name="clock-outline" size={10} color="#FFF" />
+                      <MaterialCommunityIcons name="clock-outline" size={10} color={ds.semantic.text.onDark} />
                     </View>
                   )}
                   {connection.unreadCount && connection.unreadCount > 0 && (
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
   },
   unreadText: {
     ...typography.caption,
-    color: '#FFF',
+    color: ds.semantic.text.onDark,
     fontSize: 10,
     fontWeight: '700',
   },

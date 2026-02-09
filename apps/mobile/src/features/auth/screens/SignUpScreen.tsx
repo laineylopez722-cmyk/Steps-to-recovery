@@ -146,8 +146,9 @@ export function SignUpScreen({ navigation }: Props) {
                 theme.typography.h1,
                 { color: theme.colors.text, marginBottom: theme.spacing.sm },
               ]}
+              testID="signup-header-title"
             >
-              Start Your Journey
+              Create Account
             </Text>
             <Text
               style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}

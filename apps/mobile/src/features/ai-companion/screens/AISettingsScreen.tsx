@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   saveBtnText: {
     ...ds.typography.body,
     fontWeight: '600',
-    color: '#000',
+    color: ds.colors.text,
   },
   saveBtnTextDisabled: {
     color: ds.colors.textQuaternary,

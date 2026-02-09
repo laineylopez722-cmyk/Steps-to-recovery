@@ -5,6 +5,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-na
 import { Image } from 'expo-image';
 import { Skeleton } from './Skeleton';
 import { darkAccent } from '../tokens/modern';
+import { ds } from '../tokens/ds';
 
 export interface AsyncImageProps {
   source: string;
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   avatarText: {
-    color: '#FFF',
+    color: ds.semantic.text.onDark,
     fontWeight: '700',
   },
   zoomContainer: {

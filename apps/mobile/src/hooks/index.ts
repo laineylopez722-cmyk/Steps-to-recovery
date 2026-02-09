@@ -16,6 +16,7 @@
  * - JITAI: `useJitai`
  * - Audio: `useVoiceRecorder`
  * - PIN Entry: `usePinEntry`
+ * - Performance: `usePerformanceMonitor`
  *
  * @module hooks
  */
@@ -70,3 +71,11 @@ export {
   useAvoidKeyboard,
   useInputFocusNavigation,
 } from './useKeyboard';
+
+// Performance monitoring hooks
+export {
+  usePerformanceMonitor,
+  useInteractionTiming,
+  useLongTaskDetection,
+  useListPerformance,
+} from './usePerformanceMonitor';

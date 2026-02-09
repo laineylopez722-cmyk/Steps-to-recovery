@@ -3,7 +3,13 @@
  * Micro-interactions for premium tactile feedback
  */
 
-import * as Haptics from 'expo-haptics';
+import {
+  impactAsync,
+  ImpactFeedbackStyle,
+  notificationAsync,
+  NotificationFeedbackType,
+  selectionAsync,
+} from 'expo-haptics';
 import { Platform } from 'react-native';
 
 // Check if haptics are available (not on web/simulator)
@@ -16,7 +22,7 @@ const isHapticsAvailable = Platform.OS !== 'web';
 export async function hapticLight(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await impactAsync(ImpactFeedbackStyle.Light);
   } catch {
     // Silently fail on unsupported devices
   }
@@ -29,7 +35,7 @@ export async function hapticLight(): Promise<void> {
 export async function hapticMedium(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await impactAsync(ImpactFeedbackStyle.Medium);
   } catch {
     // Silently fail
   }
@@ -42,7 +48,7 @@ export async function hapticMedium(): Promise<void> {
 export async function hapticHeavy(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    await impactAsync(ImpactFeedbackStyle.Heavy);
   } catch {
     // Silently fail
   }
@@ -55,7 +61,7 @@ export async function hapticHeavy(): Promise<void> {
 export async function hapticSuccess(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    await notificationAsync(NotificationFeedbackType.Success);
   } catch {
     // Silently fail
   }
@@ -68,7 +74,7 @@ export async function hapticSuccess(): Promise<void> {
 export async function hapticError(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    await notificationAsync(NotificationFeedbackType.Error);
   } catch {
     // Silently fail
   }
@@ -81,7 +87,7 @@ export async function hapticError(): Promise<void> {
 export async function hapticWarning(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    await notificationAsync(NotificationFeedbackType.Warning);
   } catch {
     // Silently fail
   }
@@ -94,7 +100,7 @@ export async function hapticWarning(): Promise<void> {
 export async function hapticSelection(): Promise<void> {
   if (!isHapticsAvailable) return;
   try {
-    await Haptics.selectionAsync();
+    await selectionAsync();
   } catch {
     // Silently fail
   }

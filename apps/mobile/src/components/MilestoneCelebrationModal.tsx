@@ -29,6 +29,7 @@ import { BlurView } from 'expo-blur';
 import type { MilestoneDefinition as Milestone } from '@recovery/shared';
 import { useTheme } from '../design-system/hooks/useTheme';
 import { hapticCelebration } from '../utils/haptics';
+import { ds } from '../design-system/tokens/ds';
 
 interface MilestoneCelebrationModalProps {
   visible: boolean;
@@ -123,8 +124,8 @@ export function MilestoneCelebrationModal({
     theme.colors.success,
     theme.colors.secondary,
     theme.colors.warning,
-    '#FFD700', // Gold
-    '#FF6B6B', // Coral
+    ds.colors.warning, // Gold/amber
+    ds.semantic.intent.alert.solid, // Coral/red
   ];
 
   if (!milestone) return null;
@@ -145,7 +146,7 @@ export function MilestoneCelebrationModal({
             style={StyleSheet.absoluteFill}
           />
         ) : (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.5)' }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: ds.semantic.surface.overlay }]} />
         )}
 
         {/* Confetti Cannon */}
@@ -302,11 +303,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeText: {
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     fontWeight: 'bold',
   },
   badgeLabel: {
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     fontWeight: '600',
   },
   quote: {
