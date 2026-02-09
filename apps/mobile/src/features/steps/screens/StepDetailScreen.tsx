@@ -1,9 +1,8 @@
 import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform, Animated } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { MaterialIcons } from '@expo/vector-icons';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
@@ -14,6 +13,7 @@ import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
 import { StepQuestionCounter } from '../components/StepQuestionCounter';
 import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
 import { StepDetailQuestionsList } from '../components/StepDetailQuestionsList';
+import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { buildQuestionIndexMap, buildStepListItems, type StepListItem } from '../utils/stepListItems';
 import {
   buildAnsweredQuestionSet,
@@ -21,7 +21,7 @@ import {
   getFirstUnansweredQuestion,
 } from '../utils/stepAnswers';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTheme, Toast, Text } from '../../../design-system';
+import { Toast, useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
@@ -121,16 +121,7 @@ export function StepDetailScreen(): React.ReactElement {
   // list rendering handled by StepDetailQuestionsList
 
   if (!stepData) {
-    return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <View style={styles.errorContainer}>
-          <MaterialIcons name="error-outline" size={48} color={theme.colors.danger} />
-          <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>
-            Step not found
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
+    return <StepDetailErrorState />;
   }
 
   if (isLocked) {
@@ -239,12 +230,6 @@ const styles = StyleSheet.create({
   },
   animatedContainer: {
     flex: 1,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
   },
 
 });
