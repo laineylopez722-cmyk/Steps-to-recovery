@@ -11,6 +11,7 @@ import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContent
 import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
 import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
 import { useStepDetailMeta } from '../hooks/useStepDetailMeta';
+import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -128,7 +129,10 @@ export function StepDetailScreen(): React.ReactElement {
     return <StepDetailErrorState />;
   }
 
-  const contentState = isLocked ? 'locked' : isLoading ? 'loading' : 'ready';
+  const contentState = useStepDetailContentState({
+    isLocked,
+    isLoading,
+  });
 
   return (
     <StepDetailScreenContent
