@@ -20,6 +20,7 @@ import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
+import { StepLockedState } from '../components/StepLockedState';
 import {
   buildQuestionIndexMap,
   buildStepListItems,
@@ -281,41 +282,11 @@ export function StepDetailScreen(): React.ReactElement {
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         edges={['bottom']}
       >
-        <View style={styles.lockedContainer}>
-          <MaterialCommunityIcons name="lock" size={48} color={theme.colors.textSecondary} />
-          <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>
-            Step {stepNumber} is coming soon
-          </Text>
-          <Text
-            style={[
-              theme.typography.body,
-              { color: theme.colors.textSecondary, textAlign: 'center', marginTop: 12 },
-            ]}
-          >
-            We're building the full Step {stepNumber} experience next. For now, keep focusing on
-            Step 1.
-          </Text>
-          <View style={{ marginTop: theme.spacing.lg, width: '100%' }}>
-            <Button
-              title="Back to Step 1"
-              variant="primary"
-              size="large"
-              onPress={() => navigation.navigate('StepDetail', { stepNumber: 1 })}
-              accessibilityLabel="Back to Step 1"
-              accessibilityHint="Opens Step 1 questions"
-            />
-          </View>
-          <View style={{ marginTop: theme.spacing.sm, width: '100%' }}>
-            <Button
-              title="Back to Steps"
-              variant="outline"
-              size="large"
-              onPress={() => navigation.navigate('StepsOverview')}
-              accessibilityLabel="Back to steps overview"
-              accessibilityHint="Returns to the steps list"
-            />
-          </View>
-        </View>
+        <StepLockedState
+          stepNumber={stepNumber}
+          onBackToStepOne={() => navigation.navigate('StepDetail', { stepNumber: 1 })}
+          onBackToSteps={() => navigation.navigate('StepsOverview')}
+        />
       </SafeAreaView>
     );
   }
@@ -573,17 +544,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 40,
   },
-  lockedContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 32,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   loadingSkeletonContainer: {
     flex: 1,
   },
@@ -713,4 +673,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
 
