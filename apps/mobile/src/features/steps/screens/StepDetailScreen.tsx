@@ -43,6 +43,7 @@ import {
   Text,
   Skeleton,
 } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
@@ -117,6 +118,10 @@ export function StepDetailScreen(): React.ReactElement {
       setAnswers(buildInitialAnswers(questions));
     }
   }, [questions]);
+
+  const handleAnswerChange = useCallback((questionNumber: number, text: string) => {
+    setAnswers((prev) => ({ ...prev, [questionNumber]: text }));
+  }, []);
 
   const handleSaveAnswer = useCallback(
     async (questionNumber: number) => {
@@ -246,12 +251,12 @@ export function StepDetailScreen(): React.ReactElement {
           totalQuestions={totalQuestions}
           isAnswered={Boolean(isAnswered)}
           isSaving={isSaving}
-          onChangeAnswer={(text) => setAnswers((prev) => ({ ...prev, [questionNumber]: text }))}
+          onChangeAnswer={(text) => handleAnswerChange(questionNumber, text)}
           onSave={() => handleSaveAnswer(questionNumber)}
         />
       );
     },
-    [answeredQuestionNumbers, savingQuestion, answers, handleSaveAnswer, totalQuestions],
+    [answeredQuestionNumbers, savingQuestion, answers, handleAnswerChange, handleSaveAnswer, totalQuestions],
   );
 
   const keyExtractor = stepListKeyExtractor;
@@ -603,7 +608,7 @@ const styles = StyleSheet.create({
   stepBadgeText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
   },
   headerContent: {
     flex: 1,
@@ -619,7 +624,7 @@ const styles = StyleSheet.create({
   progressSection: {
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.08)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   progressHeader: {
     flexDirection: 'row',

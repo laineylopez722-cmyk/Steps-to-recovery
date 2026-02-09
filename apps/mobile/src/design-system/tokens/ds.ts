@@ -178,12 +178,15 @@ export const colors = {
   bgTertiary: palette.gray900,
   bgQuaternary: palette.gray850,
   bgElevated: palette.gray800,
+  bgOverlay: 'rgba(0, 0, 0, 0.55)',
 
   // Text hierarchy
   textPrimary: palette.white,
   textSecondary: palette.gray100,
   textTertiary: palette.gray200,
   textQuaternary: palette.gray300,
+  text: palette.white,
+  textMuted: palette.gray200,
 
   // Borders (use sparingly)
   borderSubtle: 'rgba(255, 255, 255, 0.04)',
