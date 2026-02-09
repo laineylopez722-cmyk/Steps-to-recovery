@@ -9,6 +9,7 @@ import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
+import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -77,21 +78,15 @@ export function StepDetailScreen(): React.ReactElement {
     questionIndexMap,
   });
 
-  const handleReviewAnswers = useCallback(() => {
-    navigation.navigate('StepReview', { stepNumber });
-  }, [navigation, stepNumber]);
+  const { handleReviewAnswers, handleBackToStepOne, handleBackToSteps } =
+    useStepDetailNavigationActions({
+      navigation,
+      stepNumber,
+    });
 
   const handleToggleGuidance = useCallback(() => {
     setShowGuidance((prev) => !prev);
   }, []);
-
-  const handleBackToStepOne = useCallback(() => {
-    navigation.navigate('StepDetail', { stepNumber: 1 });
-  }, [navigation]);
-
-  const handleBackToSteps = useCallback(() => {
-    navigation.navigate('StepsOverview');
-  }, [navigation]);
 
   const mainContentProps = useStepDetailMainContentProps({
     animation: {
