@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
@@ -10,6 +10,7 @@ import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
 import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
+import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -30,8 +31,6 @@ export function StepDetailScreen(): React.ReactElement {
   const { questions, isLoading } = useStepWork(userId, stepNumber);
   const { saveAnswer } = useSaveStepAnswer(userId);
   const isLocked = stepNumber > 1;
-
-  const [showGuidance, setShowGuidance] = useState(false);
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
@@ -83,10 +82,7 @@ export function StepDetailScreen(): React.ReactElement {
       navigation,
       stepNumber,
     });
-
-  const handleToggleGuidance = useCallback(() => {
-    setShowGuidance((prev) => !prev);
-  }, []);
+  const { showGuidance, handleToggleGuidance } = useStepGuidanceToggle();
 
   const mainContentProps = useStepDetailMainContentProps({
     animation: {
