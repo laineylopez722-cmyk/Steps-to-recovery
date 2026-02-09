@@ -26,6 +26,7 @@ import {
   type StepListItem,
 } from '../utils/stepListItems';
 import { getFirstVisibleQuestionNumber } from '../utils/stepViewability';
+import { getStepListItemLayout, stepListKeyExtractor } from '../utils/stepListConfig';
 import {
   buildAnsweredQuestionSet,
   buildInitialAnswers,
@@ -253,20 +254,8 @@ export function StepDetailScreen(): React.ReactElement {
     [answeredQuestionNumbers, savingQuestion, answers, handleSaveAnswer, totalQuestions],
   );
 
-  const keyExtractor = useCallback((item: ListItem, _index: number) => {
-    if (item.type === 'section') return `section-${item.title}`;
-    if (item.type === 'footer') return 'footer';
-    return `question-${item.questionNumber}`;
-  }, []);
-
-  const getItemLayout = useCallback(
-    (data: ArrayLike<ListItem> | null | undefined, index: number) => ({
-      length: 350, // Approximate height
-      offset: 350 * index,
-      index,
-    }),
-    [],
-  );
+  const keyExtractor = stepListKeyExtractor;
+  const getItemLayout = getStepListItemLayout;
 
   if (!stepData) {
     return (
@@ -719,3 +708,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
