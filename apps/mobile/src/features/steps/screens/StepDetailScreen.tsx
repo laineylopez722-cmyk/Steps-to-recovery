@@ -640,40 +640,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingBottom: 32,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 12,
-  },
-  sectionHeaderContent: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  questionCard: {
-    marginBottom: 16,
-  },
-  questionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  questionNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    marginTop: 2,
-  },
-  questionDivider: {
-    marginBottom: 16,
-  },
-  answerTextArea: {
-    marginBottom: 16,
-  },
+
   infoCard: {
     marginTop: 8,
   },
@@ -682,5 +649,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
 
 
