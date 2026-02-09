@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
@@ -10,12 +8,10 @@ import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
-import { StepLockedState } from '../components/StepLockedState';
-import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
-import { StepDetailMainContent } from '../components/StepDetailMainContent';
+import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Toast, useTheme } from '../../../design-system';
+import { useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
@@ -80,78 +76,53 @@ export function StepDetailScreen(): React.ReactElement {
     questionIndexMap,
   });
 
-  // main content rendering handled by StepDetailMainContent
-
   if (!stepData) {
     return <StepDetailErrorState />;
   }
 
-  if (isLocked) {
-    return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-        edges={['bottom']}
-      >
-        <StepLockedState
-          stepNumber={stepNumber}
-          onBackToStepOne={() => navigation.navigate('StepDetail', { stepNumber: 1 })}
-          onBackToSteps={() => navigation.navigate('StepsOverview')}
-        />
-      </SafeAreaView>
-    );
-  }
-
-  if (isLoading) {
-    return <StepDetailLoadingState />;
-  }
+  const contentState = isLocked ? 'locked' : isLoading ? 'loading' : 'ready';
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      edges={['bottom']}
-    >
-      <Toast
-        visible={toastVisible}
-        message={toastMessage}
-        variant={toastVariant}
-        onDismiss={dismissToast}
-      />
-
-      <StepDetailMainContent
-        fadeAnim={fadeAnim}
-        slideAnim={slideAnim}
-        stepNumber={stepNumber}
-        title={stepData.title}
-        principle={stepData.principle}
-        description={stepData.description}
-        totalQuestions={totalQuestions}
-        answeredCount={answeredCount}
-        progressPercent={progressPercent}
-        hasUnanswered={hasUnanswered}
-        firstUnansweredQuestion={firstUnansweredQuestion}
-        onContinue={scrollToFirstUnanswered}
-        onReviewAnswers={() => navigation.navigate('StepReview', { stepNumber })}
-        showGuidance={showGuidance}
-        onToggleGuidance={() => setShowGuidance((prev) => !prev)}
-        currentVisibleQuestion={currentVisibleQuestion}
-        listRef={flatListRef}
-        listItems={listItems}
-        answeredQuestionNumbers={answeredQuestionNumbers}
-        savingQuestion={savingQuestion}
-        answers={answers}
-        onAnswerChange={handleAnswerChange}
-        onSaveAnswer={handleSaveAnswer}
-        onJumpToQuestion={scrollToQuestion}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-      />
-    </SafeAreaView>
+    <StepDetailScreenContent
+      state={contentState}
+      backgroundColor={theme.colors.background}
+      stepNumber={stepNumber}
+      onBackToStepOne={() => navigation.navigate('StepDetail', { stepNumber: 1 })}
+      onBackToSteps={() => navigation.navigate('StepsOverview')}
+      toastVisible={toastVisible}
+      toastMessage={toastMessage}
+      toastVariant={toastVariant}
+      onDismissToast={dismissToast}
+      mainContentProps={{
+        fadeAnim,
+        slideAnim,
+        stepNumber,
+        title: stepData.title,
+        principle: stepData.principle,
+        description: stepData.description,
+        totalQuestions,
+        answeredCount,
+        progressPercent,
+        hasUnanswered,
+        firstUnansweredQuestion,
+        onContinue: scrollToFirstUnanswered,
+        onReviewAnswers: () => navigation.navigate('StepReview', { stepNumber }),
+        showGuidance,
+        onToggleGuidance: () => setShowGuidance((prev) => !prev),
+        currentVisibleQuestion,
+        listRef: flatListRef,
+        listItems,
+        answeredQuestionNumbers,
+        savingQuestion,
+        answers,
+        onAnswerChange: handleAnswerChange,
+        onSaveAnswer: handleSaveAnswer,
+        onJumpToQuestion: scrollToQuestion,
+        onViewableItemsChanged,
+        viewabilityConfig,
+      }}
+    />
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
