@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { StyleSheet, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
@@ -8,6 +8,7 @@ import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { useStepAnswersState } from '../hooks/useStepAnswersState';
+import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { StepLockedState } from '../components/StepLockedState';
 import { StepGuidanceCard } from '../components/StepGuidanceCard';
 import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
@@ -42,9 +43,7 @@ export function StepDetailScreen(): React.ReactElement {
 
   const [showGuidance, setShowGuidance] = useState(false);
 
-  // Refs
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(30)).current;
+  const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
   // Get total question count
   const totalQuestions = stepData?.prompts.length ?? 0;
@@ -60,21 +59,6 @@ export function StepDetailScreen(): React.ReactElement {
     () => getFirstUnansweredQuestion(stepData, answeredQuestionNumbers),
     [stepData, answeredQuestionNumbers],
   );
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 400,
-        useNativeDriver: true,
-      }),
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [fadeAnim, slideAnim]);
 
   const { answers, handleAnswerChange } = useStepAnswersState(questions);
 
