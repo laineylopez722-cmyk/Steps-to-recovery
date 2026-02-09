@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Card, Divider, Text, TextArea, useTheme } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface StepQuestionCardProps {
   questionNumber: number;
@@ -42,7 +43,7 @@ export function StepQuestionCard({
           ]}
         >
           {isAnswered ? (
-            <MaterialCommunityIcons name="check" size={20} color="#FFFFFF" />
+            <MaterialCommunityIcons name="check" size={20} color={ds.semantic.text.onDark} />
           ) : (
             <Text
               style={[
