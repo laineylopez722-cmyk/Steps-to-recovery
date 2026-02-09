@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, Animated } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, useNavigation, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -11,12 +11,9 @@ import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { StepLockedState } from '../components/StepLockedState';
-import { StepGuidanceCard } from '../components/StepGuidanceCard';
-import { StepDetailHeaderCard } from '../components/StepDetailHeaderCard';
-import { StepQuestionCounter } from '../components/StepQuestionCounter';
 import { StepDetailLoadingState } from '../components/StepDetailLoadingState';
-import { StepDetailQuestionsList } from '../components/StepDetailQuestionsList';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
+import { StepDetailMainContent } from '../components/StepDetailMainContent';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Toast, useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
@@ -83,7 +80,7 @@ export function StepDetailScreen(): React.ReactElement {
     questionIndexMap,
   });
 
-  // list rendering handled by StepDetailQuestionsList
+  // main content rendering handled by StepDetailMainContent
 
   if (!stepData) {
     return <StepDetailErrorState />;
@@ -120,63 +117,34 @@ export function StepDetailScreen(): React.ReactElement {
         onDismiss={dismissToast}
       />
 
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={100}
-      >
-        <Animated.View
-          style={[
-            styles.animatedContainer,
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          {/* Header */}
-          <StepDetailHeaderCard
-            stepNumber={stepNumber}
-            title={stepData.title}
-            principle={stepData.principle}
-            totalQuestions={totalQuestions}
-            answeredCount={answeredCount}
-            progressPercent={progressPercent}
-            showContinue={hasUnanswered && answeredCount > 0}
-            firstUnansweredQuestion={firstUnansweredQuestion}
-            onContinue={scrollToFirstUnanswered}
-            onReviewAnswers={() => navigation.navigate('StepReview', { stepNumber })}
-          />
-
-          {/* Guidance */}
-          <StepGuidanceCard
-            showGuidance={showGuidance}
-            description={stepData.description}
-            onToggle={() => setShowGuidance((prev) => !prev)}
-          />
-
-          {/* Question Counter */}
-          <StepQuestionCounter
-            currentQuestion={currentVisibleQuestion}
-            totalQuestions={totalQuestions}
-          />
-
-          {/* Questions List */}
-          <StepDetailQuestionsList
-            listRef={flatListRef}
-            listItems={listItems}
-            answeredQuestionNumbers={answeredQuestionNumbers}
-            savingQuestion={savingQuestion}
-            answers={answers}
-            totalQuestions={totalQuestions}
-            onAnswerChange={handleAnswerChange}
-            onSaveAnswer={handleSaveAnswer}
-            onJumpToQuestion={scrollToQuestion}
-            onViewableItemsChanged={onViewableItemsChanged}
-            viewabilityConfig={viewabilityConfig}
-          />
-        </Animated.View>
-      </KeyboardAvoidingView>
+      <StepDetailMainContent
+        fadeAnim={fadeAnim}
+        slideAnim={slideAnim}
+        stepNumber={stepNumber}
+        title={stepData.title}
+        principle={stepData.principle}
+        description={stepData.description}
+        totalQuestions={totalQuestions}
+        answeredCount={answeredCount}
+        progressPercent={progressPercent}
+        hasUnanswered={hasUnanswered}
+        firstUnansweredQuestion={firstUnansweredQuestion}
+        onContinue={scrollToFirstUnanswered}
+        onReviewAnswers={() => navigation.navigate('StepReview', { stepNumber })}
+        showGuidance={showGuidance}
+        onToggleGuidance={() => setShowGuidance((prev) => !prev)}
+        currentVisibleQuestion={currentVisibleQuestion}
+        listRef={flatListRef}
+        listItems={listItems}
+        answeredQuestionNumbers={answeredQuestionNumbers}
+        savingQuestion={savingQuestion}
+        answers={answers}
+        onAnswerChange={handleAnswerChange}
+        onSaveAnswer={handleSaveAnswer}
+        onJumpToQuestion={scrollToQuestion}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+      />
     </SafeAreaView>
   );
 }
@@ -185,20 +153,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  keyboardView: {
-    flex: 1,
-  },
-  animatedContainer: {
-    flex: 1,
-  },
-
 });
-
-
-
-
-
-
-
-
 
