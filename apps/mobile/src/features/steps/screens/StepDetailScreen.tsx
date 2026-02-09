@@ -24,8 +24,8 @@ import {
   buildQuestionIndexMap,
   buildStepListItems,
   type StepListItem,
-  type QuestionItem,
 } from '../utils/stepListItems';
+import { getFirstVisibleQuestionNumber } from '../utils/stepViewability';
 import {
   buildAnsweredQuestionSet,
   buildInitialAnswers,
@@ -171,16 +171,12 @@ export function StepDetailScreen(): React.ReactElement {
   }, [firstUnansweredQuestion, scrollToQuestion]);
 
   // Track visible question for counter
-  const onViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      const questionItems = viewableItems.filter((item) => item.item?.type === 'question');
-      if (questionItems.length > 0) {
-        const firstVisible = questionItems[0].item as QuestionItem;
-        setCurrentVisibleQuestion(firstVisible.questionNumber);
-      }
-    },
-    [],
-  );
+  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const firstVisibleQuestionNumber = getFirstVisibleQuestionNumber(viewableItems);
+    if (firstVisibleQuestionNumber !== null) {
+      setCurrentVisibleQuestion(firstVisibleQuestionNumber);
+    }
+  }, []);
 
   const viewabilityConfig = useMemo(
     () => ({
