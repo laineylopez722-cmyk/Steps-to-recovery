@@ -16,6 +16,7 @@ import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
 import { useStepWork, useSaveStepAnswer } from '../hooks/useStepWork';
+import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { StepSectionHeader } from '../components/StepSectionHeader';
 import { StepQuestionCard } from '../components/StepQuestionCard';
 import { StepLockedState } from '../components/StepLockedState';
@@ -58,16 +59,8 @@ export function StepDetailScreen(): React.ReactElement {
   const isLocked = stepNumber > 1;
 
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [savingQuestion, setSavingQuestion] = useState<number | null>(null);
   const [currentVisibleQuestion, setCurrentVisibleQuestion] = useState(1);
   const [showGuidance, setShowGuidance] = useState(false);
-
-  // Toast state
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastVariant, setToastVariant] = useState<'success' | 'error' | 'info' | 'warning'>(
-    'success',
-  );
 
   // Refs
   const flatListRef = useRef<FlatList<ListItem>>(null);
@@ -115,40 +108,18 @@ export function StepDetailScreen(): React.ReactElement {
     setAnswers((prev) => ({ ...prev, [questionNumber]: text }));
   }, []);
 
-  const presentToast = useCallback(
-    (message: string, variant: 'success' | 'error' | 'info' | 'warning') => {
-      setToastMessage(message);
-      setToastVariant(variant);
-      setShowToast(true);
-    },
-    [],
-  );
-
-  const handleSaveAnswer = useCallback(
-    async (questionNumber: number) => {
-      if (savingQuestion === questionNumber) return;
-
-      const answer = answers[questionNumber];
-      const normalizedAnswer = answer?.trim();
-      if (!normalizedAnswer) return;
-
-      setSavingQuestion(questionNumber);
-      try {
-        await saveAnswer(stepNumber, questionNumber, normalizedAnswer, true);
-
-        // Success feedback
-        if (Platform.OS !== 'web') {
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        }
-        presentToast('Answer saved successfully', 'success');
-      } catch (_error) {
-        presentToast('Failed to save answer. Please try again.', 'error');
-      } finally {
-        setSavingQuestion(null);
-      }
-    },
-    [answers, presentToast, saveAnswer, savingQuestion, stepNumber],
-  );
+  const {
+    savingQuestion,
+    toastVisible,
+    toastMessage,
+    toastVariant,
+    dismissToast,
+    handleSaveAnswer,
+  } = useStepAnswerSave({
+    answers,
+    stepNumber,
+    saveAnswer,
+  });
 
   const scrollToQuestion = useCallback(
     (questionNumber: number) => {
@@ -344,10 +315,10 @@ export function StepDetailScreen(): React.ReactElement {
       edges={['bottom']}
     >
       <Toast
-        visible={showToast}
+        visible={toastVisible}
         message={toastMessage}
         variant={toastVariant}
-        onDismiss={() => setShowToast(false)}
+        onDismiss={dismissToast}
       />
 
       <KeyboardAvoidingView
