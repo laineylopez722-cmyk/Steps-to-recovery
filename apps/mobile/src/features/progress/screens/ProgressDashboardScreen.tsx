@@ -18,6 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { useTheme, GlassCard, SkeletonCard } from '../../../design-system';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useRecoveryAnalytics, type RecoveryInsight } from '../hooks/useRecoveryAnalytics';
 
@@ -516,7 +517,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   legendText: {
     fontSize: 12,

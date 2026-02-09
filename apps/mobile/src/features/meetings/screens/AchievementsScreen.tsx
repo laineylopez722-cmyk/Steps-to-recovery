@@ -12,6 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import { useAchievements } from '../hooks/useAchievements';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
 import { ACHIEVEMENT_COLORS } from '@recovery/shared';
@@ -80,13 +81,13 @@ export function AchievementsScreen(): React.ReactElement {
         {/* Stats Banner */}
         <Animated.View entering={FadeInUp.delay(100)}>
           <LinearGradient
-            colors={['#8B5CF6', '#7C3AED']}
+            colors={[ds.colors.accent, ds.semantic.intent.primary.solid]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.statsBanner}
           >
             <View style={styles.statsContent}>
-              <MaterialIcons name="emoji-events" size={48} color="#FFFFFF" />
+              <MaterialIcons name="emoji-events" size={48} color={ds.semantic.text.onDark} />
               <View>
                 <Text style={styles.statsValue}>
                   {unlockedCount} / {totalCount}
@@ -185,7 +186,7 @@ export function AchievementsScreen(): React.ReactElement {
                         colors={
                           achievement.unlocked
                             ? getProgressBarColor(achievement.category)
-                            : ['#374151', '#1F2937']
+                            : [ds.colors.bgSecondary, ds.colors.bgTertiary]
                         }
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
@@ -194,21 +195,21 @@ export function AchievementsScreen(): React.ReactElement {
                         <MaterialIcons
                           name={achievement.icon as IconName}
                           size={48}
-                          color={achievement.unlocked ? '#FFFFFF' : '#6B7280'}
+                          color={achievement.unlocked ? ds.semantic.text.onDark : ds.colors.textTertiary}
                         />
                       </LinearGradient>
 
                       {/* Unlock Badge */}
                       {achievement.unlocked && (
                         <View style={styles.unlockBadge}>
-                          <MaterialIcons name="check" size={16} color="#FFFFFF" />
+                          <MaterialIcons name="check" size={16} color={ds.semantic.text.onDark} />
                         </View>
                       )}
 
                       {/* Lock Icon */}
                       {!achievement.unlocked && (
                         <View style={styles.lockBadge}>
-                          <MaterialIcons name="lock" size={16} color="#6B7280" />
+                          <MaterialIcons name="lock" size={16} color={ds.colors.textTertiary} />
                         </View>
                       )}
                     </View>
@@ -271,7 +272,7 @@ export function AchievementsScreen(): React.ReactElement {
                     {achievement.unlocked && (
                       <View style={styles.shineOverlay}>
                         <LinearGradient
-                          colors={['transparent', 'rgba(255,255,255,0.1)', 'transparent']}
+                          colors={['transparent', ds.colors.bgOverlay, 'transparent']}
                           start={{ x: 0, y: 0 }}
                           end={{ x: 1, y: 1 }}
                           style={StyleSheet.absoluteFill}
@@ -348,22 +349,22 @@ const styles = StyleSheet.create({
   },
   statsValue: {
     ...typography.h1,
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     fontWeight: '800',
   },
   statsLabel: {
     ...typography.body,
-    color: 'rgba(255,255,255,0.9)',
+    color: ds.semantic.text.onDark,
   },
   progressTrack: {
     height: 8,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: radius.full,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: ds.semantic.text.onDark,
     borderRadius: radius.full,
   },
   filterContainer: {
@@ -389,7 +390,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   filterTabTextActive: {
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
   },
   scrollView: {
     flex: 1,
@@ -438,7 +439,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#10B981',
+    backgroundColor: ds.colors.success,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
@@ -480,7 +481,7 @@ const styles = StyleSheet.create({
   },
   unlockedDate: {
     ...typography.caption,
-    color: '#10B981',
+    color: ds.colors.success,
     fontWeight: '600',
   },
   progressBarContainer: {

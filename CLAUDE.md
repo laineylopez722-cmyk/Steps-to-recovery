@@ -35,16 +35,55 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - [ ] No console.log with sensitive data
 - [ ] Sync operations preserve encryption end-to-end
 
-### Custom Agents Available
+## 🐝 Agent Swarm (NEW - Recommended)
+
+**For all development requests, use the coordinated Agent Swarm.**
+
+The Agent Swarm provides autonomous, multi-agent development with built-in quality gates:
+
+```
+User Request → Swarm Coordinator → Specialized Agents → Quality Gates → Results
+```
+
+### Quick Start
+
+**For any task, simply describe what you want:**
+- "Add a gratitude list feature"
+- "Fix the sync issue in journal entries"
+- "Create tests for encryption"
+- "Optimize cold start performance"
+
+The **Swarm Coordinator** will automatically select and coordinate the right agents.
+
+### Agent Swarm Documentation
+
+| Document | Purpose |
+|----------|---------|
+| `.claude/AGENT-SWARM-PLAN.md` | Complete swarm architecture and roadmap |
+| `.claude/SWARM-QUICKSTART.md` | How to use the swarm |
+| `.claude/agents/` | Individual agent definitions |
+
+### Swarm Agents
+
+| Agent | Specialty | Activation |
+|-------|-----------|------------|
+| `swarm-coordinator` | **PRIMARY** - Routes all requests | Always start here |
+| `security-auditor` | Encryption, RLS, key storage | Auto-triggered for data changes |
+| `database-architect` | Schema, migrations, RLS | Auto-triggered for DB changes |
+| `feature-developer` | Components, hooks, screens | Auto-triggered for features |
+| `testing-specialist` | Tests, coverage, mocks | Auto-triggered post-implementation |
+| `performance-optimizer` | Cold start, rendering, bundles | Auto-triggered for perf issues |
+| `accessibility-validator` | WCAG AAA compliance | Auto-triggered for UI |
+
+---
+
+### Legacy Individual Agents (Still Available)
 
 | Agent                             | When to Use                                          |
 | --------------------------------- | ---------------------------------------------------- |
-| `security-auditor`                | After modifying encryption, auth, or sync code       |
-| `testing-specialist`              | When writing/reviewing tests                         |
-| `performance-optimizer`           | For cold start or rendering issues                   |
-| `accessibility-validator`         | Before UI PRs                                        |
-| `architecture-decision-authority` | Before new features                                  |
-| `token-optimization-specialist`   | For 8+ file tasks or approaching token limit (>150k) |
+| `architecture-decision-authority` | Before new features (now handled by swarm)           |
+| `token-optimization-specialist`   | For 8+ file tasks (swarm auto-optimizes)             |
+| `project-orchestrator`            | Complex coordination (use swarm-coordinator instead) |
 
 ### MCP Servers (run `/mcp` to check status)
 

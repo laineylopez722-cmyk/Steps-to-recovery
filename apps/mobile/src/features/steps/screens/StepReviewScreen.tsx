@@ -26,6 +26,7 @@ import {
   type ToastVariant,
   useTheme,
 } from '@/design-system';
+import { ds } from '@/design-system/tokens/ds';
 import type { StepsStackParamList } from '@/navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList>;
@@ -109,7 +110,7 @@ function buildStepWorkHtml(params: {
         <style>
           body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            color: #111827;
+            color: ${ds.colors.text};
             padding: 24px;
             line-height: 1.6;
           }
@@ -120,22 +121,22 @@ function buildStepWorkHtml(params: {
           h2 {
             font-size: 18px;
             margin: 24px 0 12px 0;
-            color: #1f2937;
+            color: ${ds.colors.textSecondary};
           }
           .meta {
             font-size: 12px;
-            color: #6b7280;
+            color: ${ds.colors.textTertiary};
             margin-bottom: 16px;
           }
           .summary {
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            background: ${ds.colors.bgSecondary};
+            border: 1px solid ${ds.colors.borderSubtle};
             border-radius: 12px;
             padding: 12px 16px;
             margin: 16px 0 24px 0;
           }
           .question {
-            border: 1px solid #e5e7eb;
+            border: 1px solid ${ds.colors.borderSubtle};
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
@@ -144,7 +145,7 @@ function buildStepWorkHtml(params: {
             font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.04em;
-            color: #6b7280;
+            color: ${ds.colors.textTertiary};
             margin-bottom: 6px;
           }
           .prompt {
@@ -153,16 +154,16 @@ function buildStepWorkHtml(params: {
           }
           .answer {
             font-size: 14px;
-            color: #111827;
+            color: ${ds.colors.text};
           }
           .unanswered {
-            color: #9ca3af;
+            color: ${ds.colors.textMuted};
             font-style: italic;
           }
           .footer {
             margin-top: 32px;
             font-size: 11px;
-            color: #6b7280;
+            color: ${ds.colors.textTertiary};
           }
         </style>
       </head>
@@ -308,14 +309,14 @@ export function StepReviewScreen(): React.ReactElement {
     ({ item }: { item: ReviewItem }): React.ReactElement | null => {
       if (item.type === 'section') {
         return (
-          <View style={[styles.sectionHeader, { backgroundColor: `${theme.colors.primary}12` }]}>
+          <View style={[styles.sectionHeader, { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle }]}>
             <MaterialCommunityIcons
               name="bookmark-outline"
               size={20}
-              color={theme.colors.primary}
+              color={ds.colors.accent}
             />
             <View style={styles.sectionHeaderContent}>
-              <Text variant="labelLarge" style={{ color: theme.colors.primary }}>
+              <Text variant="labelLarge" style={{ color: ds.colors.textPrimary }}>
                 {item.title}
               </Text>
               <Text variant="caption" color="textSecondary">
@@ -336,16 +337,16 @@ export function StepReviewScreen(): React.ReactElement {
               style={[
                 styles.questionNumber,
                 hasAnswer
-                  ? { backgroundColor: theme.colors.success }
+                  ? { backgroundColor: ds.colors.success }
                   : {
-                      backgroundColor: theme.colors.surface,
-                      borderColor: theme.colors.border,
+                      backgroundColor: ds.colors.bgSecondary,
+                      borderColor: ds.colors.borderSubtle,
                       borderWidth: 2,
                     },
               ]}
             >
               {hasAnswer ? (
-                <MaterialCommunityIcons name="check" size={18} color="#FFFFFF" />
+                <MaterialCommunityIcons name="check" size={18} color={ds.semantic.text.onDark} />
               ) : (
                 <Text variant="labelLarge" style={{ color: theme.colors.textSecondary }}>
                   {item.questionNumber}
@@ -487,8 +488,8 @@ export function StepReviewScreen(): React.ReactElement {
               variant="outlined"
               style={{
                 marginTop: theme.spacing.md,
-                borderColor: theme.colors.border,
-                backgroundColor: `${theme.colors.primary}08`,
+                borderColor: ds.colors.borderSubtle,
+                backgroundColor: ds.colors.bgSecondary,
               }}
             >
               <Text variant="bodySmall" color="textSecondary">
@@ -554,6 +555,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     marginTop: 8,
+    borderWidth: 1,
   },
   sectionHeaderContent: {
     marginLeft: 12,

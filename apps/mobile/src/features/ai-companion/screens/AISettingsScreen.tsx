@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(50, 215, 75, 0.2)',
+    backgroundColor: ds.colors.successMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },

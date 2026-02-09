@@ -24,6 +24,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { logger } from '../../../utils/logger';
 import { radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import {
   getAchievementByKey,
   getRandomAchievementMessage,
@@ -123,7 +124,7 @@ export function AchievementUnlockModal({
           {/* Shine effect */}
           <Animated.View style={[styles.shineEffect, shineAnimatedStyle]}>
             <LinearGradient
-              colors={['transparent', 'rgba(255,255,255,0.3)', 'transparent']}
+              colors={['transparent', ds.colors.bgOverlay, 'transparent']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
               style={styles.shineGradient}
@@ -152,7 +153,7 @@ export function AchievementUnlockModal({
                 <MaterialIcons
                   name={['star', 'favorite', 'emoji-events'][i % 3] as IconName}
                   size={20}
-                  color="rgba(255,255,255,0.4)"
+                  color={ds.colors.textMuted}
                 />
               </Animated.View>
             ))}
@@ -160,7 +161,7 @@ export function AchievementUnlockModal({
             {/* Achievement Icon */}
             <Animated.View style={[styles.iconContainer, iconAnimatedStyle]}>
               <View style={styles.iconBg}>
-                <MaterialIcons name={achievement.icon as IconName} size={80} color="#FFFFFF" />
+                <MaterialIcons name={achievement.icon as IconName} size={80} color={ds.semantic.text.onDark} />
               </View>
             </Animated.View>
 
@@ -179,7 +180,7 @@ export function AchievementUnlockModal({
                 variant="ghost"
                 size="md"
                 onPress={handleShare}
-                icon={<MaterialIcons name="share" size={20} color="#FFFFFF" />}
+                icon={<MaterialIcons name="share" size={20} color={ds.semantic.text.onDark} />}
                 style={styles.shareButton}
                 accessibilityLabel="Share this achievement"
                 accessibilityHint="Opens share dialog to celebrate with others"
@@ -196,7 +197,7 @@ export function AchievementUnlockModal({
                   accessibilityRole="button"
                 >
                   <Text style={styles.viewAllText}>View All Achievements</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color="#FFFFFF" />
+                  <MaterialIcons name="arrow-forward" size={18} color={ds.semantic.text.onDark} />
                 </Pressable>
               )}
 
@@ -224,7 +225,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    backgroundColor: ds.colors.bgOverlay,
   },
   modalContent: {
     width: '90%',
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
   },
   badge: {
     ...typography.caption,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: ds.semantic.text.onDark,
     textTransform: 'uppercase',
     letterSpacing: 2,
     fontWeight: '700',
@@ -275,20 +276,20 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.h1,
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     textAlign: 'center',
     marginBottom: spacing.sm,
     fontWeight: '800',
   },
   description: {
     ...typography.body,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: ds.semantic.text.onDark,
     textAlign: 'center',
     marginBottom: spacing.md,
   },
   message: {
     ...typography.h3,
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     textAlign: 'center',
     marginBottom: spacing.xl,
     fontWeight: '600',
@@ -298,9 +299,9 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   shareButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: ds.colors.borderSubtle,
   },
   viewAllButton: {
     flexDirection: 'row',
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
   },
   viewAllText: {
     ...typography.body,
-    color: '#FFFFFF',
+    color: ds.semantic.text.onDark,
     fontWeight: '600',
   },
   continueButton: {
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
   },
   continueText: {
     ...typography.body,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: ds.semantic.text.onDark,
     fontWeight: '600',
   },
 });

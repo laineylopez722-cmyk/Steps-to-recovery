@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import { useReading } from '../../../hooks/useReading';
 import type { HomeStackScreenProps } from '../../../navigation/types';
 
@@ -180,7 +181,7 @@ const styles = StyleSheet.create({
   container: {
     overflow: 'hidden',
     borderWidth: 1.5,
-    borderColor: 'rgba(99, 102, 241, 0.2)',
+    borderColor: ds.colors.borderSubtle,
   },
   content: {
     padding: spacing[3],
@@ -203,7 +204,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: radius.lg,
-    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+    backgroundColor: ds.colors.bgSecondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -227,7 +228,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: 'rgba(251, 191, 36, 0.15)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: radius.full,
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
   streakText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#FBBF24',
+    color: ds.colors.warning,
   },
   title: {
     ...typography.h3,
@@ -264,9 +265,9 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   readButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: ds.colors.bgSecondary,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: ds.colors.borderSubtle,
   },
   readButtonText: {
     fontSize: 14,
@@ -277,9 +278,9 @@ const styles = StyleSheet.create({
     backgroundColor: darkAccent.primary,
   },
   reflectButtonCompleted: {
-    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    backgroundColor: ds.colors.successMuted,
     borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.3)',
+    borderColor: ds.colors.success,
   },
   reflectButtonText: {
     fontSize: 14,

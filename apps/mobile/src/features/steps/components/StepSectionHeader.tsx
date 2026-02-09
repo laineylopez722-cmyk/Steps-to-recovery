@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, useTheme } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface StepSectionHeaderProps {
   title: string;
@@ -20,7 +21,7 @@ export function StepSectionHeader({
 
   return (
     <Pressable
-      style={[styles.sectionHeader, { backgroundColor: theme.colors.primary + '10' }]}
+      style={styles.sectionHeader}
       onPress={() => onJumpToQuestion(sectionStart)}
       accessibilityRole="button"
       accessibilityLabel={`${title}, ${questionRange}. Tap to jump to section.`}
@@ -28,21 +29,21 @@ export function StepSectionHeader({
       <MaterialCommunityIcons
         name="bookmark-outline"
         size={20}
-        color={theme.colors.primary}
+        color={ds.colors.accent}
         accessible={false}
       />
       <View style={styles.sectionHeaderContent}>
-        <Text style={[theme.typography.h3, { color: theme.colors.primary, fontWeight: '600' }]}>
+        <Text style={[theme.typography.h3, { color: ds.colors.textPrimary, fontWeight: '600' }]}>
           {title}
         </Text>
-        <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}> 
+        <Text style={[theme.typography.caption, { color: ds.colors.textTertiary }]}> 
           {questionRange} • tap to jump
         </Text>
       </View>
       <MaterialCommunityIcons
         name="chevron-right"
         size={18}
-        color={theme.colors.textSecondary}
+        color={ds.colors.textQuaternary}
         accessible={false}
       />
     </Pressable>
@@ -56,6 +57,9 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: ds.colors.borderSubtle,
+    backgroundColor: ds.colors.bgSecondary,
   },
   sectionHeaderContent: {
     marginLeft: 12,

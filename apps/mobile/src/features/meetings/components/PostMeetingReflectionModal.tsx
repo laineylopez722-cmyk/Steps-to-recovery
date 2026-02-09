@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
 import { GlassCard } from '../../../design-system/components/GlassCard';
+import { ds } from '../../../design-system/tokens/ds';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import {
   savePostMeetingReflection,
@@ -224,7 +225,7 @@ function getMoodEmoji(mood: number): string {
 const styles = StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: ds.colors.bgOverlay,
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing[4],
@@ -248,7 +249,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(52,211,153,0.15)',
+    backgroundColor: ds.colors.successMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing[3],
@@ -281,9 +282,9 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.colors.bgSecondary,
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
     gap: spacing[2],
     marginTop: spacing[3],
     padding: spacing[2],
-    backgroundColor: 'rgba(52,211,153,0.1)',
+    backgroundColor: ds.colors.successMuted,
     borderRadius: radius.md,
   },
   moodLiftText: {
@@ -319,13 +320,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: radius.lg,
     padding: spacing[3],
     color: darkAccent.text,
     ...typography.body,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
     minHeight: 80,
     textAlignVertical: 'top',
   },

@@ -27,6 +27,7 @@ import * as Haptics from 'expo-haptics';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import type { MeetingWithDetails } from '../types/meeting';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -92,7 +93,7 @@ export function CheckInModal({
         {showSuccess ? (
           <Animated.View entering={ZoomIn.springify().damping(15)} style={styles.successContainer}>
             <View style={styles.successIcon}>
-              <MaterialIcons name="check-circle" size={80} color="#10B981" />
+              <MaterialIcons name="check-circle" size={80} color={ds.colors.success} />
             </View>
             <Text style={styles.successText}>Checked In! 🎉</Text>
             <Text style={styles.successSubtext}>Keep up the great work!</Text>
@@ -107,7 +108,7 @@ export function CheckInModal({
               {/* Header */}
               <View style={styles.header}>
                 <View style={styles.iconContainer}>
-                  <MaterialIcons name="check-circle-outline" size={32} color="#10B981" />
+                  <MaterialIcons name="check-circle-outline" size={32} color={ds.colors.success} />
                 </View>
                 <Text style={styles.title}>Check In to Meeting</Text>
                 <Pressable
@@ -170,15 +171,15 @@ export function CheckInModal({
                 <View style={styles.impactSection}>
                   <Text style={styles.impactTitle}>This check-in will:</Text>
                   <View style={styles.impactItem}>
-                    <MaterialIcons name="trending-up" size={18} color="#10B981" />
+                    <MaterialIcons name="trending-up" size={18} color={ds.colors.success} />
                     <Text style={styles.impactText}>Update your meeting streak</Text>
                   </View>
                   <View style={styles.impactItem}>
-                    <MaterialIcons name="emoji-events" size={18} color="#F59E0B" />
+                    <MaterialIcons name="emoji-events" size={18} color={ds.colors.warning} />
                     <Text style={styles.impactText}>Count toward achievements</Text>
                   </View>
                   <View style={styles.impactItem}>
-                    <MaterialIcons name="star" size={18} color="#8B5CF6" />
+                    <MaterialIcons name="star" size={18} color={ds.colors.accent} />
                     <Text style={styles.impactText}>Progress your 90-in-90 challenge</Text>
                   </View>
                 </View>
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: ds.colors.bgOverlay,
   },
   modalContent: {
     width: '90%',

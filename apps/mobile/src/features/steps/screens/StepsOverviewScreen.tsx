@@ -114,6 +114,10 @@ function StepCard({
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
+        accessibilityRole="button"
+        accessibilityLabel={`Step ${step.number}: ${step.title}`}
+        accessibilityHint={isLocked ? 'Locked - coming in a future update' : isCompleted ? `Completed - ${answeredCount} of ${totalQuestions} questions answered` : isCurrent ? `Current step - ${answeredCount} of ${totalQuestions} questions answered` : `View step ${step.number}`}
+        accessibilityState={{ disabled: false }}
       >
         <Animated.View style={[
           styles.stepCard,
@@ -134,7 +138,7 @@ function StepCard({
               {isLocked ? (
                 <Feather name="lock" size={18} color={ds.colors.textQuaternary} />
               ) : isCompleted ? (
-                <Feather name="check" size={22} color="#fff" />
+                <Feather name="check" size={22} color={ds.semantic.text.onDark} />
               ) : (
                 <Text style={[
                   styles.badgeText,
@@ -463,7 +467,7 @@ const styles = StyleSheet.create({
     color: ds.colors.textTertiary,
   },
   badgeTextCurrent: {
-    color: '#000',
+    color: ds.semantic.surface.app,
   },
 
   // Content

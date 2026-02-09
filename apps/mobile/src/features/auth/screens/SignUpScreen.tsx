@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme, Input, Button } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 import { validateEmail, validatePassword } from '../../../utils/validation';
 import { useKeyboardConfig } from '../../../hooks/useKeyboardOffset';
 import type { AuthStackScreenProps } from '../../../navigation/types';
@@ -278,7 +279,7 @@ export function SignUpScreen({ navigation }: Props) {
                 style={[
                   styles.errorContainer,
                   {
-                    backgroundColor: theme.colors.dangerLight || '#FFE5E5',
+                    backgroundColor: theme.colors.dangerLight || ds.semantic.intent.alert.subtle,
                     borderColor: theme.colors.danger,
                   },
                 ]}

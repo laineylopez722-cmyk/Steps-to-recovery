@@ -1,0 +1,44 @@
+installation:
+  version: 6.0.0-Beta.4
+  installDate: 2026-02-01T13:50:44.451Z
+  lastUpdated: 2026-02-01T13:50:44.451Z
+modules:
+  - name: core
+    version: 6.0.0-Beta.4
+    installDate: 2026-02-01T13:50:41.589Z
+    lastUpdated: 2026-02-01T13:50:41.589Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmm
+    version: 6.0.0-Beta.4
+    installDate: 2026-02-01T13:50:30.827Z
+    lastUpdated: 2026-02-01T13:50:41.589Z
+    source: built-in
+    npmPackage: null
+    repoUrl: null
+  - name: bmb
+    version: 0.1.3
+    installDate: 2026-02-01T13:50:34.639Z
+    lastUpdated: 2026-02-01T13:50:42.497Z
+    source: external
+    npmPackage: bmad-builder
+    repoUrl: https://github.com/bmad-code-org/bmad-builder
+  - name: tea
+    version: 0.1.1-beta.3
+    installDate: 2026-02-01T13:50:38.111Z
+    lastUpdated: 2026-02-01T13:50:43.533Z
+    source: external
+    npmPackage: bmad-method-test-architecture-enterprise
+    repoUrl: https://github.com/bmad-code-org/bmad-method-test-architecture-enterprise
+  - name: gds
+    version: 0.1.4
+    installDate: 2026-02-01T13:50:41.415Z
+    lastUpdated: 2026-02-01T13:50:44.451Z
+    source: external
+    npmPackage: bmad-game-dev-studio
+    repoUrl: https://github.com/bmad-code-org/bmad-module-game-dev-studio.git
+ides:
+  - github-copilot
+  - codex
+  - claude-code

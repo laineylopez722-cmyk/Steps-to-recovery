@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useTheme, Button, Card } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 import { hapticSelection } from '../../../utils/haptics';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { RelationshipType } from '../../../services/safeDialService';
@@ -231,7 +232,7 @@ export function DangerZoneScreen({
                     <Text
                       style={[
                         theme.typography.labelSmall,
-                        { color: '#FFFFFF', fontWeight: 'bold' },
+                        { color: ds.semantic.text.onDark, fontWeight: 'bold' },
                       ]}
                     >
                       {index + 1}
@@ -267,7 +268,7 @@ export function DangerZoneScreen({
               accessibilityRole="button"
               accessibilityLabel="Add risky contact"
             >
-              <MaterialCommunityIcons name="plus" size={24} color="#FFFFFF" />
+              <MaterialCommunityIcons name="plus" size={24} color={ds.semantic.text.onDark} />
             </Pressable>
           </View>
 
@@ -330,7 +331,7 @@ export function DangerZoneScreen({
                 }}
                 variant="primary"
                 size="medium"
-                icon={<MaterialCommunityIcons name="plus" size={20} color="#FFFFFF" />}
+                icon={<MaterialCommunityIcons name="plus" size={20} color={ds.semantic.text.onDark} />}
               />
             </Card>
           ) : (

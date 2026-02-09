@@ -89,6 +89,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
             onPressOut={onClosePressOut}
             accessibilityRole="button"
             accessibilityLabel="Close filters"
+            accessibilityHint="Closes the filter panel and returns to meetings list"
             hitSlop={12}
             style={({ pressed }) => [
               styles.iconButton,
@@ -169,6 +170,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
             onPressOut={onFilterPressOut}
             accessibilityRole="button"
             accessibilityLabel="Filter meetings"
+            accessibilityHint="Open filter options to refine meeting search"
             hitSlop={12}
             style={({ pressed }) => [
               styles.filterButton,

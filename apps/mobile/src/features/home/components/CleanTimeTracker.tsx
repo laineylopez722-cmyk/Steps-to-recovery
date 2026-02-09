@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Card, ProgressBar, Badge, CircularProgress } from '../../../design-system/components';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { ds } from '../../../design-system/tokens/ds';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCleanTime } from '../hooks/useCleanTime';
 
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   milestoneHeader: {
     flexDirection: 'row',
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   timeItem: {
     alignItems: 'center',

@@ -15,6 +15,7 @@ import Slider from '@react-native-community/slider';
 import { useNavigation, type NavigationProp as RNNavigationProp } from '@react-navigation/native';
 
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 
@@ -239,7 +240,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
               value={cravingIntensity}
               onValueChange={setCravingIntensity}
               minimumTrackTintColor={darkAccent.error}
-              maximumTrackTintColor="rgba(148,163,184,0.2)"
+              maximumTrackTintColor={ds.colors.bgQuaternary}
               thumbTintColor={darkAccent.error}
               accessibilityLabel={`Craving intensity: ${cravingIntensity} out of 10`}
               accessibilityRole="adjustable"
@@ -413,7 +414,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
               value={finalIntensity}
               onValueChange={setFinalIntensity}
               minimumTrackTintColor={darkAccent.success}
-              maximumTrackTintColor="rgba(148,163,184,0.2)"
+              maximumTrackTintColor={ds.colors.bgQuaternary}
               thumbTintColor={darkAccent.success}
             />
           </View>
@@ -460,7 +461,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={[darkAccent.background, '#0a0f1c', darkAccent.surface]} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[darkAccent.background, ds.semantic.surface.app, darkAccent.surface]} style={StyleSheet.absoluteFill} />
 
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.headerBar}>
@@ -569,13 +570,13 @@ const styles = StyleSheet.create({
   sliderLabel: { ...typography.caption, color: darkAccent.textMuted },
 
   input: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderRadius: radius.lg,
     padding: spacing[3],
     color: darkAccent.text,
     ...typography.body,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
   },
   journalInput: {
     minHeight: 120,
@@ -586,7 +587,7 @@ const styles = StyleSheet.create({
     width: 160,
     height: 160,
     borderRadius: 80,
-    backgroundColor: 'rgba(251,191,36,0.1)',
+    backgroundColor: ds.colors.warningMuted,
     borderWidth: 4,
     borderColor: darkAccent.warning,
     alignItems: 'center',
@@ -600,7 +601,7 @@ const styles = StyleSheet.create({
   },
 
   tipsContainer: {
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: radius.lg,
     padding: spacing[4],
     marginBottom: spacing[4],
@@ -631,9 +632,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[3],
     paddingVertical: spacing[2],
     borderRadius: radius.full,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
   },
   emotionChipSelected: {
     backgroundColor: darkAccent.primary,
@@ -650,7 +651,7 @@ const styles = StyleSheet.create({
   },
 
   sponsorCard: {
-    backgroundColor: 'rgba(52,211,153,0.1)',
+    backgroundColor: ds.colors.successMuted,
     borderRadius: radius.lg,
     padding: spacing[4],
     marginBottom: spacing[6],
@@ -675,7 +676,7 @@ const styles = StyleSheet.create({
   contactButtonText: { ...typography.body, color: '#fff', fontWeight: '600' },
 
   noSponsorCard: {
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderRadius: radius.lg,
     padding: spacing[4],
     marginBottom: spacing[6],
@@ -686,9 +687,9 @@ const styles = StyleSheet.create({
   usedButton: {
     padding: spacing[3],
     borderRadius: radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: ds.semantic.surface.interactive,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: ds.colors.borderSubtle,
     alignItems: 'center',
   },
   usedButtonText: { ...typography.body, color: darkAccent.textMuted },

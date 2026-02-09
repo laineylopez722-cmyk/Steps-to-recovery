@@ -9,6 +9,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import type { SharedEntryView } from '../hooks/useSponsorSharedEntries';
 
 interface SharedEntryCardProps {
@@ -46,7 +47,7 @@ export function SharedEntryCard({
 
   const getMoodColor = (mood: number | null) => {
     if (!mood) return darkAccent.textSubtle;
-    const colors = ['#EF4444', '#F59E0B', '#6B7280', '#10B981', '#3B82F6'];
+    const colors = [ds.semantic.intent.alert.solid, ds.colors.warning, ds.colors.textTertiary, ds.colors.success, ds.colors.info];
     return colors[mood - 1] || darkAccent.textSubtle;
   };
 
@@ -98,7 +99,7 @@ export function SharedEntryCard({
 
             {entry.craving !== null && entry.craving > 3 && (
               <View style={[styles.cravingChip, styles.highCraving]}>
-                <MaterialIcons name="warning" size={14} color="#F59E0B" />
+                <MaterialIcons name="warning" size={14} color={ds.colors.warning} />
                 <Text style={styles.cravingText}>High Craving</Text>
               </View>
             )}
@@ -188,11 +189,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   highCraving: {
-    backgroundColor: '#F59E0B15',
+    backgroundColor: ds.colors.warningMuted,
   },
   cravingText: {
     ...typography.caption,
-    color: '#F59E0B',
+    color: ds.colors.warning,
     fontWeight: '600',
   },
   tagContainer: {

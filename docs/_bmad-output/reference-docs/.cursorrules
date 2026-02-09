@@ -1,0 +1,337 @@
+# Cursor Rules for 12-Step Recovery Companion
+
+## Project Overview
+
+This is a **privacy-first 12-step recovery companion mobile app** built with React Native (Expo SDK 54+). All sensitive data is encrypted and stored on-device only. Zero server telemetry.
+
+## Tech Stack (LOCKED — Do Not Deviate)
+
+```yaml
+Framework: React Native 0.81+ via Expo SDK 54
+Language: TypeScript (strict mode, no any)
+Navigation: expo-router v6 (file-based routing)
+State Management: Zustand v5
+Async State: TanStack Query v5
+Database: expo-sqlite (encrypted content)
+Encryption: expo-crypto + expo-secure-store
+Auth: Local biometric only (expo-local-authentication)
+UI Framework: NativeWind v4 (TailwindCSS for RN)
+Notifications: expo-notifications (local only)
+Audio: expo-av (voice journals)
+Build: EAS Build
+```
+
+## Directory Structure
+
+```
+/app                     # expo-router file-based routing
+  /_layout.tsx           # Root layout (providers, auth gate)
+  /(auth)/               # Auth screens (lock, onboarding)
+  /(tabs)/               # Main tab screens
+  /[feature]/            # Feature-specific screens
+  
+/components              # Reusable UI components
+  /common/               # Shared patterns (ErrorBoundary, LoadingState, CrisisButton)
+  /ui/                   # Design system primitives (Button, Card, Input)
+  /[feature]/            # Feature-specific components
+  
+/lib                     # Core logic
+  /constants/            # Static data (prompts, readings, design tokens)
+  /db/                   # Database client and models
+  /encryption/           # Crypto operations
+  /hooks/                # Custom React hooks
+  /store/                # Zustand stores
+  /notifications/        # Notification utilities
+  /utils/                # Helper functions
+  /types.ts              # Shared TypeScript types
+```
+
+## Code Style & Conventions
+
+### TypeScript
+- Strict mode enabled, NO `any` types
+- Use explicit return types on functions
+- Prefer interfaces over types for object shapes
+- Use type imports: `import type { X } from 'module'`
+- Define DB types with snake_case (e.g., `DbJournalEntry`) and app types with camelCase
+
+### Component Patterns
+
+```typescript
+/**
+ * ComponentName
+ * Brief description of purpose
+ * Any performance notes (e.g., Memoized for FlatList)
+ */
+
+import React, { memo, useCallback } from 'react';
+import { View, Text } from 'react-native';
+
+interface ComponentNameProps {
+  // Props with JSDoc comments for complex ones
+}
+
+function ComponentNameComponent({ prop1, prop2 }: ComponentNameProps) {
+  // Use useCallback for handlers passed to children
+  const handleAction = useCallback(() => {
+    // implementation
+  }, [dependencies]);
+
+  return (
+    <View className="flex-1">
+      {/* NativeWind classes for styling */}
+    </View>
+  );
+}
+
+// Memoize list item components for FlatList performance
+export const ComponentName = memo(ComponentNameComponent);
+```
+
+### Styling with NativeWind
+- Use Tailwind classes via `className` prop
+- Always support dark mode: `bg-white dark:bg-surface-800`
+- Use design token colors: `primary-*`, `secondary-*`, `surface-*`, `accent-*`
+- Follow 8px grid spacing: `p-4` (16px), `gap-3` (12px), `mb-6` (24px)
+- Touch targets minimum 44px: use `p-3` or `min-h-[44px]`
+
+### Color Palette
+```
+primary-*    # Blue (trust, calm, recovery) - main actions
+secondary-*  # Green (growth, healing) - success states  
+accent-*     # Warm yellow - highlights
+surface-*    # Neutral grays - backgrounds
+```
+
+### Zustand Stores
+
+```typescript
+/**
+ * Store Name
+ * Brief description
+ */
+
+import { create } from 'zustand';
+
+interface StoreNameState {
+  // State properties
+  items: Item[];
+  isLoading: boolean;
+  error: string | null;
+  
+  // Actions
+  loadItems: () => Promise<void>;
+  addItem: (item: Item) => Promise<void>;
+}
+
+export const useStoreNameStore = create<StoreNameState>((set, get) => ({
+  items: [],
+  isLoading: false,
+  error: null,
+
+  loadItems: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const items = await db.getItems();
+      set({ items, isLoading: false });
+    } catch (error) {
+      set({ error: 'Failed to load items', isLoading: false });
+    }
+  },
+}));
+```
+
+### Custom Hooks
+
+```typescript
+/**
+ * Hook Name
+ * Brief description of functionality
+ */
+
+import { useEffect, useCallback } from 'react';
+import { useStoreNameStore } from '../store';
+
+export function useHookName() {
+  const { items, loadItems, isLoading, error } = useStoreNameStore();
+
+  // Load data on mount
+  useEffect(() => {
+    loadItems();
+  }, [loadItems]);
+
+  // Helper functions
+  const helperFunction = useCallback((param: Type): ReturnType => {
+    // implementation
+  }, []);
+
+  return {
+    items,
+    isLoading,
+    error,
+    helperFunction,
+  };
+}
+```
+
+## Privacy Requirements (Non-Negotiable)
+
+- ALL journal content encrypted via expo-crypto
+- Encryption keys protected by biometrics (expo-secure-store)
+- NO server-side storage of ANY user content
+- NO analytics without explicit consent
+- NO required account creation
+- Full offline functionality
+- Data export capability (user owns their data)
+- Complete data deletion option
+
+## UX Guidelines
+
+### Anti-Patterns to AVOID
+- ❌ Shame-based messaging after relapse
+- ❌ "Streak lost" punitive UI
+- ❌ Required social features
+- ❌ Aggressive notification nagging
+- ❌ Gamification that trivializes recovery
+- ❌ Generic motivational quotes over personal content
+- ❌ Comparison to other users
+
+### Patterns to EMBRACE
+- ✅ "Progress not perfection" messaging
+- ✅ Celebrate total sober days (not just current streak)
+- ✅ Compassionate relapse handling
+- ✅ Personal motivation over generic content
+- ✅ User controls notification frequency
+- ✅ Meaningful achievements (not badges)
+- ✅ Reflection over gamification
+
+## Accessibility Requirements
+
+- All interactive elements need `accessibilityLabel` and `accessibilityRole`
+- Minimum touch targets: 44x44 pixels
+- Support screen readers (TalkBack/VoiceOver)
+- High contrast color combinations
+- Clear focus indicators
+- Meaningful error messages
+
+```typescript
+<TouchableOpacity
+  onPress={handleAction}
+  accessibilityRole="button"
+  accessibilityLabel="Call sponsor"
+  accessibilityHint="Opens phone dialer to call your sponsor"
+  className="min-h-[44px] min-w-[44px]"
+>
+```
+
+## Database Patterns
+
+### Type Conversions
+- DB uses snake_case: `created_at`, `mood_before`
+- App uses camelCase: `createdAt`, `moodBefore`
+- SQLite booleans are 0/1, convert to boolean in app
+- Dates stored as ISO strings, convert to Date objects
+
+### Encrypted Fields
+Fields marked as `EncryptedString` in types must be:
+- Encrypted before save: `await encrypt(content)`
+- Decrypted after read: `await decrypt(encryptedContent)`
+
+## Testing
+
+- Unit tests for encryption utilities
+- Integration tests for database operations
+- Component tests with React Native Testing Library
+- Mock expo modules in jest.setup.js
+
+## File Naming
+
+- Components: PascalCase (`ContactCard.tsx`)
+- Hooks: camelCase with `use` prefix (`useJournal.ts`)
+- Stores: camelCase with `Store` suffix (`journalStore.ts`)
+- Constants: camelCase (`dailyReadings.ts`)
+- Types: PascalCase for types, `Db` prefix for database types
+
+## Import Order
+
+1. React and React Native
+2. Expo modules
+3. Third-party libraries
+4. Local components (absolute paths via `@/`)
+5. Local hooks and stores
+6. Types (using `import type`)
+
+```typescript
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Card } from '../ui';
+import { useJournal } from '../../lib/hooks';
+import type { JournalEntry } from '../../lib/types';
+```
+
+## Common Patterns
+
+### Loading States
+```typescript
+if (isLoading) {
+  return <LoadingState message="Loading entries..." />;
+}
+```
+
+### Error States
+```typescript
+if (error) {
+  return <EmptyState icon="⚠️" title="Error" message={error} />;
+}
+```
+
+### Empty States
+```typescript
+if (items.length === 0) {
+  return (
+    <EmptyState
+      icon="📝"
+      title="No entries yet"
+      message="Your journal entries will appear here"
+      actionLabel="Write First Entry"
+      onAction={() => router.push('/journal/new')}
+    />
+  );
+}
+```
+
+### Confirmation Dialogs
+```typescript
+const confirmDelete = useCallback(() => {
+  Alert.alert(
+    'Delete Entry',
+    'Are you sure? This cannot be undone.',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: handleDelete },
+    ]
+  );
+}, [handleDelete]);
+```
+
+## Performance Guidelines
+
+- Memoize FlatList item components with `React.memo()`
+- Use `useCallback` for handlers passed as props
+- Avoid inline object/array creation in render
+- Use `keyExtractor` with stable IDs for lists
+- Keep component tree shallow where possible
+
+## Crisis Button
+
+The `CrisisButton` component is a floating action button that appears on all screens. It provides quick access to crisis resources. Never remove or hide this button.
+
+## Notes for AI Assistant
+
+- When generating code, follow the established patterns in the codebase
+- Prioritize user privacy and data security
+- Use compassionate language in user-facing strings
+- Maintain offline-first architecture
+- Test edge cases for encrypted content handling
+- Consider accessibility in all UI decisions

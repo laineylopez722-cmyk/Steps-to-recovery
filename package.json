@@ -50,8 +50,10 @@
   },
   "dependencies": {
     "@react-native/debugger-frontend": "^0.83.1",
+    "audit": "^0.0.6",
     "expo": "~54.0.33",
     "expo-device": "~8.0.10",
+    "fix": "^0.0.6",
     "react": "19.1.0",
     "react-native": "0.81.5"
   }

@@ -65,6 +65,10 @@ function ListItem({
       onPressIn={disabled ? undefined : onPressIn}
       onPressOut={onPressOut}
       disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      accessibilityHint={subtitle || undefined}
+      accessibilityState={{ disabled: !!disabled }}
     >
       <Animated.View style={[styles.listItem, disabled && styles.listItemDisabled, animatedStyle]}>
         <View style={[styles.listItemIcon, { backgroundColor: iconColor ? `${iconColor}20` : ds.semantic.intent.primary.muted }]}>
@@ -227,7 +231,7 @@ export function ProfileScreen(): React.ReactElement {
 
             {/* Sign Out */}
             <Animated.View entering={MotionTransitions.cardEnter(6)}>
-              <Pressable 
+              <Pressable
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
                   setShowSignOutModal(true);
@@ -236,6 +240,9 @@ export function ProfileScreen(): React.ReactElement {
                   styles.signOutButton,
                   pressed && styles.signOutButtonPressed,
                 ]}
+                accessibilityRole="button"
+                accessibilityLabel="Sign out"
+                accessibilityHint="Opens confirmation dialog to sign out of your account"
               >
                 <Text style={styles.signOutText}>Sign Out</Text>
               </Pressable>
@@ -404,7 +411,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(50, 215, 75, 0.2)',
+    backgroundColor: ds.semantic.intent.secondary.subtle,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Button } from '../../../design-system/components/Button';
+import { ds } from '../../../design-system/tokens/ds';
 import type {
   MeetingFilters as MeetingFiltersType,
   DayOfWeek,
@@ -137,7 +138,7 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedDay === day.value ? '#FFFFFF' : theme.colors.text,
+                      color: selectedDay === day.value ? ds.semantic.text.onDark : theme.colors.text,
                     },
                   ]}
                 >
@@ -175,7 +176,7 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedTime === time.value ? '#FFFFFF' : theme.colors.text,
+                      color: selectedTime === time.value ? ds.semantic.text.onDark : theme.colors.text,
                     },
                   ]}
                 >
@@ -214,7 +215,7 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedTypes.includes(type) ? '#FFFFFF' : theme.colors.text,
+                      color: selectedTypes.includes(type) ? ds.semantic.text.onDark : theme.colors.text,
                     },
                   ]}
                 >

@@ -16,6 +16,7 @@ import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import type { RiskPattern } from '../../../services/riskDetectionService';
 import { useNavigation } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
@@ -37,22 +38,22 @@ export interface RiskAlertCardProps {
 
 const SEVERITY_COLORS = {
   low: {
-    background: ['rgba(251, 191, 36, 0.15)', 'rgba(245, 158, 11, 0.10)'],
-    border: 'rgba(251, 191, 36, 0.3)',
-    icon: '#FCD34D',
-    text: '#FDE68A',
+    background: [ds.colors.warningMuted, ds.colors.bgTertiary],
+    border: ds.colors.warning,
+    icon: ds.colors.warning,
+    text: ds.colors.warning,
   },
   medium: {
-    background: ['rgba(251, 146, 60, 0.15)', 'rgba(249, 115, 22, 0.10)'],
-    border: 'rgba(251, 146, 60, 0.3)',
-    icon: '#FB923C',
-    text: '#FED7AA',
+    background: [ds.colors.warningMuted, ds.colors.bgTertiary],
+    border: ds.colors.accent,
+    icon: ds.colors.accent,
+    text: ds.colors.accent,
   },
   high: {
-    background: ['rgba(239, 68, 68, 0.15)', 'rgba(220, 38, 38, 0.10)'],
-    border: 'rgba(239, 68, 68, 0.3)',
-    icon: '#F87171',
-    text: '#FCA5A5',
+    background: [ds.semantic.intent.alert.subtle, ds.colors.bgTertiary],
+    border: ds.semantic.intent.alert.solid,
+    icon: ds.semantic.intent.alert.solid,
+    text: ds.semantic.intent.alert.solid,
   },
 };
 

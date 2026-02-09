@@ -80,7 +80,7 @@ export function DailyReview({ onComplete, date }: DailyReviewProps) {
         value={answers[currentPrompt.key] || ''}
         onChangeText={(v) => setAnswers(prev => ({ ...prev, [currentPrompt.key]: v }))}
         placeholder={currentPrompt.placeholder}
-        placeholderTextColor="#6B7280"
+        placeholderTextColor="#9CA3AF"
         multiline
         className="bg-gray-800 rounded-xl p-4 text-white text-base min-h-[150px] flex-1"
         textAlignVertical="top"

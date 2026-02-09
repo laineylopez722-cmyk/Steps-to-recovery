@@ -60,7 +60,11 @@ function ToggleRow({
         }}
         disabled={disabled}
         trackColor={{ false: ds.colors.bgQuaternary, true: ds.colors.success }}
-        thumbColor="#fff"
+        thumbColor={ds.semantic.text.onDark}
+        accessibilityLabel={label}
+        accessibilityHint={subtitle}
+        accessibilityRole="switch"
+        accessibilityState={{ checked: value, disabled: !!disabled }}
       />
     </View>
   );
@@ -109,7 +113,12 @@ function TimePickerRow({
         <View style={styles.timeInfo}>
           <Text style={styles.timeLabel}>{label}</Text>
           {enabled && (
-            <Pressable onPress={() => setShowPicker(!showPicker)}>
+            <Pressable
+              onPress={() => setShowPicker(!showPicker)}
+              accessibilityRole="button"
+              accessibilityLabel={`Change ${label} time`}
+              accessibilityHint={`Current time is ${formatTime(hour, minute)}`}
+            >
               <Text style={styles.timeValue}>{formatTime(hour, minute)}</Text>
             </Pressable>
           )}
@@ -119,7 +128,11 @@ function TimePickerRow({
           onValueChange={onToggle}
           disabled={disabled}
           trackColor={{ false: ds.colors.bgQuaternary, true: ds.colors.success }}
-          thumbColor="#fff"
+          thumbColor={ds.semantic.text.onDark}
+          accessibilityLabel={`${label} reminder`}
+          accessibilityHint={enabled ? `Enabled at ${formatTime(hour, minute)}` : 'Disabled'}
+          accessibilityRole="switch"
+          accessibilityState={{ checked: enabled, disabled: !!disabled }}
         />
       </View>
 
@@ -132,9 +145,11 @@ function TimePickerRow({
             onChange={handleChange}
           />
           {Platform.OS === 'ios' && (
-            <Pressable 
+            <Pressable
               onPress={() => setShowPicker(false)}
               style={styles.doneBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Done selecting time"
             >
               <Text style={styles.doneBtnText}>Done</Text>
             </Pressable>
@@ -249,7 +264,13 @@ export function NotificationSettingsScreen(): React.ReactElement {
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.backBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            accessibilityHint="Returns to previous screen"
+          >
             <Feather name="chevron-left" size={26} color={ds.colors.textPrimary} />
           </Pressable>
           <Text style={styles.headerTitle}>Notifications</Text>
@@ -326,6 +347,10 @@ export function NotificationSettingsScreen(): React.ReactElement {
                   onPress={applySettings}
                   disabled={isUpdating}
                   style={[styles.applyBtn, isUpdating && styles.applyBtnDisabled]}
+                  accessibilityRole="button"
+                  accessibilityLabel="Apply notification changes"
+                  accessibilityHint="Saves your notification preferences"
+                  accessibilityState={{ disabled: isUpdating }}
                 >
                   <Text style={styles.applyBtnText}>
                     {isUpdating ? 'Updating...' : 'Apply Changes'}
@@ -338,6 +363,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
                 <Pressable
                   onPress={handleSendTest}
                   style={styles.testBtn}
+                  accessibilityRole="button"
+                  accessibilityLabel="Send test notification"
+                  accessibilityHint="Sends a sample notification to preview how reminders will look"
                 >
                   <Text style={styles.testBtnText}>Send Test Notification</Text>
                 </Pressable>
@@ -360,7 +388,13 @@ export function NotificationSettingsScreen(): React.ReactElement {
               <Text style={styles.permissionText}>
                 We'll send reminders for daily check-ins and celebrate your milestones.
               </Text>
-              <Pressable onPress={requestPermissions} style={styles.permissionBtn}>
+              <Pressable
+                onPress={requestPermissions}
+                style={styles.permissionBtn}
+                accessibilityRole="button"
+                accessibilityLabel="Grant notification permission"
+                accessibilityHint="Opens system settings to allow notifications"
+              >
                 <Text style={styles.permissionBtnText}>Grant Permission</Text>
               </Pressable>
             </Animated.View>
@@ -499,7 +533,7 @@ const styles = StyleSheet.create({
   doneBtnText: {
     ...ds.typography.body,
     fontWeight: '600',
-    color: '#000',
+    color: ds.semantic.surface.app,
   },
 
   divider: {
@@ -533,7 +567,7 @@ const styles = StyleSheet.create({
   applyBtnText: {
     ...ds.typography.body,
     fontWeight: '600',
-    color: '#000',
+    color: ds.semantic.surface.app,
   },
   testBtn: {
     backgroundColor: ds.colors.bgTertiary,
@@ -589,6 +623,6 @@ const styles = StyleSheet.create({
   permissionBtnText: {
     ...ds.typography.body,
     fontWeight: '600',
-    color: '#000',
+    color: ds.semantic.surface.app,
   },
 });

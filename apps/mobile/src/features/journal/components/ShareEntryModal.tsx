@@ -19,6 +19,7 @@ import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useSponsorConnections } from '../../sponsor/hooks/useSponsorConnections';
+import { ds } from '../../../design-system/tokens/ds';
 import { useSponsorSharedEntries } from '../../sponsor/hooks/useSponsorSharedEntries';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { JournalEntryDecrypted } from '@recovery/shared';
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: ds.colors.bgOverlay,
   },
   modalContainer: {
     width: '90%',

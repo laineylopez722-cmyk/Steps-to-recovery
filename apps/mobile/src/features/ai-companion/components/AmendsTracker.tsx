@@ -126,7 +126,7 @@ export function AmendsTracker({ entries, onAdd, onUpdate }: AmendsTrackerProps) 
             value={newEntry.who}
             onChangeText={(v) => setNewEntry(p => ({ ...p, who: v }))}
             placeholder="Name"
-            placeholderTextColor="#6B7280"
+            placeholderTextColor="#9CA3AF"
             className="bg-gray-800 rounded-xl p-4 text-white mb-4"
           />
           
@@ -135,7 +135,7 @@ export function AmendsTracker({ entries, onAdd, onUpdate }: AmendsTrackerProps) 
             value={newEntry.harm}
             onChangeText={(v) => setNewEntry(p => ({ ...p, harm: v }))}
             placeholder="Describe the harm..."
-            placeholderTextColor="#6B7280"
+            placeholderTextColor="#9CA3AF"
             multiline
             className="bg-gray-800 rounded-xl p-4 text-white mb-4 min-h-[80px]"
             textAlignVertical="top"

@@ -34,28 +34,23 @@ export function StepQuestionCard({
           style={[
             styles.questionNumber,
             isAnswered
-              ? { backgroundColor: theme.colors.primary }
+              ? { backgroundColor: ds.colors.success }
               : {
-                  backgroundColor: theme.colors.surface,
+                  backgroundColor: ds.colors.bgSecondary,
                   borderWidth: 2,
-                  borderColor: theme.colors.border,
+                  borderColor: ds.colors.borderSubtle,
                 },
           ]}
         >
           {isAnswered ? (
             <MaterialCommunityIcons name="check" size={20} color={ds.semantic.text.onDark} />
           ) : (
-            <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.textSecondary, fontWeight: '600' },
-              ]}
-            >
+            <Text style={[theme.typography.body, { color: ds.colors.textTertiary, fontWeight: '600' }]}>
               {questionNumber}
             </Text>
           )}
         </View>
-        <Text style={[theme.typography.h3, { color: theme.colors.text, flex: 1, lineHeight: 24 }]}> 
+        <Text style={[theme.typography.h3, { color: ds.colors.textPrimary, flex: 1, lineHeight: 24 }]}> 
           {prompt}
         </Text>
       </View>
@@ -97,6 +92,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 16,
     padding: 20,
+    borderWidth: 1,
+    borderColor: ds.colors.borderSubtle,
   },
   questionHeader: {
     flexDirection: 'row',

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Card } from '../../../design-system/components';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { ds } from '../../../design-system/tokens/ds';
 import { categoryColors } from '../../../design-system/tokens/colors';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -103,7 +104,7 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
             accessibilityHint={`Navigate to ${action.title}`}
           >
             <View style={[styles.iconContainer, { backgroundColor: action.color }]}>
-              <MaterialCommunityIcons name={action.icon} size={28} color="#FFFFFF" />
+              <MaterialCommunityIcons name={action.icon} size={28} color={ds.semantic.text.onDark} />
             </View>
             <Text
               style={[

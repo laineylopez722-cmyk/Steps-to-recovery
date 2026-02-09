@@ -15,6 +15,7 @@ import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { darkAccent, gradients, spacing, typography } from '../../../design-system/tokens/modern';
 import { LinearGradient } from 'expo-linear-gradient';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface BiometricPromptProps {
   isVisible: boolean;
@@ -169,7 +170,7 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
 
   return (
     <View style={styles.lockContainer}>
-      <LinearGradient colors={[darkAccent.background, '#0a0f1c']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={[darkAccent.background, ds.colors.bgTertiary]} style={StyleSheet.absoluteFill} />
       <View style={styles.lockContent}>
         <View style={styles.appIcon}>
           <LinearGradient colors={gradients.primary} style={styles.appIconGradient}>
@@ -203,7 +204,7 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: ds.colors.bgOverlay,
     zIndex: 1000,
     justifyContent: 'center',
     alignItems: 'center',

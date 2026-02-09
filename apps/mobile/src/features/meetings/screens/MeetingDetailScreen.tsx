@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, Alert, Pressable, Linking, Share } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { ds } from '../../../design-system/tokens/ds';
 import { Button } from '../../../design-system/components/Button';
 import { Badge } from '../../../design-system/components/Badge';
 import { TextArea } from '../../../design-system/components/TextArea';
@@ -176,7 +177,10 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
         <Text style={[theme.typography.h1, { color: theme.colors.text, flex: 1 }]}>{meetingName}</Text>
         <Pressable
           onPress={() => void handleToggleFavorite()}
+          accessibilityRole="button"
           accessibilityLabel={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+          accessibilityHint={isFavorited ? 'Removes this meeting from your favorites list' : 'Adds this meeting to your favorites list'}
+          accessibilityState={{ selected: isFavorited }}
           style={({ pressed }) => [
             styles.favoriteIconButton,
             {
@@ -189,16 +193,28 @@ export function MeetingDetailScreen({ route }: MeetingDetailScreenProps): React.
           <MaterialIcons
             name={isFavorited ? 'favorite' : 'favorite-border'}
             size={22}
-            color={isFavorited ? '#FFFFFF' : theme.colors.text}
+            color={isFavorited ? ds.semantic.text.onDark : theme.colors.text}
           />
         </Pressable>
       </View>
 
       <View style={styles.actionRow}>
-        <Button variant="primary" onPress={() => void handleOpenDirections()} style={styles.actionButton}>
+        <Button
+          variant="primary"
+          onPress={() => void handleOpenDirections()}
+          style={styles.actionButton}
+          accessibilityLabel="Get directions"
+          accessibilityHint="Opens maps with directions to this meeting location"
+        >
           Directions
         </Button>
-        <Button variant="outline" onPress={() => void handleShareMeeting()} style={styles.actionButton}>
+        <Button
+          variant="outline"
+          onPress={() => void handleShareMeeting()}
+          style={styles.actionButton}
+          accessibilityLabel="Share meeting"
+          accessibilityHint="Opens share sheet to share meeting details with others"
+        >
           Share
         </Button>
       </View>

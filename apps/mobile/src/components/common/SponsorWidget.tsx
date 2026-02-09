@@ -17,6 +17,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useContacts } from '../../hooks/useContacts';
+import { ds } from '../../design-system/tokens/ds';
 import { usePhoneCalls } from '../../hooks/usePhoneCalls';
 import { sendSOSMessage, makePhoneCall, openMessagingApp, SOS_MESSAGE } from '@recovery/shared';
 import { logger } from '../../utils/logger';
@@ -127,17 +128,17 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
   };
 
   const getContactUrgencyColor = () => {
-    if (daysSinceContact === null) return '#64748b';
-    if (daysSinceContact <= 3) return '#22c55e'; // green
-    if (daysSinceContact <= 7) return '#f59e0b'; // amber
-    return '#ef4444'; // red
+    if (daysSinceContact === null) return ds.colors.textSecondary;
+    if (daysSinceContact <= 3) return ds.colors.success; // green
+    if (daysSinceContact <= 7) return ds.colors.warning; // amber
+    return ds.semantic.intent.alert.solid; // red
   };
 
   const getContactUrgencyBg = () => {
-    if (daysSinceContact === null) return 'rgba(100, 116, 139, 0.2)';
-    if (daysSinceContact <= 3) return 'rgba(34, 197, 94, 0.2)';
-    if (daysSinceContact <= 7) return 'rgba(245, 158, 11, 0.2)';
-    return 'rgba(239, 68, 68, 0.2)';
+    if (daysSinceContact === null) return ds.colors.bgTertiary;
+    if (daysSinceContact <= 3) return ds.colors.successMuted;
+    if (daysSinceContact <= 7) return ds.colors.warningMuted;
+    return ds.semantic.intent.alert.subtle;
   };
 
   // Loading skeleton
@@ -167,7 +168,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
           <GlassCard gradient="card" style={[styles.card, styles.emptyCard]}>
             <View style={styles.emptyContent}>
               <View style={styles.emptyIconContainer}>
-                <Feather name="user-plus" size={24} color="#f59e0b" />
+                <Feather name="user-plus" size={24} color={ds.colors.warning} />
               </View>
               <Text style={styles.emptyTitle}>Add Your Sponsor</Text>
               <Text style={styles.emptySubtitle}>
@@ -207,7 +208,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
                 accessibilityLabel={`Call ${sponsor.name}`}
                 accessibilityHint="Initiates phone call"
               >
-                <Feather name="phone" size={18} color="#ffffff" />
+                <Feather name="phone" size={18} color={ds.semantic.text.onDark} />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleSOS}
@@ -216,7 +217,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
                 accessibilityLabel="Send SOS message to sponsor"
                 accessibilityHint={`Sends: ${SOS_MESSAGE}`}
               >
-                <Feather name="alert-circle" size={18} color="#ef4444" />
+                <Feather name="alert-circle" size={18} color={ds.semantic.intent.alert.solid} />
               </TouchableOpacity>
             </View>
           </View>
@@ -251,7 +252,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
             accessibilityLabel={`Call ${sponsor.name}`}
             accessibilityHint="Initiates phone call"
           >
-            <Feather name="phone" size={18} color="#ffffff" />
+            <Feather name="phone" size={18} color={ds.semantic.text.onDark} />
             <Text style={styles.mainButtonText}>Call</Text>
           </TouchableOpacity>
 
@@ -262,7 +263,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
             accessibilityLabel={`Text ${sponsor.name}`}
             accessibilityHint="Opens messaging app"
           >
-            <Feather name="message-circle" size={18} color="#ffffff" />
+            <Feather name="message-circle" size={18} color={ds.semantic.text.onDark} />
             <Text style={styles.mainButtonText}>Text</Text>
           </TouchableOpacity>
         </View>
@@ -275,7 +276,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
           accessibilityLabel="Send SOS message to sponsor"
           accessibilityHint={`Sends: ${SOS_MESSAGE}`}
         >
-          <Feather name="alert-circle" size={18} color="#ef4444" />
+          <Feather name="alert-circle" size={18} color={ds.semantic.intent.alert.solid} />
           <Text style={styles.sosButtonText}>SOS - I need to talk</Text>
         </TouchableOpacity>
 
@@ -295,7 +296,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   emptyCard: {
-    borderColor: 'rgba(245, 158, 11, 0.3)',
+    borderColor: ds.colors.warning,
     borderWidth: 1,
   },
   skeleton: {
@@ -307,14 +308,14 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     marginRight: 12,
   },
   skeletonText: {
     flex: 1,
     height: 20,
     borderRadius: 4,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
   },
   emptyContent: {
     alignItems: 'center',
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -332,23 +333,23 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
   },
   addButtonText: {
-    color: '#fbbf24',
+    color: ds.colors.warning,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -376,7 +377,7 @@ const styles = StyleSheet.create({
   compactName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   compactStatus: {
     fontSize: 12,
@@ -394,10 +395,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   callButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
   },
   sosButton: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    backgroundColor: ds.semantic.intent.alert.subtle,
   },
   header: {
     flexDirection: 'row',
@@ -409,7 +410,7 @@ const styles = StyleSheet.create({
   },
   headerLabel: {
     fontSize: 12,
-    color: '#fbbf24',
+    color: ds.colors.warning,
     fontWeight: '600',
     textTransform: 'uppercase',
     letterSpacing: 0.5,
@@ -417,7 +418,7 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginTop: 2,
   },
   headerStatus: {
@@ -439,13 +440,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   callMainButton: {
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
   },
   textButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: ds.colors.info,
   },
   mainButtonText: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -453,21 +454,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    backgroundColor: ds.semantic.intent.alert.subtle,
     borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
+    borderColor: ds.semantic.intent.alert.solid,
     paddingVertical: 12,
     borderRadius: 12,
     gap: 8,
   },
   sosButtonText: {
-    color: '#ef4444',
+    color: ds.semantic.intent.alert.solid,
     fontSize: 16,
     fontWeight: '600',
   },
   helpText: {
     fontSize: 12,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textAlign: 'center',
     marginTop: 12,
   },

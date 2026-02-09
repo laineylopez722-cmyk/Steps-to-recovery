@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   // Modal
   modalBg: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.85)',
+    backgroundColor: ds.colors.bgOverlay,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -16,7 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useTheme, Button, BreathingCircle, GlassCard } from '../../../design-system';
-import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
 import { hapticSelection } from '../../../utils/haptics';
 import { useNavigation } from '@react-navigation/native';
@@ -92,7 +92,6 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
         <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
-        accessibilityRole="scrollbar"
         accessibilityLabel="Emergency support resources"
         showsVerticalScrollIndicator={false}
       >
@@ -271,7 +270,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                   variant="danger"
                   size="large"
                   fullWidth
-                  icon={<MaterialCommunityIcons name="pause-circle" size={20} color="#FFFFFF" />}
+                  icon={<MaterialCommunityIcons name="pause-circle" size={20} color={ds.semantic.text.onDark} />}
                   accessibilityLabel="Start crisis checkpoint"
                   accessibilityHint="Opens the Before You Use crisis intervention flow"
                 />

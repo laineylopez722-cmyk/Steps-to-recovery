@@ -20,6 +20,7 @@ import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RegularMeeting, RegularMeetingType } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
+import { ds } from '../../design-system/tokens/ds';
 
 interface MeetingCardProps {
   meeting: RegularMeeting;
@@ -56,13 +57,13 @@ function getTypeIcon(type: RegularMeetingType): React.ComponentProps<typeof Feat
 function getTypeColor(type: RegularMeetingType): string {
   switch (type) {
     case 'in-person':
-      return '#22c55e';
+      return ds.colors.success;
     case 'online':
-      return '#3b82f6';
+      return ds.colors.info;
     case 'hybrid':
-      return '#8b5cf6';
+      return ds.colors.accent;
     default:
-      return '#22c55e';
+      return ds.colors.success;
   }
 }
 
@@ -139,7 +140,7 @@ function MeetingCardComponent({
           activeOpacity={0.8}
         >
           <View style={styles.compactContent}>
-            <View style={[styles.typeIconContainer, { backgroundColor: `${typeColor}20` }]}>
+            <View style={[styles.typeIconContainer, meeting.type === 'in-person' ? styles.typeIconInPerson : meeting.type === 'online' ? styles.typeIconOnline : styles.typeIconHybrid]}>
               <Feather name={typeIcon} size={18} color={typeColor} />
             </View>
             <View style={styles.compactInfo}>
@@ -185,7 +186,7 @@ function MeetingCardComponent({
           {/* Header Row */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <View style={[styles.iconContainer, { backgroundColor: `${typeColor}20` }]}>
+              <View style={[styles.iconContainer, meeting.type === 'in-person' ? styles.iconInPerson : meeting.type === 'online' ? styles.iconOnline : styles.iconHybrid]}>
                 <Feather name={typeIcon} size={20} color={typeColor} />
               </View>
               <View style={styles.headerInfo}>
@@ -195,7 +196,7 @@ function MeetingCardComponent({
                   </Text>
                   {meeting.isHomeGroup && (
                     <View style={styles.homeGroupBadge}>
-                      <Feather name="home" size={10} color="#f59e0b" />
+                      <Feather name="home" size={10} color={ds.colors.warning} />
                       <Text style={styles.homeGroupText}>Home</Text>
                     </View>
                   )}
@@ -216,7 +217,7 @@ function MeetingCardComponent({
           {/* Details */}
           <View style={styles.details}>
             <View style={styles.detailRow}>
-              <Feather name="clock" size={14} color="#64748b" style={styles.detailIcon} />
+              <Feather name="clock" size={14} color={ds.colors.textSecondary} style={styles.detailIcon} />
               <Text style={styles.detailLabel}>When</Text>
               <Text style={styles.detailValue}>
                 {DAY_NAMES[meeting.dayOfWeek]} at {formatTime(meeting.time)}
@@ -225,7 +226,7 @@ function MeetingCardComponent({
 
             {meeting.location && (
               <View style={styles.detailRow}>
-                <Feather name="map-pin" size={14} color="#64748b" style={styles.detailIcon} />
+                <Feather name="map-pin" size={14} color={ds.colors.textSecondary} style={styles.detailIcon} />
                 <Text style={styles.detailLabel}>Where</Text>
                 <Text style={styles.detailValue} numberOfLines={1}>
                   {meeting.location}
@@ -238,7 +239,7 @@ function MeetingCardComponent({
           {onToggleReminder && (
             <View style={styles.reminderContainer}>
               <View style={styles.reminderLeft}>
-                <Feather name="bell" size={16} color="#64748b" />
+                <Feather name="bell" size={16} color={ds.colors.textSecondary} />
                 <Text style={styles.reminderText}>
                   Reminder ({meeting.reminderMinutesBefore} min before)
                 </Text>
@@ -246,8 +247,8 @@ function MeetingCardComponent({
               <Switch
                 value={meeting.reminderEnabled}
                 onValueChange={handleToggleReminder}
-                trackColor={{ false: 'rgba(100, 116, 139, 0.3)', true: 'rgba(59, 130, 246, 0.3)' }}
-                thumbColor={meeting.reminderEnabled ? '#3b82f6' : '#64748b'}
+                trackColor={{ false: ds.colors.bgTertiary, true: ds.colors.bgSecondary }}
+                thumbColor={meeting.reminderEnabled ? ds.colors.info : ds.colors.textSecondary}
                 accessibilityLabel={`Toggle reminder for ${meeting.name}`}
                 accessibilityHint={`Sets a reminder ${meeting.reminderMinutesBefore} minutes before the meeting`}
                 accessibilityRole="switch"
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(51, 65, 85, 0.5)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 12,
     padding: 12,
     marginHorizontal: 16,
@@ -302,6 +303,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 12,
   },
+  typeIconInPerson: {
+    backgroundColor: ds.colors.successMuted,
+  },
+  typeIconOnline: {
+    backgroundColor: ds.colors.bgSecondary,
+  },
+  typeIconHybrid: {
+    backgroundColor: ds.colors.bgSecondary,
+  },
   compactInfo: {
     flex: 1,
   },
@@ -313,11 +323,11 @@ const styles = StyleSheet.create({
   compactName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     flex: 1,
   },
   homeBadge: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -325,30 +335,30 @@ const styles = StyleSheet.create({
   homeBadgeText: {
     fontSize: 10,
     fontWeight: '500',
-    color: '#fbbf24',
+    color: ds.colors.warning,
   },
   compactMeta: {
     fontSize: 13,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   daysBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
     marginLeft: 8,
   },
   daysBadgeToday: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: ds.colors.successMuted,
   },
   daysText: {
     fontSize: 12,
     fontWeight: '500',
-    color: '#60a5fa',
+    color: ds.colors.info,
   },
   daysTextToday: {
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   header: {
     flexDirection: 'row',
@@ -369,6 +379,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 12,
   },
+  iconInPerson: {
+    backgroundColor: ds.colors.successMuted,
+  },
+  iconOnline: {
+    backgroundColor: ds.colors.bgSecondary,
+  },
+  iconHybrid: {
+    backgroundColor: ds.colors.bgSecondary,
+  },
   headerInfo: {
     flex: 1,
   },
@@ -380,13 +399,13 @@ const styles = StyleSheet.create({
   meetingName: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     flex: 1,
   },
   homeGroupBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
@@ -395,30 +414,30 @@ const styles = StyleSheet.create({
   homeGroupText: {
     fontSize: 11,
     fontWeight: '500',
-    color: '#fbbf24',
+    color: ds.colors.warning,
   },
   typeLabel: {
     fontSize: 13,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     marginTop: 2,
   },
   daysUntilBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
     marginLeft: 8,
   },
   daysUntilBadgeToday: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: ds.colors.successMuted,
   },
   daysUntilText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#60a5fa',
+    color: ds.colors.info,
   },
   daysUntilTextToday: {
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   details: {
     marginLeft: 56,
@@ -439,7 +458,7 @@ const styles = StyleSheet.create({
   },
   detailValue: {
     fontSize: 14,
-    color: '#e2e8f0',
+    color: ds.colors.text,
     fontWeight: '500',
     flex: 1,
   },
@@ -450,7 +469,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(51, 65, 85, 0.5)',
+    borderTopColor: ds.colors.borderSubtle,
   },
   reminderLeft: {
     flexDirection: 'row',
@@ -459,6 +478,6 @@ const styles = StyleSheet.create({
   },
   reminderText: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
   },
 });

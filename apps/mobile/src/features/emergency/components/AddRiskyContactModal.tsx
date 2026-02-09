@@ -20,6 +20,7 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Card, useTheme } from '../../../design-system';
 import { hapticSelection, hapticSuccess, hapticWarning } from '../../../utils/haptics';
+import { ds } from '../../../design-system/tokens/ds';
 import type { RelationshipType } from '../hooks';
 
 interface AddRiskyContactModalProps {
@@ -407,7 +408,7 @@ export function AddRiskyContactModal({
             size="large"
             fullWidth
             disabled={isSubmitting}
-            icon={<MaterialCommunityIcons name="shield-plus" size={20} color="#FFFFFF" />}
+            icon={<MaterialCommunityIcons name="shield-plus" size={20} color={ds.semantic.text.onDark} />}
           />
         </View>
       </KeyboardAvoidingView>

@@ -81,11 +81,12 @@ export function useTodayCheckIns(userId: string): {
   isLoading: boolean;
   error: Error | null;
   isFetching: boolean;
+  refetch: () => Promise<unknown>;
 } {
   const { db, isReady } = useDatabase();
   const today = new Date().toISOString().split('T')[0];
 
-  const { data, isLoading, error, isFetching } = useQuery({
+  const { data, isLoading, error, isFetching, refetch } = useQuery({
     queryKey: checkInKeys.today(userId),
     queryFn: async (): Promise<TodayCheckInsResult> => {
       if (!db || !isReady) {
@@ -120,6 +121,7 @@ export function useTodayCheckIns(userId: string): {
     isLoading,
     error: error as Error | null,
     isFetching,
+    refetch,
   };
 }
 

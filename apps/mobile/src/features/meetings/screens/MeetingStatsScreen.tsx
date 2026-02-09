@@ -12,6 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
+import { ds } from '../../../design-system/tokens/ds';
 import { useMeetingCheckIns } from '../hooks/useMeetingCheckIns';
 import { useAchievements } from '../hooks/useAchievements';
 import { use90In90Progress, get90In90MotivationalMessage } from '../hooks/use90In90Progress';
@@ -114,12 +115,12 @@ export function MeetingStatsScreen(): React.ReactElement {
             {/* Total Meetings */}
             <GlassCard style={styles.statCard}>
               <LinearGradient
-                colors={['#3B82F6', '#2563EB']}
+                colors={[ds.colors.info, ds.semantic.intent.primary.solid]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
               >
-                <MaterialIcons name="event-available" size={24} color="#FFFFFF" />
+                <MaterialIcons name="event-available" size={24} color={ds.semantic.text.onDark} />
               </LinearGradient>
               <Text style={styles.statValue}>{totalMeetings}</Text>
               <Text style={styles.statLabel}>Total Meetings</Text>
@@ -128,12 +129,12 @@ export function MeetingStatsScreen(): React.ReactElement {
             {/* Current Streak */}
             <GlassCard style={styles.statCard}>
               <LinearGradient
-                colors={['#F59E0B', '#D97706']}
+                colors={[ds.colors.warning, ds.semantic.intent.secondary.solid]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
               >
-                <MaterialIcons name="local-fire-department" size={24} color="#FFFFFF" />
+                <MaterialIcons name="local-fire-department" size={24} color={ds.semantic.text.onDark} />
               </LinearGradient>
               <Text style={styles.statValue}>{currentStreak}</Text>
               <Text style={styles.statLabel}>Day Streak</Text>
@@ -142,12 +143,12 @@ export function MeetingStatsScreen(): React.ReactElement {
             {/* Longest Streak */}
             <GlassCard style={styles.statCard}>
               <LinearGradient
-                colors={['#8B5CF6', '#7C3AED']}
+                colors={[ds.colors.accent, ds.semantic.intent.primary.solid]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
               >
-                <MaterialIcons name="emoji-events" size={24} color="#FFFFFF" />
+                <MaterialIcons name="emoji-events" size={24} color={ds.semantic.text.onDark} />
               </LinearGradient>
               <Text style={styles.statValue}>{longestStreak}</Text>
               <Text style={styles.statLabel}>Best Streak</Text>
@@ -158,7 +159,7 @@ export function MeetingStatsScreen(): React.ReactElement {
           <Animated.View entering={FadeInUp.delay(200)}>
             <GlassCard style={styles.ninetyCard}>
               <View style={styles.ninetyHeader}>
-                <MaterialIcons name="star" size={32} color="#8B5CF6" />
+                <MaterialIcons name="star" size={32} color={ds.colors.accent} />
                 <View style={styles.ninetyTitleContainer}>
                   <Text style={styles.ninetyTitle}>90 in 90 Challenge</Text>
                   <Text style={styles.ninetySubtitle}>{motivationalMessage}</Text>
@@ -186,17 +187,17 @@ export function MeetingStatsScreen(): React.ReactElement {
               <View style={styles.statusBadges}>
                 {ninetyInNinetyProgress.isComplete ? (
                   <View style={[styles.statusBadge, styles.completeBadge]}>
-                    <MaterialIcons name="check-circle" size={16} color="#10B981" />
+                    <MaterialIcons name="check-circle" size={16} color={ds.colors.success} />
                     <Text style={styles.completeBadgeText}>Complete! 🎉</Text>
                   </View>
                 ) : isOnTrack ? (
                   <View style={[styles.statusBadge, styles.onTrackBadge]}>
-                    <MaterialIcons name="trending-up" size={16} color="#10B981" />
+                    <MaterialIcons name="trending-up" size={16} color={ds.colors.success} />
                     <Text style={styles.onTrackBadgeText}>On Track!</Text>
                   </View>
                 ) : (
                   <View style={[styles.statusBadge, styles.behindBadge]}>
-                    <MaterialIcons name="schedule" size={16} color="#F59E0B" />
+                    <MaterialIcons name="schedule" size={16} color={ds.colors.warning} />
                     <Text style={styles.behindBadgeText}>Keep Going!</Text>
                   </View>
                 )}
@@ -248,7 +249,7 @@ export function MeetingStatsScreen(): React.ReactElement {
                   />
                   {achievement.unlocked && (
                     <View style={styles.achievementBadge}>
-                      <MaterialIcons name="check" size={12} color="#FFFFFF" />
+                      <MaterialIcons name="check" size={12} color={ds.semantic.text.onDark} />
                     </View>
                   )}
                   {!achievement.unlocked && (
@@ -284,7 +285,7 @@ export function MeetingStatsScreen(): React.ReactElement {
               checkIns.slice(0, 10).map((checkIn) => (
                 <GlassCard key={checkIn.id} style={styles.checkInCard}>
                   <View style={styles.checkInIcon}>
-                    <MaterialIcons name="check-circle" size={20} color="#10B981" />
+                    <MaterialIcons name="check-circle" size={20} color={ds.colors.success} />
                   </View>
                   <View style={styles.checkInContent}>
                     <Text style={styles.checkInName}>{checkIn.meetingName}</Text>
@@ -432,27 +433,27 @@ const styles = StyleSheet.create({
     borderRadius: radius.full,
   },
   completeBadge: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: ds.colors.successMuted,
   },
   completeBadgeText: {
     ...typography.caption,
-    color: '#10B981',
+    color: ds.colors.success,
     fontWeight: '600',
   },
   onTrackBadge: {
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: ds.colors.successMuted,
   },
   onTrackBadgeText: {
     ...typography.caption,
-    color: '#10B981',
+    color: ds.colors.success,
     fontWeight: '600',
   },
   behindBadge: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
   },
   behindBadgeText: {
     ...typography.caption,
-    color: '#F59E0B',
+    color: ds.colors.warning,
     fontWeight: '600',
   },
   startDateText: {
@@ -502,7 +503,7 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#10B981',
+    backgroundColor: ds.colors.success,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -542,7 +543,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    backgroundColor: ds.colors.successMuted,
     justifyContent: 'center',
     alignItems: 'center',
   },

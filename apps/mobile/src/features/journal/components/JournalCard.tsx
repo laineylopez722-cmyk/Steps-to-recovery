@@ -3,6 +3,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { JournalEntryDecrypted } from '@recovery/shared';
 import { useTheme, Card, Badge } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 
 // Constants
 const MAX_BODY_LENGTH = 100;
@@ -130,7 +131,7 @@ export function JournalCard({
               accessibilityLabel={`Craving level: ${entry.craving} out of 10`}
               accessibilityRole="text"
             >
-              <Text style={[styles.cravingText, { color: theme.colors.textInverse || '#FFFFFF' }]}>
+              <Text style={[styles.cravingText, { color: theme.colors.textInverse || ds.semantic.text.onDark }]}>
                 {entry.craving}
               </Text>
             </View>

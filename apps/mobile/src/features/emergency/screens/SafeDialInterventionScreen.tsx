@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut, SlideInDown } from 'react-native-reanimated';
 import { useTheme, Button } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 import { hapticWarning, hapticSuccess, hapticImpact } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -271,17 +272,17 @@ export function SafeDialInterventionScreen({
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <MaterialCommunityIcons name="hand-back-right" size={120} color="#FFFFFF" />
+          <MaterialCommunityIcons name="hand-back-right" size={120} color={ds.semantic.text.onDark} />
 
-          <Text style={[styles.bigText, { color: '#FFFFFF', marginTop: 32 }]}>STOP</Text>
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: 32 }]}>STOP</Text>
 
           <Text
-            style={[styles.mediumText, { color: '#FFFFFF', marginTop: 24, textAlign: 'center' }]}
+            style={[styles.mediumText, { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' }]}
           >
             Are you sure about this?
           </Text>
 
-          <Text style={[styles.bodyText, { color: '#FFFFFF', marginTop: 16, textAlign: 'center' }]}>
+          <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' }]}>
             You've been clean for {cleanDays} {cleanDays === 1 ? 'day' : 'days'}.{'\n'}
             Don't throw it away.
           </Text>
@@ -292,7 +293,7 @@ export function SafeDialInterventionScreen({
                 key={i}
                 style={[
                   styles.progressDot,
-                  { backgroundColor: i === 0 ? '#FFFFFF' : 'rgba(255,255,255,0.3)' },
+                  { backgroundColor: i === 0 ? ds.semantic.text.onDark : ds.colors.bgTertiary },
                 ]}
               />
             ))}
@@ -310,12 +311,12 @@ export function SafeDialInterventionScreen({
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <Text style={[styles.bigText, { color: '#FFFFFF' }]}>Remember Why You Started</Text>
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark }]}>Remember Why You Started</Text>
 
           <View style={styles.whyContent}>
-            <MaterialCommunityIcons name="heart" size={80} color="#FFFFFF" />
+            <MaterialCommunityIcons name="heart" size={80} color={ds.semantic.text.onDark} />
             <Text
-              style={[styles.bodyText, { color: '#FFFFFF', marginTop: 24, textAlign: 'center' }]}
+              style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' }]}
             >
               {whyText}
             </Text>
@@ -327,7 +328,7 @@ export function SafeDialInterventionScreen({
                 key={i}
                 style={[
                   styles.progressDot,
-                  { backgroundColor: i === 1 ? '#FFFFFF' : 'rgba(255,255,255,0.3)' },
+                  { backgroundColor: i === 1 ? ds.semantic.text.onDark : ds.colors.bgTertiary },
                 ]}
               />
             ))}
@@ -502,13 +503,13 @@ export function SafeDialInterventionScreen({
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
-          <MaterialCommunityIcons name="check-circle" size={120} color="#FFFFFF" />
+          <MaterialCommunityIcons name="check-circle" size={120} color={ds.semantic.text.onDark} />
 
-          <Text style={[styles.bigText, { color: '#FFFFFF', marginTop: 32 }]}>
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: 32 }]}>
             You Made the Right Choice 💙
           </Text>
 
-          <Text style={[styles.bodyText, { color: '#FFFFFF', marginTop: 16, textAlign: 'center' }]}>
+          <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' }]}>
             You just resisted a close call.{'\n'}
             That takes real strength.
           </Text>
@@ -519,7 +520,7 @@ export function SafeDialInterventionScreen({
             variant="outline"
             size="large"
             fullWidth
-            style={{ marginTop: 48, borderColor: '#FFFFFF' }}
+            style={{ marginTop: 48, borderColor: ds.semantic.text.onDark }}
           />
         </View>
       </SafeAreaView>

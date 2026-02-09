@@ -10,6 +10,7 @@ import { useRoute, type RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, Card, Button, TextArea, Modal } from '../../../design-system';
+import { ds } from '../../../design-system/tokens/ds';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useJournalEntries } from '../../journal/hooks/useJournalEntries';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';
@@ -222,8 +223,8 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
-    backgroundColor: '#FFFFFF',
+    borderTopColor: ds.colors.borderSubtle,
+    backgroundColor: ds.semantic.surface.card,
     gap: 8,
   },
   centerContainer: {

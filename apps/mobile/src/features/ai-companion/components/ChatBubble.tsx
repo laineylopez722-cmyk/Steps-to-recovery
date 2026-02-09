@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
     marginTop: ds.space[2],
   },
   timeUser: {
-    color: 'rgba(0,0,0,0.4)',
+    color: ds.colors.textMuted,
   },
   timeAssistant: {
     color: ds.colors.textQuaternary,

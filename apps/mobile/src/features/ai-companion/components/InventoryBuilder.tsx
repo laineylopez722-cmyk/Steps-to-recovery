@@ -81,7 +81,7 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
             value={entry.who}
             onChangeText={(v) => updateField('who', v)}
             placeholder="Person, institution, or principle..."
-            placeholderTextColor="#6B7280"
+            placeholderTextColor="#9CA3AF"
             className="bg-gray-800 rounded-xl p-4 text-white text-base"
             autoFocus
           />
@@ -97,7 +97,7 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
             value={entry.cause}
             onChangeText={(v) => updateField('cause', v)}
             placeholder="What happened..."
-            placeholderTextColor="#6B7280"
+            placeholderTextColor="#9CA3AF"
             multiline
             className="bg-gray-800 rounded-xl p-4 text-white text-base min-h-[120px]"
             textAlignVertical="top"
@@ -141,7 +141,7 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
             value={entry.myPart}
             onChangeText={(v) => updateField('myPart', v)}
             placeholder="Be honest with yourself..."
-            placeholderTextColor="#6B7280"
+            placeholderTextColor="#9CA3AF"
             multiline
             className="bg-gray-800 rounded-xl p-4 text-white text-base min-h-[150px]"
             textAlignVertical="top"

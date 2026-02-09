@@ -18,6 +18,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useRegularMeetings } from '../../hooks/useRegularMeetings';
+import { ds } from '../../design-system/tokens/ds';
 import * as Haptics from 'expo-haptics';
 
 interface UpcomingMeetingWidgetProps {
@@ -97,7 +98,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
           <GlassCard gradient="card" style={[styles.card, styles.emptyCard]}>
             <View style={styles.emptyContent}>
               <View style={styles.emptyIconContainer}>
-                <Feather name="calendar" size={24} color="#3b82f6" />
+                <Feather name="calendar" size={24} color={ds.colors.info} />
               </View>
               <Text style={styles.emptyTitle}>No Meetings Scheduled</Text>
               <Text style={styles.emptySubtitle}>
@@ -124,7 +125,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <View style={styles.todayIconContainer}>
-                <Feather name="calendar" size={20} color="#22c55e" />
+                <Feather name="calendar" size={20} color={ds.colors.success} />
               </View>
               <Text style={styles.todayHeaderTitle}>Meeting Today!</Text>
             </View>
@@ -152,7 +153,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
                 </Text>
                 {nextTodayMeeting.isHomeGroup && (
                   <View style={styles.todayHomeBadge}>
-                    <Feather name="home" size={10} color="#f59e0b" />
+                    <Feather name="home" size={10} color={ds.colors.warning} />
                     <Text style={styles.todayHomeText}>Home</Text>
                   </View>
                 )}
@@ -183,7 +184,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
               accessibilityLabel="Prepare to share"
               accessibilityHint="Opens share preparation screen"
             >
-              <Feather name="edit-3" size={16} color="#ffffff" style={styles.buttonIcon} />
+              <Feather name="edit-3" size={16} color={ds.semantic.text.onDark} style={styles.buttonIcon} />
               <Text style={styles.shareButtonText}>Prepare to Share</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -211,7 +212,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Feather name="calendar" size={20} color="#60a5fa" />
+              <Feather name="calendar" size={20} color={ds.colors.info} />
               <Text style={styles.headerTitle}>Next Meeting</Text>
             </View>
             <TouchableOpacity
@@ -238,7 +239,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
                 </Text>
                 {nextMeeting.isHomeGroup && (
                   <View style={styles.nextHomeBadge}>
-                    <Feather name="home" size={10} color="#f59e0b" />
+                    <Feather name="home" size={10} color={ds.colors.warning} />
                   </View>
                 )}
               </View>
@@ -267,11 +268,11 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   todayCard: {
-    borderColor: 'rgba(34, 197, 94, 0.3)',
+    borderColor: ds.colors.success,
     borderWidth: 1,
   },
   emptyCard: {
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderColor: ds.colors.borderSubtle,
     borderWidth: 1,
   },
   skeleton: {
@@ -279,14 +280,14 @@ const styles = StyleSheet.create({
   },
   skeletonHeader: {
     height: 20,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 4,
     width: '40%',
     marginBottom: 12,
   },
   skeletonContent: {
     height: 60,
-    backgroundColor: 'rgba(148, 163, 184, 0.2)',
+    backgroundColor: ds.colors.bgTertiary,
     borderRadius: 8,
   },
   emptyContent: {
@@ -297,7 +298,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -305,23 +306,23 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#64748b',
+    color: ds.colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
   },
   addButtonText: {
-    color: '#60a5fa',
+    color: ds.colors.info,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -339,29 +340,29 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
   },
   todayHeaderTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   todayIconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: ds.colors.successMuted,
     alignItems: 'center',
     justifyContent: 'center',
   },
   viewAllText: {
     fontSize: 14,
-    color: '#60a5fa',
+    color: ds.colors.info,
   },
   todayMeetingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
@@ -377,13 +378,13 @@ const styles = StyleSheet.create({
   todayMeetingName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     flex: 1,
   },
   todayHomeBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 4,
@@ -392,15 +393,15 @@ const styles = StyleSheet.create({
   todayHomeText: {
     fontSize: 10,
     fontWeight: '500',
-    color: '#fbbf24',
+    color: ds.colors.warning,
   },
   todayMeetingMeta: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     marginTop: 2,
   },
   todayBadge: {
-    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+    backgroundColor: ds.colors.successMuted,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -409,11 +410,11 @@ const styles = StyleSheet.create({
   todayBadgeText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#4ade80',
+    color: ds.colors.success,
   },
   moreMeetingsText: {
     fontSize: 14,
-    color: '#22c55e',
+    color: ds.colors.success,
     marginBottom: 12,
   },
   actions: {
@@ -425,7 +426,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#22c55e',
+    backgroundColor: ds.colors.success,
     paddingVertical: 12,
     borderRadius: 10,
   },
@@ -433,7 +434,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   shareButtonText: {
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     fontWeight: '600',
     fontSize: 14,
   },
@@ -441,21 +442,21 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: ds.colors.bgTertiary,
     borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.3)',
+    borderColor: ds.colors.success,
     paddingVertical: 12,
     borderRadius: 10,
   },
   logButtonText: {
-    color: '#4ade80',
+    color: ds.colors.success,
     fontWeight: '600',
     fontSize: 14,
   },
   nextMeetingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: ds.colors.bgSecondary,
     borderRadius: 12,
     padding: 12,
   },
@@ -470,22 +471,22 @@ const styles = StyleSheet.create({
   nextMeetingName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: ds.semantic.text.onDark,
     flex: 1,
   },
   nextHomeBadge: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: ds.colors.warningMuted,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
   },
   nextMeetingMeta: {
     fontSize: 14,
-    color: '#94a3b8',
+    color: ds.colors.textTertiary,
     marginTop: 2,
   },
   daysUntilBadge: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+    backgroundColor: ds.colors.bgSecondary,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
@@ -494,6 +495,6 @@ const styles = StyleSheet.create({
   daysUntilText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#60a5fa',
+    color: ds.colors.info,
   },
 });
