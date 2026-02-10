@@ -1,6 +1,6 @@
 import { useStepScreenAnimation } from './useStepScreenAnimation';
 import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
-import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
+import { useStepDetailMainContentModel } from './useStepDetailMainContentModel';
 import { useStepDetailInteractions } from './useStepDetailInteractions';
 import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
 import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
@@ -62,45 +62,31 @@ export function useStepDetailOrchestration() {
     stepNumber,
   });
 
-  const mainContentProps = useStepDetailMainContentProps({
-    animation: {
-      fadeAnim,
-      slideAnim,
-    },
-    step: {
-      stepNumber,
-      stepData,
-    },
-    progress: {
-      totalQuestions,
-      answeredCount,
-      progressPercent,
-      hasUnanswered,
-      firstUnansweredQuestion,
-    },
-    guidance: {
-      showGuidance,
-      onToggleGuidance: handleToggleGuidance,
-    },
-    headerActions: {
-      onContinue: scrollToFirstUnanswered,
-      onReviewAnswers: handleReviewAnswers,
-    },
-    questionNavigation: {
-      currentVisibleQuestion,
-      onJumpToQuestion: scrollToQuestion,
-      onViewableItemsChanged,
-      viewabilityConfig,
-    },
-    questionList: {
-      listRef: flatListRef,
-      listItems,
-      answeredQuestionNumbers,
-      savingQuestion,
-      answers,
-      onAnswerChange: handleAnswerChange,
-      onSaveAnswer: handleSaveAnswer,
-    },
+  const mainContentProps = useStepDetailMainContentModel({
+    fadeAnim,
+    slideAnim,
+    stepNumber,
+    stepData,
+    totalQuestions,
+    answeredCount,
+    progressPercent,
+    hasUnanswered,
+    firstUnansweredQuestion,
+    showGuidance,
+    onToggleGuidance: handleToggleGuidance,
+    onContinue: scrollToFirstUnanswered,
+    onReviewAnswers: handleReviewAnswers,
+    currentVisibleQuestion,
+    onJumpToQuestion: scrollToQuestion,
+    onViewableItemsChanged,
+    viewabilityConfig,
+    listRef: flatListRef,
+    listItems,
+    answeredQuestionNumbers,
+    savingQuestion,
+    answers,
+    onAnswerChange: handleAnswerChange,
+    onSaveAnswer: handleSaveAnswer,
   });
 
   const { hasStepData, contentState } = useStepDetailDisplayState({
