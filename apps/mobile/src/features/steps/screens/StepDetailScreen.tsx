@@ -1,6 +1,4 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
 import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
 import { useStepAnswersState } from '../hooks/useStepAnswersState';
@@ -14,14 +12,12 @@ import { useStepDetailData } from '../hooks/useStepDetailData';
 import { useStepDetailRouteParams } from '../hooks/useStepDetailRouteParams';
 import { useCurrentUserId } from '../hooks/useCurrentUserId';
 import { useScreenBackgroundColor } from '../hooks/useScreenBackgroundColor';
+import { useStepDetailNavigation } from '../hooks/useStepDetailNavigation';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
-import type { StepsStackParamList } from '../../../navigation/types';
-
-type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
 
 export function StepDetailScreen(): React.ReactElement {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useStepDetailNavigation();
   const { stepNumber, initialQuestion } = useStepDetailRouteParams();
   const userId = useCurrentUserId();
   const backgroundColor = useScreenBackgroundColor();
