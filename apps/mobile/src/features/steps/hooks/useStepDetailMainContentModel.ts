@@ -1,98 +1,70 @@
 import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
+import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepPrompt } from '@recovery/shared';
 import type { StepDetailMainContentProps } from '../components/StepDetailMainContent';
 
 type Params = {
-  fadeAnim: StepDetailMainContentProps['fadeAnim'];
-  slideAnim: StepDetailMainContentProps['slideAnim'];
-  stepNumber: number;
-  stepData?: StepPrompt;
-  totalQuestions: number;
-  answeredCount: number;
-  progressPercent: number;
-  hasUnanswered: boolean;
-  firstUnansweredQuestion: number;
-  showGuidance: boolean;
-  onToggleGuidance: () => void;
-  onContinue: () => void;
-  onReviewAnswers: () => void;
-  currentVisibleQuestion: number;
-  onJumpToQuestion: (questionNumber: number) => void;
-  onViewableItemsChanged: StepDetailMainContentProps['onViewableItemsChanged'];
-  viewabilityConfig: StepDetailMainContentProps['viewabilityConfig'];
-  listRef: StepDetailMainContentProps['listRef'];
-  listItems: StepDetailMainContentProps['listItems'];
-  answeredQuestionNumbers: Set<number>;
-  savingQuestion: number | null;
-  answers: Record<number, string>;
-  onAnswerChange: (questionNumber: number, text: string) => void;
-  onSaveAnswer: (questionNumber: number) => Promise<void>;
+  animation: {
+    fadeAnim: StepDetailMainContentProps['fadeAnim'];
+    slideAnim: StepDetailMainContentProps['slideAnim'];
+  };
+  step: {
+    stepNumber: number;
+    stepData?: StepPrompt;
+  };
+  interactions: {
+    showGuidance: boolean;
+    onToggleGuidance: () => void;
+    onContinue: () => void;
+    onReviewAnswers: () => void;
+  };
+  questionFlow: ReturnType<typeof useStepDetailQuestionFlow>;
 };
 
 export function useStepDetailMainContentModel({
-  fadeAnim,
-  slideAnim,
-  stepNumber,
-  stepData,
-  totalQuestions,
-  answeredCount,
-  progressPercent,
-  hasUnanswered,
-  firstUnansweredQuestion,
-  showGuidance,
-  onToggleGuidance,
-  onContinue,
-  onReviewAnswers,
-  currentVisibleQuestion,
-  onJumpToQuestion,
-  onViewableItemsChanged,
-  viewabilityConfig,
-  listRef,
-  listItems,
-  answeredQuestionNumbers,
-  savingQuestion,
-  answers,
-  onAnswerChange,
-  onSaveAnswer,
+  animation,
+  step,
+  interactions,
+  questionFlow,
 }: Params) {
   return useStepDetailMainContentProps({
     animation: {
-      fadeAnim,
-      slideAnim,
+      fadeAnim: animation.fadeAnim,
+      slideAnim: animation.slideAnim,
     },
     step: {
-      stepNumber,
-      stepData,
+      stepNumber: step.stepNumber,
+      stepData: step.stepData,
     },
     progress: {
-      totalQuestions,
-      answeredCount,
-      progressPercent,
-      hasUnanswered,
-      firstUnansweredQuestion,
+      totalQuestions: questionFlow.totalQuestions,
+      answeredCount: questionFlow.answeredCount,
+      progressPercent: questionFlow.progressPercent,
+      hasUnanswered: questionFlow.hasUnanswered,
+      firstUnansweredQuestion: questionFlow.firstUnansweredQuestion,
     },
     guidance: {
-      showGuidance,
-      onToggleGuidance,
+      showGuidance: interactions.showGuidance,
+      onToggleGuidance: interactions.onToggleGuidance,
     },
     headerActions: {
-      onContinue,
-      onReviewAnswers,
+      onContinue: interactions.onContinue,
+      onReviewAnswers: interactions.onReviewAnswers,
     },
     questionNavigation: {
-      currentVisibleQuestion,
-      onJumpToQuestion,
-      onViewableItemsChanged,
-      viewabilityConfig,
+      currentVisibleQuestion: questionFlow.currentVisibleQuestion,
+      onJumpToQuestion: questionFlow.scrollToQuestion,
+      onViewableItemsChanged: questionFlow.onViewableItemsChanged,
+      viewabilityConfig: questionFlow.viewabilityConfig,
     },
     questionList: {
-      listRef,
-      listItems,
-      answeredQuestionNumbers,
-      savingQuestion,
-      answers,
-      onAnswerChange,
-      onSaveAnswer,
+      listRef: questionFlow.flatListRef,
+      listItems: questionFlow.listItems,
+      answeredQuestionNumbers: questionFlow.answeredQuestionNumbers,
+      savingQuestion: questionFlow.savingQuestion,
+      answers: questionFlow.answers,
+      onAnswerChange: questionFlow.handleAnswerChange,
+      onSaveAnswer: questionFlow.handleSaveAnswer,
     },
   });
 }

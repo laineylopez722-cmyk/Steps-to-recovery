@@ -18,29 +18,8 @@ export function useStepDetailOrchestration() {
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
-  const {
-    totalQuestions,
-    listItems,
-    answeredQuestionNumbers,
-    firstUnansweredQuestion,
-    answeredCount,
-    hasUnanswered,
-    progressPercent,
-    answers,
-    handleAnswerChange,
-    savingQuestion,
-    toastVisible,
-    toastMessage,
-    toastVariant,
-    dismissToast,
-    handleSaveAnswer,
-    flatListRef,
-    currentVisibleQuestion,
-    scrollToQuestion,
-    scrollToFirstUnanswered,
-    onViewableItemsChanged,
-    viewabilityConfig,
-  } = questionFlow;
+  const { toastVisible, toastMessage, toastVariant, dismissToast, scrollToFirstUnanswered } =
+    questionFlow;
 
   const {
     handleReviewAnswers,
@@ -54,30 +33,21 @@ export function useStepDetailOrchestration() {
   });
 
   const mainContentProps = useStepDetailMainContentModel({
-    fadeAnim,
-    slideAnim,
-    stepNumber,
-    stepData,
-    totalQuestions,
-    answeredCount,
-    progressPercent,
-    hasUnanswered,
-    firstUnansweredQuestion,
-    showGuidance,
-    onToggleGuidance: handleToggleGuidance,
-    onContinue: scrollToFirstUnanswered,
-    onReviewAnswers: handleReviewAnswers,
-    currentVisibleQuestion,
-    onJumpToQuestion: scrollToQuestion,
-    onViewableItemsChanged,
-    viewabilityConfig,
-    listRef: flatListRef,
-    listItems,
-    answeredQuestionNumbers,
-    savingQuestion,
-    answers,
-    onAnswerChange: handleAnswerChange,
-    onSaveAnswer: handleSaveAnswer,
+    animation: {
+      fadeAnim,
+      slideAnim,
+    },
+    step: {
+      stepNumber,
+      stepData,
+    },
+    interactions: {
+      showGuidance,
+      onToggleGuidance: handleToggleGuidance,
+      onContinue: scrollToFirstUnanswered,
+      onReviewAnswers: handleReviewAnswers,
+    },
+    questionFlow,
   });
 
   const { hasStepData, contentState } = useStepDetailDisplayState({
