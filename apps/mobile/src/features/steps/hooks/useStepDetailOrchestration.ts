@@ -1,8 +1,7 @@
 import { useStepDetailFlowContext } from './useStepDetailFlowContext';
 import { useStepDetailContentContext } from './useStepDetailContentContext';
-import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
 import { useStepDetailDisplayState } from './useStepDetailDisplayState';
-import { useStepDetailToastState } from './useStepDetailToastState';
+import { useStepDetailContentPayload } from './useStepDetailContentPayload';
 
 export function useStepDetailOrchestration() {
   const {
@@ -14,10 +13,6 @@ export function useStepDetailOrchestration() {
     isLoading,
     questionFlow,
   } = useStepDetailFlowContext();
-
-  const { toastVisible, toastMessage, toastVariant, onDismissToast } = useStepDetailToastState({
-    questionFlow,
-  });
 
   const { handleBackToStepOne, handleBackToSteps, mainContentProps } =
     useStepDetailContentContext({
@@ -33,17 +28,14 @@ export function useStepDetailOrchestration() {
     isLoading,
   });
 
-  const content = useStepDetailScreenContentProps({
+  const content = useStepDetailContentPayload({
     contentState,
     backgroundColor,
     stepNumber,
     onBackToStepOne: handleBackToStepOne,
     onBackToSteps: handleBackToSteps,
-    toastVisible,
-    toastMessage,
-    toastVariant,
-    onDismissToast,
     mainContentProps,
+    questionFlow,
   });
 
   return {
