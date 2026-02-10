@@ -4,6 +4,7 @@ import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
 import { useStepDetailInteractions } from './useStepDetailInteractions';
 import { useStepDetailContentState } from './useStepDetailContentState';
 import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
+import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
 
 export function useStepDetailOrchestration() {
   const {
@@ -107,19 +108,21 @@ export function useStepDetailOrchestration() {
     isLoading,
   });
 
+  const content = useStepDetailScreenContentProps({
+    contentState,
+    backgroundColor,
+    stepNumber,
+    onBackToStepOne: handleBackToStepOne,
+    onBackToSteps: handleBackToSteps,
+    toastVisible,
+    toastMessage,
+    toastVariant,
+    onDismissToast: dismissToast,
+    mainContentProps,
+  });
+
   return {
     hasStepData: Boolean(stepData),
-    content: {
-      state: contentState,
-      backgroundColor,
-      stepNumber,
-      onBackToStepOne: handleBackToStepOne,
-      onBackToSteps: handleBackToSteps,
-      toastVisible,
-      toastMessage,
-      toastVariant,
-      onDismissToast: dismissToast,
-      mainContentProps,
-    },
+    content,
   };
 }
