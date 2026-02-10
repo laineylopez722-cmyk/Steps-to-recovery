@@ -13,9 +13,9 @@ import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
 import { useStepDetailData } from '../hooks/useStepDetailData';
 import { useStepDetailRouteParams } from '../hooks/useStepDetailRouteParams';
 import { useCurrentUserId } from '../hooks/useCurrentUserId';
+import { useScreenBackgroundColor } from '../hooks/useScreenBackgroundColor';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
-import { useTheme } from '../../../design-system';
 import type { StepsStackParamList } from '../../../navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList, 'StepDetail'>;
@@ -24,7 +24,7 @@ export function StepDetailScreen(): React.ReactElement {
   const navigation = useNavigation<NavigationProp>();
   const { stepNumber, initialQuestion } = useStepDetailRouteParams();
   const userId = useCurrentUserId();
-  const theme = useTheme();
+  const backgroundColor = useScreenBackgroundColor();
 
   const { stepData, isLocked, questions, isLoading, saveAnswer } = useStepDetailData({
     userId,
@@ -136,7 +136,7 @@ export function StepDetailScreen(): React.ReactElement {
   return (
     <StepDetailScreenContent
       state={contentState}
-      backgroundColor={theme.colors.background}
+      backgroundColor={backgroundColor}
       stepNumber={stepNumber}
       onBackToStepOne={handleBackToStepOne}
       onBackToSteps={handleBackToSteps}
