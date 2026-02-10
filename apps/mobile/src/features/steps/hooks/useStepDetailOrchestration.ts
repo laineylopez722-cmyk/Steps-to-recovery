@@ -1,7 +1,5 @@
-import { useStepScreenAnimation } from './useStepScreenAnimation';
-import { useStepDetailMainContentModel } from './useStepDetailMainContentModel';
-import { useStepDetailInteractions } from './useStepDetailInteractions';
 import { useStepDetailFlowContext } from './useStepDetailFlowContext';
+import { useStepDetailContentContext } from './useStepDetailContentContext';
 import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
 import { useStepDetailDisplayState } from './useStepDetailDisplayState';
 
@@ -16,39 +14,15 @@ export function useStepDetailOrchestration() {
     questionFlow,
   } = useStepDetailFlowContext();
 
-  const { fadeAnim, slideAnim } = useStepScreenAnimation();
+  const { toastVisible, toastMessage, toastVariant, dismissToast } = questionFlow;
 
-  const { toastVisible, toastMessage, toastVariant, dismissToast, scrollToFirstUnanswered } =
-    questionFlow;
-
-  const {
-    handleReviewAnswers,
-    handleBackToStepOne,
-    handleBackToSteps,
-    showGuidance,
-    handleToggleGuidance,
-  } = useStepDetailInteractions({
-    navigation,
-    stepNumber,
-  });
-
-  const mainContentProps = useStepDetailMainContentModel({
-    animation: {
-      fadeAnim,
-      slideAnim,
-    },
-    step: {
+  const { handleBackToStepOne, handleBackToSteps, mainContentProps } =
+    useStepDetailContentContext({
+      navigation,
       stepNumber,
       stepData,
-    },
-    interactions: {
-      showGuidance,
-      onToggleGuidance: handleToggleGuidance,
-      onContinue: scrollToFirstUnanswered,
-      onReviewAnswers: handleReviewAnswers,
-    },
-    questionFlow,
-  });
+      questionFlow,
+    });
 
   const { hasStepData, contentState } = useStepDetailDisplayState({
     stepData,
