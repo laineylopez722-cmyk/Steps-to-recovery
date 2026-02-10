@@ -8,24 +8,22 @@ import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContent
 import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
 import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
 import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
-import { useStepDetailData } from '../hooks/useStepDetailData';
-import { useStepDetailRouteParams } from '../hooks/useStepDetailRouteParams';
-import { useCurrentUserId } from '../hooks/useCurrentUserId';
-import { useScreenBackgroundColor } from '../hooks/useScreenBackgroundColor';
-import { useStepDetailNavigation } from '../hooks/useStepDetailNavigation';
+import { useStepDetailScreenSetup } from '../hooks/useStepDetailScreenSetup';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
 import { StepDetailScreenContent } from '../components/StepDetailScreenContent';
 
 export function StepDetailScreen(): React.ReactElement {
-  const navigation = useStepDetailNavigation();
-  const { stepNumber, initialQuestion } = useStepDetailRouteParams();
-  const userId = useCurrentUserId();
-  const backgroundColor = useScreenBackgroundColor();
-
-  const { stepData, isLocked, questions, isLoading, saveAnswer } = useStepDetailData({
-    userId,
+  const {
+    navigation,
     stepNumber,
-  });
+    initialQuestion,
+    backgroundColor,
+    stepData,
+    isLocked,
+    questions,
+    isLoading,
+    saveAnswer,
+  } = useStepDetailScreenSetup();
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
