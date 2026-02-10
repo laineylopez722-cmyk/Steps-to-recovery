@@ -5,8 +5,7 @@ import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
 import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
 import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
-import { useStepDetailNavigationActions } from '../hooks/useStepDetailNavigationActions';
-import { useStepGuidanceToggle } from '../hooks/useStepGuidanceToggle';
+import { useStepDetailInteractions } from '../hooks/useStepDetailInteractions';
 import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
 import { useStepDetailScreenSetup } from '../hooks/useStepDetailScreenSetup';
 import { StepDetailErrorState } from '../components/StepDetailErrorState';
@@ -70,12 +69,16 @@ export function StepDetailScreen(): React.ReactElement {
     questionIndexMap,
   });
 
-  const { handleReviewAnswers, handleBackToStepOne, handleBackToSteps } =
-    useStepDetailNavigationActions({
-      navigation,
-      stepNumber,
-    });
-  const { showGuidance, handleToggleGuidance } = useStepGuidanceToggle();
+  const {
+    handleReviewAnswers,
+    handleBackToStepOne,
+    handleBackToSteps,
+    showGuidance,
+    handleToggleGuidance,
+  } = useStepDetailInteractions({
+    navigation,
+    stepNumber,
+  });
 
   const mainContentProps = useStepDetailMainContentProps({
     animation: {
