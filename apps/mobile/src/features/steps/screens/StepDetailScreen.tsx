@@ -1,9 +1,6 @@
 import React from 'react';
-import { useStepAnswerSave } from '../hooks/useStepAnswerSave';
-import { useStepQuestionNavigation } from '../hooks/useStepQuestionNavigation';
-import { useStepAnswersState } from '../hooks/useStepAnswersState';
 import { useStepScreenAnimation } from '../hooks/useStepScreenAnimation';
-import { useStepDetailDerivedState } from '../hooks/useStepDetailDerivedState';
+import { useStepDetailQuestionFlow } from '../hooks/useStepDetailQuestionFlow';
 import { useStepDetailMainContentProps } from '../hooks/useStepDetailMainContentProps';
 import { useStepDetailInteractions } from '../hooks/useStepDetailInteractions';
 import { useStepDetailContentState } from '../hooks/useStepDetailContentState';
@@ -29,44 +26,31 @@ export function StepDetailScreen(): React.ReactElement {
   const {
     totalQuestions,
     listItems,
-    questionIndexMap,
     answeredQuestionNumbers,
     firstUnansweredQuestion,
     answeredCount,
     hasUnanswered,
     progressPercent,
-  } = useStepDetailDerivedState({
-    stepData,
-    questions,
-  });
-
-  const { answers, handleAnswerChange } = useStepAnswersState(questions);
-
-  const {
+    answers,
+    handleAnswerChange,
     savingQuestion,
     toastVisible,
     toastMessage,
     toastVariant,
     dismissToast,
     handleSaveAnswer,
-  } = useStepAnswerSave({
-    answers,
-    stepNumber,
-    saveAnswer,
-  });
-
-  const {
     flatListRef,
     currentVisibleQuestion,
     scrollToQuestion,
     scrollToFirstUnanswered,
     onViewableItemsChanged,
     viewabilityConfig,
-  } = useStepQuestionNavigation({
-    hasStepData: Boolean(stepData),
+  } = useStepDetailQuestionFlow({
+    stepData,
+    questions,
+    stepNumber,
     initialQuestion,
-    firstUnansweredQuestion,
-    questionIndexMap,
+    saveAnswer,
   });
 
   const {
