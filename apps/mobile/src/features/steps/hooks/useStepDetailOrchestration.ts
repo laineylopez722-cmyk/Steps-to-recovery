@@ -1,8 +1,7 @@
 import { useStepScreenAnimation } from './useStepScreenAnimation';
-import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import { useStepDetailMainContentModel } from './useStepDetailMainContentModel';
 import { useStepDetailInteractions } from './useStepDetailInteractions';
-import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
+import { useStepDetailFlowContext } from './useStepDetailFlowContext';
 import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
 import { useStepDetailDisplayState } from './useStepDetailDisplayState';
 
@@ -10,14 +9,12 @@ export function useStepDetailOrchestration() {
   const {
     navigation,
     stepNumber,
-    initialQuestion,
     backgroundColor,
     stepData,
     isLocked,
-    questions,
     isLoading,
-    saveAnswer,
-  } = useStepDetailScreenSetup();
+    questionFlow,
+  } = useStepDetailFlowContext();
 
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
@@ -43,13 +40,7 @@ export function useStepDetailOrchestration() {
     scrollToFirstUnanswered,
     onViewableItemsChanged,
     viewabilityConfig,
-  } = useStepDetailQuestionFlow({
-    stepData,
-    questions,
-    stepNumber,
-    initialQuestion,
-    saveAnswer,
-  });
+  } = questionFlow;
 
   const {
     handleReviewAnswers,
