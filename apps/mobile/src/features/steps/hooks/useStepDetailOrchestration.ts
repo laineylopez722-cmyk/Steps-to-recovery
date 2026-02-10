@@ -2,9 +2,9 @@ import { useStepScreenAnimation } from './useStepScreenAnimation';
 import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
 import { useStepDetailInteractions } from './useStepDetailInteractions';
-import { useStepDetailContentState } from './useStepDetailContentState';
 import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
 import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
+import { useStepDetailDisplayState } from './useStepDetailDisplayState';
 
 export function useStepDetailOrchestration() {
   const {
@@ -103,7 +103,8 @@ export function useStepDetailOrchestration() {
     },
   });
 
-  const contentState = useStepDetailContentState({
+  const { hasStepData, contentState } = useStepDetailDisplayState({
+    stepData,
     isLocked,
     isLoading,
   });
@@ -122,7 +123,7 @@ export function useStepDetailOrchestration() {
   });
 
   return {
-    hasStepData: Boolean(stepData),
+    hasStepData,
     content,
   };
 }
