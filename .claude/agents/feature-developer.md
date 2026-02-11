@@ -31,25 +31,116 @@ Reference `_common-patterns.md` for project standards.
 
 ## Code Templates
 
-### React Query Hook
+> **Reference**: For detailed patterns, see:
+> - [TypeScript Patterns](../snippets/typescript-patterns.md) - Component props, interfaces
+> - [Encryption Patterns](../snippets/encryption-patterns.md) - Data encryption/decryption
+> - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Cloud backup integration
+> - [Accessibility Requirements](../snippets/accessibility-requirements.md) - WCAG AAA compliance
+
 ```typescript
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDatabase } from '@/contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '@/utils/encryption';
 import { addToSyncQueue } from '@/services/syncService';
 
-export function use[Feature]() {
+// See: ../snippets/typescript-patterns.md for interface patterns
+interface [Component]Props {
+  [prop]: [type];
+}
+
+export function [Component]({ [prop] }: [Component]Props): React.ReactElement {
   const { db } = useDatabase();
-  const queryClient = useQueryClient();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAction = useCallback(async () => {
+    if (!db) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // See: ../snippets/encryption-patterns.md for encryption usage
+      const id = generateUUID();
+      const encryptedContent = await encryptContent(sensitiveData);
+      
+      await db.runAsync(
+        'INSERT INTO table_name (id, user_id, encrypted_content, created_at) VALUES (?, ?, ?, ?)',
+        [id, userId, encryptedContent, new Date().toISOString()]
+      );
+      
+      // See: ../snippets/sync-queue-integration.md for sync patterns
+      await addToSyncQueue(db, 'table_name', id, 'insert');
+      
+      logger.info('[Feature] created', { id });
+    } catch (err) {
+      // See: ../snippets/typescript-patterns.md for error handling
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      logger.error('[Feature] creation failed', err);
+      setError(message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [db, userId]);
+
+  // See: ../snippets/accessibility-requirements.md for accessibility props
+  return (
+    <View accessibilityLabel="[Feature] component">
+      {/* Implementation */}
+      <TouchableOpacity
+        onPress={handleAction}
+        disabled={isLoading}
+        accessibilityLabel="[Action] button"
+        accessibilityRole="button"
+        accessibilityState={{ disabled: isLoading }}
+      >
+        <Text>[Action]</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+```
+
+### Hook Template
+
+> **Reference**: See [Encryption Patterns](../snippets/encryption-patterns.md) for decryption usage
+
+```typescript
+// apps/mobile/src/features/[feature]/hooks/use[Feature].ts
+import { useQuery } from '@tanstack/react-query';
+import { useDatabase } from '@/contexts/DatabaseContext';
+import { decryptContent } from '@/utils/encryption';
+import { logger } from '@/utils/logger';
+
+interface [Feature] {
+  id: string;
+  content: string;
+  createdAt: string;
+}
 
   const query = useQuery({
     queryKey: ['feature', userId],
     queryFn: async () => {
-      const rows = await db.getAllAsync('SELECT * FROM table WHERE user_id = ?', [userId]);
-      return Promise.all(rows.map(async (r) => ({
-        ...r,
-        content: await decryptContent(r.encrypted_content)
-      })));
+      if (!db) return [];
+      
+      try {
+        const rows = await db.getAllAsync<[Feature]Row>(
+          'SELECT id, encrypted_content, created_at FROM table_name WHERE user_id = ? ORDER BY created_at DESC',
+          [userId]
+        );
+        
+        // Decrypt in parallel (see: ../snippets/encryption-patterns.md)
+        return Promise.all(
+          rows.map(async (row) => ({
+            id: row.id,
+            content: await decryptContent(row.encrypted_content),
+            createdAt: row.created_at,
+          }))
+        );
+      } catch (error) {
+        logger.error('Failed to fetch [features]', error);
+        throw error;
+      }
     },
     enabled: !!db
   });

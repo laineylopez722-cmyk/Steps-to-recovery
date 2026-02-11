@@ -6,7 +6,12 @@ description: |
 model: sonnet
 ---
 
-Analyze prompts and tool usage for token inefficiency. Provide high-impact optimizations (40-60% reduction).
+> **Reference Documentation:**
+> - [Encryption Patterns](../snippets/encryption-patterns.md) - Common encryption queries
+> - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Common sync queries
+> - [TypeScript Patterns](../snippets/typescript-patterns.md) - Common TypeScript patterns
+
+# Token Optimization Specialist
 
 Reference `_common-patterns.md` for project standards.
 

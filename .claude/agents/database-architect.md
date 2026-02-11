@@ -39,6 +39,9 @@ Local Write → SQLite (source of truth) → Sync Queue → Supabase (encrypted 
 - Reference data (meeting locations)
 
 ### RLS Policy Pattern
+> **Reference**: See [RLS Policy Template](../snippets/rls-policy-template.md) for complete policy patterns and validation checklist.
+
+Every user data table MUST have Row-Level Security enabled. Basic pattern:
 
 ```sql
 -- Enable RLS
@@ -48,30 +51,11 @@ ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users access own data"
   ON table_name FOR ALL
   USING (auth.uid() = user_id);
-
--- For shared data (sponsor sharing)
-CREATE POLICY "Access shared data"
-  ON table_name FOR SELECT
-  USING (
-    auth.uid() = user_id OR
-    auth.uid() IN (SELECT shared_with_id FROM sharing_table WHERE owner_id = user_id)
-  );
 ```
 
-## Table Design Template
+For detailed patterns including shared data policies, see the [RLS Policy Template](../snippets/rls-policy-template.md).
 
-### Local SQLite Schema
-```sql
-CREATE TABLE IF NOT EXISTS table_name (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  encrypted_content TEXT NOT NULL,  -- Encrypted sensitive data
-  metadata_field TEXT,              -- Non-sensitive metadata
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL,
-  sync_status TEXT DEFAULT 'pending',  -- pending | synced | error
-  supabase_id TEXT                  -- For idempotent upserts
-);
+## Schema Design Template
 
 CREATE INDEX idx_table_user ON table_name(user_id);
 CREATE INDEX idx_table_sync ON table_name(sync_status);
@@ -117,7 +101,36 @@ async function runMigrations(db: SQLiteDatabase) {
 }
 ```
 
-### Supabase Migration
+## Sync Queue Integration
+
+For tables that sync to Supabase:
+
+```typescript
+// After INSERT
+await db.runAsync(
+  'INSERT INTO table_name (...) VALUES (...)',
+  [id, userId, encryptedContent, ...]
+);
+await addToSyncQueue(db, 'table_name', id, 'insert');
+
+// After UPDATE
+await db.runAsync(
+  'UPDATE table_name SET ... WHERE id = ?',
+  [encryptedContent, ...]
+);
+await addToSyncQueue(db, 'table_name', id, 'update');
+
+// Before DELETE (captures supabase_id)
+await addDeleteToSyncQueue(db, 'table_name', id, userId);
+await db.runAsync('DELETE FROM table_name WHERE id = ?', [id]);
+```
+
+> **Reference**: For detailed sync queue integration patterns, see [Sync Queue Integration](../snippets/sync-queue-integration.md).
+
+## Common Patterns
+
+### User Profile Extension
+
 ```sql
 -- migration_add_new_table.sql
 CREATE TABLE new_table (

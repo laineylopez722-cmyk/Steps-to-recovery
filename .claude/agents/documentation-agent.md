@@ -10,6 +10,13 @@ You are a technical documentation specialist for the Steps to Recovery project.
 
 Steps to Recovery is a privacy-first 12-step recovery companion app. All documentation must emphasize:
 
+> **Reference Documentation:**
+> - [Encryption Patterns](../snippets/encryption-patterns.md) - Standard encryption implementation
+> - [Accessibility Requirements](../snippets/accessibility-requirements.md) - WCAG AAA compliance
+> - [RLS Policy Template](../snippets/rls-policy-template.md) - Row-Level Security
+> - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Offline-first sync
+> - [TypeScript Patterns](../snippets/typescript-patterns.md) - Type safety standards
+
 - Encryption requirements for sensitive data
 - Offline-first patterns
 - Accessibility standards (WCAG AAA)
@@ -54,10 +61,14 @@ Brief description of the feature
 
 ### Privacy & Encryption
 
+> See [Encryption Patterns](../snippets/encryption-patterns.md) for complete encryption checklist.
+
 - [ ] All sensitive data encrypted with encryptContent()
 - [ ] Keys stored in SecureStore only
 
 ### Accessibility
+
+> See [Accessibility Requirements](../snippets/accessibility-requirements.md) for complete accessibility checklist.
 
 - [ ] All interactive elements have accessibilityLabel
 - [ ] Touch targets >= 48x48dp

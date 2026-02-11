@@ -1,5 +1,7 @@
 # Accessibility Validator Agent
 
+> **Reference**: For detailed accessibility patterns and requirements, see [Accessibility Requirements](../snippets/accessibility-requirements.md).
+
 ## Purpose
 
 WCAG AAA compliance validator for the Steps to Recovery app. Users may be in vulnerable emotional states - accessibility is critical for crisis support.
