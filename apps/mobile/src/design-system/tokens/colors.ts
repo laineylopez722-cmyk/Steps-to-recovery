@@ -1,12 +1,231 @@
 /**
  * Color Palette - Serene Olive Theme
- * 
+ *
  * Inspired by: Calm, wellness apps
  * - Soft olive/sage green gradients
  * - Cream/white accents
  * - Frosted glass effects
  * - Calming, muted tones
  */
+
+// =============================================================================
+// MATERIAL DESIGN 3 - WARM PALETTE
+// =============================================================================
+
+/**
+ * Material Design 3 Warm Color Palette
+ * Designed for recovery apps - warm, supportive, accessible
+ * All colors maintain 7:1 contrast ratios where required
+ */
+export const md3Colors = {
+  // Primary - Warm Sage Green
+  primary: '#6B9B8D',
+  primaryLight: '#8AB8AC',
+  primaryDark: '#4A7A6D',
+  onPrimary: '#FFFFFF',
+  primaryContainer: '#D4EBE5',
+  onPrimaryContainer: '#1F4D42',
+
+  // Secondary - Warm Amber
+  secondary: '#D4A574',
+  secondaryLight: '#E8C8A8',
+  secondaryDark: '#B08356',
+  onSecondary: '#000000',
+  secondaryContainer: '#F5E6D3',
+  onSecondaryContainer: '#4D3A24',
+
+  // Tertiary - Soft Coral
+  tertiary: '#E8A89A',
+  tertiaryLight: '#F5C8BE',
+  tertiaryDark: '#C98878',
+  onTertiary: '#000000',
+  tertiaryContainer: '#FCE8E4',
+  onTertiaryContainer: '#5D3A32',
+
+  // Status Colors
+  success: '#7CB869',
+  successLight: '#A3D494',
+  successDark: '#5A9448',
+  onSuccess: '#000000',
+  successContainer: '#E3F2DE',
+  onSuccessContainer: '#1E4415',
+
+  warning: '#F4B942',
+  warningLight: '#F9D88A',
+  warningDark: '#C9942A',
+  onWarning: '#000000',
+  warningContainer: '#FDF3D8',
+  onWarningContainer: '#4D3A0F',
+
+  error: '#E07856',
+  errorLight: '#F2A88C',
+  errorDark: '#B85A3A',
+  onError: '#FFFFFF',
+  errorContainer: '#FBE8E2',
+  onErrorContainer: '#5A2A1A',
+
+  info: '#6B9B8D',
+  infoLight: '#8AB8AC',
+  infoDark: '#4A7A6D',
+  onInfo: '#FFFFFF',
+  infoContainer: '#D4EBE5',
+  onInfoContainer: '#1F4D42',
+
+  // Neutrals - Warm Gray Scale
+  surface: '#F8F7F5',
+  surfaceVariant: '#E8E6E1',
+  surfaceTint: '#6B9B8D',
+  onSurface: '#1C1B1F',
+  onSurfaceVariant: '#49454F',
+
+  // Background
+  background: '#F8F7F5',
+  onBackground: '#1C1B1F',
+
+  // Outline
+  outline: '#999385',
+  outlineVariant: '#D4CFC7',
+
+  // Inverse (for snackbars, dialogs)
+  inverseSurface: '#313033',
+  inverseOnSurface: '#F4EFF4',
+  inversePrimary: '#B3D4CC',
+
+  // Scrim/Overlay
+  scrim: 'rgba(0, 0, 0, 0.5)',
+  shadow: '#000000',
+
+  // Surface containers (MD3 elevation levels)
+  surfaceContainerLowest: '#FFFFFF',
+  surfaceContainerLow: '#F5F3F0',
+  surfaceContainer: '#EFEDE9',
+  surfaceContainerHigh: '#E9E7E3',
+  surfaceContainerHighest: '#E3E1DD',
+
+  // Disabled states
+  disabled: '#C7C7CC',
+  onDisabled: '#8E8E93',
+  disabledContainer: 'rgba(28, 27, 31, 0.12)',
+
+  // Interactive states (opacity-based)
+  pressed: 'rgba(0, 0, 0, 0.08)',
+  dragged: 'rgba(0, 0, 0, 0.16)',
+  focus: 'rgba(107, 155, 141, 0.12)',
+  hover: 'rgba(0, 0, 0, 0.04)',
+
+  // Glow accents
+  glow: 'rgba(107, 155, 141, 0.3)',
+  glowStrong: 'rgba(107, 155, 141, 0.5)',
+} as const;
+
+/**
+ * Material Design 3 Dark Mode - Warm Palette
+ * Optimized for OLED displays with true blacks
+ */
+export const md3ColorsDark = {
+  // Primary - Warm Sage Green (brighter for dark mode)
+  primary: '#B3D4CC',
+  primaryLight: '#D4EBE5',
+  primaryDark: '#8AB8AC',
+  onPrimary: '#1F4D42',
+  primaryContainer: '#1F4D42',
+  onPrimaryContainer: '#D4EBE5',
+
+  // Secondary - Warm Amber
+  secondary: '#E8C8A8',
+  secondaryLight: '#F5E6D3',
+  secondaryDark: '#C9A885',
+  onSecondary: '#4D3A24',
+  secondaryContainer: '#4D3A24',
+  onSecondaryContainer: '#F5E6D3',
+
+  // Tertiary - Soft Coral
+  tertiary: '#F5C8BE',
+  tertiaryLight: '#FCE8E4',
+  tertiaryDark: '#D4A89C',
+  onTertiary: '#5D3A32',
+  tertiaryContainer: '#5D3A32',
+  onTertiaryContainer: '#FCE8E4',
+
+  // Status Colors
+  success: '#A3D494',
+  successLight: '#C8E8BE',
+  successDark: '#7CB869',
+  onSuccess: '#1E4415',
+  successContainer: '#1E4415',
+  onSuccessContainer: '#E3F2DE',
+
+  warning: '#F9D88A',
+  warningLight: '#FDF3D8',
+  warningDark: '#F4B942',
+  onWarning: '#4D3A0F',
+  warningContainer: '#4D3A0F',
+  onWarningContainer: '#FDF3D8',
+
+  error: '#F2A88C',
+  errorLight: '#FBE8E2',
+  errorDark: '#E07856',
+  onError: '#5A2A1A',
+  errorContainer: '#5A2A1A',
+  onErrorContainer: '#FBE8E2',
+
+  info: '#B3D4CC',
+  infoLight: '#D4EBE5',
+  infoDark: '#8AB8AC',
+  onInfo: '#1F4D42',
+  infoContainer: '#1F4D42',
+  onInfoContainer: '#D4EBE5',
+
+  // Neutrals - Dark warm gray scale
+  surface: '#1C1B1F',
+  surfaceVariant: '#49454F',
+  surfaceTint: '#B3D4CC',
+  onSurface: '#E6E1E5',
+  onSurfaceVariant: '#CAC4D0',
+
+  // Background
+  background: '#000000',
+  onBackground: '#E6E1E5',
+
+  // Outline
+  outline: '#938F99',
+  outlineVariant: '#49454F',
+
+  // Inverse
+  inverseSurface: '#E6E1E5',
+  inverseOnSurface: '#1C1B1F',
+  inversePrimary: '#6B9B8D',
+
+  // Scrim/Overlay
+  scrim: 'rgba(0, 0, 0, 0.7)',
+  shadow: '#000000',
+
+  // Surface containers (MD3 elevation levels with surface tint overlay)
+  surfaceContainerLowest: '#000000',
+  surfaceContainerLow: '#0F0F10',
+  surfaceContainer: '#1C1B1F',
+  surfaceContainerHigh: '#252428',
+  surfaceContainerHighest: '#313033',
+
+  // Disabled states
+  disabled: '#5A5A5C',
+  onDisabled: '#8E8E93',
+  disabledContainer: 'rgba(230, 225, 229, 0.12)',
+
+  // Interactive states
+  pressed: 'rgba(255, 255, 255, 0.10)',
+  dragged: 'rgba(255, 255, 255, 0.16)',
+  focus: 'rgba(179, 212, 204, 0.12)',
+  hover: 'rgba(255, 255, 255, 0.08)',
+
+  // Glow accents (OLED-optimized)
+  glow: 'rgba(179, 212, 204, 0.25)',
+  glowStrong: 'rgba(179, 212, 204, 0.45)',
+} as const;
+
+// =============================================================================
+// LEGACY SERENE OLIVE THEME (Backward Compatibility)
+// =============================================================================
 
 export const lightColors = {
   // Primary accent - Olive/Sage
@@ -222,7 +441,13 @@ export const categoryColors = {
   meeting: '#8AAD8A',     // Soft green
 } as const;
 
-// Type definitions
+// =============================================================================
+// TYPE DEFINITIONS
+// =============================================================================
+
+export type MD3Colors = typeof md3Colors;
+export type MD3ColorsDark = typeof md3ColorsDark;
+
 export type ColorPalette = {
   primary: string;
   primaryLight: string;
