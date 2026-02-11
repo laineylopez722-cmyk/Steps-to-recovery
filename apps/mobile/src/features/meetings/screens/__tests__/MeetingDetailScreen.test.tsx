@@ -134,6 +134,7 @@ jest.mock('../../components/PreMeetingReflectionModal', () => ({
       <View>
         <Text>PreMeetingReflectionModal</Text>
         <Pressable
+          accessibilityLabel="pre-complete"
           onPress={() =>
             onComplete({
               intention: 'Be present',
@@ -144,7 +145,7 @@ jest.mock('../../components/PreMeetingReflectionModal', () => ({
         >
           <Text>pre-complete</Text>
         </Pressable>
-        <Pressable onPress={onSkip}>
+        <Pressable accessibilityLabel="pre-skip" onPress={onSkip}>
           <Text>pre-skip</Text>
         </Pressable>
       </View>
@@ -167,17 +168,20 @@ jest.mock('../../components/CheckInModal', () => ({
       <View>
         <Text>CheckInModal</Text>
         <Pressable
+          accessibilityLabel="checkin-confirm"
           onPress={() => {
             void Promise.resolve(onConfirm('integration notes')).then((result) => {
               if (result !== false) {
-                onClose();
+                setTimeout(() => {
+                  onClose();
+                }, 0);
               }
             });
           }}
         >
           <Text>checkin-confirm</Text>
         </Pressable>
-        <Pressable onPress={onClose}>
+        <Pressable accessibilityLabel="checkin-cancel" onPress={onClose}>
           <Text>checkin-cancel</Text>
         </Pressable>
       </View>
@@ -201,10 +205,10 @@ jest.mock('../../components/PostMeetingReflectionModal', () => ({
       <View>
         <Text>PostMeetingReflectionModal</Text>
         <Text>{`preMood:${String(preMood)}`}</Text>
-        <Pressable onPress={onComplete}>
+        <Pressable accessibilityLabel="post-complete" onPress={onComplete}>
           <Text>post-complete</Text>
         </Pressable>
-        <Pressable onPress={onClose}>
+        <Pressable accessibilityLabel="post-close" onPress={onClose}>
           <Text>post-close</Text>
         </Pressable>
       </View>
@@ -286,19 +290,19 @@ describe('MeetingDetailScreen integration flow', () => {
       expect(screen.getByText('Downtown Recovery Group')).toBeTruthy();
     });
 
-    fireEvent.press(screen.getByText('Check In'));
+    fireEvent.press(screen.getByLabelText('Check in to meeting'));
 
     await waitFor(() => {
       expect(screen.getByText('PreMeetingReflectionModal')).toBeTruthy();
     });
 
-    fireEvent.press(screen.getByText('pre-complete'));
+    fireEvent.press(screen.getByLabelText('pre-complete'));
 
     await waitFor(() => {
       expect(screen.getByText('CheckInModal')).toBeTruthy();
     });
 
-    fireEvent.press(screen.getByText('checkin-confirm'));
+    fireEvent.press(screen.getByLabelText('checkin-confirm'));
 
     await waitFor(() => {
       expect(mockCheckInAsync).toHaveBeenCalledWith({
@@ -321,7 +325,7 @@ describe('MeetingDetailScreen integration flow', () => {
     });
     expect(screen.getByText('preMood:4')).toBeTruthy();
 
-    fireEvent.press(screen.getByText('post-complete'));
+    fireEvent.press(screen.getByLabelText('post-complete'));
 
     await waitFor(() => {
       expect(screen.queryByText('PostMeetingReflectionModal')).toBeNull();
@@ -347,18 +351,18 @@ describe('MeetingDetailScreen integration flow', () => {
       expect(screen.getByText('Downtown Recovery Group')).toBeTruthy();
     });
 
-    fireEvent.press(screen.getByText('Check In'));
+    fireEvent.press(screen.getByLabelText('Check in to meeting'));
     await waitFor(() => {
       expect(screen.getByText('PreMeetingReflectionModal')).toBeTruthy();
     });
 
-    fireEvent.press(screen.getByText('pre-skip'));
+    fireEvent.press(screen.getByLabelText('pre-skip'));
 
     await waitFor(() => {
       expect(screen.getByText('CheckInModal')).toBeTruthy();
     });
 
-    fireEvent.press(screen.getByText('checkin-confirm'));
+    fireEvent.press(screen.getByLabelText('checkin-confirm'));
 
     await waitFor(() => {
       expect(mockCheckInAsync).toHaveBeenCalled();

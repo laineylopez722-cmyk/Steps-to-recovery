@@ -84,9 +84,10 @@
       "Bash(node --version:*)",
       "Bash(npm:*)",
       "Bash(cmd.exe /c \"cd /d C:\\\\Users\\\\h\\\\Documents\\\\GitHub\\\\Steps-to-recovery && rmdir /s /q node_modules 2>nul && rmdir /s /q apps\\\\mobile\\\\node_modules 2>nul && rmdir /s /q packages\\\\shared\\\\node_modules 2>nul && echo Deleted\")",
-      "Bash(npx husky init)"
+      "Bash(npx husky init)",
+      "Bash(winget upgrade:*)"
     ]
   },
-  "outputStyle": "Explanatory",
+  "outputStyle": "default",
   "spinnerTipsEnabled": true
 }
