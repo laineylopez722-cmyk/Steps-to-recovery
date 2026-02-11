@@ -111,10 +111,16 @@ export class IndexedDBAdapter implements StorageAdapter {
       process.env.EXPO_PUBLIC_SQLJS_WASM_BASE_URL ??
       'https://sql.js.org/dist/';
     this.wasmBaseUrl = base.endsWith('/') ? base : `${base}/`;
-    if (this.wasmBaseUrl.includes('sql.js.org')) {
-      logger.warn(
-        'IndexedDB adapter is using the sql.js CDN. Set EXPO_PUBLIC_SQLJS_WASM_BASE_URL to a local asset for offline-first use.',
-      );
+    try {
+      const parsed = new URL(this.wasmBaseUrl);
+      const hostname = parsed.hostname.toLowerCase();
+      if (hostname === 'sql.js.org') {
+        logger.warn(
+          'IndexedDB adapter is using the sql.js CDN. Set EXPO_PUBLIC_SQLJS_WASM_BASE_URL to a local asset for offline-first use.',
+        );
+      }
+    } catch {
+      // If the URL is malformed, skip CDN host detection and warning.
     }
   }
 

@@ -32,6 +32,9 @@ on:
 env:
   MAESTRO_VERSION: 1.39.0
 
+permissions:
+  contents: read
+
 jobs:
   # ============================================================
   # Build Development App for Testing
