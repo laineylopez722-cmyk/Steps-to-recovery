@@ -50,6 +50,9 @@ module.exports = function (api) {
       'react-native-reanimated/plugin',
     ],
     // Exclude node_modules from transformation except specific packages
-    exclude: [/node_modules\/(?!(.pnpm|react-native|@react-native|expo|@expo)\/).*/],
+    // Use patterns like expo(-[^/]*)? to match expo, expo-modules-core, expo-sqlite, etc.
+    exclude: [
+      /node_modules\/(?!(.pnpm|(jest-)?react-native(-[^/]*)?|@react-native(-[^/]*)?|expo(-[^/]*)?|@expo(-[^/]*)?|@unimodules|nativewind|@react-navigation(-[^/]*)?|@sentry\/react-native)\/).*/,
+    ],
   };
 };
