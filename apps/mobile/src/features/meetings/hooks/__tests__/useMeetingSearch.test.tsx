@@ -24,11 +24,13 @@ const mockDb = {
   withTransactionAsync: jest.fn(),
 };
 
+const mockUseDatabase = jest.fn().mockReturnValue({
+  db: mockDb,
+  isReady: true,
+});
+
 jest.mock('../../../../contexts/DatabaseContext', () => ({
-  useDatabase: () => ({
-    db: mockDb,
-    isReady: true,
-  }),
+  useDatabase: (...args: unknown[]) => mockUseDatabase(...args),
 }));
 
 const mockSearchMeetings = jest.fn();
@@ -37,11 +39,11 @@ const mockGetCachedMeetings = jest.fn();
 const mockIsCacheStale = jest.fn();
 const mockGenerateCacheRegionKey = jest.fn();
 
-jest.mock('../services/meetingGuideApi', () => ({
+jest.mock('../../services/meetingGuideApi', () => ({
   searchMeetings: (...args: unknown[]) => mockSearchMeetings(...args),
 }));
 
-jest.mock('../services/meetingCacheService', () => ({
+jest.mock('../../services/meetingCacheService', () => ({
   cacheMeetings: (...args: unknown[]) => mockCacheMeetings(...args),
   getCachedMeetings: (...args: unknown[]) => mockGetCachedMeetings(...args),
   isCacheStale: (...args: unknown[]) => mockIsCacheStale(...args),
@@ -266,7 +268,7 @@ describe('useMeetingSearch', () => {
     });
 
     it('should throw error when database is not initialized', async () => {
-      jest.mocked(require('../../../../contexts/DatabaseContext').useDatabase).mockReturnValue({
+      mockUseDatabase.mockReturnValue({
         db: null,
         isReady: false,
       });
@@ -286,7 +288,7 @@ describe('useMeetingSearch', () => {
       ).rejects.toThrow('Database not initialized');
 
       // Restore mock
-      jest.mocked(require('../../../../contexts/DatabaseContext').useDatabase).mockReturnValue({
+      mockUseDatabase.mockReturnValue({
         db: mockDb,
         isReady: true,
       });
@@ -389,7 +391,9 @@ describe('useMeetingSearch', () => {
         wrapper: createWrapper(),
       });
 
-      expect(result.current.isLoading).toBe(false);
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
       expect(result.current.meetings).toEqual([]);
     });
 

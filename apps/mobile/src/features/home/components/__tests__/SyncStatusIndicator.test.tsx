@@ -143,7 +143,7 @@ describe('SyncStatusIndicator', () => {
     mockUseSyncPendingMutations.mockReturnValue(syncPending);
 
     const { getByTestId } = render(<SyncStatusIndicator />);
-    fireEvent.press(getByTestId('sync-status-indicator'));
+    fireEvent.press(getByTestId('sync-completed-indicator'));
 
     await waitFor(() => {
       expect(triggerSync).toHaveBeenCalledTimes(1);
@@ -157,7 +157,7 @@ describe('SyncStatusIndicator', () => {
     mockUseSync.mockReturnValue(createSyncState({ triggerSync }));
 
     const { getByTestId } = render(<SyncStatusIndicator />);
-    fireEvent.press(getByTestId('sync-status-indicator'));
+    fireEvent.press(getByTestId('sync-offline-indicator'));
 
     expect(triggerSync).not.toHaveBeenCalled();
     expect(mockSyncPendingMutations).not.toHaveBeenCalled();
@@ -166,6 +166,6 @@ describe('SyncStatusIndicator', () => {
   it('exposes disabled accessibility state when sync is unavailable', () => {
     mockUseIsOnline.mockReturnValue(false);
     const { getByTestId } = render(<SyncStatusIndicator />);
-    expect(getByTestId('sync-status-indicator').props.accessibilityState.disabled).toBe(true);
+    expect(getByTestId('sync-offline-indicator').props.accessibilityState.disabled).toBe(true);
   });
 });

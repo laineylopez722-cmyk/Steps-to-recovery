@@ -62,7 +62,7 @@ export interface UseMotionPressOptions {
 /** Press animation result */
 export interface UseMotionPressReturn {
   /** Animated style to apply to component */
-  animatedStyle: { transform: [{ scale: number }] };
+  animatedStyle: { transform: { scale: number }[] };
   /** Call on press in */
   onPressIn: () => void;
   /** Call on press out */
@@ -154,7 +154,7 @@ export function useMotionPress(options: UseMotionPressOptions = {}): UseMotionPr
     if (isReducedMotion) {
       scale.value = withTiming(1, { duration: reducedMotionDuration });
     } else {
-      scale.value = withSpring(1, { ...springConfig, damping: springConfig.damping * 0.8 });
+      scale.value = withSpring(1, { ...springConfig, damping: (springConfig.damping ?? 24) * 0.8 });
     }
 
     // Callback

@@ -24,7 +24,7 @@ export { Toggle } from './Toggle';
 export type { ToggleProps } from './Toggle';
 
 export { SobrietyCounter } from './SobrietyCounter';
-export type { SobrietyCounterProps, Milestone } from './SobrietyCounter';
+export type { SobrietyCounterProps } from './SobrietyCounter';
 
 export { SobrietyCandle } from './SobrietyCandle';
 export type { SobrietyCandleProps } from './SobrietyCandle';
@@ -216,6 +216,8 @@ export type {
 export {
   // Main Button
   Button as MD3Button,
+} from './core/Button';
+export {
   // Variants
   buttonVariants,
   buttonTextVariants,
@@ -230,7 +232,7 @@ export {
   type FABIconVariantProps,
   type IconButtonVariantProps,
   type IconButtonIconVariantProps,
-} from './core/Button';
+} from './core/Button/variants';
 export type { ButtonProps as MD3ButtonProps } from './core/Button';
 
 // MD3 Card System

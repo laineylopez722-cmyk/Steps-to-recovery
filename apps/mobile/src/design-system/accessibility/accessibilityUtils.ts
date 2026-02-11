@@ -12,6 +12,7 @@ import {
   MAX_TEXT_SCALE,
 } from './constants';
 import type { RGBColor, ContrastValidation, TouchTargetValidation } from './types';
+export type { RGBColor, ContrastValidation, TouchTargetValidation };
 
 /**
  * Parse hex color to RGB values

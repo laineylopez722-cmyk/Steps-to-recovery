@@ -12,39 +12,40 @@
  *   entering={ScreenAnimations.modal}
  */
 
-import { MotionTransitions } from './motion';
+import { FadeIn, FadeInDown, SlideInDown } from 'react-native-reanimated';
+import { transitions } from './motion';
 
 export const ScreenAnimations = {
   /**
    * Screen entrance animation
    * Use for: Main screen content fade-in
    */
-  entrance: MotionTransitions.screenEnter(),
+  entrance: FadeIn.duration(transitions.fade.duration),
 
   /**
    * List item animation
    * Use for: List items, cards in scroll views
    * @param index - Item index for stagger effect
    */
-  item: (index: number = 0) => MotionTransitions.listItemEnter(index),
+  item: (index: number = 0) => FadeInDown.duration(transitions.slideUp.duration).delay(index * 50),
 
   /**
    * Modal/panel animation
    * Use for: Bottom sheets, modals, overlays
    */
-  modal: MotionTransitions.modalEnter(),
+  modal: SlideInDown.duration(transitions.slideUp.duration),
 
   /**
    * Simple fade
    * Use for: Subtle content appearance
    */
-  fade: MotionTransitions.fade(),
+  fade: FadeIn.duration(transitions.fade.duration),
 
   /**
    * Delayed fade for sequential content
    * @param delayMs - Delay in milliseconds
    */
-  fadeDelayed: (delayMs: number) => MotionTransitions.fadeDelayed(delayMs),
-} as const;
+  fadeDelayed: (delayMs: number) => FadeIn.duration(transitions.fade.duration).delay(delayMs),
+};
 
 export type ScreenAnimation = keyof typeof ScreenAnimations;

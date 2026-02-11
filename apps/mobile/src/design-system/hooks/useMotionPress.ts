@@ -12,14 +12,14 @@ interface UseMotionPressOptions {
  */
 export function useMotionPress(options: UseMotionPressOptions = {}) {
   const scale = useSharedValue<number>(motionScale.resting);
-  const scaleTo = options.scaleTo ?? motionScale.pressCard;
+  const scaleTo = options.scaleTo ?? motionScale.press;
 
   const onPressIn = useCallback(() => {
-    scale.value = withSpring(scaleTo, motionSpring.press);
+    scale.value = withSpring(scaleTo, motionSpring.snappy);
   }, [scale, scaleTo]);
 
   const onPressOut = useCallback(() => {
-    scale.value = withSpring(motionScale.resting, motionSpring.smooth);
+    scale.value = withSpring(motionScale.resting, motionSpring.gentle);
   }, [scale]);
 
   const animatedStyle = useAnimatedStyle(() => ({

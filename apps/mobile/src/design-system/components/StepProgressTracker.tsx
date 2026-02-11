@@ -116,7 +116,7 @@ interface StepNodeProps {
   step: Step;
   isLast: boolean;
   onPress: () => void;
-  colors: typeof md3LightColors;
+  colors: typeof md3LightColors | typeof md3DarkColors;
   isDark: boolean;
 }
 

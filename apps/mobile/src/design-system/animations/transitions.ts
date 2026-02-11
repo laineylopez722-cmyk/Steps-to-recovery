@@ -35,6 +35,7 @@ import {
   ZoomOut,
   Layout,
   Easing,
+  interpolate,
 } from 'react-native-reanimated';
 
 // ============================================================================
@@ -546,10 +547,11 @@ export const NavigationTransitions = {
       cardStyle: {
         transform: [
           {
-            translateX: current.progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: [layouts.screen.width, 0],
-            }),
+            translateX: interpolate(
+              current.progress,
+              [0, 1],
+              [layouts.screen.width, 0],
+            ),
           },
         ],
       },
@@ -569,10 +571,11 @@ export const NavigationTransitions = {
         opacity: current.progress,
         transform: [
           {
-            scale: current.progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.95, 1],
-            }),
+            scale: interpolate(
+              current.progress,
+              [0, 1],
+              [0.95, 1],
+            ),
           },
         ],
       },
@@ -593,10 +596,11 @@ export const NavigationTransitions = {
       cardStyle: {
         transform: [
           {
-            translateY: current.progress.interpolate({
-              inputRange: [0, 1],
-              outputRange: [300, 0],
-            }),
+            translateY: interpolate(
+              current.progress,
+              [0, 1],
+              [300, 0],
+            ),
           },
         ],
       },

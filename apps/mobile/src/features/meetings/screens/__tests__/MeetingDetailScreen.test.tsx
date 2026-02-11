@@ -154,41 +154,48 @@ jest.mock('../../components/PreMeetingReflectionModal', () => ({
   },
 }));
 
-jest.mock('../../components/CheckInModal', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  CheckInModal: ({
-    visible,
-    onConfirm,
-    onClose,
-  }: any) => {
-    const React = require('react');
-    const { View, Text, Pressable } = require('react-native');
-    return (
-    visible ? (
-      <View>
-        <Text>CheckInModal</Text>
-        <Pressable
-          accessibilityLabel="checkin-confirm"
-          onPress={() => {
-            void Promise.resolve(onConfirm('integration notes')).then((result) => {
-              if (result !== false) {
-                setTimeout(() => {
-                  onClose();
-                }, 0);
-              }
-            });
-          }}
-        >
-          <Text>checkin-confirm</Text>
-        </Pressable>
-        <Pressable accessibilityLabel="checkin-cancel" onPress={onClose}>
-          <Text>checkin-cancel</Text>
-        </Pressable>
-      </View>
-    ) : null
-    );
-  },
-}));
+jest.mock('../../components/CheckInModal', () => {
+  // Store onClose ref so we always call the latest version
+  let latestOnClose: (() => void) | null = null;
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    CheckInModal: ({
+      visible,
+      onConfirm,
+      onClose,
+    }: any) => {
+      const React = require('react');
+      const { View, Text, Pressable } = require('react-native');
+      // Always track latest onClose
+      latestOnClose = onClose;
+      return (
+      visible ? (
+        <View>
+          <Text>CheckInModal</Text>
+          <Pressable
+            accessibilityLabel="checkin-confirm"
+            onPress={() => {
+              void Promise.resolve(onConfirm('integration notes')).then((result: unknown) => {
+                if (result !== false) {
+                  // Use setTimeout to let React re-render with new props first
+                  setTimeout(() => {
+                    if (latestOnClose) latestOnClose();
+                  }, 0);
+                }
+              });
+            }}
+          >
+            <Text>checkin-confirm</Text>
+          </Pressable>
+          <Pressable accessibilityLabel="checkin-cancel" onPress={onClose}>
+            <Text>checkin-cancel</Text>
+          </Pressable>
+        </View>
+      ) : null
+      );
+    },
+  };
+});
 
 jest.mock('../../components/PostMeetingReflectionModal', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

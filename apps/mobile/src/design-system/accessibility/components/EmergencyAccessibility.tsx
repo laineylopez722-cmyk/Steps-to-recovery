@@ -34,6 +34,7 @@ import {
   type ViewProps,
   type TextProps,
   type PressableProps,
+  type ViewStyle,
   AccessibilityInfo,
   Platform,
 } from 'react-native';
@@ -58,7 +59,7 @@ const EMERGENCY_CONTRAST_RATIO = 10;
 // ============================================================================
 
 /** Emergency button props */
-interface EmergencyButtonProps extends PressableProps {
+export interface EmergencyButtonProps extends PressableProps {
   /** Button label (required) */
   label: string;
   /** Button text */
@@ -120,12 +121,12 @@ export function EmergencyButton({
     [onPress, label, announcement, announceOnPress, announceCritical]
   );
 
-  const buttonStyle = [
+  const buttonStyle: ViewStyle[] = [
     styles.emergencyButton,
     styles[`${variant}Button` as const],
-    disabled && styles.disabledButton,
-    style,
-  ];
+    disabled ? styles.disabledButton : undefined,
+    style as ViewStyle,
+  ].filter(Boolean) as ViewStyle[];
 
   return (
     <Pressable
@@ -136,7 +137,7 @@ export function EmergencyButton({
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint="Emergency action"
-      accessibilityState={{ disabled }}
+      accessibilityState={{ disabled: disabled ?? undefined }}
       testID={testID}
       // Ensure minimum touch target
       hitSlop={{
@@ -159,7 +160,7 @@ export function EmergencyButton({
 // ============================================================================
 
 /** Emergency card props */
-interface EmergencyCardProps extends ViewProps {
+export interface EmergencyCardProps extends ViewProps {
   /** Card content */
   children: React.ReactNode;
   /** Card title */
@@ -224,7 +225,7 @@ export function EmergencyCard({
 // ============================================================================
 
 /** Emergency text props */
-interface EmergencyTextProps extends TextProps {
+export interface EmergencyTextProps extends TextProps {
   /** Text content */
   children: React.ReactNode;
   /** Text variant */
@@ -327,7 +328,7 @@ export function useEmergencyAnnouncer() {
 // ============================================================================
 
 /** Emergency container props */
-interface EmergencyContainerProps extends ViewProps {
+export interface EmergencyContainerProps extends ViewProps {
   /** Container content */
   children: React.ReactNode;
   /** Emergency title */
@@ -361,7 +362,7 @@ export function EmergencyContainer({
   return (
     <View
       style={[styles.emergencyContainer, style]}
-      accessibilityRole={isModal ? 'dialog' : 'none'}
+      accessibilityRole={isModal ? 'alert' : 'none'}
       accessibilityLabel={title}
       {...props}
     >

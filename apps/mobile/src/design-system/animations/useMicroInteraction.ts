@@ -21,9 +21,8 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import {
   useReducedMotion,
-  ReduceMotion,
 } from 'react-native-reanimated';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, type GestureResponderEvent } from 'react-native';
 
 // Import all animation modules
 import {
@@ -127,7 +126,7 @@ interface ReducedMotionState {
 /**
  * Hook to detect accessibility preferences
  */
-function useAccessibilityPreferences(): ReducedMotionState {
+export function useAccessibilityPreferences(): ReducedMotionState {
   const [state, setState] = useState<ReducedMotionState>({
     isReducedMotion: false,
     isScreenReaderEnabled: false,
@@ -361,7 +360,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
       const rippleAnim = enableRipple ? useRippleEffect() : null;
 
       return {
-        onPressIn: (event?: Parameters<typeof rippleAnim['onPressIn']>[0]) => {
+        onPressIn: (event?: GestureResponderEvent) => {
           pressAnim.onPressIn();
           rippleAnim?.onPressIn(event);
         },
@@ -628,10 +627,6 @@ export function useReducedMotionPreference() {
 // ============================================================================
 
 export type {
-  MicroInteractionOptions,
-  CelebrationOptions,
-  PressOptions,
-  LoadingOptions,
   MilestoneData,
   AchievementData,
   CelebrationType,

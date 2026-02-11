@@ -65,7 +65,7 @@ export interface UseScaleAnimationOptions {
 /** Scale animation result */
 export interface UseScaleAnimationReturn {
   /** Animated style with transform */
-  animatedStyle: { transform: [{ scale: number }] };
+  animatedStyle: { transform: { scale: number }[] };
   /** Trigger the scale animation */
   trigger: (callback?: () => void) => void;
   /** Reset to initial state */
@@ -153,7 +153,7 @@ export function useScaleAnimation(
           scale.value = withSequence(
             withTiming(from, { duration: 0 }),
             withSpring(to, spring),
-            withSpring(final, { ...spring, damping: spring.damping * 1.2 })
+            withSpring(final, { ...spring, damping: (spring.damping ?? 10) * 1.2 } as typeof spring)
           );
 
           // Manual completion tracking for sequence

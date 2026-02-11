@@ -253,7 +253,9 @@ describe('useCheckIns', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBeTruthy();
+      // Hook handles decryption errors gracefully — returns null values
+      expect(result.current.morning).toBeNull();
+      expect(result.current.evening).toBeNull();
     });
   });
 

@@ -92,6 +92,15 @@ describe('useSponsorships', () => {
     // Default authenticated user - return stable reference
     mockUseAuth.mockImplementation(() => ({ user: mockStableUser }));
 
+    // Re-establish chainable mock returns (cleared by clearAllMocks)
+    mockChainable.select.mockReturnValue(mockChainable);
+    mockChainable.insert.mockReturnValue(mockChainable);
+    mockChainable.update.mockReturnValue(mockChainable);
+    mockChainable.delete.mockReturnValue(mockChainable);
+    mockChainable.eq.mockReturnValue(mockChainable);
+    mockChainable.or.mockReturnValue(mockChainable);
+    mockChainable.order.mockReturnValue(mockChainable);
+
     // Default successful responses
     mockChainable.order.mockResolvedValue({ data: [], error: null });
     mockChainable.single.mockResolvedValue({ data: null, error: null });
@@ -416,8 +425,8 @@ describe('useSponsorships', () => {
     it('should handle insert errors', async () => {
       const sponsorProfile = { id: otherUserId };
       mockChainable.single.mockResolvedValueOnce({ data: sponsorProfile, error: null });
-      mockChainable.insert.mockResolvedValue({
-        error: { message: 'Insert failed' },
+      mockChainable.insert.mockResolvedValueOnce({
+        error: new Error('Insert failed'),
       });
 
       const { result } = renderHook(() => useSponsorships());
@@ -462,8 +471,6 @@ describe('useSponsorships', () => {
     });
 
     it('should update status to accepted', async () => {
-      mockChainable.update.mockResolvedValue({ error: null });
-
       const { result } = renderHook(() => useSponsorships());
 
       await waitFor(() => {
@@ -481,8 +488,6 @@ describe('useSponsorships', () => {
     });
 
     it('should refresh sponsorships after accepting', async () => {
-      mockChainable.update.mockResolvedValue({ error: null });
-
       const { result } = renderHook(() => useSponsorships());
 
       await waitFor(() => {
@@ -501,8 +506,8 @@ describe('useSponsorships', () => {
     });
 
     it('should handle update errors', async () => {
-      mockChainable.update.mockResolvedValue({
-        error: { message: 'Update failed' },
+      mockChainable.eq.mockResolvedValueOnce({
+        error: new Error('Update failed'),
       });
 
       const { result } = renderHook(() => useSponsorships());
@@ -527,8 +532,6 @@ describe('useSponsorships', () => {
     });
 
     it('should update status to declined', async () => {
-      mockChainable.update.mockResolvedValue({ error: null });
-
       const { result } = renderHook(() => useSponsorships());
 
       await waitFor(() => {
@@ -546,8 +549,6 @@ describe('useSponsorships', () => {
     });
 
     it('should refresh sponsorships after declining', async () => {
-      mockChainable.update.mockResolvedValue({ error: null });
-
       const { result } = renderHook(() => useSponsorships());
 
       await waitFor(() => {
@@ -566,8 +567,8 @@ describe('useSponsorships', () => {
     });
 
     it('should handle update errors', async () => {
-      mockChainable.update.mockResolvedValue({
-        error: { message: 'Update failed' },
+      mockChainable.eq.mockResolvedValueOnce({
+        error: new Error('Update failed'),
       });
 
       const { result } = renderHook(() => useSponsorships());
@@ -592,8 +593,6 @@ describe('useSponsorships', () => {
     });
 
     it('should delete sponsorship record', async () => {
-      mockChainable.delete.mockResolvedValue({ error: null });
-
       const { result } = renderHook(() => useSponsorships());
 
       await waitFor(() => {
@@ -611,8 +610,6 @@ describe('useSponsorships', () => {
     });
 
     it('should refresh sponsorships after removal', async () => {
-      mockChainable.delete.mockResolvedValue({ error: null });
-
       const { result } = renderHook(() => useSponsorships());
 
       await waitFor(() => {
@@ -631,8 +628,8 @@ describe('useSponsorships', () => {
     });
 
     it('should handle delete errors', async () => {
-      mockChainable.delete.mockResolvedValue({
-        error: { message: 'Delete failed' },
+      mockChainable.eq.mockResolvedValueOnce({
+        error: new Error('Delete failed'),
       });
 
       const { result } = renderHook(() => useSponsorships());

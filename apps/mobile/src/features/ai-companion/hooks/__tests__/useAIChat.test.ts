@@ -306,10 +306,11 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('Hello AI');
+        // Flush the setTimeout(fn, 100) inside sendMessage
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
       await waitFor(() => {
@@ -394,19 +395,21 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('I want to end my life');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
-      expect(mockOnCrisisDetected).toHaveBeenCalledWith(
-        expect.objectContaining({
-          detected: true,
-          severity: 'high',
-          suggestedAction: 'emergency',
-        }),
-      );
+      await waitFor(() => {
+        expect(mockOnCrisisDetected).toHaveBeenCalledWith(
+          expect.objectContaining({
+            detected: true,
+            severity: 'high',
+            suggestedAction: 'emergency',
+          }),
+        );
+      });
     });
 
     it('should detect medium severity crisis (relapse)', async () => {
@@ -421,19 +424,21 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('I relapsed today and feel like giving up');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
-      expect(mockOnCrisisDetected).toHaveBeenCalledWith(
-        expect.objectContaining({
-          detected: true,
-          severity: 'medium',
-          suggestedAction: 'intervene',
-        }),
-      );
+      await waitFor(() => {
+        expect(mockOnCrisisDetected).toHaveBeenCalledWith(
+          expect.objectContaining({
+            detected: true,
+            severity: 'medium',
+            suggestedAction: 'intervene',
+          }),
+        );
+      });
     });
 
     it('should detect low severity crisis (craving)', async () => {
@@ -448,19 +453,21 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('Having a strong craving right now');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
-      expect(mockOnCrisisDetected).toHaveBeenCalledWith(
-        expect.objectContaining({
-          detected: true,
-          severity: 'low',
-          suggestedAction: 'monitor',
-        }),
-      );
+      await waitFor(() => {
+        expect(mockOnCrisisDetected).toHaveBeenCalledWith(
+          expect.objectContaining({
+            detected: true,
+            severity: 'low',
+            suggestedAction: 'monitor',
+          }),
+        );
+      });
     });
 
     it('should not trigger crisis for normal messages', async () => {
@@ -500,10 +507,10 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('Hello');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
       await waitFor(() => {
@@ -512,7 +519,10 @@ describe('useAIChat', () => {
     });
 
     it('should handle API errors gracefully', async () => {
-      mockChatService.chat.mockRejectedValue(new Error('API Error'));
+      // Mock chat to return an async iterable that throws
+      mockChatService.chat.mockImplementation(async function* () {
+        throw new Error('API Error');
+      });
 
       const { result } = renderHook(() =>
         useAIChat({
@@ -525,10 +535,10 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('Hello');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
       await waitFor(() => {
@@ -550,10 +560,10 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('Hello');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
       await waitFor(() => {
@@ -612,10 +622,10 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       await act(async () => {
         await result.current.sendMessage('I really like coffee in the morning');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
       await waitFor(() => {
@@ -641,17 +651,19 @@ describe('useAIChat', () => {
         await result.current.startNewConversation('general');
       });
 
-      jest.advanceTimersByTime(100);
-
       // Should not throw
       await act(async () => {
         await result.current.sendMessage('Test message');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Memory extraction failed',
-        expect.any(Error),
-      );
+      await waitFor(() => {
+        expect(mockLogger.warn).toHaveBeenCalledWith(
+          'Memory extraction failed',
+          expect.any(Error),
+        );
+      });
     });
   });
 

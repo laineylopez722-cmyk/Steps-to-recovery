@@ -35,6 +35,7 @@ import Animated, {
   withTiming,
   withRepeat,
   withSpring,
+  withSequence,
   Easing,
 } from 'react-native-reanimated';
 import Svg, { Circle, G } from 'react-native-svg';

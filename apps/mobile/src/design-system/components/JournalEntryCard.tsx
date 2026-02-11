@@ -95,7 +95,7 @@ function getMoodConfig(mood: MoodType | string): typeof MOOD_CONFIG[MoodType] {
 
 interface CravingBarProps {
   level: CravingLevel;
-  colors: typeof md3LightColors;
+  colors: typeof md3LightColors | typeof md3DarkColors;
 }
 
 function CravingBar({ level, colors }: CravingBarProps): React.ReactElement | null {
@@ -135,7 +135,7 @@ function CravingBar({ level, colors }: CravingBarProps): React.ReactElement | nu
 
 interface TagChipProps {
   label: string;
-  colors: typeof md3LightColors;
+  colors: typeof md3LightColors | typeof md3DarkColors;
 }
 
 function TagChip({ label, colors }: TagChipProps): React.ReactElement {

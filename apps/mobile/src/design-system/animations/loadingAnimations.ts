@@ -20,6 +20,8 @@ import {
   withTiming,
   withRepeat,
   withSpring,
+  withDelay,
+  withSequence,
   Easing,
   interpolate,
   Extrapolation,
@@ -743,14 +745,4 @@ export function useContentFadeAnimation(config: Partial<ContentFadeConfig> = {})
     start,
     stop,
   };
-}
-
-// ============================================================================
-// WITHSEQUENCE HELPER
-// ============================================================================
-
-function withSequence<T>(...animations: T[]): T {
-  // Sequence wrapper - in real implementation,
-  // this would use withSequence from reanimated
-  return animations[animations.length - 1];
 }

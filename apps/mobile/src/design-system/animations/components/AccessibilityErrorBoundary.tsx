@@ -170,7 +170,7 @@ export function useAnimationError(): {
 // SAFE ANIMATION WRAPPER
 // ============================================================================
 
-interface SafeAnimationProps {
+export interface SafeAnimationProps {
   children: ReactNode;
   /** Animation component to render */
   animation: ReactNode;

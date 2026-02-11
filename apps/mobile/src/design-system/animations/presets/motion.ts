@@ -19,7 +19,8 @@
  * ```
  */
 
-import { Easing } from 'react-native-reanimated';
+import { Easing, type EasingFunctionFactory } from 'react-native-reanimated';
+export { useReducedMotion } from 'react-native-reanimated';
 
 // ============================================================================
 // DURATION CONSTANTS
@@ -254,7 +255,7 @@ export function getReducedMotionSpring<T extends { damping?: number; stiffness?:
 /** Complete motion preset */
 export interface MotionPreset {
   duration: number;
-  easing: (value: number) => number;
+  easing: ((value: number) => number) | EasingFunctionFactory;
   spring?: { damping: number; stiffness: number; mass?: number };
 }
 

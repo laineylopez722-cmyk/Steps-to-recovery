@@ -7,7 +7,7 @@
  * @see https://m3.material.io/styles/motion/overview
  */
 
-import { Easing } from 'react-native-reanimated';
+import { Easing, FadeIn, FadeInDown, FadeOut, FadeOutUp, Layout } from 'react-native-reanimated';
 
 // =============================================================================
 // DURATION SCALE
@@ -539,3 +539,67 @@ export const motionSystem = {
 } as const;
 
 export type MotionSystem = typeof motionSystem;
+
+// =============================================================================
+// LEGACY ALIASES (backward compatibility)
+// Consumers still import the old prefixed names after the token refactor.
+// TODO: Migrate consumers to the canonical names above, then remove these.
+// =============================================================================
+
+/** @deprecated Use `duration` instead */
+export const motionDuration = {
+  ...duration,
+  fast: duration.fast2,
+  standard: duration.normal1,
+} as const;
+/** @deprecated Use `spring` instead */
+export const motionSpring = spring;
+/** @deprecated Use `scale` instead */
+export const motionScale = {
+  ...scale,
+  pressCard: scale.press,
+  pressButton: scale.press,
+} as const;
+/** @deprecated Use `durations` instead */
+export const motionTiming = durations;
+/** @deprecated Use `loading.shimmer` instead */
+export const motionShimmer = loading.shimmer;
+/** @deprecated Use `transitions` instead */
+export const MotionTransitions = {
+  ...transitions,
+  fade: () => FadeIn.duration(durations.normal),
+  cardEnter: (index: number = 0) =>
+    FadeInDown.delay(index * 50)
+      .duration(duration.normal3)
+      .springify(),
+  screenEnter: () => FadeIn.duration(durations.normal),
+  fadeDelayed: (delayMs: number) => FadeIn.delay(delayMs).duration(durations.normal),
+  skeletonEnter: (index: number = 0) => FadeIn.delay(index * 80).duration(duration.fast4),
+  accordionLayout: () => Layout.duration(duration.normal1),
+};
+
+/** @deprecated Use `duration` instead */
+export const md3Duration = duration;
+/** @deprecated Use `easing` instead */
+export const md3Easing = easing;
+/** @deprecated Use `motion` instead */
+export const md3Motion = motion;
+/** @deprecated Use `spring` instead */
+export const md3Spring = spring;
+/** @deprecated Use `transitions` instead */
+export const md3Transitions = transitions;
+
+/** @deprecated Use `DurationKey` instead */
+export type MD3DurationKey = DurationKey;
+/** @deprecated Use `EasingKey` instead */
+export type MD3EasingKey = EasingKey;
+/** @deprecated Use `MotionKey` instead */
+export type MD3MotionKey = MotionKey;
+/** @deprecated Use `SpringKey` instead */
+export type MD3SpringKey = SpringKey;
+/** @deprecated Use `TransitionKey` instead */
+export type MD3TransitionKey = TransitionKey;
+/** @deprecated Use `DurationKey` instead */
+export type MotionDurationKey = DurationKey;
+/** @deprecated Use `SpringKey` instead */
+export type MotionSpringKey = SpringKey;

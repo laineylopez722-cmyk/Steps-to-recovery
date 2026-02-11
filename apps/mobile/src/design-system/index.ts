@@ -278,7 +278,7 @@ export {
   md3DarkColors,
   elevationOverlayOpacity,
 } from './tokens/md3-colors';
-export type { MD3LightColors, MD3DarkColors, MD3Colors } from './tokens/md3-colors';
+export type { MD3LightColors, MD3DarkColors } from './tokens/md3-colors';
 
 export {
   md3ElevationLight,
@@ -286,8 +286,8 @@ export {
   stateLayerOpacity,
   md3RippleConfig,
   md3Shape,
-  md3Motion,
-  md3Typography,
+  md3Motion as md3MotionElevation,
+  md3Typography as md3TypographyElevation,
   md3Tokens,
 } from './tokens/md3-elevation';
 export type { ElevationStyle } from './tokens/md3-elevation';

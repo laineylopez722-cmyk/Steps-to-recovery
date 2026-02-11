@@ -262,7 +262,7 @@ export const Button = forwardRef<View, ButtonProps>(
       switch (variant) {
         case 'filled':
         case 'tonal':
-          return theme.colors.onPrimary;
+          return theme.colors.semantic.text.onPrimary;
         case 'outlined':
         case 'text':
         case 'elevated':

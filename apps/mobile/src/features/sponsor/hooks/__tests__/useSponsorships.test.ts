@@ -224,7 +224,7 @@ describe('useSponsorships', () => {
 
     it('should handle insert errors', async () => {
       mockSupabaseSingle.mockResolvedValue({ data: { id: 'sponsor-456' }, error: null });
-      mockSupabaseInsert.mockResolvedValue({ error: { message: 'Insert failed' } });
+      mockSupabaseInsert.mockResolvedValue({ error: new Error('Insert failed') });
       mockSupabaseOrder.mockResolvedValue({ data: [], error: null });
 
       const { result } = renderHook(() => useSponsorships());
@@ -281,7 +281,7 @@ describe('useSponsorships', () => {
     it('should handle accept errors', async () => {
       mockSupabaseOrder.mockResolvedValue({ data: [], error: null });
       mockSupabaseUpdate.mockReturnValue({
-        eq: jest.fn().mockResolvedValue({ error: { message: 'Update failed' } }),
+        eq: jest.fn().mockResolvedValue({ error: new Error('Update failed') }),
       });
 
       const { result } = renderHook(() => useSponsorships());
@@ -319,7 +319,7 @@ describe('useSponsorships', () => {
     it('should handle decline errors', async () => {
       mockSupabaseOrder.mockResolvedValue({ data: [], error: null });
       mockSupabaseUpdate.mockReturnValue({
-        eq: jest.fn().mockResolvedValue({ error: { message: 'Decline failed' } }),
+        eq: jest.fn().mockResolvedValue({ error: new Error('Decline failed') }),
       });
 
       const { result } = renderHook(() => useSponsorships());
@@ -358,7 +358,7 @@ describe('useSponsorships', () => {
     it('should handle remove errors', async () => {
       mockSupabaseOrder.mockResolvedValue({ data: [], error: null });
       mockSupabaseDelete.mockReturnValue({
-        eq: jest.fn().mockResolvedValue({ error: { message: 'Delete failed' } }),
+        eq: jest.fn().mockResolvedValue({ error: new Error('Delete failed') }),
       });
 
       const { result } = renderHook(() => useSponsorships());

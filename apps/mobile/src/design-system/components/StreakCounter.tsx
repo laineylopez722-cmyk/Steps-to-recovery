@@ -29,6 +29,7 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolation,
+  type SharedValue,
 } from 'react-native-reanimated';
 import Svg, { Circle, G, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { Feather } from '@expo/vector-icons';
@@ -95,9 +96,9 @@ interface CircularRingProps {
   progress: number;
   size: number;
   strokeWidth: number;
-  colors: typeof md3LightColors;
+  colors: typeof md3LightColors | typeof md3DarkColors;
   isDark: boolean;
-  animatedValue: Animated.SharedValue<number>;
+  animatedValue: SharedValue<number>;
 }
 
 function CircularRing({

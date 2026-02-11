@@ -28,6 +28,7 @@ export {
   ReducedMotionDurations,
   getReducedMotionDuration,
   getReducedMotionSpring,
+  useReducedMotion,
 
   // Motion presets
   MotionPresets,

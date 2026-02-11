@@ -109,6 +109,10 @@ export interface InputProps extends Omit<TextInputProps, 'style'> {
    */
   required?: boolean;
   /**
+   * Whether the input is disabled
+   */
+  disabled?: boolean;
+  /**
    * Custom container style
    */
   containerStyle?: StyleProp<ViewStyle>;
@@ -360,7 +364,7 @@ export const Input = forwardRef<TextInput, InputProps>(
               editable={!disabled}
               secureTextEntry={effectiveSecureTextEntry}
               placeholder={shouldFloat ? placeholder : undefined}
-              placeholderTextColor={theme.colors.onSurfaceVariant}
+              placeholderTextColor={theme.colors.textTertiary}
               className={cn(
                 'text-base text-onSurface h-full pt-4',
                 Platform.select({

@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS: AccessibilitySettings = {
 };
 
 /** Context value type */
-interface AccessibilityContextValue extends AccessibilitySettings {
+export interface AccessibilityContextValue extends AccessibilitySettings {
   /** Update a specific setting */
   setSetting: <K extends keyof AccessibilitySettings>(
     key: K,
@@ -48,7 +48,7 @@ interface AccessibilityContextValue extends AccessibilitySettings {
 const AccessibilityContext = createContext<AccessibilityContextValue | undefined>(undefined);
 
 /** Props for AccessibilityProvider */
-interface AccessibilityProviderProps {
+export interface AccessibilityProviderProps {
   children: React.ReactNode;
 }
 

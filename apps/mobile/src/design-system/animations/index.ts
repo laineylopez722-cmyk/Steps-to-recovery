@@ -93,7 +93,7 @@ export {
   /** MD3 easing curves */
   MD3Easing,
   /** Animation duration constants */
-  Durations,
+  Durations as TransitionDurations,
   /** Screen transition specs */
   ScreenTransitions,
   /** Enter animation presets */
@@ -487,7 +487,7 @@ export {
   DEFAULT_COLORS,
   type UseConfettiOptions,
   type UseConfettiReturn,
-  type ConfettiParticle,
+  type ConfettiParticle as ConfettiParticleHook,
 } from './hooks/useConfetti';
 
 export {
@@ -498,8 +498,3 @@ export {
   useAnimationError,
   type SafeAnimationProps,
 } from './components/AccessibilityErrorBoundary';
-
-// Re-export from presets for convenience
-export * from './presets';
-export * from './hooks';
-export * from './components';

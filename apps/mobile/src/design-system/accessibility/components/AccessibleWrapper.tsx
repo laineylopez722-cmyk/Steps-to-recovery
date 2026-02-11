@@ -51,7 +51,7 @@ import { useA11yAnnouncer } from '../hooks/useA11yAnnouncer';
 // ============================================================================
 
 /** Props for AccessibleWrapper */
-export interface AccessibleWrapperProps extends ViewProps {
+export interface AccessibleWrapperProps extends Omit<ViewProps, 'role'> {
   /** Children to wrap */
   children: React.ReactNode;
   /** Accessibility label (auto-generated if not provided) */
@@ -111,29 +111,30 @@ function extractTextContent(element: React.ReactNode): string {
   }
 
   if ('props' in element) {
+    const elProps = (element as React.ReactElement<Record<string, unknown>>).props;
     // Check for common text props
-    if (element.props.children) {
-      if (typeof element.props.children === 'string') {
-        return element.props.children;
+    if (elProps.children) {
+      if (typeof elProps.children === 'string') {
+        return elProps.children;
       }
-      if (Array.isArray(element.props.children)) {
-        return element.props.children.map(extractTextContent).join(' ');
+      if (Array.isArray(elProps.children)) {
+        return elProps.children.map(extractTextContent).join(' ');
       }
-      return extractTextContent(element.props.children);
+      return extractTextContent(elProps.children as React.ReactNode);
     }
 
     // Check for label/title/accessibilityLabel props
-    if (element.props.accessibilityLabel) {
-      return element.props.accessibilityLabel;
+    if (elProps.accessibilityLabel) {
+      return elProps.accessibilityLabel as string;
     }
-    if (element.props.label) {
-      return element.props.label;
+    if (elProps.label) {
+      return elProps.label as string;
     }
-    if (element.props.title) {
-      return element.props.title;
+    if (elProps.title) {
+      return elProps.title as string;
     }
-    if (element.props.placeholder) {
-      return element.props.placeholder;
+    if (elProps.placeholder) {
+      return elProps.placeholder as string;
     }
   }
 

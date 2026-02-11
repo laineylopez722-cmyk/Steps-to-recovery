@@ -19,7 +19,7 @@ import type { ContrastValidation } from './types';
 /**
  * Hook return type
  */
-interface UseAccessibilityReturn {
+export interface UseAccessibilityReturn {
   // Settings
   /** High contrast mode enabled */
   highContrast: boolean;

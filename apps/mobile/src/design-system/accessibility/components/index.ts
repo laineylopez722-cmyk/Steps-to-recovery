@@ -41,11 +41,4 @@ export {
   type EmergencyContainerProps,
 } from './EmergencyAccessibility';
 
-// Error boundary
-export {
-  AccessibilityErrorBoundary,
-  SafeAnimation,
-  AnimationDisabledBanner,
-  useAnimationError,
-  type SafeAnimationProps,
-} from './AccessibilityErrorBoundary';
+

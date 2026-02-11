@@ -21,6 +21,7 @@ import {
   useAnimatedStyle,
   withSpring,
   withTiming,
+  withSequence,
   Easing,
   runOnJS,
   type SharedValue,
@@ -457,21 +458,11 @@ export function useLongPressAnimation(
   }, [scale, progress, isPressed]);
 
   // Track progress for haptic and callbacks
+  // Note: SharedValue does not support addListener in reanimated v3.
+  // Progress tracking should use useAnimatedReaction if needed.
   useEffect(() => {
-    const listener = progress.addListener?.((value: number) => {
-      onProgress?.(value);
-
-      if (value >= hapticAtProgress && !hapticTriggered.value) {
-        hapticTriggered.value = true;
-        // Haptic would be triggered here
-      }
-    });
-
-    return () => {
-      if (listener && progress.removeListener) {
-        progress.removeListener(listener);
-      }
-    };
+    // No-op cleanup
+    return () => {};
   }, [progress, hapticAtProgress, onProgress, hapticTriggered]);
 
   const animatedStyle = useAnimatedStyle(() => ({

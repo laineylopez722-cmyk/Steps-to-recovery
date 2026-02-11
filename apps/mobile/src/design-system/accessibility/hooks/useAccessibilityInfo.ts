@@ -129,7 +129,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
           invertColorsEnabled = (await AccessibilityInfo.isInvertColorsEnabled?.()) ?? false;
           reduceTransparencyEnabled =
             (await AccessibilityInfo.isReduceTransparencyEnabled?.()) ?? false;
-          closedCaptioningEnabled = (await AccessibilityInfo.isClosedCaptioningEnabled?.()) ?? false;
+          closedCaptioningEnabled = false; // Not available in all RN versions
         } else {
           // Android - detect high contrast from grayscale or invert colors
           invertColorsEnabled = (await AccessibilityInfo.isInvertColorsEnabled?.()) ?? false;
@@ -154,7 +154,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
         }
       } catch (error) {
         if (mountedRef.current) {
-          setIsLoading(false);
+          setState((prev: AccessibilityInfoState) => ({ ...prev, isLoading: false }));
         }
       }
     };
