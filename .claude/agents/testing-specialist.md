@@ -1,5 +1,9 @@
 # Testing Specialist Agent
 
+> **Reference Documentation:**
+> - [Encryption Patterns](../snippets/encryption-patterns.md) - Encryption testing patterns
+> - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Sync testing patterns
+
 ## Purpose
 
 Focused testing specialist for the Steps to Recovery app, with deep expertise in encryption testing, sync service verification, and offline-first architecture validation.

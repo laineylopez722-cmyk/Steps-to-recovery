@@ -53,6 +53,12 @@ src/features/[feature-name]/
 
 ### Component Template
 
+> **Reference**: For detailed patterns, see:
+> - [TypeScript Patterns](../snippets/typescript-patterns.md) - Component props, interfaces
+> - [Encryption Patterns](../snippets/encryption-patterns.md) - Data encryption/decryption
+> - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Cloud backup integration
+> - [Accessibility Requirements](../snippets/accessibility-requirements.md) - WCAG AAA compliance
+
 ```typescript
 // apps/mobile/src/features/[feature]/components/[Component].tsx
 import React, { useState, useCallback } from 'react';
@@ -63,6 +69,7 @@ import { logger } from '@/utils/logger';
 import { generateUUID } from '@/utils/uuid';
 import { addToSyncQueue } from '@/services/syncService';
 
+// See: ../snippets/typescript-patterns.md for interface patterns
 interface [Component]Props {
   [prop]: [type];
 }
@@ -79,7 +86,7 @@ export function [Component]({ [prop] }: [Component]Props): React.ReactElement {
     setError(null);
     
     try {
-      // Implementation with encryption
+      // See: ../snippets/encryption-patterns.md for encryption usage
       const id = generateUUID();
       const encryptedContent = await encryptContent(sensitiveData);
       
@@ -88,11 +95,12 @@ export function [Component]({ [prop] }: [Component]Props): React.ReactElement {
         [id, userId, encryptedContent, new Date().toISOString()]
       );
       
-      // Queue for sync
+      // See: ../snippets/sync-queue-integration.md for sync patterns
       await addToSyncQueue(db, 'table_name', id, 'insert');
       
       logger.info('[Feature] created', { id });
     } catch (err) {
+      // See: ../snippets/typescript-patterns.md for error handling
       const message = err instanceof Error ? err.message : 'Unknown error';
       logger.error('[Feature] creation failed', err);
       setError(message);
@@ -101,6 +109,7 @@ export function [Component]({ [prop] }: [Component]Props): React.ReactElement {
     }
   }, [db, userId]);
 
+  // See: ../snippets/accessibility-requirements.md for accessibility props
   return (
     <View accessibilityLabel="[Feature] component">
       {/* Implementation */}
@@ -119,6 +128,8 @@ export function [Component]({ [prop] }: [Component]Props): React.ReactElement {
 ```
 
 ### Hook Template
+
+> **Reference**: See [Encryption Patterns](../snippets/encryption-patterns.md) for decryption usage
 
 ```typescript
 // apps/mobile/src/features/[feature]/hooks/use[Feature].ts
@@ -158,7 +169,7 @@ export function use[Feature]s(): {
           [userId]
         );
         
-        // Decrypt in parallel
+        // Decrypt in parallel (see: ../snippets/encryption-patterns.md)
         return Promise.all(
           rows.map(async (row) => ({
             id: row.id,
