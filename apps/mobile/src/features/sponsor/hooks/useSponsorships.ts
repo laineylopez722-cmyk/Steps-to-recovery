@@ -19,7 +19,10 @@ export function useSponsorships() {
   const [error, setError] = useState<Error | null>(null);
 
   const fetchSponsorships = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -38,7 +41,7 @@ export function useSponsorships() {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchSponsorships();
