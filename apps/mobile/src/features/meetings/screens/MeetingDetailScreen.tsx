@@ -8,7 +8,6 @@ import {
   View,
   Text,
   ScrollView,
-  StyleSheet,
   ActivityIndicator,
   Alert,
   Pressable,
@@ -17,7 +16,8 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { Button } from '../../../design-system/components/Button';
 import { Badge } from '../../../design-system/components/Badge';
 import { TextArea } from '../../../design-system/components/TextArea';
@@ -39,6 +39,8 @@ type MeetingDetailScreenProps = MeetingsStackScreenProps<'MeetingDetail'>;
 
 export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const { db } = useDatabase();
   const { user } = useAuth();
   const { meetingId } = route.params;
@@ -530,7 +532,7 @@ export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenPr
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -585,4 +587,4 @@ const styles = StyleSheet.create({
   saveButton: {
     marginTop: 12,
   },
-});
+} as const);

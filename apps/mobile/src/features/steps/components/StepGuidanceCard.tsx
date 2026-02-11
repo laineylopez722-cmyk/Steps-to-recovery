@@ -1,8 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Card, Text, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface StepGuidanceCardProps {
   showGuidance: boolean;
@@ -16,6 +17,8 @@ export function StepGuidanceCard({
   onToggle,
 }: StepGuidanceCardProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   return (
     <Card variant="outlined" style={styles.descriptionCard}>
@@ -51,7 +54,7 @@ export function StepGuidanceCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   descriptionCard: {
     marginHorizontal: 16,
     marginBottom: 8,
@@ -67,4 +70,4 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 10,
   },
-});
+} as const);

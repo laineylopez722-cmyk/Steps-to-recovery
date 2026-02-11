@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState, useCallback } from 'react';
-import { FlatList, Platform, StyleSheet, View } from 'react-native';
+import { FlatList, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useRoute, type RouteProp } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -26,7 +26,8 @@ import {
   type ToastVariant,
   useTheme,
 } from '@/design-system';
-import { ds } from '@/design-system/tokens/ds';
+import { useThemedStyles, type DS } from '@/design-system/hooks/useThemedStyles';
+import { useDs } from '@/design-system/DsProvider';
 import type { StepsStackParamList } from '@/navigation/types';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList>;
@@ -57,13 +58,14 @@ function escapeHtml(value: string): string {
 }
 
 function buildStepWorkHtml(params: {
+  ds: DS;
   stepData: StepPrompt;
   answersByNumber: Map<number, string>;
   answeredCount: number;
   totalQuestions: number;
   exportedAt: string;
 }): string {
-  const { stepData, answersByNumber, answeredCount, totalQuestions, exportedAt } = params;
+  const { ds, stepData, answersByNumber, answeredCount, totalQuestions, exportedAt } = params;
   const sections = stepData.sections?.length
     ? stepData.sections
     : [
@@ -184,6 +186,8 @@ function buildStepWorkHtml(params: {
 
 export function StepReviewScreen(): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<StepReviewRoute>();
   const { user } = useAuth();
@@ -283,6 +287,7 @@ export function StepReviewScreen(): React.ReactElement {
       }
 
       const html = buildStepWorkHtml({
+        ds,
         stepData,
         answersByNumber,
         answeredCount,
@@ -522,7 +527,7 @@ export function StepReviewScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -582,4 +587,4 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 12,
   },
-});
+} as const);

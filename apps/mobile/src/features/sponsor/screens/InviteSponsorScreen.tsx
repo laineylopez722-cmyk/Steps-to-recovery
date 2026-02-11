@@ -19,6 +19,7 @@ import * as Clipboard from 'expo-clipboard';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSponsorConnections } from '../hooks';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { Input, Button, Card, Modal, Toast, TextArea } from '../../../design-system/components';
 import type { ModalAction } from '../../../design-system/components';
 import type { Theme } from '../../../design-system/context/ThemeContext';
@@ -26,6 +27,7 @@ import type { Theme } from '../../../design-system/context/ThemeContext';
 export function InviteSponsorScreen(): React.ReactElement {
   const navigation = useNavigation();
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const { createInvite, confirmInvite, pendingInvites } = useSponsorConnections(userId);
@@ -277,6 +279,7 @@ export function InviteSponsorScreen(): React.ReactElement {
 }
 
 function InfoItem({ theme, text }: { theme: Theme; text: string }): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.infoItem}>
       <Text style={[theme.typography.body, { color: theme.colors.primary }]}>• {text}</Text>
@@ -284,7 +287,7 @@ function InfoItem({ theme, text }: { theme: Theme; text: string }): React.ReactE
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (_ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -331,4 +334,4 @@ const styles = StyleSheet.create({
     marginTop: 24,
     padding: 16,
   },
-});
+} as const);

@@ -6,12 +6,13 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, Pressable, Alert } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useTheme, Button, Card } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { hapticSelection } from '../../../utils/haptics';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { RelationshipType } from '../../../services/safeDialService';
@@ -26,6 +27,8 @@ export function DangerZoneScreen({
   onNavigateToIntervention: _onNavigateToIntervention,
 }: DangerZoneScreenProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const { user } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
   const [, setEditingContact] = useState<RiskyContact | null>(null);
@@ -390,7 +393,7 @@ export function DangerZoneScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -479,4 +482,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-});
+} as const);

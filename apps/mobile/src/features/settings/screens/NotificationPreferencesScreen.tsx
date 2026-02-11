@@ -7,7 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { AnimatedToggle } from '../../../design-system/components/MicroInteractions';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -59,6 +60,8 @@ export function NotificationPreferencesScreen(): React.ReactElement {
   ]);
 
   const [quietHours, setQuietHours] = useState({ enabled: true, start: '22:00', end: '07:00' });
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const toggleChannel = (id: string) => {
     setChannels((prev) => prev.map((c) => (c.id === id ? { ...c, enabled: !c.enabled } : c)));
@@ -182,6 +185,7 @@ export function NotificationPreferencesScreen(): React.ReactElement {
 }
 
 function TimeSelector({ label, time }: { label: string; time: string }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.timeSelector}>
       <Text style={styles.timeLabel}>{label}</Text>
@@ -192,7 +196,7 @@ function TimeSelector({ label, time }: { label: string; time: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -375,4 +379,4 @@ const styles = StyleSheet.create({
     ...typography.bodySmall,
     color: darkAccent.textMuted,
   },
-});
+} as const);

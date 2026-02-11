@@ -27,7 +27,7 @@ import { CrisisOverlay } from './CrisisOverlay';
 import { useAIChat } from '../hooks/useAIChat';
 import { useSobriety } from '../../../hooks/useSobriety';
 import { useSponsorInfo } from '../../../hooks/useSponsorInfo';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import type { Message, CrisisSignal } from '../types';
 
 interface ChatScreenProps {
@@ -35,6 +35,7 @@ interface ChatScreenProps {
 }
 
 export function ChatScreen({ userId }: ChatScreenProps) {
+  const styles = useThemedStyles(createStyles);
   const navigation = useNavigation();
   
   const { soberDays } = useSobriety();
@@ -226,7 +227,7 @@ export function ChatScreen({ userId }: ChatScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -318,4 +319,4 @@ const styles = StyleSheet.create({
     color: ds.colors.textTertiary,
     textAlign: 'center',
   },
-});
+} as const);

@@ -12,7 +12,7 @@
  */
 
 import React, { useEffect, useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
@@ -22,7 +22,8 @@ import { useContacts } from '../../hooks/useContacts';
 import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
 import { logger } from '../../utils/logger';
-import { ds } from '../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../design-system/DsProvider';
 
 interface PhoneWidgetProps {
   /** Delay index for staggered entrance animation */
@@ -39,6 +40,8 @@ function ProgressBar({
   label: string;
   sublabel: string;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const getProgressColor = () => {
     if (progress >= 1) return ds.colors.success;
     if (progress >= 0.5) return ds.colors.warning;
@@ -80,6 +83,7 @@ function QuickCallButton({
   isSponsor?: boolean;
   delay?: number;
 }) {
+  const styles = useThemedStyles(createStyles);
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -121,6 +125,8 @@ function QuickCallButton({
 }
 
 export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const router = useRouterCompat();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -308,7 +314,7 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
@@ -506,4 +512,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
   },
-});
+} as const);

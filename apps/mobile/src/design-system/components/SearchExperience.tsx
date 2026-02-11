@@ -13,7 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { GlassCard } from './GlassCard';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
 
 interface SearchSuggestion {
   id: string;
@@ -44,6 +44,7 @@ export function SearchExperience({
   showFilters,
   onToggleFilters,
 }: SearchExperienceProps): ReactElement {
+  const styles = useThemedStyles(createStyles);
   const [isFocused, setIsFocused] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const { light } = useHaptics();
@@ -186,6 +187,7 @@ export function FilterChip({
   onPress,
   count,
 }: FilterChipProps): ReactElement {
+  const styles = useThemedStyles(createStyles);
   const scale = useSharedValue(1);
 
   const handlePress = async () => {
@@ -227,6 +229,7 @@ export function SearchResultsHeader({
   resultCount,
   onClear,
 }: SearchResultsHeaderProps): ReactElement {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.resultsHeader}>
       <View style={styles.resultsInfo}>
@@ -252,6 +255,7 @@ export function HighlightedText({
   highlight,
   style,
       }: HighlightedTextProps): ReactElement {
+  const styles = useThemedStyles(createStyles);
   if (!highlight.trim()) {
     return <Text style={style}>{text}</Text>;
   }
@@ -273,7 +277,7 @@ export function HighlightedText({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   container: {
     position: 'relative',
     zIndex: 100,

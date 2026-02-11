@@ -30,7 +30,8 @@ import {
   sendTestNotification,
   type DailyReminderConfig,
 } from '../../../services/notificationService';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 // Toggle Row Component
 function ToggleRow({ 
@@ -46,6 +47,8 @@ function ToggleRow({
   onValueChange: (val: boolean) => void;
   disabled?: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   return (
     <View style={styles.toggleRow}>
       <View style={styles.toggleContent}>
@@ -88,6 +91,8 @@ function TimePickerRow({
   onToggle: (val: boolean) => void;
   disabled?: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [showPicker, setShowPicker] = useState(false);
 
   const formatTime = (h: number, m: number): string => {
@@ -162,6 +167,8 @@ function TimePickerRow({
 
 export function NotificationSettingsScreen(): React.ReactElement {
   const navigation = useNavigation();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const { 
     permissionStatus, 
     requestPermissions, 
@@ -407,7 +414,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -625,4 +632,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: ds.semantic.surface.app,
   },
-});
+} as const);

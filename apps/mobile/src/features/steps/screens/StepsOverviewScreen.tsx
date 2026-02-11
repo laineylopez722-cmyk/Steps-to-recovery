@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, StyleSheet, View, Pressable, Text } from 'react-native';
+import { ScrollView, View, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -27,7 +27,8 @@ import { useStepProgress } from '../hooks/useStepWork';
 import { STEP_PROMPTS } from '@recovery/shared';
 import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 type NavigationProp = NativeStackNavigationProp<StepsStackParamList>;
 
@@ -58,6 +59,7 @@ const STEPS: Step[] = [
 
 // Pulse for current step
 function PulseRing() {
+  const styles = useThemedStyles(createStyles);
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0.6);
 
@@ -107,6 +109,8 @@ function StepCard({
   delay: number;
 }) {
   const { onPressIn, onPressOut, animatedStyle } = useMotionPress({ scaleTo: motionScale.pressCard });
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   return (
     <Animated.View entering={MotionTransitions.cardEnter(Math.max(0, Math.round((delay - 100) / 50)))}>
@@ -203,6 +207,8 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
   const navigation = useNavigation<NavigationProp>();
   const { stepsCompleted, currentStep, overallProgress, stepDetails } = useStepProgress(userId);
   const [lockedStep, setLockedStep] = useState<Step | null>(null);
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const stepDetailMap = useMemo(() => {
     return new Map(stepDetails.map((detail) => [detail.stepNumber, detail]));
@@ -316,7 +322,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -552,4 +558,4 @@ const styles = StyleSheet.create({
     color: ds.colors.textSecondary,
     lineHeight: 18,
   },
-});
+} as const);

@@ -17,7 +17,8 @@ import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-rea
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useTheme, Button, BreathingCircle, GlassCard } from '../../../design-system';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { hapticSelection } from '../../../utils/haptics';
 import { useNavigation } from '@react-navigation/native';
 
@@ -59,6 +60,8 @@ const getStaggerDelay = (index: number): number => Math.min(index * 100, 500);
 
 export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const navigation = useNavigation();
   const [_showBreathingExercise, setShowBreathingExercise] = useState(false);
 
@@ -502,7 +505,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -595,4 +598,4 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: ds.semantic.emergency.calmMuted,
   },
-});
+} as const);

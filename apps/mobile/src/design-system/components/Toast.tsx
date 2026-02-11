@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, Animated, type ViewStyle, Platform } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
 import { useTheme } from '../hooks/useTheme';
-import { ds } from '../tokens/ds';
+import { useDs } from '../DsProvider';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
 
@@ -33,6 +33,7 @@ export function Toast({
   containerStyle,
 }: ToastProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-20)).current;
 

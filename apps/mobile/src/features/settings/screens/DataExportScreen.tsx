@@ -9,7 +9,8 @@ import { GradientButton } from '../../../design-system/components/GradientButton
 import { AnimatedCheckbox } from '../../../design-system/components/MicroInteractions';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useToast } from '../../../design-system/components/ToastProvider';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -39,6 +40,8 @@ export function DataExportScreen(): React.ReactElement {
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState(0);
   const { showToast } = useToast();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const toggleDataType = (id: string) => {
     setSelectedTypes((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]));
@@ -183,7 +186,7 @@ export function DataExportScreen(): React.ReactElement {
 
 import { Pressable } from 'react-native';
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -304,4 +307,4 @@ const styles = StyleSheet.create({
     ...typography.h4,
     color: darkAccent.primary,
   },
-});
+} as const);

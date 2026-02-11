@@ -4,13 +4,14 @@
  */
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { FlatList, StyleSheet, View, Text, Share } from 'react-native';
+import { FlatList, View, Text, Share } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, Card, Button, TextArea, Modal } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useJournalEntries } from '../../journal/hooks/useJournalEntries';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';
@@ -21,6 +22,7 @@ type ShareRoute = RouteProp<ProfileStackParamList, 'ShareEntries'>;
 
 export function ShareEntriesScreen(): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const route = useRoute<ShareRoute>();
@@ -199,7 +201,7 @@ export function ShareEntriesScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -233,4 +235,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
   },
-});
+} as const);

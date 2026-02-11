@@ -11,14 +11,15 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, AccessibilityInfo } from 'react-native';
+import { View, Text, TouchableOpacity, AccessibilityInfo } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useReading } from '../../hooks/useReading';
 import * as Haptics from 'expo-haptics';
-import { ds } from '../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../design-system/DsProvider';
 
 interface DailyReadingCardProps {
   /** Delay index for staggered entrance animation */
@@ -29,6 +30,8 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
   const router = useRouterCompat();
   const { todayReading, hasReflectedToday, readingStreak, shortDate, readingPreview, isLoading, error } =
     useReading();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const handlePress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -141,7 +144,7 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
@@ -271,4 +274,4 @@ const styles = StyleSheet.create({
   arrow: {
     marginLeft: 4,
   },
-});
+} as const);

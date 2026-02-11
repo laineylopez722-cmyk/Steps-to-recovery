@@ -26,7 +26,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { AmberButton } from '../../../design-system/components/AmberButton';
 import { OnboardingIllustration } from '../../../design-system/components/Illustration';
@@ -95,6 +95,7 @@ interface OnboardingScreenProps {
 
 export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   const { user } = useAuth();
+  const styles = useThemedStyles(createStyles);
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
@@ -357,7 +358,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 // STYLES
 // ============================================================================
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -476,4 +477,4 @@ const styles = StyleSheet.create({
     color: aestheticColors.navy[400],
     fontWeight: '500',
   },
-});
+} as const);

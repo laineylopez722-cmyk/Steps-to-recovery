@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
 import { useTheme, GlassCard, SkeletonCard } from '../../../design-system';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useRecoveryAnalytics, type RecoveryInsight } from '../hooks/useRecoveryAnalytics';
 
@@ -40,6 +40,7 @@ function MiniBarChart({
   color: string;
   height?: number;
 }): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const barWidth = Math.max(4, (screenWidth - 120) / Math.max(data.length, 1) - 2);
 
   return (
@@ -72,6 +73,7 @@ function MiniBarChart({
 
 function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
 
   const iconMap: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
     positive: 'check-circle',
@@ -118,10 +120,11 @@ function StatCard({
   glow?: boolean;
 }): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
 
   return (
     <GlassCard 
-      intensity="card" 
+      intensity="card"
       style={[styles.statCard, glow && { shadowColor: color, shadowOpacity: 0.3, shadowRadius: 16 }]}
       glow={glow}
       glowColor={color}
@@ -140,6 +143,7 @@ export function ProgressDashboardScreen({
   userId,
 }: ProgressDashboardScreenProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const analytics = useRecoveryAnalytics(userId);
 
   // Loading state
@@ -387,7 +391,7 @@ export function ProgressDashboardScreen({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -576,4 +580,4 @@ const styles = StyleSheet.create({
     fontSize: 11,
     flex: 1,
   },
-});
+} as const);

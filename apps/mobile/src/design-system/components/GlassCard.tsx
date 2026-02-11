@@ -17,7 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
 import { getGradients } from '../tokens/theme';
-import { ds } from '../tokens/ds';
+import { useDs } from '../DsProvider';
 
 export type GradientType = 'none' | 'card' | 'elevated' | 'surface' | 'inset' | 'highlight' | 'button' | 'header';
 
@@ -74,6 +74,7 @@ export function GlassCard({
   ...props
 }: GlassCardProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
   const gradients = getGradients(theme.isDark);
   const scale = useSharedValue(1);
   const opacity = useSharedValue(1);

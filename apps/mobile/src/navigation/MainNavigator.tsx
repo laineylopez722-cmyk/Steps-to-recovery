@@ -33,7 +33,10 @@ import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDi
 import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 import { ChatScreen } from '../features/ai-companion/components/ChatScreen';
 import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScreen';
-import { ds } from '../design-system/tokens/ds';
+import { StatusBar } from 'expo-status-bar';
+import * as Haptics from 'expo-haptics';
+import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
+import { useDs, useDsIsDark } from '../design-system/DsProvider';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -51,15 +54,6 @@ const StepsStack = createNativeStackNavigator<StepsStackParamList>();
 const MeetingsStack = createNativeStackNavigator<MeetingsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
-// OLED-optimized dark theme colors using design tokens
-const themeColors = {
-  background: ds.semantic.surface.app,
-  surface: ds.semantic.surface.elevated,
-  accent: ds.colors.accent,
-  text: ds.semantic.text.primary,
-  textMuted: ds.semantic.text.muted,
-  border: ds.semantic.intent.primary.muted,
-};
 
 function SafeDialInterventionRouteScreen({
   route,
@@ -84,24 +78,28 @@ function SafeDialInterventionRouteScreen({
     />
   );
 }
-// Dark header style for all stacks
-const darkHeaderOptions = {
-  headerStyle: {
-    backgroundColor: themeColors.background,
-  },
-  headerTintColor: themeColors.text,
-  headerTitleStyle: {
-    fontWeight: '600' as const,
-    fontSize: 17,
-  },
-  headerShadowVisible: true,
-  headerBackTitleVisible: false,
-  headerLargeTitle: false,
-};
+// Dark header style for all stacks (theme-aware)
+function useDarkHeaderOptions() {
+  const ds = useDs();
+  return {
+    headerStyle: {
+      backgroundColor: ds.semantic.surface.app,
+    },
+    headerTintColor: ds.semantic.text.primary,
+    headerTitleStyle: {
+      fontWeight: '600' as const,
+      fontSize: 17,
+    },
+    headerShadowVisible: true,
+    headerBackTitleVisible: false,
+    headerLargeTitle: false,
+  };
+}
 
 function HomeStackNavigator(): React.ReactElement {
   const { user } = useAuth();
   const userId = user?.id || '';
+  const darkHeaderOptions = useDarkHeaderOptions();
 
   return (
     <HomeStack.Navigator screenOptions={darkHeaderOptions}>
@@ -190,6 +188,7 @@ function HomeStackNavigator(): React.ReactElement {
 function JournalStackNavigator(): React.ReactElement {
   const { user } = useAuth();
   const userId = user?.id || '';
+  const darkHeaderOptions = useDarkHeaderOptions();
 
   return (
     <JournalStack.Navigator screenOptions={darkHeaderOptions}>
@@ -209,6 +208,7 @@ function JournalStackNavigator(): React.ReactElement {
 function StepsStackNavigator(): React.ReactElement {
   const { user } = useAuth();
   const userId = user?.id || '';
+  const darkHeaderOptions = useDarkHeaderOptions();
 
   return (
     <StepsStack.Navigator screenOptions={darkHeaderOptions}>
@@ -236,6 +236,7 @@ function StepsStackNavigator(): React.ReactElement {
 }
 
 function MeetingsStackNavigator(): React.ReactElement {
+  const darkHeaderOptions = useDarkHeaderOptions();
   return (
     <MeetingsStack.Navigator screenOptions={darkHeaderOptions}>
       <MeetingsStack.Screen
@@ -258,6 +259,7 @@ function MeetingsStackNavigator(): React.ReactElement {
 }
 
 function ProfileStackNavigator(): React.ReactElement {
+  const darkHeaderOptions = useDarkHeaderOptions();
   return (
     <ProfileStack.Navigator screenOptions={darkHeaderOptions}>
       <ProfileStack.Screen
@@ -299,6 +301,22 @@ function ProfileStackNavigator(): React.ReactElement {
   );
 }
 
+const createStyles = (ds: DS) =>
+  ({
+    tabIconWrap: {
+      width: 38,
+      height: 30,
+      borderRadius: ds.radius.md,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    tabIconWrapFocused: {
+      backgroundColor: ds.semantic.intent.primary.subtle,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: ds.semantic.intent.primary.muted,
+    },
+  }) as const;
+
 function TabIcon({
   focused,
   color,
@@ -310,6 +328,7 @@ function TabIcon({
   size: number;
   name: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={[styles.tabIconWrap, focused && styles.tabIconWrapFocused]}>
       <MaterialCommunityIcons name={name} size={size} color={color} />
@@ -318,23 +337,47 @@ function TabIcon({
 }
 
 export function MainNavigator(): React.ReactElement {
+  const ds = useDs();
+  const isDark = useDsIsDark();
+  const themeColors = {
+    background: ds.semantic.surface.app,
+    surface: ds.semantic.surface.elevated,
+    accent: ds.colors.accent,
+    text: ds.semantic.text.primary,
+    textMuted: ds.semantic.text.muted,
+    border: ds.semantic.intent.primary.muted,
+  };
+
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: themeColors.accent,
-        tabBarInactiveTintColor: themeColors.textMuted,
-        tabBarShowLabel: false,
-        tabBarStyle: {
-          backgroundColor: themeColors.surface,
-          borderTopColor: themeColors.border,
-          borderTopWidth: StyleSheet.hairlineWidth,
-          paddingTop: ds.space[2],
-          paddingBottom: ds.space[3],
-          height: 76,
-        },
-      }}
-    >
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Tab.Navigator
+        screenListeners={{
+          tabPress: () => {
+            Haptics.selectionAsync();
+          },
+        }}
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: themeColors.accent,
+          tabBarInactiveTintColor: themeColors.textMuted,
+          tabBarShowLabel: true,
+          tabBarLabelStyle: {
+            fontSize: 11,
+            fontWeight: '500' as const,
+            marginTop: -2,
+          },
+          tabBarStyle: {
+            backgroundColor: themeColors.surface,
+            borderTopColor: themeColors.border,
+            borderTopWidth: StyleSheet.hairlineWidth,
+            paddingTop: ds.space[2],
+            paddingBottom: ds.space[3],
+            height: 76,
+          },
+          tabBarHideOnKeyboard: true,
+        }}
+      >
       <Tab.Screen
         name="Home"
         component={HomeStackNavigator}
@@ -392,20 +435,7 @@ export function MainNavigator(): React.ReactElement {
         }}
       />
     </Tab.Navigator>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
-  tabIconWrap: {
-    width: 38,
-    height: 30,
-    borderRadius: ds.radius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabIconWrapFocused: {
-    backgroundColor: ds.semantic.intent.primary.subtle,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ds.semantic.intent.primary.muted,
-  },
-});

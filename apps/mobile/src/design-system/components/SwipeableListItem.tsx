@@ -18,7 +18,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '../hooks/useTheme';
 import { hapticThreshold, hapticImpact } from '../../utils/haptics';
-import { ds } from '../tokens/ds';
+import { useDs } from '../DsProvider';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ACTION_WIDTH = 80;
@@ -92,6 +92,7 @@ export function SwipeableListItem({
   testID,
 }: SwipeableListItemProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
 
   // Shared value for tracking swipe position
   const translateX = useSharedValue(0);

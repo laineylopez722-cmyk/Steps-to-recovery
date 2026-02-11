@@ -11,7 +11,7 @@ import Animated, {
   } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius } from '../tokens/modern';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
 
 export interface PullToRefreshProps extends RefreshControlProps {
   scrollY: SharedValue<number>;
@@ -24,6 +24,7 @@ export function PullToRefresh({
   onRefresh: _onRefresh,
   scrollY,
 }: PullToRefreshProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const rotation = useSharedValue(0);
 
   useEffect(() => {
@@ -67,7 +68,7 @@ export function PullToRefresh({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,

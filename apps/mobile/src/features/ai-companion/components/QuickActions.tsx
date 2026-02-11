@@ -13,7 +13,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface QuickAction {
   id: string;
@@ -116,6 +117,8 @@ function ActionChip({
   onPress: () => void;
   disabled?: boolean;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const scale = useSharedValue(1);
   
   const animatedStyle = useAnimatedStyle(() => ({
@@ -158,6 +161,7 @@ interface QuickActionsProps {
 }
 
 export function QuickActions({ onSelect, disabled }: QuickActionsProps) {
+  const styles = useThemedStyles(createStyles);
   const actions = useMemo(() => getTimeBasedActions(), []);
 
   const handleSelect = useCallback((message: string) => {
@@ -187,7 +191,7 @@ export function QuickActions({ onSelect, disabled }: QuickActionsProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: ds.colors.borderSubtle,
@@ -216,4 +220,4 @@ const styles = StyleSheet.create({
   chipTextDisabled: {
     color: ds.colors.textQuaternary,
   },
-});
+} as const);

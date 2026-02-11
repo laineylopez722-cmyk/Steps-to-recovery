@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 import { Card } from '../../../design-system/components';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { categoryColors } from '../../../design-system/tokens/colors';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -62,6 +63,8 @@ const QUICK_ACTIONS_BASE: Omit<QuickAction, 'color'>[] = [
 export function QuickActions({ userId }: QuickActionsProps): React.ReactElement {
   const navigation = useNavigation();
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   // Map colors to theme
   const actionColors = [
@@ -121,23 +124,23 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (_ds: DS) => ({
   card: {
     margin: 16,
     marginTop: 8,
   },
   title: {
-    fontWeight: 'bold',
+    fontWeight: 'bold' as const,
     marginBottom: 16,
   },
   actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    flexWrap: 'wrap' as const,
+    justifyContent: 'space-between' as const,
   },
   actionButton: {
-    width: '48%',
-    alignItems: 'center',
+    width: '48%' as const,
+    alignItems: 'center' as const,
     padding: 16,
     marginBottom: 12,
     borderRadius: 12,
@@ -146,8 +149,8 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     marginBottom: 8,
   },
-});
+} as const);

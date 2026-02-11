@@ -13,14 +13,15 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Switch, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Switch } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RegularMeeting, RegularMeetingType } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
-import { ds } from '../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../design-system/DsProvider';
 
 interface MeetingCardProps {
   meeting: RegularMeeting;
@@ -54,7 +55,7 @@ function getTypeIcon(type: RegularMeetingType): React.ComponentProps<typeof Feat
   }
 }
 
-function getTypeColor(type: RegularMeetingType): string {
+function getTypeColor(type: RegularMeetingType, ds: DS): string {
   switch (type) {
     case 'in-person':
       return ds.colors.success;
@@ -88,6 +89,8 @@ function MeetingCardComponent({
   compact = false,
   enteringDelay = 0,
 }: MeetingCardProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const router = useRouterCompat();
   const scale = useSharedValue(1);
 
@@ -121,7 +124,7 @@ function MeetingCardComponent({
   }, [daysUntil]);
 
   const typeIcon = getTypeIcon(meeting.type);
-  const typeColor = getTypeColor(meeting.type);
+  const typeColor = getTypeColor(meeting.type, ds);
 
   // Accessibility label
   const accessibilityLabel = `${meeting.name}, ${getTypeLabel(meeting.type)}, ${DAY_NAMES[meeting.dayOfWeek]} at ${formatTime(meeting.time)}${meeting.isHomeGroup ? ', Home Group' : ''}${daysUntil !== undefined ? `, ${getDaysUntilText()}` : ''}`;
@@ -274,7 +277,7 @@ export const MeetingCard = memo(MeetingCardComponent, (prevProps, nextProps) => 
   );
 });
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   card: {
     marginHorizontal: 16,
     marginVertical: 6,
@@ -480,4 +483,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: ds.colors.textTertiary,
   },
-});
+} as const);

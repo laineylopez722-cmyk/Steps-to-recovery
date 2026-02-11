@@ -5,7 +5,7 @@
  * Enhanced with pull-to-refresh, smooth scroll animations, and error handling.
  */
 
-import React, { useMemo, useCallback, useState } from 'react';
+import React, { useMemo, useCallback, useState, useEffect, useRef } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -29,9 +29,11 @@ import {
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { Action } from '../../../design-system/primitives';
-import { useCleanTime } from '../hooks/useCleanTime';
+import { useCleanTime, useMilestones } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
-import { ds } from '../../../design-system/tokens/ds';
+import { MilestoneCelebrationModal } from '../../../components/MilestoneCelebrationModal';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import type { HomeStackParamList } from '../../../navigation/types';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -95,6 +97,8 @@ function PremiumProgressHero({
   minutes: number;
   completedToday: number;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const size = 214;
   const stroke = 14;
   const radius = (size - stroke) / 2;
@@ -160,6 +164,7 @@ function PremiumProgressHero({
 }
 
 function MiniStat({ label, value, tint }: { label: string; value: string; tint?: string }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.miniStat}>
       <Text style={[styles.miniStatValue, tint ? { color: tint } : null]}>{value}</Text>
@@ -179,6 +184,8 @@ function ShortcutCard({
   subtitle: string;
   onPress: () => void;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   return (
     <ActionCard
       onPress={onPress}
@@ -198,6 +205,7 @@ function ShortcutCard({
 
 // Shimmer loading placeholder
 function HomeScreenSkeleton() {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.container} testID="home-screen">
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -241,12 +249,36 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const { days, hours, minutes, isLoading: loadingDays, error: daysError, refetch: refetchDays } = useCleanTime(userId);
   const { morning, evening, isLoading: loadingCheckins, error: checkinsError, refetch: refetchCheckins } = useTodayCheckIns(userId);
+  const { newMilestone, checkForNewMilestones } = useMilestones(userId);
   
   const [refreshing, setRefreshing] = useState(false);
+  const [showMilestone, setShowMilestone] = useState(false);
+  const lastCelebratedKeyRef = useRef<string | null>(null);
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const greeting = useMemo(() => getGreeting(), []);
   const date = useMemo(() => formatDate(), []);
   const completedToday = Number(Boolean(morning)) + Number(Boolean(evening));
+
+  // Check for new milestones when clean days change
+  useEffect(() => {
+    if (days > 0) {
+      checkForNewMilestones();
+    }
+  }, [days, checkForNewMilestones]);
+
+  // Show celebration modal when a new milestone is detected
+  useEffect(() => {
+    if (newMilestone && newMilestone.key !== lastCelebratedKeyRef.current) {
+      lastCelebratedKeyRef.current = newMilestone.key;
+      setShowMilestone(true);
+    }
+  }, [newMilestone]);
+
+  const handleCloseMilestone = useCallback((): void => {
+    setShowMilestone(false);
+  }, []);
 
   const hapticLight = () => {
     impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
@@ -450,11 +482,17 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           <View style={{ height: ds.space[20] }} />
         </ScrollView>
       </SafeAreaView>
+
+      <MilestoneCelebrationModal
+        visible={showMilestone}
+        milestone={newMilestone}
+        onClose={handleCloseMilestone}
+      />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -810,4 +848,4 @@ const styles = StyleSheet.create({
     color: ds.semantic.text.muted,
     marginTop: 2,
   },
-});
+} as const);

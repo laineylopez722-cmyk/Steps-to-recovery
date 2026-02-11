@@ -3,13 +3,13 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
 import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { EmptyState } from '../../../design-system/components/EmptyState';
@@ -23,6 +23,7 @@ type MeetingFinderScreenProps = NativeStackScreenProps<MeetingsStackParamList, '
 
 export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const { onPressIn: onFilterPressIn, onPressOut: onFilterPressOut, animatedStyle: filterAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
   const {
@@ -324,7 +325,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -392,4 +393,4 @@ const styles = StyleSheet.create({
     paddingTop: ds.space[4],
     paddingBottom: ds.space[2],
   },
-});
+} as const);

@@ -12,7 +12,6 @@ import {
   Pressable, 
   ActivityIndicator,
   Keyboard,
-  StyleSheet,
 } from 'react-native';
 import Animated, { 
   useAnimatedStyle, 
@@ -22,7 +21,8 @@ import Animated, {
 import { Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { Icon } from '@/components/ui/Icon';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface ChatInputProps {
   onSend: (message: string) => void;
@@ -35,6 +35,8 @@ export function ChatInput({
   isLoading,
   placeholder = "Message...",
 }: ChatInputProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [text, setText] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
@@ -115,7 +117,7 @@ export function ChatInput({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'flex-end',
@@ -157,4 +159,4 @@ const styles = StyleSheet.create({
   sendButtonInactive: {
     backgroundColor: ds.colors.bgTertiary,
   },
-});
+} as const);

@@ -4,10 +4,11 @@
  */
 
 import { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Button } from '../../../design-system/components/Button';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import type {
   MeetingFilters as MeetingFiltersType,
   DayOfWeek,
@@ -58,6 +59,8 @@ export function MeetingFilters({
   onClearFilters,
 }: MeetingFiltersProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const [selectedDay, setSelectedDay] = useState<DayOfWeek | null>(currentFilters.day_of_week);
   const [selectedTime, setSelectedTime] = useState<TimeOfDay | null>(currentFilters.time_of_day);
@@ -250,7 +253,7 @@ export function MeetingFilters({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -285,4 +288,4 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
   },
-});
+} as const);

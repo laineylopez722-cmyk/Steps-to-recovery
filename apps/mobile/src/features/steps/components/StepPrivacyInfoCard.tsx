@@ -2,10 +2,13 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Card, Text, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 export function StepPrivacyInfoCard(): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   return (
     <Card variant="outlined" style={styles.infoCard}>
@@ -25,7 +28,7 @@ export function StepPrivacyInfoCard(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   infoCard: {
     marginTop: 8,
     borderColor: ds.colors.borderSubtle,
@@ -34,4 +37,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-});
+} as const);

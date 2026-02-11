@@ -380,7 +380,211 @@ export const spring = {
 } as const;
 
 // ============================================================================
-// COMBINED THEME EXPORT
+// LIGHT MODE PALETTE
+// ============================================================================
+
+export const paletteLight = {
+  // Backgrounds - warm sage/cream
+  white: '#FFFFFF',
+  cream: '#F5F5F0',
+  creamDark: '#F0F0EB',
+  creamDeep: '#E8E8E3',
+  sage100: '#D8DDD5',
+  sage200: '#C0C8BC',
+
+  // Text - dark sage greens (7:1+ AAA contrast on #F5F5F0)
+  textDark: '#2C3E2C',
+  textMedium: '#5A6B5A',
+  textLight: '#8A9A8A',
+  textMuted: '#A0ADA0',
+
+  // Accent - amber (works in both modes)
+  amber: '#D4880A', // Slightly darker amber for better contrast on light
+  amberLight: '#F59E0B',
+  amberMuted: 'rgba(212, 136, 10, 0.15)',
+  amberSubtle: 'rgba(212, 136, 10, 0.08)',
+
+  // Semantic
+  green: '#6B8E6B',
+  greenMuted: 'rgba(107, 142, 107, 0.15)',
+
+  blue: '#2E6B8A',
+  blueMuted: 'rgba(46, 107, 138, 0.15)',
+
+  red: '#C45C5C',
+  redMuted: 'rgba(196, 92, 92, 0.15)',
+
+  orange: '#C87A1A',
+  orangeMuted: 'rgba(200, 122, 26, 0.15)',
+
+  // Legacy aliases
+  warmGold: '#C88D20',
+  warmGoldMuted: 'rgba(200, 141, 32, 0.15)',
+  calmBlue: '#2E6B8A',
+  calmBlueMuted: 'rgba(46, 107, 138, 0.15)',
+  sageGreen: '#5A9448',
+  sageGreenMuted: 'rgba(90, 148, 72, 0.15)',
+  dustyRose: '#C45C5C',
+  dustyRoseMuted: 'rgba(196, 92, 92, 0.15)',
+} as const;
+
+// ============================================================================
+// LIGHT MODE COLORS
+// ============================================================================
+
+export const colorsLight = {
+  // Background layers
+  bgPrimary: paletteLight.cream,
+  bgSecondary: paletteLight.white,
+  bgTertiary: paletteLight.creamDark,
+  bgQuaternary: paletteLight.white,
+  bgElevated: paletteLight.creamDeep,
+  bgOverlay: 'rgba(0, 0, 0, 0.4)',
+  overlay: 'rgba(0, 0, 0, 0.4)',
+  transparent: 'transparent',
+
+  // Text hierarchy
+  textPrimary: paletteLight.textDark,
+  textSecondary: paletteLight.textMedium,
+  textTertiary: paletteLight.textLight,
+  textQuaternary: paletteLight.textMuted,
+  text: paletteLight.textDark,
+  textMuted: paletteLight.textLight,
+
+  // Borders (warm-tinted)
+  borderSubtle: 'rgba(60, 80, 60, 0.06)',
+  borderDefault: 'rgba(60, 80, 60, 0.12)',
+  borderStrong: 'rgba(60, 80, 60, 0.18)',
+  divider: 'rgba(60, 80, 60, 0.10)',
+  shadow: 'rgba(60, 80, 60, 0.08)',
+
+  // Accent
+  accent: paletteLight.amber,
+  accentLight: paletteLight.amberLight,
+  accentMuted: paletteLight.amberMuted,
+  accentSubtle: paletteLight.amberSubtle,
+
+  // Semantic
+  success: paletteLight.green,
+  successMuted: paletteLight.greenMuted,
+  warning: paletteLight.orange,
+  warningMuted: paletteLight.orangeMuted,
+  error: paletteLight.red,
+  errorMuted: paletteLight.redMuted,
+  info: paletteLight.blue,
+  infoMuted: paletteLight.blueMuted,
+} as const;
+
+// ============================================================================
+// LIGHT MODE SEMANTIC
+// ============================================================================
+
+export const semanticLight = {
+  intent: {
+    primary: {
+      solid: colorsLight.accent,
+      muted: colorsLight.accentMuted,
+      subtle: colorsLight.accentSubtle,
+      onSolid: paletteLight.white,
+    },
+    secondary: {
+      solid: colorsLight.info,
+      muted: colorsLight.infoMuted,
+      subtle: 'rgba(46, 107, 138, 0.08)',
+      onSolid: paletteLight.white,
+    },
+    alert: {
+      solid: colorsLight.error,
+      muted: colorsLight.errorMuted,
+      subtle: 'rgba(196, 92, 92, 0.08)',
+      onSolid: paletteLight.white,
+    },
+  },
+  surface: {
+    app: colorsLight.bgPrimary,
+    canvas: colorsLight.bgSecondary,
+    card: colorsLight.bgTertiary,
+    elevated: colorsLight.bgElevated,
+    interactive: colorsLight.bgQuaternary,
+    overlay: 'rgba(0, 0, 0, 0.4)',
+    overlayModal: 'rgba(0, 0, 0, 0.55)',
+  },
+  text: {
+    primary: colorsLight.textPrimary,
+    secondary: colorsLight.textSecondary,
+    tertiary: colorsLight.textTertiary,
+    muted: colorsLight.textQuaternary,
+    onPrimary: paletteLight.white,
+    onSecondary: paletteLight.white,
+    onAlert: paletteLight.white,
+    onDark: paletteLight.white,
+    inverse: paletteLight.white,
+  },
+  emergency: {
+    calm: paletteLight.blue,
+    calmMuted: 'rgba(46, 107, 138, 0.15)',
+    calmSubtle: 'rgba(46, 107, 138, 0.08)',
+  },
+  elevation: {
+    base: 'sm',
+    raised: 'md',
+    overlay: 'lg',
+    focus: 'glow',
+  },
+  layout: {
+    screenPadding: space[6],
+    sectionGap: space[6],
+    cardPadding: space[5],
+    listItemPadding: space[4],
+    touchTarget: 44,
+  },
+  typography: {
+    screenTitle: typography.h1,
+    sectionLabel: typography.caption,
+    body: typography.body,
+    bodySmall: typography.bodySm,
+    meta: typography.micro,
+    button: typography.body,
+  },
+} as const;
+
+// ============================================================================
+// LIGHT MODE SHADOWS (warm-tinted, slightly more visible)
+// ============================================================================
+
+export const shadowsLight = {
+  sm: {
+    shadowColor: 'rgba(60, 80, 60, 1)',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  md: {
+    shadowColor: 'rgba(60, 80, 60, 1)',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  lg: {
+    shadowColor: 'rgba(60, 80, 60, 1)',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.14,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  glow: {
+    shadowColor: paletteLight.amber,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 0,
+  },
+} as const;
+
+// ============================================================================
+// COMBINED THEME EXPORT (dark mode default — backward compatible)
 // ============================================================================
 
 export const ds = {
@@ -401,3 +605,31 @@ export const ds = {
 } as const;
 
 export type DS = typeof ds;
+
+// ============================================================================
+// THEME FACTORY
+// ============================================================================
+
+/** Creates a theme-aware DS object for the given color scheme. */
+export function createDs(isDark: boolean): DS {
+  if (isDark) {
+    return ds;
+  }
+
+  return {
+    space,
+    typography,
+    fontSize,
+    fontWeight,
+    lineHeight,
+    colors: colorsLight,
+    semantic: semanticLight,
+    palette: paletteLight,
+    radius,
+    shadows: shadowsLight,
+    sizes,
+    timing,
+    spring,
+    serene,
+  } as unknown as DS;
+}

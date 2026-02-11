@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Text, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 
 interface StepQuestionCounterProps {
   currentQuestion: number;
@@ -13,6 +13,7 @@ export function StepQuestionCounter({
   totalQuestions,
 }: StepQuestionCounterProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
 
   return (
     <View style={styles.questionCounter}>
@@ -23,7 +24,7 @@ export function StepQuestionCounter({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   questionCounter: {
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -35,4 +36,4 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.bgSecondary,
     borderColor: ds.colors.borderSubtle,
   },
-});
+} as const);

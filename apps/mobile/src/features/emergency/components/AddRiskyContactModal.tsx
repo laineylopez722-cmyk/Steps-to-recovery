@@ -8,7 +8,6 @@ import { useState, type ReactElement } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Modal,
   ScrollView,
   TextInput,
@@ -20,7 +19,8 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Card, useTheme } from '../../../design-system';
 import { hapticSelection, hapticSuccess, hapticWarning } from '../../../utils/haptics';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import type { RelationshipType } from '../hooks';
 
 interface AddRiskyContactModalProps {
@@ -72,6 +72,8 @@ export function AddRiskyContactModal({
   onAdd,
       }: AddRiskyContactModalProps): ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState<string>('');
   const [relationshipType, setRelationshipType] = useState<RelationshipType>('dealer');
@@ -416,7 +418,7 @@ export function AddRiskyContactModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -473,4 +475,4 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderTopWidth: 1,
   },
-});
+} as const);

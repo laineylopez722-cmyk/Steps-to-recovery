@@ -12,7 +12,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { useMeetingCheckIns } from '../hooks/useMeetingCheckIns';
 import { useAchievements } from '../hooks/useAchievements';
 import { use90In90Progress, get90In90MotivationalMessage } from '../hooks/use90In90Progress';
@@ -23,6 +24,8 @@ type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 export function MeetingStatsScreen(): React.ReactElement {
   const navigation = useNavigation();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [refreshing, setRefreshing] = useState(false);
   const [showAchievementModal, setShowAchievementModal] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
@@ -315,7 +318,7 @@ export function MeetingStatsScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -565,4 +568,4 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: darkAccent.textMuted,
   },
-});
+} as const);

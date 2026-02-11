@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Badge, Button, Card, ProgressBar, Text, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface StepDetailHeaderCardProps {
   stepNumber: number;
@@ -30,6 +31,8 @@ export function StepDetailHeaderCard({
   onReviewAnswers,
 }: StepDetailHeaderCardProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   return (
     <Card variant="elevated" style={styles.headerCard}>
@@ -94,7 +97,7 @@ export function StepDetailHeaderCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   headerCard: {
     marginHorizontal: 16,
     marginTop: 8,
@@ -154,4 +157,4 @@ const styles = StyleSheet.create({
     marginTop: 12,
     backgroundColor: ds.colors.accentMuted,
   },
-});
+} as const);

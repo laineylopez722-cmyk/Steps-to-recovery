@@ -15,7 +15,8 @@ import Slider from '@react-native-community/slider';
 import { useNavigation, type NavigationProp as RNNavigationProp } from '@react-navigation/native';
 
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 
@@ -51,6 +52,8 @@ interface BeforeYouUseScreenProps {
 // ========================================
 
 export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactElement {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const navigation = useNavigation<RNNavigationProp<RootStackParamList>>();
 
   const { sponsor, isLoading: sponsorLoading } = useSponsorInfo(userId);
@@ -494,6 +497,7 @@ interface TipItemProps {
 }
 
 function TipItem({ icon, text }: TipItemProps): ReactElement {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.tipItem}>
       <MaterialIcons name={icon} size={20} color={darkAccent.warning} />
@@ -506,7 +510,7 @@ function TipItem({ icon, text }: TipItemProps): ReactElement {
 // Styles
 // ========================================
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: { flex: 1 },
   safeArea: { flex: 1 },
 
@@ -693,4 +697,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   usedButtonText: { ...typography.body, color: darkAccent.textMuted },
-});
+} as const);

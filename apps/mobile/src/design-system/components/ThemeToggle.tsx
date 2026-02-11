@@ -29,7 +29,8 @@ import { Feather } from '@expo/vector-icons';
 import { hapticLight } from '../../utils/haptics';
 import { aestheticColors } from '../tokens/aesthetic';
 import { FadeIn, withSequence } from 'react-native-reanimated';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
+import { useDs } from '../DsProvider';
 
 // ============================================================================
 // TYPES
@@ -87,6 +88,8 @@ export function ThemeToggle({
   style,
   glassIntensity = 'medium',
 }: ThemeToggleProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const progress = useSharedValue(isDark ? 1 : 0);
   const scale = useSharedValue(1);
 
@@ -261,6 +264,8 @@ export function CompactThemeToggle({
   onToggle,
   style,
 }: CompactThemeToggleProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const scale = useSharedValue(1);
   const rotate = useSharedValue(0);
 
@@ -313,7 +318,7 @@ export function CompactThemeToggle({
 // STYLES
 // ============================================================================
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   wrapper: {
     flexDirection: 'row',
     alignItems: 'center',

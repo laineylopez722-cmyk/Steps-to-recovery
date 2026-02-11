@@ -17,7 +17,8 @@ import { Feather } from '@expo/vector-icons';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
 import { Card } from './Card';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
+import { useDs } from '../DsProvider';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -89,6 +90,7 @@ function CircularProgress({
   size?: number;
   strokeWidth?: number;
 }) {
+  const ds = useDs();
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const strokeDashoffset = circumference - Math.min(progress, 1) * circumference;
@@ -139,6 +141,8 @@ function StatItem({
   value: string | number;
   label: string;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   return (
     <View
       style={styles.statItem}
@@ -176,6 +180,8 @@ export function SobrietyCounter({
   onShare,
 }: SobrietyCounterProps) {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [lastReachedMilestone, setLastReachedMilestone] = useState<number>(-1);
 
   const calculateTimeElapsed = useCallback((): TimeDisplay => {
@@ -348,7 +354,7 @@ export function SobrietyCounter({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,

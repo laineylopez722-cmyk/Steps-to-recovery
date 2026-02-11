@@ -15,7 +15,8 @@ import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { darkAccent, gradients, spacing, typography } from '../../../design-system/tokens/modern';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface BiometricPromptProps {
   isVisible: boolean;
@@ -30,6 +31,8 @@ export function BiometricPrompt({
   onCancel,
   onFallback,
 }: BiometricPromptProps): React.ReactElement | null {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
   const pulse = useSharedValue(1);
@@ -141,6 +144,8 @@ interface AppLockScreenProps {
 }
 
 export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [authType, setAuthType] = React.useState<string>('Biometric');
   const [isAuthenticating, setIsAuthenticating] = React.useState(false);
 
@@ -201,7 +206,7 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: ds.colors.bgOverlay,
@@ -262,4 +267,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   lockHint: { ...typography.bodySmall, color: darkAccent.textSubtle },
-});
+} as const);

@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface DailyReviewProps {
   onComplete: (review: DailyReviewData) => Promise<void>;
@@ -80,7 +81,7 @@ export function DailyReview({ onComplete, date }: DailyReviewProps) {
         value={answers[currentPrompt.key] || ''}
         onChangeText={(v) => setAnswers(prev => ({ ...prev, [currentPrompt.key]: v }))}
         placeholder={currentPrompt.placeholder}
-        placeholderTextColor="#9CA3AF"
+        placeholderTextColor={ds.colors.textTertiary}
         multiline
         className="bg-gray-800 rounded-xl p-4 text-white text-base min-h-[150px] flex-1"
         textAlignVertical="top"

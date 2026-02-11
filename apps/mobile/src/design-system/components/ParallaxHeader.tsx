@@ -11,7 +11,7 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, spacing, typography } from '../tokens/modern';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
 
 const { width: _SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -32,6 +32,7 @@ export function ParallaxHeader({
   height = 250,
   collapsedHeight = 60,
 }: ParallaxHeaderProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const imageStyle = useAnimatedStyle(() => {
     const translateY = interpolate(
       scrollY.value,
@@ -150,6 +151,7 @@ export function ParallaxScrollView({
   headerHeight = 250,
   headerImage,
 }: ParallaxScrollViewProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const scrollY = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
@@ -188,6 +190,7 @@ interface StickyHeaderProps {
 }
 
 export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const style = useAnimatedStyle(() => {
     const translateY = interpolate(
       scrollY.value,
@@ -216,7 +219,7 @@ export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): 
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 0,

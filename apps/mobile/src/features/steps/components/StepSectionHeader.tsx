@@ -2,7 +2,8 @@ import React from 'react';
 import { Pressable, View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Text, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface StepSectionHeaderProps {
   title: string;
@@ -18,6 +19,8 @@ export function StepSectionHeader({
   onJumpToQuestion,
 }: StepSectionHeaderProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   return (
     <Pressable
@@ -50,7 +53,7 @@ export function StepSectionHeader({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,4 +68,4 @@ const styles = StyleSheet.create({
     marginLeft: 12,
     flex: 1,
   },
-});
+} as const);

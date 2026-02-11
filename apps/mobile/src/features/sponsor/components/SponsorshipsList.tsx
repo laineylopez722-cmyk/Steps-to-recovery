@@ -4,12 +4,13 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, spacing, typography } from '../../../design-system/tokens/modern';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 export interface SponsorConnection {
   id: string;
@@ -31,6 +32,8 @@ export function SponsorshipsList({
   onConnectionPress,
   emptyMessage = 'No connections yet',
 }: SponsershipsListProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const formatLastContact = (dateString?: string) => {
     if (!dateString) return 'No recent contact';
 
@@ -128,7 +131,7 @@ export function SponsorshipsList({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     gap: spacing[2],
   },
@@ -204,4 +207,4 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: darkAccent.textSubtle,
   },
-});
+} as const);

@@ -12,13 +12,14 @@
  */
 
 import React, { useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useRegularMeetings } from '../../hooks/useRegularMeetings';
-import { ds } from '../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../design-system/DsProvider';
 import * as Haptics from 'expo-haptics';
 
 interface UpcomingMeetingWidgetProps {
@@ -36,6 +37,8 @@ function formatTime(time: string): string {
 }
 
 export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidgetProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const router = useRouterCompat();
   const { nextMeeting, todayMeetings, meetings, isLoading, loadMeetings, getDaysUntil } =
     useRegularMeetings();
@@ -261,7 +264,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
   return null;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   card: {
     marginHorizontal: 16,
     marginVertical: 8,
@@ -497,4 +500,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: ds.colors.info,
   },
-});
+} as const);

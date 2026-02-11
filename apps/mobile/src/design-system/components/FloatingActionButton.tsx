@@ -15,7 +15,8 @@ import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
 import { logger } from '../../utils/logger';
 import { hapticImpact } from '../../utils/haptics';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
+import { useDs } from '../DsProvider';
 
 type FABVariant = 'primary' | 'danger';
 
@@ -49,6 +50,8 @@ export function FloatingActionButton({
   visible = false, // Hidden by default
 }: FloatingActionButtonProps): ReactElement | null {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const { scaleAnim, animatePress } = usePressAnimation(theme.animations.scales.press);
 
   // Return null if not visible (default behavior)
@@ -104,7 +107,7 @@ export function FloatingActionButton({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   container: {
     position: 'absolute',
     right: 20,

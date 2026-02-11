@@ -1,9 +1,10 @@
 import React, { useCallback } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { JournalEntryDecrypted } from '@recovery/shared';
 import { useTheme, Card, Badge } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 // Constants
 const MAX_BODY_LENGTH = 100;
@@ -50,6 +51,8 @@ export function JournalCard({
   accessibilityHint,
 }: JournalCardProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const formatDate = useCallback((dateString: string): string => {
     try {
@@ -160,15 +163,15 @@ export function JournalCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (_ds: DS) => ({
   cardContainer: {
     marginHorizontal: 16,
     marginBottom: 12,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'flex-start' as const,
     marginBottom: 8,
   },
   titleContainer: {
@@ -176,13 +179,13 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
   },
   indicators: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 8,
   },
   indicator: {
@@ -195,17 +198,17 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   cravingText: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: 'white', // Will be overridden by inline style with theme.colors.textInverse
+    fontWeight: 'bold' as const,
+    color: 'white' as const,
   },
   tags: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 4,
   },
-});
+} as const);

@@ -20,10 +20,13 @@ import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { getAIService } from '../services/aiService';
 
 export function AISettingsScreen() {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const navigation = useNavigation();
   const [apiKey, setApiKey] = useState('');
   const [showKey, setShowKey] = useState(false);
@@ -244,7 +247,7 @@ export function AISettingsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -462,4 +465,4 @@ const styles = StyleSheet.create({
     marginTop: ds.space[1],
     lineHeight: 18,
   },
-});
+} as const);

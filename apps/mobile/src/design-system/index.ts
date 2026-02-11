@@ -91,6 +91,7 @@ export {
 export { ThemeProvider } from './context/ThemeContext';
 export { useTheme, useColors, useIsDark } from './hooks/useTheme';
 export { useMotionPress } from './hooks/useMotionPress';
+export { useThemedStyles } from './hooks/useThemedStyles';
 export { Action, useActionMotion } from './primitives';
 export { ScreenAnimations } from './tokens/screen-animations';
 export {
@@ -295,3 +296,15 @@ export type { ElevationStyle } from './tokens/md3-elevation';
 export * from './animations';
 
 export * from './review';
+
+// Theme-aware design system tokens
+export { DsProvider, useDs, useDsIsDark } from './DsProvider';
+export {
+  ds,
+  createDs,
+  paletteLight,
+  colorsLight,
+  semanticLight,
+  shadowsLight,
+} from './tokens/ds';
+export type { DS } from './tokens/ds';

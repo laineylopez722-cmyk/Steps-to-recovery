@@ -19,7 +19,8 @@ import { GlassCard } from '../../../design-system/components/GlassCard';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
 import { useSponsorConnections } from '../../sponsor/hooks/useSponsorConnections';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { useSponsorSharedEntries } from '../../sponsor/hooks/useSponsorSharedEntries';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { JournalEntryDecrypted } from '@recovery/shared';
@@ -40,6 +41,8 @@ export function ShareEntryModal({
   onSuccess,
 }: ShareEntryModalProps): React.ReactElement | null {
   const { user } = useAuth();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const userId = user?.id ?? '';
   const { mySponsor, isLoading: sponsorsLoading } = useSponsorConnections(userId);
   const { shareEntries } = useSponsorSharedEntries(userId);
@@ -277,11 +280,11 @@ export function ShareEntryModal({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     zIndex: 1000,
   },
   backdrop: {
@@ -289,22 +292,22 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.bgOverlay,
   },
   modalContainer: {
-    width: '90%',
+    width: '90%' as const,
     maxWidth: 420,
-    maxHeight: '80%',
+    maxHeight: '80%' as const,
   },
   modal: {
     padding: spacing[4],
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
     marginBottom: spacing[3],
   },
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: spacing[2],
   },
   headerTitle: {
@@ -343,13 +346,13 @@ const styles = StyleSheet.create({
     ...typography.label,
     color: darkAccent.text,
     marginBottom: spacing[2],
-    textTransform: 'uppercase',
+    textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
   },
   loadingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     padding: spacing[4],
     gap: spacing[2],
   },
@@ -365,8 +368,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   sponsorCardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: spacing[2],
   },
   radioCircle: {
@@ -375,8 +378,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: darkAccent.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   radioInner: {
     width: 10,
@@ -390,37 +393,37 @@ const styles = StyleSheet.create({
   sponsorName: {
     ...typography.body,
     color: darkAccent.text,
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
   sponsorRole: {
     ...typography.caption,
     color: darkAccent.textMuted,
   },
   emptyState: {
-    alignItems: 'center',
+    alignItems: 'center' as const,
     padding: spacing[4],
   },
   emptyText: {
     ...typography.body,
     color: darkAccent.text,
     marginTop: spacing[2],
-    fontWeight: '600',
+    fontWeight: '600' as const,
   },
   emptySubtext: {
     ...typography.caption,
     color: darkAccent.textMuted,
     marginTop: spacing[1],
-    textAlign: 'center',
+    textAlign: 'center' as const,
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     gap: spacing[2],
   },
   actionButton: {
     flex: 1,
   },
   successContainer: {
-    alignItems: 'center',
+    alignItems: 'center' as const,
     paddingVertical: spacing[2],
   },
   successIcon: {
@@ -434,11 +437,11 @@ const styles = StyleSheet.create({
   successSubtext: {
     ...typography.body,
     color: darkAccent.textMuted,
-    textAlign: 'center',
+    textAlign: 'center' as const,
     marginBottom: spacing[4],
   },
   payloadCard: {
-    width: '100%',
+    width: '100%' as const,
     padding: spacing[3],
     marginBottom: spacing[3],
     maxHeight: 150,
@@ -447,7 +450,7 @@ const styles = StyleSheet.create({
     ...typography.caption,
     color: darkAccent.textSubtle,
     marginBottom: spacing[1],
-    textTransform: 'uppercase',
+    textTransform: 'uppercase' as const,
   },
   payloadScroll: {
     maxHeight: 100,
@@ -460,4 +463,4 @@ const styles = StyleSheet.create({
   sendButton: {
     marginBottom: spacing[2],
   },
-});
+} as const);

@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme, Input, Button } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { validateEmail } from '../../../utils/validation';
 import { useKeyboardConfig } from '../../../hooks/useKeyboardOffset';
 import type { AuthStackScreenProps } from '../../../navigation/types';
@@ -21,6 +22,8 @@ type Props = AuthStackScreenProps<'Login'>;
 export function LoginScreen({ navigation }: Props) {
   const theme = useTheme();
   const keyboardConfig = useKeyboardConfig();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -219,7 +222,7 @@ export function LoginScreen({ navigation }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   safeArea: {
     flex: 1,
   },
@@ -251,4 +254,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
   },
-});
+} as const);

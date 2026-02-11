@@ -10,7 +10,6 @@ import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   Pressable,
   TextInput,
   Keyboard,
@@ -26,7 +25,8 @@ import Animated, { Layout } from 'react-native-reanimated';
 import { useJournalEntries, useDeleteJournalEntry } from '../hooks/useJournalEntries';
 import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { hapticLight } from '../../../utils/haptics';
 import type { JournalEntryDecrypted } from '@recovery/shared';
 import type { JournalStackParamList } from '../../../navigation/types';
@@ -75,6 +75,7 @@ function EntryCard({
   const preview = getPreview(entry);
   const time = formatTime(new Date(entry.created_at));
   const { onPressIn, onPressOut, animatedStyle } = useMotionPress({ scaleTo: motionScale.pressCard });
+  const styles = useThemedStyles(createStyles);
   
   return (
     <Pressable
@@ -106,6 +107,7 @@ function EntryCard({
 
 // Section Header
 function SectionHeader({ title }: { title: string }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -115,6 +117,8 @@ function SectionHeader({ title }: { title: string }) {
 
 // Empty State
 function EmptyState({ isSearching }: { isSearching: boolean }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   return (
     <Animated.View 
       entering={MotionTransitions.fadeDelayed(200)} 
@@ -146,6 +150,8 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
   
   const [search, setSearch] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   
   // Filter entries by search
   const filteredEntries = useMemo(() => {
@@ -366,7 +372,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -566,4 +572,4 @@ const styles = StyleSheet.create({
     color: ds.colors.accent,
     fontWeight: '700',
   },
-});
+} as const);

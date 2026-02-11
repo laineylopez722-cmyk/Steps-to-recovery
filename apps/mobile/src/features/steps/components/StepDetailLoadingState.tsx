@@ -2,10 +2,11 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Skeleton, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 
 export function StepDetailLoadingState(): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom']}>
@@ -40,7 +41,7 @@ export function StepDetailLoadingState(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -70,4 +71,4 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     borderColor: ds.colors.borderSubtle,
   },
-});
+} as const);

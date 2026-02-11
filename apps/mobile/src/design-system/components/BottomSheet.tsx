@@ -11,7 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -36,6 +36,7 @@ export function BottomSheet({
   showDragHandle = true,
   showCloseButton = true,
 }: BottomSheetProps): React.ReactElement | null {
+  const styles = useThemedStyles(createStyles);
   const translateY = useSharedValue(SCREEN_HEIGHT);
   const opacity = useSharedValue(0);
   const { medium } = useHaptics();
@@ -137,6 +138,7 @@ export function ActionSheetItem({
   onPress,
   disabled = false,
 }: ActionSheetItemProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const { light } = useHaptics();
 
   const handlePress = useCallback(async () => {
@@ -175,10 +177,11 @@ export function ActionSheetItem({
 
 // Action Sheet Divider
 export function ActionSheetDivider(): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   return <View style={styles.divider} />;
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: ds.colors.overlay,

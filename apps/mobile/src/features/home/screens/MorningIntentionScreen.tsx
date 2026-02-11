@@ -8,7 +8,6 @@
 import React, { useState, useCallback } from 'react';
 import { 
   ScrollView, 
-  StyleSheet, 
   View, 
   Text, 
   TextInput,
@@ -24,7 +23,8 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { useCreateCheckIn } from '../hooks/useCheckIns';
 import { AnimatedCheckmark } from '../../../design-system/components';
 import { hapticSuccess, hapticSelection } from '../../../utils/haptics';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { extractMemories } from '../../journal/utils/memoryExtraction';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
 
@@ -34,6 +34,8 @@ interface Props {
 
 export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   const navigation = useNavigation();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
   const memoryStore = useMemoryStore(userId);
 
@@ -204,7 +206,7 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -218,9 +220,9 @@ const styles = StyleSheet.create({
 
   // Header
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     height: ds.sizes.headerHeight,
     paddingHorizontal: ds.sizes.contentPadding,
     borderBottomWidth: 1,
@@ -229,8 +231,8 @@ const styles = StyleSheet.create({
   headerBtn: {
     width: ds.sizes.touchMin,
     height: ds.sizes.touchMin,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
     marginLeft: -ds.space[2],
   },
   headerTitle: {
@@ -275,7 +277,7 @@ const styles = StyleSheet.create({
     ...ds.typography.caption,
     color: ds.colors.textSecondary,
     marginBottom: ds.space[3],
-    textTransform: 'uppercase',
+    textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
   },
 
@@ -298,7 +300,7 @@ const styles = StyleSheet.create({
     marginBottom: ds.space[6],
   },
   moodTrack: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     gap: ds.space[2],
     marginBottom: ds.space[2],
   },
@@ -312,8 +314,8 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.accent,
   },
   moodLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
   },
   moodLabelText: {
     ...ds.typography.micro,
@@ -324,15 +326,15 @@ const styles = StyleSheet.create({
   modalBg: {
     flex: 1,
     backgroundColor: ds.semantic.surface.overlayModal,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   modalCard: {
     backgroundColor: ds.colors.bgTertiary,
     borderRadius: ds.radius.xl,
     paddingVertical: ds.space[12],
     paddingHorizontal: ds.space[10],
-    alignItems: 'center',
+    alignItems: 'center' as const,
     minWidth: 240,
   },
   modalTitle: {
@@ -345,4 +347,4 @@ const styles = StyleSheet.create({
     color: ds.colors.textSecondary,
     marginTop: ds.space[2],
   },
-});
+} as const);

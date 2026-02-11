@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import type { ResentmentEntry } from '../types';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface InventoryBuilderProps {
   onSave: (entry: ResentmentEntry) => Promise<void>;
@@ -81,7 +82,7 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
             value={entry.who}
             onChangeText={(v) => updateField('who', v)}
             placeholder="Person, institution, or principle..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={ds.colors.textTertiary}
             className="bg-gray-800 rounded-xl p-4 text-white text-base"
             autoFocus
           />
@@ -97,7 +98,7 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
             value={entry.cause}
             onChangeText={(v) => updateField('cause', v)}
             placeholder="What happened..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={ds.colors.textTertiary}
             multiline
             className="bg-gray-800 rounded-xl p-4 text-white text-base min-h-[120px]"
             textAlignVertical="top"
@@ -141,7 +142,7 @@ export function InventoryBuilder({ onSave, onCancel, initialEntry }: InventoryBu
             value={entry.myPart}
             onChangeText={(v) => updateField('myPart', v)}
             placeholder="Be honest with yourself..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={ds.colors.textTertiary}
             multiline
             className="bg-gray-800 rounded-xl p-4 text-white text-base min-h-[150px]"
             textAlignVertical="top"

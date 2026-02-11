@@ -4,12 +4,13 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import type { SharedEntryView } from '../hooks/useSponsorSharedEntries';
 
 interface SharedEntryCardProps {
@@ -23,6 +24,8 @@ export function SharedEntryCard({
   onPress,
   index = 0,
 }: SharedEntryCardProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -124,7 +127,7 @@ export function SharedEntryCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   card: {
     marginBottom: spacing[2],
   },
@@ -209,4 +212,4 @@ const styles = StyleSheet.create({
   spacer: {
     flex: 1,
   },
-});
+} as const);

@@ -10,7 +10,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { darkAccent, gradients, radius, spacing, typography } from '../tokens/modern';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
+import { useDs } from '../DsProvider';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -45,6 +46,7 @@ export function useToast() {
 }
 
 export function ToastProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = useCallback(
@@ -97,6 +99,8 @@ function ToastItem({
   index: number;
   onDismiss: (() => void) | undefined;
 }) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const translateY = useSharedValue(-100);
   const opacity = useSharedValue(0);
   const scale = useSharedValue(0.9);
@@ -191,7 +195,7 @@ export function useToastHelpers() {
   };
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 9999,

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,12 +11,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Card, ProgressBar, Badge, CircularProgress } from '../../../design-system/components';
 import { useTheme } from '../../../design-system/hooks/useTheme';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCleanTime } from '../hooks/useCleanTime';
 
 export function CleanTimeTracker(): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const { days, hours, minutes, seconds, nextMilestone, isLoading } = useCleanTime(userId);
@@ -233,7 +235,7 @@ export function CleanTimeTracker(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   card: {
     margin: 16,
     marginTop: 8,
@@ -241,75 +243,75 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     padding: 40,
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-between' as const,
+    alignItems: 'center' as const,
     marginBottom: 20,
   },
   headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     gap: 8,
   },
   iconText: {
     fontSize: 20,
   },
   title: {
-    fontWeight: '700',
+    fontWeight: '700' as const,
     fontSize: 18,
   },
   circularContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
     marginVertical: 16,
   },
   centerContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
   },
   daysNumber: {
     fontSize: 56,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     lineHeight: 64,
   },
   daysLabel: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     letterSpacing: 1,
     marginTop: 4,
   },
   motivationalText: {
-    textAlign: 'center',
+    textAlign: 'center' as const,
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: 'italic' as const,
     marginTop: 12,
     marginBottom: 20,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-around' as const,
+    alignItems: 'center' as const,
     paddingVertical: 16,
     paddingHorizontal: 8,
   },
   statItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   statIcon: {
     marginBottom: 8,
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 10,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     letterSpacing: 0.5,
   },
   statDivider: {
@@ -323,14 +325,14 @@ const styles = StyleSheet.create({
     borderTopColor: ds.colors.borderSubtle,
   },
   milestoneHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     marginBottom: 12,
   },
   milestoneLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
     flex: 1,
   },
   milestoneEmoji: {
@@ -342,7 +344,7 @@ const styles = StyleSheet.create({
   },
   milestoneTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     marginBottom: 2,
   },
   milestoneSubtitle: {
@@ -353,22 +355,22 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   timeBreakdown: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexDirection: 'row' as const,
+    justifyContent: 'space-around' as const,
     marginTop: 20,
     paddingTop: 16,
     borderTopWidth: 1,
     borderTopColor: ds.colors.borderSubtle,
   },
   timeItem: {
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   timeNumber: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: '600' as const,
     marginBottom: 4,
   },
   timeLabel: {
     fontSize: 11,
   },
-});
+} as const);

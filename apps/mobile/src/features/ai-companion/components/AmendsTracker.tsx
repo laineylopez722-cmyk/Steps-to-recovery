@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import type { AmendsEntry } from '../types';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface AmendsTrackerProps {
   entries: AmendsEntry[];
@@ -126,7 +127,7 @@ export function AmendsTracker({ entries, onAdd, onUpdate }: AmendsTrackerProps) 
             value={newEntry.who}
             onChangeText={(v) => setNewEntry(p => ({ ...p, who: v }))}
             placeholder="Name"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={ds.colors.textTertiary}
             className="bg-gray-800 rounded-xl p-4 text-white mb-4"
           />
           
@@ -135,7 +136,7 @@ export function AmendsTracker({ entries, onAdd, onUpdate }: AmendsTrackerProps) 
             value={newEntry.harm}
             onChangeText={(v) => setNewEntry(p => ({ ...p, harm: v }))}
             placeholder="Describe the harm..."
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={ds.colors.textTertiary}
             multiline
             className="bg-gray-800 rounded-xl p-4 text-white mb-4 min-h-[80px]"
             textAlignVertical="top"

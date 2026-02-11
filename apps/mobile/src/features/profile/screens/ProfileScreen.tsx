@@ -24,7 +24,8 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { Modal } from '../../../design-system';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import type { ProfileStackParamList, MainTabParamList } from '../../../navigation/types';
 
 type ProfileScreenNavigationProp = CompositeNavigationProp<
@@ -51,6 +52,8 @@ function ListItem({
   isLast?: boolean;
 }) {
   const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   const handlePress = () => {
     if (onPress && !disabled) {
@@ -96,6 +99,7 @@ function ListItem({
 
 // Section Header
 function SectionHeader({ title, delay = 0 }: { title: string; delay?: number }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <Animated.View entering={MotionTransitions.fadeDelayed(delay)}>
       <Text style={styles.sectionHeader}>{title}</Text>
@@ -105,6 +109,7 @@ function SectionHeader({ title, delay = 0 }: { title: string; delay?: number }) 
 
 // Card Group
 function CardGroup({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+  const styles = useThemedStyles(createStyles);
   return (
     <Animated.View 
       entering={MotionTransitions.cardEnter(Math.floor(delay / 50))}
@@ -118,6 +123,8 @@ function CardGroup({ children, delay = 0 }: { children: React.ReactNode; delay?:
 export function ProfileScreen(): React.ReactElement {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
   const { user, signOut, loading } = useAuth();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [signingOut, setSigningOut] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
@@ -283,7 +290,7 @@ export function ProfileScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.semantic.surface.app,
@@ -455,5 +462,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: ds.space[6],
   },
-});
+} as const);
 

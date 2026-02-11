@@ -3,7 +3,7 @@ import { memo } from 'react';
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { ds } from '../../design-system/tokens/ds';
+import { useDs } from '../../design-system/DsProvider';
 
 interface StepTimelineCardProps {
   step: {
@@ -28,6 +28,7 @@ export const StepTimelineCard = memo(function StepTimelineCard({
   index,
   isLast,
 }: StepTimelineCardProps) {
+  const ds = useDs();
   const isLocked = progress === 'none' && !isCurrent;
   const isCompleted = progress === 'completed';
 

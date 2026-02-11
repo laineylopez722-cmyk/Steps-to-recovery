@@ -16,6 +16,7 @@ import { Uniwind } from 'uniwind';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { QueryProvider } from './src/providers/QueryProvider';
 import { ThemeProvider } from './src/design-system';
+import { DsProvider } from './src/design-system/DsProvider';
 import { DatabaseProvider } from './src/contexts/DatabaseContext';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { SyncProvider } from './src/contexts/SyncContext';
@@ -102,6 +103,7 @@ function App(): React.ReactElement {
           <UniwindSafeAreaBridge>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <ThemeProvider>
+                <DsProvider>
                 <DatabaseProvider>
                   <AuthProvider>
                     <SyncProvider>
@@ -119,6 +121,7 @@ function App(): React.ReactElement {
                     </SyncProvider>
                   </AuthProvider>
                 </DatabaseProvider>
+                </DsProvider>
               </ThemeProvider>
             </GestureHandlerRootView>
           </UniwindSafeAreaBridge>

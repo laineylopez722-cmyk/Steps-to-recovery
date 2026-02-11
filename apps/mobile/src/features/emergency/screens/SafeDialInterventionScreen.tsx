@@ -12,12 +12,13 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, Alert, BackHandler, Linking } from 'react-native';
+import { View, Text, TextInput, Alert, BackHandler, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut, SlideInDown } from 'react-native-reanimated';
 import { useTheme, Button } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { hapticWarning, hapticSuccess, hapticImpact } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -51,6 +52,8 @@ export function SafeDialInterventionScreen({
   onProceed,
 }: SafeDialInterventionScreenProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const { user } = useAuth();
   const { logCall } = useCloseCallTracking();
 
@@ -546,7 +549,7 @@ export function SafeDialInterventionScreen({
   }
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   stepContainer: {
     flex: 1,
   },
@@ -617,4 +620,4 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
   },
-});
+} as const);

@@ -11,12 +11,14 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import * as Haptics from 'expo-haptics';
 import { ds } from '../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../design-system/DsProvider';
 
 interface EmptyStateProps {
   /** Emoji to display (or use icon) */
@@ -42,7 +44,7 @@ interface EmptyStateProps {
 export const EmptyState = memo(function EmptyState({
   emoji = '📭',
   icon,
-  iconColor = ds.colors.info,
+  iconColor: iconColorProp,
   title,
   message,
   actionLabel,
@@ -50,6 +52,9 @@ export const EmptyState = memo(function EmptyState({
   variant = 'default',
   enteringDelay = 0,
 }: EmptyStateProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
+  const iconColor = iconColorProp ?? ds.colors.info;
   const handleAction = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     onAction?.();
@@ -235,7 +240,7 @@ export const EMPTY_STATES = {
   },
 } as const;
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   // Minimal variant
   minimalContainer: {
     alignItems: 'center',
@@ -383,4 +388,4 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 16,
   },
-});
+} as const);

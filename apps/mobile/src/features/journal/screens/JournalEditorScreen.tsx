@@ -25,7 +25,8 @@ import Animated, {
   FadeIn,
   SlideInDown,
 } from 'react-native-reanimated';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { hapticSuccess, hapticLight } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 import {
@@ -44,6 +45,8 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const navigation = useNavigation();
   const route = useRoute();
   const insets = useSafeAreaInsets();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const params = route.params as { mode?: 'create' | 'edit'; entryId?: string } | undefined;
   
   const { entries } = useJournalEntries(userId);
@@ -329,7 +332,7 @@ logger.error('Auto-save failed', err);
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
     backgroundColor: ds.colors.bgPrimary,
@@ -343,9 +346,9 @@ const styles = StyleSheet.create({
   
   // Header
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     paddingHorizontal: ds.space[4],
     paddingTop: ds.space[2],
     paddingBottom: ds.space[3],
@@ -353,19 +356,19 @@ const styles = StyleSheet.create({
   backBtn: {
     width: 44,
     height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   backBtnInner: {
     width: 36,
     height: 36,
     borderRadius: 18,
     backgroundColor: ds.colors.bgTertiary,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   actionsPill: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     backgroundColor: ds.colors.bgTertiary,
     borderRadius: 20,
     paddingHorizontal: ds.space[2],
@@ -375,8 +378,8 @@ const styles = StyleSheet.create({
   actionBtn: {
     width: 36,
     height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   
   // Content
@@ -390,7 +393,7 @@ const styles = StyleSheet.create({
   },
   titleInput: {
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: '700' as const,
     color: ds.colors.textPrimary,
     marginBottom: ds.space[3],
     paddingVertical: 0,
@@ -405,9 +408,9 @@ const styles = StyleSheet.create({
   
   // Toolbar
   toolbar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'space-between' as const,
     paddingHorizontal: ds.space[4],
     paddingTop: ds.space[3],
     backgroundColor: ds.colors.bgPrimary,
@@ -415,7 +418,7 @@ const styles = StyleSheet.create({
     borderTopColor: ds.colors.divider,
   },
   toolsPill: {
-    flexDirection: 'row',
+    flexDirection: 'row' as const,
     backgroundColor: ds.colors.bgTertiary,
     borderRadius: 20,
     paddingHorizontal: ds.space[3],
@@ -425,12 +428,12 @@ const styles = StyleSheet.create({
   toolBtn: {
     width: 32,
     height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
   saveStatus: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: 'center' as const,
   },
   savingText: {
     ...ds.typography.caption,
@@ -441,7 +444,7 @@ const styles = StyleSheet.create({
     height: 44,
     borderRadius: 12,
     backgroundColor: ds.colors.accentMuted,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'center' as const,
+    alignItems: 'center' as const,
   },
-});
+} as const);

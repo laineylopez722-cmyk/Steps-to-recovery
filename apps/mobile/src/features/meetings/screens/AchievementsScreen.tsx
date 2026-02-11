@@ -12,7 +12,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { useAchievements } from '../hooks/useAchievements';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
 import { ACHIEVEMENT_COLORS } from '@recovery/shared';
@@ -23,6 +24,8 @@ type FilterType = 'all' | 'unlocked' | 'locked';
 
 export function AchievementsScreen(): React.ReactElement {
   const navigation = useNavigation();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const [filter, setFilter] = useState<FilterType>('all');
   const [refreshing, setRefreshing] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -310,7 +313,7 @@ export function AchievementsScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flex: 1,
   },
@@ -525,4 +528,4 @@ const styles = StyleSheet.create({
     color: darkAccent.textMuted,
     textAlign: 'center',
   },
-});
+} as const);

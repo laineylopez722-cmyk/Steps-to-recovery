@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet, type ViewProps } from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
-import { ds } from '../tokens/ds';
+import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -36,6 +36,7 @@ export function GlassListItem({
   children,
   ...props
 }: GlassListItemProps): React.ReactElement {
+  const styles = useThemedStyles(createStyles);
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -99,7 +100,7 @@ export function GlassListItem({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => StyleSheet.create({
   container: {
     marginHorizontal: spacing[2],
     marginBottom: spacing[2],

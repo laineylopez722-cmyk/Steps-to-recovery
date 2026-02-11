@@ -1,8 +1,9 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Button, Card, Divider, Text, TextArea, useTheme } from '../../../design-system';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 
 interface StepQuestionCardProps {
   questionNumber: number;
@@ -26,6 +27,8 @@ export function StepQuestionCard({
   onSave,
 }: StepQuestionCardProps): React.ReactElement {
   const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
 
   return (
     <Card variant="elevated" style={styles.questionCard}>
@@ -87,7 +90,7 @@ export function StepQuestionCard({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   questionCard: {
     marginHorizontal: 16,
     marginBottom: 16,
@@ -115,4 +118,4 @@ const styles = StyleSheet.create({
   answerTextArea: {
     marginBottom: 16,
   },
-});
+} as const);

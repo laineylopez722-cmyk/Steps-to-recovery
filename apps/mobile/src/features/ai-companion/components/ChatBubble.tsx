@@ -6,9 +6,10 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, Easing, StyleSheet } from 'react-native';
+import { View, Text, Animated, Easing } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { ds } from '../../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import type { Message } from '../types';
 
 interface ChatBubbleProps {
@@ -18,6 +19,8 @@ interface ChatBubbleProps {
 }
 
 export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const isUser = message.role === 'user';
   const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
   const scaleAnim = useRef(new Animated.Value(isNew ? 0.95 : 1)).current;
@@ -88,6 +91,7 @@ export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps
 }
 
 function TypingDots() {
+  const styles = useThemedStyles(createStyles);
   const dot1 = useRef(new Animated.Value(0)).current;
   const dot2 = useRef(new Animated.Value(0)).current;
   const dot3 = useRef(new Animated.Value(0)).current;
@@ -144,7 +148,7 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flexDirection: 'row',
     marginBottom: ds.space[3],
@@ -207,4 +211,4 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.textTertiary,
     marginHorizontal: 2,
   },
-});
+} as const);

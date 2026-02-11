@@ -38,6 +38,7 @@ import {
   Platform,
 } from 'react-native';
 import { useA11yAnnouncer } from '../hooks/useA11yAnnouncer';
+import { ds } from '../../tokens/ds';
 
 // ============================================================================
 // CONSTANTS
@@ -408,7 +409,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#991B1B', // Red-800
   },
   disabledButton: {
-    backgroundColor: '#9CA3AF', // Gray-400
+    backgroundColor: ds.colors.textTertiary,
     opacity: 0.6,
   },
   emergencyButtonText: {

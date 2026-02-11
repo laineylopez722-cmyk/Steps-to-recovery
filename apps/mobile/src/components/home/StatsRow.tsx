@@ -11,13 +11,14 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import * as Haptics from 'expo-haptics';
-import { ds } from '../../design-system/tokens/ds';
+import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../design-system/DsProvider';
 
 interface StatItemProps {
   value: string | number;
@@ -30,6 +31,8 @@ interface StatItemProps {
 }
 
 function StatItem({ value, label, icon, color = 'primary', onPress, isLoading, delay = 0 }: StatItemProps) {
+  const styles = useThemedStyles(createStyles);
+  const ds = useDs();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -128,6 +131,7 @@ export function StatsRow({
   isLoading = false,
   enteringDelay = 2,
 }: StatsRowProps) {
+  const styles = useThemedStyles(createStyles);
   const router = useRouterCompat();
 
   return (
@@ -163,7 +167,7 @@ export function StatsRow({
   );
 }
 
-const styles = StyleSheet.create({
+const createStyles = (ds: DS) => ({
   container: {
     flexDirection: 'row',
     gap: 12,
@@ -220,4 +224,4 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: ds.colors.bgTertiary,
   },
-});
+} as const);
