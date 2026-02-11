@@ -158,3 +158,111 @@ export {
   EmptyStateIllustration,
 } from './Illustration';
 export type { IllustrationProps } from './Illustration';
+
+// ============================================================================
+// Material Design 3 Recovery Components (Warm Theme)
+// ============================================================================
+
+// StreakCounter - Clean time tracker with circular display
+export { StreakCounter } from './StreakCounter';
+export type { StreakCounterProps, Milestone } from './StreakCounter';
+
+// DailyCheckInCard - Morning/Evening check-in card
+export { DailyCheckInCard } from './DailyCheckInCard';
+export type { 
+  DailyCheckInCardProps, 
+  CheckInSection, 
+  CheckInState 
+} from './DailyCheckInCard';
+
+// JournalEntryCard - Journal entry with mood and tags
+export { JournalEntryCard } from './JournalEntryCard';
+export type { 
+  JournalEntryCardProps, 
+  MoodType, 
+  CravingLevel 
+} from './JournalEntryCard';
+
+// StepProgressTracker - 12-step progress visualization
+export { StepProgressTracker } from './StepProgressTracker';
+export type { 
+  StepProgressTrackerProps, 
+  Step, 
+  StepStatus 
+} from './StepProgressTracker';
+
+// AchievementBadge - Achievement unlock with animation
+export { AchievementBadge, AchievementGrid } from './AchievementBadge';
+export type { 
+  AchievementBadgeProps, 
+  Achievement, 
+  AchievementGridProps 
+} from './AchievementBadge';
+
+// CrisisFAB - Emergency safety kit button
+export { CrisisFAB, CrisisButtonGroup } from './CrisisFAB';
+export type { 
+  CrisisFABProps, 
+  CrisisFABVariant, 
+  CrisisFABSize,
+  CrisisButtonGroupProps 
+} from './CrisisFAB';
+
+// ============================================================================
+// Material Design 3 Core Components (New Unified Library)
+// ============================================================================
+
+// MD3 Button System
+export {
+  // Main Button
+  Button as MD3Button,
+  // Variants
+  buttonVariants,
+  buttonTextVariants,
+  fabVariants,
+  fabIconVariants,
+  iconButtonVariants,
+  iconButtonIconVariants,
+  // Types
+  type ButtonVariantProps as MD3ButtonVariantProps,
+  type ButtonTextVariantProps as MD3ButtonTextVariantProps,
+  type FABVariantProps,
+  type FABIconVariantProps,
+  type IconButtonVariantProps,
+  type IconButtonIconVariantProps,
+} from './core/Button';
+export type { ButtonProps as MD3ButtonProps } from './core/Button';
+
+// MD3 Card System
+export {
+  Card as MD3Card,
+  CardHeader as MD3CardHeader,
+  CardTitle as MD3CardTitle,
+  CardDescription as MD3CardDescription,
+  CardContent as MD3CardContent,
+  CardFooter as MD3CardFooter,
+} from './core/Card';
+export type {
+  CardProps as MD3CardProps,
+  CardHeaderProps as MD3CardHeaderProps,
+  CardTitleProps as MD3CardTitleProps,
+  CardDescriptionProps as MD3CardDescriptionProps,
+  CardContentProps as MD3CardContentProps,
+  CardFooterProps as MD3CardFooterProps,
+  CardVariant as MD3CardVariant,
+  CardElevation as MD3CardElevation,
+} from './core/Card';
+
+// MD3 Input System
+export { Input as MD3Input } from './core/Input';
+export type { InputProps as MD3InputProps } from './core/Input';
+
+// MD3 Progress Indicators
+export {
+  LinearProgress as MD3LinearProgress,
+  CircularProgress as MD3CircularProgress,
+} from './core/Progress';
+export type {
+  LinearProgressProps as MD3LinearProgressProps,
+  CircularProgressProps as MD3CircularProgressProps,
+} from './core/Progress';
