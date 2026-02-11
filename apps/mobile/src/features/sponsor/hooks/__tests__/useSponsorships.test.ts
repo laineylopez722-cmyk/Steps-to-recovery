@@ -30,10 +30,10 @@ jest.mock('../../../../lib/supabase', () => ({
 }));
 
 jest.mock('../../../../contexts/AuthContext', () => ({
-  useAuth: () => ({
+  useAuth: jest.fn(() => ({
     user: { id: 'user-123', email: 'test@example.com' },
     session: { access_token: 'mock-token' },
-  }),
+  })),
 }));
 
 jest.mock('../../../../utils/logger', () => ({
@@ -63,7 +63,7 @@ describe('useSponsorships', () => {
     mockSupabaseOrder.mockResolvedValue({ data: [], error: null });
     mockSupabaseEq.mockReturnValue({ single: mockSupabaseSingle });
     mockSupabaseSingle.mockResolvedValue({ data: null, error: null });
-    mockSupabaseSelect.mockReturnValue({ eq: mockSupabaseEq });
+    mockSupabaseSelect.mockReturnValue({ eq: mockSupabaseEq, or: mockSupabaseOr });
     mockSupabaseUpdate.mockReturnValue({ eq: mockSupabaseEq });
     mockSupabaseDelete.mockReturnValue({ eq: mockSupabaseEq });
     mockSupabaseInsert.mockResolvedValue({ error: null });
