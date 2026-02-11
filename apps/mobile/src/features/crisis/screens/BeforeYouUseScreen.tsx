@@ -387,7 +387,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
             navigation.navigate('MainApp', {
               screen: 'Home',
               params: { screen: 'CompanionChat' },
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } as any);
           }}
           style={styles.talkButton}

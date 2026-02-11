@@ -94,9 +94,7 @@ export function useQuickEscape(): UseQuickEscapeReturn {
     if (!isEnabled) return;
 
     const now = Date.now();
-    const recentTaps = tapTimestampsRef.current.filter(
-      (t) => now - t < TAP_WINDOW_MS,
-    );
+    const recentTaps = tapTimestampsRef.current.filter((t) => now - t < TAP_WINDOW_MS);
     recentTaps.push(now);
     tapTimestampsRef.current = recentTaps;
 

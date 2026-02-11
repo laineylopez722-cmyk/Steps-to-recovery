@@ -1,5 +1,3 @@
- 
-
 const mockScheduleNotificationAsync = jest.fn();
 const mockCancelScheduledNotificationAsync = jest.fn();
 const mockGetAllScheduledNotificationsAsync = jest.fn();

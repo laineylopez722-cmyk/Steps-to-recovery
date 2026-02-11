@@ -99,14 +99,8 @@ export function GroundingExercise({ onComplete }: GroundingExerciseProps): React
     return (
       <Animated.View entering={FadeIn.duration(400)} style={styles.container}>
         <View style={styles.completeContainer}>
-          <MaterialIcons
-            name="check-circle"
-            size={48}
-            color={styles.successColor.color}
-          />
-          <Text style={styles.completeTitle}>
-            You did it
-          </Text>
+          <MaterialIcons name="check-circle" size={48} color={styles.successColor.color} />
+          <Text style={styles.completeTitle}>You did it</Text>
           <Text style={styles.completeSubtitle}>
             You're grounded in the present moment. The crisis will pass.
           </Text>
@@ -127,15 +121,10 @@ export function GroundingExercise({ onComplete }: GroundingExerciseProps): React
 
   return (
     <Animated.View entering={FadeIn.duration(400)} style={styles.container}>
-      <Text
-        style={styles.title}
-        accessibilityRole="header"
-      >
+      <Text style={styles.title} accessibilityRole="header">
         5-4-3-2-1 Grounding
       </Text>
-      <Text style={styles.description}>
-        Use your senses to anchor yourself in the present
-      </Text>
+      <Text style={styles.description}>Use your senses to anchor yourself in the present</Text>
 
       {/* Progress indicators */}
       <View
@@ -146,31 +135,18 @@ export function GroundingExercise({ onComplete }: GroundingExerciseProps): React
         {GROUNDING_STEPS.map((_, index) => (
           <View
             key={index}
-            style={[
-              styles.progressDot,
-              index <= currentStep && styles.progressDotActive,
-            ]}
+            style={[styles.progressDot, index <= currentStep && styles.progressDotActive]}
           />
         ))}
       </View>
 
       {/* Current step */}
-      <Animated.View
-        key={currentStep}
-        entering={FadeInDown.duration(300)}
-        style={styles.stepCard}
-      >
+      <Animated.View key={currentStep} entering={FadeInDown.duration(300)} style={styles.stepCard}>
         <View style={styles.stepBadge}>
-          <MaterialIcons
-            name={step.icon}
-            size={32}
-            color={styles.badgeIconColor.color}
-          />
+          <MaterialIcons name={step.icon} size={32} color={styles.badgeIconColor.color} />
         </View>
         <Text style={styles.stepCount}>{step.count}</Text>
-        <Text style={styles.stepSense}>
-          things you can {step.sense.toLowerCase()}
-        </Text>
+        <Text style={styles.stepSense}>things you can {step.sense.toLowerCase()}</Text>
         <Text style={styles.stepPrompt}>{step.prompt}</Text>
       </Animated.View>
 
@@ -187,9 +163,7 @@ export function GroundingExercise({ onComplete }: GroundingExerciseProps): React
         accessibilityHint="Move to the next grounding step"
       >
         <Text style={styles.nextButtonText}>
-          {currentStep < GROUNDING_STEPS.length - 1
-            ? `I found ${step.count} ✓`
-            : 'Done ✓'}
+          {currentStep < GROUNDING_STEPS.length - 1 ? `I found ${step.count} ✓` : 'Done ✓'}
         </Text>
       </Pressable>
     </Animated.View>

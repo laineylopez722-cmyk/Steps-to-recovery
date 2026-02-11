@@ -1,10 +1,10 @@
 /**
- * PostCSS Configuration for NativeWind/Tailwind CSS
+ * PostCSS Configuration for Tailwind CSS v4
  *
- * Processes Tailwind CSS classes for React Native via NativeWind.
- * CommonJS format required for Metro bundler compatibility.
+ * Processes Tailwind CSS classes for React Native via uniwind.
+ * Uses @tailwindcss/postcss for Tailwind v4 compatibility.
  */
 export const plugins = {
-  tailwindcss: {},
+  '@tailwindcss/postcss': {},
   autoprefixer: {},
 };

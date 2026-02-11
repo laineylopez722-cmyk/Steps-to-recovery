@@ -1,5 +1,3 @@
- 
-
 // Factory mocks must be defined BEFORE imports
 const mockIsTaskRegisteredAsync = jest.fn();
 const _mockDefineTask = jest.fn();

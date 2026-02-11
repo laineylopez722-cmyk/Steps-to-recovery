@@ -35,12 +35,7 @@ export function ScreenErrorBoundary({
   }, []);
 
   return (
-    <ErrorBoundary
-      key={resetKey}
-      onReset={handleReset}
-      boundary={screenName}
-      fallback={fallback}
-    >
+    <ErrorBoundary key={resetKey} onReset={handleReset} boundary={screenName} fallback={fallback}>
       {children}
     </ErrorBoundary>
   );

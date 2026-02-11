@@ -489,10 +489,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
                         <View style={styles.divider} />
 
                         <View style={styles.radiusRow}>
-                          <Text
-                            style={styles.radiusLabel}
-                            accessibilityRole="text"
-                          >
+                          <Text style={styles.radiusLabel} accessibilityRole="text">
                             Detection radius
                           </Text>
                           <View style={styles.radiusOptions}>
@@ -525,11 +522,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
                         <View style={styles.divider} />
 
                         <View style={styles.geofenceInfo}>
-                          <Feather
-                            name="info"
-                            size={14}
-                            color={ds.colors.textTertiary}
-                          />
+                          <Feather name="info" size={14} color={ds.colors.textTertiary} />
                           <Text style={styles.geofenceInfoText}>
                             {geofenceCount > 0
                               ? `Monitoring ${geofenceCount} meeting location${geofenceCount !== 1 ? 's' : ''}.`

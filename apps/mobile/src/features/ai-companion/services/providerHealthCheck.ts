@@ -42,7 +42,6 @@ export async function checkProviderHealth(provider: AIProvider): Promise<Provide
 
       (async (): Promise<void> => {
         try {
-           
           for await (const _chunk of service.chat(testMessages, {
             maxTokens: 5,
             temperature: 0,

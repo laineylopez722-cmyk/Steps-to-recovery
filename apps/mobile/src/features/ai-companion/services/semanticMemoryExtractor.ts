@@ -111,7 +111,10 @@ export async function extractSemanticMemories(
     });
 
     // Parse AI response
-    const cleaned = response.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+    const cleaned = response
+      .trim()
+      .replace(/^```json\s*/i, '')
+      .replace(/\s*```$/, '');
     const parsed: unknown = JSON.parse(cleaned);
     if (!Array.isArray(parsed)) {
       logger.warn('Semantic extraction returned non-array');

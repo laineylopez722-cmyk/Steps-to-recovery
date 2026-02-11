@@ -208,7 +208,16 @@ async function saveWeatherSnapshot(
     } else {
       await db.runAsync(
         'INSERT INTO weather_snapshots (id, user_id, date, temperature, condition, humidity, location, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, userId, today, weather.temperature, weather.condition, weather.humidity, weather.location, new Date().toISOString()],
+        [
+          id,
+          userId,
+          today,
+          weather.temperature,
+          weather.condition,
+          weather.humidity,
+          weather.location,
+          new Date().toISOString(),
+        ],
       );
     }
   } catch (error) {
@@ -249,10 +258,11 @@ async function correlateMoodWithWeather(
     );
 
     // Calculate overall average mood for trend comparison
-    const overallAvg = rows.length > 0
-      ? rows.reduce((sum, r) => sum + r.avg_mood * r.sample_count, 0) /
-        rows.reduce((sum, r) => sum + r.sample_count, 0)
-      : 3;
+    const overallAvg =
+      rows.length > 0
+        ? rows.reduce((sum, r) => sum + r.avg_mood * r.sample_count, 0) /
+          rows.reduce((sum, r) => sum + r.sample_count, 0)
+        : 3;
 
     return rows.map((row) => {
       let trend: CorrelationTrend = 'neutral';
@@ -279,10 +289,7 @@ async function correlateMoodWithWeather(
 /**
  * Get total number of weather data points for a user.
  */
-async function getWeatherDataPointCount(
-  db: StorageAdapter,
-  userId: string,
-): Promise<number> {
+async function getWeatherDataPointCount(db: StorageAdapter, userId: string): Promise<number> {
   try {
     const result = await db.getFirstAsync<{ count: number }>(
       'SELECT COUNT(*) as count FROM weather_snapshots WHERE user_id = ?',

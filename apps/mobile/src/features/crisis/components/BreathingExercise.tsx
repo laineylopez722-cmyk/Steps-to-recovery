@@ -9,12 +9,7 @@
 
 import React, { useCallback, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-  Easing,
-  FadeIn,
-} from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, withTiming, Easing, FadeIn } from 'react-native-reanimated';
 import { useBreathingExercise } from '../../../hooks/useBreathingExercise';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { spacing, radius } from '../../../design-system/tokens/modern';
@@ -33,21 +28,13 @@ export function BreathingExercise({
 }: BreathingExerciseProps): ReactElement {
   const styles = useThemedStyles(createStyles);
 
-  const {
-    phase,
-    phaseLabel,
-    progress,
-    cycleCount,
-    isRunning,
-    isPaused,
-    toggle,
-    reset,
-  } = useBreathingExercise({
-    pattern: 'box',
-    targetCycles,
-    hapticFeedback: true,
-    onComplete,
-  });
+  const { phase, phaseLabel, progress, cycleCount, isRunning, isPaused, toggle, reset } =
+    useBreathingExercise({
+      pattern: 'box',
+      targetCycles,
+      hapticFeedback: true,
+      onComplete,
+    });
 
   const handleToggle = useCallback((): void => {
     toggle();
@@ -83,23 +70,14 @@ export function BreathingExercise({
   }, [phase, progress]);
 
   const isIdle = phase === 'idle' && !isRunning && !isPaused;
-  const statusText = isIdle
-    ? 'Tap to begin'
-    : isPaused
-      ? 'Paused — tap to resume'
-      : phaseLabel;
+  const statusText = isIdle ? 'Tap to begin' : isPaused ? 'Paused — tap to resume' : phaseLabel;
 
   return (
     <Animated.View entering={FadeIn.duration(400)} style={styles.container}>
-      <Text
-        style={styles.title}
-        accessibilityRole="header"
-      >
+      <Text style={styles.title} accessibilityRole="header">
         Box Breathing
       </Text>
-      <Text style={styles.description}>
-        Breathe in 4 seconds, hold 4, out 4, hold 4
-      </Text>
+      <Text style={styles.description}>Breathe in 4 seconds, hold 4, out 4, hold 4</Text>
 
       {/* Breathing Circle */}
       <Pressable
@@ -120,7 +98,8 @@ export function BreathingExercise({
             <Text style={styles.phaseText}>{statusText}</Text>
             {isRunning && (
               <Text style={styles.cycleText}>
-                Cycle {cycleCount + 1}{targetCycles > 0 ? ` of ${targetCycles}` : ''}
+                Cycle {cycleCount + 1}
+                {targetCycles > 0 ? ` of ${targetCycles}` : ''}
               </Text>
             )}
           </Animated.View>

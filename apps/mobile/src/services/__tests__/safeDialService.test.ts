@@ -1,4 +1,3 @@
- 
 import {
   normalizePhoneNumber,
   addRiskyContact,

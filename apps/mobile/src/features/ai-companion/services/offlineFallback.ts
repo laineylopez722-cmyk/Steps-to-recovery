@@ -54,13 +54,19 @@ function categorizeMessage(message: string): string {
   const lower = message.toLowerCase();
 
   const categories: Array<{ pattern: RegExp; topic: string }> = [
-    { pattern: /crav(e|ing|ings)|urge|tempt(ed|ation)|want to (use|drink|get high)/i, topic: 'craving' },
+    {
+      pattern: /crav(e|ing|ings)|urge|tempt(ed|ation)|want to (use|drink|get high)/i,
+      topic: 'craving',
+    },
     { pattern: /sad|depress(ed|ion)|down|lonely|hopeless|empty|numb/i, topic: 'sadness' },
     { pattern: /anxi(ous|ety)|worr(y|ied)|nervous|panic|scared|afraid/i, topic: 'anxiety' },
     { pattern: /ang(ry|er)|frust(rated|ation)|rage|furious|mad|irritat/i, topic: 'anger' },
     { pattern: /grat(eful|itude)|thankful|bless(ed|ing)|appreciat/i, topic: 'gratitude' },
     { pattern: /meeting|fellowship|group|attend|go to a meeting/i, topic: 'meeting' },
-    { pattern: /step\s*(\d+|work|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)/i, topic: 'stepwork' },
+    {
+      pattern: /step\s*(\d+|work|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)/i,
+      topic: 'stepwork',
+    },
     { pattern: /sponsor|sponsee|mentor/i, topic: 'sponsor' },
     { pattern: /relaps(e|ed|ing)|slip(ped)?|fell off|went back/i, topic: 'relapse' },
     { pattern: /sleep|insomnia|nightmare|can't sleep|tired|exhausted/i, topic: 'sleep' },
@@ -95,11 +101,11 @@ const PREWRITTEN_RESPONSES: Record<string, string[]> = {
   ],
   anxiety: [
     "Anxiety is your body's alarm system — but sometimes it fires when there's no real danger. Try grounding: name 5 things you can see, 4 you can hear, 3 you can touch, 2 you can smell, and 1 you can taste.",
-    "Take a slow breath. You are safe right now, in this moment. Anxiety often comes from projecting into the future. What can you do right now, just for the next 5 minutes? Start there.",
+    'Take a slow breath. You are safe right now, in this moment. Anxiety often comes from projecting into the future. What can you do right now, just for the next 5 minutes? Start there.',
     "Feeling anxious doesn't mean something bad is happening — it means your body is on alert. Try box breathing (4 counts in, 4 hold, 4 out, 4 hold). Your body knows how to calm down; give it permission.",
   ],
   anger: [
-    "Anger is a signal — it tells us something matters to us. Before reacting, pause. Take 10 deep breaths. Ask yourself: will this matter in a week? You have the power to choose your response.",
+    'Anger is a signal — it tells us something matters to us. Before reacting, pause. Take 10 deep breaths. Ask yourself: will this matter in a week? You have the power to choose your response.',
     "It's okay to feel angry. What's important is what you do with it. Try writing down what's bothering you — sometimes seeing it on paper takes away some of its power. Your recovery is worth more than any reaction.",
   ],
   gratitude: [
@@ -128,7 +134,7 @@ const PREWRITTEN_RESPONSES: Record<string, string[]> = {
     "If you can't sleep, don't fight it. Get up, do something calm — read, write, or listen to soothing sounds. Avoid caffeine after noon. Over time, your sleep will improve as your body heals.",
   ],
   relationship: [
-    "Relationships in recovery can be complicated. Remember: you can only control your own actions. Set healthy boundaries, communicate openly, and give yourself grace. Healing your relationships starts with healing yourself.",
+    'Relationships in recovery can be complicated. Remember: you can only control your own actions. Set healthy boundaries, communicate openly, and give yourself grace. Healing your relationships starts with healing yourself.',
     "It's natural for relationships to shift in recovery. Some people may not understand the changes you're making. Focus on the people who support your recovery, and trust that the right relationships will grow.",
   ],
   milestone: [
@@ -178,10 +184,7 @@ async function loadCachedResponses(): Promise<CachedResponse[]> {
  */
 async function saveCachedResponses(responses: CachedResponse[]): Promise<void> {
   try {
-    await secureStorage.setItemAsync(
-      CACHED_RESPONSES_KEY,
-      JSON.stringify(responses),
-    );
+    await secureStorage.setItemAsync(CACHED_RESPONSES_KEY, JSON.stringify(responses));
   } catch (error) {
     logger.error('Failed to save cached responses', error);
   }
@@ -191,10 +194,7 @@ async function saveCachedResponses(responses: CachedResponse[]): Promise<void> {
  * Cache an AI response for offline use.
  * Stores by topic for efficient retrieval.
  */
-export async function cacheResponse(
-  userMessage: string,
-  aiResponse: string,
-): Promise<void> {
+export async function cacheResponse(userMessage: string, aiResponse: string): Promise<void> {
   try {
     const topic = categorizeMessage(userMessage);
     const cached = await loadCachedResponses();
@@ -228,9 +228,7 @@ export async function cacheResponse(
  * Get an offline response for a user message.
  * Tries cached responses first, then falls back to pre-written ones.
  */
-export async function getOfflineResponse(
-  userMessage: string,
-): Promise<OfflineResponse> {
+export async function getOfflineResponse(userMessage: string): Promise<OfflineResponse> {
   const topic = categorizeMessage(userMessage);
 
   // Try cached responses first
@@ -259,10 +257,7 @@ export async function getOfflineResponse(
 /**
  * Queue a message for sending when back online.
  */
-export async function queuePendingMessage(
-  content: string,
-  conversationId: string,
-): Promise<void> {
+export async function queuePendingMessage(content: string, conversationId: string): Promise<void> {
   try {
     const raw = await secureStorage.getItemAsync(PENDING_MESSAGES_KEY);
     const pending: PendingMessage[] = raw ? JSON.parse(raw) : [];

@@ -149,7 +149,13 @@ export function ChatScreen({ userId }: ChatScreenProps) {
             </View>
 
             <Pressable
-              onPress={() => (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Profile', { screen: 'AISettings' })}
+              onPress={() =>
+                (
+                  navigation as {
+                    navigate: (screen: string, params?: Record<string, unknown>) => void;
+                  }
+                ).navigate('Profile', { screen: 'AISettings' })
+              }
               style={({ pressed }) => [styles.headerButton, pressed && styles.headerButtonPressed]}
               accessibilityRole="button"
               accessibilityLabel="AI Settings"

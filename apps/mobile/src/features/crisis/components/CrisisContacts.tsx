@@ -57,9 +57,7 @@ interface CrisisContactsProps {
   showCustomContacts?: boolean;
 }
 
-export function CrisisContacts({
-  showCustomContacts = true,
-}: CrisisContactsProps): ReactElement {
+export function CrisisContacts({ showCustomContacts = true }: CrisisContactsProps): ReactElement {
   const styles = useThemedStyles(createStyles);
   const { emergencyContacts, callCrisisLine: _callCrisisLine } = useEmergencyAccess();
 
@@ -89,9 +87,10 @@ export function CrisisContacts({
       logger.info('Crisis text line initiated', { hotline: name });
       const cleanNumber = number.replace(/[^\d+]/g, '');
       const body = encodeURIComponent('HOME');
-      const smsUrl = Platform.OS === 'ios'
-        ? `sms:${cleanNumber}&body=${body}`
-        : `sms:${cleanNumber}?body=${body}`;
+      const smsUrl =
+        Platform.OS === 'ios'
+          ? `sms:${cleanNumber}&body=${body}`
+          : `sms:${cleanNumber}?body=${body}`;
       await Linking.openURL(smsUrl);
     },
     [triggerHaptic],
@@ -109,22 +108,14 @@ export function CrisisContacts({
 
   return (
     <Animated.View entering={FadeIn.duration(400)} style={styles.container}>
-      <Text
-        style={styles.title}
-        accessibilityRole="header"
-      >
+      <Text style={styles.title} accessibilityRole="header">
         Get Help Now
       </Text>
-      <Text style={styles.description}>
-        You don't have to do this alone. Reach out.
-      </Text>
+      <Text style={styles.description}>You don't have to do this alone. Reach out.</Text>
 
       {/* Primary hotlines */}
       {PRIMARY_HOTLINES.map((hotline, index) => (
-        <Animated.View
-          key={hotline.number}
-          entering={FadeInDown.duration(300).delay(index * 80)}
-        >
+        <Animated.View key={hotline.number} entering={FadeInDown.duration(300).delay(index * 80)}>
           <Pressable
             onPress={() => {
               if (hotline.action === 'text') {
@@ -139,11 +130,7 @@ export function CrisisContacts({
             accessibilityHint={`${hotline.action === 'call' ? 'Makes a phone call' : 'Opens text message'} to ${hotline.name}`}
           >
             <View style={styles.hotlineIcon}>
-              <MaterialIcons
-                name={hotline.icon}
-                size={24}
-                color={styles.iconColor.color}
-              />
+              <MaterialIcons name={hotline.icon} size={24} color={styles.iconColor.color} />
             </View>
             <View style={styles.hotlineContent}>
               <Text style={styles.hotlineName}>{hotline.name}</Text>
@@ -181,14 +168,12 @@ export function CrisisContacts({
                 accessibilityLabel={`Call ${contact.name}${contact.phone ? ` at ${contact.phone}` : ''}`}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: !contact.phone }}
-                accessibilityHint={contact.phone ? 'Makes a phone call' : 'No phone number available'}
+                accessibilityHint={
+                  contact.phone ? 'Makes a phone call' : 'No phone number available'
+                }
               >
                 <View style={styles.contactIcon}>
-                  <MaterialIcons
-                    name="person"
-                    size={20}
-                    color={styles.contactIconColor.color}
-                  />
+                  <MaterialIcons name="person" size={20} color={styles.contactIconColor.color} />
                 </View>
                 <View style={styles.contactContent}>
                   <Text style={styles.contactName}>{contact.name}</Text>
@@ -199,11 +184,7 @@ export function CrisisContacts({
                   )}
                 </View>
                 {contact.phone && (
-                  <MaterialIcons
-                    name="call"
-                    size={20}
-                    color={styles.iconColor.color}
-                  />
+                  <MaterialIcons name="call" size={20} color={styles.iconColor.color} />
                 )}
               </Pressable>
             </Animated.View>

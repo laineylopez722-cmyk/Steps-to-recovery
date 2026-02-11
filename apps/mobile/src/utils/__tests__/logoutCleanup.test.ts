@@ -113,7 +113,6 @@ describe('performLogoutCleanup', () => {
       logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() },
     }));
 
-     
     const { performLogoutCleanup: cleanupWeb } =
       require('../logoutCleanup') as typeof LogoutCleanupModule;
     const { logger: webLogger } = require('../logger') as typeof LoggerModule;

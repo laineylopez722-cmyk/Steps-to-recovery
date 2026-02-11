@@ -80,7 +80,9 @@ function getShapeIndicator(level: ActivityLevel): number {
   }
 }
 
-export function CommitmentCalendar({ userId: _userId }: CommitmentCalendarProps): React.ReactElement {
+export function CommitmentCalendar({
+  userId: _userId,
+}: CommitmentCalendarProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const today = formatDate(new Date());

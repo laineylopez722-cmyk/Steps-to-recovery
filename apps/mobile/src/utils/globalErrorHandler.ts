@@ -8,7 +8,6 @@ import { logger } from './logger';
 // Try to import Sentry dynamically
 let captureException: ((error: unknown) => void) | null = null;
 try {
-   
   const Sentry = require('@sentry/react-native');
   captureException = Sentry.captureException;
 } catch {

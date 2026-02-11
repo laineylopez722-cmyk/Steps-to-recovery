@@ -23,16 +23,16 @@ interface CravingRatingSliderProps {
 }
 
 const RATING_COLORS = [
-  ds.colors.success,       // 1 - green
-  ds.palette.sageGreen,    // 2
-  ds.colors.successMuted,  // 3
-  ds.palette.amberLight,   // 4
-  ds.palette.amberLight,   // 5 - yellow
-  ds.colors.accent,        // 6
-  ds.palette.orange,       // 7
-  ds.colors.error,         // 8
-  ds.colors.error,         // 9
-  ds.palette.red,          // 10 - red
+  ds.colors.success, // 1 - green
+  ds.palette.sageGreen, // 2
+  ds.colors.successMuted, // 3
+  ds.palette.amberLight, // 4
+  ds.palette.amberLight, // 5 - yellow
+  ds.colors.accent, // 6
+  ds.palette.orange, // 7
+  ds.colors.error, // 8
+  ds.colors.error, // 9
+  ds.palette.red, // 10 - red
 ];
 
 function getRatingColor(rating: number): string {

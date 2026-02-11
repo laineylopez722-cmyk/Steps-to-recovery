@@ -72,7 +72,6 @@ jest.mock('../../../../design-system/DsProvider', () => ({
 }));
 
 jest.mock('../../../../design-system/components/Button', () => ({
-   
   Button: ({ children, onPress, disabled, accessibilityLabel }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
@@ -90,7 +89,6 @@ jest.mock('../../../../design-system/components/Button', () => ({
 }));
 
 jest.mock('../../../../design-system/components/Badge', () => ({
-   
   Badge: ({ children }: any) => {
     const _React = require('react');
     const { Text } = require('react-native');
@@ -99,7 +97,6 @@ jest.mock('../../../../design-system/components/Badge', () => ({
 }));
 
 jest.mock('../../../../design-system/components/TextArea', () => ({
-   
   TextArea: ({ value, onChangeText, accessibilityLabel, editable }: any) => {
     const _React = require('react');
     const { TextInput } = require('react-native');
@@ -115,7 +112,6 @@ jest.mock('../../../../design-system/components/TextArea', () => ({
 }));
 
 jest.mock('../../../../design-system/components/Card', () => ({
-   
   Card: ({ children }: any) => {
     const _React = require('react');
     const { View } = require('react-native');
@@ -124,7 +120,6 @@ jest.mock('../../../../design-system/components/Card', () => ({
 }));
 
 jest.mock('../../components/PreMeetingReflectionModal', () => ({
-   
   PreMeetingReflectionModal: ({ visible, onComplete, onSkip }: any) => {
     const _React = require('react');
     const { View, Text, Pressable } = require('react-native');
@@ -155,7 +150,6 @@ jest.mock('../../components/CheckInModal', () => {
   // Store onClose ref so we always call the latest version
   let latestOnClose: (() => void) | null = null;
   return {
-     
     CheckInModal: ({ visible, onConfirm, onClose }: any) => {
       const _React = require('react');
       const { View, Text, Pressable } = require('react-native');
@@ -189,7 +183,6 @@ jest.mock('../../components/CheckInModal', () => {
 });
 
 jest.mock('../../components/PostMeetingReflectionModal', () => ({
-   
   PostMeetingReflectionModal: ({ visible, preMood, onComplete, onClose }: any) => {
     const _React = require('react');
     const { View, Text, Pressable } = require('react-native');
@@ -291,10 +284,8 @@ describe('MeetingDetailScreen integration flow', () => {
     );
   }
 
-  it(
-    'orchestrates pre-reflection -> check-in -> post-reflection in order',
-    async () => {
-      const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  it('orchestrates pre-reflection -> check-in -> post-reflection in order', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
     mockCheckInAsync.mockResolvedValue({
       checkIn: {
@@ -357,9 +348,7 @@ describe('MeetingDetailScreen integration flow', () => {
       'Reflection saved',
       'Great work showing up for your recovery today.',
     );
-    },
-    15000,
-  );
+  }, 15000);
 
   it('supports skipping pre-reflection and still opens post-reflection after check-in', async () => {
     mockCheckInAsync.mockResolvedValue({

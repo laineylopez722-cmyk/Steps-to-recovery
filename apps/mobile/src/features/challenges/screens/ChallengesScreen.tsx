@@ -12,10 +12,7 @@ import { View, Text, ScrollView, StyleSheet, Alert, RefreshControl } from 'react
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { ActiveChallenges } from '../components/ActiveChallenges';
-import {
-  TemplateChallengeCard,
-  CompletedChallengeCard,
-} from '../components/ChallengeCard';
+import { TemplateChallengeCard, CompletedChallengeCard } from '../components/ChallengeCard';
 import { useChallenges, useStartChallenge, useAbandonChallenge } from '../hooks/useChallenges';
 import { logger } from '../../../utils/logger';
 import type { ChallengeTemplate } from '../types';
@@ -26,13 +23,8 @@ export interface ChallengesScreenProps {
 
 export function ChallengesScreen({ userId }: ChallengesScreenProps): React.ReactElement {
   const theme = useTheme();
-  const {
-    activeChallenges,
-    completedChallenges,
-    availableTemplates,
-    isLoading,
-    refetch,
-  } = useChallenges(userId);
+  const { activeChallenges, completedChallenges, availableTemplates, isLoading, refetch } =
+    useChallenges(userId);
 
   const { startChallenge, isPending: isStarting } = useStartChallenge(userId);
   const { abandonChallenge, isPending: isAbandoning } = useAbandonChallenge(userId);
@@ -74,24 +66,20 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
 
   const handleAbandon = useCallback(
     (challengeId: string) => {
-      Alert.alert(
-        'Abandon Challenge',
-        'Are you sure? Your progress will be lost.',
-        [
-          { text: 'Keep Going', style: 'cancel' },
-          {
-            text: 'Abandon',
-            style: 'destructive',
-            onPress: async () => {
-              try {
-                await abandonChallenge(challengeId);
-              } catch (err) {
-                logger.error('Failed to abandon challenge', err);
-              }
-            },
+      Alert.alert('Abandon Challenge', 'Are you sure? Your progress will be lost.', [
+        { text: 'Keep Going', style: 'cancel' },
+        {
+          text: 'Abandon',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await abandonChallenge(challengeId);
+            } catch (err) {
+              logger.error('Failed to abandon challenge', err);
+            }
           },
-        ],
-      );
+        },
+      ]);
     },
     [abandonChallenge],
   );
@@ -114,11 +102,7 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
       {/* ---- Active Challenges ---- */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons
-            name="fire"
-            size={20}
-            color={theme.colors.warning}
-          />
+          <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
           <Text
             style={[styles.sectionTitle, { color: theme.colors.text }]}
             accessibilityRole="header"
@@ -126,20 +110,13 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
             Active Challenges
           </Text>
         </View>
-        <ActiveChallenges
-          challenges={activeChallenges}
-          onAbandon={handleAbandon}
-        />
+        <ActiveChallenges challenges={activeChallenges} onAbandon={handleAbandon} />
       </View>
 
       {/* ---- Available Challenges ---- */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons
-            name="trophy-outline"
-            size={20}
-            color={theme.colors.primary}
-          />
+          <MaterialCommunityIcons name="trophy-outline" size={20} color={theme.colors.primary} />
           <Text
             style={[styles.sectionTitle, { color: theme.colors.text }]}
             accessibilityRole="header"
@@ -171,11 +148,7 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
       {completedChallenges.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons
-              name="medal"
-              size={20}
-              color={theme.colors.success}
-            />
+            <MaterialCommunityIcons name="medal" size={20} color={theme.colors.success} />
             <Text
               style={[styles.sectionTitle, { color: theme.colors.text }]}
               accessibilityRole="header"

@@ -40,7 +40,7 @@ export async function syncContextToOpenClaw(metadata: RecoveryContextMetadata): 
     };
 
     // Send as a system-level context update via the provider
-     
+
     for await (const _chunk of provider.chat(
       [
         {

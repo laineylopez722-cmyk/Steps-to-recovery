@@ -36,10 +36,7 @@ function MilestoneRow({
   return (
     <Animated.View entering={FadeInUp.delay(200 + index * 80)}>
       <Pressable
-        style={({ pressed }) => [
-          styles.milestoneRow,
-          pressed && styles.milestoneRowPressed,
-        ]}
+        style={({ pressed }) => [styles.milestoneRow, pressed && styles.milestoneRowPressed]}
         accessibilityRole="button"
         accessibilityLabel={`${prediction.title}, ${countdownText}`}
         accessibilityHint={prediction.description}
@@ -54,8 +51,7 @@ function MilestoneRow({
             style={[
               styles.countdownText,
               prediction.daysAway !== undefined &&
-                prediction.daysAway <= 3 &&
-                { color: ds.semantic.intent.primary.solid },
+                prediction.daysAway <= 3 && { color: ds.semantic.intent.primary.solid },
             ]}
           >
             {countdownText}
@@ -66,9 +62,7 @@ function MilestoneRow({
   );
 }
 
-export function UpcomingMilestones({
-  userId,
-}: UpcomingMilestonesProps): React.ReactElement | null {
+export function UpcomingMilestones({ userId }: UpcomingMilestonesProps): React.ReactElement | null {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { predictions, isLoading } = useMilestonePredictions(userId);
@@ -86,11 +80,7 @@ export function UpcomingMilestones({
         <Feather name="award" size={14} color={ds.semantic.text.muted} />
       </View>
 
-      <View
-        style={styles.card}
-        accessibilityRole="list"
-        accessibilityLabel="Upcoming milestones"
-      >
+      <View style={styles.card} accessibilityRole="list" accessibilityLabel="Upcoming milestones">
         {topThree.map((prediction, index) => (
           <MilestoneRow
             key={`${prediction.type}-${prediction.title}`}

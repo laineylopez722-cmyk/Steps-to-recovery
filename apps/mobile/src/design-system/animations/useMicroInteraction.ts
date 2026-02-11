@@ -50,10 +50,7 @@ import {
   type UsePressAnimationOptions,
 } from './pressAnimations';
 
-import {
-  haptics,
-  isHapticsAvailable,
-} from './hapticFeedback';
+import { haptics, isHapticsAvailable } from './hapticFeedback';
 
 import {
   useBreathingAnimation,

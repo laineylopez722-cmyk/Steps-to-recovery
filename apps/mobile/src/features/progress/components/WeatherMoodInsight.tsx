@@ -78,7 +78,10 @@ function getTrendIcon(trend: string): keyof typeof MaterialCommunityIcons.glyphM
   }
 }
 
-function getTrendColor(trend: string, theme: { colors: { success: string; danger: string; textSecondary: string } }): string {
+function getTrendColor(
+  trend: string,
+  theme: { colors: { success: string; danger: string; textSecondary: string } },
+): string {
   switch (trend) {
     case 'positive':
       return theme.colors.success;

@@ -83,6 +83,7 @@ You are the **Swarm Coordinator**, the central intelligence that orchestrates al
 | Database/Schema     | Database Architect                | table, column, migration, schema, SQL, RLS |
 | UI/Components       | Feature Developer + Accessibility | screen, component, UI, design, layout      |
 | Testing             | Testing Specialist                | test, coverage, jest, mock, spec           |
+| Debugging           | Debugger                          | bug, crash, error, failing, broken, fix, why, trace, debug |
 | Performance         | Performance Optimizer             | slow, lag, bundle, size, memory, optimize  |
 | Documentation       | Documentation Agent               | docs, readme, comment, guide               |
 | Recovery Features   | Feature Developer                 | journal, step, sponsor, meeting, check-in  |

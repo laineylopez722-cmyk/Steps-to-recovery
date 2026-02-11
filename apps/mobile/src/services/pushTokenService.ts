@@ -78,16 +78,14 @@ export async function registerPushToken(userId: string): Promise<boolean> {
       return false;
     }
 
-    const { error } = await supabase
-      .from('profiles')
-      .upsert(
-        {
-          id: userId,
-          push_token: token,
-          push_token_updated_at: new Date().toISOString(),
-        },
-        { onConflict: 'id' },
-      );
+    const { error } = await supabase.from('profiles').upsert(
+      {
+        id: userId,
+        push_token: token,
+        push_token_updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'id' },
+    );
 
     if (error) {
       logger.error('Failed to register push token with Supabase', { error: error.message });

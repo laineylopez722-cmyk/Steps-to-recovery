@@ -472,7 +472,10 @@ export class AIServiceInstance {
 
       span?.end();
     } catch (err) {
-      span?.setStatus({ code: 2, message: err instanceof Error ? err.message : 'AI request failed' });
+      span?.setStatus({
+        code: 2,
+        message: err instanceof Error ? err.message : 'AI request failed',
+      });
       span?.end();
       throw err;
     }

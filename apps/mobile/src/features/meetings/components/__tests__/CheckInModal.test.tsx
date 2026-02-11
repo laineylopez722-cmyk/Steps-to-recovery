@@ -36,7 +36,6 @@ jest.mock('react-native-reanimated', () => {
 });
 
 jest.mock('../../../../design-system/components/GradientButton', () => ({
-   
   GradientButton: ({ title, onPress, disabled, accessibilityLabel }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
@@ -54,7 +53,6 @@ jest.mock('../../../../design-system/components/GradientButton', () => ({
 }));
 
 jest.mock('../../../../design-system/components/GlassCard', () => ({
-   
   GlassCard: ({ children }: any) => {
     const _React = require('react');
     const { View } = require('react-native');

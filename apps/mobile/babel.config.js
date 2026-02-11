@@ -8,7 +8,7 @@
 require('./polyfills.cjs');
 
 /** @param {import('@babel/core').ConfigAPI} api */
-module.exports = function (api) {
+module.exports = function (api)  {
   api.cache.using(() => process.env.BABEL_ENV || process.env.NODE_ENV || 'development');
 
   const isTest = api.env('test');

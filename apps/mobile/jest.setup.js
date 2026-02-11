@@ -45,10 +45,10 @@ jest.mock('react-native-css-interop/jsx-runtime', () => ({
 }));
 
 jest.mock('react-native-css-interop', () => ({
-  cssInterop: jest.fn((component) => component),
+  cssInterop: jest.fn((/** @type {any} */ component) => component),
   remapProps: jest.fn(),
   StyleSheet: {
-    create: (styles) => styles,
+    create: (/** @type {Record<string, any>} */ styles) => styles,
   },
 }));
 
@@ -308,13 +308,12 @@ globalThis.testUtils = {
     globalThis.Date = class extends RealDate {
       /** @param {...any} args */
       constructor(...args) {
-        // @ts-ignore - Spread args for Date constructor compatibility
-        super(...args);
         if (args.length === 0) {
-          return new RealDate(date);
+          super(date);
+        } else {
+          // @ts-ignore - Spread args for Date constructor compatibility
+          super(...args);
         }
-        // @ts-ignore - Spread args for Date constructor compatibility
-        return new RealDate(...args);
       }
       static now() {
         return new RealDate(date).getTime();

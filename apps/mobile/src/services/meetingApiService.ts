@@ -132,10 +132,7 @@ export async function fetchTSMLMeetings(params: MeetingSearchParams): Promise<Ca
  * @param allMeetings Array of meetings to search
  * @returns Meeting or null
  */
-export function getMeetingById(
-  id: string,
-  allMeetings: CachedMeeting[],
-): CachedMeeting | null {
+export function getMeetingById(id: string, allMeetings: CachedMeeting[]): CachedMeeting | null {
   return allMeetings.find((m) => m.id === id) ?? null;
 }
 
@@ -384,12 +381,7 @@ function filterByDistance(
         return null;
       }
 
-      const distance = calculateDistance(
-        latitude,
-        longitude,
-        meeting.latitude,
-        meeting.longitude,
-      );
+      const distance = calculateDistance(latitude, longitude, meeting.latitude, meeting.longitude);
 
       if (distance > radiusMiles) {
         return null;

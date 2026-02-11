@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
+      "@/*": ["apps/mobile/src/*"]
+    },
+    "skipLibCheck": true,
+    "noEmit": true
   },
-  "exclude": [
-    "node_modules",
-    "_bmad-output",
-    "**/__tests__",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ],
-  "extends": "expo/tsconfig.base"
+  "files": [],
+  "exclude": ["node_modules"],
+  "extends": "expo/tsconfig.base",
+  "references": [{ "path": "./apps/mobile" }]
 }

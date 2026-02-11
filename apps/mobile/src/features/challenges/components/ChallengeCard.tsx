@@ -47,7 +47,8 @@ export function ActiveChallengeCard({
   onAbandon,
 }: ActiveChallengeCardProps): React.ReactElement {
   const theme = useTheme();
-  const iconName = (TYPE_ICON[challenge.type] ?? 'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
+  const iconName = (TYPE_ICON[challenge.type] ??
+    'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
 
   return (
     <Card
@@ -105,7 +106,8 @@ export function TemplateChallengeCard({
   disabled,
 }: TemplateChallengeCardProps): React.ReactElement {
   const theme = useTheme();
-  const iconName = (TYPE_ICON[template.type] ?? 'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
+  const iconName = (TYPE_ICON[template.type] ??
+    'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
 
   return (
     <Card
@@ -132,7 +134,8 @@ export function TemplateChallengeCard({
 
       <View style={styles.metaRow}>
         <Text style={[styles.meta, { color: theme.colors.textSecondary }]}>
-          {template.target} {template.type === 'step' ? 'questions' : 'days'} · {template.duration} day{template.duration > 1 ? 's' : ''}
+          {template.target} {template.type === 'step' ? 'questions' : 'days'} · {template.duration}{' '}
+          day{template.duration > 1 ? 's' : ''}
         </Text>
       </View>
 
@@ -163,7 +166,8 @@ export function CompletedChallengeCard({
   challenge,
 }: CompletedChallengeCardProps): React.ReactElement {
   const theme = useTheme();
-  const iconName = (TYPE_ICON[challenge.type] ?? 'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
+  const iconName = (TYPE_ICON[challenge.type] ??
+    'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
 
   return (
     <Card

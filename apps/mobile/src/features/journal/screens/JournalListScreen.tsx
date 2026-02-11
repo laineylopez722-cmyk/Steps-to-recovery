@@ -7,13 +7,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  Keyboard,
-} from 'react-native';
+import { View, Text, Pressable, TextInput, Keyboard } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -220,7 +214,9 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
     hapticLight();
     const parentNavigation = navigation.getParent();
     if (parentNavigation) {
-      (parentNavigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Profile', { screen: 'ShareEntries' });
+      (
+        parentNavigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }
+      ).navigate('Profile', { screen: 'ShareEntries' });
     }
   };
 

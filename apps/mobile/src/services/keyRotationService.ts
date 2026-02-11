@@ -341,10 +341,7 @@ export async function rotateEncryptionKey(
 
         if (updates.length > 0) {
           values.push(record['id']);
-          await db.runAsync(
-            `UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`,
-            values,
-          );
+          await db.runAsync(`UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`, values);
         }
 
         processedRecords++;

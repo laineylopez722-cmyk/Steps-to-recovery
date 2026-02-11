@@ -37,11 +37,7 @@ export interface GeofenceOptions {
   notifyOnExit?: boolean;
 }
 
-export type GeofencePermissionStatus =
-  | 'granted'
-  | 'foreground_only'
-  | 'denied'
-  | 'undetermined';
+export type GeofencePermissionStatus = 'granted' | 'foreground_only' | 'denied' | 'undetermined';
 
 // ── Background Task ────────────────────────────────────────────────
 
@@ -153,11 +149,7 @@ export async function registerMeetingGeofences(
     return 0;
   }
 
-  const {
-    radius = 250,
-    notifyOnEnter = true,
-    notifyOnExit = false,
-  } = options;
+  const { radius = 250, notifyOnEnter = true, notifyOnExit = false } = options;
 
   // Verify permissions
   const permStatus = await getGeofencePermissionStatus();

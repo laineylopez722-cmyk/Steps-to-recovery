@@ -8,10 +8,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import {
-  generateWeeklyReport,
-  getWeeklyReports,
-} from '../../../services/weeklyReportService';
+import { generateWeeklyReport, getWeeklyReports } from '../../../services/weeklyReportService';
 import type { WeeklyReport } from '../../ai-companion/services/weeklyReport';
 import { logger } from '../../../utils/logger';
 
@@ -72,6 +69,6 @@ export function useWeeklyReport(): {
     isLoading: pastQuery.isLoading,
     isGenerating: generateMutation.isPending,
     generate: () => generateMutation.mutate(),
-    error: (pastQuery.error as Error | null),
+    error: pastQuery.error as Error | null,
   };
 }

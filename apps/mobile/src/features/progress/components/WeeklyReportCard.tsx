@@ -80,21 +80,13 @@ function StatItem({
       accessibilityLabel={`${label}: ${value}`}
       accessibilityRole="text"
     >
-      <MaterialCommunityIcons
-        name={icon}
-        size={18}
-        color={aestheticColors.primary[500]}
-      />
+      <MaterialCommunityIcons name={icon} size={18} color={aestheticColors.primary[500]} />
       <View style={styles.statContent}>
         <View style={styles.statValueRow}>
-          <Text style={[styles.statValue, { color: theme.colors.text }]}>
-            {value}
-          </Text>
+          <Text style={[styles.statValue, { color: theme.colors.text }]}>{value}</Text>
           <TrendArrow direction={trend} invertColor={invertColor} />
         </View>
-        <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-          {label}
-        </Text>
+        <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>{label}</Text>
       </View>
     </View>
   );
@@ -123,11 +115,7 @@ export function WeeklyReportCard({
       <Animated.View entering={ScreenAnimations.entrance}>
         <GlassCard intensity="subtle" style={styles.card}>
           <View style={styles.emptyState}>
-            <MaterialCommunityIcons
-              name="chart-bar"
-              size={32}
-              color={theme.colors.textSecondary}
-            />
+            <MaterialCommunityIcons name="chart-bar" size={32} color={theme.colors.textSecondary} />
             <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
               No weekly report yet
             </Text>
@@ -156,18 +144,9 @@ export function WeeklyReportCard({
 
   const prev = previousReport;
 
-  const moodTrend = getTrend(
-    report.moodSummary.average,
-    prev?.moodSummary.average,
-  );
-  const cravingTrend = getTrend(
-    report.cravingSummary.average,
-    prev?.cravingSummary.average,
-  );
-  const journalTrend = getTrend(
-    report.journalSummary.entryCount,
-    prev?.journalSummary.entryCount,
-  );
+  const moodTrend = getTrend(report.moodSummary.average, prev?.moodSummary.average);
+  const cravingTrend = getTrend(report.cravingSummary.average, prev?.cravingSummary.average);
+  const journalTrend = getTrend(report.journalSummary.entryCount, prev?.journalSummary.entryCount);
   const checkinTrend = getTrend(
     report.checkInSummary.completedDays,
     prev?.checkInSummary.completedDays,
@@ -184,9 +163,7 @@ export function WeeklyReportCard({
               size={20}
               color={aestheticColors.primary[500]}
             />
-            <Text style={[styles.title, { color: theme.colors.text }]}>
-              Weekly Summary
-            </Text>
+            <Text style={[styles.title, { color: theme.colors.text }]}>Weekly Summary</Text>
           </View>
           <Text style={[styles.dateRange, { color: theme.colors.textSecondary }]}>
             {report.weekStarting} — {report.weekEnding}
@@ -224,14 +201,10 @@ export function WeeklyReportCard({
 
         {/* Step Work */}
         <View style={styles.stepWorkRow}>
-          <MaterialCommunityIcons
-            name="stairs"
-            size={16}
-            color={theme.colors.textSecondary}
-          />
+          <MaterialCommunityIcons name="stairs" size={16} color={theme.colors.textSecondary} />
           <Text style={[styles.stepWorkText, { color: theme.colors.textSecondary }]}>
-            Step {report.stepWorkSummary.currentStep} •{' '}
-            {report.stepWorkSummary.entriesThisWeek} entries this week
+            Step {report.stepWorkSummary.currentStep} • {report.stepWorkSummary.entriesThisWeek}{' '}
+            entries this week
           </Text>
         </View>
 
@@ -255,11 +228,7 @@ export function WeeklyReportCard({
         <View
           style={[styles.encouragement, { backgroundColor: aestheticColors.primary[500] + '15' }]}
         >
-          <MaterialCommunityIcons
-            name="heart"
-            size={16}
-            color={aestheticColors.primary[500]}
-          />
+          <MaterialCommunityIcons name="heart" size={16} color={aestheticColors.primary[500]} />
           <Text
             style={[styles.encouragementText, { color: theme.colors.text }]}
             accessibilityLabel={`Encouragement: ${report.encouragement}`}

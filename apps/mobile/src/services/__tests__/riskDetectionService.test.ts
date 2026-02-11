@@ -1,5 +1,3 @@
- 
-
 // Mock AsyncStorage BEFORE imports - source uses dynamic import()
 // which babel transpiles to require() in test env
 const mockAsyncStorage = {

@@ -1,4 +1,3 @@
- 
 import {
   startCrisisCheckpoint,
   updateTriggerDescription,

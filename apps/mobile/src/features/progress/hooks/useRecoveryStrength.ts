@@ -14,7 +14,10 @@ import {
   calculateMoodStability,
   calculateCravingManagement,
 } from '../../ai-companion/services/recoveryStrengthScore';
-import type { RecoveryStrengthResult, RecoveryMetrics } from '../../ai-companion/services/recoveryStrengthScore';
+import type {
+  RecoveryStrengthResult,
+  RecoveryMetrics,
+} from '../../ai-companion/services/recoveryStrengthScore';
 
 export type { RecoveryStrengthResult, RecoveryMetrics };
 
@@ -38,9 +41,7 @@ async function gatherMetrics(
      WHERE user_id = ? ORDER BY check_in_date DESC LIMIT 30`,
     [userId],
   );
-  const checkInConsistency = calculateCheckInConsistency(
-    checkInRows.map((r) => r.check_in_date),
-  );
+  const checkInConsistency = calculateCheckInConsistency(checkInRows.map((r) => r.check_in_date));
 
   // Journal frequency (entries in last 7 days)
   const sevenDaysAgo = new Date();

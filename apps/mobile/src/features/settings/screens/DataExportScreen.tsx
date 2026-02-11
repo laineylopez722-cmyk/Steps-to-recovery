@@ -45,15 +45,17 @@ const DATA_TYPES = [
   { id: 'safety_plans', label: 'Safety Plans', table: 'safety_plans' as ExportableTable },
   { id: 'gratitude', label: 'Gratitude Entries', table: 'gratitude_entries' as ExportableTable },
   { id: 'inventory', label: 'Personal Inventory', table: 'personal_inventory' as ExportableTable },
-  { id: 'cravings', label: 'Craving Surf Sessions', table: 'craving_surf_sessions' as ExportableTable },
+  {
+    id: 'cravings',
+    label: 'Craving Surf Sessions',
+    table: 'craving_surf_sessions' as ExportableTable,
+  },
   { id: 'sponsor', label: 'Sponsor Connections', table: 'sponsor_connections' as ExportableTable },
 ];
 
 export function DataExportScreen(): React.ReactElement {
   const [selectedFormat, setSelectedFormat] = useState('json');
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(
-    DATA_TYPES.map((t) => t.id),
-  );
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(DATA_TYPES.map((t) => t.id));
   const [isExporting, setIsExporting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -69,7 +71,17 @@ export function DataExportScreen(): React.ReactElement {
 
     const loadCounts = async (): Promise<void> => {
       try {
-        const [journal, checkins, meetings, steps, safetyPlans, gratitude, inventory, cravings, sponsor] = await Promise.all([
+        const [
+          journal,
+          checkins,
+          meetings,
+          steps,
+          safetyPlans,
+          gratitude,
+          inventory,
+          cravings,
+          sponsor,
+        ] = await Promise.all([
           db.getFirstAsync<{ count: number }>(
             'SELECT COUNT(*) as count FROM journal_entries WHERE user_id = ?',
             [user.id],

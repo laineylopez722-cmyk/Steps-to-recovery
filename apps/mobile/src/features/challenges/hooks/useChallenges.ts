@@ -68,12 +68,7 @@ export function useChallenges(userId: string): {
 } {
   const { db, isReady } = useDatabase();
 
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: challengeKeys.byUser(userId),
     queryFn: async () => {
       if (!db || !isReady) throw new Error('Database not ready');
@@ -89,12 +84,7 @@ export function useChallenges(userId: string): {
         const challenge = enrichChallenge(row);
 
         if (row.status === 'active') {
-          const progress = await calculateProgress(
-            db,
-            userId,
-            row.template_id,
-            row.start_date,
-          );
+          const progress = await calculateProgress(db, userId, row.template_id, row.start_date);
 
           challenge.currentProgress = progress;
 
@@ -151,7 +141,9 @@ export function useChallenges(userId: string): {
     availableTemplates,
     isLoading,
     error: error as Error | null,
-    refetch: async () => { await refetch(); },
+    refetch: async () => {
+      await refetch();
+    },
   };
 }
 

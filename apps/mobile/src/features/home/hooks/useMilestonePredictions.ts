@@ -32,8 +32,7 @@ export function useMilestonePredictions(userId: string): {
       );
       const sobrietyDays = profile?.sobriety_start_date
         ? Math.floor(
-            (Date.now() - new Date(profile.sobriety_start_date).getTime()) /
-              (1000 * 60 * 60 * 24),
+            (Date.now() - new Date(profile.sobriety_start_date).getTime()) / (1000 * 60 * 60 * 24),
           )
         : 0;
 

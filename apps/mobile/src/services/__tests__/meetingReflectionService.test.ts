@@ -113,7 +113,12 @@ describe('meetingReflectionService', () => {
     }
 
     it('updates existing reflection row when pre-reflection exists', async () => {
-      const { update, insert, eq: _eq, select: _select } = createUpdateChain({
+      const {
+        update,
+        insert,
+        eq: _eq,
+        select: _select,
+      } = createUpdateChain({
         data: [{ id: 'reflection-1' }],
         error: null,
       });

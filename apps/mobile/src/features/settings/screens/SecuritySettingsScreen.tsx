@@ -370,11 +370,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
                       { backgroundColor: ds.semantic.intent.primary.muted },
                     ]}
                   >
-                    <Feather
-                      name="zap"
-                      size={20}
-                      color={ds.semantic.intent.primary.solid}
-                    />
+                    <Feather name="zap" size={20} color={ds.semantic.intent.primary.solid} />
                   </View>
                   <View style={styles.settingText}>
                     <Text style={styles.settingTitle}>Quick Escape</Text>
@@ -487,7 +483,8 @@ export function SecuritySettingsScreen(): React.ReactElement {
                         styles.progressFill,
                         {
                           width: `${Math.round(
-                            (rotationProgress.processedRecords / rotationProgress.totalRecords) * 100,
+                            (rotationProgress.processedRecords / rotationProgress.totalRecords) *
+                              100,
                           )}%`,
                           backgroundColor: ds.semantic.intent.primary.solid,
                         },
@@ -504,10 +501,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
             {rotationProgress?.status === 'completed' ? (
               <View style={styles.rotationProgress}>
                 <Text
-                  style={[
-                    styles.rotationProgressText,
-                    { color: ds.semantic.intent.primary.solid },
-                  ]}
+                  style={[styles.rotationProgressText, { color: ds.semantic.intent.primary.solid }]}
                 >
                   ✓ Key rotated successfully
                 </Text>
@@ -517,13 +511,10 @@ export function SecuritySettingsScreen(): React.ReactElement {
             {rotationProgress?.status === 'failed' ? (
               <View style={styles.rotationProgress}>
                 <Text
-                  style={[
-                    styles.rotationProgressText,
-                    { color: ds.semantic.intent.alert.solid },
-                  ]}
+                  style={[styles.rotationProgressText, { color: ds.semantic.intent.alert.solid }]}
                 >
-                  Rotation failed: {rotationProgress.error || 'Unknown error'}. Your data is safe
-                  — the old key was preserved.
+                  Rotation failed: {rotationProgress.error || 'Unknown error'}. Your data is safe —
+                  the old key was preserved.
                 </Text>
               </View>
             ) : null}

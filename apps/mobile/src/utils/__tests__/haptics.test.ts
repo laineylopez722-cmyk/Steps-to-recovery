@@ -1,4 +1,3 @@
- 
 import type * as HapticsModule from '../haptics';
 
 const mockImpactAsync = jest.fn().mockResolvedValue(undefined);

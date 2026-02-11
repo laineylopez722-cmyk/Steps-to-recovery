@@ -126,7 +126,13 @@ interface StepNodeProps {
   isDark: boolean;
 }
 
-function StepNode({ step, isLast, onPress, colors, isDark: _isDark }: StepNodeProps): React.ReactElement {
+function StepNode({
+  step,
+  isLast,
+  onPress,
+  colors,
+  isDark: _isDark,
+}: StepNodeProps): React.ReactElement {
   const scale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
 

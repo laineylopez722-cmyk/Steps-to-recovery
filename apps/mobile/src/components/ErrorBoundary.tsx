@@ -142,8 +142,7 @@ function getErrorMessage(error: Error | null): ErrorMessage {
   ) {
     return {
       title: 'Session expired',
-      description:
-        'Your session may have timed out. Let\u2019s get you signed back in safely.',
+      description: 'Your session may have timed out. Let\u2019s get you signed back in safely.',
       icon: 'person-outline',
     };
   }
@@ -231,11 +230,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 // Error Fallback UI
 // ============================================================================
 
-function ErrorFallback({
-  error,
-  errorInfo,
-  onReset,
-}: ErrorFallbackProps): React.ReactElement {
+function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React.ReactElement {
   const theme = React.useContext(ThemeContext);
   const [showDetails, setShowDetails] = React.useState(false);
 
@@ -276,10 +271,7 @@ function ErrorFallback({
       accessibilityRole="alert"
       accessibilityLabel={`Error: ${title}. ${description}`}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           {/* Icon */}
           <View style={[styles.iconContainer, { backgroundColor: colors.emergencyMuted }]}>
@@ -287,17 +279,12 @@ function ErrorFallback({
           </View>
 
           {/* Title */}
-          <Text
-            style={[styles.title, { color: colors.text }]}
-            accessibilityRole="header"
-          >
+          <Text style={[styles.title, { color: colors.text }]} accessibilityRole="header">
             {title}
           </Text>
 
           {/* Description */}
-          <Text style={[styles.description, { color: colors.textSecondary }]}>
-            {description}
-          </Text>
+          <Text style={[styles.description, { color: colors.textSecondary }]}>{description}</Text>
 
           {/* Try Again Button */}
           <TouchableOpacity
@@ -370,15 +357,11 @@ function ErrorFallback({
           {isDev && showDetails && (
             <View style={styles.detailsContainer}>
               <Text style={[styles.detailsTitle, { color: colors.danger }]}>Error:</Text>
-              <Text style={[styles.detailsText, { color: colors.text }]}>
-                {error?.toString()}
-              </Text>
+              <Text style={[styles.detailsText, { color: colors.text }]}>{error?.toString()}</Text>
 
               {errorInfo?.componentStack ? (
                 <>
-                  <Text
-                    style={[styles.detailsTitle, { color: colors.danger, marginTop: 16 }]}
-                  >
+                  <Text style={[styles.detailsTitle, { color: colors.danger, marginTop: 16 }]}>
                     Component Stack:
                   </Text>
                   <Text style={[styles.detailsText, { color: colors.text }]}>

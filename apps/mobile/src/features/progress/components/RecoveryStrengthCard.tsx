@@ -60,9 +60,7 @@ export function RecoveryStrengthCard({
           size={20}
           color={aestheticColors.primary[500]}
         />
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Recovery Strength
-        </Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recovery Strength</Text>
       </View>
 
       <GlassCard
@@ -102,9 +100,7 @@ export function RecoveryStrengthCard({
               />
             </Svg>
             <View style={styles.gaugeCenter}>
-              <Text style={[styles.scoreText, { color: theme.colors.text }]}>
-                {data.score}
-              </Text>
+              <Text style={[styles.scoreText, { color: theme.colors.text }]}>{data.score}</Text>
             </View>
           </View>
 
@@ -128,11 +124,7 @@ export function RecoveryStrengthCard({
                 accessibilityLabel={insight}
                 accessibilityRole="text"
               >
-                <MaterialCommunityIcons
-                  name="chevron-right"
-                  size={16}
-                  color={color}
-                />
+                <MaterialCommunityIcons name="chevron-right" size={16} color={color} />
                 <Text style={[styles.insightText, { color: theme.colors.textSecondary }]}>
                   {insight}
                 </Text>

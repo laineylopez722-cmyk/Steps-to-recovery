@@ -71,7 +71,8 @@ async function transcribeAudio(uri: string): Promise<string> {
     }
 
     // Determine provider — Whisper is OpenAI-only
-    const isOpenAI = apiKey.startsWith('sk-') && !apiKey.startsWith('sk-ant-') && !apiKey.startsWith('sk-or-');
+    const isOpenAI =
+      apiKey.startsWith('sk-') && !apiKey.startsWith('sk-ant-') && !apiKey.startsWith('sk-or-');
     const isOpenRouter = apiKey.startsWith('sk-or-');
 
     if (!isOpenAI && !isOpenRouter) {
@@ -104,7 +105,7 @@ async function transcribeAudio(uri: string): Promise<string> {
       return '[Voice recorded but transcription failed — please try again]';
     }
 
-    const result = await response.json() as { text: string };
+    const result = (await response.json()) as { text: string };
     logger.info('Transcription successful', { length: result.text.length });
     return result.text;
   } catch (error) {
@@ -335,7 +336,10 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps): React.R
           ]}
           accessibilityRole="button"
           accessibilityLabel={buttonLabel}
-          accessibilityState={{ disabled: disabled || isProcessing, busy: isRecording || isProcessing }}
+          accessibilityState={{
+            disabled: disabled || isProcessing,
+            busy: isRecording || isProcessing,
+          }}
           accessibilityHint="Records your voice and converts to text"
         >
           <Feather name={iconName} size={20} color={iconColor} />

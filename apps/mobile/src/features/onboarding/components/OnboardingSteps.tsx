@@ -10,15 +10,7 @@
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Pressable,
-  ScrollView,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Pressable, ScrollView, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -224,9 +216,7 @@ function ProgramSelector({
               style={[
                 styles.programIconBg,
                 {
-                  backgroundColor: isSelected
-                    ? `${ds.colors.accent}20`
-                    : ds.colors.bgQuaternary,
+                  backgroundColor: isSelected ? `${ds.colors.accent}20` : ds.colors.bgQuaternary,
                 },
               ]}
             >
@@ -311,11 +301,11 @@ function WelcomeContent(): React.ReactElement {
         and connect with support — all with complete privacy.
       </Text>
       <View style={styles.featureList}>
-        {([
+        {[
           { icon: 'edit-3' as const, text: 'Encrypted journaling' },
           { icon: 'trending-up' as const, text: 'Progress tracking' },
           { icon: 'shield' as const, text: 'Complete privacy' },
-        ]).map((feature) => (
+        ].map((feature) => (
           <View key={feature.text} style={styles.featureRow}>
             <Feather name={feature.icon} size={18} color={ds.colors.accent} />
             <Text style={styles.featureText}>{feature.text}</Text>
@@ -339,11 +329,11 @@ function PrivacyContent(): React.ReactElement {
         encryption. We can never read your content — only you hold the key.
       </Text>
       <View style={styles.featureList}>
-        {([
+        {[
           { icon: 'shield' as const, text: 'End-to-end encryption' },
           { icon: 'eye-off' as const, text: 'Zero tracking or analytics' },
           { icon: 'database' as const, text: 'Your data, your device' },
-        ]).map((item) => (
+        ].map((item) => (
           <View key={item.text} style={styles.featureRow}>
             <Feather name={item.icon} size={18} color={ds.colors.success} />
             <Text style={styles.featureText}>{item.text}</Text>
@@ -525,9 +515,7 @@ function NotificationsContent({
             {enabled ? 'Notifications On' : 'Enable Notifications'}
           </Text>
           <Text style={styles.notificationSubtitle}>
-            {enabled
-              ? "You'll receive gentle daily reminders"
-              : 'Tap to enable check-in reminders'}
+            {enabled ? "You'll receive gentle daily reminders" : 'Tap to enable check-in reminders'}
           </Text>
         </View>
         <Feather
@@ -538,11 +526,11 @@ function NotificationsContent({
       </Pressable>
 
       <View style={styles.featureList}>
-        {([
+        {[
           { icon: 'sunrise' as const, text: 'Morning intention reminders' },
           { icon: 'moon' as const, text: 'Evening reflection prompts' },
           { icon: 'award' as const, text: 'Milestone celebrations' },
-        ]).map((item) => (
+        ].map((item) => (
           <View key={item.text} style={styles.featureRow}>
             <Feather name={item.icon} size={18} color={ds.colors.info} />
             <Text style={styles.featureText}>{item.text}</Text>

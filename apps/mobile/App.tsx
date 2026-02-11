@@ -39,8 +39,12 @@ import { PortalHost } from '@rn-primitives/portal';
 function BiometricLockOverlay({ children }: { children: React.ReactNode }): React.ReactElement {
   const { isLocked, authenticate, validatePin, emergencyUnlock, biometricType, hasPinSet } =
     useBiometricLock();
-  const { isEnabled: quickEscapeEnabled, isEscapeTriggered, registerTap, resetEscape } =
-    useQuickEscape();
+  const {
+    isEnabled: quickEscapeEnabled,
+    isEscapeTriggered,
+    registerTap,
+    resetEscape,
+  } = useQuickEscape();
 
   const handleEmergencyAccess = useCallback(() => {
     emergencyUnlock();
@@ -61,22 +65,22 @@ function BiometricLockOverlay({ children }: { children: React.ReactNode }): Reac
     return success;
   }, [authenticate, resetEscape]);
 
-  const handlePinValidate = useCallback(async (pin: string): Promise<boolean> => {
-    const success = await validatePin(pin);
-    if (success) {
-      resetEscape();
-    }
-    return success;
-  }, [validatePin, resetEscape]);
+  const handlePinValidate = useCallback(
+    async (pin: string): Promise<boolean> => {
+      const success = await validatePin(pin);
+      if (success) {
+        resetEscape();
+      }
+      return success;
+    },
+    [validatePin, resetEscape],
+  );
 
   const shouldShowLock = isLocked || isEscapeTriggered;
 
   return (
     <>
-      <QuickEscapeTapZone
-        onTripleTap={registerTap}
-        enabled={quickEscapeEnabled}
-      >
+      <QuickEscapeTapZone onTripleTap={registerTap} enabled={quickEscapeEnabled}>
         {children}
       </QuickEscapeTapZone>
       {shouldShowLock ? (

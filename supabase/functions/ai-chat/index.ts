@@ -11,7 +11,7 @@
  * Test: curl -X POST https://<project>.supabase.co/functions/v1/ai-chat
  */
 
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 // Configuration
 const DAILY_FREE_LIMIT = 20;
@@ -124,7 +124,14 @@ Deno.serve(async (req) => {
 
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
-      console.error(JSON.stringify({ level: 'error', context: 'openai_proxy', message: 'OpenAI API error', status: openaiResponse.status }));
+      console.error(
+        JSON.stringify({
+          level: 'error',
+          context: 'openai_proxy',
+          message: 'OpenAI API error',
+          status: openaiResponse.status,
+        }),
+      );
       return new Response(JSON.stringify({ error: 'AI service error', details: errorText }), {
         status: 502,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -141,10 +148,24 @@ Deno.serve(async (req) => {
           p_date: today,
         });
         if (usageError) {
-          console.error(JSON.stringify({ level: 'error', context: 'usage_tracking', message: 'Failed to increment usage', detail: usageError.message }));
+          console.error(
+            JSON.stringify({
+              level: 'error',
+              context: 'usage_tracking',
+              message: 'Failed to increment usage',
+              detail: usageError.message,
+            }),
+          );
         }
       } catch (err) {
-        console.error(JSON.stringify({ level: 'error', context: 'usage_tracking', message: 'Failed to increment usage', detail: err instanceof Error ? err.message : 'Unknown error' }));
+        console.error(
+          JSON.stringify({
+            level: 'error',
+            context: 'usage_tracking',
+            message: 'Failed to increment usage',
+            detail: err instanceof Error ? err.message : 'Unknown error',
+          }),
+        );
       }
     }
 
@@ -166,7 +187,14 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error(JSON.stringify({ level: 'error', context: 'edge_function', message: 'Unhandled error', detail: error instanceof Error ? error.message : 'Unknown error' }));
+    console.error(
+      JSON.stringify({
+        level: 'error',
+        context: 'edge_function',
+        message: 'Unhandled error',
+        detail: error instanceof Error ? error.message : 'Unknown error',
+      }),
+    );
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

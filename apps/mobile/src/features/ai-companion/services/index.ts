@@ -200,11 +200,7 @@ export {
 } from './openClawMultiChannel';
 
 // Conversation export
-export {
-  exportConversation,
-  type ExportFormat,
-  type ExportResult,
-} from './conversationExport';
+export { exportConversation, type ExportFormat, type ExportResult } from './conversationExport';
 
 // Offline fallback
 export {

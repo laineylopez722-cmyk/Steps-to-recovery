@@ -65,13 +65,10 @@ export function WidgetSettingsScreen(): React.ReactElement {
       });
   }, [lastSyncTime]);
 
-  const togglePref = useCallback(
-    (key: keyof WidgetPreferences) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-      setPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
-    },
-    [],
-  );
+  const togglePref = useCallback((key: keyof WidgetPreferences) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    setPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
+  }, []);
 
   const handleManualSync = useCallback(async (): Promise<void> => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
@@ -95,9 +92,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
             >
               Home Screen Widget
             </Text>
-            <Text style={styles.subtitle}>
-              See your recovery progress at a glance
-            </Text>
+            <Text style={styles.subtitle}>See your recovery progress at a glance</Text>
           </Animated.View>
 
           {/* Setup Instructions */}
@@ -204,12 +199,13 @@ export function WidgetSettingsScreen(): React.ReactElement {
             <View style={styles.cardGroup}>
               <View style={styles.settingItem}>
                 <View style={styles.settingInfo}>
-                  <View style={[styles.settingIcon, { backgroundColor: ds.semantic.intent.primary.muted }]}>
-                    <Feather
-                      name="refresh-cw"
-                      size={18}
-                      color={ds.semantic.intent.primary.solid}
-                    />
+                  <View
+                    style={[
+                      styles.settingIcon,
+                      { backgroundColor: ds.semantic.intent.primary.muted },
+                    ]}
+                  >
+                    <Feather name="refresh-cw" size={18} color={ds.semantic.intent.primary.solid} />
                   </View>
                   <View style={styles.settingText}>
                     <Text style={styles.settingTitle}>Last synced</Text>
@@ -226,10 +222,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
                   accessibilityRole="button"
                   accessibilityLabel="Sync widget data now"
                   accessibilityState={{ disabled: isSyncing }}
-                  style={({ pressed }) => [
-                    styles.syncButton,
-                    pressed && styles.syncButtonPressed,
-                  ]}
+                  style={({ pressed }) => [styles.syncButton, pressed && styles.syncButtonPressed]}
                 >
                   <Text style={[styles.syncButtonText, isSyncing && styles.disabledText]}>
                     {isSyncing ? 'Syncing…' : 'Sync Now'}
@@ -243,8 +236,8 @@ export function WidgetSettingsScreen(): React.ReactElement {
           <Animated.View entering={FadeInDown.delay(500).duration(400)} style={styles.infoBanner}>
             <Feather name="info" size={16} color={ds.semantic.text.tertiary} />
             <Text style={styles.infoText}>
-              Widget data updates automatically every 5 minutes. Only aggregated
-              counts are shown — no sensitive content leaves the app.
+              Widget data updates automatically every 5 minutes. Only aggregated counts are shown —
+              no sensitive content leaves the app.
             </Text>
           </Animated.View>
 
@@ -267,7 +260,13 @@ interface InstructionStepProps {
   isLast?: boolean;
 }
 
-function InstructionStep({ number, text, styles: s, ds, isLast: _isLast }: InstructionStepProps): React.ReactElement {
+function InstructionStep({
+  number,
+  text,
+  styles: s,
+  ds,
+  isLast: _isLast,
+}: InstructionStepProps): React.ReactElement {
   return (
     <View style={s.settingItem} accessibilityLabel={`Step ${number}: ${text}`}>
       <View style={s.settingInfo}>
@@ -315,11 +314,7 @@ function ToggleRow({
           <Text style={s.settingSubtitle}>{subtitle}</Text>
         </View>
       </View>
-      <Toggle
-        value={value}
-        onValueChange={onValueChange}
-        accessibilityLabel={`Toggle ${label}`}
-      />
+      <Toggle value={value} onValueChange={onValueChange} accessibilityLabel={`Toggle ${label}`} />
     </View>
   );
 }
@@ -344,9 +339,7 @@ function WidgetPreview({ data, prefs, styles: s, ds }: WidgetPreviewProps): Reac
     >
       {prefs.showCleanTime && (
         <View style={s.previewCleanTime}>
-          <Text style={[s.previewDays, { color: ds.semantic.intent.primary.solid }]}>
-            {days}
-          </Text>
+          <Text style={[s.previewDays, { color: ds.semantic.intent.primary.solid }]}>{days}</Text>
           <Text style={[s.previewDaysLabel, { color: ds.semantic.text.secondary }]}>
             {days === 1 ? 'day' : 'days'} clean
           </Text>
@@ -358,7 +351,10 @@ function WidgetPreview({ data, prefs, styles: s, ds }: WidgetPreviewProps): Reac
 
       {prefs.showDailyQuote && data?.quoteText && (
         <View style={s.previewQuote}>
-          <Text style={[s.previewQuoteText, { color: ds.semantic.text.secondary }]} numberOfLines={2}>
+          <Text
+            style={[s.previewQuoteText, { color: ds.semantic.text.secondary }]}
+            numberOfLines={2}
+          >
             &ldquo;{data.quoteText}&rdquo;
           </Text>
           <Text style={[s.previewQuoteSource, { color: ds.semantic.text.tertiary }]}>
@@ -369,30 +365,10 @@ function WidgetPreview({ data, prefs, styles: s, ds }: WidgetPreviewProps): Reac
 
       {prefs.showTodayStatus && (
         <View style={s.previewStatus}>
-          <StatusDot
-            label="Morning"
-            done={data?.morningCheckIn ?? false}
-            ds={ds}
-            styles={s}
-          />
-          <StatusDot
-            label="Evening"
-            done={data?.eveningCheckIn ?? false}
-            ds={ds}
-            styles={s}
-          />
-          <StatusDot
-            label="Journal"
-            done={data?.journalWritten ?? false}
-            ds={ds}
-            styles={s}
-          />
-          <StatusDot
-            label="Meeting"
-            done={data?.meetingAttended ?? false}
-            ds={ds}
-            styles={s}
-          />
+          <StatusDot label="Morning" done={data?.morningCheckIn ?? false} ds={ds} styles={s} />
+          <StatusDot label="Evening" done={data?.eveningCheckIn ?? false} ds={ds} styles={s} />
+          <StatusDot label="Journal" done={data?.journalWritten ?? false} ds={ds} styles={s} />
+          <StatusDot label="Meeting" done={data?.meetingAttended ?? false} ds={ds} styles={s} />
         </View>
       )}
 
@@ -404,11 +380,14 @@ function WidgetPreview({ data, prefs, styles: s, ds }: WidgetPreviewProps): Reac
         </View>
       )}
 
-      {!prefs.showCleanTime && !prefs.showDailyQuote && !prefs.showTodayStatus && !prefs.showStreaks && (
-        <Text style={[s.previewEmpty, { color: ds.semantic.text.tertiary }]}>
-          Enable at least one section above
-        </Text>
-      )}
+      {!prefs.showCleanTime &&
+        !prefs.showDailyQuote &&
+        !prefs.showTodayStatus &&
+        !prefs.showStreaks && (
+          <Text style={[s.previewEmpty, { color: ds.semantic.text.tertiary }]}>
+            Enable at least one section above
+          </Text>
+        )}
     </View>
   );
 }

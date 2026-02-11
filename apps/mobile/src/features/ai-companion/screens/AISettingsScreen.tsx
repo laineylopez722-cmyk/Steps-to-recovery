@@ -24,11 +24,7 @@ import * as Haptics from 'expo-haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { getAIService, type AIProvider } from '../services/aiService';
-import {
-  getSessionCost,
-  getDailyCost,
-  getCostHistory,
-} from '../services/costEstimation';
+import { getSessionCost, getDailyCost, getCostHistory } from '../services/costEstimation';
 import type { DailyCostEntry } from '../services/costEstimation';
 import {
   checkRateLimit,
@@ -293,15 +289,11 @@ export function AISettingsScreen() {
             <View style={styles.card}>
               <View style={styles.costRow}>
                 <Text style={styles.costLabel}>Session cost</Text>
-                <Text style={styles.costValue}>
-                  {formatDisplayCost(sessionCost)}
-                </Text>
+                <Text style={styles.costValue}>{formatDisplayCost(sessionCost)}</Text>
               </View>
               <View style={[styles.costRow, styles.costRowBorder]}>
                 <Text style={styles.costLabel}>Today&apos;s cost</Text>
-                <Text style={styles.costValue}>
-                  {formatDisplayCost(dailyCost)}
-                </Text>
+                <Text style={styles.costValue}>{formatDisplayCost(dailyCost)}</Text>
               </View>
 
               {/* Recent usage mini chart */}
@@ -310,23 +302,12 @@ export function AISettingsScreen() {
                   <Text style={styles.historyTitle}>Recent days</Text>
                   <View style={styles.barChart}>
                     {costHistory.slice(-7).map((entry) => {
-                      const maxCost = Math.max(
-                        ...costHistory.map((e) => e.cost),
-                        dailyCost,
-                        0.001,
-                      );
+                      const maxCost = Math.max(...costHistory.map((e) => e.cost), dailyCost, 0.001);
                       const heightPct = Math.max(4, (entry.cost / maxCost) * 100);
                       return (
                         <View key={entry.date} style={styles.barColumn}>
-                          <View
-                            style={[
-                              styles.bar,
-                              { height: `${heightPct}%` },
-                            ]}
-                          />
-                          <Text style={styles.barLabel}>
-                            {entry.date.slice(-2)}
-                          </Text>
+                          <View style={[styles.bar, { height: `${heightPct}%` }]} />
+                          <Text style={styles.barLabel}>{entry.date.slice(-2)}</Text>
                         </View>
                       );
                     })}
@@ -341,9 +322,7 @@ export function AISettingsScreen() {
                           },
                         ]}
                       />
-                      <Text style={[styles.barLabel, styles.barLabelToday]}>
-                        Today
-                      </Text>
+                      <Text style={[styles.barLabel, styles.barLabelToday]}>Today</Text>
                     </View>
                   </View>
                 </View>
@@ -385,9 +364,7 @@ export function AISettingsScreen() {
                       accessibilityHint="Enter a number between 10 and 200"
                     />
                   </View>
-                  <Text style={styles.limitHint}>
-                    10–200 messages per day
-                  </Text>
+                  <Text style={styles.limitHint}>10–200 messages per day</Text>
 
                   {rateLimitStatus && (
                     <View style={[styles.costRow, styles.costRowBorder]}>

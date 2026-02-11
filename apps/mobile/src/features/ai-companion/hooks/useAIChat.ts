@@ -493,7 +493,11 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         if (messageCountRef.current % 5 === 0 && db && dbReady) {
           try {
             const existingMemories = await memoryStore.getAllMemories();
-            const recentMessages = [...messages, { role: 'user' as const, content }, { role: 'assistant' as const, content: fullResponse }]
+            const recentMessages = [
+              ...messages,
+              { role: 'user' as const, content },
+              { role: 'assistant' as const, content: fullResponse },
+            ]
               .slice(-10)
               .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }));
 
@@ -515,7 +519,10 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send message');
-      agentSpan?.setStatus({ code: 2, message: err instanceof Error ? err.message : 'Agent failed' });
+      agentSpan?.setStatus({
+        code: 2,
+        message: err instanceof Error ? err.message : 'Agent failed',
+      });
     } finally {
       agentSpan?.end();
       setIsStreaming(false);
