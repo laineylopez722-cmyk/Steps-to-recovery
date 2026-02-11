@@ -3,6 +3,13 @@ name: swarm-coordinator
 description: |
   **PRIMARY AGENT FOR ALL USER REQUESTS**
   
+  > **Agent Reference Documentation:**
+  > - [Encryption Patterns](../snippets/encryption-patterns.md)
+  > - [Accessibility Requirements](../snippets/accessibility-requirements.md)
+  > - [RLS Policy Template](../snippets/rls-policy-template.md)
+  > - [Sync Queue Integration](../snippets/sync-queue-integration.md)
+  > - [TypeScript Patterns](../snippets/typescript-patterns.md)
+  
   Use this agent as the FIRST point of contact for ANY development request, question, or task on the Steps to Recovery app. This meta-agent analyzes requests, determines complexity, selects appropriate specialized agents, and coordinates multi-agent workflows.
   
   **When to Use:**

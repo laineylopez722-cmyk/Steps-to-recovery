@@ -38,6 +38,11 @@ description: |
 model: sonnet
 ---
 
+> **Reference Documentation:**
+> - [Encryption Patterns](../snippets/encryption-patterns.md) - Common encryption queries
+> - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Common sync queries
+> - [TypeScript Patterns](../snippets/typescript-patterns.md) - Common TypeScript patterns
+
 # Token Optimization Specialist
 
 ## Purpose

@@ -60,7 +60,9 @@ Local Write → SQLite → Sync Queue → Supabase (encrypted)
 
 ### 3. RLS Policy Pattern
 
-Every user data table MUST have:
+> **Reference**: See [RLS Policy Template](../snippets/rls-policy-template.md) for complete policy patterns and validation checklist.
+
+Every user data table MUST have Row-Level Security enabled. Basic pattern:
 
 ```sql
 -- Enable RLS
@@ -70,18 +72,9 @@ ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can only access their own data"
   ON table_name FOR ALL
   USING (auth.uid() = user_id);
-
--- For shared data (e.g., sponsor sharing)
-CREATE POLICY "Users can access shared data"
-  ON table_name FOR SELECT
-  USING (
-    auth.uid() = user_id OR
-    auth.uid() IN (
-      SELECT shared_with_id FROM sharing_table
-      WHERE resource_id = table_name.id
-    )
-  );
 ```
+
+For detailed patterns including shared data policies, see the [RLS Policy Template](../snippets/rls-policy-template.md).
 
 ## Schema Design Template
 
@@ -244,6 +237,8 @@ await addToSyncQueue(db, 'table_name', id, 'update');
 await addDeleteToSyncQueue(db, 'table_name', id, userId);
 await db.runAsync('DELETE FROM table_name WHERE id = ?', [id]);
 ```
+
+> **Reference**: For detailed sync queue integration patterns, see [Sync Queue Integration](../snippets/sync-queue-integration.md).
 
 ## Common Patterns
 
