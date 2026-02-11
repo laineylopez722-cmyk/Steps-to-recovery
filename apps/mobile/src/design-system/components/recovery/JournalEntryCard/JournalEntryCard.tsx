@@ -4,12 +4,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  useColorScheme,
-} from 'react-native';
+import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -21,7 +16,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Share2, User } from 'lucide-react-native';
-import { COLORS, ANIMATION, DIMENSIONS, TYPOGRAPHY, SHADOWS, SPACING, MOOD_CONFIG } from '../constants';
+import {
+  COLORS,
+  ANIMATION,
+  DIMENSIONS,
+  TYPOGRAPHY,
+  SHADOWS,
+  SPACING,
+  MOOD_CONFIG,
+} from '../constants';
 import type { JournalEntry } from '../types';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -71,7 +74,7 @@ export function JournalEntryCard({
     if (!reducedMotion) {
       scale.value = withSequence(
         withTiming(0.98, { duration: ANIMATION.accelerated }),
-        withTiming(1, { duration: ANIMATION.standard })
+        withTiming(1, { duration: ANIMATION.standard }),
       );
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -102,12 +105,7 @@ export function JournalEntryCard({
     opacity: shareIndicatorOpacity.value,
     transform: [
       {
-        translateX: interpolate(
-          shareIndicatorOpacity.value,
-          [0, 1],
-          [20, 0],
-          Extrapolate.CLAMP
-        ),
+        translateX: interpolate(shareIndicatorOpacity.value, [0, 1], [20, 0], Extrapolate.CLAMP),
       },
     ],
   }));
@@ -297,8 +295,8 @@ export function JournalEntryCard({
                         entry.cravingIntensity > 7
                           ? COLORS.error
                           : entry.cravingIntensity > 4
-                          ? COLORS.warning
-                          : COLORS.success,
+                            ? COLORS.warning
+                            : COLORS.success,
                     }}
                   />
                 </View>

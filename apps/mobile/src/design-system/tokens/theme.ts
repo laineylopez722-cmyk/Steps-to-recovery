@@ -1,6 +1,6 @@
 /**
  * Theme System - Serene Olive Theme
- * 
+ *
  * Inspired by: Calm, wellness apps
  * - Soft olive/sage green gradients
  * - Cream/white accents
@@ -17,12 +17,12 @@ import { useColorScheme } from 'react-native';
 const darkColors = {
   // Backgrounds - Olive gradient
   background: {
-    primary: '#2E3E2C',         // Deep olive
+    primary: '#2E3E2C', // Deep olive
     secondary: 'rgba(255, 255, 255, 0.08)',
     tertiary: 'rgba(255, 255, 255, 0.12)',
     elevated: 'rgba(255, 255, 255, 0.08)',
   },
-  
+
   // Text
   text: {
     primary: '#FFFFFF',
@@ -30,7 +30,7 @@ const darkColors = {
     tertiary: 'rgba(255, 255, 255, 0.5)',
     inverse: '#2C3E2C',
   },
-  
+
   // Primary - Warm Cream
   primary: {
     50: '#FFFEF5',
@@ -44,7 +44,7 @@ const darkColors = {
     800: '#9C8C70',
     900: '#807054',
   },
-  
+
   // Secondary - Sage Green
   secondary: {
     50: '#F5F8F4',
@@ -58,20 +58,20 @@ const darkColors = {
     800: '#3A4A38',
     900: '#2E3E2C',
   },
-  
+
   // Accent
   accent: {
     DEFAULT: '#E8E0D0',
     light: '#F5EDE0',
     dark: '#D4C8B8',
   },
-  
+
   // Semantic - Muted for calm feel
   success: '#8AAD8A',
   warning: '#E0B860',
   error: '#D47474',
   info: '#7A9AAA',
-  
+
   // Glass/Surface
   glass: {
     background: 'rgba(255, 255, 255, 0.08)',
@@ -80,11 +80,11 @@ const darkColors = {
     modal: 'rgba(255, 255, 255, 0.12)',
     subtle: 'rgba(255, 255, 255, 0.05)',
   },
-  
+
   // Borders
   border: 'rgba(255, 255, 255, 0.12)',
   borderLight: 'rgba(255, 255, 255, 0.08)',
-  
+
   // Glow effects - Soft cream
   glow: {
     primary: 'rgba(232, 224, 208, 0.2)',
@@ -101,7 +101,7 @@ const lightColors = {
     tertiary: '#F0F0EB',
     elevated: '#FFFFFF',
   },
-  
+
   // Text
   text: {
     primary: '#2C3E2C',
@@ -109,7 +109,7 @@ const lightColors = {
     tertiary: '#8A9A8A',
     inverse: '#FFFFFF',
   },
-  
+
   // Primary - Olive
   primary: {
     50: '#F5F8F4',
@@ -123,7 +123,7 @@ const lightColors = {
     800: '#3A4A38',
     900: '#2E3E2C',
   },
-  
+
   // Secondary - Cream
   secondary: {
     50: '#FFFEF5',
@@ -137,20 +137,20 @@ const lightColors = {
     800: '#807054',
     900: '#645438',
   },
-  
+
   // Accent
   accent: {
     DEFAULT: '#6B7B5E',
     light: '#8A9A7C',
     dark: '#4A5A42',
   },
-  
+
   // Semantic
   success: '#6B8E6B',
   warning: '#D4A855',
   error: '#C45C5C',
   info: '#5A7A8A',
-  
+
   // Glass/Surface
   glass: {
     background: '#FFFFFF',
@@ -159,11 +159,11 @@ const lightColors = {
     modal: '#FFFFFF',
     subtle: '#F5F5F0',
   },
-  
+
   // Borders
   border: 'rgba(60, 80, 60, 0.12)',
   borderLight: 'rgba(60, 80, 60, 0.08)',
-  
+
   // Glow effects
   glow: {
     primary: 'rgba(107, 123, 94, 0.15)',
@@ -587,30 +587,26 @@ export function useTheme(): Theme {
 // ============================================================================
 
 export const getGradients = (isDark: boolean) => ({
-  background: isDark 
-    ? ['#4A5A42', '#3A4A38', '#2E3E2C'] as const
-    : ['#F5F5F0', '#FFFFFF', '#F5F5F0'] as const,
+  background: isDark
+    ? (['#4A5A42', '#3A4A38', '#2E3E2C'] as const)
+    : (['#F5F5F0', '#FFFFFF', '#F5F5F0'] as const),
   card: isDark
-    ? ['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.04)'] as const
-    : ['#FFFFFF', '#FFFFFF'] as const,
+    ? (['rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.04)'] as const)
+    : (['#FFFFFF', '#FFFFFF'] as const),
   cardElevated: isDark
-    ? ['rgba(255, 255, 255, 0.12)', 'rgba(255, 255, 255, 0.08)'] as const
-    : ['#FFFFFF', '#FAFAFA'] as const,
+    ? (['rgba(255, 255, 255, 0.12)', 'rgba(255, 255, 255, 0.08)'] as const)
+    : (['#FFFFFF', '#FAFAFA'] as const),
   surface: isDark
-    ? ['rgba(255, 255, 255, 0.06)', 'rgba(255, 255, 255, 0.03)'] as const
-    : ['#FAFAFA', '#F5F5F0'] as const,
+    ? (['rgba(255, 255, 255, 0.06)', 'rgba(255, 255, 255, 0.03)'] as const)
+    : (['#FAFAFA', '#F5F5F0'] as const),
   inset: isDark
-    ? ['rgba(0, 0, 0, 0.1)', 'rgba(0, 0, 0, 0.05)'] as const
-    : ['#F0F0EB', '#F5F5F0'] as const,
+    ? (['rgba(0, 0, 0, 0.1)', 'rgba(0, 0, 0, 0.05)'] as const)
+    : (['#F0F0EB', '#F5F5F0'] as const),
   highlight: isDark
-    ? ['rgba(232, 224, 208, 0.15)', 'rgba(232, 224, 208, 0.05)'] as const
-    : ['#FFFEF5', '#FFFFFF'] as const,
-  button: isDark
-    ? ['#E8E0D0', '#D4C5A9'] as const
-    : ['#6B7B5E', '#4A5A42'] as const,
-  header: isDark
-    ? ['#3A4A38', '#2E3E2C'] as const
-    : ['#FFFFFF', '#F5F5F0'] as const,
+    ? (['rgba(232, 224, 208, 0.15)', 'rgba(232, 224, 208, 0.05)'] as const)
+    : (['#FFFEF5', '#FFFFFF'] as const),
+  button: isDark ? (['#E8E0D0', '#D4C5A9'] as const) : (['#6B7B5E', '#4A5A42'] as const),
+  header: isDark ? (['#3A4A38', '#2E3E2C'] as const) : (['#FFFFFF', '#F5F5F0'] as const),
   primary: ['#E8E0D0', '#D4C5A9'] as const,
   secondary: ['#8A9A7C', '#6B7B5E'] as const,
   milestone: ['#E8E0D0', '#D4C8B8', '#B8A88C'] as const,

@@ -290,9 +290,7 @@ export const AchievementBadge = memo(function AchievementBadge({
       {/* Achievement Title (compact) */}
       <Text
         className={`text-xs mt-1 text-center max-w-[70px] ${
-          isUnlocked
-            ? 'text-surface-900 dark:text-surface-100 font-medium'
-            : 'text-surface-500'
+          isUnlocked ? 'text-surface-900 dark:text-surface-100 font-medium' : 'text-surface-500'
         }`}
         numberOfLines={2}
         ellipsizeMode="tail"

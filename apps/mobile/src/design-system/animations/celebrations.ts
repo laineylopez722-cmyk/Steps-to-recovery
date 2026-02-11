@@ -205,7 +205,7 @@ export function useMilestoneAnimation(onComplete?: () => void) {
       cardScale.value = withSequence(
         withTiming(0, { duration: 0 }),
         withSpring(1.05, { damping: 12, stiffness: 200 }),
-        withSpring(1, { damping: 15, stiffness: 150 })
+        withSpring(1, { damping: 15, stiffness: 150 }),
       );
       cardOpacity.value = withTiming(1, { duration: 300 });
 
@@ -214,16 +214,16 @@ export function useMilestoneAnimation(onComplete?: () => void) {
         300,
         withSequence(
           withSpring(1.3, { damping: 8, stiffness: 300 }),
-          withSpring(1, { damping: 12, stiffness: 200 })
-        )
+          withSpring(1, { damping: 12, stiffness: 200 }),
+        ),
       );
       iconRotation.value = withDelay(
         300,
         withSequence(
           withTiming(-15, { duration: 200 }),
           withTiming(15, { duration: 200 }),
-          withTiming(0, { duration: 200 })
-        )
+          withTiming(0, { duration: 200 }),
+        ),
       );
 
       // Title fade in (600-900ms)
@@ -238,7 +238,7 @@ export function useMilestoneAnimation(onComplete?: () => void) {
         withRepeat(
           withSequence(
             withTiming(1.02, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-            withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+            withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
           ),
           3,
           true,
@@ -246,8 +246,8 @@ export function useMilestoneAnimation(onComplete?: () => void) {
             if (finished && onComplete) {
               runOnJS(onComplete)();
             }
-          }
-        )
+          },
+        ),
       );
 
       // Shimmer effect
@@ -256,11 +256,21 @@ export function useMilestoneAnimation(onComplete?: () => void) {
         withRepeat(
           withTiming(SCREEN_WIDTH * 2, { duration: 2000, easing: Easing.linear }),
           2,
-          false
-        )
+          false,
+        ),
       );
     },
-    [cardScale, cardOpacity, iconScale, iconRotation, titleOpacity, messageOpacity, pulseScale, shimmerTranslate, onComplete]
+    [
+      cardScale,
+      cardOpacity,
+      iconScale,
+      iconRotation,
+      titleOpacity,
+      messageOpacity,
+      pulseScale,
+      shimmerTranslate,
+      onComplete,
+    ],
   );
 
   const dismiss = useCallback(() => {
@@ -385,13 +395,13 @@ export function useAchievementAnimation(onComplete?: () => void) {
       badgeScale.value = withSequence(
         withTiming(0, { duration: 0 }),
         withSpring(1.1 * intensity, { damping: 10, stiffness: 200 }),
-        withSpring(1, { damping: 12, stiffness: 150 })
+        withSpring(1, { damping: 12, stiffness: 150 }),
       );
 
       badgeRotation.value = withSequence(
         withTiming(-180, { duration: 0 }),
         withTiming(10, { duration: 400, easing: Easing.out(Easing.cubic) }),
-        withTiming(0, { duration: 300, easing: Easing.out(Easing.cubic) })
+        withTiming(0, { duration: 300, easing: Easing.out(Easing.cubic) }),
       );
 
       // Glow effect
@@ -401,11 +411,11 @@ export function useAchievementAnimation(onComplete?: () => void) {
         withRepeat(
           withSequence(
             withTiming(1.2 * intensity, { duration: 1000 }),
-            withTiming(1, { duration: 1000 })
+            withTiming(1, { duration: 1000 }),
           ),
           3,
-          true
-        )
+          true,
+        ),
       );
 
       // Expanding ring
@@ -413,12 +423,12 @@ export function useAchievementAnimation(onComplete?: () => void) {
         100,
         withSequence(
           withTiming(0, { duration: 0 }),
-          withTiming(2 * intensity, { duration: 800, easing: Easing.out(Easing.cubic) })
-        )
+          withTiming(2 * intensity, { duration: 800, easing: Easing.out(Easing.cubic) }),
+        ),
       );
       ringOpacity.value = withDelay(
         100,
-        withTiming(0, { duration: 800, easing: Easing.out(Easing.cubic) })
+        withTiming(0, { duration: 800, easing: Easing.out(Easing.cubic) }),
       );
 
       // Sparkle effect
@@ -431,11 +441,22 @@ export function useAchievementAnimation(onComplete?: () => void) {
             if (finished && onComplete) {
               runOnJS(onComplete)();
             }
-          })
-        )
+          }),
+        ),
       );
     },
-    [containerScale, containerOpacity, badgeScale, badgeRotation, glowOpacity, glowScale, ringScale, ringOpacity, sparkleOpacity, onComplete]
+    [
+      containerScale,
+      containerOpacity,
+      badgeScale,
+      badgeRotation,
+      glowOpacity,
+      glowScale,
+      ringScale,
+      ringOpacity,
+      sparkleOpacity,
+      onComplete,
+    ],
   );
 
   const reset = useCallback(() => {
@@ -446,7 +467,15 @@ export function useAchievementAnimation(onComplete?: () => void) {
     glowOpacity.value = 0;
     ringOpacity.value = 1;
     sparkleOpacity.value = 0;
-  }, [containerScale, containerOpacity, badgeScale, badgeRotation, glowOpacity, ringOpacity, sparkleOpacity]);
+  }, [
+    containerScale,
+    containerOpacity,
+    badgeScale,
+    badgeRotation,
+    glowOpacity,
+    ringOpacity,
+    sparkleOpacity,
+  ]);
 
   const containerStyle = useAnimatedStyle(() => ({
     transform: [{ scale: containerScale.value }],
@@ -454,10 +483,7 @@ export function useAchievementAnimation(onComplete?: () => void) {
   }));
 
   const badgeStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: badgeScale.value },
-      { rotate: `${badgeRotation.value}deg` },
-    ],
+    transform: [{ scale: badgeScale.value }, { rotate: `${badgeRotation.value}deg` }],
   }));
 
   const glowStyle = useAnimatedStyle(() => ({
@@ -523,7 +549,7 @@ export interface CheckInCompletionConfig {
  */
 export function useCheckInAnimation(
   config: Partial<CheckInCompletionConfig> = {},
-  onComplete?: () => void
+  onComplete?: () => void,
 ) {
   const { showConfetti = true, hapticFeedback = true, duration = 2000 } = config;
 
@@ -553,7 +579,7 @@ export function useCheckInAnimation(
       withTiming(1, {
         duration: 400,
         easing: Easing.out(Easing.cubic),
-      })
+      }),
     );
 
     // Scale bounce (400-800ms)
@@ -565,17 +591,14 @@ export function useCheckInAnimation(
           if (finished && onComplete) {
             runOnJS(onComplete)();
           }
-        })
-      )
+        }),
+      ),
     );
 
     // Glow pulse
     glowPulse.value = withDelay(
       600,
-      withSequence(
-        withTiming(1.2, { duration: 300 }),
-        withTiming(1, { duration: 300 })
-      )
+      withSequence(withTiming(1.2, { duration: 300 }), withTiming(1, { duration: 300 })),
     );
 
     // Confetti burst
@@ -585,11 +608,20 @@ export function useCheckInAnimation(
         withSequence(
           withTiming(1, { duration: 100 }),
           withTiming(1, { duration: duration - 500 }),
-          withTiming(0, { duration: 300 })
-        )
+          withTiming(0, { duration: 300 }),
+        ),
       );
     }
-  }, [checkmarkProgress, circleProgress, scale, glowPulse, confettiOpacity, showConfetti, duration, onComplete]);
+  }, [
+    checkmarkProgress,
+    circleProgress,
+    scale,
+    glowPulse,
+    confettiOpacity,
+    showConfetti,
+    duration,
+    onComplete,
+  ]);
 
   const reset = useCallback(() => {
     checkmarkProgress.value = 0;
@@ -660,7 +692,7 @@ export interface ConfettiParticle {
  * Generate confetti particles for celebration
  */
 export function generateConfettiParticles(
-  config: Partial<ConfettiConfig> = {}
+  config: Partial<ConfettiConfig> = {},
 ): ConfettiParticle[] {
   const {
     particleCount = 60,

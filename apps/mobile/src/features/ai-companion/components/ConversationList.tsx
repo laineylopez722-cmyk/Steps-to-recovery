@@ -4,16 +4,10 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  Pressable,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, MessageCircle, Archive, Plus } from 'lucide-react-native';
+import { ChevronLeft, MessageCircle, Archive, Plus, Share2 } from 'lucide-react-native';
 import { Icon } from '../../../components/ui/Icon';
 import type { Conversation } from '../types';
 
@@ -23,6 +17,7 @@ interface ConversationListProps {
   onSelect: (conversationId: string) => void;
   onNewConversation: () => void;
   onArchive: (conversationId: string) => void;
+  onExport?: (conversationId: string) => void;
   isLoading?: boolean;
 }
 
@@ -64,6 +59,7 @@ export function ConversationList({
   onSelect,
   onNewConversation,
   onArchive,
+  onExport,
   isLoading,
 }: ConversationListProps) {
   const navigation = useNavigation();
@@ -126,10 +122,19 @@ export function ConversationList({
               <Text className="text-white font-medium" numberOfLines={1}>
                 {item.title || 'New conversation'}
               </Text>
-              <Text className="text-gray-500 text-sm mt-0.5">
-                {formatDate(item.updatedAt)}
-              </Text>
+              <Text className="text-gray-500 text-sm mt-0.5">{formatDate(item.updatedAt)}</Text>
             </View>
+            {onExport && (
+              <Pressable
+                onPress={() => onExport(item.id)}
+                className="p-2 mr-1"
+                accessibilityRole="button"
+                accessibilityLabel="Export conversation"
+                accessibilityHint="Share this conversation as text"
+              >
+                <Icon as={Share2} size={18} className="text-gray-500" />
+              </Pressable>
+            )}
             {item.id === currentConversationId && (
               <View className="w-2 h-2 rounded-full bg-amber-500" />
             )}
@@ -140,7 +145,7 @@ export function ConversationList({
       {/* Hint */}
       <View className="px-4 py-3 border-t border-gray-800">
         <Text className="text-gray-600 text-xs text-center">
-          Long press to archive a conversation
+          Long press to archive · Tap share icon to export
         </Text>
       </View>
     </SafeAreaView>

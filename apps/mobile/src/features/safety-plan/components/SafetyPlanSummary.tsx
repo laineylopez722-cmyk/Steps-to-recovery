@@ -113,11 +113,7 @@ function renderItems(items: string[], label: string): React.ReactElement[] {
   return items
     .filter((item) => item.trim().length > 0)
     .map((item, index) => (
-      <Text
-        key={index}
-        variant="body"
-        accessibilityLabel={`${label} item ${index + 1}: ${item}`}
-      >
+      <Text key={index} variant="body" accessibilityLabel={`${label} item ${index + 1}: ${item}`}>
         • {item}
       </Text>
     ));
@@ -150,9 +146,7 @@ export function SafetyPlanSummary({ plan, onEdit }: SafetyPlanSummaryProps): Rea
             </Text>
             {section.contacts ? (
               section.contacts.length > 0 ? (
-                section.contacts.map((contact, i) => (
-                  <ContactRow key={i} contact={contact} />
-                ))
+                section.contacts.map((contact, i) => <ContactRow key={i} contact={contact} />)
               ) : (
                 <Text variant="body" color="textSecondary" style={styles.emptyText}>
                   No contacts added

@@ -2,17 +2,21 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 
-jest.mock('../../design-system', () => ({
-  useTheme: () => ({
-    colors: {
-      background: '#FFFFFF',
-      danger: '#FF3B30',
-      primary: '#007AFF',
-      text: '#111111',
-      textSecondary: '#666666',
-    },
-  }),
+jest.mock('../../design-system/context/ThemeContext', () => ({
+  ThemeContext: {
+    Consumer: ({ children }: { children: (value: null) => React.ReactNode }) => children(null),
+    Provider: ({ children }: { children: React.ReactNode }) => children,
+  },
 }));
+
+// Mock React.useContext to return null for ThemeContext (uses FALLBACK_COLORS)
+const originalUseContext = React.useContext;
+jest.spyOn(React, 'useContext').mockImplementation((context) => {
+  if (context && (context as { Consumer?: unknown }).Consumer) {
+    return null;
+  }
+  return originalUseContext(context);
+});
 
 jest.mock('@expo/vector-icons', () => ({
   MaterialIcons: 'MaterialIcons',
@@ -74,7 +78,7 @@ describe('ErrorBoundary', () => {
       </ErrorBoundary>,
     );
 
-    expect(getByText('Something went wrong')).toBeTruthy();
+    expect(getByText('Something unexpected happened')).toBeTruthy();
     expect(getByText('Try Again')).toBeTruthy();
   });
 

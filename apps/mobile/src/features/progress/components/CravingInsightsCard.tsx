@@ -19,7 +19,12 @@ interface CravingInsightsCardProps {
 
 function getInsightIcon(insight: string): keyof typeof MaterialCommunityIcons.glyphMap {
   const lower = insight.toLowerCase();
-  if (lower.includes('peak') || lower.includes('time') || lower.includes('morning') || lower.includes('evening')) {
+  if (
+    lower.includes('peak') ||
+    lower.includes('time') ||
+    lower.includes('morning') ||
+    lower.includes('evening')
+  ) {
     return 'clock-outline';
   }
   if (lower.includes('decreased') || lower.includes('progress') || lower.includes('amazing')) {
@@ -43,9 +48,19 @@ function getInsightIcon(insight: string): keyof typeof MaterialCommunityIcons.gl
   return 'lightbulb-outline';
 }
 
-function getInsightColor(insight: string, theme: { colors: { success: string; danger: string; warning: string; primary: string } }): string {
+function getInsightColor(
+  insight: string,
+  theme: { colors: { success: string; danger: string; warning: string; primary: string } },
+): string {
   const lower = insight.toLowerCase();
-  if (lower.includes('decreased') || lower.includes('progress') || lower.includes('amazing') || lower.includes('stronger') || lower.includes('rare') || lower.includes('low')) {
+  if (
+    lower.includes('decreased') ||
+    lower.includes('progress') ||
+    lower.includes('amazing') ||
+    lower.includes('stronger') ||
+    lower.includes('rare') ||
+    lower.includes('low')
+  ) {
     return theme.colors.success;
   }
   if (lower.includes('increased') || lower.includes('reaching out')) {
@@ -54,7 +69,10 @@ function getInsightColor(insight: string, theme: { colors: { success: string; da
   return theme.colors.primary;
 }
 
-export function CravingInsightsCard({ insights, trend }: CravingInsightsCardProps): React.ReactElement {
+export function CravingInsightsCard({
+  insights,
+  trend,
+}: CravingInsightsCardProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 

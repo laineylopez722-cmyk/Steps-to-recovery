@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Development Methodology**: BMAD (Build-Measure-Analyze-Decide) - Iterative development with focus on user feedback and continuous improvement.
 
-**Current Status**: Phase 1 Complete (Auth & Core Architecture). Phase 2 in progress (Journaling & Step Work).
+**Current Status**: Phase 4 Complete. Phase 5 in progress (AI Companion & Advanced Features).
 
 **Supabase Project**: `tbiunmmvfbakwlzykpwq`
 
@@ -48,6 +48,7 @@ User Request → Swarm Coordinator → Specialized Agents → Quality Gates → 
 ### Quick Start
 
 **For any task, simply describe what you want:**
+
 - "Add a gratitude list feature"
 - "Fix the sync issue in journal entries"
 - "Create tests for encryption"
@@ -57,23 +58,23 @@ The **Swarm Coordinator** will automatically select and coordinate the right age
 
 ### Agent Swarm Documentation
 
-| Document | Purpose |
-|----------|---------|
+| Document                      | Purpose                                 |
+| ----------------------------- | --------------------------------------- |
 | `.claude/AGENT-SWARM-PLAN.md` | Complete swarm architecture and roadmap |
-| `.claude/SWARM-QUICKSTART.md` | How to use the swarm |
-| `.claude/agents/` | Individual agent definitions |
+| `.claude/SWARM-QUICKSTART.md` | How to use the swarm                    |
+| `.claude/agents/`             | Individual agent definitions            |
 
 ### Swarm Agents
 
-| Agent | Specialty | Activation |
-|-------|-----------|------------|
-| `swarm-coordinator` | **PRIMARY** - Routes all requests | Always start here |
-| `security-auditor` | Encryption, RLS, key storage | Auto-triggered for data changes |
-| `database-architect` | Schema, migrations, RLS | Auto-triggered for DB changes |
-| `feature-developer` | Components, hooks, screens | Auto-triggered for features |
-| `testing-specialist` | Tests, coverage, mocks | Auto-triggered post-implementation |
-| `performance-optimizer` | Cold start, rendering, bundles | Auto-triggered for perf issues |
-| `accessibility-validator` | WCAG AAA compliance | Auto-triggered for UI |
+| Agent                     | Specialty                         | Activation                         |
+| ------------------------- | --------------------------------- | ---------------------------------- |
+| `swarm-coordinator`       | **PRIMARY** - Routes all requests | Always start here                  |
+| `security-auditor`        | Encryption, RLS, key storage      | Auto-triggered for data changes    |
+| `database-architect`      | Schema, migrations, RLS           | Auto-triggered for DB changes      |
+| `feature-developer`       | Components, hooks, screens        | Auto-triggered for features        |
+| `testing-specialist`      | Tests, coverage, mocks            | Auto-triggered post-implementation |
+| `performance-optimizer`   | Cold start, rendering, bundles    | Auto-triggered for perf issues     |
+| `accessibility-validator` | WCAG AAA compliance               | Auto-triggered for UI              |
 
 ---
 
@@ -169,12 +170,12 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 
 # IMPORTANT: The daily_checkins migration is REQUIRED
 # Without it, check-ins will NOT back up to cloud (data loss risk)
-# See MIGRATION-INSTRUCTIONS.md for detailed steps
+# See supabase-schema.sql and migration files for detailed steps
 
 # Supabase MCP (optional - for Claude Code integration)
 # Project Reference: tbiunmmvfbakwlzykpwq
 # MCP URL: https://mcp.supabase.com/mcp?project_ref=tbiunmmvfbakwlzykpwq
-# See .bmad/supabase-setup.md for authentication instructions
+# See Supabase MCP documentation for authentication instructions
 ```
 
 ---
@@ -510,7 +511,7 @@ Local Write → Add to sync_queue → Background Worker → Process Queue → Up
 
 ### 4. Context Architecture
 
-The app uses three primary contexts that work together:
+The app uses four primary contexts that work together:
 
 ```
 AuthContext (apps/mobile/src/contexts/AuthContext.tsx)
@@ -528,9 +529,14 @@ SyncContext (apps/mobile/src/contexts/SyncContext.tsx)
     ├─ Processes sync queue in background
     ├─ Clears database on user logout
     └─ Handles retry logic for failed syncs
+
+NotificationContext (apps/mobile/src/contexts/NotificationContext.tsx)
+    ├─ Manages push notification permissions
+    ├─ Schedules daily reminders
+    └─ Handles notification responses
 ```
 
-**Initialization Order**: AuthContext → DatabaseContext → SyncContext
+**Initialization Order**: AuthContext → DatabaseContext → SyncContext → NotificationContext
 
 ### 5. Feature-Based Organization
 
@@ -539,16 +545,34 @@ The codebase is organized by **feature**, not by technical layer:
 ```
 apps/mobile/src/
 ├── features/
+│   ├── ai-companion/    # AI-powered recovery insights
 │   ├── auth/          # Login, signup, onboarding
+│   ├── craving-surf/    # Urge surfing exercises
+│   ├── crisis/          # Crisis intervention tools
+│   ├── emergency/       # Emergency contacts & resources
+│   ├── gratitude/       # Gratitude list tracking
 │   ├── home/          # Dashboard, clean time tracker, check-ins
+│   ├── inventory/       # Personal inventory (Step 4/10)
 │   ├── journal/       # Encrypted journaling
-│   ├── steps/         # 12-step work tracking
+│   ├── meetings/        # Meeting finder & check-ins
+│   ├── onboarding/      # First-time user setup
+│   ├── profile/       # User settings
+│   ├── progress/        # Recovery progress dashboard
+│   ├── readings/        # Daily recovery readings
+│   ├── safety-plan/     # Personal safety plan
+│   ├── settings/        # App settings & preferences
 │   ├── sponsor/       # Sponsor connections
-│   └── profile/       # User settings
+│   └── steps/         # 12-step work tracking
 ├── components/        # Shared UI components
-├── contexts/          # React contexts (Auth, Database, Sync)
+├── config/            # Widget configuration
+├── constants/         # App constants
+├── contexts/          # React contexts (Auth, Database, Sync, Notification)
+├── data/              # Static data
+├── db/                # Drizzle ORM schema and client
 ├── navigation/        # React Navigation setup
 ├── lib/              # Third-party integrations (Supabase, notifications)
+├── providers/         # QueryProvider
+├── store/             # Zustand stores
 ├── utils/            # Utilities (encryption, logging, validation)
 ├── adapters/         # Platform abstraction (storage, secureStorage)
 └── design-system/    # iOS-style design tokens & components
@@ -571,7 +595,7 @@ apps/mobile/src/
 
 ### 6. Design System
 
-The app uses an **iOS-style design system** with design tokens:
+The app uses an **iOS-style design system** with design tokens. Styling uses **uniwind** (Tailwind CSS for React Native) with design tokens from `design-system/tokens/`. Use `cn()` helper from `lib/utils.ts` for conditional classes.
 
 **Key Files**:
 
@@ -1009,7 +1033,7 @@ Uses **Turborepo** with npm workspaces:
 Steps-to-recovery/
 ├── apps/
 │   ├── mobile/          # Expo React Native app (MVP focus)
-│   └── web/             # Next.js app (future)
+│   └── web/             # Expo web target (shared codebase, not a separate Next.js app)
 ├── packages/
 │   └── shared/          # Shared types, constants, utils
 └── turbo.json           # Turborepo configuration
@@ -1062,12 +1086,12 @@ npm test -- useJournalEntries
 
 **Test Coverage Targets**:
 
-| Module | Target | Current |
-|--------|--------|---------|
-| Encryption | 90% | 94% |
-| Sync Service | 70% | 75% |
-| Journal Hooks | 90% | 96% |
-| **Overall** | 75% | 75%+ |
+| Module        | Target | Current |
+| ------------- | ------ | ------- |
+| Encryption    | 90%    | 94%     |
+| Sync Service  | 70%    | 75%     |
+| Journal Hooks | 90%    | 96%     |
+| **Overall**   | 75%    | 75%+    |
 
 **Test Coverage Focus**:
 
@@ -1101,14 +1125,14 @@ maestro test --dry-run .maestro/flows/onboarding.yaml
 
 **E2E Test Flows**:
 
-| Flow | Description | File |
-|------|-------------|------|
-| Onboarding | Sign up → Set sobriety date → Complete onboarding | `onboarding.yaml` |
-| Login | Existing user authentication | `login.yaml` |
-| Daily Check-in | Morning intention + Evening pulse | `daily-checkin.yaml` |
-| Journal | Create → Edit → Search entries | `journal.yaml` |
-| Step Work | 12-step progress tracking | `step-work.yaml` |
-| Offline Sync | Offline → Online sync test | `offline-sync.yaml` |
+| Flow           | Description                                       | File                 |
+| -------------- | ------------------------------------------------- | -------------------- |
+| Onboarding     | Sign up → Set sobriety date → Complete onboarding | `onboarding.yaml`    |
+| Login          | Existing user authentication                      | `login.yaml`         |
+| Daily Check-in | Morning intention + Evening pulse                 | `daily-checkin.yaml` |
+| Journal        | Create → Edit → Search entries                    | `journal.yaml`       |
+| Step Work      | 12-step progress tracking                         | `step-work.yaml`     |
+| Offline Sync   | Offline → Online sync test                        | `offline-sync.yaml`  |
 
 **CI/CD**: E2E tests run automatically via GitHub Actions (`.github/workflows/e2e.yml`)
 
@@ -1177,16 +1201,21 @@ test: add coverage for step work hooks
 
 ## Key Dependencies
 
-- **Expo SDK**: ~54.0.30 (new architecture enabled)
+- **Expo SDK**: ~54.0.0 (new architecture enabled)
 - **React**: 19.1.0
 - **React Native**: 0.81.5
-- **TypeScript**: ~5.9.2 (strict mode enabled)
-- **Supabase**: ^2.89.0
+- **TypeScript**: ~5.9.3 (strict mode enabled)
+- **Supabase**: ^2.93.3
 - **expo-sqlite**: ~16.0.10 (mobile storage)
 - **expo-secure-store**: ~15.0.8 (encryption key storage)
 - **@tanstack/react-query**: ^5.90.15 (server state)
 - **zustand**: ^5.0.9 (client state)
 - **crypto-js**: ^4.2.0 (AES-256-CBC encryption)
+- **drizzle-orm**: ^0.45.1 (type-safe ORM layer)
+- **uniwind**: ^1.3.0 (Tailwind CSS for React Native)
+- **@shopify/flash-list**: 2.0.2 (performant list rendering)
+- **zod**: ^4.3.6 (schema validation)
+- **react-hook-form**: ^7.71.1 (form management)
 
 ## Platform-Specific Considerations
 
@@ -1209,9 +1238,7 @@ test: add coverage for step work hooks
 ### Core Documentation
 
 - **Setup Guide**: `SETUP.md` - Complete setup and installation
-- **Project Context**: `.bmad/project-context.md` - Critical rules and patterns (MUST READ)
 - **Security Doc**: `SECURITY.md` - Security practices, key rotation, audit history
-- **Project Status**: `PROJECT_STATUS.md` - Current phase, completed tasks, next steps
 - **Architecture**: `docs/_bmad-output/planning-artifacts/architecture.md` - Detailed technical architecture
 
 ### Feature Implementation Guides (.claude/)
@@ -1226,13 +1253,12 @@ test: add coverage for step work hooks
 
 ### Supabase Integration
 
-- `.bmad/supabase-setup.md` - MCP authentication and tools reference
 - `supabase-schema.sql` - Base database schema with RLS policies
 
 ### Planning Artifacts (docs/\_bmad-output/planning-artifacts/)
 
 - `prd.md` - Product requirements document
-- `epics-and-stories.md` - User stories for Phase 2
+- `epics-and-stories.md` - User stories and epics
 - `research/` - Domain research on recovery apps and privacy patterns
 
 ## Development Notes
@@ -1246,7 +1272,7 @@ test: add coverage for step work hooks
 ## Performance Guidelines
 
 - **Cold Start Target**: Sub-2-second load time (critical for emergency access during cravings)
-- **List Rendering**: Use FlatList for >10 items (NOT ScrollView)
+- **List Rendering**: Use FlashList (@shopify/flash-list) for >10 items (NOT ScrollView)
 - **Re-render Optimization**: Use React.memo + useCallback for heavy components
 - **Database Operations**: Batch SQLite operations in transactions
 - **Image Loading**: Lazy load, optimize sizes
@@ -1324,6 +1350,7 @@ This project follows **Build-Measure-Analyze-Decide** methodology:
 ### Environment Setup
 
 Create `apps/mobile/.env`:
+
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -1332,12 +1359,12 @@ EXPO_PUBLIC_SENTRY_DSN=optional-sentry-dsn
 
 ### EAS Build Profiles
 
-| Profile | Use Case | Distribution |
-|---------|----------|--------------|
-| `development` | Local development | Internal (simulator) |
-| `development-device` | Device testing | Internal (physical) |
-| `preview` | QA testing | Internal testing |
-| `production` | App Store / Play Store | Public stores |
+| Profile              | Use Case               | Distribution         |
+| -------------------- | ---------------------- | -------------------- |
+| `development`        | Local development      | Internal (simulator) |
+| `development-device` | Device testing         | Internal (physical)  |
+| `preview`            | QA testing             | Internal testing     |
+| `production`         | App Store / Play Store | Public stores        |
 
 ### Build Commands
 
@@ -1402,7 +1429,7 @@ eas secret:delete --name SECRET_NAME
 - [ ] Changelog updated
 - [ ] EAS secrets configured (for production)
 
-See [BUILD_CHECKLIST.md](docs/BUILD_CHECKLIST.md) for detailed checklist.
+See the Pre-Build Checklist above for detailed steps.
 
 ---
 
@@ -1420,17 +1447,17 @@ See [BUILD_CHECKLIST.md](docs/BUILD_CHECKLIST.md) for detailed checklist.
 
 ## Known Technical Debt
 
-| Item | Location | Priority |
-|------|----------|----------|
-| Toast notification for offline mutation | `useOfflineMutation.ts` | Medium |
-| FTS optimization for >1000 encrypted items | `useMemoryStore.ts` | Medium |
-| Remote config integration for runtime theme | `runtime-theme/` | Medium |
-| AI extraction refinement | `memoryExtractor.ts` | Medium |
-| Share entry feature | `JournalEditorScreen.tsx` | Low |
-| Delete entry feature | `JournalEditorScreen.tsx` | Low |
-| Refetch implementation | `DailyReadingCard.tsx` | Low |
-| Analytics event sending | `analytics.ts` | Low |
-| Migrate motion token names | `motion.ts` | Low |
+| Item                                        | Location                  | Priority |
+| ------------------------------------------- | ------------------------- | -------- |
+| Toast notification for offline mutation     | `useOfflineMutation.ts`   | Medium   |
+| FTS optimization for >1000 encrypted items  | `useMemoryStore.ts`       | Medium   |
+| Remote config integration for runtime theme | `runtime-theme/`          | Medium   |
+| AI extraction refinement                    | `memoryExtractor.ts`      | Medium   |
+| Share entry feature                         | `JournalEditorScreen.tsx` | Low      |
+| Delete entry feature                        | `JournalEditorScreen.tsx` | Low      |
+| Refetch implementation                      | `DailyReadingCard.tsx`    | Low      |
+| Analytics event sending                     | `analytics.ts`            | Low      |
+| Migrate motion token names                  | `motion.ts`               | Low      |
 
 ---
 

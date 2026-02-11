@@ -8,12 +8,11 @@ tags:
   - critical
 
 env:
-  TEST_INTENTION: "Stay present and focused on recovery"
-  TEST_GRATITUDE: "Grateful for another day clean"
-  TEST_REFLECTION: "Today was a good day, managed cravings well"
+  TEST_INTENTION: 'Stay present and focused on recovery'
+  TEST_GRATITUDE: 'Grateful for another day clean'
+  TEST_REFLECTION: 'Today was a good day, managed cravings well'
 
 ---
-
 # Launch app (preserve state for logged in user)
 - launchApp
 
@@ -22,22 +21,22 @@ env:
 # Ensure we're on home screen
 - runFlow:
     when:
-      visible: "Welcome Back"
+      visible: 'Welcome Back'
     commands:
-      - tapOn: "Sign Up"
+      - tapOn: 'Sign Up'
       - tapOn:
-          id: "signup-email-input"
-      - inputText: "checkin.{{RANDOM}}@test.com"
+          id: 'signup-email-input'
+      - inputText: 'checkin.{{RANDOM}}@test.com'
       - tapOn:
-          id: "signup-password-input"
-      - inputText: "TestPass123!"
+          id: 'signup-password-input'
+      - inputText: 'TestPass123!'
       - tapOn:
-          id: "signup-confirm-password-input"
-      - inputText: "TestPass123!"
+          id: 'signup-confirm-password-input'
+      - inputText: 'TestPass123!'
       - tapOn:
-          id: "signup-submit-button"
+          id: 'signup-submit-button'
       - extendedWaitUntil:
-          visible: "Clean Time"
+          visible: 'Clean Time'
           timeout: 30000
 
 # ============================================
@@ -46,37 +45,37 @@ env:
 
 # Tap on morning intention option
 - tapOn:
-    text: "Stay present"
+    text: 'Stay present'
     retryTapIfNoChange: true
 
 # Should navigate to Morning Intention screen
 - extendedWaitUntil:
-    visible: "Morning Intention"
+    visible: 'Morning Intention'
     timeout: 10000
 
 # Verify screen elements
-- assertVisible: "Set your intention for today"
+- assertVisible: 'Set your intention for today'
 
 # Enter intention
 - tapOn:
-    id: "intention-input"
-- inputText: "${TEST_INTENTION}"
+    id: 'intention-input'
+- inputText: '${TEST_INTENTION}'
 
 # Enter gratitude
 - tapOn:
-    id: "gratitude-input"
-- inputText: "${TEST_GRATITUDE}"
+    id: 'gratitude-input'
+- inputText: '${TEST_GRATITUDE}'
 
 # Save the morning intention
-- tapOn: "Save Intention"
+- tapOn: 'Save Intention'
 
 # Wait for save and return to home
 - extendedWaitUntil:
-    visible: "Clean Time"
+    visible: 'Clean Time'
     timeout: 15000
 
 # Verify check-in count updated (should show 1/2)
-- assertVisible: "1/2"
+- assertVisible: '1/2'
 
 # Take screenshot
 - takeScreenshot: morning-checkin-complete
@@ -87,37 +86,37 @@ env:
 
 # Tap on evening check-in
 - tapOn:
-    text: "Close day strong"
+    text: 'Close day strong'
     retryTapIfNoChange: true
 
 # Should navigate to Evening Pulse screen
 - extendedWaitUntil:
-    visible: "Evening Pulse Check"
+    visible: 'Evening Pulse Check'
     timeout: 10000
 
 # Verify screen elements
-- assertVisible: "Reflect on your day"
+- assertVisible: 'Reflect on your day'
 
 # Enter reflection
 - tapOn:
-    id: "reflection-input"
-- inputText: "${TEST_REFLECTION}"
+    id: 'reflection-input'
+- inputText: '${TEST_REFLECTION}'
 
 # Rate the day (tap on a rating option - assuming 1-5 scale)
 - tapOn:
-    text: "4"
+    text: '4'
     retryTapIfNoChange: true
 
 # Save the evening reflection
-- tapOn: "Save Reflection"
+- tapOn: 'Save Reflection'
 
 # Wait for save and return to home
 - extendedWaitUntil:
-    visible: "Clean Time"
+    visible: 'Clean Time'
     timeout: 15000
 
 # Verify check-in count updated (should show 2/2)
-- assertVisible: "2/2"
+- assertVisible: '2/2'
 
 # Take final screenshot
 - takeScreenshot: evening-checkin-complete

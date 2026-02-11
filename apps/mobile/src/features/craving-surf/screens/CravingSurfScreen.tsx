@@ -72,9 +72,7 @@ export function CravingSurfScreen({ navigation }: CravingSurfScreenProps): React
   return (
     <View style={styles.container}>
       <View style={styles.progressContainer}>
-        <ProgressBar
-          progress={PHASE_PROGRESS[phase] ?? 0}
-        />
+        <ProgressBar progress={PHASE_PROGRESS[phase] ?? 0} />
       </View>
 
       <ScrollView
@@ -105,10 +103,7 @@ export function CravingSurfScreen({ navigation }: CravingSurfScreenProps): React
         )}
 
         {phase === 'distraction' && (
-          <DistractionPicker
-            onSelect={selectDistraction}
-            testID="craving-distraction"
-          />
+          <DistractionPicker onSelect={selectDistraction} testID="craving-distraction" />
         )}
 
         {phase === 'rate-final' && (

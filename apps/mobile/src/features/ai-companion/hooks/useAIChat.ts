@@ -5,9 +5,18 @@
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import * as Sentry from '@sentry/react-native';
 import { useChatHistory } from './useChatHistory';
 import { getAIService, getRecoverySystemPrompt, type ChatMessage } from '../services/aiService';
 import { extractMemoriesFromMessage } from '../services/memoryExtractor';
+import {
+  isOfflineMode,
+  getOfflineResponse,
+  cacheResponse,
+  queuePendingMessage,
+} from '../services/offlineFallback';
+import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
+import { checkRateLimit, incrementMessageCount } from '../services/rateLimiter';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
 import { logger } from '../../../utils/logger';
 import type { Message, Conversation, ConversationType, CrisisSignal } from '../types';
@@ -29,6 +38,8 @@ export interface UseAIChatReturn {
   isStreaming: boolean;
   streamingContent: string;
   error: string | null;
+  isOfflineResponse: boolean;
+  remainingMessages: number | null;
 
   // Actions
   sendMessage: (content: string) => Promise<void>;
@@ -65,13 +76,7 @@ const CRISIS_PATTERNS = {
     /\bhurt myself\b/i,
     /\bself.?harm\b/i,
   ],
-  low: [
-    /\bcraving\b/i,
-    /\btriggered\b/i,
-    /\btempted\b/i,
-    /\bstrongly urge\b/i,
-    /\bcan't cope\b/i,
-  ],
+  low: [/\bcraving\b/i, /\btriggered\b/i, /\btempted\b/i, /\bstrongly urge\b/i, /\bcan't cope\b/i],
 };
 
 /**
@@ -173,18 +178,11 @@ function generateConversationTitle(message: string): string {
  * Main AI Chat Hook
  */
 export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
-  const {
-    userId,
-    sobrietyDays,
-    currentStep,
-    userName,
-    sponsorName,
-    onCrisisDetected,
-  } = options;
+  const { userId, sobrietyDays, currentStep, userName, sponsorName, onCrisisDetected } = options;
 
   // Chat history management
   const chatHistory = useChatHistory(userId);
-  
+
   // Memory store for saving extracted facts
   const memoryStore = useMemoryStore(userId);
 
@@ -196,6 +194,8 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
   const [streamingContent, setStreamingContent] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isAIConfigured, setIsAIConfigured] = useState(false);
+  const [isOfflineResponse, setIsOfflineResponse] = useState(false);
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(null);
 
   // Refs for cancellation and queue management
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -204,7 +204,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
   // Check AI configuration on mount
   useEffect(() => {
-    const checkConfig = async () => {
+    const checkConfig = async (): Promise<void> => {
       try {
         const service = await getAIService();
         const configured = await service.isConfigured();
@@ -213,7 +213,16 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         setIsAIConfigured(false);
       }
     };
+    const loadRateLimit = async (): Promise<void> => {
+      try {
+        const status = await checkRateLimit();
+        setRemainingMessages(status.remaining);
+      } catch {
+        // Non-critical
+      }
+    };
     checkConfig();
+    loadRateLimit();
   }, []);
 
   /**
@@ -254,7 +263,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         setIsLoading(false);
       }
     },
-    [chatHistory, cancelStream]
+    [chatHistory, cancelStream],
   );
 
   /**
@@ -281,7 +290,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         setIsLoading(false);
       }
     },
-    [chatHistory, cancelStream]
+    [chatHistory, cancelStream],
   );
 
   /**
@@ -295,6 +304,12 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     processingRef.current = true;
     const content = messageQueueRef.current.shift()!;
 
+    const agentSpan = Sentry.startInactiveSpan({
+      op: 'gen_ai.invoke_agent',
+      name: 'invoke_agent RecoveryCompanion',
+    });
+    agentSpan?.setAttribute('gen_ai.agent.name', 'RecoveryCompanion');
+
     try {
       if (!currentConversation) {
         throw new Error('No active conversation');
@@ -305,6 +320,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       if (!(await service.isConfigured())) {
         throw new Error('Please configure your AI API key in settings');
       }
+      agentSpan?.setAttribute('gen_ai.request.model', service.getModel());
 
       // Detect crisis signals
       const crisis = detectCrisis(content);
@@ -313,12 +329,42 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
 
       // Add user message
-      const userMessage = await chatHistory.addMessage(
-        currentConversation.id,
-        'user',
-        content
-      );
-      setMessages(prev => [...prev, userMessage]);
+      const userMessage = await chatHistory.addMessage(currentConversation.id, 'user', content);
+      setMessages((prev) => [...prev, userMessage]);
+
+      // Check if offline — use cached/prewritten response instead
+      const offline = await isOfflineMode();
+      if (offline) {
+        setIsOfflineResponse(true);
+        const offlineResult = await getOfflineResponse(content);
+
+        // Save offline response as assistant message
+        const offlineMsg = await chatHistory.addMessage(
+          currentConversation.id,
+          'assistant',
+          offlineResult.content,
+          { offline: true, offlineSource: offlineResult.source },
+        );
+        setMessages((prev) => [...prev, offlineMsg]);
+
+        // Queue the user message for sending when back online
+        await queuePendingMessage(content, currentConversation.id);
+
+        // Auto-title if first exchange
+        if (messages.length === 0 && content.length > 0) {
+          const title = generateConversationTitle(content);
+          try {
+            await chatHistory.updateConversationTitle(currentConversation.id, title);
+            setCurrentConversation((prev) => (prev ? { ...prev, title } : prev));
+          } catch {
+            // Title update failed, not critical
+          }
+        }
+
+        return;
+      }
+
+      setIsOfflineResponse(false);
 
       // Get memory context about the user
       let memoryContext = '';
@@ -353,7 +399,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
       const aiMessages: ChatMessage[] = [
         { role: 'system', content: contextualSystemPrompt },
-        ...messages.map(m => ({ role: m.role, content: m.content })),
+        ...messages.map((m) => ({ role: m.role, content: m.content })),
         { role: 'user', content },
       ];
 
@@ -388,32 +434,46 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           currentConversation.id,
           'assistant',
           fullResponse,
-          { crisisDetected: crisis?.detected }
+          { crisisDetected: crisis?.detected },
         );
-        setMessages(prev => [...prev, aiMessage]);
-        
+        setMessages((prev) => [...prev, aiMessage]);
+
+        // Track cost and rate limit
+        try {
+          const costEst = estimateCost(content + fullResponse);
+          addToSessionCost(costEst.estimatedCostUSD);
+          await addToDailyCost(costEst.estimatedCostUSD);
+          await incrementMessageCount();
+          const updatedStatus = await checkRateLimit();
+          setRemainingMessages(updatedStatus.remaining);
+        } catch {
+          // Cost/rate tracking is non-critical
+        }
+
         // Auto-title the conversation after first exchange
         if (messages.length === 0 && content.length > 0) {
           // Generate a short title from the first user message
           const title = generateConversationTitle(content);
           try {
             await chatHistory.updateConversationTitle(currentConversation.id, title);
-            setCurrentConversation(prev => prev ? { ...prev, title } : prev);
+            setCurrentConversation((prev) => (prev ? { ...prev, title } : prev));
           } catch {
             // Title update failed, not critical
           }
         }
-        
+
         // Extract and save memories from the user message
         try {
-          const memories = extractMemoriesFromMessage(
-            userId,
-            content,
-            currentConversation.id
-          );
+          const toolSpan = Sentry.startInactiveSpan({
+            op: 'gen_ai.execute_tool',
+            name: 'execute_tool memoryExtractor',
+          });
+          toolSpan?.setAttribute('gen_ai.tool.name', 'memoryExtractor');
+          const memories = extractMemoriesFromMessage(userId, content, currentConversation.id);
           if (memories.length > 0) {
             await memoryStore.addMemories(memories);
           }
+          toolSpan?.end();
         } catch (memErr) {
           // Don't fail the chat if memory extraction fails
           logger.warn('Memory extraction failed', memErr);
@@ -421,7 +481,9 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send message');
+      agentSpan?.setStatus({ code: 2, message: err instanceof Error ? err.message : 'Agent failed' });
     } finally {
+      agentSpan?.end();
       setIsStreaming(false);
       setStreamingContent('');
       abortControllerRef.current = null;
@@ -452,6 +514,19 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     async (content: string) => {
       if (!content.trim()) return;
 
+      // Check rate limit before sending
+      try {
+        const rateLimitStatus = await checkRateLimit();
+        if (!rateLimitStatus.allowed) {
+          setError(
+            `You\u2019ve reached your daily limit of ${rateLimitStatus.limit} messages. Take a break \u2014 your limit resets at midnight.`,
+          );
+          return;
+        }
+      } catch {
+        // If rate limit check fails, allow the message
+      }
+
       // If no conversation, start a new one
       if (!currentConversation) {
         await startNewConversation();
@@ -469,7 +544,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         setIsLoading(false);
       }, 100);
     },
-    [currentConversation, startNewConversation, processQueue]
+    [currentConversation, startNewConversation, processQueue],
   );
 
   /**
@@ -478,7 +553,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
    */
   const sendWelcomeMessage = useCallback(async () => {
     if (!currentConversation) return;
-    
+
     try {
       const service = await getAIService();
       if (!(await service.isConfigured())) return;
@@ -487,9 +562,10 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       setStreamingContent('');
 
       // Build a welcome prompt
-      const welcomePrompt = sobrietyDays && sobrietyDays > 0
-        ? `The user just opened the chat for the first time. They have ${sobrietyDays} days sober. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy or use recovery clichés. Just be real and curious about how they're doing. Don't mention the day count unless it's a milestone.`
-        : `The user just opened the chat for the first time. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy. Just be real - you're here to listen.`;
+      const welcomePrompt =
+        sobrietyDays && sobrietyDays > 0
+          ? `The user just opened the chat for the first time. They have ${sobrietyDays} days sober. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy or use recovery clichés. Just be real and curious about how they're doing. Don't mention the day count unless it's a milestone.`
+          : `The user just opened the chat for the first time. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy. Just be real - you're here to listen.`;
 
       const systemPrompt = getRecoverySystemPrompt({
         sobrietyDays,
@@ -514,13 +590,13 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         const welcomeMsg = await chatHistory.addMessage(
           currentConversation.id,
           'assistant',
-          fullContent.trim()
+          fullContent.trim(),
         );
         setMessages([welcomeMsg]);
       }
     } catch (err) {
       // Silently fail - welcome message is optional
-logger.warn('Welcome message failed', err);
+      logger.warn('Welcome message failed', err);
     } finally {
       setIsStreaming(false);
       setStreamingContent('');
@@ -535,6 +611,8 @@ logger.warn('Welcome message failed', err);
     isStreaming,
     streamingContent,
     error,
+    isOfflineResponse,
+    remainingMessages,
 
     // Actions
     sendMessage,

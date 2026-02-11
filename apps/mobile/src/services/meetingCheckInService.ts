@@ -394,10 +394,7 @@ export async function hasCheckedInToMeetingToday(
 /**
  * Delete a meeting check-in
  */
-export async function deleteMeetingCheckIn(
-  userId: string,
-  checkInId: string,
-): Promise<boolean> {
+export async function deleteMeetingCheckIn(userId: string, checkInId: string): Promise<boolean> {
   try {
     const { error } = await supabase
       .from('meeting_checkins')
@@ -418,4 +415,3 @@ export async function deleteMeetingCheckIn(
     return false;
   }
 }
-

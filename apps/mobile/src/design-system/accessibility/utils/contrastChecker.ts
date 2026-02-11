@@ -163,12 +163,9 @@ export function getRelativeLuminance(rgb: RGBColor): number {
   const bsRGB = b / 255;
 
   // Apply gamma correction
-  const rLinear =
-    rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
-  const gLinear =
-    gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
-  const bLinear =
-    bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
+  const rLinear = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
+  const gLinear = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
+  const bLinear = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
 
   return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
 }
@@ -208,10 +205,7 @@ export function calculateContrastRatio(color1: string, color2: string): number {
  * @param background - Background color
  * @returns Contrast result with AA/AAA compliance
  */
-export function getContrastRatio(
-  foreground: string,
-  background: string
-): ContrastResult {
+export function getContrastRatio(foreground: string, background: string): ContrastResult {
   const ratio = calculateContrastRatio(foreground, background);
   const roundedRatio = Math.round(ratio * 100) / 100;
 
@@ -236,7 +230,7 @@ export function validateContrast(
   foreground: string,
   background: string,
   standard: 'AA' | 'AAA' = 'AA',
-  isLargeText = false
+  isLargeText = false,
 ): boolean {
   const ratio = calculateContrastRatio(foreground, background);
 
@@ -271,7 +265,7 @@ export function getAccessibleTextColor(backgroundColor: string): string {
 export function suggestAccessibleColor(
   targetColor: string,
   backgroundColor: string,
-  minRatio = AAA_NORMAL_RATIO
+  minRatio = AAA_NORMAL_RATIO,
 ): string {
   const rgb = parseColor(targetColor);
   const bgRgb = parseColor(backgroundColor);
@@ -344,10 +338,7 @@ export interface TouchTargetResult {
  * @param height - Touch target height in dp
  * @returns Validation result
  */
-export function validateTouchTarget(
-  width: number,
-  height: number
-): TouchTargetResult {
+export function validateTouchTarget(width: number, height: number): TouchTargetResult {
   const currentSize = Math.min(width, height);
   const valid = width >= MIN_TOUCH_TARGET && height >= MIN_TOUCH_TARGET;
 
@@ -409,8 +400,7 @@ export interface BatchValidationResult {
  * @returns Batch validation results
  */
 export function validateColorPairs(pairs: ColorPair[]): BatchValidationResult {
-  const results: Record<string, ContrastResult & { foreground: string; background: string }> =
-    {};
+  const results: Record<string, ContrastResult & { foreground: string; background: string }> = {};
   const failingAAA: string[] = [];
   const failingAA: string[] = [];
 

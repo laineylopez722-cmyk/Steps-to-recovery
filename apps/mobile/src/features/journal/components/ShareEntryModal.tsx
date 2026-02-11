@@ -280,187 +280,188 @@ export function ShareEntryModal({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    zIndex: 1000,
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: ds.colors.bgOverlay,
-  },
-  modalContainer: {
-    width: '90%' as const,
-    maxWidth: 420,
-    maxHeight: '80%' as const,
-  },
-  modal: {
-    padding: spacing[4],
-  },
-  header: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    marginBottom: spacing[3],
-  },
-  headerLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: spacing[2],
-  },
-  headerTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-  },
-  entryPreview: {
-    backgroundColor: `${darkAccent.primary}10`,
-    borderRadius: radius.md,
-    padding: spacing[3],
-    marginBottom: spacing[3],
-  },
-  entryTitle: {
-    ...typography.h4,
-    color: darkAccent.text,
-    marginBottom: spacing[1],
-  },
-  entryBody: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginBottom: spacing[2],
-  },
-  entryDate: {
-    ...typography.caption,
-    color: darkAccent.textSubtle,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: darkAccent.border,
-    marginVertical: spacing[3],
-  },
-  section: {
-    marginBottom: spacing[4],
-  },
-  sectionTitle: {
-    ...typography.label,
-    color: darkAccent.text,
-    marginBottom: spacing[2],
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
-  },
-  loadingContainer: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    padding: spacing[4],
-    gap: spacing[2],
-  },
-  loadingText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-  },
-  sponsorCard: {
-    padding: spacing[3],
-  },
-  sponsorCardSelected: {
-    borderColor: darkAccent.primary,
-    borderWidth: 2,
-  },
-  sponsorCardContent: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: spacing[2],
-  },
-  radioCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: darkAccent.primary,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  radioInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: darkAccent.primary,
-  },
-  sponsorInfo: {
-    flex: 1,
-  },
-  sponsorName: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600' as const,
-  },
-  sponsorRole: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-  },
-  emptyState: {
-    alignItems: 'center' as const,
-    padding: spacing[4],
-  },
-  emptyText: {
-    ...typography.body,
-    color: darkAccent.text,
-    marginTop: spacing[2],
-    fontWeight: '600' as const,
-  },
-  emptySubtext: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginTop: spacing[1],
-    textAlign: 'center' as const,
-  },
-  actions: {
-    flexDirection: 'row' as const,
-    gap: spacing[2],
-  },
-  actionButton: {
-    flex: 1,
-  },
-  successContainer: {
-    alignItems: 'center' as const,
-    paddingVertical: spacing[2],
-  },
-  successIcon: {
-    marginBottom: spacing[3],
-  },
-  successTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-    marginBottom: spacing[1],
-  },
-  successSubtext: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    textAlign: 'center' as const,
-    marginBottom: spacing[4],
-  },
-  payloadCard: {
-    width: '100%' as const,
-    padding: spacing[3],
-    marginBottom: spacing[3],
-    maxHeight: 150,
-  },
-  payloadLabel: {
-    ...typography.caption,
-    color: darkAccent.textSubtle,
-    marginBottom: spacing[1],
-    textTransform: 'uppercase' as const,
-  },
-  payloadScroll: {
-    maxHeight: 100,
-  },
-  payloadText: {
-    ...typography.bodySmall,
-    color: darkAccent.text,
-    fontFamily: 'monospace',
-  },
-  sendButton: {
-    marginBottom: spacing[2],
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      zIndex: 1000,
+    },
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: ds.colors.bgOverlay,
+    },
+    modalContainer: {
+      width: '90%' as const,
+      maxWidth: 420,
+      maxHeight: '80%' as const,
+    },
+    modal: {
+      padding: spacing[4],
+    },
+    header: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+      marginBottom: spacing[3],
+    },
+    headerLeft: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: spacing[2],
+    },
+    headerTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+    },
+    entryPreview: {
+      backgroundColor: `${darkAccent.primary}10`,
+      borderRadius: radius.md,
+      padding: spacing[3],
+      marginBottom: spacing[3],
+    },
+    entryTitle: {
+      ...typography.h4,
+      color: darkAccent.text,
+      marginBottom: spacing[1],
+    },
+    entryBody: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      marginBottom: spacing[2],
+    },
+    entryDate: {
+      ...typography.caption,
+      color: darkAccent.textSubtle,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: darkAccent.border,
+      marginVertical: spacing[3],
+    },
+    section: {
+      marginBottom: spacing[4],
+    },
+    sectionTitle: {
+      ...typography.label,
+      color: darkAccent.text,
+      marginBottom: spacing[2],
+      textTransform: 'uppercase' as const,
+      letterSpacing: 0.5,
+    },
+    loadingContainer: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      padding: spacing[4],
+      gap: spacing[2],
+    },
+    loadingText: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+    },
+    sponsorCard: {
+      padding: spacing[3],
+    },
+    sponsorCardSelected: {
+      borderColor: darkAccent.primary,
+      borderWidth: 2,
+    },
+    sponsorCardContent: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: spacing[2],
+    },
+    radioCircle: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      borderWidth: 2,
+      borderColor: darkAccent.primary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    radioInner: {
+      width: 10,
+      height: 10,
+      borderRadius: 5,
+      backgroundColor: darkAccent.primary,
+    },
+    sponsorInfo: {
+      flex: 1,
+    },
+    sponsorName: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600' as const,
+    },
+    sponsorRole: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+    },
+    emptyState: {
+      alignItems: 'center' as const,
+      padding: spacing[4],
+    },
+    emptyText: {
+      ...typography.body,
+      color: darkAccent.text,
+      marginTop: spacing[2],
+      fontWeight: '600' as const,
+    },
+    emptySubtext: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginTop: spacing[1],
+      textAlign: 'center' as const,
+    },
+    actions: {
+      flexDirection: 'row' as const,
+      gap: spacing[2],
+    },
+    actionButton: {
+      flex: 1,
+    },
+    successContainer: {
+      alignItems: 'center' as const,
+      paddingVertical: spacing[2],
+    },
+    successIcon: {
+      marginBottom: spacing[3],
+    },
+    successTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+      marginBottom: spacing[1],
+    },
+    successSubtext: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      textAlign: 'center' as const,
+      marginBottom: spacing[4],
+    },
+    payloadCard: {
+      width: '100%' as const,
+      padding: spacing[3],
+      marginBottom: spacing[3],
+      maxHeight: 150,
+    },
+    payloadLabel: {
+      ...typography.caption,
+      color: darkAccent.textSubtle,
+      marginBottom: spacing[1],
+      textTransform: 'uppercase' as const,
+    },
+    payloadScroll: {
+      maxHeight: 100,
+    },
+    payloadText: {
+      ...typography.bodySmall,
+      color: darkAccent.text,
+      fontFamily: 'monospace',
+    },
+    sendButton: {
+      marginBottom: spacing[2],
+    },
+  }) as const;

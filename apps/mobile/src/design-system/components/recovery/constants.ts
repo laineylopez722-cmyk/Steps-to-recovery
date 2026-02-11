@@ -58,13 +58,13 @@ export const MOOD_CONFIG: Record<string, { emoji: string; label: string; color: 
 
 // Milestone messages
 export const MILESTONE_MESSAGES: Record<number, string> = {
-  1: "Your first step is the hardest. You did it! 🌱",
+  1: 'Your first step is the hardest. You did it! 🌱',
   7: "One week! You're proving it to yourself. 💪",
   30: "A full month! You're unstoppable! 🔥",
-  60: "Two months! Your commitment is inspiring. 💜",
-  90: "Three months! This is real change. ✨",
+  60: 'Two months! Your commitment is inspiring. 💜',
+  90: 'Three months! This is real change. ✨',
   180: "Six months of strength! You're a warrior. ⚔️",
-  365: "ONE YEAR! You rewrote your story! 🏆",
+  365: 'ONE YEAR! You rewrote your story! 🏆',
 };
 
 // Animation durations (ms)

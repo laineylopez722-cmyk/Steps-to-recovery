@@ -10,7 +10,7 @@
  * - Check-ins: `useCheckin`
  * - Meetings: `useMeetings`, `useRegularMeetings`
  * - Contacts: `useContacts`, `usePhoneCalls`
- * - Notifications: `useNotifications`
+ * - Notifications: `useNotificationPreferences`
  * - Achievements: `useAchievements`
  * - Reading: `useReading`
  * - JITAI: `useJitai`
@@ -25,7 +25,7 @@ export { useAuth } from './useAuth';
 export { useSobriety } from './useSobriety';
 export { useJournal } from './useJournal';
 export { useCheckin } from './useCheckin';
-export { useNotifications } from './useNotifications';
+export { useNotificationPreferences } from './useNotifications';
 export { useMeetings } from './useMeetings';
 export { useVoiceRecorder } from './useAudioRecorder';
 export { usePinEntry } from './usePinEntry';
@@ -52,6 +52,9 @@ export {
 
 // Biometric lock
 export { useBiometricLock } from './useBiometricLock';
+
+// Quick escape
+export { useQuickEscape, QuickEscapeTapZone } from './useQuickEscape';
 
 // App state hooks
 export {

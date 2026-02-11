@@ -1453,10 +1453,12 @@ describe('syncService Integration Tests', () => {
 
       expect(result.synced).toBe(0);
       expect(result.failed).toBe(1);
-      expect(mockDb.runAsync).toHaveBeenCalledWith(
-        expect.stringContaining('failed_at'),
-        [3, 'Journal entry not found', expect.any(String), queueItem.id],
-      );
+      expect(mockDb.runAsync).toHaveBeenCalledWith(expect.stringContaining('failed_at'), [
+        3,
+        'Journal entry not found',
+        expect.any(String),
+        queueItem.id,
+      ]);
       expect(logger.error).toHaveBeenCalledWith(
         'Sync item permanently failed after max retries',
         expect.objectContaining({ queueItemId: queueItem.id }),
@@ -1469,9 +1471,7 @@ describe('syncService Integration Tests', () => {
         releaseQueue = resolve;
       });
 
-      mockDb.getAllAsync
-        .mockReturnValueOnce(firstQueueRead as any)
-        .mockResolvedValueOnce([]);
+      mockDb.getAllAsync.mockReturnValueOnce(firstQueueRead as any).mockResolvedValueOnce([]);
 
       const firstRun = processSyncQueue(mockDb, userId);
       const secondRun = await processSyncQueue(mockDb, userId);

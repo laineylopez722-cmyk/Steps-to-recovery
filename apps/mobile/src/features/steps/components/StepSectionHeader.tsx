@@ -39,7 +39,7 @@ export function StepSectionHeader({
         <Text style={[theme.typography.h3, { color: ds.colors.textPrimary, fontWeight: '600' }]}>
           {title}
         </Text>
-        <Text style={[theme.typography.caption, { color: ds.colors.textTertiary }]}> 
+        <Text style={[theme.typography.caption, { color: ds.colors.textTertiary }]}>
           {questionRange} • tap to jump
         </Text>
       </View>
@@ -53,19 +53,20 @@ export function StepSectionHeader({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-    backgroundColor: ds.colors.bgSecondary,
-  },
-  sectionHeaderContent: {
-    marginLeft: 12,
-    flex: 1,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 12,
+      marginBottom: 12,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+      backgroundColor: ds.colors.bgSecondary,
+    },
+    sectionHeaderContent: {
+      marginLeft: 12,
+      flex: 1,
+    },
+  }) as const;

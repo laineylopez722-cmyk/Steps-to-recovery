@@ -12,15 +12,15 @@ Building the AI Recovery Companion as defined in AI-COMPANION-VISION.md. This do
 
 ### Existing Infrastructure ✅
 
-| Component | Status | Location |
-|-----------|--------|----------|
-| Memory Store Hook | Complete | `hooks/useMemoryStore.ts` |
-| Risk Detection | Complete | `services/riskDetectionService.ts` |
-| Database Schema | Partial | `db/schema.ts` |
-| Journal System | Complete | `features/journal/` |
-| Check-in System | Complete | `components/home/` |
-| Step Progress | Basic | `stepProgress` table |
-| Encryption | Complete | `utils/encryption.ts` |
+| Component         | Status   | Location                           |
+| ----------------- | -------- | ---------------------------------- |
+| Memory Store Hook | Complete | `hooks/useMemoryStore.ts`          |
+| Risk Detection    | Complete | `services/riskDetectionService.ts` |
+| Database Schema   | Partial  | `db/schema.ts`                     |
+| Journal System    | Complete | `features/journal/`                |
+| Check-in System   | Complete | `components/home/`                 |
+| Step Progress     | Basic    | `stepProgress` table               |
+| Encryption        | Complete | `utils/encryption.ts`              |
 
 ### Gaps to Fill
 
@@ -85,7 +85,9 @@ Building the AI Recovery Companion as defined in AI-COMPANION-VISION.md. This do
 // Chat Conversations
 export const chatConversations = sqliteTable('chat_conversations', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
   title: text('title'),
   type: text('type').notNull(), // 'general' | 'step_work' | 'crisis' | 'check_in'
   stepNumber: integer('step_number'), // If step work conversation
@@ -97,7 +99,9 @@ export const chatConversations = sqliteTable('chat_conversations', {
 // Chat Messages
 export const chatMessages = sqliteTable('chat_messages', {
   id: text('id').primaryKey(),
-  conversationId: text('conversation_id').notNull().references(() => chatConversations.id),
+  conversationId: text('conversation_id')
+    .notNull()
+    .references(() => chatConversations.id),
   role: text('role').notNull(), // 'user' | 'assistant' | 'system'
   content: text('content').notNull(),
   isEncrypted: integer('is_encrypted', { mode: 'boolean' }).default(true),
@@ -108,7 +112,9 @@ export const chatMessages = sqliteTable('chat_messages', {
 // Step Work Entries (detailed work, not just progress)
 export const stepWorkEntries = sqliteTable('step_work_entries', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
   stepNumber: integer('step_number').notNull(),
   entryType: text('entry_type').notNull(), // 'resentment' | 'fear' | 'amend' | 'reflection'
   data: text('data').notNull(), // Encrypted JSON
@@ -147,20 +153,15 @@ export function getAIService(): AIProvider {
 ```typescript
 // services/contextBuilder.ts
 export async function buildContext(userId: string, conversationType: string): Promise<string> {
-  const [
-    memorySummary,
-    recentMessages,
-    currentStep,
-    sobrietyDays,
-    recentCheckIns,
-  ] = await Promise.all([
-    getMemorySummary(userId),
-    getRecentMessages(userId, 10),
-    getCurrentStep(userId),
-    getSobrietyDays(userId),
-    getRecentCheckIns(userId, 7),
-  ]);
-  
+  const [memorySummary, recentMessages, currentStep, sobrietyDays, recentCheckIns] =
+    await Promise.all([
+      getMemorySummary(userId),
+      getRecentMessages(userId, 10),
+      getCurrentStep(userId),
+      getSobrietyDays(userId),
+      getRecentCheckIns(userId, 7),
+    ]);
+
   return assembleContextString({
     memorySummary,
     recentMessages,
@@ -177,6 +178,7 @@ export async function buildContext(userId: string, conversationType: string): Pr
 ## Implementation Phases
 
 ### Phase 1: Foundation (Agent 1 - Schema + Core)
+
 - [ ] Extend `schema.ts` with chat tables
 - [ ] Create migration
 - [ ] Create `features/ai-companion/` structure
@@ -184,18 +186,21 @@ export async function buildContext(userId: string, conversationType: string): Pr
 - [ ] Basic AI service abstraction
 
 ### Phase 2: Chat System (Agent 2 - Chat)
+
 - [ ] `useAIChat.ts` hook
 - [ ] `useChatHistory.ts` hook
 - [ ] Message persistence with encryption
 - [ ] Streaming response handling
 
 ### Phase 3: Intelligence (Agent 3 - AI)
+
 - [ ] System prompts (base, step work, crisis)
 - [ ] Context builder
 - [ ] Memory extraction from chat
 - [ ] Crisis detection
 
 ### Phase 4: UI (Agent 4 - UI)
+
 - [ ] ChatScreen component
 - [ ] ChatBubble component
 - [ ] ChatInput component
@@ -204,12 +209,14 @@ export async function buildContext(userId: string, conversationType: string): Pr
 - [ ] Crisis overlay
 
 ### Phase 5: Step Work (Agent 5 - Steps)
+
 - [ ] 4th step inventory builder
 - [ ] 8th/9th step amends tracker
 - [ ] Step-specific prompts
 - [ ] Interactive worksheets
 
 ### Phase 6: Integration (Conductor - Me)
+
 - [ ] Wire everything together
 - [ ] Navigation integration
 - [ ] Test flows
@@ -232,14 +239,14 @@ Each agent's work goes through the **Code Reviewer Agent** before merge:
 
 ## Agent Assignments
 
-| Agent | Focus | Deliverables |
-|-------|-------|--------------|
+| Agent     | Focus              | Deliverables                             |
+| --------- | ------------------ | ---------------------------------------- |
 | Architect | Schema + Structure | Extended schema, folder structure, types |
-| Chat | Chat System | Hooks, services for chat persistence |
-| AI | Intelligence | Prompts, context, memory extraction |
-| UI | Components | Chat UI, crisis overlay |
-| Steps | Step Work | Interactive step tools |
-| Reviewer | Quality | Code improvements on each file |
+| Chat      | Chat System        | Hooks, services for chat persistence     |
+| AI        | Intelligence       | Prompts, context, memory extraction      |
+| UI        | Components         | Chat UI, crisis overlay                  |
+| Steps     | Step Work          | Interactive step tools                   |
+| Reviewer  | Quality            | Code improvements on each file           |
 
 ---
 
@@ -255,4 +262,4 @@ Each agent's work goes through the **Code Reviewer Agent** before merge:
 
 ---
 
-*This document is the single source of truth for implementation.*
+_This document is the single source of truth for implementation._

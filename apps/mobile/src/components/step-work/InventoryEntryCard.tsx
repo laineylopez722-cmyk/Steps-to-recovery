@@ -13,13 +13,21 @@
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { FourthStepType } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
 import { ds } from '../../design-system/tokens/ds';
 
-const TYPE_CONFIG: Record<FourthStepType, { bg: string; text: string; border: string; icon: React.ComponentProps<typeof Feather>['name'] }> = {
+const TYPE_CONFIG: Record<
+  FourthStepType,
+  { bg: string; text: string; border: string; icon: React.ComponentProps<typeof Feather>['name'] }
+> = {
   resentment: {
     bg: ds.semantic.intent.alert.subtle,
     text: ds.semantic.intent.alert.solid,
@@ -116,9 +124,7 @@ export function InventoryEntryCard({
             <View style={styles.headerLeft}>
               <View style={[styles.typeBadge, { backgroundColor: config.bg }]}>
                 <Feather name={config.icon} size={12} color={config.text} />
-                <Text style={[styles.typeText, { color: config.text }]}>
-                  {TYPE_LABELS[type]}
-                </Text>
+                <Text style={[styles.typeText, { color: config.text }]}>{TYPE_LABELS[type]}</Text>
               </View>
               <Text style={styles.whoText}>{who}</Text>
               {!isExpanded && cause && (

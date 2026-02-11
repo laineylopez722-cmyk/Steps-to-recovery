@@ -16,6 +16,7 @@ conditions:
 Interactive component is missing required accessibility attributes for screen readers.
 
 **Why this is critical:**
+
 - Users in recovery may have visual or motor impairments
 - WCAG AAA compliance is mandatory for this app
 - VoiceOver (iOS) and TalkBack (Android) require proper labels
@@ -53,6 +54,7 @@ Interactive component is missing required accessibility attributes for screen re
 ```
 
 **Required fields:**
+
 - `accessibilityLabel` - What is this? (required)
 - `accessibilityRole` - button, text, header, etc. (required)
 - `accessibilityState` - { disabled, checked, busy } (when applicable)

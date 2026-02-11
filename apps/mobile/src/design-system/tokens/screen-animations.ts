@@ -1,11 +1,11 @@
 /**
  * Screen Animation System
- * 
+ *
  * LIMITED animation budget for consistent, premium feel:
  * - 3 animation patterns maximum
  * - Consistent timing (300-400ms)
  * - Purposeful motion only
- * 
+ *
  * Usage:
  *   entering={ScreenAnimations.item(index)}
  *   entering={ScreenAnimations.entrance}

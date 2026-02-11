@@ -139,10 +139,12 @@ describe('performance utilities', () => {
       // Should log info or warn depending on speed
       const infoOrWarnCalled =
         (logger.info as jest.Mock).mock.calls.some(
-          (call: unknown[]) => typeof call[0] === 'string' && (call[0] as string).includes('Cold start'),
+          (call: unknown[]) =>
+            typeof call[0] === 'string' && (call[0] as string).includes('Cold start'),
         ) ||
         (logger.warn as jest.Mock).mock.calls.some(
-          (call: unknown[]) => typeof call[0] === 'string' && (call[0] as string).includes('Cold start'),
+          (call: unknown[]) =>
+            typeof call[0] === 'string' && (call[0] as string).includes('Cold start'),
         );
       expect(infoOrWarnCalled).toBe(true);
     });
@@ -162,9 +164,7 @@ describe('performance utilities', () => {
       expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('HomeScreen'));
 
       measureScreenLoad('HomeScreen', 'end');
-      expect(logger.debug).toHaveBeenCalledWith(
-        expect.stringContaining('HomeScreen'),
-      );
+      expect(logger.debug).toHaveBeenCalledWith(expect.stringContaining('HomeScreen'));
     });
 
     it('defaults to start stage', () => {
@@ -190,10 +190,12 @@ describe('performance utilities', () => {
       measureDatabaseInit('end');
       const logged =
         (logger.info as jest.Mock).mock.calls.some(
-          (call: unknown[]) => typeof call[0] === 'string' && (call[0] as string).includes('Database init'),
+          (call: unknown[]) =>
+            typeof call[0] === 'string' && (call[0] as string).includes('Database init'),
         ) ||
         (logger.warn as jest.Mock).mock.calls.some(
-          (call: unknown[]) => typeof call[0] === 'string' && (call[0] as string).includes('Database init'),
+          (call: unknown[]) =>
+            typeof call[0] === 'string' && (call[0] as string).includes('Database init'),
         );
       expect(logged).toBe(true);
     });

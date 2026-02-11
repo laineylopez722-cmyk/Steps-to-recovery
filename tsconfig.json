@@ -12,11 +12,5 @@
     "noImplicitAny": true
   },
   "extends": "expo/tsconfig.base",
-  "exclude": [
-    "node_modules",
-    "_bmad-output",
-    "**/__tests__",
-    "**/*.test.ts",
-    "**/*.test.tsx"
-  ]
+  "exclude": ["node_modules", "_bmad-output", "**/__tests__", "**/*.test.ts", "**/*.test.tsx"]
 }

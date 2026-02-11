@@ -20,21 +20,16 @@ The Steps to Recovery design system has been consolidated and enhanced with a co
 
 ```typescript
 // Core components
-import { 
-  MD3Button, 
-  MD3Card, 
-  MD3Input, 
-  MD3LinearProgress 
-} from '@/design-system/components';
+import { MD3Button, MD3Card, MD3Input, MD3LinearProgress } from '@/design-system/components';
 
 // Recovery components
-import { 
-  StreakCounter, 
-  DailyCheckInCard, 
+import {
+  StreakCounter,
+  DailyCheckInCard,
   JournalEntryCard,
   StepProgressTracker,
   AchievementBadge,
-  CrisisFAB 
+  CrisisFAB,
 } from '@/design-system/components';
 
 // Or from recovery sub-path
@@ -57,39 +52,39 @@ import { useMotionPress, useConfetti } from '@/design-system/animations';
 ### Button Migration
 
 **Before (Legacy):**
+
 ```tsx
 import { Button } from '@/components/ui/Button';
 
 <Button variant="primary" onPress={handlePress}>
   Save Entry
-</Button>
+</Button>;
 ```
 
 **After (MD3):**
+
 ```tsx
 import { MD3Button } from '@/design-system/components';
 
-<MD3Button 
-  variant="filled" 
-  onPress={handlePress}
-  accessibilityLabel="Save journal entry"
->
+<MD3Button variant="filled" onPress={handlePress} accessibilityLabel="Save journal entry">
   Save Entry
-</MD3Button>
+</MD3Button>;
 ```
 
 ### Card Migration
 
 **Before (Legacy):**
+
 ```tsx
 import { Card } from '@/components/ui/Card';
 
 <Card className="p-4 rounded-lg">
   <Text>Content</Text>
-</Card>
+</Card>;
 ```
 
 **After (MD3):**
+
 ```tsx
 import { MD3Card, MD3CardContent } from '@/design-system/components';
 
@@ -97,7 +92,7 @@ import { MD3Card, MD3CardContent } from '@/design-system/components';
   <MD3CardContent>
     <Text>Content</Text>
   </MD3CardContent>
-</MD3Card>
+</MD3Card>;
 ```
 
 ---
@@ -116,7 +111,7 @@ import { StreakCounter } from '@/design-system/components/recovery';
   lastResetDate="2026-01-15"
   nextMilestone={60}
   onPress={() => navigation.navigate('StreakHistory')}
-/>
+/>;
 ```
 
 ### DailyCheckInCard
@@ -132,7 +127,7 @@ import { DailyCheckInCard } from '@/design-system/components/recovery';
   eveningReflection=""
   cravingLevel={3}
   onPress={() => openCheckInFlow()}
-/>
+/>;
 ```
 
 ### JournalEntryCard
@@ -150,7 +145,7 @@ import { JournalEntryCard } from '@/design-system/components/recovery';
   sharedWithSponsor={true}
   sponsorAvatar="https://..."
   onPress={() => openEntry('entry-123')}
-/>
+/>;
 ```
 
 ### StepProgressTracker
@@ -167,7 +162,7 @@ import { StepProgressTracker } from '@/design-system/components/recovery';
   ]}
   currentStep={2}
   onStepPress={(step) => navigateToStep(step)}
-/>
+/>;
 ```
 
 ### AchievementBadge
@@ -182,7 +177,7 @@ import { AchievementBadge } from '@/design-system/components/recovery';
   unlocked={true}
   unlockedDate={new Date('2026-02-10')}
   onUnlockAnimationComplete={() => playSound()}
-/>
+/>;
 ```
 
 ### CrisisFAB
@@ -191,11 +186,7 @@ import { AchievementBadge } from '@/design-system/components/recovery';
 import { CrisisFAB } from '@/design-system/components/recovery';
 
 // In your root layout or screen
-<CrisisFAB
-  onPress={() => openEmergencyKit()}
-  extended={true}
-  label="Safety Kit"
-/>
+<CrisisFAB onPress={() => openEmergencyKit()} extended={true} label="Safety Kit" />;
 ```
 
 **Critical**: CrisisFAB must be placed at the root level to be accessible from all screens.
@@ -211,12 +202,10 @@ import { useTheme } from '@/design-system/tokens';
 
 function MyComponent() {
   const { theme, isDark, toggleTheme } = useTheme('light');
-  
+
   return (
     <View style={{ backgroundColor: theme.surface }}>
-      <Text style={{ color: theme.onSurface }}>
-        Hello World
-      </Text>
+      <Text style={{ color: theme.onSurface }}>Hello World</Text>
       <Button onPress={toggleTheme} title="Toggle Theme" />
     </View>
   );
@@ -238,9 +227,7 @@ const easing = tokens.motion.easings.standard;
 
 // Reduced motion
 const isReducedMotion = useReducedMotion();
-const motion = isReducedMotion 
-  ? tokens.motion.reducedMotion 
-  : tokens.motion;
+const motion = isReducedMotion ? tokens.motion.reducedMotion : tokens.motion;
 ```
 
 ---
@@ -268,13 +255,9 @@ import { useReducedMotion } from '@/design-system/accessibility';
 
 function AnimatedComponent() {
   const reducedMotion = useReducedMotion();
-  
+
   return (
-    <Animated.View
-      entering={reducedMotion ? FadeIn : BounceIn}
-    >
-      {/* Content */}
-    </Animated.View>
+    <Animated.View entering={reducedMotion ? FadeIn : BounceIn}>{/* Content */}</Animated.View>
   );
 }
 ```
@@ -286,12 +269,12 @@ import { useA11yAnnouncer } from '@/design-system/accessibility';
 
 function MyComponent() {
   const { announce } = useA11yAnnouncer();
-  
+
   const handleSave = async () => {
     await saveEntry();
     announce('Journal entry saved and encrypted', 'success');
   };
-  
+
   return <Button onPress={handleSave} title="Save" />;
 }
 ```
@@ -308,11 +291,11 @@ import { useMotionPress, useConfetti } from '@/design-system/animations';
 function CelebrationButton() {
   const { animatedStyle, handlers } = useMotionPress();
   const { triggerConfetti } = useConfetti();
-  
+
   const handlePress = () => {
     triggerConfetti({ count: 20, colors: ['#D4A574', '#E8A89A'] });
   };
-  
+
   return (
     <Animated.View style={animatedStyle}>
       <MD3Button {...handlers} onPress={handlePress}>
@@ -390,6 +373,7 @@ Before deploying with new components:
 ### TypeScript Errors
 
 If you see `Cannot find module '@/design-system/components'`:
+
 - Ensure your `tsconfig.json` includes the path alias
 - Run `npx tsc --noEmit` to check for errors
 
@@ -414,6 +398,7 @@ If you see `Cannot find module '@/design-system/components'`:
 ## Support
 
 For questions or issues with the design system:
+
 1. Check this migration guide
 2. Review component documentation in source
 3. Consult the enhanced design plan: `docs/ENHANCED-DESIGN-PLAN.md`

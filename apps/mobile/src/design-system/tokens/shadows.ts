@@ -90,7 +90,7 @@ export const md3ShadowLevel5: ShadowStyle = Platform.select({
   ios: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.30,
+    shadowOpacity: 0.3,
     shadowRadius: 20,
   },
   android: { elevation: 5 },
@@ -115,7 +115,7 @@ export const md3ShadowLevel2Dark: ShadowStyle = Platform.select({
   ios: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.30,
+    shadowOpacity: 0.3,
     shadowRadius: 6,
   },
   android: { elevation: 2 },
@@ -137,7 +137,7 @@ export const md3ShadowLevel4Dark: ShadowStyle = Platform.select({
   ios: {
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.40,
+    shadowOpacity: 0.4,
     shadowRadius: 16,
   },
   android: { elevation: 4 },

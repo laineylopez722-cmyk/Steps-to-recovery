@@ -314,12 +314,13 @@ export function StepReviewScreen(): React.ReactElement {
     ({ item }: { item: ReviewItem }): React.ReactElement | null => {
       if (item.type === 'section') {
         return (
-          <View style={[styles.sectionHeader, { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle }]}>
-            <MaterialCommunityIcons
-              name="bookmark-outline"
-              size={20}
-              color={ds.colors.accent}
-            />
+          <View
+            style={[
+              styles.sectionHeader,
+              { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle },
+            ]}
+          >
+            <MaterialCommunityIcons name="bookmark-outline" size={20} color={ds.colors.accent} />
             <View style={styles.sectionHeaderContent}>
               <Text variant="labelLarge" style={{ color: ds.colors.textPrimary }}>
                 {item.title}
@@ -527,64 +528,65 @@ export function StepReviewScreen(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  centered: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 24,
-  },
-  content: {
-    paddingTop: 12,
-    paddingHorizontal: 16,
-    gap: 16,
-  },
-  header: {
-    paddingBottom: 16,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  progressBar: {
-    height: 8,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 10,
-    marginTop: 8,
-    borderWidth: 1,
-  },
-  sectionHeaderContent: {
-    marginLeft: 12,
-  },
-  questionCard: {
-    marginTop: 8,
-  },
-  questionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  questionNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-    marginTop: 2,
-  },
-  questionHeaderContent: {
-    flex: 1,
-  },
-  divider: {
-    marginVertical: 12,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    centered: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 24,
+    },
+    content: {
+      paddingTop: 12,
+      paddingHorizontal: 16,
+      gap: 16,
+    },
+    header: {
+      paddingBottom: 16,
+    },
+    summaryRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    progressBar: {
+      height: 8,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 12,
+      borderRadius: 10,
+      marginTop: 8,
+      borderWidth: 1,
+    },
+    sectionHeaderContent: {
+      marginLeft: 12,
+    },
+    questionCard: {
+      marginTop: 8,
+    },
+    questionHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    questionNumber: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+      marginTop: 2,
+    },
+    questionHeaderContent: {
+      flex: 1,
+    },
+    divider: {
+      marginVertical: 12,
+    },
+  }) as const;

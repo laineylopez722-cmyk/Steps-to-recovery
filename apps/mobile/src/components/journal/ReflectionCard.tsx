@@ -69,7 +69,8 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
         try {
           const decrypted = await decryptContent(entry.content);
           // Get first 120 characters
-          const truncated = decrypted.length > 120 ? decrypted.substring(0, 120) + '...' : decrypted;
+          const truncated =
+            decrypted.length > 120 ? decrypted.substring(0, 120) + '...' : decrypted;
           setExcerpt(truncated);
         } catch {
           setExcerpt('(Unable to decrypt content)');
@@ -136,9 +137,7 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
               </View>
               <View style={styles.emptyTextContainer}>
                 <Text style={styles.emptyTitle}>Look Back • {daysAgo} days ago</Text>
-                <Text style={styles.emptySubtitle}>
-                  No journal entry found from this time
-                </Text>
+                <Text style={styles.emptySubtitle}>No journal entry found from this time</Text>
                 <Text style={styles.emptyCta}>Write your first entry →</Text>
               </View>
             </View>
@@ -169,9 +168,7 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
             </View>
 
             <View style={styles.content}>
-              <Text style={styles.header}>
-                Look Back • {actualDaysAgo} days ago
-              </Text>
+              <Text style={styles.header}>Look Back • {actualDaysAgo} days ago</Text>
 
               {error ? (
                 <View style={styles.errorContainer}>

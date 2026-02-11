@@ -30,8 +30,8 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
     logger.info(`Event: ${eventName}`, properties);
   }
 
-  // TODO: Send to analytics service in production
-  // Sentry.captureMessage(eventName, { extra: properties });
+  // Analytics provider integration deferred to post-MVP.
+  // Current implementation logs events locally via logger for debugging.
 }
 
 /**

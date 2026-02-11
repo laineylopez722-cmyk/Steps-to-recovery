@@ -179,7 +179,8 @@
 ## Reference Pattern Example
 
 ### Before
-```markdown
+
+````markdown
 ## Encryption Implementation
 
 ```typescript
@@ -192,13 +193,16 @@ await db.runAsync('INSERT INTO ...');
 // Decrypt when reading
 const decrypted = await decryptContent(encrypted);
 ```
+````
 
 **Security Checklist:**
+
 - [ ] All sensitive data encrypted with encryptContent()
 - [ ] Encryption happens client-side
 - [ ] Keys stored in SecureStore
-...
-```
+      ...
+
+````
 
 ### After
 ```markdown
@@ -209,7 +213,9 @@ const decrypted = await decryptContent(encrypted);
 ```typescript
 // See: ../snippets/encryption-patterns.md
 const encryptedContent = await encryptContent(sensitiveData);
-```
+````
+
 ```
 
 **Space saved:** ~80 lines → 3 lines (96% reduction in this section)
+```

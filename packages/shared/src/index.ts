@@ -61,7 +61,6 @@ export type {
   StepProgress,
 } from '../types';
 
-
 // Explicit exports from constants to avoid naming conflicts
 export {
   TIME_MILESTONES,

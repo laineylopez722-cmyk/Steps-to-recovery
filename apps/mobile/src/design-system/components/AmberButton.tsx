@@ -1,6 +1,6 @@
 /**
  * AmberButton - Primary Action Button
- * 
+ *
  * Premium app quality with:
  * - 48px minimum touch target
  * - 12px border radius
@@ -122,15 +122,16 @@ export function AmberButton({
     width: fullWidth ? '100%' : undefined,
   };
 
-  const glowStyle: ViewStyle = glow && variant === 'solid'
-    ? {
-        shadowColor: aestheticColors.primary[500],
-        shadowOffset: { width: 0, height: 0 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
-        elevation: 6,
-      }
-    : {};
+  const glowStyle: ViewStyle =
+    glow && variant === 'solid'
+      ? {
+          shadowColor: aestheticColors.primary[500],
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.25,
+          shadowRadius: 16,
+          elevation: 6,
+        }
+      : {};
 
   return (
     <AnimatedPressable

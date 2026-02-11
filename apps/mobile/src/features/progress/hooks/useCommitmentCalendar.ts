@@ -47,7 +47,10 @@ function buildDateRange(): { startDate: string; endDate: string } {
   return { startDate: formatDate(start), endDate: formatDate(end) };
 }
 
-export function useCommitmentCalendar(year: number, month: number): {
+export function useCommitmentCalendar(
+  year: number,
+  month: number,
+): {
   calendarMonth: CalendarMonth | null;
   isLoading: boolean;
   error: Error | null;

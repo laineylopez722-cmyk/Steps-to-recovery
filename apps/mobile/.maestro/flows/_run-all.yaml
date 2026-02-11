@@ -7,7 +7,6 @@ tags:
   - all
 
 ---
-
 # Run all critical path tests in order
 - runFlow: onboarding.yaml
 - runFlow: login.yaml

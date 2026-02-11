@@ -266,4 +266,3 @@ export function useSponsorConnections(userId: string) {
     getSharedKey,
   };
 }
-

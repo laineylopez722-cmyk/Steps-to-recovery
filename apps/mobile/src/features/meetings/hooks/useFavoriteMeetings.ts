@@ -56,6 +56,7 @@ export function useFavoriteMeetings(): UseFavoriteMeetingsReturn {
       return favorites;
     },
     enabled: !!db && !!user,
+    staleTime: 30 * 60 * 1000, // 30 minutes - reference data, rarely changes
   });
 
   /**
@@ -254,4 +255,3 @@ export function useFavoriteMeetings(): UseFavoriteMeetingsReturn {
     getFavoriteNotes,
   };
 }
-

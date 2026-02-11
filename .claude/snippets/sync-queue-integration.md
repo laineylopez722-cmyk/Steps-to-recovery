@@ -13,7 +13,7 @@ import { addToSyncQueue, addDeleteToSyncQueue } from '@/services/syncService';
 const id = generateUUID();
 await db.runAsync(
   'INSERT INTO table_name (id, user_id, encrypted_content, created_at) VALUES (?, ?, ?, ?)',
-  [id, userId, encryptedContent, new Date().toISOString()]
+  [id, userId, encryptedContent, new Date().toISOString()],
 );
 
 // Queue for sync
@@ -24,10 +24,11 @@ await addToSyncQueue(db, 'table_name', id, 'insert');
 
 ```typescript
 // After updating a record, queue it for sync
-await db.runAsync(
-  'UPDATE table_name SET encrypted_content = ?, updated_at = ? WHERE id = ?',
-  [encryptedContent, new Date().toISOString(), id]
-);
+await db.runAsync('UPDATE table_name SET encrypted_content = ?, updated_at = ? WHERE id = ?', [
+  encryptedContent,
+  new Date().toISOString(),
+  id,
+]);
 
 // Queue for sync
 await addToSyncQueue(db, 'table_name', id, 'update');

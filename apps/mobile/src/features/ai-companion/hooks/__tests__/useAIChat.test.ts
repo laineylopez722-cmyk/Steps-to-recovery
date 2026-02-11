@@ -659,10 +659,7 @@ describe('useAIChat', () => {
       });
 
       await waitFor(() => {
-        expect(mockLogger.warn).toHaveBeenCalledWith(
-          'Memory extraction failed',
-          expect.any(Error),
-        );
+        expect(mockLogger.warn).toHaveBeenCalledWith('Memory extraction failed', expect.any(Error));
       });
     });
   });

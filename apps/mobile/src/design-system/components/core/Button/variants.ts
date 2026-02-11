@@ -1,7 +1,7 @@
 /**
  * Material Design 3 Button Variants
  * Using class-variance-authority for type-safe variant management
- * 
+ *
  * MD3 Button Types:
  * - Filled: High emphasis, primary actions
  * - Outlined: Medium emphasis, secondary actions

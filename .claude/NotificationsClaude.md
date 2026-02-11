@@ -6,10 +6,11 @@ Implement local notifications, daily reminders, and geofence-based meeting locat
 
 ## Target Files
 
-- `apps/mobile/src/features/notifications/setupNotifications.ts`
-- `apps/mobile/src/features/notifications/geofencing.ts`
-- `apps/mobile/src/features/notifications/taskDefinitions.ts`
-- `apps/mobile/src/utils/permissions.ts`
+- `apps/mobile/src/services/notificationService.ts` - Notification scheduling and management
+- `apps/mobile/src/lib/notifications.ts` - Notification utilities and configuration
+- `apps/mobile/src/types/notifications.ts` - Notification type definitions
+- `apps/mobile/src/features/settings/screens/NotificationSettingsScreen.tsx` - Notification preferences UI
+- Note: Permissions are handled inline in notification and location code (no separate permissions file)
 
 ## Requirements
 

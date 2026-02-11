@@ -48,6 +48,7 @@ WHAT NOT TO DO:
 ## Memory Schema Design
 
 ### Core Facts Table
+
 ```sql
 CREATE TABLE user_core_facts (
   id TEXT PRIMARY KEY,
@@ -60,6 +61,7 @@ CREATE TABLE user_core_facts (
 ```
 
 ### Conversation Memories Table
+
 ```sql
 CREATE TABLE conversation_memories (
   id TEXT PRIMARY KEY,
@@ -75,6 +77,7 @@ CREATE TABLE conversation_memories (
 ```
 
 ### Patterns Table
+
 ```sql
 CREATE TABLE detected_patterns (
   id TEXT PRIMARY KEY,
@@ -89,6 +92,7 @@ CREATE TABLE detected_patterns (
 ```
 
 ### Step Work Progress Table
+
 ```sql
 CREATE TABLE step_work_progress (
   id TEXT PRIMARY KEY,
@@ -110,22 +114,22 @@ CREATE TABLE step_work_progress (
 async function buildAIContext(userId: string, currentMessage: string) {
   // 1. Always include core facts
   const coreFacts = await getCoreFacts(userId);
-  
+
   // 2. Get recent conversation (last 10 messages)
   const recentChat = await getRecentMessages(userId, 10);
-  
+
   // 3. Search memories relevant to current message
   const relevantMemories = await semanticSearch(userId, currentMessage, 5);
-  
+
   // 4. Get detected patterns
   const patterns = await getPatterns(userId);
-  
+
   // 5. Get current mood/state if recent
   const currentState = await getLatestCheckin(userId);
-  
+
   // 6. Get step work status
   const stepProgress = await getStepProgress(userId);
-  
+
   // 7. Build context string
   return `
 ABOUT THIS PERSON:
@@ -136,13 +140,13 @@ ABOUT THIS PERSON:
 - Known triggers: ${coreFacts.triggers?.join(', ')}
 
 RECENT CONTEXT:
-${recentChat.map(m => `${m.role}: ${m.content}`).join('\n')}
+${recentChat.map((m) => `${m.role}: ${m.content}`).join('\n')}
 
 RELEVANT MEMORIES:
-${relevantMemories.map(m => `- ${m.content}`).join('\n')}
+${relevantMemories.map((m) => `- ${m.content}`).join('\n')}
 
 PATTERNS NOTICED:
-${patterns.map(p => `- ${p.description}`).join('\n')}
+${patterns.map((p) => `- ${p.description}`).join('\n')}
 
 CURRENT STATE:
 ${currentState ? `Mood: ${currentState.mood}, Energy: ${currentState.energy}` : 'No recent check-in'}
@@ -159,28 +163,30 @@ const outreachRules = [
   {
     condition: (user) => daysSinceCheckIn(user) >= 2,
     message: "Haven't heard from you in a couple days. How are you doing?",
-    priority: 'medium'
+    priority: 'medium',
   },
   {
     condition: (user) => isApproachingMilestone(user, 7), // 7 days before
     message: (user) => `${user.nextMilestone} is coming up. How do you want to celebrate?`,
-    priority: 'low'
+    priority: 'low',
   },
   {
     condition: (user) => detectIsolationPattern(user),
     message: "I've noticed you've been more quiet lately. Everything okay?",
-    priority: 'high'
+    priority: 'high',
   },
   {
     condition: (user) => isTriggerTime(user), // Based on detected patterns
-    message: (user) => `It's ${user.triggerTime}. Historically a tough time for you. How are you feeling?`,
-    priority: 'high'
+    message: (user) =>
+      `It's ${user.triggerTime}. Historically a tough time for you. How are you feeling?`,
+    priority: 'high',
   },
   {
     condition: (user) => daysSinceSponsorContact(user) >= 7,
-    message: "It's been a week since you mentioned talking to your sponsor. Might be worth a check-in?",
-    priority: 'medium'
-  }
+    message:
+      "It's been a week since you mentioned talking to your sponsor. Might be worth a check-in?",
+    priority: 'medium',
+  },
 ];
 ```
 
@@ -208,7 +214,7 @@ const crisisIndicators = {
 
 function assessCrisisLevel(message: string): 'immediate' | 'elevated' | 'monitoring' | 'normal' {
   const lowerMessage = message.toLowerCase();
-  
+
   if (crisisIndicators.immediate.some(k => lowerMessage.includes(k))) {
     return 'immediate';
   }
@@ -231,29 +237,33 @@ Before sending a response, check:
 ```typescript
 function qualityCheck(response: string, conversationHistory: Message[]): QualityIssue[] {
   const issues: QualityIssue[] = [];
-  
+
   // Check for repetition
   const recentResponses = conversationHistory
-    .filter(m => m.role === 'assistant')
+    .filter((m) => m.role === 'assistant')
     .slice(-3)
-    .map(m => m.content);
-  
+    .map((m) => m.content);
+
   if (hasSimilarPhrasing(response, recentResponses)) {
     issues.push({ type: 'repetition', severity: 'high' });
   }
-  
+
   // Check for over-validation
   const validationPhrases = ['I hear you', 'that sounds', 'that must be', 'I understand'];
-  if (validationPhrases.some(p => response.toLowerCase().includes(p))) {
+  if (validationPhrases.some((p) => response.toLowerCase().includes(p))) {
     issues.push({ type: 'over_validation', severity: 'medium' });
   }
-  
+
   // Check for rushing to advice
-  const lastUserMessage = conversationHistory.filter(m => m.role === 'user').pop();
-  if (lastUserMessage?.sentiment === 'struggling' && containsAdvice(response) && response.length < 200) {
+  const lastUserMessage = conversationHistory.filter((m) => m.role === 'user').pop();
+  if (
+    lastUserMessage?.sentiment === 'struggling' &&
+    containsAdvice(response) &&
+    response.length < 200
+  ) {
     issues.push({ type: 'rushed_advice', severity: 'medium' });
   }
-  
+
   return issues;
 }
 ```
@@ -263,8 +273,9 @@ function qualityCheck(response: string, conversationHistory: Message[]): Quality
 ## Example Conversation Flows
 
 ### First Time User
+
 ```
-AI: "Hey. I'm here whenever you need to talk - no judgment, just support. 
+AI: "Hey. I'm here whenever you need to talk - no judgment, just support.
      What brings you to recovery?"
 
 User: "I've been using ice for 3 years. I need to stop."
@@ -275,29 +286,31 @@ AI: "Three years is a long time. What made today the day you decided to do somet
 ```
 
 ### Returning User (Day 14)
+
 ```
 AI: "Two weeks today. How are you feeling?"
 
 User: "Like shit. No energy. Everything is flat."
 
-AI: "Yeah, that's the brutal part with ice - your brain's basically running on empty 
+AI: "Yeah, that's the brutal part with ice - your brain's basically running on empty
      while it figures out how to work again. The flat feeling isn't permanent though.
-     
+
      You sleeping okay, or is that part of it too?"
 
 [Reference: knows their drug, knows timeline, doesn't lecture]
 ```
 
 ### Crisis Moment
+
 ```
 User: "I bought a bag. It's in my car."
 
 AI: "Okay. You haven't used it yet - that matters.
-     
+
      Can you get away from the car right now? Go inside, anywhere else.
-     
+
      [📞 Call Mike]
-     
+
      What happened tonight? I'm not going anywhere."
 
 [Detected: crisis level immediate, prioritize safety, offer sponsor contact, stay present]

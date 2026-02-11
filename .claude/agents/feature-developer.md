@@ -32,6 +32,7 @@ Reference `_common-patterns.md` for project standards.
 ## Code Templates
 
 > **Reference**: For detailed patterns, see:
+>
 > - [TypeScript Patterns](../snippets/typescript-patterns.md) - Component props, interfaces
 > - [Encryption Patterns](../snippets/encryption-patterns.md) - Data encryption/decryption
 > - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Cloud backup integration
@@ -55,23 +56,23 @@ export function [Component]({ [prop] }: [Component]Props): React.ReactElement {
 
   const handleAction = useCallback(async () => {
     if (!db) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // See: ../snippets/encryption-patterns.md for encryption usage
       const id = generateUUID();
       const encryptedContent = await encryptContent(sensitiveData);
-      
+
       await db.runAsync(
         'INSERT INTO table_name (id, user_id, encrypted_content, created_at) VALUES (?, ?, ?, ?)',
         [id, userId, encryptedContent, new Date().toISOString()]
       );
-      
+
       // See: ../snippets/sync-queue-integration.md for sync patterns
       await addToSyncQueue(db, 'table_name', id, 'insert');
-      
+
       logger.info('[Feature] created', { id });
     } catch (err) {
       // See: ../snippets/typescript-patterns.md for error handling
@@ -122,13 +123,13 @@ interface [Feature] {
     queryKey: ['feature', userId],
     queryFn: async () => {
       if (!db) return [];
-      
+
       try {
         const rows = await db.getAllAsync<[Feature]Row>(
           'SELECT id, encrypted_content, created_at FROM table_name WHERE user_id = ? ORDER BY created_at DESC',
           [userId]
         );
-        
+
         // Decrypt in parallel (see: ../snippets/encryption-patterns.md)
         return Promise.all(
           rows.map(async (row) => ({
@@ -161,6 +162,7 @@ interface [Feature] {
 ```
 
 ### Component with Accessibility
+
 ```typescript
 interface Props {
   onSave: (data: Data) => void;
@@ -194,6 +196,7 @@ export function Component({ onSave }: Props): React.ReactElement {
 ## Security Checklist
 
 Before completing feature:
+
 - [ ] Sensitive fields encrypted with `encryptContent()`
 - [ ] No plain text in SQLite or AsyncStorage
 - [ ] Writes added to sync queue

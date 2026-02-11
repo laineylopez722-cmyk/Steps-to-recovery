@@ -16,6 +16,7 @@ export interface RuntimeThemeOverrides {
  *
  * NOTE: this is intentionally minimal for rollout safety.
  * TODO(rollout): expand shape once backend contract is finalized.
+ * Remote config integration deferred to Phase 3+.
  */
 export interface UserRuntimeTheme {
   schemaVersion: number;
@@ -35,6 +36,7 @@ export interface RuntimeThemeResolverOptions {
   isDark: boolean;
   /**
    * TODO(flags): wire to remote config / experiment assignment.
+   * Remote config integration deferred to Phase 3+.
    */
   runtimeThemeEnabled?: boolean;
 }

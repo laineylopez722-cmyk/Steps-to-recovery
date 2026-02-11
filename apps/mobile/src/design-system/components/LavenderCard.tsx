@@ -1,6 +1,6 @@
 /**
  * LavenderCard - Mindfulness & Reflection
- * 
+ *
  * iOS-style card with subtle purple accent
  * Clean design, no blur/glass effects
  */
@@ -45,13 +45,13 @@ export function LavenderCard({
           {title && <Text style={styles.title}>{title}</Text>}
         </View>
       )}
-      
+
       {quote && (
         <View style={styles.quoteContainer}>
           <Text style={styles.quote}>"{quote}"</Text>
         </View>
       )}
-      
+
       {description && <Text style={styles.description}>{description}</Text>}
       {children}
     </View>

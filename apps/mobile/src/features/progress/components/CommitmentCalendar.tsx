@@ -22,6 +22,7 @@ import { GlassCard } from '../../../design-system';
 import { useTheme } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useCommitmentCalendar, formatDate } from '../hooks/useCommitmentCalendar';
 import { DayDetailModal } from './DayDetailModal';
@@ -34,14 +35,24 @@ interface CommitmentCalendarProps {
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
 ];
 
 function getActivityColor(level: ActivityLevel): string {
   switch (level) {
     case 'none':
-      return 'rgba(255, 255, 255, 0.04)';
+      return ds.colors.borderSubtle;
     case 'low':
       return 'rgba(50, 215, 75, 0.25)';
     case 'medium':
@@ -142,9 +153,7 @@ export function CommitmentCalendar({ userId }: CommitmentCalendarProps): React.R
           size={20}
           color={aestheticColors.primary[500]}
         />
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Commitment Calendar
-        </Text>
+        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Commitment Calendar</Text>
       </View>
 
       <GlassCard intensity="card" style={styles.card}>
@@ -157,11 +166,7 @@ export function CommitmentCalendar({ userId }: CommitmentCalendarProps): React.R
             accessibilityRole="button"
             hitSlop={8}
           >
-            <MaterialCommunityIcons
-              name="chevron-left"
-              size={28}
-              color={theme.colors.text}
-            />
+            <MaterialCommunityIcons name="chevron-left" size={28} color={theme.colors.text} />
           </Pressable>
 
           <Text
@@ -231,9 +236,7 @@ export function CommitmentCalendar({ userId }: CommitmentCalendarProps): React.R
                       style={[
                         styles.dayCell,
                         {
-                          backgroundColor: isFuture
-                            ? 'transparent'
-                            : getActivityColor(level),
+                          backgroundColor: isFuture ? 'transparent' : getActivityColor(level),
                           borderRadius: getShapeIndicator(level),
                         },
                         isToday && styles.todayBorder,
@@ -264,9 +267,10 @@ export function CommitmentCalendar({ userId }: CommitmentCalendarProps): React.R
                           style={[
                             styles.activityDot,
                             {
-                              backgroundColor: level === 'excellent'
-                                ? aestheticColors.dark.background
-                                : aestheticColors.success.DEFAULT,
+                              backgroundColor:
+                                level === 'excellent'
+                                  ? aestheticColors.dark.background
+                                  : aestheticColors.success.DEFAULT,
                             },
                           ]}
                         />
@@ -299,11 +303,7 @@ export function CommitmentCalendar({ userId }: CommitmentCalendarProps): React.R
         </View>
       </GlassCard>
 
-      <DayDetailModal
-        visible={modalVisible}
-        onClose={handleCloseModal}
-        day={selectedDay}
-      />
+      <DayDetailModal visible={modalVisible} onClose={handleCloseModal} day={selectedDay} />
     </Animated.View>
   );
 }

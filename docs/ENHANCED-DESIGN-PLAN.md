@@ -13,14 +13,14 @@
 
 The original design plan (`dazzling-watching-lecun.md`) provides a comprehensive aesthetic vision but contains **significant architectural gaps** that would cause production failures:
 
-| Aspect | Original Plan Grade | Issues Identified |
-|--------|--------------------|--------------------|
-| Visual Design | A+ | Excellent MD3 warm palette, strong emotional resonance |
-| Animation Strategy | C+ | No performance budgets, missing reduced-motion architecture |
-| Accessibility | B | WCAG AAA claimed but no testing strategy defined |
-| Component Dependencies | C | Sequential phases ignore parallelization opportunities |
-| Risk Mitigation | D | No failure modes considered for crisis scenarios |
-| Expo-Specific Considerations | C- | Missing SecureStore limitations, haptics fallbacks |
+| Aspect                       | Original Plan Grade | Issues Identified                                           |
+| ---------------------------- | ------------------- | ----------------------------------------------------------- |
+| Visual Design                | A+                  | Excellent MD3 warm palette, strong emotional resonance      |
+| Animation Strategy           | C+                  | No performance budgets, missing reduced-motion architecture |
+| Accessibility                | B                   | WCAG AAA claimed but no testing strategy defined            |
+| Component Dependencies       | C                   | Sequential phases ignore parallelization opportunities      |
+| Risk Mitigation              | D                   | No failure modes considered for crisis scenarios            |
+| Expo-Specific Considerations | C-                  | Missing SecureStore limitations, haptics fallbacks          |
 
 ### 1.2 Key Enhancements Made
 
@@ -61,6 +61,7 @@ The original design plan (`dazzling-watching-lecun.md`) provides a comprehensive
 **CRITICAL PATH - Must complete before any UI work**
 
 #### Week 1-2: Design Tokens & Theming Infrastructure
+
 ```typescript
 // PRIORITY 1: Token Consolidation (Day 1-2)
 // CRITICAL: Merge existing token systems into unified architecture
@@ -75,6 +76,7 @@ src/design-system/tokens/
 ```
 
 **Tasks**:
+
 1. **Consolidate Color Tokens** (2 days)
    - Merge `md3Colors` + `lightColors` + Tailwind navy scale
    - Create unified token system with proper TypeScript types
@@ -96,6 +98,7 @@ src/design-system/tokens/
    - Manual override persistence (AsyncStorage, not SecureStore)
 
 #### Week 2-3: Core Component Library
+
 ```typescript
 // PRIORITY 2: Core Components (Days 3-10)
 // Build from atoms up - every component must have accessibility props
@@ -113,24 +116,25 @@ src/design-system/components/core/
 
 **Component Implementation Order** (by dependency):
 
-| Priority | Component | Dependencies | Effort | Owner |
-|----------|-----------|--------------|--------|-------|
-| P0 | Button | ThemeProvider | 4h | Team A |
-| P0 | Text (MD3) | Typography | 2h | Team A |
-| P0 | Card | ThemeProvider | 3h | Team A |
-| P1 | Input | Button, Text | 4h | Team A |
-| P1 | Progress | Reanimated | 6h | Team B |
-| P1 | BottomNav | Button | 8h | Team B |
-| P2 | Dialog | Card, Button | 6h | Team B |
-| P2 | BottomSheet | Reanimated | 12h | Team B |
+| Priority | Component   | Dependencies  | Effort | Owner  |
+| -------- | ----------- | ------------- | ------ | ------ |
+| P0       | Button      | ThemeProvider | 4h     | Team A |
+| P0       | Text (MD3)  | Typography    | 2h     | Team A |
+| P0       | Card        | ThemeProvider | 3h     | Team A |
+| P1       | Input       | Button, Text  | 4h     | Team A |
+| P1       | Progress    | Reanimated    | 6h     | Team B |
+| P1       | BottomNav   | Button        | 8h     | Team B |
+| P2       | Dialog      | Card, Button  | 6h     | Team B |
+| P2       | BottomSheet | Reanimated    | 12h    | Team B |
 
 **Accessibility Requirements Per Component**:
+
 ```typescript
 interface AccessibleComponentProps {
-  accessibilityLabel: string;           // REQUIRED
+  accessibilityLabel: string; // REQUIRED
   accessibilityRole: AccessibilityRole; // REQUIRED
   accessibilityState?: AccessibilityState;
-  accessibilityHint?: string;           // For non-obvious actions
+  accessibilityHint?: string; // For non-obvious actions
   accessibilityValue?: AccessibilityValue; // For progress, sliders
 }
 ```
@@ -140,6 +144,7 @@ interface AccessibleComponentProps {
 **Parallel to Track 1, starts after P0 components ready**
 
 #### Week 2-3: Data Visualization Components
+
 ```typescript
 // PRIORITY 3: Charts & Counters (Days 8-14)
 // Performance-critical: Use Reanimated, minimize re-renders
@@ -160,18 +165,19 @@ src/design-system/components/recovery/
 ```
 
 **Streak Counter - Performance Specifications**:
+
 ```typescript
 // Ring Animation Performance Budget
 const RING_ANIMATION_CONFIG = {
   // Target: 60fps on all devices
-  duration: 1500,           // 1.5s for full ring
-  worklet: true,            // Run on UI thread
+  duration: 1500, // 1.5s for full ring
+  worklet: true, // Run on UI thread
   // Fallback for low-end devices (<4GB RAM)
   lowEndDevice: {
-    duration: 500,          // Faster, simpler animation
-    disableGradient: true,  // Solid color only
-    skipConfetti: true,     // Static celebration
-  }
+    duration: 500, // Faster, simpler animation
+    disableGradient: true, // Solid color only
+    skipConfetti: true, // Static celebration
+  },
 };
 
 // Memory budget: Max 50MB for celebration animation
@@ -179,6 +185,7 @@ const MEMORY_LIMIT = 50 * 1024 * 1024; // 50MB
 ```
 
 #### Week 3-4: Micro-Interactions & Delight
+
 ```typescript
 // PRIORITY 4: Micro-Interactions (Days 15-21)
 // All interactions must respect reduced-motion preference
@@ -191,6 +198,7 @@ src/design-system/animations/
 ```
 
 **Haptic Pattern Library**:
+
 ```typescript
 export const hapticPatterns = {
   // Daily check-in completion
@@ -200,7 +208,7 @@ export const hapticPatterns = {
     await delay(50);
     await hapticLight();
   },
-  
+
   // Milestone celebration (3-pulse sequence)
   milestone: async () => {
     if (await isReducedMotionEnabled()) {
@@ -213,13 +221,14 @@ export const hapticPatterns = {
     await delay(100);
     await hapticSuccess();
   },
-  
+
   // Crisis kit - NO haptics (avoid startling user)
   crisis: () => Promise.resolve(),
 };
 ```
 
 #### Week 4-5: Emergency/Crisis Components
+
 ```typescript
 // PRIORITY 5: Crisis Experience (Days 22-28)
 // LIFE-CRITICAL: Sub-100ms response, maximum accessibility
@@ -238,17 +247,18 @@ src/features/crisis/
 ```
 
 **Crisis FAB - Critical Requirements**:
+
 ```typescript
 interface CrisisFABProps {
   // Position configurable (user may have motor control preferences)
   position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
-  
+
   // Always visible - never hide behind other content
-  zIndex: 999,
-  
+  zIndex: 999;
+
   // Instant response - no animation delay
-  onPress: () => void,  // Direct navigation, no animation
-  
+  onPress: () => void; // Direct navigation, no animation
+
   // Reduced motion: Static, no pulse
   // Normal: Subtle pulse (every 10s, max 3 times)
 }
@@ -265,6 +275,7 @@ useEffect(() => {
 ### 2.4 Track 3: Navigation & Screens (Weeks 3-5)
 
 #### Week 3-4: Core Screen Implementation
+
 ```typescript
 // PRIORITY 6: Screen Migration (Days 15-28)
 // Migrate existing screens to new design system
@@ -284,6 +295,7 @@ src/features/
 ```
 
 **Screen Migration Strategy**:
+
 1. **Wrapper Approach**: Create new screen shells using design system
 2. **Component Swapping**: Replace old components incrementally
 3. **Feature Flags**: Allow rollback if issues arise
@@ -291,6 +303,7 @@ src/features/
 ### 2.5 Track 4: Accessibility & Testing (Weeks 4-6)
 
 #### Week 4-5: Accessibility Implementation
+
 ```typescript
 // PRIORITY 7: WCAG AAA Compliance (Days 22-35)
 
@@ -305,18 +318,19 @@ src/design-system/accessibility/
 
 **Accessibility Checklist**:
 
-| Requirement | Implementation | Testing Method |
-|-------------|---------------|----------------|
-| Touch Targets ≥48dp | Style enforcement | Visual inspection + Maestro |
-| Contrast ≥7:1 | Color token validation | Automated contrast check |
-| Reduced Motion | useReducedMotion hook | Device settings toggle |
-| Screen Reader | All components labeled | TalkBack on Android |
-| High Contrast | Theme variant | Toggle in settings |
-| Large Text | Dynamic type scaling | System font size 200% |
-| Color Blindness | Never color-only indicators | Simulator testing |
-| Keyboard Navigation | Tab order, focus states | External keyboard test |
+| Requirement         | Implementation              | Testing Method              |
+| ------------------- | --------------------------- | --------------------------- |
+| Touch Targets ≥48dp | Style enforcement           | Visual inspection + Maestro |
+| Contrast ≥7:1       | Color token validation      | Automated contrast check    |
+| Reduced Motion      | useReducedMotion hook       | Device settings toggle      |
+| Screen Reader       | All components labeled      | TalkBack on Android         |
+| High Contrast       | Theme variant               | Toggle in settings          |
+| Large Text          | Dynamic type scaling        | System font size 200%       |
+| Color Blindness     | Never color-only indicators | Simulator testing           |
+| Keyboard Navigation | Tab order, focus states     | External keyboard test      |
 
 #### Week 5-6: Testing & QA
+
 ```typescript
 // Testing Strategy
 
@@ -390,12 +404,14 @@ RECOVERY COMPONENTS (Parallelizable after Core)
 ### Critical Path Analysis
 
 **Longest Path (Critical Path)**: 21 days
+
 ```
-ThemeProvider → Colors → Typography → Text → Button → Card → 
+ThemeProvider → Colors → Typography → Text → Button → Card →
 CheckInCard → Home Screen Integration → E2E Testing
 ```
 
 **Parallelizable Workstreams** (start after Foundation):
+
 1. **Data Visualization Track**: Progress → StreakCounter → StepTracker (5 days)
 2. **Journal Track**: Card → List → Editor (6 days)
 3. **Crisis Track**: FAB → BottomSheet → Crisis Components (7 days)
@@ -407,13 +423,13 @@ CheckInCard → Home Screen Integration → E2E Testing
 
 ### 4.1 Animation Engine: Reanimated 3 vs Animated API
 
-| Criteria | Reanimated 3 | Animated API | Decision |
-|----------|--------------|--------------|----------|
-| Performance | 60fps guaranteed (UI thread) | Risk of frame drops (JS thread) | ✅ Reanimated 3 |
-| Gesture Integration | Native gesture-handler | Manual gesture handling | ✅ Reanimated 3 |
-| Bundle Size | +150KB | Built-in | ⚠️ Accept cost |
-| Learning Curve | Worklets concept | Familiar API | ⚠️ Training needed |
-| Reduced Motion | Manual implementation | Manual implementation | Equal |
+| Criteria            | Reanimated 3                 | Animated API                    | Decision           |
+| ------------------- | ---------------------------- | ------------------------------- | ------------------ |
+| Performance         | 60fps guaranteed (UI thread) | Risk of frame drops (JS thread) | ✅ Reanimated 3    |
+| Gesture Integration | Native gesture-handler       | Manual gesture handling         | ✅ Reanimated 3    |
+| Bundle Size         | +150KB                       | Built-in                        | ⚠️ Accept cost     |
+| Learning Curve      | Worklets concept             | Familiar API                    | ⚠️ Training needed |
+| Reduced Motion      | Manual implementation        | Manual implementation           | Equal              |
 
 **Verdict**: Reanimated 3 for all animations. Budget 150KB bundle increase.
 
@@ -423,32 +439,32 @@ CheckInCard → Home Screen Integration → E2E Testing
 // Haptic availability matrix
 const HAPTIC_SUPPORT = {
   iOS: {
-    allDevices: true,           // Taptic Engine on all modern iOS
-    quality: 'excellent',       // Precise, nuanced feedback
+    allDevices: true, // Taptic Engine on all modern iOS
+    quality: 'excellent', // Precise, nuanced feedback
   },
   Android: {
-    API29_plus: true,           // HapticGenerator API
-    API28_minus: 'degraded',    // Basic vibration only
-    quality: 'variable',        // Highly device-dependent
-  }
+    API29_plus: true, // HapticGenerator API
+    API28_minus: 'degraded', // Basic vibration only
+    quality: 'variable', // Highly device-dependent
+  },
 };
 
 // Implementation strategy
-export async function safeHaptic(
-  style: 'light' | 'medium' | 'heavy'
-): Promise<void> {
+export async function safeHaptic(style: 'light' | 'medium' | 'heavy'): Promise<void> {
   try {
     // Check if haptics available (not web/simulator)
     if (Platform.OS === 'web') return;
-    
+
     // Check reduced motion preference
     const reducedMotion = await AccessibilityInfo.isReduceMotionEnabled?.();
     if (reducedMotion) return;
-    
+
     await impactAsync(
-      style === 'light' ? ImpactFeedbackStyle.Light :
-      style === 'heavy' ? ImpactFeedbackStyle.Heavy :
-      ImpactFeedbackStyle.Medium
+      style === 'light'
+        ? ImpactFeedbackStyle.Light
+        : style === 'heavy'
+          ? ImpactFeedbackStyle.Heavy
+          : ImpactFeedbackStyle.Medium,
     );
   } catch {
     // Graceful degradation: Silently fail
@@ -460,36 +476,38 @@ export async function safeHaptic(
 ### 4.3 SecureStore: Key Storage with Backup Strategy
 
 **Critical Issue**: expo-secure-store has documented limitations:
+
 - Android: KeyStore failures on ~0.3% of devices (mostly Xiaomi, Huawei)
 - Key loss on app reinstall (expected behavior)
 - No cloud backup (by design for security)
 
 **Recommended Architecture**:
+
 ```typescript
 // Multi-tier key storage with graceful degradation
 export class EncryptionKeyManager {
   private primaryStore = SecureStore;
   private fallbackStore = AsyncStorage; // For key metadata only
-  
+
   async getOrCreateKey(): Promise<string> {
     try {
       // Tier 1: SecureStore
       const key = await this.primaryStore.getItemAsync('encryption_key');
       if (key) return key;
-      
+
       // Generate new key
       const newKey = await generateSecureKey();
       await this.primaryStore.setItemAsync('encryption_key', newKey);
-      
+
       // Store key hash in AsyncStorage for corruption detection
       const keyHash = await hashKey(newKey);
       await this.fallbackStore.setItem('key_hash', keyHash);
-      
+
       return newKey;
     } catch (secureStoreError) {
       // Tier 2: Fallback for SecureStore failures
       logger.error('SecureStore failed, using fallback', secureStoreError);
-      
+
       // Check if we have a cached key (less secure, but functional)
       const cachedKey = await this.fallbackStore.getItem('encryption_key_fallback');
       if (cachedKey) {
@@ -497,12 +515,12 @@ export class EncryptionKeyManager {
         EventEmitter.emit('SECURITY_DEGRADED');
         return cachedKey;
       }
-      
+
       // Generate temporary key (will prompt user to regenerate)
       const tempKey = await generateSecureKey();
       throw new EncryptionKeyError(
         'SECURE_STORE_UNAVAILABLE',
-        'Please regenerate your encryption key in Settings'
+        'Please regenerate your encryption key in Settings',
       );
     }
   }
@@ -511,17 +529,18 @@ export class EncryptionKeyManager {
 
 ### 4.4 Dark Mode: CSS Variables vs Context
 
-| Approach | Pros | Cons | Decision |
-|----------|------|------|----------|
-| CSS Variables (NativeWind) | Instant switch, no re-render | Limited dynamic logic | ⚠️ Partial use |
-| React Context | Full control, transitions | Re-renders entire tree | ✅ Primary |
-| System Preference | Native feel | Less control | ✅ Default |
+| Approach                   | Pros                         | Cons                   | Decision       |
+| -------------------------- | ---------------------------- | ---------------------- | -------------- |
+| CSS Variables (NativeWind) | Instant switch, no re-render | Limited dynamic logic  | ⚠️ Partial use |
+| React Context              | Full control, transitions    | Re-renders entire tree | ✅ Primary     |
+| System Preference          | Native feel                  | Less control           | ✅ Default     |
 
 **Hybrid Approach**:
+
 ```typescript
 // ThemeContext for semantic colors
 const ThemeContext = createContext({
-  colors: md3Colors,           // Full color object
+  colors: md3Colors, // Full color object
   isDark: false,
   setTheme: () => {},
 });
@@ -538,6 +557,7 @@ const ThemeContext = createContext({
 **Decision**: Stay with React Navigation 7
 
 **Rationale**:
+
 - Expo Router would require complete rewrite
 - React Navigation 7 has excellent TypeScript support
 - Native Stack Navigator provides native performance
@@ -551,44 +571,46 @@ const ThemeContext = createContext({
 
 ### 5.1 Critical Risks (Project Failure Possible)
 
-| ID | Risk | Probability | Impact | Mitigation |
-|----|------|-------------|--------|------------|
-| R1 | **Android Low-End Performance** | High | Critical | Frame-rate detection, simplified animations |
-| R2 | **SecureStore Key Loss** | Medium | Critical | Backup strategy, user education |
-| R3 | **Crisis Kit Inaccessible** | Low | Life-Threatening | Dedicated error boundary, always-on-top FAB |
-| R4 | **Screen Reader Breaking** | Medium | High | Dedicated QA track, TalkBack testing |
-| R5 | **Reanimated 3 Crashes** | Low | High | Fallback to Animated API |
-| R6 | **Bundle Size Exceeding 50MB** | Medium | Medium | Code splitting, tree shaking |
+| ID  | Risk                            | Probability | Impact           | Mitigation                                  |
+| --- | ------------------------------- | ----------- | ---------------- | ------------------------------------------- |
+| R1  | **Android Low-End Performance** | High        | Critical         | Frame-rate detection, simplified animations |
+| R2  | **SecureStore Key Loss**        | Medium      | Critical         | Backup strategy, user education             |
+| R3  | **Crisis Kit Inaccessible**     | Low         | Life-Threatening | Dedicated error boundary, always-on-top FAB |
+| R4  | **Screen Reader Breaking**      | Medium      | High             | Dedicated QA track, TalkBack testing        |
+| R5  | **Reanimated 3 Crashes**        | Low         | High             | Fallback to Animated API                    |
+| R6  | **Bundle Size Exceeding 50MB**  | Medium      | Medium           | Code splitting, tree shaking                |
 
 ### 5.2 Risk Mitigation Strategies
 
 #### R1: Android Low-End Performance
 
 **Detection**:
+
 ```typescript
 // Performance monitoring hook
 export function useDevicePerformance() {
   const [performanceClass, setPerformanceClass] = useState<'high' | 'medium' | 'low'>('high');
-  
+
   useEffect(() => {
     // Detect RAM
     const ram = DeviceInfo.getTotalMemorySync?.() || 4 * 1024 * 1024 * 1024;
-    
+
     // Detect API level
     const apiLevel = Platform.Version;
-    
+
     if (ram < 3 * 1024 * 1024 * 1024 || apiLevel < 28) {
       setPerformanceClass('low');
     } else if (ram < 4 * 1024 * 1024 * 1024) {
       setPerformanceClass('medium');
     }
   }, []);
-  
+
   return performanceClass;
 }
 ```
 
 **Adaptive Animations**:
+
 ```typescript
 const AnimationConfig = {
   high: { duration: 500, useSpring: true, confetti: true },
@@ -600,22 +622,23 @@ const AnimationConfig = {
 #### R3: Crisis Kit Inaccessibility
 
 **Emergency Error Boundary**:
+
 ```typescript
 class CrisisErrorBoundary extends React.Component {
   state = { hasError: false };
-  
+
   static getDerivedStateFromError() {
     return { hasError: true };
   }
-  
+
   componentDidCatch(error: Error) {
     // Log to Sentry
     Sentry.captureException(error);
-    
+
     // Ensure crisis FAB remains accessible
     EventEmitter.emit('CRISIS_SYSTEM_DEGRADED');
   }
-  
+
   render() {
     if (this.state.hasError) {
       // Render minimal crisis button that always works
@@ -628,12 +651,12 @@ class CrisisErrorBoundary extends React.Component {
 
 ### 5.3 Risk Triggers & Escalation
 
-| Trigger | Action | Escalation |
-|---------|--------|------------|
-| Crash rate >1% in crisis flow | Immediate rollback | CTO within 1 hour |
+| Trigger                               | Action             | Escalation                        |
+| ------------------------------------- | ------------------ | --------------------------------- |
+| Crash rate >1% in crisis flow         | Immediate rollback | CTO within 1 hour                 |
 | Screen reader unusable on key screens | Pause feature work | Accessibility lead within 4 hours |
-| Animation FPS <30 on target devices | Disable animations | Engineering lead within 1 day |
-| Key loss rate >0.5% | Emergency fix | CTO within 4 hours |
+| Animation FPS <30 on target devices   | Disable animations | Engineering lead within 1 day     |
+| Key loss rate >0.5%                   | Emergency fix      | CTO within 4 hours                |
 
 ---
 
@@ -674,23 +697,26 @@ class CrisisErrorBoundary extends React.Component {
     "plugins": [
       // Required for Reanimated 3
       ["react-native-reanimated/plugin"],
-      
+
       // Haptics
       ["expo-haptics"],
-      
+
       // SecureStore
       ["expo-secure-store"],
-      
+
       // Font loading
-      ["expo-font", {
-        "fonts": [
-          "./assets/fonts/Roboto-Regular.ttf",
-          "./assets/fonts/Roboto-Medium.ttf",
-          "./assets/fonts/Roboto-Bold.ttf"
-        ]
-      }]
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Roboto-Regular.ttf",
+            "./assets/fonts/Roboto-Medium.ttf",
+            "./assets/fonts/Roboto-Bold.ttf"
+          ]
+        }
+      ]
     ],
-    
+
     // Android-specific
     "android": {
       "adaptiveIcon": {
@@ -698,9 +724,7 @@ class CrisisErrorBoundary extends React.Component {
         "backgroundColor": "#6B9B8D"
       },
       // Request haptic permission on Android
-      "permissions": [
-        "VIBRATE"
-      ]
+      "permissions": ["VIBRATE"]
     }
   }
 }
@@ -709,29 +733,31 @@ class CrisisErrorBoundary extends React.Component {
 ### 6.3 Expo SecureStore Limitations & Workarounds
 
 **Limitation 1: 2048 Character Limit**
+
 ```typescript
 // For large values, chunk storage
 async function storeLargeValue(key: string, value: string): Promise<void> {
   const chunkSize = 2000;
   const chunks = Math.ceil(value.length / chunkSize);
-  
+
   for (let i = 0; i < chunks; i++) {
     const chunk = value.slice(i * chunkSize, (i + 1) * chunkSize);
     await SecureStore.setItemAsync(`${key}_chunk_${i}`, chunk);
   }
-  
+
   await SecureStore.setItemAsync(`${key}_chunks`, String(chunks));
 }
 ```
 
 **Limitation 2: No Cloud Backup**
+
 ```typescript
 // User-facing backup warning
 export function BackupReminder() {
   const { showBackupReminder } = useSettings();
-  
+
   if (!showBackupReminder) return null;
-  
+
   return (
     <AlertBanner
       type="info"
@@ -747,11 +773,13 @@ export function BackupReminder() {
 **Strategy**: Design system changes require full build (not OTA)
 
 **Rationale**:
+
 - Color/token changes can break accessibility
 - Animation changes need performance testing
 - Font changes require binary update
 
 **Implementation**:
+
 ```typescript
 // Version gate design system features
 const MIN_DESIGN_SYSTEM_VERSION = '2.0.0';
@@ -759,7 +787,7 @@ const MIN_DESIGN_SYSTEM_VERSION = '2.0.0';
 export function useDesignSystem() {
   const appVersion = Constants.expoConfig?.version;
   const isEnabled = compareVersions(appVersion, MIN_DESIGN_SYSTEM_VERSION) >= 0;
-  
+
   return {
     useNewComponents: isEnabled,
     // Fallback to legacy components if needed
@@ -770,6 +798,7 @@ export function useDesignSystem() {
 ### 6.5 Development Client vs Production
 
 **Development**:
+
 ```bash
 # Use development client for fast iteration
 npm run android:dev
@@ -777,6 +806,7 @@ npm run ios:dev
 ```
 
 **Production Testing**:
+
 ```bash
 # Build preview for QA
 eas build --profile preview --platform android
@@ -789,14 +819,14 @@ eas build --profile preview --platform android
 
 **Required Device Matrix**:
 
-| Device | OS | RAM | Purpose |
-|--------|-----|-----|---------|
-| iPhone 14 Pro | iOS 17 | 6GB | Reference performance |
-| iPhone SE (2020) | iOS 17 | 3GB | Low-end iOS |
-| Samsung S23 | Android 14 | 8GB | Reference Android |
-| Samsung A12 | Android 11 | 3GB | Low-end Android (critical) |
-| Pixel 7 | Android 14 | 8GB | Reference Android (Google) |
-| Xiaomi Redmi | MIUI 14 | 4GB | Chinese market testing |
+| Device           | OS         | RAM | Purpose                    |
+| ---------------- | ---------- | --- | -------------------------- |
+| iPhone 14 Pro    | iOS 17     | 6GB | Reference performance      |
+| iPhone SE (2020) | iOS 17     | 3GB | Low-end iOS                |
+| Samsung S23      | Android 14 | 8GB | Reference Android          |
+| Samsung A12      | Android 11 | 3GB | Low-end Android (critical) |
+| Pixel 7          | Android 14 | 8GB | Reference Android (Google) |
+| Xiaomi Redmi     | MIUI 14    | 4GB | Chinese market testing     |
 
 ---
 
@@ -804,24 +834,24 @@ eas build --profile preview --platform android
 
 ### 7.1 Animation Performance Budgets
 
-| Animation Type | Target FPS | Max Duration | Max Memory |
-|----------------|------------|--------------|------------|
-| Button press | 60fps | 200ms | 5MB |
-| Screen transition | 60fps | 300ms | 10MB |
-| Confetti celebration | 60fps | 2000ms | 50MB |
-| Streak ring | 60fps | 1500ms | 20MB |
-| Breathing circle | 30fps | Continuous | 10MB |
-| Crisis FAB pulse | 30fps | 2000ms | 5MB |
+| Animation Type       | Target FPS | Max Duration | Max Memory |
+| -------------------- | ---------- | ------------ | ---------- |
+| Button press         | 60fps      | 200ms        | 5MB        |
+| Screen transition    | 60fps      | 300ms        | 10MB       |
+| Confetti celebration | 60fps      | 2000ms       | 50MB       |
+| Streak ring          | 60fps      | 1500ms       | 20MB       |
+| Breathing circle     | 30fps      | Continuous   | 10MB       |
+| Crisis FAB pulse     | 30fps      | 2000ms       | 5MB        |
 
 ### 7.2 Bundle Size Budgets
 
-| Category | Budget | Current | Headroom |
-|----------|--------|---------|----------|
-| Total Bundle | 50MB | ~35MB | 15MB |
-| Design System | 5MB | ~1MB | 4MB |
-| Reanimated | 1.5MB | ~1.5MB | 0MB |
-| Fonts (Roboto) | 500KB | ~300KB | 200KB |
-| Animations (JSON) | 2MB | ~0MB | 2MB |
+| Category          | Budget | Current | Headroom |
+| ----------------- | ------ | ------- | -------- |
+| Total Bundle      | 50MB   | ~35MB   | 15MB     |
+| Design System     | 5MB    | ~1MB    | 4MB      |
+| Reanimated        | 1.5MB  | ~1.5MB  | 0MB      |
+| Fonts (Roboto)    | 500KB  | ~300KB  | 200KB    |
+| Animations (JSON) | 2MB    | ~0MB    | 2MB      |
 
 ### 7.3 Runtime Performance Monitoring
 
@@ -830,19 +860,23 @@ eas build --profile preview --platform android
 export function usePerformanceMonitor() {
   useEffect(() => {
     // Monitor frame drops
-    const subscription = PerformanceObserver?.observe?.({
-      type: 'frame',
-      buffered: true,
-    }, (list) => {
-      for (const entry of list.getEntries()) {
-        if (entry.duration > 33) { // < 30fps
-          Sentry.captureMessage('Frame drop detected', {
-            extra: { duration: entry.duration },
-          });
+    const subscription = PerformanceObserver?.observe?.(
+      {
+        type: 'frame',
+        buffered: true,
+      },
+      (list) => {
+        for (const entry of list.getEntries()) {
+          if (entry.duration > 33) {
+            // < 30fps
+            Sentry.captureMessage('Frame drop detected', {
+              extra: { duration: entry.duration },
+            });
+          }
         }
-      }
-    });
-    
+      },
+    );
+
     return () => subscription?.disconnect?.();
   }, []);
 }
@@ -854,27 +888,28 @@ export function usePerformanceMonitor() {
 
 ### 8.1 Technical Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Cold start time | <2s | Sentry performance |
-| Animation FPS | >55 avg | Frame timing API |
-| Bundle size | <50MB | EAS build output |
-| Crash-free rate | >99.9% | Sentry + Crashlytics |
-| Accessibility violations | 0 | Manual audit + axe |
+| Metric                   | Target  | Measurement          |
+| ------------------------ | ------- | -------------------- |
+| Cold start time          | <2s     | Sentry performance   |
+| Animation FPS            | >55 avg | Frame timing API     |
+| Bundle size              | <50MB   | EAS build output     |
+| Crash-free rate          | >99.9%  | Sentry + Crashlytics |
+| Accessibility violations | 0       | Manual audit + axe   |
 
 ### 8.2 User Experience Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Crisis kit access time | <2 taps | E2E test |
-| Check-in completion | <30s | Analytics |
-| Screen reader usability | 100% | TalkBack testing |
-| High contrast readability | 100% | Visual inspection |
-| Large text (200%) layout | No breaks | Device testing |
+| Metric                    | Target    | Measurement       |
+| ------------------------- | --------- | ----------------- |
+| Crisis kit access time    | <2 taps   | E2E test          |
+| Check-in completion       | <30s      | Analytics         |
+| Screen reader usability   | 100%      | TalkBack testing  |
+| High contrast readability | 100%      | Visual inspection |
+| Large text (200%) layout  | No breaks | Device testing    |
 
 ### 8.3 Validation Checklist
 
 **Pre-Release**:
+
 - [ ] All P0 components implemented
 - [ ] Crisis kit accessible from every screen
 - [ ] Reduced motion mode tested on all animations
@@ -894,20 +929,20 @@ export function usePerformanceMonitor() {
 // Complete reduced motion implementation
 export function useReducedMotion(): boolean {
   const [reducedMotion, setReducedMotion] = useState(false);
-  
+
   useEffect(() => {
     // Check initial state
     AccessibilityInfo.isReduceMotionEnabled().then(setReducedMotion);
-    
+
     // Listen for changes
     const subscription = AccessibilityInfo.addEventListener(
       'reduceMotionChanged',
       setReducedMotion
     );
-    
+
     return () => subscription.remove();
   }, []);
-  
+
   return reducedMotion;
 }
 
@@ -915,23 +950,23 @@ export function useReducedMotion(): boolean {
 export function AnimatedButton({ onPress, children }) {
   const reducedMotion = useReducedMotion();
   const scale = useSharedValue(1);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  
+
   const handlePressIn = () => {
     if (!reducedMotion) {
       scale.value = withSpring(0.95);
     }
   };
-  
+
   const handlePressOut = () => {
     if (!reducedMotion) {
       scale.value = withSpring(1);
     }
   };
-  
+
   return (
     <AnimatedPressable
       style={animatedStyle}
@@ -950,9 +985,9 @@ export function AnimatedButton({ onPress, children }) {
 ```typescript
 // Color blindness simulation for testing
 export const colorBlindnessFilters = {
-  protanopia: 'protanopia',    // Red-blind
+  protanopia: 'protanopia', // Red-blind
   deuteranopia: 'deuteranopia', // Green-blind
-  tritanopia: 'tritanopia',     // Blue-blind
+  tritanopia: 'tritanopia', // Blue-blind
   achromatopsia: 'achromatopsia', // Total color blindness
 };
 
@@ -960,11 +995,11 @@ export const colorBlindnessFilters = {
 export function testColorContrast(
   foreground: string,
   background: string,
-  type: 'normal' | 'protanopia' | 'deuteranopia'
+  type: 'normal' | 'protanopia' | 'deuteranopia',
 ): number {
   // Simulate color blindness
   const simulated = simulateColorBlindness(foreground, type);
-  
+
   // Calculate contrast ratio
   return getContrastRatio(simulated, background);
 }
@@ -980,17 +1015,14 @@ const MIN_CONTRAST_RATIO = 4.5; // WCAG AA
 export async function callCrisisHotline(number: string): Promise<void> {
   // No confirmation - immediate dial
   const url = `tel:${number}`;
-  
+
   const canOpen = await Linking.canOpenURL(url);
   if (canOpen) {
     await Linking.openURL(url);
   } else {
     // Copy to clipboard as fallback
     await Clipboard.setStringAsync(number);
-    Alert.alert(
-      'Unable to Dial',
-      `The number ${number} has been copied to your clipboard.`
-    );
+    Alert.alert('Unable to Dial', `The number ${number} has been copied to your clipboard.`);
   }
 }
 
@@ -1015,6 +1047,7 @@ This enhanced design plan addresses the critical gaps in the original plan while
 5. **Expo-Specific Guidance**: Real-world limitations documented with workarounds
 
 **Next Steps**:
+
 1. Review and approve this enhanced plan
 2. Set up device testing matrix
 3. Begin Track 1 (Foundation) immediately

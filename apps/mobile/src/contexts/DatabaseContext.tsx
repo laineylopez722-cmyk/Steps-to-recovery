@@ -60,25 +60,25 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
     async function initializeDatabase() {
       try {
         logger.info('Mobile: Starting database initialization');
-        
+
         // Dynamically import expo-sqlite
         const { openDatabaseAsync } = await import('expo-sqlite');
-        
+
         // Open the database directly (not using SQLiteProvider component)
         const db = await openDatabaseAsync('recovery.db');
-        
+
         if (!isMounted) return;
-        
+
         logger.info('Mobile: Database opened, creating adapter');
         const storageAdapter = await createStorageAdapter(db);
-        
+
         if (!isMounted) return;
-        
+
         logger.info('Mobile: Initializing schema');
         await initDatabase(storageAdapter);
-        
+
         if (!isMounted) return;
-        
+
         logger.info('Mobile: Database ready');
         setAdapter(storageAdapter);
       } catch (err) {
@@ -97,17 +97,10 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
     };
   }, []);
 
-  const contextValue = useMemo(
-    () => ({ db: adapter, isReady: adapter !== null }),
-    [adapter]
-  );
+  const contextValue = useMemo(() => ({ db: adapter, isReady: adapter !== null }), [adapter]);
 
   // Always render children - don't block on database loading
-  return (
-    <DatabaseContext.Provider value={contextValue}>
-      {children}
-    </DatabaseContext.Provider>
-  );
+  return <DatabaseContext.Provider value={contextValue}>{children}</DatabaseContext.Provider>;
 }
 
 /**
@@ -136,7 +129,7 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
         logger.error('Web: Failed to initialize database', err);
       }
     }
-    
+
     setupAdapter();
 
     return () => {
@@ -144,14 +137,7 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
     };
   }, []);
 
-  const contextValue = useMemo(
-    () => ({ db: adapter, isReady: adapter !== null }),
-    [adapter]
-  );
+  const contextValue = useMemo(() => ({ db: adapter, isReady: adapter !== null }), [adapter]);
 
-  return (
-    <DatabaseContext.Provider value={contextValue}>
-      {children}
-    </DatabaseContext.Provider>
-  );
+  return <DatabaseContext.Provider value={contextValue}>{children}</DatabaseContext.Provider>;
 }

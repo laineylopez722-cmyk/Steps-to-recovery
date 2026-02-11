@@ -32,6 +32,7 @@ export function use90In90Progress() {
             daysElapsed: 0,
           },
     enabled: !!userId,
+    staleTime: 30 * 60 * 1000, // 30 minutes - progress changes only on check-in
   });
 
   // Calculate percentage for progress bars

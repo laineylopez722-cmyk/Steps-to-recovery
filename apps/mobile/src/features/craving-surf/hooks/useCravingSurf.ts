@@ -135,7 +135,9 @@ export function useCravingSurf(): UseCravingSurfReturn {
   }, [clearBreathTimer]);
 
   const selectDistraction = useCallback((distractionId: string): void => {
-    setSession((prev) => (prev ? { ...prev, distractionUsed: distractionId, phase: 'rate-final' } : null));
+    setSession((prev) =>
+      prev ? { ...prev, distractionUsed: distractionId, phase: 'rate-final' } : null,
+    );
     setPhase('rate-final');
     logger.info('Distraction selected', { distractionId });
   }, []);

@@ -198,7 +198,9 @@ export function AchievementsScreen(): React.ReactElement {
                         <MaterialIcons
                           name={achievement.icon as IconName}
                           size={48}
-                          color={achievement.unlocked ? ds.semantic.text.onDark : ds.colors.textTertiary}
+                          color={
+                            achievement.unlocked ? ds.semantic.text.onDark : ds.colors.textTertiary
+                          }
                         />
                       </LinearGradient>
 
@@ -313,219 +315,220 @@ export function AchievementsScreen(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: darkAccent.text,
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  statsBanner: {
-    marginHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-    padding: spacing.lg,
-    borderRadius: radius.xl,
-  },
-  statsContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.md,
-  },
-  statsValue: {
-    ...typography.h1,
-    color: ds.semantic.text.onDark,
-    fontWeight: '800',
-  },
-  statsLabel: {
-    ...typography.body,
-    color: ds.semantic.text.onDark,
-  },
-  progressTrack: {
-    height: 8,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: ds.semantic.text.onDark,
-    borderRadius: radius.full,
-  },
-  filterContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.lg,
-    gap: spacing.sm,
-  },
-  filterTab: {
-    flex: 1,
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.md,
-    borderRadius: radius.md,
-    backgroundColor: darkAccent.surfaceHigh,
-    alignItems: 'center',
-  },
-  filterTabActive: {
-    backgroundColor: darkAccent.primary,
-  },
-  filterTabText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    fontWeight: '600',
-  },
-  filterTabTextActive: {
-    color: ds.semantic.text.onDark,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing.lg,
-  },
-  grid: {
-    gap: spacing.lg,
-  },
-  achievementCard: {
-    marginBottom: spacing.md,
-  },
-  achievementCardLocked: {
-    opacity: 0.7,
-  },
-  cardContent: {
-    flexDirection: 'row',
-    padding: spacing.lg,
-    gap: spacing.md,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  iconContainer: {
-    position: 'relative',
-  },
-  iconContainerUnlocked: {
-    // Add shine/glow effect
-  },
-  iconBg: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: ds.colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-  unlockBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: ds.colors.success,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: darkAccent.primary,
-  },
-  lockBadge: {
-    position: 'absolute',
-    bottom: -4,
-    right: -4,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: darkAccent.surfaceHigh,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: darkAccent.border,
-  },
-  infoContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  achievementTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-    fontWeight: '700',
-    marginBottom: spacing.xs,
-  },
-  achievementTitleLocked: {
-    color: darkAccent.textMuted,
-  },
-  achievementDescription: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginBottom: spacing.sm,
-  },
-  achievementDescriptionLocked: {
-    color: darkAccent.textMuted,
-  },
-  unlockedDate: {
-    ...typography.caption,
-    color: ds.colors.success,
-    fontWeight: '600',
-  },
-  progressBarContainer: {
-    marginBottom: spacing.xs,
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  progressBarGradient: {
-    flex: 1,
-  },
-  progressText: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-  },
-  shineOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    pointerEvents: 'none',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.xxl,
-    gap: spacing.md,
-  },
-  emptyText: {
-    ...typography.h3,
-    color: darkAccent.text,
-    textAlign: 'center',
-  },
-  emptySubtext: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    textAlign: 'center',
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    backButton: {
+      padding: spacing.sm,
+    },
+    headerTitle: {
+      ...typography.h2,
+      color: darkAccent.text,
+      flex: 1,
+      textAlign: 'center',
+    },
+    headerSpacer: {
+      width: 40,
+    },
+    statsBanner: {
+      marginHorizontal: spacing.lg,
+      marginBottom: spacing.lg,
+      padding: spacing.lg,
+      borderRadius: radius.xl,
+    },
+    statsContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      marginBottom: spacing.md,
+    },
+    statsValue: {
+      ...typography.h1,
+      color: ds.semantic.text.onDark,
+      fontWeight: '800',
+    },
+    statsLabel: {
+      ...typography.body,
+      color: ds.semantic.text.onDark,
+    },
+    progressTrack: {
+      height: 8,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: radius.full,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      backgroundColor: ds.semantic.text.onDark,
+      borderRadius: radius.full,
+    },
+    filterContainer: {
+      flexDirection: 'row',
+      paddingHorizontal: spacing.lg,
+      marginBottom: spacing.lg,
+      gap: spacing.sm,
+    },
+    filterTab: {
+      flex: 1,
+      paddingVertical: spacing.sm,
+      paddingHorizontal: spacing.md,
+      borderRadius: radius.md,
+      backgroundColor: darkAccent.surfaceHigh,
+      alignItems: 'center',
+    },
+    filterTabActive: {
+      backgroundColor: darkAccent.primary,
+    },
+    filterTabText: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      fontWeight: '600',
+    },
+    filterTabTextActive: {
+      color: ds.semantic.text.onDark,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: spacing.lg,
+    },
+    grid: {
+      gap: spacing.lg,
+    },
+    achievementCard: {
+      marginBottom: spacing.md,
+    },
+    achievementCardLocked: {
+      opacity: 0.7,
+    },
+    cardContent: {
+      flexDirection: 'row',
+      padding: spacing.lg,
+      gap: spacing.md,
+      position: 'relative',
+      overflow: 'hidden',
+    },
+    iconContainer: {
+      position: 'relative',
+    },
+    iconContainerUnlocked: {
+      // Add shine/glow effect
+    },
+    iconBg: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: ds.colors.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 6,
+    },
+    unlockBadge: {
+      position: 'absolute',
+      top: -4,
+      right: -4,
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: ds.colors.success,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: darkAccent.primary,
+    },
+    lockBadge: {
+      position: 'absolute',
+      bottom: -4,
+      right: -4,
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      backgroundColor: darkAccent.surfaceHigh,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: darkAccent.border,
+    },
+    infoContainer: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    achievementTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+      fontWeight: '700',
+      marginBottom: spacing.xs,
+    },
+    achievementTitleLocked: {
+      color: darkAccent.textMuted,
+    },
+    achievementDescription: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      marginBottom: spacing.sm,
+    },
+    achievementDescriptionLocked: {
+      color: darkAccent.textMuted,
+    },
+    unlockedDate: {
+      ...typography.caption,
+      color: ds.colors.success,
+      fontWeight: '600',
+    },
+    progressBarContainer: {
+      marginBottom: spacing.xs,
+    },
+    progressBar: {
+      height: 6,
+      backgroundColor: darkAccent.surfaceHigh,
+      borderRadius: radius.full,
+      overflow: 'hidden',
+    },
+    progressBarFill: {
+      height: '100%',
+      borderRadius: radius.full,
+      overflow: 'hidden',
+    },
+    progressBarGradient: {
+      flex: 1,
+    },
+    progressText: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+    },
+    shineOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      pointerEvents: 'none',
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: spacing.xxl,
+      gap: spacing.md,
+    },
+    emptyText: {
+      ...typography.h3,
+      color: darkAccent.text,
+      textAlign: 'center',
+    },
+    emptySubtext: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      textAlign: 'center',
+    },
+  }) as const;

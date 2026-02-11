@@ -79,19 +79,21 @@ function createMockMemory(overrides: Partial<Memory> = {}): Memory {
 }
 
 // Helper to create encrypted mock row
-function createMockRow(overrides: Partial<{
-  id: string;
-  user_id: string;
-  type: string;
-  encrypted_content: string;
-  encrypted_context: string | null;
-  confidence: number;
-  source: string;
-  source_id: string;
-  key: string;
-  created_at: string;
-  updated_at: string;
-}> = {}) {
+function createMockRow(
+  overrides: Partial<{
+    id: string;
+    user_id: string;
+    type: string;
+    encrypted_content: string;
+    encrypted_context: string | null;
+    confidence: number;
+    source: string;
+    source_id: string;
+    key: string;
+    created_at: string;
+    updated_at: string;
+  }> = {},
+) {
   const now = new Date().toISOString();
   return {
     id: 'mem-123',
@@ -145,7 +147,7 @@ describe('useMemoryStore', () => {
 
       // Wait for useEffect to run
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(mockExecAsync).toHaveBeenCalledWith(
@@ -157,7 +159,7 @@ describe('useMemoryStore', () => {
       renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(mockExecAsync).toHaveBeenCalledWith(
@@ -180,7 +182,7 @@ describe('useMemoryStore', () => {
       renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(mockExecAsync).not.toHaveBeenCalled();
@@ -195,7 +197,7 @@ describe('useMemoryStore', () => {
       renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(mockExecAsync).not.toHaveBeenCalled();
@@ -207,7 +209,7 @@ describe('useMemoryStore', () => {
       renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(mockLogger.error).toHaveBeenCalledWith(
@@ -236,7 +238,7 @@ describe('useMemoryStore', () => {
       rerender({});
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(mockExecAsync).toHaveBeenCalled();
@@ -248,7 +250,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory({
@@ -281,7 +283,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory({
@@ -306,7 +308,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory({
@@ -328,11 +330,7 @@ describe('useMemoryStore', () => {
       // Should update instead of insert
       expect(mockRunAsync).toHaveBeenCalledWith(
         expect.stringContaining('UPDATE memories SET'),
-        expect.arrayContaining([
-          'encrypted:Updated info about John',
-          0.9,
-          'existing-mem-123',
-        ]),
+        expect.arrayContaining(['encrypted:Updated info about John', 0.9, 'existing-mem-123']),
       );
     });
 
@@ -342,7 +340,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory({
@@ -368,7 +366,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memories = [
@@ -392,7 +390,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       expect(result.current.isLoading).toBe(false);
@@ -439,7 +437,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory();
@@ -449,10 +447,7 @@ describe('useMemoryStore', () => {
         await result.current.addMemories([memory]);
       });
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to add memories',
-        expect.any(Object),
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to add memories', expect.any(Object));
 
       expect(result.current.isLoading).toBe(false);
     });
@@ -463,7 +458,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory();
@@ -499,7 +494,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -544,7 +539,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -553,10 +548,7 @@ describe('useMemoryStore', () => {
       });
 
       expect(memories).toEqual([]);
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to get memories',
-        expect.any(Object),
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to get memories', expect.any(Object));
     });
 
     it('should handle decryption errors', async () => {
@@ -571,7 +563,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       // Set up decryption to fail for getAllMemories call
@@ -598,7 +590,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -627,7 +619,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -664,7 +656,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       for (const type of types) {
@@ -672,10 +664,7 @@ describe('useMemoryStore', () => {
           await result.current.getMemoriesByType(type);
         });
 
-        expect(mockGetAllAsync).toHaveBeenCalledWith(
-          expect.any(String),
-          [testUserId, type],
-        );
+        expect(mockGetAllAsync).toHaveBeenCalledWith(expect.any(String), [testUserId, type]);
       }
     });
 
@@ -700,7 +689,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memories = await act(async () => {
@@ -733,7 +722,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -741,10 +730,10 @@ describe('useMemoryStore', () => {
         memories = await result.current.getRecentMemories(7);
       });
 
-      expect(mockGetAllAsync).toHaveBeenCalledWith(
-        expect.stringContaining('created_at > ?'),
-        [testUserId, expect.any(String)],
-      );
+      expect(mockGetAllAsync).toHaveBeenCalledWith(expect.stringContaining('created_at > ?'), [
+        testUserId,
+        expect.any(String),
+      ]);
 
       expect(memories).toHaveLength(1);
     });
@@ -755,7 +744,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -776,7 +765,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -822,16 +811,19 @@ describe('useMemoryStore', () => {
 
       mockGetAllAsync.mockResolvedValue(mockRows);
       mockDecryptContent.mockImplementation((enc: string) => {
-        if (enc === 'enc:My sponsor John helped me') return Promise.resolve('My sponsor John helped me');
-        if (enc === 'enc:He called during a craving') return Promise.resolve('He called during a craving');
-        if (enc === 'enc:Went to a meeting today') return Promise.resolve('Went to a meeting today');
+        if (enc === 'enc:My sponsor John helped me')
+          return Promise.resolve('My sponsor John helped me');
+        if (enc === 'enc:He called during a craving')
+          return Promise.resolve('He called during a craving');
+        if (enc === 'enc:Went to a meeting today')
+          return Promise.resolve('Went to a meeting today');
         return Promise.resolve('');
       });
 
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -858,14 +850,15 @@ describe('useMemoryStore', () => {
       mockGetAllAsync.mockResolvedValue(mockRows);
       mockDecryptContent.mockImplementation((enc: string) => {
         if (enc === 'enc:Some person') return Promise.resolve('Some person');
-        if (enc === 'enc:This is about my sponsor Mike') return Promise.resolve('This is about my sponsor Mike');
+        if (enc === 'enc:This is about my sponsor Mike')
+          return Promise.resolve('This is about my sponsor Mike');
         return Promise.resolve('');
       });
 
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -894,7 +887,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -925,7 +918,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -940,7 +933,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memories = await act(async () => {
@@ -955,7 +948,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memories = await act(async () => {
@@ -971,7 +964,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memories = await act(async () => {
@@ -1009,7 +1002,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let summary: MemorySummary = {
@@ -1053,7 +1046,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let summary: MemorySummary = {
@@ -1088,7 +1081,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let summary: MemorySummary = {
@@ -1132,7 +1125,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let summary: MemorySummary = {
@@ -1188,7 +1181,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let summary: MemorySummary = {
@@ -1231,7 +1224,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let context = '';
@@ -1256,7 +1249,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let context = '';
@@ -1268,9 +1261,7 @@ describe('useMemoryStore', () => {
     });
 
     it('should include only non-empty sections', async () => {
-      const mockRows = [
-        createMockRow({ type: 'person', encrypted_content: 'enc:John' }),
-      ];
+      const mockRows = [createMockRow({ type: 'person', encrypted_content: 'enc:John' })];
 
       mockGetAllAsync.mockResolvedValue(mockRows);
       mockDecryptContent.mockImplementation((enc: string) =>
@@ -1280,7 +1271,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let context = '';
@@ -1306,7 +1297,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let context = '';
@@ -1324,7 +1315,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -1342,7 +1333,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -1360,7 +1351,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -1378,7 +1369,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -1395,7 +1386,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -1414,7 +1405,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
@@ -1449,7 +1440,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       // Should not throw
@@ -1457,10 +1448,7 @@ describe('useMemoryStore', () => {
         await result.current.updateMemory('mem-123', { content: 'Test' });
       });
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to update memory',
-        expect.any(Object),
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to update memory', expect.any(Object));
     });
   });
 
@@ -1469,17 +1457,14 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       await act(async () => {
         await result.current.deleteMemory('mem-123');
       });
 
-      expect(mockRunAsync).toHaveBeenCalledWith(
-        'DELETE FROM memories WHERE id = ?',
-        ['mem-123'],
-      );
+      expect(mockRunAsync).toHaveBeenCalledWith('DELETE FROM memories WHERE id = ?', ['mem-123']);
     });
 
     it('should not delete if database not ready', async () => {
@@ -1503,7 +1488,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       // Should not throw
@@ -1511,10 +1496,7 @@ describe('useMemoryStore', () => {
         await result.current.deleteMemory('mem-123');
       });
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to delete memory',
-        expect.any(Object),
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to delete memory', expect.any(Object));
     });
   });
 
@@ -1525,7 +1507,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const types: MemoryType[] = [
@@ -1571,7 +1553,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let summary: MemorySummary = {
@@ -1616,7 +1598,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -1640,7 +1622,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -1666,7 +1648,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       let memories: Memory[] = [];
@@ -1690,7 +1672,7 @@ describe('useMemoryStore', () => {
         const { result } = renderHook(() => useMemoryStore(testUserId));
 
         await act(async () => {
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise((resolve) => setTimeout(resolve, 10));
         });
 
         let memories: Memory[] = [];
@@ -1708,7 +1690,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory({
@@ -1733,14 +1715,14 @@ describe('useMemoryStore', () => {
 
       // Wait for initialization
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory();
 
       // Slow encryption to observe loading state
       mockEncryptContent.mockImplementation(
-        () => new Promise(resolve => setTimeout(() => resolve('encrypted:test'), 50)),
+        () => new Promise((resolve) => setTimeout(() => resolve('encrypted:test'), 50)),
       );
 
       const addPromise = act(async () => {
@@ -1759,7 +1741,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       await act(async () => {
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
       const memory = createMockMemory();

@@ -5,6 +5,7 @@
 ## What's Built
 
 ### Core Feature: AI Chat ✅
+
 - Full chat UI with streaming responses
 - Crisis detection (high/medium/low severity)
 - Memory extraction from conversations
@@ -15,24 +16,28 @@
 - **Conversation history** - View and manage past chats
 
 ### Context & Personalization ✅
+
 - **Sobriety days** wired to AI context
 - **Sponsor info** available for crisis overlay
 - **Memory context** - AI references past conversations
 - Quick actions adapt to time of day
 
 ### Step Work Tools ✅
+
 - Step 4 Inventory Builder (4-column resentment method)
 - Step 8/9 Amends Tracker with status
 - Step 10 Daily Review prompts
 - All 12 steps have AI guidance prompts
 
 ### Navigation & Integration ✅
+
 - Chat accessible from home screen (amber card)
 - AI Settings in Profile with quick access from chat
 - Crisis overlay with sponsor/988 hotline
 - Back button in chat header
 
 ### Backend Proxy (Ready for Deployment) ✅
+
 - Edge Function: `supabase/functions/ai-chat/index.ts`
 - SQL migration: `supabase/migrations/20260208_ai_usage_tracking.sql`
 - Free tier: 20 messages/day
@@ -40,6 +45,7 @@
 - Just needs deployment and `PROXY_ENABLED = true`
 
 ### UI/UX Polish ✅
+
 - **Haptic feedback** throughout (send, navigate, crisis)
 - **Fade-in animations** for new messages
 - **Button scale animation** on send
@@ -120,6 +126,7 @@ docs/
 ## What's Missing
 
 ### High Priority
+
 1. **Backend proxy** - Most users don't have API keys
    - See `BACKEND-PROXY-ARCHITECTURE.md`
    - Estimated cost: ~$1/1000 messages
@@ -129,11 +136,13 @@ docs/
    - Better: AI sends first message
 
 ### Medium Priority
+
 3. **Proactive notifications** - AI reaches out
 4. **Context from journal** - Use existing journal entries
 5. **Sponsor integration** - Pull sponsor name/phone
 
 ### Low Priority
+
 6. **Voice input** - Speak instead of type
 7. **Vector search** - Better memory retrieval
 8. **Multi-conversation** - Switch between chats
@@ -148,6 +157,7 @@ npx expo start --clear
 ```
 
 Then:
+
 1. Tap the amber card on home screen
 2. Go to Profile → AI Companion → Add API key
 3. Return to chat and send a message
@@ -158,10 +168,10 @@ Then:
 
 ## Cost Estimates (with proxy)
 
-| Scale | Daily Messages | Monthly Cost |
-|-------|---------------|--------------|
-| 100 users | 1,000 | ~$13 |
-| 1,000 users | 10,000 | ~$135 |
-| 10,000 users | 100,000 | ~$1,350 |
+| Scale        | Daily Messages | Monthly Cost |
+| ------------ | -------------- | ------------ |
+| 100 users    | 1,000          | ~$13         |
+| 1,000 users  | 10,000         | ~$135        |
+| 10,000 users | 100,000        | ~$1,350      |
 
 GPT-4o-mini pricing. Sustainable with premium tier.

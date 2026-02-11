@@ -54,11 +54,12 @@ export function usePinEntry({
               onSuccess();
             } else {
               if (onFailure) onFailure();
-              setError('Incorrect PIN'); // default error, can be overridden
-              // Logic for shake or clear can be handled by the consumer via the effect of error or callback
+              setError('Incorrect PIN');
+              setPin('');
             }
           } catch {
             setError('Error validating PIN');
+            setPin('');
           } finally {
             setIsValidating(false);
           }

@@ -10,7 +10,7 @@ Set up the core app structure: Expo project initialization, navigation (React Na
 - `apps/mobile/src/navigation/RootNavigator.tsx` - Root navigation setup
 - `apps/mobile/src/contexts/AuthContext.tsx` - Authentication context
 - `apps/mobile/src/lib/supabase.ts` - Supabase client initialization
-- `apps/mobile/src/utils/theme.ts` - App theming and styles
+- `apps/mobile/src/design-system/tokens/theme.ts` - App theming and design tokens
 
 ## Requirements
 
@@ -27,7 +27,7 @@ Set up the core app structure: Expo project initialization, navigation (React Na
 
 - Calming color palette (soft blues, greens)
 - Support for dark mode
-- Accessible color contrast (WCAG AA)
+- Accessible color contrast (WCAG AAA)
 - Consistent typography
 
 ### Context Providers

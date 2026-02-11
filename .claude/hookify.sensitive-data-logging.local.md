@@ -16,18 +16,21 @@ conditions:
 You're adding console.log that might expose sensitive data (passwords, keys, tokens, credentials).
 
 **Why this is critical:**
+
 - Sensitive data in console logs can leak to Sentry/monitoring services
 - Never log encryption keys, API tokens, or session credentials
 - This violates the privacy-first principle of the recovery app
 - User trust is compromised if data exposure occurs
 
 **What to do:**
+
 - Use `logger.debug()` instead (auto-sanitizes in production)
 - Only log sanitized metadata: `{ userId, entryId }` not `{ content, encryptionKey }`
 - Remove before committing
 - Check `.utils/logger.ts` for the safe logging utility
 
 **Example:**
+
 ```typescript
 // ❌ WRONG
 console.log('Encryption key:', encryptionKey);

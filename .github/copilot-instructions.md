@@ -67,9 +67,11 @@ User Display ← decryptContent() ← Local DB ← Fetch from Supabase
    - See `apps/mobile/src/services/syncService.ts`
 
 4. **Context Initialization Order** (CRITICAL):
+
    ```
    AuthContext → DatabaseContext → SyncContext → NotificationContext
    ```
+
    - Each context depends on previous one being ready
    - See `apps/mobile/src/contexts/`
 
@@ -89,16 +91,18 @@ User Display ← decryptContent() ← Local DB ← Fetch from Supabase
 ## Code Conventions (Repo-Specific)
 
 ### TypeScript Strictness
+
 - **NO `any` types allowed** - use `unknown` and type guard
 - **Explicit return types required** on all functions
 - **Component props** must have TypeScript interfaces
 - Use `import type` for type-only imports
 
 ### Security Patterns
+
 ```typescript
 // ✅ CORRECT: Encrypt before storage
 const encrypted = await encryptContent(journalText);
-await db.runAsync('INSERT INTO journal_entries (id, encrypted_body, ...) VALUES (?, ?, ...)', 
+await db.runAsync('INSERT INTO journal_entries (id, encrypted_body, ...) VALUES (?, ?, ...)',
   [id, encrypted, ...]);
 await addToSyncQueue(db, 'journal_entries', id, 'insert');
 
@@ -122,17 +126,20 @@ console.log('Saved entry:', journalText);
 ```
 
 ### State Management Patterns
+
 - **React Query** for server/async state: `useQuery`, `useMutation`
 - **Zustand** for client UI state: `apps/mobile/src/store/`
 - **Context** for cross-cutting concerns: Auth, Database, Sync
 
 ### UI/Styling Conventions
+
 - **NativeWind** (Tailwind CSS) for styling
 - **Design tokens** from `apps/mobile/src/design-system/tokens/` (colors, typography, spacing)
 - **DO NOT** hardcode hex colors or arbitrary spacing values
 - Use `cn()` helper from `apps/mobile/src/lib/utils.ts` for conditional classes
 
 ### Accessibility Requirements (WCAG AAA)
+
 ```typescript
 // ✅ REQUIRED on ALL interactive elements
 <Button
@@ -145,6 +152,7 @@ console.log('Saved entry:', journalText);
   Save
 </Button>
 ```
+
 - Minimum touch target: 48x48dp
 - Color contrast: 7:1 (AAA level)
 - Support screen readers (TalkBack, VoiceOver)
@@ -152,6 +160,7 @@ console.log('Saved entry:', journalText);
 ## Database Migrations
 
 ### Local Schema Changes
+
 ```typescript
 // apps/mobile/src/utils/database.ts
 const CURRENT_SCHEMA_VERSION = 5; // Increment this
@@ -168,6 +177,7 @@ async function runMigrations(db: SQLiteDatabase): Promise<void> {
 ```
 
 ### Cloud Schema Changes
+
 1. Update `supabase-schema.sql` (base schema)
 2. Create migration file: `supabase-migration-{feature}.sql`
 3. **ALWAYS add RLS policies**: `ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;`
@@ -196,7 +206,9 @@ await db.runAsync('DELETE FROM journal_entries WHERE id = ?', [entryId]);
 ## Testing Conventions
 
 ### Test File Location
+
 Tests are **co-located** with source code in `__tests__/` directories:
+
 ```
 src/utils/
 ├── encryption.ts
@@ -210,21 +222,24 @@ src/features/journal/hooks/
 ```
 
 ### Critical Test Coverage Thresholds
+
 - `encryption.ts`: 90% (security-critical)
 - `syncService.ts`: 70%
 - `AuthContext.tsx`: 70%
 - **Overall goal**: 75%+ for production
 
 ### Encryption Testing (CRITICAL)
+
 **ALWAYS test encrypt → decrypt roundtrip**:
+
 ```typescript
 it('should encrypt and decrypt to return original text', async () => {
   const plaintext = 'Sensitive journal entry';
   const encrypted = await encryptContent(plaintext);
-  
+
   expect(encrypted).not.toBe(plaintext);
   expect(encrypted).toContain(':'); // IV:ciphertext format
-  
+
   const decrypted = await decryptContent(encrypted);
   expect(decrypted).toBe(plaintext);
 });

@@ -19,9 +19,7 @@
  */
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import {
-  useReducedMotion,
-} from 'react-native-reanimated';
+import { useReducedMotion } from 'react-native-reanimated';
 import { AccessibilityInfo, type GestureResponderEvent } from 'react-native';
 
 // Import all animation modules
@@ -161,14 +159,14 @@ export function useAccessibilityPreferences(): ReducedMotionState {
       'reduceMotionChanged',
       (isEnabled) => {
         setState((prev) => ({ ...prev, isReducedMotion: isEnabled }));
-      }
+      },
     );
 
     const screenReaderSubscription = AccessibilityInfo.addEventListener(
       'screenReaderChanged',
       (isEnabled) => {
         setState((prev) => ({ ...prev, isScreenReaderEnabled: isEnabled }));
-      }
+      },
     );
 
     return () => {
@@ -216,11 +214,7 @@ export function useAccessibilityPreferences(): ReducedMotionState {
  * ```
  */
 export function useMicroInteraction(options: MicroInteractionOptions = {}) {
-  const {
-    enabled = true,
-    respectReducedMotion = true,
-    hapticsEnabled = true,
-  } = options;
+  const { enabled = true, respectReducedMotion = true, hapticsEnabled = true } = options;
 
   // Detect accessibility preferences
   const accessibility = useAccessibilityPreferences();
@@ -233,7 +227,9 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
   // Celebration state
   const [isCelebrating, setIsCelebrating] = useState(false);
   const [celebrationType, setCelebrationType] = useState<CelebrationType | null>(null);
-  const [confettiParticles, setConfettiParticles] = useState<ReturnType<typeof generateConfettiParticles>>([]);
+  const [confettiParticles, setConfettiParticles] = useState<
+    ReturnType<typeof generateConfettiParticles>
+  >([]);
 
   // ============================================================================
   // CELEBRATION ANIMATIONS
@@ -276,9 +272,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
       // Generate confetti if enabled
       if (showConfetti && shouldAnimate) {
         const config =
-          typeof confettiConfig === 'string'
-            ? confettiPresets[confettiConfig]
-            : confettiConfig;
+          typeof confettiConfig === 'string' ? confettiPresets[confettiConfig] : confettiConfig;
         setConfettiParticles(generateConfettiParticles(config));
       }
 
@@ -318,7 +312,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
 
       onComplete?.();
     },
-    [shouldAnimate, shouldUseHaptics, milestoneAnim, achievementAnim, checkInAnim]
+    [shouldAnimate, shouldUseHaptics, milestoneAnim, achievementAnim, checkInAnim],
   );
 
   /**
@@ -373,7 +367,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
         reset: pressAnim.reset,
       };
     },
-    [shouldUseHaptics]
+    [shouldUseHaptics],
   );
 
   // ============================================================================
@@ -391,7 +385,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
       }
       return EnterAnimations[type](delay);
     },
-    [shouldAnimate]
+    [shouldAnimate],
   );
 
   /**
@@ -404,7 +398,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
       }
       return ExitAnimations[type]();
     },
-    [shouldAnimate]
+    [shouldAnimate],
   );
 
   /**
@@ -417,7 +411,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
       }
       return useStaggerDelays(config);
     },
-    [shouldAnimate]
+    [shouldAnimate],
   );
 
   // ============================================================================
@@ -449,7 +443,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
           return useSpinnerAnimation();
       }
     },
-    [shouldAnimate]
+    [shouldAnimate],
   );
 
   // ============================================================================
@@ -468,7 +462,7 @@ export function useMicroInteraction(options: MicroInteractionOptions = {}) {
         await (hapticFn as (...args: never[]) => Promise<void>)(...args);
       }
     },
-    [shouldUseHaptics]
+    [shouldUseHaptics],
   );
 
   // ============================================================================
@@ -549,14 +543,14 @@ export function useCelebrationAnimation(onComplete?: () => void) {
     (data: MilestoneData) => {
       milestone.trigger(data);
     },
-    [milestone]
+    [milestone],
   );
 
   const triggerAchievement = useCallback(
     (data: AchievementData) => {
       achievement.trigger(data);
     },
-    [achievement]
+    [achievement],
   );
 
   const triggerCheckIn = useCallback(() => {
@@ -626,11 +620,7 @@ export function useReducedMotionPreference() {
 // EXPORTS
 // ============================================================================
 
-export type {
-  MilestoneData,
-  AchievementData,
-  CelebrationType,
-};
+export type { MilestoneData, AchievementData, CelebrationType };
 
 export {
   // Animation modules

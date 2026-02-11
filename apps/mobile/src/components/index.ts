@@ -9,6 +9,7 @@
 export { LoadingSpinner } from './LoadingSpinner';
 export { Slider } from './Slider';
 export { ErrorBoundary } from './ErrorBoundary';
+export { ScreenErrorBoundary } from './ScreenErrorBoundary';
 export { MilestoneCelebrationModal } from './MilestoneCelebrationModal';
 
 // Re-export UI components for convenience

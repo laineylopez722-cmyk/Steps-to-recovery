@@ -1,6 +1,6 @@
 /**
  * AI Companion Feature
- * 
+ *
  * Privacy-first AI chat for recovery support.
  */
 

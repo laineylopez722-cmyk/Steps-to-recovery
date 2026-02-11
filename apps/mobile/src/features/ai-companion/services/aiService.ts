@@ -6,6 +6,7 @@
 
 import { secureStorage } from '../../../adapters/secureStorage';
 import { supabase } from '../../../lib/supabase';
+import * as Sentry from '@sentry/react-native';
 
 const API_KEY_STORAGE_KEY = 'ai_companion_api_key';
 const PROVIDER_STORAGE_KEY = 'ai_companion_provider';
@@ -26,7 +27,7 @@ export interface ChatOptions {
   stream?: boolean;
 }
 
-export type AIProvider = 'openai' | 'anthropic';
+export type AIProvider = 'openai' | 'anthropic' | 'openrouter' | 'openclaw';
 
 interface ProviderConfig {
   apiUrl: string;
@@ -35,7 +36,7 @@ interface ProviderConfig {
   parseStreamChunk: (chunk: string) => string | null;
 }
 
-const PROVIDER_CONFIGS: Record<AIProvider, ProviderConfig> = {
+const PROVIDER_CONFIGS: Record<Exclude<AIProvider, 'openclaw'>, ProviderConfig> = {
   openai: {
     apiUrl: 'https://api.openai.com/v1/chat/completions',
     defaultModel: 'gpt-4o-mini',
@@ -47,7 +48,6 @@ const PROVIDER_CONFIGS: Record<AIProvider, ProviderConfig> = {
       stream: options.stream ?? true,
     }),
     parseStreamChunk: (chunk: string): string | null => {
-      // OpenAI SSE format: data: {"choices":[{"delta":{"content":"..."}}]}
       if (chunk.startsWith('data: ')) {
         const data = chunk.slice(6).trim();
         if (data === '[DONE]') return null;
@@ -65,15 +65,14 @@ const PROVIDER_CONFIGS: Record<AIProvider, ProviderConfig> = {
     apiUrl: 'https://api.anthropic.com/v1/messages',
     defaultModel: 'claude-3-5-sonnet-20241022',
     formatRequest: (messages, options) => {
-      // Anthropic requires system message separate
-      const systemMessage = messages.find(m => m.role === 'system');
-      const nonSystemMessages = messages.filter(m => m.role !== 'system');
+      const systemMessage = messages.find((m) => m.role === 'system');
+      const nonSystemMessages = messages.filter((m) => m.role !== 'system');
 
       return {
         model: options.model || 'claude-3-5-sonnet-20241022',
         max_tokens: options.maxTokens || 1024,
         system: systemMessage?.content,
-        messages: nonSystemMessages.map(m => ({
+        messages: nonSystemMessages.map((m) => ({
           role: m.role,
           content: m.content,
         })),
@@ -81,7 +80,6 @@ const PROVIDER_CONFIGS: Record<AIProvider, ProviderConfig> = {
       };
     },
     parseStreamChunk: (chunk: string): string | null => {
-      // Anthropic SSE format: event: content_block_delta\ndata: {"delta":{"text":"..."}}
       if (chunk.startsWith('data: ')) {
         const data = chunk.slice(6).trim();
         try {
@@ -89,6 +87,31 @@ const PROVIDER_CONFIGS: Record<AIProvider, ProviderConfig> = {
           if (parsed.type === 'content_block_delta') {
             return parsed.delta?.text || null;
           }
+        } catch {
+          return null;
+        }
+      }
+      return null;
+    },
+  },
+  openrouter: {
+    apiUrl: 'https://openrouter.ai/api/v1/chat/completions',
+    defaultModel: 'meta-llama/llama-3.1-8b-instruct:free',
+    formatRequest: (messages, options) => ({
+      model: options.model || 'meta-llama/llama-3.1-8b-instruct:free',
+      messages,
+      max_tokens: options.maxTokens || 1024,
+      temperature: options.temperature ?? 0.7,
+      stream: options.stream ?? true,
+    }),
+    parseStreamChunk: (chunk: string): string | null => {
+      // OpenRouter uses OpenAI-compatible SSE format
+      if (chunk.startsWith('data: ')) {
+        const data = chunk.slice(6).trim();
+        if (data === '[DONE]') return null;
+        try {
+          const parsed = JSON.parse(data);
+          return parsed.choices?.[0]?.delta?.content || null;
         } catch {
           return null;
         }
@@ -105,6 +128,9 @@ function detectProvider(apiKey: string): AIProvider {
   if (apiKey.startsWith('sk-ant-')) {
     return 'anthropic';
   }
+  if (apiKey.startsWith('sk-or-')) {
+    return 'openrouter';
+  }
   // Default to OpenAI for sk-* keys
   return 'openai';
 }
@@ -118,7 +144,7 @@ export async function createAIService(): Promise<AIServiceInstance> {
 
   return new AIServiceInstance(
     apiKey,
-    (storedProvider as AIProvider) || (apiKey ? detectProvider(apiKey) : 'openai')
+    (storedProvider as AIProvider) || (apiKey ? detectProvider(apiKey) : 'openai'),
   );
 }
 
@@ -160,9 +186,18 @@ export class AIServiceInstance {
       return true;
     }
 
+    // Check if OpenClaw provider is configured
+    if (this.provider === 'openclaw') {
+      const { getOpenClawProvider } = await import('./openClawProvider');
+      const clawProvider = getOpenClawProvider();
+      return clawProvider.isConfigured();
+    }
+
     // Check if proxy mode is enabled and user is authenticated
     if (PROXY_ENABLED) {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) return true;
     }
 
@@ -210,32 +245,39 @@ export class AIServiceInstance {
   }
 
   /**
+   * Get the default model name for the current provider
+   */
+  getModel(): string {
+    if (this.provider === 'openclaw') return 'openclaw';
+    return PROVIDER_CONFIGS[this.provider]?.defaultModel || 'unknown';
+  }
+
+  /**
    * Stream chat completion via proxy (for free tier)
    */
   private async *chatViaProxy(
     messages: ChatMessage[],
-    options: ChatOptions = {}
+    options: ChatOptions = {},
   ): AsyncGenerator<string, void, unknown> {
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     if (!session) {
       throw new Error('Please sign in to use the AI companion.');
     }
 
-    const response = await fetch(
-      `${SUPABASE_URL}/functions/v1/ai-chat`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({
-          messages,
-          stream: options.stream ?? true,
-          model: options.model,
-        }),
-      }
-    );
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/ai-chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        messages,
+        stream: options.stream ?? true,
+        model: options.model,
+      }),
+    });
 
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
@@ -265,10 +307,10 @@ export class AIServiceInstance {
       for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed || !trimmed.startsWith('data: ')) continue;
-        
+
         const data = trimmed.slice(6);
         if (data === '[DONE]') continue;
-        
+
         try {
           const parsed = JSON.parse(data);
           const content = parsed.choices?.[0]?.delta?.content;
@@ -285,111 +327,154 @@ export class AIServiceInstance {
    */
   async *chat(
     messages: ChatMessage[],
-    options: ChatOptions = {}
+    options: ChatOptions = {},
   ): AsyncGenerator<string, void, unknown> {
-    // Use proxy if no API key and proxy is enabled
-    if (!this.apiKey && PROXY_ENABLED) {
-      yield* this.chatViaProxy(messages, options);
-      return;
-    }
+    const model = options.model || this.getModel();
 
-    if (!this.apiKey) {
-      throw new Error('AI service not configured. Please set an API key.');
-    }
-
-    const config = PROVIDER_CONFIGS[this.provider];
-    const streamEnabled = options.stream ?? true;
-
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-
-    // Set provider-specific auth headers
-    if (this.provider === 'anthropic') {
-      headers['x-api-key'] = this.apiKey;
-      headers['anthropic-version'] = '2023-06-01';
-    } else {
-      headers['Authorization'] = `Bearer ${this.apiKey}`;
-    }
-
-    const requestBody = config.formatRequest(messages, {
-      ...options,
-      stream: streamEnabled,
+    const span = Sentry.startInactiveSpan({
+      op: 'gen_ai.request',
+      name: `chat ${model}`,
     });
+    span?.setAttribute('gen_ai.request.model', model);
+    span?.setAttribute('gen_ai.system', this.provider);
 
     try {
-      const response = await fetch(config.apiUrl, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.text();
-        let errorMessage = `API error: ${response.status}`;
-        try {
-          const parsed = JSON.parse(errorBody);
-          errorMessage = parsed.error?.message || parsed.message || errorMessage;
-        } catch {
-          // Use status-based message
-        }
-        throw new Error(errorMessage);
-      }
-
-      if (!streamEnabled) {
-        // Non-streaming response
-        const data = await response.json();
-        if (this.provider === 'anthropic') {
-          yield data.content?.[0]?.text || '';
-        } else {
-          yield data.choices?.[0]?.message?.content || '';
-        }
+      // Use proxy if no API key and proxy is enabled
+      if (!this.apiKey && PROXY_ENABLED) {
+        yield* this.chatViaProxy(messages, options);
+        span?.end();
         return;
       }
 
-      // Streaming response
-      const reader = response.body?.getReader();
-      if (!reader) {
-        throw new Error('Response body is not readable');
+      // OpenClaw provider — delegate to dedicated provider
+      if (this.provider === 'openclaw') {
+        const { getOpenClawProvider } = await import('./openClawProvider');
+        const clawProvider = getOpenClawProvider();
+        let result = '';
+        await clawProvider.chat(messages, {
+          ...options,
+          onChunk: (chunk: string) => {
+            result += chunk;
+          },
+        });
+        yield result;
+        span?.end();
+        return;
       }
 
-      const decoder = new TextDecoder();
-      let buffer = '';
+      if (!this.apiKey) {
+        throw new Error('AI service not configured. Please set an API key.');
+      }
 
-      while (true) {
-        const { done, value } = await reader.read();
+      const config = PROVIDER_CONFIGS[this.provider];
+      if (!config) {
+        throw new Error(`Unknown provider: ${this.provider}`);
+      }
+      const streamEnabled = options.stream ?? true;
 
-        if (done) break;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
 
-        buffer += decoder.decode(value, { stream: true });
+      // Set provider-specific auth headers
+      if (this.provider === 'anthropic') {
+        headers['x-api-key'] = this.apiKey;
+        headers['anthropic-version'] = '2023-06-01';
+      } else {
+        headers['Authorization'] = `Bearer ${this.apiKey}`;
+      }
 
-        // Process complete lines
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || ''; // Keep incomplete line in buffer
+      const requestBody = config.formatRequest(messages, {
+        ...options,
+        stream: streamEnabled,
+      });
 
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed) continue;
+      try {
+        const response = await fetch(config.apiUrl, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(requestBody),
+        });
 
-          const content = config.parseStreamChunk(trimmed);
+        if (!response.ok) {
+          const errorBody = await response.text();
+          let errorMessage = `API error: ${response.status}`;
+          try {
+            const parsed = JSON.parse(errorBody);
+            errorMessage = parsed.error?.message || parsed.message || errorMessage;
+          } catch {
+            // Use status-based message
+          }
+          throw new Error(errorMessage);
+        }
+
+        if (!streamEnabled) {
+          // Non-streaming response
+          const data = await response.json();
+          // Capture token usage from non-streaming response
+          if (data.usage) {
+            span?.setAttribute('gen_ai.usage.input_tokens', data.usage.prompt_tokens ?? 0);
+            span?.setAttribute('gen_ai.usage.output_tokens', data.usage.completion_tokens ?? 0);
+          }
+          if (this.provider === 'anthropic') {
+            yield data.content?.[0]?.text || '';
+          } else {
+            yield data.choices?.[0]?.message?.content || '';
+          }
+          span?.end();
+          return;
+        }
+
+        // Streaming response
+        const reader = response.body?.getReader();
+        if (!reader) {
+          throw new Error('Response body is not readable');
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          // Process complete lines
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || ''; // Keep incomplete line in buffer
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed) continue;
+
+            const content = config.parseStreamChunk(trimmed);
+            if (content) {
+              yield content;
+            }
+          }
+        }
+
+        // Process any remaining buffer
+        if (buffer.trim()) {
+          const content = config.parseStreamChunk(buffer.trim());
           if (content) {
             yield content;
           }
         }
+      } catch (err) {
+        if (err instanceof Error) {
+          throw err;
+        }
+        throw new Error(`AI request failed: ${String(err)}`);
       }
 
-      // Process any remaining buffer
-      if (buffer.trim()) {
-        const content = config.parseStreamChunk(buffer.trim());
-        if (content) {
-          yield content;
-        }
-      }
+      span?.end();
     } catch (err) {
-      if (err instanceof Error) {
-        throw err;
-      }
-      throw new Error(`AI request failed: ${String(err)}`);
+      span?.setStatus({ code: 2, message: err instanceof Error ? err.message : 'AI request failed' });
+      span?.end();
+      throw err;
     }
   }
 
@@ -413,6 +498,7 @@ export function getRecoverySystemPrompt(context?: {
   currentStep?: number | null;
   userName?: string;
   sponsorName?: string | null;
+  personalityPrompt?: string;
 }): string {
   const parts = [
     `You are a supportive AI companion for someone in addiction recovery, following the 12-step program tradition.`,
@@ -449,6 +535,10 @@ export function getRecoverySystemPrompt(context?: {
 
   if (context?.sponsorName) {
     parts.push(`Their sponsor is ${context.sponsorName}.`);
+  }
+
+  if (context?.personalityPrompt) {
+    parts.push('', context.personalityPrompt);
   }
 
   return parts.join('\n');

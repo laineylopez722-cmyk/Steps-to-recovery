@@ -66,7 +66,7 @@ let databaseInitEndTime: number | null = null;
  */
 function addMetric(metric: PerformanceMetric): void {
   metricsHistory.push(metric);
-  
+
   // Keep only last N metrics
   if (metricsHistory.length > MAX_METRICS_HISTORY) {
     metricsHistory.shift();
@@ -256,7 +256,9 @@ export function measureScreenLoad(screenName: string, stage: 'start' | 'end' = '
 
       // Check against budget (300ms target)
       if (duration > 500) {
-        logger.warn(`Screen load slow: ${screenName} took ${duration.toFixed(2)}ms (target: <300ms)`);
+        logger.warn(
+          `Screen load slow: ${screenName} took ${duration.toFixed(2)}ms (target: <300ms)`,
+        );
       } else {
         logger.debug(`Screen load: ${screenName} took ${duration.toFixed(2)}ms`);
       }
@@ -509,22 +511,25 @@ export function reportPerformanceMetrics(): {
     coldStartTime: number | null;
   };
 } {
-  const renderMetrics = metricsHistory.filter(m => m.type === 'render');
-  const screenMetrics = metricsHistory.filter(m => m.type === 'screen');
-  
-  const averageRenderTime = renderMetrics.length > 0
-    ? renderMetrics.reduce((sum, m) => sum + m.duration, 0) / renderMetrics.length
-    : 0;
-  
-  const averageScreenLoadTime = screenMetrics.length > 0
-    ? screenMetrics.reduce((sum, m) => sum + m.duration, 0) / screenMetrics.length
-    : 0;
-  
-  const slowestOperation = metricsHistory.length > 0
-    ? metricsHistory.reduce((slowest, current) => 
-        current.duration > slowest.duration ? current : slowest
-      )
-    : null;
+  const renderMetrics = metricsHistory.filter((m) => m.type === 'render');
+  const screenMetrics = metricsHistory.filter((m) => m.type === 'screen');
+
+  const averageRenderTime =
+    renderMetrics.length > 0
+      ? renderMetrics.reduce((sum, m) => sum + m.duration, 0) / renderMetrics.length
+      : 0;
+
+  const averageScreenLoadTime =
+    screenMetrics.length > 0
+      ? screenMetrics.reduce((sum, m) => sum + m.duration, 0) / screenMetrics.length
+      : 0;
+
+  const slowestOperation =
+    metricsHistory.length > 0
+      ? metricsHistory.reduce((slowest, current) =>
+          current.duration > slowest.duration ? current : slowest,
+        )
+      : null;
 
   const report = {
     metrics: [...metricsHistory],
@@ -533,9 +538,8 @@ export function reportPerformanceMetrics(): {
       averageRenderTime,
       averageScreenLoadTime,
       slowestOperation,
-      coldStartTime: isColdStartComplete && coldStartTime !== null
-        ? performance.now() - coldStartTime
-        : null,
+      coldStartTime:
+        isColdStartComplete && coldStartTime !== null ? performance.now() - coldStartTime : null,
     },
   };
 
@@ -572,9 +576,9 @@ export function measureFunction<T extends (...args: unknown[]) => unknown>(
 ): (...args: Parameters<T>) => ReturnType<T> {
   return (...args: Parameters<T>): ReturnType<T> => {
     const startTime = performance.now();
-    
+
     const result = fn(...args);
-    
+
     // Handle both sync and async functions
     if (result instanceof Promise) {
       return result.finally(() => {
@@ -605,18 +609,18 @@ export class FrameRateMonitor {
 
   start(): void {
     if (this.isRunning) return;
-    
+
     this.isRunning = true;
     this.frameCount = 0;
     this.lastTime = performance.now();
-    
+
     const measureFrame = (): void => {
       if (!this.isRunning) return;
-      
+
       this.frameCount++;
       const currentTime = performance.now();
       const elapsed = currentTime - this.lastTime;
-      
+
       // Update FPS every second
       if (elapsed >= 1000) {
         const fps = Math.round((this.frameCount * 1000) / elapsed);
@@ -624,10 +628,10 @@ export class FrameRateMonitor {
         this.frameCount = 0;
         this.lastTime = currentTime;
       }
-      
+
       this.rafId = requestAnimationFrame(measureFrame);
     };
-    
+
     this.rafId = requestAnimationFrame(measureFrame);
   }
 

@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { ds } from '../../design-system/tokens/ds';
 
 type PromptModalProps = {
   visible: boolean;
@@ -73,7 +74,7 @@ export function PromptModal({
                 value={value}
                 onChangeText={setValue}
                 placeholder={placeholder}
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor={ds.colors.textTertiary}
                 className="text-white text-base"
                 autoFocus
                 accessibilityLabel={placeholder}

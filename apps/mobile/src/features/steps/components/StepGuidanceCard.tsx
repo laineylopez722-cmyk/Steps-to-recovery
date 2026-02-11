@@ -11,7 +11,7 @@ interface StepGuidanceCardProps {
   onToggle: () => void;
 }
 
-export function StepGuidanceCard({
+export const StepGuidanceCard = React.memo(function StepGuidanceCard({
   showGuidance,
   description,
   onToggle,
@@ -52,22 +52,24 @@ export function StepGuidanceCard({
       )}
     </Card>
   );
-}
+});
+StepGuidanceCard.displayName = 'StepGuidanceCard';
 
-const createStyles = (ds: DS) => ({
-  descriptionCard: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-    borderColor: ds.colors.borderSubtle,
-  },
-  descriptionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  guidanceToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    descriptionCard: {
+      marginHorizontal: 16,
+      marginBottom: 8,
+      borderColor: ds.colors.borderSubtle,
+    },
+    descriptionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    guidanceToggle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+    },
+  }) as const;

@@ -201,38 +201,39 @@ export function ShareEntriesScreen(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  listContent: {
-    padding: 16,
-    paddingBottom: 120,
-    gap: 12,
-  },
-  entryCard: {
-    padding: 12,
-    gap: 8,
-  },
-  entryContent: {
-    marginTop: 8,
-    gap: 6,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-    backgroundColor: ds.semantic.surface.card,
-    gap: 8,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    listContent: {
+      padding: 16,
+      paddingBottom: 120,
+      gap: 12,
+    },
+    entryCard: {
+      padding: 12,
+      gap: 8,
+    },
+    entryContent: {
+      marginTop: 8,
+      gap: 6,
+    },
+    footer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      padding: 16,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+      backgroundColor: ds.semantic.surface.card,
+      gap: 8,
+    },
+    centerContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 24,
+    },
+  }) as const;

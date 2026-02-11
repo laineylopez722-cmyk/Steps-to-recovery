@@ -16,7 +16,7 @@ interface StepQuestionCardProps {
   onSave: () => void;
 }
 
-export function StepQuestionCard({
+export const StepQuestionCard = React.memo(function StepQuestionCard({
   questionNumber,
   prompt,
   answer,
@@ -48,12 +48,16 @@ export function StepQuestionCard({
           {isAnswered ? (
             <MaterialCommunityIcons name="check" size={20} color={ds.semantic.text.onDark} />
           ) : (
-            <Text style={[theme.typography.body, { color: ds.colors.textTertiary, fontWeight: '600' }]}>
+            <Text
+              style={[theme.typography.body, { color: ds.colors.textTertiary, fontWeight: '600' }]}
+            >
               {questionNumber}
             </Text>
           )}
         </View>
-        <Text style={[theme.typography.h3, { color: ds.colors.textPrimary, flex: 1, lineHeight: 24 }]}> 
+        <Text
+          style={[theme.typography.h3, { color: ds.colors.textPrimary, flex: 1, lineHeight: 24 }]}
+        >
           {prompt}
         </Text>
       </View>
@@ -81,41 +85,45 @@ export function StepQuestionCard({
         loading={isSaving}
         variant="primary"
         fullWidth
-        accessibilityLabel={isSaving ? 'Saving answer' : isAnswered ? 'Update answer' : 'Save answer'}
+        accessibilityLabel={
+          isSaving ? 'Saving answer' : isAnswered ? 'Update answer' : 'Save answer'
+        }
         accessibilityRole="button"
         accessibilityHint="Save your answer to this step question"
         accessibilityState={{ disabled: !answer.trim() || isSaving }}
       />
     </Card>
   );
-}
+});
+StepQuestionCard.displayName = 'StepQuestionCard';
 
-const createStyles = (ds: DS) => ({
-  questionCard: {
-    marginHorizontal: 16,
-    marginBottom: 16,
-    padding: 20,
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  questionHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  questionNumber: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 16,
-    marginTop: 2,
-  },
-  questionDivider: {
-    marginBottom: 16,
-  },
-  answerTextArea: {
-    marginBottom: 16,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    questionCard: {
+      marginHorizontal: 16,
+      marginBottom: 16,
+      padding: 20,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    questionHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: 16,
+    },
+    questionNumber: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 16,
+      marginTop: 2,
+    },
+    questionDivider: {
+      marginBottom: 16,
+    },
+    answerTextArea: {
+      marginBottom: 16,
+    },
+  }) as const;

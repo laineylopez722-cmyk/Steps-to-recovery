@@ -17,14 +17,14 @@
 
 ## Quick Stats
 
-| Metric | Count | Status |
-|--------|-------|--------|
-| Star Imports | 32 | 🔴 |
-| FlatList Usage | 13 | 🟢 |
-| FlashList Usage | 1 | 🟡 |
-| useMemo Usage | 35 | 🟢 |
-| useCallback Usage | 100 | 🟢 |
-| React.memo Usage | 13 | 🟡 |
+| Metric            | Count | Status |
+| ----------------- | ----- | ------ |
+| Star Imports      | 32    | 🔴     |
+| FlatList Usage    | 13    | 🟢     |
+| FlashList Usage   | 1     | 🟡     |
+| useMemo Usage     | 35    | 🟢     |
+| useCallback Usage | 100   | 🟢     |
+| React.memo Usage  | 13    | 🟡     |
 
 ## 🟡 Warnings (184)
 
@@ -135,12 +135,12 @@ Use the new usePerformanceMonitor hook in key components to track render times a
 
 Current targets for the app:
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| Bundle Size | < 4MB | Unknown | ⚪ |
-| Cold Start | < 2s | Unknown | ⚪ |
-| Screen Load | < 300ms | Unknown | ⚪ |
-| List Scroll | 60 FPS | Unknown | ⚪ |
+| Metric      | Target  | Current | Status |
+| ----------- | ------- | ------- | ------ |
+| Bundle Size | < 4MB   | Unknown | ⚪     |
+| Cold Start  | < 2s    | Unknown | ⚪     |
+| Screen Load | < 300ms | Unknown | ⚪     |
+| List Scroll | 60 FPS  | Unknown | ⚪     |
 
 ## 🚀 Next Steps
 
@@ -161,4 +161,4 @@ Current targets for the app:
 
 ---
 
-*This report was generated automatically by the performance audit script.*
+_This report was generated automatically by the performance audit script._

@@ -8,10 +8,12 @@ export function StepDetailErrorState(): React.ReactElement {
   const theme = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}> 
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <View style={styles.errorContainer}>
         <MaterialIcons name="error-outline" size={48} color={theme.colors.danger} />
-        <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>Step not found</Text>
+        <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>
+          Step not found
+        </Text>
       </View>
     </SafeAreaView>
   );

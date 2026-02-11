@@ -33,7 +33,7 @@ import { logger } from './logger';
  * @param b - Second string to compare
  * @returns true if strings are equal, false otherwise
  */
-function constantTimeEqual(a: string, b: string): boolean {
+export function constantTimeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let result = 0;
   for (let i = 0; i < a.length; i++) {
@@ -344,14 +344,39 @@ export async function rotateEncryptionKey(
 
   // All tables with encrypted columns
   const tables = [
-    { table: 'journal_entries', columns: ['encrypted_body', 'encrypted_title', 'encrypted_mood', 'encrypted_craving', 'encrypted_tags'] },
-    { table: 'daily_checkins', columns: ['encrypted_mood', 'encrypted_craving', 'encrypted_intention', 'encrypted_reflection', 'encrypted_gratitude'] },
+    {
+      table: 'journal_entries',
+      columns: [
+        'encrypted_body',
+        'encrypted_title',
+        'encrypted_mood',
+        'encrypted_craving',
+        'encrypted_tags',
+      ],
+    },
+    {
+      table: 'daily_checkins',
+      columns: [
+        'encrypted_mood',
+        'encrypted_craving',
+        'encrypted_intention',
+        'encrypted_reflection',
+        'encrypted_gratitude',
+      ],
+    },
     { table: 'step_work', columns: ['encrypted_answer'] },
     { table: 'reading_reflections', columns: ['encrypted_reflection'] },
     { table: 'personal_inventory', columns: ['encrypted_answers', 'encrypted_notes'] },
-    { table: 'gratitude_entries', columns: ['encrypted_item_1', 'encrypted_item_2', 'encrypted_item_3'] },
-    { table: 'craving_surf_sessions', columns: ['encrypted_initial_rating', 'encrypted_final_rating', 'encrypted_distraction_used'] },
+    {
+      table: 'gratitude_entries',
+      columns: ['encrypted_item_1', 'encrypted_item_2', 'encrypted_item_3'],
+    },
+    {
+      table: 'craving_surf_sessions',
+      columns: ['encrypted_initial_rating', 'encrypted_final_rating', 'encrypted_distraction_used'],
+    },
     { table: 'favorite_meetings', columns: ['encrypted_notes'] },
+    { table: 'safety_plans', columns: ['encrypted_plan'] },
   ];
 
   // Count total items for progress
@@ -399,10 +424,7 @@ export async function rotateEncryptionKey(
 
       if (updates.length > 0) {
         values.push(record['id']);
-        await db.runAsync(
-          `UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`,
-          values,
-        );
+        await db.runAsync(`UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`, values);
       }
 
       processedItems++;

@@ -1,13 +1,13 @@
 /**
  * Memory Extraction for AI Companion
- * 
+ *
  * Parses journal entries to extract key information:
  * - People mentioned (sponsor, family, friends)
  * - Triggers identified
  * - Emotions expressed
  * - Victories and struggles
  * - Patterns and themes
- * 
+ *
  * This data feeds the AI companion's memory store,
  * allowing it to reference user's history in conversations.
  */
@@ -28,17 +28,17 @@ export interface Memory {
 }
 
 export type MemoryType =
-  | 'person'           // Someone the user knows
-  | 'trigger'          // What triggers cravings/negative feelings
-  | 'coping_strategy'  // What helps them cope
-  | 'emotion'          // Significant emotional moment
-  | 'victory'          // Something they're proud of
-  | 'struggle'         // Current challenges
-  | 'goal'             // Things they want to achieve
-  | 'insight'          // Self-realizations
-  | 'preference'       // Likes/dislikes
-  | 'milestone'        // Recovery milestones
-  | 'pattern';         // Behavioral patterns
+  | 'person' // Someone the user knows
+  | 'trigger' // What triggers cravings/negative feelings
+  | 'coping_strategy' // What helps them cope
+  | 'emotion' // Significant emotional moment
+  | 'victory' // Something they're proud of
+  | 'struggle' // Current challenges
+  | 'goal' // Things they want to achieve
+  | 'insight' // Self-realizations
+  | 'preference' // Likes/dislikes
+  | 'milestone' // Recovery milestones
+  | 'pattern'; // Behavioral patterns
 
 // Patterns to detect different memory types
 const PATTERNS = {
@@ -49,7 +49,7 @@ const PATTERNS = {
     /talked to (\w+)/gi,
     /(\w+) (?:said|told me|helped|supported)/gi,
   ],
-  
+
   // Trigger detection
   trigger: [
     /(?:triggered|craving|urge|tempted) (?:when|by|after) (.+?)(?:\.|$)/gi,
@@ -57,7 +57,7 @@ const PATTERNS = {
     /(?:stress|anxiety|anger|loneliness|boredom) (?:makes|causes)/gi,
     /(?:hard|difficult|struggle) (?:when|after|with) (.+?)(?:\.|$)/gi,
   ],
-  
+
   // Coping strategies
   coping: [
     /(?:helped|helps|calms|calmed) (?:me|when I) (.+?)(?:\.|$)/gi,
@@ -65,7 +65,7 @@ const PATTERNS = {
     /what works (?:for me|is) (.+?)(?:\.|$)/gi,
     /(?:meditation|prayer|exercise|meeting|calling|walking)/gi,
   ],
-  
+
   // Victories
   victory: [
     /(?:proud|accomplished|achieved|managed|succeeded)/gi,
@@ -73,7 +73,7 @@ const PATTERNS = {
     /(?:first time|finally|breakthrough)/gi,
     /(?:\d+) (?:days|weeks|months) (?:clean|sober)/gi,
   ],
-  
+
   // Struggles
   struggle: [
     /(?:struggling|hard time|difficult|tough|challenging)/gi,
@@ -81,14 +81,14 @@ const PATTERNS = {
     /(?:relapse|slip|mistake|setback)/gi,
     /(?:craving|urge|temptation)/gi,
   ],
-  
+
   // Goals
   goal: [
     /(?:want to|trying to|goal is|hope to|plan to) (.+?)(?:\.|$)/gi,
     /(?:working on|focusing on) (.+?)(?:\.|$)/gi,
     /(?:next step|my goal)/gi,
   ],
-  
+
   // Insights
   insight: [
     /(?:realized|learned|understand|noticed|see that) (.+?)(?:\.|$)/gi,
@@ -100,16 +100,33 @@ const PATTERNS = {
 // Emotion keywords with their categories
 const EMOTION_KEYWORDS = {
   positive: [
-    'happy', 'grateful', 'thankful', 'hopeful', 'proud', 'peaceful',
-    'calm', 'content', 'relieved', 'excited', 'joyful', 'optimistic',
+    'happy',
+    'grateful',
+    'thankful',
+    'hopeful',
+    'proud',
+    'peaceful',
+    'calm',
+    'content',
+    'relieved',
+    'excited',
+    'joyful',
+    'optimistic',
   ],
   negative: [
-    'sad', 'angry', 'anxious', 'scared', 'lonely', 'depressed',
-    'frustrated', 'overwhelmed', 'hopeless', 'ashamed', 'guilty',
+    'sad',
+    'angry',
+    'anxious',
+    'scared',
+    'lonely',
+    'depressed',
+    'frustrated',
+    'overwhelmed',
+    'hopeless',
+    'ashamed',
+    'guilty',
   ],
-  neutral: [
-    'okay', 'fine', 'neutral', 'meh', 'uncertain', 'mixed',
-  ],
+  neutral: ['okay', 'fine', 'neutral', 'meh', 'uncertain', 'mixed'],
 };
 
 /**
@@ -122,14 +139,14 @@ export async function extractMemories(
 ): Promise<Memory[]> {
   const memories: Memory[] = [];
   const now = new Date();
-  
+
   // Skip if content is too short
   if (content.length < 20) return memories;
-  
+
   // Normalize content
   const text = content.toLowerCase();
-  const sentences = content.split(/[.!?]+/).filter(s => s.trim());
-  
+  const sentences = content.split(/[.!?]+/).filter((s) => s.trim());
+
   // Extract people
   for (const pattern of PATTERNS.person) {
     const matches = content.matchAll(pattern);
@@ -152,7 +169,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract triggers
   for (const pattern of PATTERNS.trigger) {
     const matches = content.matchAll(pattern);
@@ -174,7 +191,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract coping strategies
   for (const pattern of PATTERNS.coping) {
     const matches = content.matchAll(pattern);
@@ -196,7 +213,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract victories
   for (const sentence of sentences) {
     for (const pattern of PATTERNS.victory) {
@@ -216,7 +233,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract struggles
   for (const sentence of sentences) {
     for (const pattern of PATTERNS.struggle) {
@@ -236,7 +253,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract goals
   for (const pattern of PATTERNS.goal) {
     const matches = content.matchAll(pattern);
@@ -258,7 +275,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract insights
   for (const pattern of PATTERNS.insight) {
     const matches = content.matchAll(pattern);
@@ -280,7 +297,7 @@ export async function extractMemories(
       }
     }
   }
-  
+
   // Extract significant emotions
   const emotionMatches = detectEmotions(text);
   if (emotionMatches.length > 0) {
@@ -297,7 +314,7 @@ export async function extractMemories(
       updatedAt: now,
     });
   }
-  
+
   // Dedupe by content similarity
   return dedupeMemories(memories);
 }
@@ -316,14 +333,14 @@ function getContext(content: string, index: number, radius = 100): string {
  */
 function detectEmotions(text: string): string[] {
   const found: string[] = [];
-  
+
   for (const emotion of EMOTION_KEYWORDS.positive) {
     if (text.includes(emotion)) found.push(emotion);
   }
   for (const emotion of EMOTION_KEYWORDS.negative) {
     if (text.includes(emotion)) found.push(emotion);
   }
-  
+
   return found.slice(0, 5); // Max 5 emotions
 }
 
@@ -332,7 +349,7 @@ function detectEmotions(text: string): string[] {
  */
 function dedupeMemories(memories: Memory[]): Memory[] {
   const seen = new Set<string>();
-  return memories.filter(m => {
+  return memories.filter((m) => {
     const key = m.key || `${m.type}:${m.content.toLowerCase().slice(0, 50)}`;
     if (seen.has(key)) return false;
     seen.add(key);

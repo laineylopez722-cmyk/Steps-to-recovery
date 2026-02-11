@@ -1,6 +1,6 @@
 /**
  * SageCard - Success & Achievement
- * 
+ *
  * iOS-style card with subtle green accent
  * For milestones, achievements, positive states
  */
@@ -54,7 +54,7 @@ export function SageCard({
           </View>
         </View>
       )}
-      
+
       {description && <Text style={styles.description}>{description}</Text>}
       {children}
     </View>

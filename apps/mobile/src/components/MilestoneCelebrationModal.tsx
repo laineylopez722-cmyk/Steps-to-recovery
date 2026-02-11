@@ -146,7 +146,9 @@ export function MilestoneCelebrationModal({
             style={StyleSheet.absoluteFill}
           />
         ) : (
-          <View style={[StyleSheet.absoluteFill, { backgroundColor: ds.semantic.surface.overlay }]} />
+          <View
+            style={[StyleSheet.absoluteFill, { backgroundColor: ds.semantic.surface.overlay }]}
+          />
         )}
 
         {/* Confetti Cannon */}

@@ -3,10 +3,7 @@
  * Extracts facts and memories from AI conversations.
  */
 
-import type {
-  Memory,
-  MemoryType,
-} from '../../../features/journal/utils/memoryExtraction';
+import type { Memory, MemoryType } from '../../../features/journal/utils/memoryExtraction';
 
 // Helper to generate IDs
 function generateId(): string {
@@ -17,7 +14,7 @@ function generateId(): string {
 export function extractMemoriesFromMessage(
   userId: string,
   message: string,
-  sourceId: string
+  sourceId: string,
 ): Memory[] {
   const memories: Memory[] = [];
   const now = new Date();
@@ -39,10 +36,7 @@ export function extractMemoriesFromMessage(
           userId,
           type: 'person' as MemoryType,
           content: name,
-          context: message.slice(
-            Math.max(0, match.index - 50),
-            match.index + match[0].length + 50
-          ),
+          context: message.slice(Math.max(0, match.index - 50), match.index + match[0].length + 50),
           confidence: 0.7,
           source: 'chat',
           sourceId,
@@ -74,7 +68,7 @@ export function extractMemoriesFromMessage(
           content: trigger,
           context: message.slice(
             Math.max(0, match.index - 30),
-            Math.min(message.length, match.index + match[0].length + 30)
+            Math.min(message.length, match.index + match[0].length + 30),
           ),
           confidence: 0.8,
           source: 'chat',
@@ -203,7 +197,7 @@ export function extractMemoriesFromAssistantExchange(
   userId: string,
   userMessage: string,
   assistantMessage: string,
-  sourceId: string
+  sourceId: string,
 ): Memory[] {
   // Only extract from user message for now
   // Could expand to confirm facts mentioned by assistant that user agrees with
@@ -225,7 +219,7 @@ function dedupeMemories(memories: Memory[]): Memory[] {
 export async function extractMemoriesWithAI(
   _userId: string,
   _message: string,
-  _sourceId: string
+  _sourceId: string,
 ): Promise<Memory[]> {
   // TODO: Implement AI-powered extraction for more nuanced understanding
   // For now, fall back to rule-based extraction

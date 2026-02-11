@@ -1,9 +1,9 @@
 /**
  * Design System Tokens - Premium App Quality
- * 
+ *
  * Inspired by: Spotify, Apple Health, Calm, Notion
  * Goals: Clean, spacious, trustworthy, calming
- * 
+ *
  * Standards:
  * - 8px grid system
  * - iOS dark mode color conventions
@@ -34,33 +34,33 @@ export const aestheticColors = {
 
   // Backgrounds - True dark (Spotify/YouTube style)
   dark: {
-    background: '#0A0A0A',      // True black, OLED
-    elevated: '#1C1C1E',        // iOS elevated surface
-    card: '#1C1C1E',            // Card background (iOS style)
-    surface: '#2C2C2E',         // Secondary surface
-    surfaceHover: '#3A3A3C',    // Hover/pressed state
-    border: '#38383A',          // iOS separator
-    borderSubtle: '#2C2C2E',    // Subtle borders
+    background: '#0A0A0A', // True black, OLED
+    elevated: '#1C1C1E', // iOS elevated surface
+    card: '#1C1C1E', // Card background (iOS style)
+    surface: '#2C2C2E', // Secondary surface
+    surfaceHover: '#3A3A3C', // Hover/pressed state
+    border: '#38383A', // iOS separator
+    borderSubtle: '#2C2C2E', // Subtle borders
   },
 
   // Text - iOS conventions
   text: {
-    primary: '#FFFFFF',          // Primary text
-    secondary: '#8E8E93',        // iOS secondary gray
-    tertiary: '#636366',         // iOS tertiary gray
-    quaternary: '#48484A',       // iOS quaternary gray
-    placeholder: '#636366',      // Placeholder text
+    primary: '#FFFFFF', // Primary text
+    secondary: '#8E8E93', // iOS secondary gray
+    tertiary: '#636366', // iOS tertiary gray
+    quaternary: '#48484A', // iOS quaternary gray
+    placeholder: '#636366', // Placeholder text
   },
 
   // Semantic Colors - Muted, not harsh
   semantic: {
-    success: '#30D158',          // iOS green
+    success: '#30D158', // iOS green
     successMuted: 'rgba(48, 209, 88, 0.12)',
-    warning: '#FFD60A',          // iOS yellow
+    warning: '#FFD60A', // iOS yellow
     warningMuted: 'rgba(255, 214, 10, 0.12)',
-    danger: '#FF453A',           // iOS red
+    danger: '#FF453A', // iOS red
     dangerMuted: 'rgba(255, 69, 58, 0.12)',
-    info: '#0A84FF',             // iOS blue
+    info: '#0A84FF', // iOS blue
     infoMuted: 'rgba(10, 132, 255, 0.12)',
   },
 
@@ -131,28 +131,28 @@ export const aestheticColors = {
 export const gradients = {
   // Background - solid
   background: ['#0A0A0A', '#0A0A0A'] as const,
-  
+
   // Card - solid
   card: ['#1C1C1E', '#1C1C1E'] as const,
-  
+
   // Primary button - subtle gradient
   primary: ['#F59E0B', '#D97706'] as const,
-  
+
   // Success
   success: ['#30D158', '#28CD50'] as const,
-  
+
   // Danger
   danger: ['#FF453A', '#FF3B30'] as const,
-  
+
   // Milestone - gold shimmer
   milestone: ['#FDE68A', '#F59E0B', '#D97706'] as const,
-  
+
   // Calming - amber
   calming: ['#F59E0B', '#D97706'] as const,
-  
+
   // Nav - solid
   nav: ['#0A0A0A', '#0A0A0A'] as const,
-  
+
   // No glass
   glass: ['transparent', 'transparent'] as const,
 } as const;
@@ -378,10 +378,10 @@ export const aestheticTypography = {
 export const aestheticSpacing = {
   // Base units (multiples of 8)
   0: 0,
-  1: 4,   // Half unit
-  2: 8,   // Base unit
+  1: 4, // Half unit
+  2: 8, // Base unit
   3: 12,
-  4: 16,  // Standard padding
+  4: 16, // Standard padding
   5: 20,
   6: 24,
   8: 32,
@@ -389,7 +389,7 @@ export const aestheticSpacing = {
   12: 48,
   16: 64,
   20: 80,
-  
+
   // Named values
   xs: 4,
   sm: 8,
@@ -398,14 +398,14 @@ export const aestheticSpacing = {
   xl: 32,
   '2xl': 48,
   '3xl': 64,
-  
+
   // Component-specific
-  screen: 16,       // Screen edge padding
-  card: 16,         // Card internal padding
-  section: 32,      // Section spacing
-  element: 12,      // Between elements
-  listItem: 16,     // List item padding
-  iconGap: 12,      // Gap after icons
+  screen: 16, // Screen edge padding
+  card: 16, // Card internal padding
+  section: 32, // Section spacing
+  element: 12, // Between elements
+  listItem: 16, // List item padding
+  iconGap: 12, // Gap after icons
 } as const;
 
 // ============================================================================
@@ -416,8 +416,8 @@ export const aestheticRadius = {
   none: 0,
   xs: 4,
   sm: 8,
-  md: 12,     // Standard for cards, inputs
-  lg: 16,     // Larger cards
+  md: 12, // Standard for cards, inputs
+  lg: 16, // Larger cards
   xl: 20,
   '2xl': 24,
   full: 9999,
@@ -435,7 +435,7 @@ export const buttonSizes = {
     borderRadius: 8,
   },
   md: {
-    height: 48,  // Standard touch target
+    height: 48, // Standard touch target
     paddingHorizontal: 24,
     fontSize: 17,
     borderRadius: 12,

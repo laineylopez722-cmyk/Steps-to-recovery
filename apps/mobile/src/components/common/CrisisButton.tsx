@@ -8,7 +8,15 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Linking, Modal, Pressable, AccessibilityInfo } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+  Modal,
+  Pressable,
+  AccessibilityInfo,
+} from 'react-native';
 import { useRouterCompat, useSegmentsCompat } from '../../utils/navigationHelper';
 import { Feather } from '@expo/vector-icons';
 import { useSettingsStore } from '@recovery/shared';
@@ -41,7 +49,7 @@ export function CrisisButton() {
     setShowQuickHelp(true);
     // Announce modal opening to screen readers
     AccessibilityInfo.announceForAccessibility(
-      'Crisis support menu opened. Emergency resources available.'
+      'Crisis support menu opened. Emergency resources available.',
     );
   };
 
@@ -130,16 +138,16 @@ export function CrisisButton() {
             {/* Header */}
             <View className="items-center mb-6">
               <View className="w-12 h-1 bg-surface-600 rounded-full mb-4" />
-              <Text 
-                className="text-xl font-bold text-white"
-                accessibilityRole="header"
-              >
+              <Text className="text-xl font-bold text-white" accessibilityRole="header">
                 Need Help Right Now?
               </Text>
               <Text className="text-surface-400 text-center mt-1">
                 You're not alone. Reach out immediately.
               </Text>
-              <Text className="text-surface-500 text-center text-xs mt-1" accessibilityElementsHidden>
+              <Text
+                className="text-surface-500 text-center text-xs mt-1"
+                accessibilityElementsHidden
+              >
                 📍 {resources.name}
               </Text>
             </View>
@@ -154,11 +162,15 @@ export function CrisisButton() {
                   accessibilityRole="button"
                   accessibilityLabel={`${resource.title}: ${resource.subtitle}. Tap to call.`}
                   accessibilityHint={`Calls ${resource.phone}`}
-                  style={{
-                    // Add haptic feedback on press
-                  }}
+                  style={
+                    {
+                      // Add haptic feedback on press
+                    }
+                  }
                 >
-                  <Text className="text-2xl" accessibilityElementsHidden>{resource.emoji}</Text>
+                  <Text className="text-2xl" accessibilityElementsHidden>
+                    {resource.emoji}
+                  </Text>
                   <View className="flex-1">
                     <Text className="text-white font-bold text-lg">{resource.title}</Text>
                     <Text className="text-white/80">{resource.subtitle}</Text>

@@ -16,11 +16,11 @@ export const CRISIS_KEYWORDS = {
     'hurt myself',
     'self harm',
     'cut myself',
-    'don\'t want to be here',
+    "don't want to be here",
     'better off dead',
     'no reason to live',
     'end it all',
-    'can\'t go on',
+    "can't go on",
     'everyone would be better off',
     'no way out',
     'ready to go',
@@ -30,10 +30,10 @@ export const CRISIS_KEYWORDS = {
     'using again',
     'drank',
     'used',
-    'can\'t do this anymore',
+    "can't do this anymore",
     'giving up',
     'no point',
-    'what\'s the point',
+    "what's the point",
     'falling apart',
     'about to use',
     'going to drink',
@@ -50,7 +50,7 @@ export const CRISIS_KEYWORDS = {
     'might relapse',
     'close to using',
     'losing hope',
-    'don\'t know if I can',
+    "don't know if I can",
     'slipping',
     'urges are bad',
     'craving hard',
@@ -172,14 +172,8 @@ export function buildCrisisResponse(params: {
 
   response = response.replace('{acknowledgment}', params.acknowledgment);
   response = response.replace('{immediate_action}', params.immediateAction);
-  response = response.replace(
-    '{sponsor_name}',
-    params.sponsorName || 'Your sponsor'
-  );
-  response = response.replace(
-    '{additional_resources}',
-    params.additionalResources || ''
-  );
+  response = response.replace('{sponsor_name}', params.sponsorName || 'Your sponsor');
+  response = response.replace('{additional_resources}', params.additionalResources || '');
 
   return response.trim();
 }

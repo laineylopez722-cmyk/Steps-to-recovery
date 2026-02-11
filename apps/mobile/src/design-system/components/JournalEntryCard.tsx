@@ -1,8 +1,8 @@
 /**
  * JournalEntryCard Component - Material Design 3
- * 
+ *
  * Journal entry card with mood display and swipe actions support.
- * 
+ *
  * Features:
  * - 120dp height with surface background
  * - Level 1 elevation
@@ -30,7 +30,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';
-import { md3ElevationLight, md3ElevationDark, md3Shape, md3Typography, md3Motion } from '../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  md3Shape,
+  md3Typography,
+  md3Motion,
+} from '../tokens/md3-elevation';
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -81,7 +87,7 @@ const MOOD_CONFIG: Record<MoodType, { emoji: string; label: string; color: strin
   struggling: { emoji: '💪', label: 'Struggling', color: '#E8A89A' },
 };
 
-function getMoodConfig(mood: MoodType | string): typeof MOOD_CONFIG[MoodType] {
+function getMoodConfig(mood: MoodType | string): (typeof MOOD_CONFIG)[MoodType] {
   if (mood in MOOD_CONFIG) {
     return MOOD_CONFIG[mood as MoodType];
   }
@@ -100,18 +106,16 @@ interface CravingBarProps {
 
 function CravingBar({ level, colors }: CravingBarProps): React.ReactElement | null {
   if (level === 0) return null;
-  
+
   const getColor = () => {
     if (level <= 2) return colors.success;
     if (level <= 3) return colors.secondary;
     return colors.error;
   };
-  
+
   return (
     <View style={styles.cravingContainer}>
-      <Text style={[styles.cravingLabel, { color: colors.onSurfaceVariant }]}>
-        Craving
-      </Text>
+      <Text style={[styles.cravingLabel, { color: colors.onSurfaceVariant }]}>Craving</Text>
       <View style={styles.cravingBars}>
         {[1, 2, 3, 4, 5].map((i) => (
           <View
@@ -170,46 +174,48 @@ export function JournalEntryCard({
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
-  
+
   const moodConfig = getMoodConfig(mood);
-  
+
   // Animation values
   const scale = useSharedValue(1);
   const elevationValue = useSharedValue(1);
-  
+
   const handlePressIn = () => {
     scale.value = withTiming(0.98, { duration: 100 });
     elevationValue.value = withTiming(2, { duration: 100 });
   };
-  
+
   const handlePressOut = () => {
     scale.value = withSpring(1, md3Motion.spring.quick);
     elevationValue.value = withTiming(1, { duration: 200 });
   };
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  
+
   // Format date
   const formattedDate = React.useMemo(() => {
     const d = typeof date === 'string' ? new Date(date) : date;
     const now = new Date();
     const isToday = d.toDateString() === now.toDateString();
-    const isYesterday = new Date(now.setDate(now.getDate() - 1)).toDateString() === d.toDateString();
-    
+    const isYesterday =
+      new Date(now.setDate(now.getDate() - 1)).toDateString() === d.toDateString();
+
     if (isToday) return 'Today';
     if (isYesterday) return 'Yesterday';
-    
+
     return d.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
     });
   }, [date]);
-  
-  const a11yLabel = accessibilityLabel || 
+
+  const a11yLabel =
+    accessibilityLabel ||
     `${title}. ${formattedDate}. Mood: ${moodConfig.label}. ${tags.length > 0 ? `Tags: ${tags.join(', ')}` : ''}`;
-  
+
   return (
     <AnimatedTouchable
       style={[
@@ -234,25 +240,18 @@ export function JournalEntryCard({
       <View style={styles.leftContent}>
         {/* Header row with title and encryption indicator */}
         <View style={styles.headerRow}>
-          <Text 
-            style={[styles.title, { color: colors.onSurface }]} 
-            numberOfLines={1}
-          >
+          <Text style={[styles.title, { color: colors.onSurface }]} numberOfLines={1}>
             {title}
           </Text>
-          {isEncrypted && (
-            <Feather name="lock" size={14} color={colors.onSurfaceVariant} />
-          )}
+          {isEncrypted && <Feather name="lock" size={14} color={colors.onSurfaceVariant} />}
         </View>
-        
+
         {/* Date row */}
         <View style={styles.dateRow}>
           <Feather name="calendar" size={12} color={colors.onSurfaceVariant} />
-          <Text style={[styles.date, { color: colors.onSurfaceVariant }]}>
-            {formattedDate}
-          </Text>
+          <Text style={[styles.date, { color: colors.onSurfaceVariant }]}>{formattedDate}</Text>
         </View>
-        
+
         {/* Tags row */}
         {tags.length > 0 && (
           <View style={styles.tagsContainer}>
@@ -267,28 +266,20 @@ export function JournalEntryCard({
           </View>
         )}
       </View>
-      
+
       {/* Right Content - 20% */}
       <View style={styles.rightContent}>
         {/* Large Mood Emoji */}
-        <View style={[
-          styles.moodContainer,
-          { backgroundColor: colors.surfaceContainerHighest },
-        ]}>
+        <View style={[styles.moodContainer, { backgroundColor: colors.surfaceContainerHighest }]}>
           <Text style={styles.moodEmoji}>{moodConfig.emoji}</Text>
         </View>
-        
+
         {/* Craving bar */}
-        {cravingLevel > 0 && (
-          <CravingBar level={cravingLevel} colors={colors} />
-        )}
-        
+        {cravingLevel > 0 && <CravingBar level={cravingLevel} colors={colors} />}
+
         {/* Mood badge */}
         {showMoodBadge && (
-          <View style={[
-            styles.moodBadge,
-            { backgroundColor: moodConfig.color + '20' },
-          ]}>
+          <View style={[styles.moodBadge, { backgroundColor: moodConfig.color + '20' }]}>
             <Text style={[styles.moodBadgeText, { color: colors.onSurfaceVariant }]}>
               {moodConfig.label}
             </Text>

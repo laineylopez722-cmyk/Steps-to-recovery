@@ -15,6 +15,7 @@
 ## Colors
 
 ### Backgrounds (Dark Mode)
+
 ```
 Primary:    #000000  (true black)
 Secondary:  #0A0A0C  (barely visible lift)
@@ -24,6 +25,7 @@ Elevated:   #2C2C2E  (interactive elements)
 ```
 
 ### Text Hierarchy
+
 ```
 Primary:    #FFFFFF (100%)
 Secondary:  rgba(255,255,255,0.85)
@@ -32,6 +34,7 @@ Quaternary: rgba(255,255,255,0.35)
 ```
 
 ### Accent
+
 ```
 Amber:      #F5A623  (primary accent)
 Amber Muted: rgba(245,166,35,0.15)
@@ -42,6 +45,7 @@ Amber Muted: rgba(245,166,35,0.15)
 ## Typography
 
 ### Scale (1.25 ratio)
+
 ```
 Display:  48px / 700 / -1 tracking
 H1:       34px / 700 / -0.5 tracking
@@ -54,6 +58,7 @@ Micro:    11px / 600 / 0.2 tracking
 ```
 
 ### Usage
+
 - **H1:** Screen titles, hero text
 - **H2:** Section headers
 - **Body:** Primary content
@@ -94,6 +99,7 @@ Full: 9999px (circular elements)
 ```
 
 ### Content Padding
+
 - Screen edges: 24px
 - Card internal: 20px
 - Between sections: 24-32px
@@ -103,17 +109,20 @@ Full: 9999px (circular elements)
 ## Cards
 
 ### Do
+
 - Background differentiation (tertiary on primary)
 - Generous internal padding (20px)
 - Rounded corners (20px for primary cards)
 - Subtle shadow on elevated elements
 
 ### Don't
+
 - Visible borders
 - Small corner radius (<16px for main cards)
 - Cramped internal spacing
 
 ### Example
+
 ```tsx
 <View style={{
   backgroundColor: ds.colors.bgTertiary,
@@ -127,18 +136,21 @@ Full: 9999px (circular elements)
 ## Buttons
 
 ### Primary (Amber)
+
 - Height: 56px
 - Radius: 28px (half height = pill)
 - Background: Amber (#F5A623)
 - Text: Black, 600 weight
 
 ### Secondary
+
 - Height: 56px
 - Radius: 20px
 - Background: bgTertiary
 - Text: White, 500 weight
 
 ### Touch feedback
+
 - Scale to 0.98 on press (spring animation)
 - Background shift on press
 
@@ -147,12 +159,14 @@ Full: 9999px (circular elements)
 ## Lists
 
 ### Grouped Lists (iOS Settings style)
+
 - Container: bgTertiary, radius-lg
 - Items: Full width, generous padding
 - Dividers: hairlineWidth, start from icon edge
 - No border on container
 
 ### Item Structure
+
 ```
 [ Icon (44x44) ] [ Content (flex) ] [ Chevron ]
 ```
@@ -162,6 +176,7 @@ Full: 9999px (circular elements)
 ## Animation
 
 ### Springs (prefer over timing)
+
 ```
 Snappy: { damping: 20, stiffness: 300 }
 Smooth: { damping: 15, stiffness: 150 }
@@ -169,6 +184,7 @@ Bouncy: { damping: 10, stiffness: 200 }
 ```
 
 ### Common Animations
+
 - Entry: FadeInDown, 400ms
 - Press: Scale 0.98 → 1.0
 - Exit: FadeOut, 200ms
@@ -178,6 +194,7 @@ Bouncy: { damping: 10, stiffness: 200 }
 ## Icons
 
 ### Sizes
+
 ```
 SM: 18px (inline, secondary)
 MD: 22px (buttons, primary)
@@ -186,6 +203,7 @@ XL: 32px (hero icons)
 ```
 
 ### Colors
+
 - Primary actions: textPrimary
 - Secondary: textTertiary
 - Disabled: textQuaternary
@@ -203,11 +221,13 @@ Large/Primary: 56x56
 ## Headers
 
 ### Screen Headers
+
 - Back button: Circle (44x44), bgTertiary
 - Title: Center or left, 17px, 600 weight
 - Action buttons: Icon only, 44x44
 
 ### Section Headers
+
 - Caption style, uppercase
 - Letter-spacing: 1.5
 - Color: textTertiary

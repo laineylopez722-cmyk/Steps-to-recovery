@@ -30,7 +30,9 @@ function getEncouragingMessage(reduction: number): string {
   return 'Sometimes cravings are tough. You showed courage by trying. Keep going.';
 }
 
-function getResultIcon(reduction: number): React.ComponentProps<typeof MaterialCommunityIcons>['name'] {
+function getResultIcon(
+  reduction: number,
+): React.ComponentProps<typeof MaterialCommunityIcons>['name'] {
   if (reduction >= 50) return 'star-circle';
   if (reduction >= 25) return 'thumb-up';
   if (reduction > 0) return 'check-circle';
@@ -108,7 +110,7 @@ const createStyles = (ds: DS) =>
     reductionText: {
       fontSize: 14,
       fontWeight: '700' as const,
-      color: '#FFFFFF',
+      color: ds.semantic.text.onAlert,
     },
     buttonContainer: {
       width: '100%' as const,
@@ -127,9 +129,9 @@ export function CravingResult({
   const styles = useThemedStyles(createStyles);
 
   const isImproved = reductionPercent > 0;
-  const badgeColor = isImproved ? '#22C55E' : ds.colors.accent;
-  const beforeColor = '#EF4444';
-  const afterColor = isImproved ? '#22C55E' : '#FBBF24';
+  const badgeColor = isImproved ? ds.colors.success : ds.colors.accent;
+  const beforeColor = ds.colors.error;
+  const afterColor = isImproved ? ds.colors.success : ds.colors.accentLight;
 
   return (
     <View
@@ -167,10 +169,7 @@ export function CravingResult({
             style={styles.arrow}
           />
 
-          <View
-            style={styles.ratingBlock}
-            accessibilityLabel={`After: ${finalRating} out of 10`}
-          >
+          <View style={styles.ratingBlock} accessibilityLabel={`After: ${finalRating} out of 10`}>
             <Text style={styles.ratingLabel}>After</Text>
             <Text style={[styles.ratingValue, { color: afterColor }]}>{finalRating}</Text>
             <Text style={styles.ratingOutOf}>/ 10</Text>

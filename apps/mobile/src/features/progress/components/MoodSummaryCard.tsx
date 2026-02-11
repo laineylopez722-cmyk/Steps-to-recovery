@@ -14,7 +14,10 @@ interface MoodSummaryCardProps {
   data: MoodTrendData;
 }
 
-function formatDiff(current: number, previous: number): { text: string; isPositive: boolean; isNeutral: boolean } {
+function formatDiff(
+  current: number,
+  previous: number,
+): { text: string; isPositive: boolean; isNeutral: boolean } {
   if (previous === 0) return { text: 'N/A', isPositive: false, isNeutral: true };
   const diff = current - previous;
   const sign = diff > 0 ? '+' : '';
@@ -35,7 +38,11 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
   const cravingIsPositive = cravingDiff.isNeutral ? false : !cravingDiff.isPositive;
 
   const overallTrendIcon: keyof typeof MaterialCommunityIcons.glyphMap =
-    data.trend === 'improving' ? 'arrow-up-circle' : data.trend === 'declining' ? 'arrow-down-circle' : 'minus-circle';
+    data.trend === 'improving'
+      ? 'arrow-up-circle'
+      : data.trend === 'declining'
+        ? 'arrow-down-circle'
+        : 'minus-circle';
 
   const overallTrendColor =
     data.trend === 'improving'
@@ -56,11 +63,7 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <MaterialCommunityIcons
-            name="chart-arc"
-            size={20}
-            color={aestheticColors.gold.DEFAULT}
-          />
+          <MaterialCommunityIcons name="chart-arc" size={20} color={aestheticColors.gold.DEFAULT} />
           <Text style={[styles.title, { color: theme.colors.text }]}>Weekly Summary</Text>
         </View>
         <View style={styles.trendBadge}>
@@ -70,7 +73,9 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
 
       {/* Good Day Streak */}
       <View style={styles.streakRow}>
-        <View style={[styles.streakBadge, { backgroundColor: aestheticColors.gold.DEFAULT + '20' }]}>
+        <View
+          style={[styles.streakBadge, { backgroundColor: aestheticColors.gold.DEFAULT + '20' }]}
+        >
           <MaterialCommunityIcons name="fire" size={18} color={aestheticColors.gold.DEFAULT} />
           <Text style={[styles.streakValue, { color: aestheticColors.gold.DEFAULT }]}>
             {data.goodDayStreak}
@@ -88,7 +93,9 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
       <View style={styles.statsGrid}>
         {/* Mood this week */}
         <View style={styles.statItem}>
-          <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Mood (this week)</Text>
+          <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            Mood (this week)
+          </Text>
           <View style={styles.statValueRow}>
             <Text style={[styles.statValue, { color: theme.colors.text }]}>
               {data.weekAvgMood.toFixed(1)}
@@ -111,7 +118,9 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
 
         {/* Craving this week */}
         <View style={styles.statItem}>
-          <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>Craving (this week)</Text>
+          <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
+            Craving (this week)
+          </Text>
           <View style={styles.statValueRow}>
             <Text style={[styles.statValue, { color: theme.colors.text }]}>
               {data.weekAvgCraving.toFixed(1)}

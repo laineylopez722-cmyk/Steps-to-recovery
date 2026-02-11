@@ -16,6 +16,18 @@ import type {
   AmendsEntry,
 } from '../types';
 
+interface StepWorkRow {
+  id: string;
+  user_id: string;
+  step_number: number;
+  entry_type: string;
+  data: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  supabase_id?: string;
+}
+
 /**
  * Generate UUID in a platform-agnostic way
  */
@@ -46,7 +58,7 @@ export interface UseStepWorkReturn {
   saveEntry: (
     stepNumber: number,
     type: StepWorkEntryType,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ) => Promise<void>;
   deleteEntry: (id: string) => Promise<void>;
 
@@ -104,11 +116,11 @@ export function useStepWork(userId: string): UseStepWorkReturn {
     if (!db || !isReady) return;
 
     try {
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<StepWorkRow>(
         `SELECT * FROM step_work_entries 
          WHERE user_id = ? AND step_number = 4 AND entry_type = 'resentment'
          ORDER BY created_at DESC`,
-        [userId]
+        [userId],
       );
 
       const entries: ResentmentEntry[] = [];
@@ -132,11 +144,11 @@ export function useStepWork(userId: string): UseStepWorkReturn {
     if (!db || !isReady) return;
 
     try {
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<StepWorkRow>(
         `SELECT * FROM step_work_entries 
          WHERE user_id = ? AND step_number IN (8, 9) AND entry_type = 'amend'
          ORDER BY created_at DESC`,
-        [userId]
+        [userId],
       );
 
       const entries: AmendsEntry[] = [];
@@ -161,7 +173,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       stepNumber: number,
       type: StepWorkEntryType,
       data: Record<string, unknown>,
-      status: StepWorkStatus = 'draft'
+      status: StepWorkStatus = 'draft',
     ) => {
       if (!db || !isReady) return;
 
@@ -177,7 +189,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
           `INSERT INTO step_work_entries 
            (id, user_id, step_number, entry_type, data, status, created_at, updated_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [id, userId, stepNumber, type, encrypted, status, now, now]
+          [id, userId, stepNumber, type, encrypted, status, now, now],
         );
       } catch (err) {
         logger.error('Failed to save step work entry', err);
@@ -187,7 +199,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
         setIsLoading(false);
       }
     },
-    [db, isReady, userId]
+    [db, isReady, userId],
   );
 
   const deleteEntry = useCallback(
@@ -204,7 +216,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
         setError('Failed to delete entry');
       }
     },
-    [db, isReady, userId]
+    [db, isReady, userId],
   );
 
   const addResentment = useCallback(
@@ -212,7 +224,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       await saveEntry(4, 'resentment', entry as unknown as Record<string, unknown>);
       await loadResentments();
     },
-    [saveEntry, loadResentments]
+    [saveEntry, loadResentments],
   );
 
   const updateResentment = useCallback(
@@ -224,10 +236,10 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       const current = resentments[index];
       if (current) {
         // Find the DB entry by matching content
-        const rows = await db.getAllAsync<any>(
+        const rows = await db.getAllAsync<StepWorkRow>(
           `SELECT id, data FROM step_work_entries 
            WHERE user_id = ? AND step_number = 4 AND entry_type = 'resentment'`,
-          [userId]
+          [userId],
         );
 
         for (const row of rows) {
@@ -246,7 +258,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
       await addResentment(entry);
     },
-    [db, isReady, userId, resentments, deleteEntry, addResentment]
+    [db, isReady, userId, resentments, deleteEntry, addResentment],
   );
 
   const deleteResentment = useCallback(
@@ -256,10 +268,10 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       const current = resentments[index];
       if (!current) return;
 
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<StepWorkRow>(
         `SELECT id, data FROM step_work_entries 
          WHERE user_id = ? AND step_number = 4 AND entry_type = 'resentment'`,
-        [userId]
+        [userId],
       );
 
       for (const row of rows) {
@@ -277,7 +289,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
       await loadResentments();
     },
-    [db, isReady, userId, resentments, deleteEntry, loadResentments]
+    [db, isReady, userId, resentments, deleteEntry, loadResentments],
   );
 
   const addAmends = useCallback(
@@ -286,7 +298,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       await saveEntry(8, 'amend', fullEntry as unknown as Record<string, unknown>);
       await loadAmends();
     },
-    [saveEntry, loadAmends]
+    [saveEntry, loadAmends],
   );
 
   const updateAmends = useCallback(
@@ -298,10 +310,10 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       const newStatus = entry.status === 'complete' ? 'complete' : entry.status;
 
       // Find by 'who' field
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<StepWorkRow>(
         `SELECT id, data FROM step_work_entries 
          WHERE user_id = ? AND entry_type = 'amend'`,
-        [userId]
+        [userId],
       );
 
       for (const row of rows) {
@@ -312,7 +324,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
             await db.runAsync(
               `UPDATE step_work_entries SET data = ?, updated_at = ?, status = ?
                WHERE id = ?`,
-              [encrypted, now, newStatus, row.id]
+              [encrypted, now, newStatus, row.id],
             );
             break;
           }
@@ -323,17 +335,17 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
       await loadAmends();
     },
-    [db, isReady, userId, loadAmends]
+    [db, isReady, userId, loadAmends],
   );
 
   const deleteAmends = useCallback(
     async (who: string) => {
       if (!db || !isReady) return;
 
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<StepWorkRow>(
         `SELECT id, data FROM step_work_entries 
          WHERE user_id = ? AND entry_type = 'amend'`,
-        [userId]
+        [userId],
       );
 
       for (const row of rows) {
@@ -351,7 +363,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
 
       await loadAmends();
     },
-    [db, isReady, userId, deleteEntry, loadAmends]
+    [db, isReady, userId, deleteEntry, loadAmends],
   );
 
   const getEntriesForStep = useCallback(
@@ -359,9 +371,9 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       if (!db || !isReady) return [];
 
       try {
-        const rows = await db.getAllAsync<any>(
+        const rows = await db.getAllAsync<StepWorkRow>(
           `SELECT * FROM step_work_entries WHERE user_id = ? AND step_number = ?`,
-          [userId, stepNumber]
+          [userId, stepNumber],
         );
 
         const entries: StepWorkEntry[] = [];
@@ -389,7 +401,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
         return [];
       }
     },
-    [db, isReady, userId]
+    [db, isReady, userId],
   );
 
   const getStepStats = useCallback(
@@ -400,13 +412,13 @@ export function useStepWork(userId: string): UseStepWorkReturn {
         const total = await db.getFirstAsync<{ count: number }>(
           `SELECT COUNT(*) as count FROM step_work_entries 
            WHERE user_id = ? AND step_number = ?`,
-          [userId, stepNumber]
+          [userId, stepNumber],
         );
 
         const completed = await db.getFirstAsync<{ count: number }>(
           `SELECT COUNT(*) as count FROM step_work_entries 
            WHERE user_id = ? AND step_number = ? AND status = 'complete'`,
-          [userId, stepNumber]
+          [userId, stepNumber],
         );
 
         return {
@@ -417,7 +429,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
         return { total: 0, completed: 0 };
       }
     },
-    [db, isReady, userId]
+    [db, isReady, userId],
   );
 
   return {

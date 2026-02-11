@@ -1,6 +1,6 @@
 /**
  * Drizzle Schema
- * 
+ *
  * Database schema for the recovery app.
  * Uses SQLite with expo-sqlite.
  */
@@ -13,16 +13,16 @@ import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
   id: text('id').primaryKey(),
-  
+
   // Core info
   sobrietyDate: text('sobriety_date'), // ISO date string
   programType: text('program_type'), // 'NA', 'AA', 'Other'
-  
+
   // Settings
   notificationsEnabled: integer('notifications_enabled', { mode: 'boolean' }).default(true),
   biometricsEnabled: integer('biometrics_enabled', { mode: 'boolean' }).default(false),
   darkMode: integer('dark_mode', { mode: 'boolean' }).default(true),
-  
+
   // Timestamps
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
@@ -34,23 +34,25 @@ export const users = sqliteTable('users', {
 
 export const checkIns = sqliteTable('check_ins', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
-  
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+
   // Type
   type: text('type').notNull(), // 'morning' | 'evening'
   date: text('date').notNull(), // ISO date (YYYY-MM-DD)
-  
+
   // Morning fields
   intention: text('intention'),
-  
+
   // Evening fields
   reflection: text('reflection'),
   gratitude: text('gratitude'),
-  
+
   // Shared fields
   mood: integer('mood'), // 1-5
   craving: integer('craving'), // 0-10 (evening only)
-  
+
   // Timestamps
   createdAt: text('created_at').notNull(),
 });
@@ -61,20 +63,22 @@ export const checkIns = sqliteTable('check_ins', {
 
 export const journalEntries = sqliteTable('journal_entries', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
-  
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+
   // Content
   title: text('title'),
   content: text('content').notNull(),
   tags: text('tags'), // JSON array
-  
+
   // Mood at time of writing
   mood: integer('mood'),
-  
+
   // Flags
   isEncrypted: integer('is_encrypted', { mode: 'boolean' }).default(false),
   isFavorite: integer('is_favorite', { mode: 'boolean' }).default(false),
-  
+
   // Timestamps
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
@@ -86,15 +90,17 @@ export const journalEntries = sqliteTable('journal_entries', {
 
 export const readingReflections = sqliteTable('reading_reflections', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
-  
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+
   // Reading reference
   date: text('date').notNull(), // ISO date
   readingId: text('reading_id'),
-  
+
   // Reflection
   reflection: text('reflection').notNull(),
-  
+
   // Timestamps
   createdAt: text('created_at').notNull(),
 });
@@ -105,15 +111,17 @@ export const readingReflections = sqliteTable('reading_reflections', {
 
 export const contacts = sqliteTable('contacts', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
-  
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+
   // Info
   name: text('name').notNull(),
   phone: text('phone'),
   email: text('email'),
   role: text('role'), // 'sponsor' | 'sponsee' | 'friend' | 'family'
   notes: text('notes'),
-  
+
   // Timestamps
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
@@ -125,14 +133,16 @@ export const contacts = sqliteTable('contacts', {
 
 export const phoneCalls = sqliteTable('phone_calls', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
   contactId: text('contact_id').references(() => contacts.id),
-  
+
   // Call info
   contactName: text('contact_name'),
   duration: integer('duration'), // seconds
   notes: text('notes'),
-  
+
   // Timestamps
   calledAt: text('called_at').notNull(),
 });
@@ -143,16 +153,18 @@ export const phoneCalls = sqliteTable('phone_calls', {
 
 export const achievements = sqliteTable('achievements', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
-  
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+
   // Achievement
   type: text('type').notNull(), // 'days' | 'streak' | 'journal' | etc
   name: text('name').notNull(),
   description: text('description'),
-  
+
   // Value (e.g., 30 for "30 days")
   value: integer('value'),
-  
+
   // Timestamps
   unlockedAt: text('unlocked_at').notNull(),
   celebratedAt: text('celebrated_at'),
@@ -164,15 +176,17 @@ export const achievements = sqliteTable('achievements', {
 
 export const stepProgress = sqliteTable('step_progress', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
-  
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
+
   // Step
   stepNumber: integer('step_number').notNull(), // 1-12
   status: text('status').notNull(), // 'not_started' | 'in_progress' | 'completed'
-  
+
   // Content
   notes: text('notes'),
-  
+
   // Timestamps
   startedAt: text('started_at'),
   completedAt: text('completed_at'),
@@ -185,7 +199,9 @@ export const stepProgress = sqliteTable('step_progress', {
 
 export const chatConversations = sqliteTable('chat_conversations', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
   title: text('title'),
   type: text('type').notNull(), // 'general' | 'step_work' | 'crisis' | 'check_in'
   stepNumber: integer('step_number'),
@@ -196,7 +212,9 @@ export const chatConversations = sqliteTable('chat_conversations', {
 
 export const chatMessages = sqliteTable('chat_messages', {
   id: text('id').primaryKey(),
-  conversationId: text('conversation_id').notNull().references(() => chatConversations.id),
+  conversationId: text('conversation_id')
+    .notNull()
+    .references(() => chatConversations.id),
   role: text('role').notNull(), // 'user' | 'assistant' | 'system'
   content: text('content').notNull(),
   isEncrypted: integer('is_encrypted', { mode: 'boolean' }).default(true),
@@ -210,7 +228,9 @@ export const chatMessages = sqliteTable('chat_messages', {
 
 export const stepWorkEntries = sqliteTable('step_work_entries', {
   id: text('id').primaryKey(),
-  userId: text('user_id').notNull().references(() => users.id),
+  userId: text('user_id')
+    .notNull()
+    .references(() => users.id),
   stepNumber: integer('step_number').notNull(),
   entryType: text('entry_type').notNull(), // 'resentment' | 'fear' | 'amend' | 'reflection' | 'inventory'
   data: text('data').notNull(), // Encrypted JSON

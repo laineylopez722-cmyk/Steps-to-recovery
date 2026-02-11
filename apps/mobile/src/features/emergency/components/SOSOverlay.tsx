@@ -35,12 +35,12 @@ interface SOSOverlayProps {
 }
 
 const ICON_MAP: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
-  'phone': 'phone',
+  phone: 'phone',
   'phone-alert': 'phone-alert',
-  'lungs': 'lungs',
+  lungs: 'lungs',
   'shield-check': 'shield-check',
-  'hospital': 'hospital-building',
-  'pencil': 'pencil',
+  hospital: 'hospital-building',
+  pencil: 'pencil',
 };
 
 function resolveIcon(iconName: string): keyof typeof MaterialCommunityIcons.glyphMap {
@@ -90,13 +90,7 @@ function SOSActionButton({
         size={32}
         color={isCallAction ? ds.palette.white : ds.semantic.text.primary}
       />
-      <Text
-        style={[
-          styles.actionLabel,
-          isCallAction && styles.actionLabelCall,
-        ]}
-        numberOfLines={2}
-      >
+      <Text style={[styles.actionLabel, isCallAction && styles.actionLabelCall]} numberOfLines={2}>
         {action.label}
       </Text>
     </Pressable>
@@ -174,10 +168,7 @@ export function SOSOverlay({ visible, onClose }: SOSOverlayProps): React.ReactEl
           </View>
 
           {/* Action Grid */}
-          <ScrollView
-            contentContainerStyle={styles.grid}
-            showsVerticalScrollIndicator={false}
-          >
+          <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={false}>
             {sortedActions.map((action) => (
               <SOSActionButton
                 key={action.id}

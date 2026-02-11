@@ -4,13 +4,13 @@
 
 ## Quick Reference
 
-| Command | Purpose |
-|---------|---------|
-| `npm run mobile` | Start Expo dev server |
-| `npm test` | Run all tests |
+| Command                                     | Purpose                         |
+| ------------------------------------------- | ------------------------------- |
+| `npm run mobile`                            | Start Expo dev server           |
+| `npm test`                                  | Run all tests                   |
 | `cd apps/mobile && npm run test:encryption` | Encryption tests (**CRITICAL**) |
-| `cd apps/mobile && npx tsc --noEmit` | Type check |
-| `npm run lint` | ESLint |
+| `cd apps/mobile && npx tsc --noEmit`        | Type check                      |
+| `npm run lint`                              | ESLint                          |
 
 ## Core Philosophy
 
@@ -27,16 +27,16 @@
 
 ## Tech Stack
 
-| Category | Technology | Version |
-|----------|-----------|---------|
-| Frontend | React Native + Expo | SDK ~54.0.32 |
-| React | React | 19.1.0 |
-| Language | TypeScript | ~5.9.3 (strict) |
-| Backend | Supabase | ^2.93.3 |
-| Offline Storage | expo-sqlite / IndexedDB | ~16.0.10 |
-| State | React Query + Zustand | ^5.90.15 / ^5.0.9 |
-| Encryption | AES-256-CBC (crypto-js) | ^4.2.0 |
-| Key Storage | expo-secure-store | ~15.0.8 |
+| Category        | Technology              | Version           |
+| --------------- | ----------------------- | ----------------- |
+| Frontend        | React Native + Expo     | SDK ~54.0.0       |
+| React           | React                   | 19.1.0            |
+| Language        | TypeScript              | ~5.9.3 (strict)   |
+| Backend         | Supabase                | ^2.93.3           |
+| Offline Storage | expo-sqlite / IndexedDB | ~16.0.10          |
+| State           | React Query + Zustand   | ^5.90.15 / ^5.0.9 |
+| Encryption      | AES-256-CBC (crypto-js) | ^4.2.0            |
+| Key Storage     | expo-secure-store       | ~15.0.8           |
 
 ## Agent Swarm
 

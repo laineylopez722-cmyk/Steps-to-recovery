@@ -45,7 +45,7 @@ const getCravingColor = (craving: number | null, theme: ReturnType<typeof useThe
   return theme.colors.danger;
 };
 
-export function JournalCard({
+export const JournalCard = React.memo(function JournalCard({
   entry,
   onPress,
   accessibilityHint,
@@ -134,7 +134,12 @@ export function JournalCard({
               accessibilityLabel={`Craving level: ${entry.craving} out of 10`}
               accessibilityRole="text"
             >
-              <Text style={[styles.cravingText, { color: theme.colors.textInverse || ds.semantic.text.onDark }]}>
+              <Text
+                style={[
+                  styles.cravingText,
+                  { color: theme.colors.textInverse || ds.semantic.text.onDark },
+                ]}
+              >
                 {entry.craving}
               </Text>
             </View>
@@ -161,54 +166,56 @@ export function JournalCard({
       </View>
     </Card>
   );
-}
+});
+JournalCard.displayName = 'JournalCard';
 
-const createStyles = (_ds: DS) => ({
-  cardContainer: {
-    marginHorizontal: 16,
-    marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'flex-start' as const,
-    marginBottom: 8,
-  },
-  titleContainer: {
-    flex: 1,
-    marginRight: 8,
-  },
-  footer: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-  },
-  indicators: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 8,
-  },
-  indicator: {
-    padding: 4,
-  },
-  emoji: {
-    fontSize: 20,
-  },
-  cravingIndicator: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  cravingText: {
-    fontSize: 12,
-    fontWeight: 'bold' as const,
-    color: 'white' as const,
-  },
-  tags: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 4,
-  },
-} as const);
+const createStyles = (_ds: DS) =>
+  ({
+    cardContainer: {
+      marginHorizontal: 16,
+      marginBottom: 12,
+    },
+    header: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'flex-start' as const,
+      marginBottom: 8,
+    },
+    titleContainer: {
+      flex: 1,
+      marginRight: 8,
+    },
+    footer: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+    },
+    indicators: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: 8,
+    },
+    indicator: {
+      padding: 4,
+    },
+    emoji: {
+      fontSize: 20,
+    },
+    cravingIndicator: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    cravingText: {
+      fontSize: 12,
+      fontWeight: 'bold' as const,
+      color: 'white' as const,
+    },
+    tags: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: 4,
+    },
+  }) as const;

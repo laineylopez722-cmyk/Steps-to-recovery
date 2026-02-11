@@ -4,13 +4,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  AccessibilityInfo,
-  useColorScheme,
-} from 'react-native';
+import { View, Text, TouchableOpacity, AccessibilityInfo, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -73,7 +67,7 @@ export function DailyCheckInCard({
     if (isComplete && !reducedMotion) {
       completionAnimation.value = withSequence(
         withTiming(1, { duration: 250 }),
-        withTiming(0, { duration: 200 })
+        withTiming(0, { duration: 200 }),
       );
       checkmarkScale.value = withSpring(1, { damping: 12, stiffness: 100 });
 
@@ -82,7 +76,7 @@ export function DailyCheckInCard({
 
       // Announce completion
       AccessibilityInfo.announceForAccessibility(
-        'Daily check-in complete! Great job taking care of yourself today.'
+        'Daily check-in complete! Great job taking care of yourself today.',
       );
     }
   }, [isComplete, reducedMotion]);
@@ -99,12 +93,7 @@ export function DailyCheckInCard({
 
   const highlightStyle = useAnimatedStyle(() => ({
     backgroundColor: `${COLORS.success}20`,
-    opacity: interpolate(
-      completionAnimation.value,
-      [0, 1],
-      [0, 1],
-      Extrapolate.CLAMP
-    ),
+    opacity: interpolate(completionAnimation.value, [0, 1], [0, 1], Extrapolate.CLAMP),
   }));
 
   // Format date
@@ -124,11 +113,7 @@ export function DailyCheckInCard({
 
     return {
       backgroundColor: isCompleted ? completedBg : baseBg,
-      borderColor: isCompleted
-        ? isMorning
-          ? COLORS.primary
-          : COLORS.secondary
-        : borderColor,
+      borderColor: isCompleted ? (isMorning ? COLORS.primary : COLORS.secondary) : borderColor,
     };
   };
 
@@ -137,7 +122,7 @@ export function DailyCheckInCard({
       if (!reducedMotion) {
         scale.value = withSequence(
           withTiming(0.98, { duration: ANIMATION.accelerated }),
-          withTiming(1, { duration: ANIMATION.standard })
+          withTiming(1, { duration: ANIMATION.standard }),
         );
       }
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -148,7 +133,7 @@ export function DailyCheckInCard({
         onEveningPress?.();
       }
     },
-    [onMorningPress, onEveningPress, reducedMotion, scale]
+    [onMorningPress, onEveningPress, reducedMotion, scale],
   );
 
   // Accessibility label
@@ -279,8 +264,8 @@ export function DailyCheckInCard({
                 backgroundColor: checkInData.morning?.completed
                   ? COLORS.primary
                   : isDark
-                  ? COLORS.gray700
-                  : COLORS.surfaceVariant,
+                    ? COLORS.gray700
+                    : COLORS.surfaceVariant,
               }}
             >
               <Sun
@@ -289,8 +274,8 @@ export function DailyCheckInCard({
                   checkInData.morning?.completed
                     ? COLORS.white
                     : isDark
-                    ? COLORS.gray400
-                    : COLORS.gray500
+                      ? COLORS.gray400
+                      : COLORS.gray500
                 }
               />
             </View>
@@ -372,8 +357,8 @@ export function DailyCheckInCard({
                 backgroundColor: checkInData.evening?.completed
                   ? COLORS.secondary
                   : isDark
-                  ? COLORS.gray700
-                  : COLORS.surfaceVariant,
+                    ? COLORS.gray700
+                    : COLORS.surfaceVariant,
               }}
             >
               <Moon
@@ -382,8 +367,8 @@ export function DailyCheckInCard({
                   checkInData.evening?.completed
                     ? COLORS.white
                     : isDark
-                    ? COLORS.gray400
-                    : COLORS.gray500
+                      ? COLORS.gray400
+                      : COLORS.gray500
                 }
               />
             </View>
@@ -459,8 +444,8 @@ export function DailyCheckInCard({
                             checkInData.evening.cravingIntensity > 7
                               ? COLORS.error
                               : checkInData.evening.cravingIntensity > 4
-                              ? COLORS.warning
-                              : COLORS.success,
+                                ? COLORS.warning
+                                : COLORS.success,
                         }}
                       />
                     </View>

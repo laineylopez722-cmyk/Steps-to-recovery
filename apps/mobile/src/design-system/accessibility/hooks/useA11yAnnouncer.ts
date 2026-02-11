@@ -175,12 +175,7 @@ export function useA11yAnnouncer(): UseA11yAnnouncerReturn {
    */
   const announce = useCallback(
     (message: string, options: AnnouncementOptions = {}): void => {
-      const {
-        priority = 'normal',
-        delay = 0,
-        interrupt = false,
-        politeness = 'polite',
-      } = options;
+      const { priority = 'normal', delay = 0, interrupt = false, politeness = 'polite' } = options;
 
       // Skip empty messages
       if (!message || message.trim().length === 0) return;
@@ -219,7 +214,7 @@ export function useA11yAnnouncer(): UseA11yAnnouncerReturn {
         }
       }
     },
-    [processQueue]
+    [processQueue],
   );
 
   /**
@@ -227,9 +222,14 @@ export function useA11yAnnouncer(): UseA11yAnnouncerReturn {
    */
   const announceCritical = useCallback(
     (message: string, options: Omit<AnnouncementOptions, 'priority'> = {}): void => {
-      announce(message, { ...options, priority: 'critical', interrupt: true, politeness: 'assertive' });
+      announce(message, {
+        ...options,
+        priority: 'critical',
+        interrupt: true,
+        politeness: 'assertive',
+      });
     },
-    [announce]
+    [announce],
   );
 
   /**
@@ -239,7 +239,7 @@ export function useA11yAnnouncer(): UseA11yAnnouncerReturn {
     (message: string, options: Omit<AnnouncementOptions, 'priority'> = {}): void => {
       announce(message, { ...options, priority: 'info' });
     },
-    [announce]
+    [announce],
   );
 
   /**

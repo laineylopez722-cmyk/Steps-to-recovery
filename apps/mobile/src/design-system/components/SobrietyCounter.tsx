@@ -12,7 +12,16 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Share, Dimensions, AccessibilityInfo, type ViewStyle } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Share,
+  Dimensions,
+  AccessibilityInfo,
+  type ViewStyle,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
@@ -70,10 +79,20 @@ interface TimeDisplay {
 }
 
 const DEFAULT_MILESTONES: Milestone[] = [
-  { days: 1, title: '24 Hours', icon: '🌟', message: 'The first day is the hardest. You\'re doing great!' },
+  {
+    days: 1,
+    title: '24 Hours',
+    icon: '🌟',
+    message: "The first day is the hardest. You're doing great!",
+  },
   { days: 7, title: '1 Week', icon: '🎯', message: 'Building momentum one day at a time.' },
   { days: 30, title: '1 Month', icon: '🏆', message: 'Your dedication is inspiring. Keep going!' },
-  { days: 90, title: '90 Days', icon: '💎', message: 'You\'re proving that lasting change is possible.' },
+  {
+    days: 90,
+    title: '90 Days',
+    icon: '💎',
+    message: "You're proving that lasting change is possible.",
+  },
   { days: 180, title: '6 Months', icon: '🎊', message: 'Half a year of strength and growth.' },
   { days: 365, title: '1 Year', icon: '👑', message: 'Your journey is an inspiration to others.' },
   { days: 730, title: '2 Years', icon: '👑', message: 'Two years of incredible transformation.' },
@@ -161,14 +180,14 @@ function StatItem({
 
 // Get dynamic encouragement message based on days
 function getEncouragementMessage(days: number): string {
-  if (days === 0) return "Today is a new beginning. You can do this.";
+  if (days === 0) return 'Today is a new beginning. You can do this.';
   if (days === 1) return "The first day is the hardest. You're doing great!";
-  if (days < 7) return "Building momentum one day at a time.";
-  if (days < 30) return "Your dedication is inspiring. Keep going!";
+  if (days < 7) return 'Building momentum one day at a time.';
+  if (days < 30) return 'Your dedication is inspiring. Keep going!';
   if (days < 90) return "You're proving that lasting change is possible.";
-  if (days < 180) return "Your journey is an inspiration to others.";
-  if (days < 365) return "Half a year of strength and growth.";
-  return "Your commitment is truly remarkable.";
+  if (days < 180) return 'Your journey is an inspiration to others.';
+  if (days < 365) return 'Half a year of strength and growth.';
+  return 'Your commitment is truly remarkable.';
 }
 
 export function SobrietyCounter({
@@ -214,9 +233,7 @@ export function SobrietyCounter({
   // Check for milestone achievements
   useEffect(() => {
     const sortedMilestones = [...milestones].sort((a, b) => a.days - b.days);
-    const currentMilestoneIndex = sortedMilestones.findIndex(
-      (m) => timeElapsed.days >= m.days
-    );
+    const currentMilestoneIndex = sortedMilestones.findIndex((m) => timeElapsed.days >= m.days);
 
     if (currentMilestoneIndex > lastReachedMilestone && currentMilestoneIndex !== -1) {
       const milestone = sortedMilestones[currentMilestoneIndex];
@@ -224,14 +241,14 @@ export function SobrietyCounter({
       onMilestoneReached?.(milestone);
       // Announce to screen readers
       AccessibilityInfo.announceForAccessibility(
-        `Congratulations! You've reached ${milestone.title} clean!`
+        `Congratulations! You've reached ${milestone.title} clean!`,
       );
     }
   }, [timeElapsed.days, milestones, lastReachedMilestone, onMilestoneReached]);
 
   // Calculate progress for circular indicator
   const progress = useMemo(() => {
-    const milestoneDays = milestones.map(m => m.days).sort((a, b) => a - b);
+    const milestoneDays = milestones.map((m) => m.days).sort((a, b) => a - b);
     const nextMilestone = milestoneDays.find((m) => m > timeElapsed.days) || timeElapsed.days + 30;
     const prevMilestone = [...milestoneDays].reverse().find((m) => m <= timeElapsed.days) || 0;
     return (timeElapsed.days - prevMilestone) / (nextMilestone - prevMilestone);
@@ -239,16 +256,16 @@ export function SobrietyCounter({
 
   // Find next milestone
   const nextMilestone = useMemo(() => {
-    return milestones
-      .sort((a, b) => a.days - b.days)
-      .find((m) => m.days > timeElapsed.days);
+    return milestones.sort((a, b) => a.days - b.days).find((m) => m.days > timeElapsed.days);
   }, [milestones, timeElapsed.days]);
 
   // Build accessibility label
   const accessibilityLabel = useMemo(() => {
     let label = `${timeElapsed.days} ${timeElapsed.days === 1 ? 'day' : 'days'} clean`;
-    if (timeElapsed.weeks > 0) label += `, ${timeElapsed.weeks} ${timeElapsed.weeks === 1 ? 'week' : 'weeks'}`;
-    if (timeElapsed.months > 0) label += `, approximately ${timeElapsed.months} ${timeElapsed.months === 1 ? 'month' : 'months'}`;
+    if (timeElapsed.weeks > 0)
+      label += `, ${timeElapsed.weeks} ${timeElapsed.weeks === 1 ? 'week' : 'weeks'}`;
+    if (timeElapsed.months > 0)
+      label += `, approximately ${timeElapsed.months} ${timeElapsed.months === 1 ? 'month' : 'months'}`;
     if (nextMilestone) {
       const daysToGo = nextMilestone.days - timeElapsed.days;
       label += `. ${daysToGo} days until ${nextMilestone.title}`;
@@ -330,9 +347,14 @@ export function SobrietyCounter({
 
       {/* Next Milestone */}
       {nextMilestone && (
-        <View style={styles.milestoneContainer} accessible accessibilityLabel={`Next milestone: ${nextMilestone.title} in ${nextMilestone.days - timeElapsed.days} days`}>
+        <View
+          style={styles.milestoneContainer}
+          accessible
+          accessibilityLabel={`Next milestone: ${nextMilestone.title} in ${nextMilestone.days - timeElapsed.days} days`}
+        >
           <Text style={styles.milestoneText}>
-            Next: {nextMilestone.icon} {nextMilestone.title} ({nextMilestone.days - timeElapsed.days} days)
+            Next: {nextMilestone.icon} {nextMilestone.title} (
+            {nextMilestone.days - timeElapsed.days} days)
           </Text>
         </View>
       )}
@@ -354,138 +376,139 @@ export function SobrietyCounter({
   );
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  card: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    backgroundColor: ds.colors.bgSecondary,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerText: {
-    marginLeft: 4,
-  },
-  headerTitle: {
-    color: ds.semantic.text.onDark,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  headerSubtitle: {
-    color: ds.colors.textSecondary,
-    fontSize: 12,
-  },
-  streakBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: ds.colors.successMuted,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  streakText: {
-    color: '#4ade80',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  progressContainer: {
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  circleContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  circleContent: {
-    position: 'absolute',
-    alignItems: 'center',
-  },
-  awardIcon: {
-    marginBottom: 4,
-  },
-  daysNumber: {
-    color: ds.semantic.text.onDark,
-    fontSize: 48,
-    fontWeight: 'bold',
-  },
-  daysLabel: {
-    color: ds.colors.textTertiary,
-    fontSize: 14,
-    fontWeight: '500',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-  },
-  encouragementText: {
-    color: ds.colors.textTertiary,
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 16,
-    paddingHorizontal: 16,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 8,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  statIconContainer: {
-    marginBottom: 4,
-  },
-  statValue: {
-    color: ds.semantic.text.onDark,
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  statLabel: {
-    color: ds.colors.textSecondary,
-    fontSize: 12,
-  },
-  statDivider: {
-    width: 1,
-    backgroundColor: ds.colors.borderSubtle,
-  },
-  milestoneContainer: {
-    marginTop: 12,
-    alignItems: 'center',
-  },
-  milestoneText: {
-    color: ds.colors.textSecondary,
-    fontSize: 12,
-  },
-  shareButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    backgroundColor: ds.colors.infoMuted,
-    borderRadius: 20,
-    alignSelf: 'center',
-  },
-  shareText: {
-    color: '#60a5fa',
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 8,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    card: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      backgroundColor: ds.colors.bgSecondary,
+      borderRadius: 16,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    headerText: {
+      marginLeft: 4,
+    },
+    headerTitle: {
+      color: ds.semantic.text.onDark,
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    headerSubtitle: {
+      color: ds.colors.textSecondary,
+      fontSize: 12,
+    },
+    streakBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      backgroundColor: ds.colors.successMuted,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+    },
+    streakText: {
+      color: '#4ade80',
+      fontSize: 12,
+      fontWeight: '500',
+    },
+    progressContainer: {
+      alignItems: 'center',
+      paddingVertical: 16,
+    },
+    circleContainer: {
+      position: 'relative',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    circleContent: {
+      position: 'absolute',
+      alignItems: 'center',
+    },
+    awardIcon: {
+      marginBottom: 4,
+    },
+    daysNumber: {
+      color: ds.semantic.text.onDark,
+      fontSize: 48,
+      fontWeight: 'bold',
+    },
+    daysLabel: {
+      color: ds.colors.textTertiary,
+      fontSize: 14,
+      fontWeight: '500',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    encouragementText: {
+      color: ds.colors.textTertiary,
+      fontSize: 14,
+      textAlign: 'center',
+      marginTop: 16,
+      paddingHorizontal: 16,
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 12,
+      padding: 12,
+      marginTop: 8,
+    },
+    statItem: {
+      flex: 1,
+      alignItems: 'center',
+    },
+    statIconContainer: {
+      marginBottom: 4,
+    },
+    statValue: {
+      color: ds.semantic.text.onDark,
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    statLabel: {
+      color: ds.colors.textSecondary,
+      fontSize: 12,
+    },
+    statDivider: {
+      width: 1,
+      backgroundColor: ds.colors.borderSubtle,
+    },
+    milestoneContainer: {
+      marginTop: 12,
+      alignItems: 'center',
+    },
+    milestoneText: {
+      color: ds.colors.textSecondary,
+      fontSize: 12,
+    },
+    shareButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 16,
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      backgroundColor: ds.colors.infoMuted,
+      borderRadius: 20,
+      alignSelf: 'center',
+    },
+    shareText: {
+      color: '#60a5fa',
+      fontSize: 14,
+      fontWeight: '500',
+      marginLeft: 8,
+    },
+  });

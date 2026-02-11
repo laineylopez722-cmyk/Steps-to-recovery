@@ -108,10 +108,7 @@ export {
   themeNames,
 } from './themes';
 
-export type {
-  Theme,
-  ThemeName,
-} from './themes';
+export type { Theme, ThemeName } from './themes';
 
 // =============================================================================
 // MOTION - Animation specifications
@@ -226,7 +223,7 @@ export function useTheme(initialTheme: ThemeName = 'light'): UseThemeReturn {
 
   const isHighContrast = useMemo(
     () => themeName === 'highContrastLight' || themeName === 'highContrastDark',
-    [themeName]
+    [themeName],
   );
 
   const setTheme = useCallback((name: ThemeName) => {

@@ -88,15 +88,15 @@ export function StepProgressTracker({
         step.status === 'completed'
           ? 'completed'
           : step.status === 'current'
-          ? 'current step'
-          : 'not started';
+            ? 'current step'
+            : 'not started';
       AccessibilityInfo.announceForAccessibility(
-        `Step ${step.number}: ${step.title}. ${statusText}`
+        `Step ${step.number}: ${step.title}. ${statusText}`,
       );
 
       onStepPress?.(step);
     },
-    [onStepPress]
+    [onStepPress],
   );
 
   return (
@@ -258,7 +258,7 @@ function StepNode({ step, isCurrent, onPress, reducedMotion }: StepNodeProps) {
     if (!reducedMotion) {
       scale.value = withSequence(
         withTiming(0.9, { duration: ANIMATION.accelerated }),
-        withSpring(1, { damping: 12, stiffness: 100 })
+        withSpring(1, { damping: 12, stiffness: 100 }),
       );
     }
     onPress();
@@ -292,7 +292,11 @@ function StepNode({ step, isCurrent, onPress, reducedMotion }: StepNodeProps) {
   const size = DIMENSIONS.stepNodeSize;
 
   const accessibilityLabel = `Step ${step.number}${isCurrent ? ', current step' : ''}. ${
-    step.status === 'completed' ? 'Completed' : step.status === 'current' ? 'In progress' : 'Not started'
+    step.status === 'completed'
+      ? 'Completed'
+      : step.status === 'current'
+        ? 'In progress'
+        : 'Not started'
   }. ${step.title}`;
 
   return (
@@ -324,11 +328,7 @@ function StepNode({ step, isCurrent, onPress, reducedMotion }: StepNodeProps) {
             fontSize: TYPOGRAPHY.labelLarge.fontSize,
             fontWeight: TYPOGRAPHY.labelLarge.fontWeight,
             color:
-              step.status === 'current'
-                ? COLORS.primary
-                : isDark
-                ? COLORS.gray400
-                : COLORS.gray500,
+              step.status === 'current' ? COLORS.primary : isDark ? COLORS.gray400 : COLORS.gray500,
           }}
         >
           {step.number}

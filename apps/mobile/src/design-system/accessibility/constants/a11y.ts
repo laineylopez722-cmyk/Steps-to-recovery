@@ -339,7 +339,7 @@ export function getTouchTargetSize(context: 'default' | 'emergency' | 'crisis' |
  */
 export function getRequiredContrastRatio(
   context: 'normal' | 'large' | 'critical',
-  level: ContrastLevel = 'AAA'
+  level: ContrastLevel = 'AAA',
 ): number {
   const isLarge = context === 'large';
 

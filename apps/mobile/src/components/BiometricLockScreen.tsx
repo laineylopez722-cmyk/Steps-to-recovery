@@ -81,7 +81,7 @@ export function BiometricLockScreen({
       handleBiometricAuth();
     }, 500);
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Intentionally run only on mount
   }, []);
 
   const handleBiometricAuth = useCallback(async (): Promise<void> => {
@@ -122,15 +122,10 @@ export function BiometricLockScreen({
         />
         <SafeAreaView style={styles.safeArea}>
           <View style={styles.pinContainer}>
-            <Text
-              style={styles.pinTitle}
-              accessibilityRole="header"
-            >
+            <Text style={styles.pinTitle} accessibilityRole="header">
               Enter PIN
             </Text>
-            <Text style={styles.pinSubtitle}>
-              Enter your 4-digit PIN to unlock
-            </Text>
+            <Text style={styles.pinSubtitle}>Enter your 4-digit PIN to unlock</Text>
 
             {/* PIN Dots */}
             <View
@@ -139,18 +134,12 @@ export function BiometricLockScreen({
               accessibilityRole="text"
             >
               {[0, 1, 2, 3].map((i) => (
-                <View
-                  key={i}
-                  style={[styles.pinDot, i < pin.length && styles.pinDotFilled]}
-                />
+                <View key={i} style={[styles.pinDot, i < pin.length && styles.pinDotFilled]} />
               ))}
             </View>
 
             {pinError ? (
-              <Text
-                style={styles.pinError}
-                accessibilityRole="alert"
-              >
+              <Text style={styles.pinError} accessibilityRole="alert">
                 {pinError}
               </Text>
             ) : null}
@@ -247,31 +236,19 @@ export function BiometricLockScreen({
           <View style={styles.iconArea}>
             <Animated.View style={[styles.pulseRing, pulseStyle]} />
             <LinearGradient colors={gradients.primary} style={styles.appIconGradient}>
-              <MaterialIcons
-                name="self-improvement"
-                size={48}
-                color={ds.semantic.text.onDark}
-              />
+              <MaterialIcons name="self-improvement" size={48} color={ds.semantic.text.onDark} />
             </LinearGradient>
           </View>
 
-          <Text
-            style={styles.appName}
-            accessibilityRole="header"
-          >
+          <Text style={styles.appName} accessibilityRole="header">
             Steps to Recovery
           </Text>
-          <Text style={styles.lockMessage}>
-            Tap to unlock
-          </Text>
+          <Text style={styles.lockMessage}>Tap to unlock</Text>
 
           {/* Biometric Button */}
           <Pressable
             onPress={handleBiometricAuth}
-            style={({ pressed }) => [
-              styles.authButton,
-              pressed && styles.authButtonPressed,
-            ]}
+            style={({ pressed }) => [styles.authButton, pressed && styles.authButtonPressed]}
             disabled={isAuthenticating}
             accessibilityLabel={`Unlock app with ${biometricType}`}
             accessibilityRole="button"
@@ -282,11 +259,7 @@ export function BiometricLockScreen({
               colors={isAuthenticating ? gradients.success : gradients.primary}
               style={styles.authButtonGradient}
             >
-              <MaterialIcons
-                name={biometricIcon}
-                size={36}
-                color={ds.semantic.text.onDark}
-              />
+              <MaterialIcons name={biometricIcon} size={36} color={ds.semantic.text.onDark} />
             </LinearGradient>
           </Pressable>
 
@@ -478,7 +451,7 @@ const createStyles = (ds: DS) => ({
     justifyContent: 'center' as const,
   },
   numPadButtonPressed: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: ds.colors.borderStrong,
   },
   numPadDigit: {
     fontSize: 28,

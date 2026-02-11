@@ -11,3 +11,8 @@ export { InventoryBuilder } from './InventoryBuilder';
 export { AmendsTracker } from './AmendsTracker';
 export { DailyReview } from './DailyReview';
 export type { DailyReviewData } from './DailyReview';
+
+// Enhanced AI components
+export { SuggestedResponses } from './SuggestedResponses';
+export { RichMessageCard, parseRichCards } from './RichMessageCard';
+export { VoiceInput } from './VoiceInput';

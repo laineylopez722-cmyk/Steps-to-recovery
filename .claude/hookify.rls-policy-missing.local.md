@@ -19,6 +19,7 @@ conditions:
 You're creating/modifying a Supabase table without Row-Level Security (RLS) policies!
 
 **Why this is CRITICAL:**
+
 - RLS is the PRIMARY defense against unauthorized data access
 - Without RLS, users could query other users' encrypted journal entries
 - Violates the privacy-first principle
@@ -26,10 +27,12 @@ You're creating/modifying a Supabase table without Row-Level Security (RLS) poli
 
 **What to do:**
 Every table with user data MUST have:
+
 1. RLS enabled
 2. A policy that filters by `auth.uid()`
 
 **Example:**
+
 ```sql
 -- Create table
 CREATE TABLE journal_entries (
@@ -61,6 +64,7 @@ CREATE POLICY "Sponsors can read shared entries"
 ```
 
 **Tables requiring RLS:**
+
 - journal_entries ✓
 - daily_checkins ✓
 - step_work ✓

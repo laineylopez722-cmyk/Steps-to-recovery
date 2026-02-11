@@ -18,6 +18,7 @@ import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { useBiometricLock } from '../../../hooks/useBiometricLock';
+import { useQuickEscape } from '../../../hooks/useQuickEscape';
 import { usePinEntry } from '../../../hooks/usePinEntry';
 import { logger } from '../../../utils/logger';
 
@@ -41,58 +42,81 @@ export function SecuritySettingsScreen(): React.ReactElement {
     setPin,
   } = useBiometricLock();
 
+  const { isEnabled: quickEscapeEnabled, setEnabled: setQuickEscapeEnabled } = useQuickEscape();
+
   const [showSetPin, setShowSetPin] = useState(false);
   const [showTimeoutPicker, setShowTimeoutPicker] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [pinStep, setPinStep] = useState<'enter' | 'confirm'>('enter');
   const [pinError, setPinError] = useState('');
 
-  const handleToggleLock = useCallback(async (value: boolean): Promise<void> => {
-    if (value) {
-      const success = await enable();
-      if (success) {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-        logger.info('Biometric lock enabled via settings');
-      }
-    } else {
-      await disable();
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-      logger.info('Biometric lock disabled via settings');
-    }
-  }, [enable, disable]);
-
-  const handleToggleBackground = useCallback(async (value: boolean): Promise<void> => {
-    await updateSettings({ lockOnBackground: value });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-  }, [updateSettings]);
-
-  const handleSelectTimeout = useCallback(async (value: number): Promise<void> => {
-    await updateSettings({ lockTimeout: value });
-    setShowTimeoutPicker(false);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-  }, [updateSettings]);
-
-  const handleSetPin = useCallback(async (enteredPin: string): Promise<void> => {
-    if (pinStep === 'enter') {
-      setNewPin(enteredPin);
-      setPinStep('confirm');
-      setPinError('');
-    } else {
-      if (enteredPin === newPin) {
-        await setPin(enteredPin);
-        setShowSetPin(false);
-        setPinStep('enter');
-        setNewPin('');
-        setPinError('');
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+  const handleToggleLock = useCallback(
+    async (value: boolean): Promise<void> => {
+      if (value) {
+        const success = await enable();
+        if (success) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+          logger.info('Biometric lock enabled via settings');
+        }
       } else {
-        setPinError('PINs do not match. Try again.');
-        setPinStep('enter');
-        setNewPin('');
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+        await disable();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+        logger.info('Biometric lock disabled via settings');
       }
-    }
-  }, [pinStep, newPin, setPin]);
+    },
+    [enable, disable],
+  );
+
+  const handleToggleBackground = useCallback(
+    async (value: boolean): Promise<void> => {
+      await updateSettings({ lockOnBackground: value });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    },
+    [updateSettings],
+  );
+
+  const handleSelectTimeout = useCallback(
+    async (value: number): Promise<void> => {
+      await updateSettings({ lockTimeout: value });
+      setShowTimeoutPicker(false);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    },
+    [updateSettings],
+  );
+
+  const handleToggleQuickEscape = useCallback(
+    async (value: boolean): Promise<void> => {
+      await setQuickEscapeEnabled(value);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      logger.info('Quick escape toggled via settings', { enabled: value });
+    },
+    [setQuickEscapeEnabled],
+  );
+
+  const handleSetPin = useCallback(
+    async (enteredPin: string): Promise<void> => {
+      if (pinStep === 'enter') {
+        setNewPin(enteredPin);
+        setPinStep('confirm');
+        setPinError('');
+      } else {
+        if (enteredPin === newPin) {
+          await setPin(enteredPin);
+          setShowSetPin(false);
+          setPinStep('enter');
+          setNewPin('');
+          setPinError('');
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+        } else {
+          setPinError('PINs do not match. Try again.');
+          setPinStep('enter');
+          setNewPin('');
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+        }
+      }
+    },
+    [pinStep, newPin, setPin],
+  );
 
   const getTimeoutLabel = (): string => {
     const option = TIMEOUT_OPTIONS.find((o) => o.value === settings.lockTimeout);
@@ -109,10 +133,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
         >
           {/* Header */}
           <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
-            <Text
-              style={styles.title}
-              accessibilityRole="header"
-            >
+            <Text style={styles.title} accessibilityRole="header">
               Privacy & Security
             </Text>
             <Text style={styles.subtitle}>
@@ -126,7 +147,12 @@ export function SecuritySettingsScreen(): React.ReactElement {
             <View style={styles.cardGroup}>
               <View style={styles.settingItem}>
                 <View style={styles.settingInfo}>
-                  <View style={[styles.settingIcon, { backgroundColor: ds.semantic.intent.primary.muted }]}>
+                  <View
+                    style={[
+                      styles.settingIcon,
+                      { backgroundColor: ds.semantic.intent.primary.muted },
+                    ]}
+                  >
                     <Feather
                       name={biometricType === 'Face ID' ? 'eye' : 'smartphone'}
                       size={20}
@@ -161,14 +187,21 @@ export function SecuritySettingsScreen(): React.ReactElement {
                 {/* Lock on background */}
                 <View style={styles.settingItem}>
                   <View style={styles.settingInfo}>
-                    <View style={[styles.settingIcon, { backgroundColor: ds.semantic.intent.secondary.muted }]}>
-                      <Feather name="minimize-2" size={20} color={ds.semantic.intent.secondary.solid} />
+                    <View
+                      style={[
+                        styles.settingIcon,
+                        { backgroundColor: ds.semantic.intent.secondary.muted },
+                      ]}
+                    >
+                      <Feather
+                        name="minimize-2"
+                        size={20}
+                        color={ds.semantic.intent.secondary.solid}
+                      />
                     </View>
                     <View style={styles.settingText}>
                       <Text style={styles.settingTitle}>Lock When Backgrounded</Text>
-                      <Text style={styles.settingSubtitle}>
-                        Re-lock when you leave the app
-                      </Text>
+                      <Text style={styles.settingSubtitle}>Re-lock when you leave the app</Text>
                     </View>
                   </View>
                   <Toggle
@@ -192,14 +225,29 @@ export function SecuritySettingsScreen(): React.ReactElement {
                   accessibilityState={{ disabled: !settings.lockOnBackground }}
                 >
                   <View style={styles.settingInfo}>
-                    <View style={[styles.settingIcon, { backgroundColor: ds.semantic.intent.secondary.muted }]}>
+                    <View
+                      style={[
+                        styles.settingIcon,
+                        { backgroundColor: ds.semantic.intent.secondary.muted },
+                      ]}
+                    >
                       <Feather name="clock" size={20} color={ds.semantic.intent.secondary.solid} />
                     </View>
                     <View style={styles.settingText}>
-                      <Text style={[styles.settingTitle, !settings.lockOnBackground && styles.disabledText]}>
+                      <Text
+                        style={[
+                          styles.settingTitle,
+                          !settings.lockOnBackground && styles.disabledText,
+                        ]}
+                      >
                         Lock Timeout
                       </Text>
-                      <Text style={[styles.settingSubtitle, !settings.lockOnBackground && styles.disabledText]}>
+                      <Text
+                        style={[
+                          styles.settingSubtitle,
+                          !settings.lockOnBackground && styles.disabledText,
+                        ]}
+                      >
                         {getTimeoutLabel()}
                       </Text>
                     </View>
@@ -223,7 +271,12 @@ export function SecuritySettingsScreen(): React.ReactElement {
                   accessibilityHint="Set a backup PIN to unlock when biometrics fail"
                 >
                   <View style={styles.settingInfo}>
-                    <View style={[styles.settingIcon, { backgroundColor: ds.semantic.intent.secondary.muted }]}>
+                    <View
+                      style={[
+                        styles.settingIcon,
+                        { backgroundColor: ds.semantic.intent.secondary.muted },
+                      ]}
+                    >
                       <Feather name="hash" size={20} color={ds.semantic.intent.secondary.solid} />
                     </View>
                     <View style={styles.settingText}>
@@ -239,16 +292,51 @@ export function SecuritySettingsScreen(): React.ReactElement {
             </Animated.View>
           ) : null}
 
+          {/* Quick Escape */}
+          <Animated.View entering={MotionTransitions.cardEnter(3)}>
+            <Text style={styles.sectionHeader}>SAFETY</Text>
+            <View style={styles.cardGroup}>
+              <View style={styles.settingItem}>
+                <View style={styles.settingInfo}>
+                  <View
+                    style={[
+                      styles.settingIcon,
+                      { backgroundColor: ds.semantic.intent.primary.muted },
+                    ]}
+                  >
+                    <Feather
+                      name="zap"
+                      size={20}
+                      color={ds.semantic.intent.primary.solid}
+                    />
+                  </View>
+                  <View style={styles.settingText}>
+                    <Text style={styles.settingTitle}>Quick Escape</Text>
+                    <Text style={styles.settingSubtitle}>
+                      Triple-tap the top of the screen to instantly lock the app
+                    </Text>
+                  </View>
+                </View>
+                <Toggle
+                  value={quickEscapeEnabled}
+                  onValueChange={handleToggleQuickEscape}
+                  accessibilityLabel="Enable quick escape"
+                  accessibilityHint="Triple-tap the top of the screen to instantly lock the app and require re-authentication"
+                />
+              </View>
+            </View>
+          </Animated.View>
+
           {/* Privacy Info */}
-          <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.infoCard}>
+          <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.infoCard}>
             <View style={styles.infoIcon}>
               <Feather name="shield" size={20} color={ds.semantic.intent.secondary.solid} />
             </View>
             <View style={styles.infoContent}>
               <Text style={styles.infoTitle}>Your Data is Protected</Text>
               <Text style={styles.infoText}>
-                All journal entries and step work are encrypted with AES-256. Biometric lock adds
-                an extra layer of protection to prevent unauthorized access.
+                All journal entries and step work are encrypted with AES-256. Biometric lock adds an
+                extra layer of protection to prevent unauthorized access.
               </Text>
             </View>
           </Animated.View>
@@ -310,7 +398,11 @@ export function SecuritySettingsScreen(): React.ReactElement {
 }
 
 /** Inline PIN setup component for the modal */
-function PinSetupInput({ onComplete }: { onComplete: (pin: string) => Promise<void> }): React.ReactElement {
+function PinSetupInput({
+  onComplete,
+}: {
+  onComplete: (pin: string) => Promise<void>;
+}): React.ReactElement {
   const styles = useThemedStyles(createPinStyles);
   const ds = useDs();
 
@@ -414,7 +506,7 @@ const createPinStyles = (ds: DS) => ({
     justifyContent: 'center' as const,
   },
   miniBtnPressed: {
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: ds.colors.borderStrong,
   },
   miniBtnText: {
     fontSize: 22,

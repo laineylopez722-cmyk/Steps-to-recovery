@@ -8,11 +8,10 @@ tags:
   - critical
 
 env:
-  OFFLINE_ENTRY_TITLE: "Offline Test Entry"
-  OFFLINE_ENTRY_CONTENT: "Created while offline - should sync when online"
+  OFFLINE_ENTRY_TITLE: 'Offline Test Entry'
+  OFFLINE_ENTRY_CONTENT: 'Created while offline - should sync when online'
 
 ---
-
 # Launch app
 - launchApp
 
@@ -24,22 +23,22 @@ env:
 
 - runFlow:
     when:
-      visible: "Welcome Back"
+      visible: 'Welcome Back'
     commands:
-      - tapOn: "Sign Up"
+      - tapOn: 'Sign Up'
       - tapOn:
-          id: "signup-email-input"
-      - inputText: "sync.{{RANDOM}}@test.com"
+          id: 'signup-email-input'
+      - inputText: 'sync.{{RANDOM}}@test.com'
       - tapOn:
-          id: "signup-password-input"
-      - inputText: "TestPass123!"
+          id: 'signup-password-input'
+      - inputText: 'TestPass123!'
       - tapOn:
-          id: "signup-confirm-password-input"
-      - inputText: "TestPass123!"
+          id: 'signup-confirm-password-input'
+      - inputText: 'TestPass123!'
       - tapOn:
-          id: "signup-submit-button"
+          id: 'signup-submit-button'
       - extendedWaitUntil:
-          visible: "Clean Time"
+          visible: 'Clean Time'
           timeout: 30000
 
 # ============================================
@@ -48,47 +47,47 @@ env:
 
 # Check sync status indicator on home screen
 - assertVisible:
-    id: "sync-status-indicator"
+    id: 'sync-status-indicator'
 
 # ============================================
 # Navigate to Journal and Create Entry
 # ============================================
 
-- tapOn: "Journal"
+- tapOn: 'Journal'
 
 - extendedWaitUntil:
-    visible: "Journal"
+    visible: 'Journal'
     timeout: 10000
 
 # ============================================
 # Create Entry (Will queue for sync)
 # ============================================
 
-- tapOn: "Create new journal entry"
+- tapOn: 'Create new journal entry'
 
 - extendedWaitUntil:
-    visible: "New Entry"
+    visible: 'New Entry'
     timeout: 10000
 
 # Fill in entry details
 - tapOn:
-    id: "journal-title-input"
-- inputText: "${OFFLINE_ENTRY_TITLE}"
+    id: 'journal-title-input'
+- inputText: '${OFFLINE_ENTRY_TITLE}'
 
 - tapOn:
-    id: "journal-content-input"
-- inputText: "${OFFLINE_ENTRY_CONTENT}"
+    id: 'journal-content-input'
+- inputText: '${OFFLINE_ENTRY_CONTENT}'
 
 # Save entry
 - tapOn:
-    id: "journal-save-button"
+    id: 'journal-save-button'
 
 - extendedWaitUntil:
-    visible: "Journal"
+    visible: 'Journal'
     timeout: 15000
 
 # Verify entry created locally
-- assertVisible: "${OFFLINE_ENTRY_TITLE}"
+- assertVisible: '${OFFLINE_ENTRY_TITLE}'
 
 # Take screenshot of local entry
 - takeScreenshot: entry-created-locally
@@ -98,15 +97,15 @@ env:
 # ============================================
 
 # Go back to home to check sync status
-- tapOn: "Home"
+- tapOn: 'Home'
 
 - extendedWaitUntil:
-    visible: "Clean Time"
+    visible: 'Clean Time'
     timeout: 10000
 
 # Verify sync indicator shows pending
 - assertVisible:
-    id: "sync-pending-indicator"
+    id: 'sync-pending-indicator'
 
 # ============================================
 # Trigger Sync (simulate going online)
@@ -120,14 +119,14 @@ env:
 # Wait for sync to complete
 - extendedWaitUntil:
     visible:
-      id: "sync-completed-indicator"
+      id: 'sync-completed-indicator'
     timeout: 30000
 
 # Alternative: check sync status changed
 - runFlow:
     when:
       notVisible:
-        id: "sync-pending-indicator"
+        id: 'sync-pending-indicator'
     commands:
       - takeScreenshot: sync-completed
 
@@ -136,14 +135,14 @@ env:
 # ============================================
 
 # Go back to journal to verify entry still there
-- tapOn: "Journal"
+- tapOn: 'Journal'
 
 - extendedWaitUntil:
-    visible: "Journal"
+    visible: 'Journal'
     timeout: 10000
 
 # Verify entry exists after sync
-- assertVisible: "${OFFLINE_ENTRY_TITLE}"
+- assertVisible: '${OFFLINE_ENTRY_TITLE}'
 
 # ============================================
 # Final Verification

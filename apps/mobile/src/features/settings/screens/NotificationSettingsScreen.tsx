@@ -1,16 +1,16 @@
 /**
  * Notification Settings Screen
- * 
+ *
  * Apple Settings-inspired notification preferences.
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { 
-  Platform, 
-  ScrollView, 
-  StyleSheet, 
-  View, 
-  Text, 
+import {
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+  Text,
   Pressable,
   Switch,
   Alert,
@@ -31,10 +31,10 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { useDs } from '../../../design-system/DsProvider';
 
 // Toggle Row Component
-function ToggleRow({ 
-  label, 
+function ToggleRow({
+  label,
   subtitle,
-  value, 
+  value,
   onValueChange,
   disabled,
 }: {
@@ -166,12 +166,8 @@ export function NotificationSettingsScreen(): React.ReactElement {
   const navigation = useNavigation();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
-  const { 
-    permissionStatus, 
-    requestPermissions, 
-    notificationsEnabled, 
-    setNotificationsEnabled 
-  } = useNotifications();
+  const { permissionStatus, requestPermissions, notificationsEnabled, setNotificationsEnabled } =
+    useNotifications();
 
   const {
     preferences,
@@ -188,27 +184,30 @@ export function NotificationSettingsScreen(): React.ReactElement {
     refreshScheduled();
   }, [refreshScheduled]);
 
-  const handleToggleNotifications = useCallback(async (enabled: boolean) => {
-    if (enabled && permissionStatus !== 'granted') {
-      const granted = await requestPermissions();
-      if (!granted) {
-        Alert.alert('Notifications Disabled', 'Enable notifications in device settings.');
-        return;
+  const handleToggleNotifications = useCallback(
+    async (enabled: boolean) => {
+      if (enabled && permissionStatus !== 'granted') {
+        const granted = await requestPermissions();
+        if (!granted) {
+          Alert.alert('Notifications Disabled', 'Enable notifications in device settings.');
+          return;
+        }
       }
-    }
 
-    setNotificationsEnabled(enabled);
-    setIsUpdating(true);
+      setNotificationsEnabled(enabled);
+      setIsUpdating(true);
 
-    try {
-      await toggleAll(enabled);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-    } catch {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
-    } finally {
-      setIsUpdating(false);
-    }
-  }, [permissionStatus, requestPermissions, setNotificationsEnabled, toggleAll]);
+      try {
+        await toggleAll(enabled);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      } catch {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [permissionStatus, requestPermissions, setNotificationsEnabled, toggleAll],
+  );
 
   const handleTimeChange = useCallback(
     async (
@@ -269,10 +268,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
     }
 
     try {
-      await sendTestNotification(
-        'Test Notification',
-        'This is how your reminders will look!'
-      );
+      await sendTestNotification('Test Notification', 'This is how your reminders will look!');
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     } catch {
       Alert.alert('Error', 'Failed to send test notification.');
@@ -313,7 +309,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
           <View style={styles.headerSpacer} />
         </View>
 
-        <ScrollView 
+        <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
@@ -346,7 +342,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
           {notificationsEnabled && permissionGranted && (
             <>
               <Text style={styles.sectionHeader}>Daily Reminders</Text>
-              
+
               <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
                 <TimePickerRow
                   label="Morning check-in"
@@ -357,9 +353,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
                   onToggle={(val) => handleToggleReminder('morningCheckIn', val)}
                   disabled={isUpdating}
                 />
-                
+
                 <View style={styles.divider} />
-                
+
                 <TimePickerRow
                   label="Evening reflection"
                   enabled={preferences.eveningCheckIn.enabled}
@@ -448,7 +444,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
 
               {/* Info Card */}
               <Animated.View entering={FadeInDown.delay(300).duration(300)} style={styles.infoCard}>
-                <Text style={styles.infoTitle}>{scheduledNotifications.length} notifications scheduled</Text>
+                <Text style={styles.infoTitle}>
+                  {scheduledNotifications.length} notifications scheduled
+                </Text>
                 <Text style={styles.infoText}>
                   Includes daily reminders and milestone celebrations.
                 </Text>
@@ -461,8 +459,8 @@ export function NotificationSettingsScreen(): React.ReactElement {
             <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
               <Text style={styles.permissionTitle}>Allow Notifications</Text>
               <Text style={styles.permissionText}>
-                We'll send reminders for daily check-ins, celebrate your milestones, and share
-                words of encouragement.
+                We'll send reminders for daily check-ins, celebrate your milestones, and share words
+                of encouragement.
               </Text>
               <Pressable
                 onPress={requestPermissions}
@@ -483,219 +481,220 @@ export function NotificationSettingsScreen(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: ds.sizes.contentPadding,
-    paddingTop: ds.space[4],
-  },
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
+    scroll: {
+      flex: 1,
+    },
+    content: {
+      paddingHorizontal: ds.sizes.contentPadding,
+      paddingTop: ds.space[4],
+    },
 
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: ds.space[3],
-    paddingVertical: ds.space[2],
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: ds.colors.borderSubtle,
-  },
-  backBtn: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.colors.textPrimary,
-  },
-  headerSpacer: {
-    width: 44,
-  },
+    // Header
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: ds.space[3],
+      paddingVertical: ds.space[2],
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: ds.colors.borderSubtle,
+    },
+    backBtn: {
+      width: 44,
+      height: 44,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    headerTitle: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.colors.textPrimary,
+    },
+    headerSpacer: {
+      width: 44,
+    },
 
-  // Warning Card
-  warningCard: {
-    flexDirection: 'row',
-    backgroundColor: ds.colors.warningMuted,
-    borderRadius: ds.radius.lg,
-    padding: ds.space[4],
-    marginBottom: ds.space[4],
-  },
-  warningContent: {
-    flex: 1,
-    marginLeft: ds.space[3],
-  },
-  warningTitle: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.colors.warning,
-  },
-  warningText: {
-    ...ds.typography.caption,
-    color: ds.colors.textSecondary,
-    marginTop: 2,
-  },
+    // Warning Card
+    warningCard: {
+      flexDirection: 'row',
+      backgroundColor: ds.colors.warningMuted,
+      borderRadius: ds.radius.lg,
+      padding: ds.space[4],
+      marginBottom: ds.space[4],
+    },
+    warningContent: {
+      flex: 1,
+      marginLeft: ds.space[3],
+    },
+    warningTitle: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.colors.warning,
+    },
+    warningText: {
+      ...ds.typography.caption,
+      color: ds.colors.textSecondary,
+      marginTop: 2,
+    },
 
-  // Card
-  card: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.lg,
-    marginBottom: ds.space[4],
-  },
+    // Card
+    card: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.lg,
+      marginBottom: ds.space[4],
+    },
 
-  // Toggle Row
-  toggleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: ds.space[4],
-  },
-  toggleContent: {
-    flex: 1,
-    marginRight: ds.space[4],
-  },
-  toggleLabel: {
-    ...ds.typography.body,
-    color: ds.colors.textPrimary,
-  },
-  toggleSubtitle: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginTop: 2,
-  },
+    // Toggle Row
+    toggleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: ds.space[4],
+    },
+    toggleContent: {
+      flex: 1,
+      marginRight: ds.space[4],
+    },
+    toggleLabel: {
+      ...ds.typography.body,
+      color: ds.colors.textPrimary,
+    },
+    toggleSubtitle: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginTop: 2,
+    },
 
-  // Time Row
-  timeRow: {
-    padding: ds.space[4],
-  },
-  timeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  timeInfo: {
-    flex: 1,
-  },
-  timeLabel: {
-    ...ds.typography.body,
-    color: ds.colors.textPrimary,
-  },
-  timeValue: {
-    ...ds.typography.caption,
-    color: ds.colors.accent,
-    marginTop: 4,
-  },
-  pickerContainer: {
-    marginTop: ds.space[4],
-    alignItems: 'center',
-  },
-  doneBtn: {
-    backgroundColor: ds.colors.accent,
-    paddingHorizontal: ds.space[6],
-    paddingVertical: ds.space[3],
-    borderRadius: ds.radius.md,
-    marginTop: ds.space[3],
-  },
-  doneBtnText: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.semantic.surface.app,
-  },
+    // Time Row
+    timeRow: {
+      padding: ds.space[4],
+    },
+    timeHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    timeInfo: {
+      flex: 1,
+    },
+    timeLabel: {
+      ...ds.typography.body,
+      color: ds.colors.textPrimary,
+    },
+    timeValue: {
+      ...ds.typography.caption,
+      color: ds.colors.accent,
+      marginTop: 4,
+    },
+    pickerContainer: {
+      marginTop: ds.space[4],
+      alignItems: 'center',
+    },
+    doneBtn: {
+      backgroundColor: ds.colors.accent,
+      paddingHorizontal: ds.space[6],
+      paddingVertical: ds.space[3],
+      borderRadius: ds.radius.md,
+      marginTop: ds.space[3],
+    },
+    doneBtnText: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.semantic.surface.app,
+    },
 
-  divider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: ds.colors.divider,
-    marginHorizontal: ds.space[4],
-  },
+    divider: {
+      height: StyleSheet.hairlineWidth,
+      backgroundColor: ds.colors.divider,
+      marginHorizontal: ds.space[4],
+    },
 
-  // Section Header
-  sectionHeader: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginTop: ds.space[4],
-    marginBottom: ds.space[2],
-    marginLeft: ds.space[1],
-  },
+    // Section Header
+    sectionHeader: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginTop: ds.space[4],
+      marginBottom: ds.space[2],
+      marginLeft: ds.space[1],
+    },
 
-  // Buttons
-  applyBtn: {
-    backgroundColor: ds.colors.accent,
-    borderRadius: ds.radius.lg,
-    paddingVertical: ds.space[4],
-    alignItems: 'center',
-    marginBottom: ds.space[3],
-  },
-  applyBtnText: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.semantic.surface.app,
-  },
-  testBtn: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.lg,
-    paddingVertical: ds.space[4],
-    alignItems: 'center',
-    marginBottom: ds.space[6],
-  },
-  testBtnText: {
-    ...ds.typography.body,
-    fontWeight: '500',
-    color: ds.colors.textSecondary,
-  },
+    // Buttons
+    applyBtn: {
+      backgroundColor: ds.colors.accent,
+      borderRadius: ds.radius.lg,
+      paddingVertical: ds.space[4],
+      alignItems: 'center',
+      marginBottom: ds.space[3],
+    },
+    applyBtnText: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.semantic.surface.app,
+    },
+    testBtn: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.lg,
+      paddingVertical: ds.space[4],
+      alignItems: 'center',
+      marginBottom: ds.space[6],
+    },
+    testBtnText: {
+      ...ds.typography.body,
+      fontWeight: '500',
+      color: ds.colors.textSecondary,
+    },
 
-  // Info Card
-  infoCard: {
-    backgroundColor: ds.colors.accentSubtle,
-    borderRadius: ds.radius.lg,
-    padding: ds.space[4],
-  },
-  infoTitle: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.colors.textPrimary,
-  },
-  infoText: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginTop: ds.space[1],
-  },
+    // Info Card
+    infoCard: {
+      backgroundColor: ds.colors.accentSubtle,
+      borderRadius: ds.radius.lg,
+      padding: ds.space[4],
+    },
+    infoTitle: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.colors.textPrimary,
+    },
+    infoText: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginTop: ds.space[1],
+    },
 
-  // Permission
-  permissionTitle: {
-    ...ds.typography.h3,
-    color: ds.colors.textPrimary,
-    padding: ds.space[4],
-    paddingBottom: ds.space[2],
-  },
-  permissionText: {
-    ...ds.typography.body,
-    color: ds.colors.textTertiary,
-    paddingHorizontal: ds.space[4],
-    paddingBottom: ds.space[4],
-  },
-  permissionBtn: {
-    backgroundColor: ds.colors.accent,
-    margin: ds.space[4],
-    marginTop: 0,
-    paddingVertical: ds.space[4],
-    borderRadius: ds.radius.lg,
-    alignItems: 'center',
-  },
-  permissionBtnText: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.semantic.surface.app,
-  },
-} as const);
+    // Permission
+    permissionTitle: {
+      ...ds.typography.h3,
+      color: ds.colors.textPrimary,
+      padding: ds.space[4],
+      paddingBottom: ds.space[2],
+    },
+    permissionText: {
+      ...ds.typography.body,
+      color: ds.colors.textTertiary,
+      paddingHorizontal: ds.space[4],
+      paddingBottom: ds.space[4],
+    },
+    permissionBtn: {
+      backgroundColor: ds.colors.accent,
+      margin: ds.space[4],
+      marginTop: 0,
+      paddingVertical: ds.space[4],
+      borderRadius: ds.radius.lg,
+      alignItems: 'center',
+    },
+    permissionBtnText: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.semantic.surface.app,
+    },
+  }) as const;

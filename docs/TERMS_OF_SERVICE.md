@@ -15,6 +15,7 @@ Welcome to Steps to Recovery ("we," "us," "our," or the "App"). These Terms of S
 ### Eligibility
 
 You must be at least **13 years old** to use the Services. By using the Services, you represent and warrant that:
+
 - You are at least 13 years of age
 - You have the legal capacity to enter into these Terms
 - You are not prohibited from using the Services under applicable laws
@@ -58,6 +59,7 @@ The App is designed to work primarily offline, with optional cloud synchronizati
 ### Creating an Account
 
 To use certain features, you must create an account by providing:
+
 - A valid email address
 - A secure password
 - Agreement to these Terms and our Privacy Policy
@@ -65,12 +67,14 @@ To use certain features, you must create an account by providing:
 ### Account Security
 
 You are responsible for:
+
 - Maintaining the confidentiality of your account credentials
 - All activities that occur under your account
 - Notifying us immediately of any unauthorized access
 - Ensuring your device is secure (biometric lock, passcode, etc.)
 
 **Important:** Because of our encryption design:
+
 - We cannot recover your data if you lose your device and haven't enabled cloud sync
 - We cannot reset your encryption key
 - We cannot access your journal entries or step work, even if requested
@@ -78,6 +82,7 @@ You are responsible for:
 ### Account Termination
 
 We may suspend or terminate your account if:
+
 - You violate these Terms
 - You engage in fraudulent or illegal activities
 - Your account remains inactive for more than 2 years
@@ -92,6 +97,7 @@ You may delete your account at any time through the app settings.
 ### Your Content
 
 You retain all rights to the content you create in the App (journal entries, step work, reflections, etc.). By using the Services, you grant us a limited license to:
+
 - Store your encrypted data on your device
 - Sync your encrypted data to our secure servers (if you enable cloud sync)
 - Process your data as necessary to provide the Services
@@ -99,6 +105,7 @@ You retain all rights to the content you create in the App (journal entries, ste
 ### End-to-End Encryption
 
 **Critical Understanding:**
+
 - All sensitive content is encrypted on your device before storage
 - We use AES-256-CBC encryption with keys stored only on your device
 - **We cannot decrypt, read, or access your journal entries, step work, or personal reflections**
@@ -107,6 +114,7 @@ You retain all rights to the content you create in the App (journal entries, ste
 ### Prohibited Content
 
 You agree not to use the Services to create, store, or share content that:
+
 - Is illegal, harmful, or promotes illegal activities
 - Infringes on intellectual property rights
 - Contains malware, viruses, or harmful code
@@ -117,6 +125,7 @@ You agree not to use the Services to create, store, or share content that:
 ### Content Moderation
 
 Because your content is encrypted, we cannot monitor or moderate it. However, we reserve the right to:
+
 - Terminate accounts of users who violate these Terms
 - Cooperate with law enforcement when legally required
 - Remove any unencrypted content that violates these Terms
@@ -141,6 +150,7 @@ Our commitment to your privacy is fundamental. Please review our [Privacy Policy
 ### Our Intellectual Property
 
 The App, including all software, designs, graphics, logos, and content (excluding User Content), is owned by Steps to Recovery and protected by:
+
 - Copyright laws
 - Trademark laws
 - Patent laws
@@ -149,6 +159,7 @@ The App, including all software, designs, graphics, logos, and content (excludin
 ### License to You
 
 We grant you a limited, non-exclusive, non-transferable, revocable license to:
+
 - Download and install the App on your devices
 - Use the Services for personal, non-commercial purposes
 - Access and use features as intended
@@ -156,6 +167,7 @@ We grant you a limited, non-exclusive, non-transferable, revocable license to:
 ### Restrictions
 
 You may not:
+
 - Copy, modify, or create derivative works of the App
 - Reverse engineer, decompile, or disassemble the App
 - Remove copyright or proprietary notices
@@ -174,6 +186,7 @@ Portions of our software may be open source. Open source licenses for third-part
 ### Permitted Uses
 
 You may use the Services to:
+
 - Support your personal recovery journey
 - Track your progress and milestones
 - Journal and reflect privately
@@ -182,6 +195,7 @@ You may use the Services to:
 ### Prohibited Uses
 
 You may not:
+
 - Use the Services for any illegal purpose
 - Attempt to bypass encryption or security measures
 - Access another user's account without permission
@@ -192,6 +206,7 @@ You may not:
 ### Sponsorship Connections
 
 If you use sponsor connection features:
+
 - You are solely responsible for choosing and vetting sponsors
 - We do not verify the identity or qualifications of sponsors
 - We are not responsible for any interactions between users and sponsors
@@ -204,6 +219,7 @@ If you use sponsor connection features:
 ### Third-Party Integrations
 
 The App may include integrations with third-party services:
+
 - **Supabase:** Authentication and cloud storage
 - **Sentry:** Error reporting (anonymized)
 - **Optional AI Services:** Only with your explicit consent
@@ -211,11 +227,13 @@ The App may include integrations with third-party services:
 ### External Links
 
 The App may contain links to external resources:
+
 - Recovery meeting locators
 - Crisis hotlines
 - Educational materials
 
 We are not responsible for:
+
 - The content of third-party websites
 - The privacy practices of third parties
 - Any harm resulting from third-party services
@@ -227,6 +245,7 @@ We are not responsible for:
 ### Service Disclaimers
 
 THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO:
+
 - IMPLIED WARRANTIES OF MERCHANTABILITY
 - FITNESS FOR A PARTICULAR PURPOSE
 - NON-INFRINGEMENT
@@ -236,6 +255,7 @@ THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY K
 ### Not a Medical Service
 
 **WE ARE NOT A MEDICAL PROVIDER.** The App is a self-help tool and:
+
 - Does not provide medical advice, diagnosis, or treatment
 - Is not a substitute for professional healthcare
 - Should not be used in place of therapy or medical care
@@ -244,6 +264,7 @@ THE SERVICES ARE PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY K
 ### Limitation of Liability
 
 TO THE MAXIMUM EXTENT PERMITTED BY LAW, STEPS TO RECOVERY AND ITS OFFICERS, DIRECTORS, EMPLOYEES, AND AGENTS SHALL NOT BE LIABLE FOR:
+
 - INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES
 - LOSS OF PROFITS, DATA, OR GOODWILL
 - SERVICE INTERRUPTIONS OR DATA LOSS
@@ -255,6 +276,7 @@ TO THE MAXIMUM EXTENT PERMITTED BY LAW, STEPS TO RECOVERY AND ITS OFFICERS, DIRE
 ### Data Loss
 
 We are not responsible for:
+
 - Data loss due to device failure
 - Data loss from failure to enable cloud backup
 - Loss of encryption keys
@@ -267,6 +289,7 @@ We are not responsible for:
 ## 10. Indemnification
 
 You agree to indemnify and hold harmless Steps to Recovery and its officers, directors, employees, and agents from any claims, damages, liabilities, costs, and expenses (including reasonable attorneys' fees) arising from:
+
 - Your use of the Services
 - Your violation of these Terms
 - Your violation of any rights of another party
@@ -287,10 +310,12 @@ Before filing a formal legal claim, we encourage you to contact us to resolve di
 **For US Residents:**
 
 Any dispute arising from these Terms or the Services shall be resolved through binding arbitration, except for:
+
 - Small claims court actions
 - Injunctive relief for intellectual property violations
 
 The arbitration shall be:
+
 - Conducted by the American Arbitration Association (AAA)
 - Held in [Your State/Jurisdiction]
 - Conducted in English
@@ -311,6 +336,7 @@ If you are outside the United States, local consumer protection laws may apply. 
 ## 12. Changes to Terms
 
 We may modify these Terms at any time. We will notify you of changes by:
+
 - Posting updated Terms in the App
 - Updating the "Last Updated" date
 - Sending notice for material changes
@@ -326,12 +352,14 @@ If you do not agree to the changes, you must stop using the Services and delete 
 ### By You
 
 You may terminate your account at any time:
+
 - Through the app's Settings → Delete Account
 - By contacting support@stepstorecovery.app
 
 ### By Us
 
 We may suspend or terminate your access if:
+
 - You violate these Terms
 - We discontinue the Services
 - Required by law
@@ -339,6 +367,7 @@ We may suspend or terminate your access if:
 ### Effect of Termination
 
 Upon termination:
+
 - Your right to use the Services ceases immediately
 - You may request data export before deletion
 - Provisions that by nature should survive termination will survive
@@ -382,6 +411,7 @@ For questions about these Terms, contact us:
 **Response Time:** Within 48 hours
 
 **Mailing Address:**
+
 ```
 Steps to Recovery Legal Department
 [Your Business Address]
@@ -394,6 +424,7 @@ Steps to Recovery Legal Department
 ### For Recovery Community Members
 
 **We built this app for you.** These Terms exist to protect both you and us, but they shouldn't create barriers to your recovery. If you have concerns about any provision:
+
 - Contact us to discuss
 - We're committed to working with the recovery community
 - We prioritize your well-being over legal technicalities
@@ -401,6 +432,7 @@ Steps to Recovery Legal Department
 ### For Healthcare Providers
 
 If you are a healthcare provider:
+
 - The App is not a HIPAA-covered entity
 - We do not enter into Business Associate Agreements
 - Patients should not use the App as a replacement for professional care
@@ -409,6 +441,7 @@ If you are a healthcare provider:
 ### Accessibility
 
 We are committed to making the App accessible to all users. If you need accommodations:
+
 - Contact us at accessibility@stepstorecovery.app
 - We follow WCAG AAA guidelines
 - We support screen readers and assistive technologies
@@ -420,11 +453,13 @@ We are committed to making the App accessible to all users. If you need accommod
 If you are in crisis or need immediate support:
 
 **United States:**
+
 - SAMHSA National Helpline: 1-800-662-4357 (free, confidential, 24/7)
 - Crisis Text Line: Text HOME to 741741
 - Emergency Services: 911
 
 **International:**
+
 - [FindAHelpline.com](https://findahelpline.com) - Global crisis support directory
 - Contact local emergency services
 
@@ -447,7 +482,7 @@ If you are in crisis or need immediate support:
 
 ---
 
-*These Terms of Service are designed to be clear and fair. If you have any questions or concerns, please don't hesitate to reach out. Your trust matters to us.*
+_These Terms of Service are designed to be clear and fair. If you have any questions or concerns, please don't hesitate to reach out. Your trust matters to us._
 
 **Last Updated:** February 9, 2026  
 **Version:** 1.0

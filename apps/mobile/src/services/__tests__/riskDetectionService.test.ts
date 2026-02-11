@@ -66,7 +66,12 @@ describe('riskDetectionService', () => {
 
       // All queries return recent data
       mockSingle.mockResolvedValue({
-        data: { created_at: recentDate, checkin_date: recentDate, checked_in_at: recentDate, reflected_at: recentDate },
+        data: {
+          created_at: recentDate,
+          checkin_date: recentDate,
+          checked_in_at: recentDate,
+          reflected_at: recentDate,
+        },
         error: null,
       });
 

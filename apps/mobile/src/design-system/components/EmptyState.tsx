@@ -50,64 +50,47 @@ export function EmptyState({
   const theme = useTheme();
 
   const iconColors: Record<string, string> = {
-    'book': aestheticColors.primary[400],
+    book: aestheticColors.primary[400],
     'book-open': aestheticColors.primary[400],
     'book-open-variant': aestheticColors.primary[400],
-    'calendar': aestheticColors.secondary[400],
+    calendar: aestheticColors.secondary[400],
     'chart-line': aestheticColors.accent[400],
     'check-circle': aestheticColors.success.DEFAULT,
-    'emoticon': aestheticColors.gold.DEFAULT,
+    emoticon: aestheticColors.gold.DEFAULT,
     'file-document': aestheticColors.primary[400],
-    'heart': aestheticColors.warning.DEFAULT,
-    'meditation': aestheticColors.secondary[400],
-    'note': aestheticColors.primary[400],
-    'notebook': aestheticColors.primary[400],
-    'phone': aestheticColors.warning.DEFAULT,
-    'search': theme.colors.textSecondary,
+    heart: aestheticColors.warning.DEFAULT,
+    meditation: aestheticColors.secondary[400],
+    note: aestheticColors.primary[400],
+    notebook: aestheticColors.primary[400],
+    phone: aestheticColors.warning.DEFAULT,
+    search: theme.colors.textSecondary,
     'search-off': theme.colors.textSecondary,
-    'shield': aestheticColors.success.DEFAULT,
-    'star': aestheticColors.gold.DEFAULT,
-    'users': aestheticColors.accent[400],
-    'default': theme.colors.primary,
+    shield: aestheticColors.success.DEFAULT,
+    star: aestheticColors.gold.DEFAULT,
+    users: aestheticColors.accent[400],
+    default: theme.colors.primary,
   };
 
   const iconColor = iconColors[icon] || iconColors.default;
   const fallbackIcon: keyof typeof MaterialCommunityIcons.glyphMap = 'alert-circle-outline';
-  const resolvedIcon = (icon in MaterialCommunityIcons.glyphMap
-    ? icon
-    : fallbackIcon) as keyof typeof MaterialCommunityIcons.glyphMap;
+  const resolvedIcon = (
+    icon in MaterialCommunityIcons.glyphMap ? icon : fallbackIcon
+  ) as keyof typeof MaterialCommunityIcons.glyphMap;
 
   return (
-    <Animated.View 
-      entering={FadeInUp.duration(400)}
-      style={[styles.container, style]}
-    >
+    <Animated.View entering={FadeInUp.duration(400)} style={[styles.container, style]}>
       {/* Icon Container with Glow */}
-      <View style={[styles.iconContainer, { backgroundColor: iconColor + '15' }]}> 
-        <MaterialCommunityIcons
-          name={resolvedIcon}
-          size={48}
-          color={iconColor}
-        />
+      <View style={[styles.iconContainer, { backgroundColor: iconColor + '15' }]}>
+        <MaterialCommunityIcons name={resolvedIcon} size={48} color={iconColor} />
         {/* Glow effect */}
-        <View
-          style={[
-            styles.glow,
-            { backgroundColor: iconColor }
-          ]}
-          pointerEvents="none"
-        />
+        <View style={[styles.glow, { backgroundColor: iconColor }]} pointerEvents="none" />
       </View>
 
       {/* Title */}
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        {title}
-      </Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
 
       {/* Description */}
-      <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
-        {description}
-      </Text>
+      <Text style={[styles.description, { color: theme.colors.textSecondary }]}>{description}</Text>
 
       {/* Action Button */}
       {actionLabel && onAction && (

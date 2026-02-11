@@ -1,6 +1,7 @@
 # Agent Swarm Index
 
 **Quick Links:**
+
 - [Quick Start Guide](./SWARM-QUICKSTART.md)
 - [Complete Swarm Plan](./AGENT-SWARM-PLAN.md)
 - [CLAUDE.md Updates](../CLAUDE.md)
@@ -52,20 +53,20 @@
 
 ### Primary Agent
 
-| Agent | File | Purpose | When to Use |
-|-------|------|---------|-------------|
+| Agent                 | File                                                         | Purpose           | When to Use      |
+| --------------------- | ------------------------------------------------------------ | ----------------- | ---------------- |
 | **swarm-coordinator** | [agents/swarm-coordinator.md](./agents/swarm-coordinator.md) | Meta-orchestrator | **ALL requests** |
 
 ### Specialized Agents (Auto-Selected)
 
-| Agent | File | Specialty | Auto-Trigger |
-|-------|------|-----------|--------------|
-| security-auditor | [agents/security-auditor.md](./agents/security-auditor.md) | Encryption, RLS, keys | Data/storage changes |
-| database-architect | [agents/database-architect.md](./agents/database-architect.md) | Schema, migrations, RLS | New tables/columns |
-| feature-developer | [agents/feature-developer.md](./agents/feature-developer.md) | Components, hooks, screens | Feature implementation |
-| testing-specialist | [agents/testing-specialist.md](./agents/testing-specialist.md) | Tests, coverage, mocks | Post-implementation |
-| performance-optimizer | [agents/performance-optimizer.md](./agents/performance-optimizer.md) | Cold start, bundles | Performance issues |
-| accessibility-validator | [agents/accessibility-validator.md](./agents/accessibility-validator.md) | WCAG AAA compliance | UI components |
+| Agent                   | File                                                                     | Specialty                  | Auto-Trigger           |
+| ----------------------- | ------------------------------------------------------------------------ | -------------------------- | ---------------------- |
+| security-auditor        | [agents/security-auditor.md](./agents/security-auditor.md)               | Encryption, RLS, keys      | Data/storage changes   |
+| database-architect      | [agents/database-architect.md](./agents/database-architect.md)           | Schema, migrations, RLS    | New tables/columns     |
+| feature-developer       | [agents/feature-developer.md](./agents/feature-developer.md)             | Components, hooks, screens | Feature implementation |
+| testing-specialist      | [agents/testing-specialist.md](./agents/testing-specialist.md)           | Tests, coverage, mocks     | Post-implementation    |
+| performance-optimizer   | [agents/performance-optimizer.md](./agents/performance-optimizer.md)     | Cold start, bundles        | Performance issues     |
+| accessibility-validator | [agents/accessibility-validator.md](./agents/accessibility-validator.md) | WCAG AAA compliance        | UI components          |
 
 ---
 
@@ -135,12 +136,12 @@ Swarm Coordinator
 
 Every swarm execution enforces:
 
-| Gate | Command | Target |
-|------|---------|--------|
-| Type Safety | `npx tsc --noEmit` | 0 errors |
-| Security | Security Auditor review | No vulnerabilities |
-| Tests | Jest coverage | >75% overall, 90% encryption |
-| Accessibility | WCAG AAA checklist | All interactive elements |
+| Gate          | Command                 | Target                       |
+| ------------- | ----------------------- | ---------------------------- |
+| Type Safety   | `npx tsc --noEmit`      | 0 errors                     |
+| Security      | Security Auditor review | No vulnerabilities           |
+| Tests         | Jest coverage           | >75% overall, 90% encryption |
+| Accessibility | WCAG AAA checklist      | All interactive elements     |
 
 ---
 
@@ -150,22 +151,22 @@ Every swarm execution enforces:
 
 **Status**: Infrastructure complete, needs testing & polish
 
-| Task | Priority | Assigned Agents |
-|------|----------|-----------------|
-| Encryption test coverage (90%) | HIGH | Testing Specialist |
-| Security audit | HIGH | Security Auditor |
-| Memory store optimization | MEDIUM | Performance Optimizer |
-| Documentation updates | MEDIUM | Documentation Agent |
+| Task                           | Priority | Assigned Agents       |
+| ------------------------------ | -------- | --------------------- |
+| Encryption test coverage (90%) | HIGH     | Testing Specialist    |
+| Security audit                 | HIGH     | Security Auditor      |
+| Memory store optimization      | MEDIUM   | Performance Optimizer |
+| Documentation updates          | MEDIUM   | Documentation Agent   |
 
 ### Next Phase: Phase 3 (Sponsor Connection)
 
 **Prerequisites**: Phase 2 complete + security audit pass
 
-| Feature | Complexity | Agents Required |
-|---------|-----------|-----------------|
-| Sponsor invite flow | Medium | Feature Developer, Security Auditor |
-| Selective entry sharing | High | Security Auditor (lead), Database Architect |
-| RLS policies for sharing | Medium | Database Architect, Security Auditor |
+| Feature                  | Complexity | Agents Required                             |
+| ------------------------ | ---------- | ------------------------------------------- |
+| Sponsor invite flow      | Medium     | Feature Developer, Security Auditor         |
+| Selective entry sharing  | High       | Security Auditor (lead), Database Architect |
+| RLS policies for sharing | Medium     | Database Architect, Security Auditor        |
 
 ---
 
@@ -173,14 +174,14 @@ Every swarm execution enforces:
 
 Specialized knowledge for common patterns:
 
-| Skill | Purpose |
-|-------|---------|
-| [expo-encryption-patterns](./skills/expo-encryption-patterns/SKILL.md) | AES-256 encryption implementation |
-| [supabase-offline-sync](./skills/supabase-offline-sync/SKILL.md) | Queue-based sync architecture |
-| [recovery-app-ui](./skills/recovery-app-ui/SKILL.md) | Recovery-specific UI components |
-| [react-native-privacy](./skills/react-native-privacy/SKILL.md) | Privacy & security patterns |
-| [test-encryption](./skills/test-encryption/SKILL.md) | Encryption testing patterns |
-| [recovery-feature-scaffold](./skills/recovery-feature-scaffold/SKILL.md) | Complete feature scaffolding |
+| Skill                                                                    | Purpose                           |
+| ------------------------------------------------------------------------ | --------------------------------- |
+| [expo-encryption-patterns](./skills/expo-encryption-patterns/SKILL.md)   | AES-256 encryption implementation |
+| [supabase-offline-sync](./skills/supabase-offline-sync/SKILL.md)         | Queue-based sync architecture     |
+| [recovery-app-ui](./skills/recovery-app-ui/SKILL.md)                     | Recovery-specific UI components   |
+| [react-native-privacy](./skills/react-native-privacy/SKILL.md)           | Privacy & security patterns       |
+| [test-encryption](./skills/test-encryption/SKILL.md)                     | Encryption testing patterns       |
+| [recovery-feature-scaffold](./skills/recovery-feature-scaffold/SKILL.md) | Complete feature scaffolding      |
 
 ---
 
@@ -217,23 +218,23 @@ These changes **always** include Security Auditor:
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| Results not as expected | Be more specific in your request |
-| Need to stop/revert | Say "Stop the current swarm task" |
-| Want to review first | Say "Show me the plan before implementing" |
+| Issue                   | Solution                                   |
+| ----------------------- | ------------------------------------------ |
+| Results not as expected | Be more specific in your request           |
+| Need to stop/revert     | Say "Stop the current swarm task"          |
+| Want to review first    | Say "Show me the plan before implementing" |
 
 ---
 
 ## 📈 Success Metrics
 
-| Metric | Current | Target |
-|--------|---------|--------|
-| TypeScript Errors | 0 | Maintain 0 |
-| Test Coverage | Partial | >75% |
-| Security Issues | 0 critical | Maintain 0 |
-| Cold Start | TBD | <2s |
-| Bundle Size | TBD | <5MB |
+| Metric            | Current    | Target     |
+| ----------------- | ---------- | ---------- |
+| TypeScript Errors | 0          | Maintain 0 |
+| Test Coverage     | Partial    | >75%       |
+| Security Issues   | 0 critical | Maintain 0 |
+| Cold Start        | TBD        | <2s        |
+| Bundle Size       | TBD        | <5MB       |
 
 ---
 
@@ -260,13 +261,13 @@ cd apps/mobile && npm run test:coverage
 
 ## 📝 Updates & Maintenance
 
-| Date | Change |
-|------|--------|
+| Date       | Change                   |
+| ---------- | ------------------------ |
 | 2026-02-09 | Agent Swarm v1.0 created |
-| | Added Swarm Coordinator |
-| | Added Database Architect |
-| | Added Feature Developer |
-| | Updated CLAUDE.md |
+|            | Added Swarm Coordinator  |
+|            | Added Database Architect |
+|            | Added Feature Developer  |
+|            | Updated CLAUDE.md        |
 
 ---
 

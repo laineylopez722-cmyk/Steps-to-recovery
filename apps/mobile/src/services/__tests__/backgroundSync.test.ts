@@ -23,7 +23,7 @@ const BG_FETCH_RESULT = {
 
 jest.mock('expo-task-manager', () => ({
   isTaskRegisteredAsync: (...args: unknown[]) => mockIsTaskRegisteredAsync(...args),
-  defineTask: (...args: unknown[]) => mockDefineTask(...args),
+  defineTask: jest.fn(),
 }));
 
 jest.mock('expo-background-fetch', () => ({
@@ -386,10 +386,7 @@ describe('backgroundSync', () => {
         success: false,
         message: 'Sync failed',
       });
-      expect(logger.error).toHaveBeenCalledWith(
-        'Manual background sync failed',
-        expect.any(Error),
-      );
+      expect(logger.error).toHaveBeenCalledWith('Manual background sync failed', expect.any(Error));
     });
   });
 
@@ -432,7 +429,7 @@ describe('backgroundSync', () => {
       await setupBackgroundSync();
 
       expect(logger.error).toHaveBeenCalledWith(
-        'Failed to setup background sync',
+        'Failed to get background fetch status',
         expect.any(Error),
       );
     });

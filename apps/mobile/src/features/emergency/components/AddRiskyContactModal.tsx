@@ -70,7 +70,7 @@ export function AddRiskyContactModal({
   visible,
   onClose,
   onAdd,
-      }: AddRiskyContactModalProps): ReactElement {
+}: AddRiskyContactModalProps): ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
@@ -82,9 +82,9 @@ export function AddRiskyContactModal({
 
   const resetForm = (): void => {
     setName('' as string);
-        setPhoneNumber('' as string);
+    setPhoneNumber('' as string);
     setRelationshipType('other');
-      setNotes(undefined);
+    setNotes(undefined);
   };
 
   const handleClose = (): void => {
@@ -247,7 +247,7 @@ export function AddRiskyContactModal({
             </Text>
             <TextInput
               value={name as string}
-              onChangeText={setName as (text: string) => void     }
+              onChangeText={setName as (text: string) => void}
               placeholder="e.g., My Dealer, Old Friend"
               placeholderTextColor={theme.colors.textSecondary}
               style={[
@@ -410,7 +410,13 @@ export function AddRiskyContactModal({
             size="large"
             fullWidth
             disabled={isSubmitting}
-            icon={<MaterialCommunityIcons name="shield-plus" size={20} color={ds.semantic.text.onDark} />}
+            icon={
+              <MaterialCommunityIcons
+                name="shield-plus"
+                size={20}
+                color={ds.semantic.text.onDark}
+              />
+            }
           />
         </View>
       </KeyboardAvoidingView>
@@ -418,61 +424,62 @@ export function AddRiskyContactModal({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-  },
-  closeButton: {
-    padding: 8,
-    position: 'absolute',
-    left: 8,
-    zIndex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  introCard: {
-    alignItems: 'center',
-    padding: 16,
-    marginBottom: 24,
-  },
-  inputGroup: {
-    marginBottom: 24,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-  },
-  textArea: {
-    height: 100,
-    paddingTop: 12,
-  },
-  relationshipGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  relationshipOption: {
-    width: '48%',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  footer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderTopWidth: 1,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      borderBottomWidth: 1,
+    },
+    closeButton: {
+      padding: 8,
+      position: 'absolute',
+      left: 8,
+      zIndex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 16,
+      paddingBottom: 32,
+    },
+    introCard: {
+      alignItems: 'center',
+      padding: 16,
+      marginBottom: 24,
+    },
+    inputGroup: {
+      marginBottom: 24,
+    },
+    input: {
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+    },
+    textArea: {
+      height: 100,
+      paddingTop: 12,
+    },
+    relationshipGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    relationshipOption: {
+      width: '48%',
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    footer: {
+      paddingHorizontal: 16,
+      paddingVertical: 16,
+      borderTopWidth: 1,
+    },
+  }) as const;

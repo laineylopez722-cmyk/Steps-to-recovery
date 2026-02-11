@@ -25,11 +25,11 @@ export function buildContextString(data: ContextData): string {
   // Sobriety
   if (data.sobrietyDate) {
     const days = Math.floor(
-      (Date.now() - new Date(data.sobrietyDate).getTime()) / (1000 * 60 * 60 * 24)
+      (Date.now() - new Date(data.sobrietyDate).getTime()) / (1000 * 60 * 60 * 24),
     );
     const years = Math.floor(days / 365);
     const months = Math.floor((days % 365) / 30);
-    
+
     let sobrietyString = `Sobriety: ${days} days`;
     if (years > 0) {
       sobrietyString += ` (${years} year${years > 1 ? 's' : ''}`;
@@ -83,15 +83,13 @@ export function buildContextString(data: ContextData): string {
 
   // Recent mood/craving patterns
   if (data.recentMoods.length > 0) {
-    const avgMood =
-      data.recentMoods.reduce((a, b) => a + b, 0) / data.recentMoods.length;
+    const avgMood = data.recentMoods.reduce((a, b) => a + b, 0) / data.recentMoods.length;
     const trend = getMoodTrend(data.recentMoods);
     parts.push(`Recent mood: ${avgMood.toFixed(1)}/5 (${trend})`);
   }
 
   if (data.recentCravings.length > 0) {
-    const avgCraving =
-      data.recentCravings.reduce((a, b) => a + b, 0) / data.recentCravings.length;
+    const avgCraving = data.recentCravings.reduce((a, b) => a + b, 0) / data.recentCravings.length;
     const trend = getCravingTrend(data.recentCravings);
     parts.push(`Recent craving level: ${avgCraving.toFixed(1)}/10 (${trend})`);
   }
@@ -104,10 +102,10 @@ function getMoodTrend(moods: number[]): string {
   const recent = moods.slice(-3);
   const earlier = moods.slice(0, -3);
   if (earlier.length === 0) return 'stable';
-  
+
   const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
   const earlierAvg = earlier.reduce((a, b) => a + b, 0) / earlier.length;
-  
+
   const diff = recentAvg - earlierAvg;
   if (diff > 0.5) return 'improving';
   if (diff < -0.5) return 'declining';
@@ -119,10 +117,10 @@ function getCravingTrend(cravings: number[]): string {
   const recent = cravings.slice(-3);
   const earlier = cravings.slice(0, -3);
   if (earlier.length === 0) return 'stable';
-  
+
   const recentAvg = recent.reduce((a, b) => a + b, 0) / recent.length;
   const earlierAvg = earlier.reduce((a, b) => a + b, 0) / earlier.length;
-  
+
   const diff = recentAvg - earlierAvg;
   if (diff > 1) return 'increasing - watch closely';
   if (diff < -1) return 'decreasing';
@@ -133,12 +131,9 @@ function getCravingTrend(cravings: number[]): string {
 export async function assembleFullContext(
   userId: string,
   getMemorySummary: () => Promise<string>,
-  getUserData: () => Promise<Partial<ContextData>>
+  getUserData: () => Promise<Partial<ContextData>>,
 ): Promise<string> {
-  const [memorySummary, userData] = await Promise.all([
-    getMemorySummary(),
-    getUserData(),
-  ]);
+  const [memorySummary, userData] = await Promise.all([getMemorySummary(), getUserData()]);
 
   return buildContextString({
     sobrietyDate: userData.sobrietyDate || null,
@@ -156,15 +151,9 @@ export async function assembleFullContext(
 }
 
 // Convert to AIContext type for API use
-export function toAIContext(
-  contextString: string,
-  data: Partial<ContextData>
-): AIContext {
+export function toAIContext(contextString: string, data: Partial<ContextData>): AIContext {
   const sobrietyDays = data.sobrietyDate
-    ? Math.floor(
-        (Date.now() - new Date(data.sobrietyDate).getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
+    ? Math.floor((Date.now() - new Date(data.sobrietyDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
   const recentMood =

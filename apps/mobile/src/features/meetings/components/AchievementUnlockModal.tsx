@@ -161,7 +161,11 @@ export function AchievementUnlockModal({
             {/* Achievement Icon */}
             <Animated.View style={[styles.iconContainer, iconAnimatedStyle]}>
               <View style={styles.iconBg}>
-                <MaterialIcons name={achievement.icon as IconName} size={80} color={ds.semantic.text.onDark} />
+                <MaterialIcons
+                  name={achievement.icon as IconName}
+                  size={80}
+                  color={ds.semantic.text.onDark}
+                />
               </View>
             </Animated.View>
 

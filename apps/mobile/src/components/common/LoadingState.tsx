@@ -6,12 +6,20 @@
 
 import React, { memo, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, interpolate, Easing } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  interpolate,
+  Easing,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MotionTransitions, motionDuration, motionShimmer } from '@/design-system/tokens/motion';
+import { ds } from '@/design-system/tokens/ds';
 
 // Constants
-const PRIMARY_COLOR = '#3B82F6';
+const PRIMARY_COLOR = ds.colors.info;
 const STAGGER_DELAY = 100;
 
 // Types
@@ -102,7 +110,7 @@ const ShimmerBar = memo(function ShimmerBar({
         ]}
       >
         <LinearGradient
-          colors={['transparent', 'rgba(255,255,255,0.4)', 'transparent']}
+          colors={['transparent', ds.colors.borderStrong, 'transparent']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={{ width: '100%', height: '100%' }}

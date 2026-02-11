@@ -204,12 +204,7 @@ interface FilterChipProps {
   count?: number;
 }
 
-export function FilterChip({
-  label,
-  isSelected,
-  onPress,
-  count,
-}: FilterChipProps): ReactElement {
+export function FilterChip({ label, isSelected, onPress, count }: FilterChipProps): ReactElement {
   const styles = useThemedStyles(createStyles);
   const scale = useSharedValue(1);
 
@@ -273,11 +268,7 @@ interface HighlightedTextProps {
   style?: StyleProp<TextStyle>;
 }
 
-export function HighlightedText({
-  text,
-  highlight,
-  style,
-      }: HighlightedTextProps): ReactElement {
+export function HighlightedText({ text, highlight, style }: HighlightedTextProps): ReactElement {
   const styles = useThemedStyles(createStyles);
   if (!highlight.trim()) {
     return <Text style={style}>{text}</Text>;
@@ -300,145 +291,146 @@ export function HighlightedText({
   );
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  container: {
-    position: 'relative',
-    zIndex: 100,
-  },
-  searchBar: {
-    padding: spacing[2],
-  },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[1.5],
-  },
-  input: {
-    flex: 1,
-    ...typography.body,
-    color: darkAccent.text,
-    padding: 0,
-    height: 40,
-  },
-  clearButton: {
-    padding: spacing[1],
-  },
-  filterButton: {
-    padding: spacing[1],
-  },
-  filtersContainer: {
-    marginTop: spacing[2],
-  },
-  suggestionsContainer: {
-    position: 'absolute',
-    top: 70,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-  },
-  suggestionsCard: {
-    padding: spacing[2],
-  },
-  suggestionsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing[2],
-  },
-  suggestionsTitle: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  clearAll: {
-    ...typography.bodySmall,
-    color: darkAccent.primary,
-  },
-  suggestionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2],
-    paddingVertical: spacing[1.5],
-  },
-  suggestionText: {
-    ...typography.body,
-    color: darkAccent.text,
-    flex: 1,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: radius.full,
-    backgroundColor: darkAccent.surfaceHigh,
-    borderWidth: 1,
-    borderColor: darkAccent.border,
-  },
-  chipSelected: {
-    backgroundColor: darkAccent.primary,
-    borderColor: darkAccent.primary,
-  },
-  chipLabel: {
-    ...typography.bodySmall,
-    color: darkAccent.text,
-    fontWeight: '500',
-  },
-  chipLabelSelected: {
-    color: ds.semantic.text.onDark,
-    fontWeight: '600',
-  },
-  chipCount: {
-    backgroundColor: darkAccent.surface,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: radius.full,
-  },
-  chipCountSelected: {
-    backgroundColor: ds.colors.bgSecondary,
-  },
-  chipCountText: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    fontWeight: '600',
-  },
-  chipCountTextSelected: {
-    color: ds.semantic.text.onDark,
-  },
-  resultsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: spacing[3],
-    paddingBottom: spacing[2],
-  },
-  resultsInfo: {
-    flex: 1,
-  },
-  resultsQuery: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-  resultsCount: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  clearResults: {
-    padding: spacing[1],
-  },
-  clearResultsText: {
-    ...typography.bodySmall,
-    color: darkAccent.primary,
-    fontWeight: '600',
-  },
-  highlight: {
-    backgroundColor: ds.colors.accentMuted,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      position: 'relative',
+      zIndex: 100,
+    },
+    searchBar: {
+      padding: spacing[2],
+    },
+    searchRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[1.5],
+    },
+    input: {
+      flex: 1,
+      ...typography.body,
+      color: darkAccent.text,
+      padding: 0,
+      height: 40,
+    },
+    clearButton: {
+      padding: spacing[1],
+    },
+    filterButton: {
+      padding: spacing[1],
+    },
+    filtersContainer: {
+      marginTop: spacing[2],
+    },
+    suggestionsContainer: {
+      position: 'absolute',
+      top: 70,
+      left: 0,
+      right: 0,
+      zIndex: 1000,
+    },
+    suggestionsCard: {
+      padding: spacing[2],
+    },
+    suggestionsHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing[2],
+    },
+    suggestionsTitle: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+      fontWeight: '600',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    clearAll: {
+      ...typography.bodySmall,
+      color: darkAccent.primary,
+    },
+    suggestionItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[2],
+      paddingVertical: spacing[1.5],
+    },
+    suggestionText: {
+      ...typography.body,
+      color: darkAccent.text,
+      flex: 1,
+    },
+    chip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      borderRadius: radius.full,
+      backgroundColor: darkAccent.surfaceHigh,
+      borderWidth: 1,
+      borderColor: darkAccent.border,
+    },
+    chipSelected: {
+      backgroundColor: darkAccent.primary,
+      borderColor: darkAccent.primary,
+    },
+    chipLabel: {
+      ...typography.bodySmall,
+      color: darkAccent.text,
+      fontWeight: '500',
+    },
+    chipLabelSelected: {
+      color: ds.semantic.text.onDark,
+      fontWeight: '600',
+    },
+    chipCount: {
+      backgroundColor: darkAccent.surface,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
+      borderRadius: radius.full,
+    },
+    chipCountSelected: {
+      backgroundColor: ds.colors.bgSecondary,
+    },
+    chipCountText: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      fontWeight: '600',
+    },
+    chipCountTextSelected: {
+      color: ds.semantic.text.onDark,
+    },
+    resultsHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: spacing[3],
+      paddingBottom: spacing[2],
+    },
+    resultsInfo: {
+      flex: 1,
+    },
+    resultsQuery: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+    resultsCount: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    clearResults: {
+      padding: spacing[1],
+    },
+    clearResultsText: {
+      ...typography.bodySmall,
+      color: darkAccent.primary,
+      fontWeight: '600',
+    },
+    highlight: {
+      backgroundColor: ds.colors.accentMuted,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+  });

@@ -7,9 +7,7 @@ interface UseStepAnswersStateResult {
   handleAnswerChange: (questionNumber: number, text: string) => void;
 }
 
-export function useStepAnswersState(
-  questions: StepWorkDecrypted[],
-): UseStepAnswersStateResult {
+export function useStepAnswersState(questions: StepWorkDecrypted[]): UseStepAnswersStateResult {
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
   useEffect(() => {

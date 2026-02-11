@@ -1,9 +1,9 @@
 /**
  * StreakCounter Component - Material Design 3
- * 
+ *
  * Clean time tracker with 120dp circular display, ring animation,
  * context card below with last reset date and next milestone.
- * 
+ *
  * Features:
  * - 120dp circular display with animated progress ring
  * - Large days number (32px bold) + "Days" label
@@ -34,7 +34,13 @@ import Animated, {
 import Svg, { Circle, G, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';
-import { md3ElevationLight, md3ElevationDark, md3Shape, md3Motion, md3Typography } from '../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  md3Shape,
+  md3Motion,
+  md3Typography,
+} from '../tokens/md3-elevation';
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -80,7 +86,12 @@ export interface StreakCounterProps {
 // ============================================================================
 
 const DEFAULT_MILESTONES: Milestone[] = [
-  { days: 1, title: 'First Day', icon: '🌅', description: 'Every journey begins with a single step' },
+  {
+    days: 1,
+    title: 'First Day',
+    icon: '🌅',
+    description: 'Every journey begins with a single step',
+  },
   { days: 7, title: '1 Week', icon: '📅', description: 'Building momentum one day at a time' },
   { days: 30, title: '1 Month', icon: '🏆', description: 'Your dedication is inspiring' },
   { days: 90, title: '90 Days', icon: '💎', description: 'Proving lasting change is possible' },
@@ -112,15 +123,15 @@ function CircularRing({
   const center = size / 2;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  
+
   const trackColor = isDark ? colors.surfaceContainerHighest : colors.surfaceVariant;
   const progressColor = colors.primary;
-  
+
   const animatedProps = useAnimatedProps(() => {
     const strokeDashoffset = circumference * (1 - animatedValue.value / 100);
     return { strokeDashoffset };
   });
-  
+
   return (
     <View style={{ width: size, height: size }}>
       <Svg width={size} height={size}>
@@ -179,28 +190,28 @@ export function StreakCounter({
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
-  
+
   // Animation values
   const progressValue = useSharedValue(0);
   const scaleValue = useSharedValue(0.8);
   const opacityValue = useSharedValue(0);
-  
+
   // Calculate progress to next milestone
   const { progressPercent, actualNextMilestone } = useMemo(() => {
     const sorted = [...milestones].sort((a, b) => a.days - b.days);
-    const next = nextMilestone || sorted.find(m => m.days > days);
-    const prev = sorted.reverse().find(m => m.days <= days);
-    
+    const next = nextMilestone || sorted.find((m) => m.days > days);
+    const prev = sorted.reverse().find((m) => m.days <= days);
+
     if (!next) return { progressPercent: 100, actualNextMilestone: null };
-    
+
     const prevDays = prev?.days || 0;
     const total = next.days - prevDays;
     const current = days - prevDays;
     const percent = (current / total) * 100;
-    
+
     return { progressPercent: Math.min(percent, 100), actualNextMilestone: next };
   }, [days, milestones, nextMilestone]);
-  
+
   // Animate on mount
   useEffect(() => {
     progressValue.value = withTiming(progressPercent, {
@@ -208,35 +219,33 @@ export function StreakCounter({
     });
     scaleValue.value = withSpring(1, md3Motion.spring.gentle);
     opacityValue.value = withTiming(1, { duration: 400 });
-    
+
     // Check for milestone
-    const reached = milestones.find(m => m.days === days);
+    const reached = milestones.find((m) => m.days === days);
     if (reached && onMilestoneReached) {
       onMilestoneReached(reached);
       AccessibilityInfo.announceForAccessibility(
-        `Congratulations! You've reached ${reached.title}!`
+        `Congratulations! You've reached ${reached.title}!`,
       );
     }
   }, [days, progressPercent, animationDuration]);
-  
+
   // Animated styles
   const containerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: opacityValue.value,
     transform: [{ scale: scaleValue.value }],
   }));
-  
+
   // Format last reset date
   const formattedDate = useMemo(() => {
-    const date = typeof lastResetDate === 'string' 
-      ? new Date(lastResetDate) 
-      : lastResetDate;
+    const date = typeof lastResetDate === 'string' ? new Date(lastResetDate) : lastResetDate;
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
     });
   }, [lastResetDate]);
-  
+
   // Format time display
   const timeDisplay = useMemo(() => {
     if (hours > 0 || minutes > 0) {
@@ -244,13 +253,16 @@ export function StreakCounter({
     }
     return '';
   }, [hours, minutes]);
-  
+
   // Accessibility label
-  const a11yLabel = accessibilityLabel || 
-    `${days} days clean. ${actualNextMilestone 
-      ? `Next milestone: ${actualNextMilestone.title} in ${actualNextMilestone.days - days} days` 
-      : 'All milestones completed!'}`;
-  
+  const a11yLabel =
+    accessibilityLabel ||
+    `${days} days clean. ${
+      actualNextMilestone
+        ? `Next milestone: ${actualNextMilestone.title} in ${actualNextMilestone.days - days} days`
+        : 'All milestones completed!'
+    }`;
+
   return (
     <Animated.View
       style={[
@@ -270,11 +282,9 @@ export function StreakCounter({
         <View style={styles.headerIcon}>
           <Feather name="activity" size={20} color={colors.primary} />
         </View>
-        <Text style={[styles.headerText, { color: colors.onSurfaceVariant }]}>
-          Clean Time
-        </Text>
+        <Text style={[styles.headerText, { color: colors.onSurfaceVariant }]}>Clean Time</Text>
       </View>
-      
+
       {/* Circular Progress */}
       <View style={styles.progressContainer}>
         <View style={styles.ringContainer}>
@@ -288,15 +298,11 @@ export function StreakCounter({
           />
           {/* Center Content */}
           <View style={styles.centerContent}>
-            <Text style={[styles.daysNumber, { color: colors.onSurface }]}>
-              {days}
-            </Text>
-            <Text style={[styles.daysLabel, { color: colors.onSurfaceVariant }]}>
-              Days
-            </Text>
+            <Text style={[styles.daysNumber, { color: colors.onSurface }]}>{days}</Text>
+            <Text style={[styles.daysLabel, { color: colors.onSurfaceVariant }]}>Days</Text>
           </View>
         </View>
-        
+
         {/* Secondary time display */}
         {timeDisplay && (
           <Text style={[styles.timeDisplay, { color: colors.onSurfaceVariant }]}>
@@ -304,23 +310,19 @@ export function StreakCounter({
           </Text>
         )}
       </View>
-      
+
       {/* Context Card */}
       <View style={[styles.contextCard, { backgroundColor: colors.surfaceContainerHighest }]}>
         {/* Last Reset */}
         <View style={styles.contextRow}>
           <Feather name="refresh-ccw" size={14} color={colors.onSurfaceVariant} />
-          <Text style={[styles.contextLabel, { color: colors.onSurfaceVariant }]}>
-            Last reset
-          </Text>
-          <Text style={[styles.contextValue, { color: colors.onSurface }]}>
-            {formattedDate}
-          </Text>
+          <Text style={[styles.contextLabel, { color: colors.onSurfaceVariant }]}>Last reset</Text>
+          <Text style={[styles.contextValue, { color: colors.onSurface }]}>{formattedDate}</Text>
         </View>
-        
+
         {/* Divider */}
         <View style={[styles.divider, { backgroundColor: colors.outlineVariant }]} />
-        
+
         {/* Next Milestone */}
         {actualNextMilestone ? (
           <View style={styles.contextRow}>

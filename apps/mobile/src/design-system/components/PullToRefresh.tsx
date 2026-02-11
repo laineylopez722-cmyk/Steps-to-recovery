@@ -8,7 +8,7 @@ import Animated, {
   withTiming,
   interpolate,
   Extrapolation,
-  } from 'react-native-reanimated';
+} from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
 import { darkAccent, radius } from '../tokens/modern';
 import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
@@ -40,8 +40,23 @@ export function PullToRefresh({
     const progress = Math.min(pullDistance / 100, 1);
 
     return {
-      opacity: interpolate(progress, [0, 0.5, 1], [0, 0.5, 1], Extrapolation.CLAMP as Extrapolation),
-      transform: [{ translateY: interpolate(progress, [0, 1], [-50, 20], Extrapolation.CLAMP as Extrapolation) }, { scale: interpolate(progress, [0, 1], [0.5, 1], Extrapolation.CLAMP as Extrapolation) }],
+      opacity: interpolate(
+        progress,
+        [0, 0.5, 1],
+        [0, 0.5, 1],
+        Extrapolation.CLAMP as Extrapolation,
+      ),
+      transform: [
+        {
+          translateY: interpolate(
+            progress,
+            [0, 1],
+            [-50, 20],
+            Extrapolation.CLAMP as Extrapolation,
+          ),
+        },
+        { scale: interpolate(progress, [0, 1], [0.5, 1], Extrapolation.CLAMP as Extrapolation) },
+      ],
     } as ViewStyle & AnimatedProps<ViewStyle>;
   });
 
@@ -68,26 +83,27 @@ export function PullToRefresh({
   );
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    zIndex: 100,
-  },
-  indicator: {
-    width: 44,
-    height: 44,
-    borderRadius: radius.full,
-    backgroundColor: darkAccent.surfaceHigh,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: ds.colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+      zIndex: 100,
+    },
+    indicator: {
+      width: 44,
+      height: 44,
+      borderRadius: radius.full,
+      backgroundColor: darkAccent.surfaceHigh,
+      alignItems: 'center',
+      justifyContent: 'center',
+      shadowColor: ds.colors.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 8,
+      elevation: 8,
+    },
+  });

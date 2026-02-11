@@ -10,7 +10,7 @@ Implement encrypted personal journal feature with offline-first storage and clou
 - `apps/mobile/src/features/journal/screens/JournalEntryScreen.tsx`
 - `apps/mobile/src/features/journal/components/JournalCard.tsx`
 - `apps/mobile/src/utils/encryption.ts` - Encryption/decryption utilities
-- `apps/mobile/src/lib/database/journal.ts` - SQLite journal operations
+- `apps/mobile/src/features/journal/hooks/useJournalEntries.ts` - Journal data hooks (React Query)
 
 ## Requirements
 
@@ -33,7 +33,7 @@ Implement encrypted personal journal feature with offline-first storage and clou
 
 ### Encryption Implementation
 
-- Use AES-256-GCM for encryption
+- Use AES-256-CBC with HMAC-SHA256 for encryption
 - Symmetric key stored in SecureStore
 - Encrypt content before saving to SQLite
 - Decrypt only when displaying to user

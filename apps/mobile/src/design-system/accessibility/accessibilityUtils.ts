@@ -1,6 +1,6 @@
 /**
  * Accessibility Utility Functions
- * 
+ *
  * WCAG AAA compliance utilities for color contrast, touch targets,
  * text scaling, and other accessibility requirements.
  */
@@ -22,16 +22,20 @@ export type { RGBColor, ContrastValidation, TouchTargetValidation };
 export function hexToRgb(hex: string): RGBColor {
   // Remove # and any alpha channel
   const cleanHex = hex.replace('#', '').substring(0, 6);
-  
+
   // Handle shorthand (#RGB)
-  const fullHex = cleanHex.length === 3
-    ? cleanHex.split('').map(c => c + c).join('')
-    : cleanHex;
-  
+  const fullHex =
+    cleanHex.length === 3
+      ? cleanHex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : cleanHex;
+
   const r = parseInt(fullHex.substring(0, 2), 16);
   const g = parseInt(fullHex.substring(2, 4), 16);
   const b = parseInt(fullHex.substring(4, 6), 16);
-  
+
   return { r, g, b };
 }
 
@@ -42,17 +46,17 @@ export function hexToRgb(hex: string): RGBColor {
  */
 export function getRelativeLuminance(rgb: RGBColor): number {
   const { r, g, b } = rgb;
-  
+
   // Convert to sRGB
   const rsRGB = r / 255;
   const gsRGB = g / 255;
   const bsRGB = b / 255;
-  
+
   // Apply gamma correction
   const rLinear = rsRGB <= 0.03928 ? rsRGB / 12.92 : Math.pow((rsRGB + 0.055) / 1.055, 2.4);
   const gLinear = gsRGB <= 0.03928 ? gsRGB / 12.92 : Math.pow((gsRGB + 0.055) / 1.055, 2.4);
   const bLinear = bsRGB <= 0.03928 ? bsRGB / 12.92 : Math.pow((bsRGB + 0.055) / 1.055, 2.4);
-  
+
   return 0.2126 * rLinear + 0.7152 * gLinear + 0.0722 * bLinear;
 }
 
@@ -66,14 +70,14 @@ export function getRelativeLuminance(rgb: RGBColor): number {
 export function calculateContrastRatio(color1: string, color2: string): number {
   const rgb1 = hexToRgb(color1);
   const rgb2 = hexToRgb(color2);
-  
+
   const l1 = getRelativeLuminance(rgb1);
   const l2 = getRelativeLuminance(rgb2);
-  
+
   // Ensure lighter color is L1
   const lighter = Math.max(l1, l2);
   const darker = Math.min(l1, l2);
-  
+
   return (lighter + 0.05) / (darker + 0.05);
 }
 
@@ -91,7 +95,7 @@ export function validateContrast(
 ): ContrastValidation {
   const ratio = calculateContrastRatio(foreground, background);
   const requiredRatio = isLargeText ? MIN_CONTRAST_RATIO_LARGE_TEXT : MIN_CONTRAST_RATIO;
-  
+
   return {
     valid: ratio >= requiredRatio,
     ratio: Math.round(ratio * 100) / 100,
@@ -108,7 +112,7 @@ export function validateContrast(
 export function getAccessibleTextColor(backgroundColor: string): string {
   const whiteContrast = calculateContrastRatio('#FFFFFF', backgroundColor);
   const blackContrast = calculateContrastRatio('#000000', backgroundColor);
-  
+
   return whiteContrast >= blackContrast ? '#FFFFFF' : '#000000';
 }
 
@@ -127,12 +131,15 @@ export function findAccessibleColor(
   let rgb = hexToRgb(baseColor);
   let attempts = 0;
   const maxAttempts = 20;
-  
+
   // Try adjusting lightness
-  while (calculateContrastRatio(rgbToHex(rgb), backgroundColor) < targetRatio && attempts < maxAttempts) {
+  while (
+    calculateContrastRatio(rgbToHex(rgb), backgroundColor) < targetRatio &&
+    attempts < maxAttempts
+  ) {
     const luminance = getRelativeLuminance(rgb);
     const bgLuminance = getRelativeLuminance(hexToRgb(backgroundColor));
-    
+
     // Determine whether to lighten or darken
     if (luminance > bgLuminance) {
       // Lighten
@@ -151,7 +158,7 @@ export function findAccessibleColor(
     }
     attempts++;
   }
-  
+
   return rgbToHex(rgb);
 }
 
@@ -165,7 +172,7 @@ function rgbToHex(rgb: RGBColor): string {
     const hex = Math.max(0, Math.min(255, n)).toString(16);
     return hex.length === 1 ? '0' + hex : hex;
   };
-  
+
   return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
 }
 
@@ -191,13 +198,10 @@ export function scaleSize(
  * @param height - Touch target height
  * @returns Validation result
  */
-export function isTouchTargetValid(
-  width: number,
-  height: number,
-): TouchTargetValidation {
+export function isTouchTargetValid(width: number, height: number): TouchTargetValidation {
   const currentSize = Math.min(width, height);
   const valid = width >= MIN_TOUCH_TARGET && height >= MIN_TOUCH_TARGET;
-  
+
   return {
     valid,
     currentSize,
@@ -234,35 +238,34 @@ export function generateAccessiblePalette(
   baseColors: Record<string, string>,
 ): Record<string, { original: string; accessible: string; contrast: number }> {
   const result: Record<string, { original: string; accessible: string; contrast: number }> = {};
-  
+
   // Standard background colors to test against
   const backgrounds = ['#FFFFFF', '#000000', '#F5F5F0', '#1A1A1A'];
-  
+
   Object.entries(baseColors).forEach(([name, color]) => {
     // Find best contrast against common backgrounds
     let bestContrast = 0;
     let bestBg = backgrounds[0];
-    
-    backgrounds.forEach(bg => {
+
+    backgrounds.forEach((bg) => {
       const contrast = calculateContrastRatio(color, bg);
       if (contrast > bestContrast) {
         bestContrast = contrast;
         bestBg = bg;
       }
     });
-    
+
     // Generate accessible variant if needed
-    const accessibleColor = bestContrast >= MIN_CONTRAST_RATIO
-      ? color
-      : findAccessibleColor(color, bestBg);
-    
+    const accessibleColor =
+      bestContrast >= MIN_CONTRAST_RATIO ? color : findAccessibleColor(color, bestBg);
+
     result[name] = {
       original: color,
       accessible: accessibleColor,
       contrast: Math.round(bestContrast * 100) / 100,
     };
   });
-  
+
   return result;
 }
 
@@ -291,7 +294,7 @@ export function debounceAnnouncement<T extends (...args: string[]) => void>(
   delay: number = 1000,
 ): (...args: Parameters<T>) => void {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  
+
   return (...args: Parameters<T>): void => {
     if (timeoutId) {
       clearTimeout(timeoutId);

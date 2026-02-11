@@ -116,10 +116,7 @@ export function JournalEntryCardExample(): React.ReactElement {
         onSharePress={(e) => console.log('Share:', e.id)}
       />
       <View style={styles.spacer} />
-      <JournalEntryCard
-        entry={entry2}
-        onPress={(e) => console.log('Entry pressed:', e.id)}
-      />
+      <JournalEntryCard entry={entry2} onPress={(e) => console.log('Entry pressed:', e.id)} />
     </View>
   );
 }

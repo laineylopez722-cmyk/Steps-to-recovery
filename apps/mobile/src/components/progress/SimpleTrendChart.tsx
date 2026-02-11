@@ -6,6 +6,7 @@
 
 import React, { useMemo } from 'react';
 import { View, Text, Dimensions } from 'react-native';
+import { ds } from '../../design-system/tokens/ds';
 import type { DailyCheckin } from '@recovery/shared';
 
 interface SimpleTrendChartProps {
@@ -21,7 +22,7 @@ export function SimpleTrendChart({
   data,
   dataKey,
   title,
-  color = '#7C3AED', // primary-600
+  color = ds.colors.info,
   height = 120,
   className = '',
 }: SimpleTrendChartProps) {

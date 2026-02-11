@@ -71,9 +71,7 @@ export function CrisisOverlay({
             <View className="w-16 h-16 rounded-full bg-amber-500/20 items-center justify-center mb-4">
               <Icon as={Heart} size={32} className="text-amber-500" />
             </View>
-            <Text className="text-2xl font-bold text-white text-center">
-              I'm here for you
-            </Text>
+            <Text className="text-2xl font-bold text-white text-center">I'm here for you</Text>
             <Text className="text-gray-400 text-center mt-2">
               Whatever you're going through, you don't have to face it alone.
             </Text>
@@ -88,9 +86,7 @@ export function CrisisOverlay({
               accessibilityLabel={`Call ${sponsorName || 'Sponsor'}`}
             >
               <Icon as={Phone} size={20} className="text-black" />
-              <Text className="text-black font-semibold ml-2">
-                Call {sponsorName || 'Sponsor'}
-              </Text>
+              <Text className="text-black font-semibold ml-2">Call {sponsorName || 'Sponsor'}</Text>
             </TouchableOpacity>
           )}
 

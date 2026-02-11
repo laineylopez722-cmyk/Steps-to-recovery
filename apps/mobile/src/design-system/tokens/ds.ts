@@ -1,14 +1,11 @@
-import {
-  premiumTypographyAliases,
-  serene,
-} from './serene';
+import { premiumTypographyAliases, serene } from './serene';
 
 /**
  * Design System Tokens
- * 
+ *
  * Apple-inspired dark theme.
  * Premium, minimal, confident.
- * 
+ *
  * 4px grid, 1.25 type scale.
  */
 
@@ -134,32 +131,32 @@ export const palette = {
   gray800: '#2C2C2E', // Interactive elements
   gray700: '#3A3A3C',
   gray600: '#48484A',
-  
+
   // Text - refined opacity
   white: '#FFFFFF',
   gray100: 'rgba(255, 255, 255, 0.85)', // More readable
   gray200: 'rgba(255, 255, 255, 0.55)',
   gray300: 'rgba(255, 255, 255, 0.35)',
-  
+
   // Accent - warm amber
   amber: '#F59E0B',
   amberLight: '#FBBF24',
   amberMuted: 'rgba(245, 158, 11, 0.15)',
   amberSubtle: 'rgba(245, 158, 11, 0.08)',
-  
+
   // Semantic (avoid green cast in dark UI)
   green: '#FBBF24',
   greenMuted: 'rgba(251, 191, 36, 0.15)',
-  
+
   blue: '#0A84FF',
   blueMuted: 'rgba(10, 132, 255, 0.15)',
-  
+
   red: '#FF453A',
   redMuted: 'rgba(255, 69, 58, 0.15)',
-  
+
   orange: '#FF9F0A',
   orangeMuted: 'rgba(255, 159, 10, 0.15)',
-  
+
   // Legacy aliases (backwards compatibility)
   warmGold: '#F5A623',
   warmGoldMuted: 'rgba(245, 166, 35, 0.15)',
@@ -291,8 +288,8 @@ export const radius = {
   xs: 6,
   sm: 10,
   md: 14,
-  lg: 20,    // Primary cards
-  xl: 28,    // Hero elements
+  lg: 20, // Primary cards
+  xl: 28, // Hero elements
   '2xl': 36, // Modals
   full: 9999,
 } as const;
@@ -340,23 +337,23 @@ export const sizes = {
   // Touch targets (Apple minimum)
   touchMin: 44,
   touchLg: 56,
-  
+
   // Buttons
   buttonHeight: 56,
   buttonHeightSm: 44,
-  
+
   // Inputs
   inputHeight: 56,
-  
+
   // Header
   headerHeight: 60,
-  
+
   // Icons
   iconSm: 18,
   iconMd: 22,
   iconLg: 28,
   iconXl: 32,
-  
+
   // Content
   contentPadding: 24, // More breathing room
   cardPadding: 20,
@@ -563,7 +560,7 @@ export const shadowsLight = {
   md: {
     shadowColor: 'rgba(60, 80, 60, 1)',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.10,
+    shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 4,
   },

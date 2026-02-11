@@ -1,5 +1,11 @@
 import React, { useCallback } from 'react';
-import { FlatList, Platform, StyleSheet, type ListRenderItemInfo, type ViewToken } from 'react-native';
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  type ListRenderItemInfo,
+  type ViewToken,
+} from 'react-native';
 import { StepSectionHeader } from './StepSectionHeader';
 import { StepQuestionCard } from './StepQuestionCard';
 import { StepPrivacyInfoCard } from './StepPrivacyInfoCard';
@@ -69,7 +75,15 @@ export function StepDetailQuestionsList({
         />
       );
     },
-    [answeredQuestionNumbers, answers, onAnswerChange, onJumpToQuestion, onSaveAnswer, savingQuestion, totalQuestions],
+    [
+      answeredQuestionNumbers,
+      answers,
+      onAnswerChange,
+      onJumpToQuestion,
+      onSaveAnswer,
+      savingQuestion,
+      totalQuestions,
+    ],
   );
 
   return (

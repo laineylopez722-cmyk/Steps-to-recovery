@@ -95,22 +95,22 @@ interface PerformanceActions {
  */
 function deepEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
-  
+
   if (typeof a !== 'object' || typeof b !== 'object') return false;
   if (a === null || b === null) return false;
-  
+
   const aObj = a as Record<string, unknown>;
   const bObj = b as Record<string, unknown>;
   const keysA = Object.keys(aObj);
   const keysB = Object.keys(bObj);
-  
+
   if (keysA.length !== keysB.length) return false;
-  
+
   for (const key of keysA) {
     if (!keysB.includes(key)) return false;
     if (!deepEqual(aObj[key], bObj[key])) return false;
   }
-  
+
   return true;
 }
 
@@ -122,16 +122,16 @@ function findChangedProps(
   currentProps: Record<string, unknown>,
 ): string[] {
   if (!prevProps) return Object.keys(currentProps);
-  
+
   const changed: string[] = [];
   const allKeys = new Set([...Object.keys(prevProps), ...Object.keys(currentProps)]);
-  
+
   for (const key of allKeys) {
     if (!deepEqual(prevProps[key], currentProps[key])) {
       changed.push(key);
     }
   }
-  
+
   return changed;
 }
 
@@ -175,23 +175,26 @@ export function usePerformanceMonitor(
   });
 
   // Logging helper
-  const log = useCallback((message: string, ...args: unknown[]) => {
-    switch (logLevel) {
-      case 'error':
-        logger.error(message, ...args);
-        break;
-      case 'warn':
-        logger.warn(message, ...args);
-        break;
-      case 'info':
-        logger.info(message, ...args);
-        break;
-      case 'debug':
-      default:
-        logger.debug(message, ...args);
-        break;
-    }
-  }, [logLevel]);
+  const log = useCallback(
+    (message: string, ...args: unknown[]) => {
+      switch (logLevel) {
+        case 'error':
+          logger.error(message, ...args);
+          break;
+        case 'warn':
+          logger.warn(message, ...args);
+          break;
+        case 'info':
+          logger.info(message, ...args);
+          break;
+        case 'debug':
+        default:
+          logger.debug(message, ...args);
+          break;
+      }
+    },
+    [logLevel],
+  );
 
   // Start timing before render
   startTimeRef.current = performance.now();
@@ -210,12 +213,13 @@ export function usePerformanceMonitor(
     }
 
     const isFirstRender = renderCountRef.current === 1;
-    const averageRenderTime = renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length;
+    const averageRenderTime =
+      renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length;
     const maxRenderTime = Math.max(...renderTimesRef.current);
     const isSlowRender = renderTime > slowRenderThreshold;
 
     // Update metrics state
-    setMetrics(prev => ({
+    setMetrics((prev) => ({
       ...prev,
       renderCount: renderCountRef.current,
       renderTime,
@@ -229,12 +233,12 @@ export function usePerformanceMonitor(
     if (isFirstRender) {
       log(`[${componentName}] First render: ${renderTime.toFixed(2)}ms`);
     } else if (warnOnRerender) {
-      const changedProps = trackProps && props 
-        ? findChangedProps(prevPropsRef.current, props)
-        : [];
-      
+      const changedProps = trackProps && props ? findChangedProps(prevPropsRef.current, props) : [];
+
       if (changedProps.length > 0 && trackProps) {
-        log(`[${componentName}] Re-render #${renderCountRef.current}: ${renderTime.toFixed(2)}ms (changed: ${changedProps.join(', ')})`);
+        log(
+          `[${componentName}] Re-render #${renderCountRef.current}: ${renderTime.toFixed(2)}ms (changed: ${changedProps.join(', ')})`,
+        );
       } else {
         log(`[${componentName}] Re-render #${renderCountRef.current}: ${renderTime.toFixed(2)}ms`);
       }
@@ -242,12 +246,16 @@ export function usePerformanceMonitor(
 
     // Warn about slow renders
     if (isSlowRender) {
-      logger.warn(`[${componentName}] Slow render detected: ${renderTime.toFixed(2)}ms (threshold: ${slowRenderThreshold}ms)`);
+      logger.warn(
+        `[${componentName}] Slow render detected: ${renderTime.toFixed(2)}ms (threshold: ${slowRenderThreshold}ms)`,
+      );
     }
 
     // Warn about excessive renders
     if (renderCountRef.current > maxRenderCount) {
-      logger.warn(`[${componentName}] Excessive renders detected: ${renderCountRef.current} (max: ${maxRenderCount})`);
+      logger.warn(
+        `[${componentName}] Excessive renders detected: ${renderCountRef.current} (max: ${maxRenderCount})`,
+      );
     }
 
     // Update prev props
@@ -258,8 +266,11 @@ export function usePerformanceMonitor(
     // Memory leak detection
     if (detectMemoryLeaks && !isFirstRender) {
       const memory = (performance as unknown as { memory?: { usedJSHeapSize: number } }).memory;
-      if (memory && memory.usedJSHeapSize > 100 * 1024 * 1024) { // 100MB
-        logger.warn(`[${componentName}] High memory usage detected: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`);
+      if (memory && memory.usedJSHeapSize > 100 * 1024 * 1024) {
+        // 100MB
+        logger.warn(
+          `[${componentName}] High memory usage detected: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)}MB`,
+        );
       }
     }
 
@@ -270,7 +281,17 @@ export function usePerformanceMonitor(
         isMountedRef.current = false;
       }
     };
-  }, [componentName, trackRenderTime, warnOnRerender, slowRenderThreshold, maxRenderCount, detectMemoryLeaks, log, trackProps, props]);
+  }, [
+    componentName,
+    trackRenderTime,
+    warnOnRerender,
+    slowRenderThreshold,
+    maxRenderCount,
+    detectMemoryLeaks,
+    log,
+    trackProps,
+    props,
+  ]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -279,7 +300,7 @@ export function usePerformanceMonitor(
         cancelAnimationFrame(fpsMonitorRef.current);
       }
       isMountedRef.current = false;
-      
+
       log(`[${componentName}] Unmounted after ${renderCountRef.current} renders`);
     };
   }, [componentName, log]);
@@ -295,8 +316,8 @@ export function usePerformanceMonitor(
 
       if (elapsed >= 1000) {
         const fps = Math.round((frameCountRef.current * 1000) / elapsed);
-        setMetrics(prev => ({ ...prev, currentFPS: fps }));
-        
+        setMetrics((prev) => ({ ...prev, currentFPS: fps }));
+
         if (fps < 30) {
           logger.warn(`[${componentName}] Low FPS detected: ${fps}`);
         }
@@ -325,7 +346,7 @@ export function usePerformanceMonitor(
     renderCountRef.current = 0;
     renderTimesRef.current = [];
     prevPropsRef.current = undefined;
-    
+
     setMetrics({
       renderCount: 0,
       renderTime: 0,
@@ -335,7 +356,7 @@ export function usePerformanceMonitor(
       hasSlowRender: false,
       currentFPS: null,
     });
-    
+
     log(`[${componentName}] Metrics reset`);
   }, [componentName, log]);
 
@@ -363,7 +384,9 @@ export function useInteractionTiming(
   onComplete?: (duration: number) => void,
 ): { start: () => void; end: () => void } {
   const startTimeRef = useRef<number>(0);
-  const interactionHandleRef = useRef<ReturnType<typeof InteractionManager.runAfterInteractions> | null>(null);
+  const interactionHandleRef = useRef<ReturnType<
+    typeof InteractionManager.runAfterInteractions
+  > | null>(null);
 
   const start = useCallback(() => {
     startTimeRef.current = performance.now();
@@ -371,7 +394,7 @@ export function useInteractionTiming(
 
   const end = useCallback(() => {
     const duration = performance.now() - startTimeRef.current;
-    
+
     interactionHandleRef.current = InteractionManager.runAfterInteractions(() => {
       const totalDuration = performance.now() - startTimeRef.current;
       logger.debug(`[${interactionName}] Interaction completed in ${totalDuration.toFixed(2)}ms`);
@@ -398,20 +421,23 @@ export function useLongTaskDetection(
   thresholdMs: number = 100,
   onLongTask?: (duration: number, taskName: string) => void,
 ): { wrapTask: <T>(task: () => T, taskName?: string) => T } {
-  const wrapTask = useCallback(<T,>(task: () => T, taskName: string = 'unnamed'): T => {
-    const startTime = performance.now();
-    
-    const result = task();
-    
-    const duration = performance.now() - startTime;
-    
-    if (duration > thresholdMs) {
-      logger.warn(`Long task detected: ${taskName} took ${duration.toFixed(2)}ms`);
-      onLongTask?.(duration, taskName);
-    }
+  const wrapTask = useCallback(
+    <T>(task: () => T, taskName: string = 'unnamed'): T => {
+      const startTime = performance.now();
 
-    return result;
-  }, [thresholdMs, onLongTask]);
+      const result = task();
+
+      const duration = performance.now() - startTime;
+
+      if (duration > thresholdMs) {
+        logger.warn(`Long task detected: ${taskName} took ${duration.toFixed(2)}ms`);
+        onLongTask?.(duration, taskName);
+      }
+
+      return result;
+    },
+    [thresholdMs, onLongTask],
+  );
 
   return { wrapTask };
 }
@@ -438,13 +464,14 @@ export function useListPerformance(
   const onScrollEnd = useCallback(() => {
     const totalDuration = performance.now() - scrollStartTimeRef.current;
     const renderedItems = renderTimesRef.current.size;
-    const avgRenderTime = renderedItems > 0
-      ? Array.from(renderTimesRef.current.values()).reduce((a, b) => a + b, 0) / renderedItems
-      : 0;
+    const avgRenderTime =
+      renderedItems > 0
+        ? Array.from(renderTimesRef.current.values()).reduce((a, b) => a + b, 0) / renderedItems
+        : 0;
 
     logger.debug(
       `[${listName}] Scroll performance: ${renderedItems}/${itemCount} items rendered ` +
-      `in ${totalDuration.toFixed(2)}ms (avg: ${avgRenderTime.toFixed(2)}ms/item)`
+        `in ${totalDuration.toFixed(2)}ms (avg: ${avgRenderTime.toFixed(2)}ms/item)`,
     );
   }, [listName, itemCount]);
 

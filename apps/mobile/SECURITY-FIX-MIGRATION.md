@@ -14,6 +14,7 @@ This document describes critical security fixes applied to the codebase and any 
 **Problem**: The `chat_messages` table used column name `content` instead of the required `encrypted_content` convention from CLAUDE.md security standards.
 
 **Fix Applied**:
+
 - Updated schema in `useChatHistory.ts` (line 126)
 - Updated schema in `db/client.ts` (line 150)
 - Updated INSERT query (line 306)
@@ -32,6 +33,7 @@ ALTER TABLE chat_messages RENAME COLUMN content TO encrypted_content;
 **Note**: SQLite ALTER TABLE RENAME COLUMN is supported since SQLite 3.25.0 (2018). Expo uses SQLite 3.45+ so this is safe.
 
 **Alternative (if ALTER not available)**:
+
 ```sql
 -- Create new table with correct schema
 CREATE TABLE chat_messages_new (
@@ -63,14 +65,16 @@ CREATE INDEX idx_chat_messages_conversation ON chat_messages(conversation_id);
 **Problem**: Multiple files used `console.error()` with raw error objects, risking sensitive data leakage (journal content, chat messages, step work answers, encryption keys in stack traces).
 
 **Files Fixed**:
+
 1. `useChatHistory.ts`: 10 instances (lines 134, 157, 222, 245, 268, 336, 370, 377, 402)
 2. `useStepWork.ts`: 6 instances (lines 87, 125, 153, 182, 202, 387)
 3. `useAIChat.ts`: 2 instances (lines 418, 522)
 4. `JournalEditorScreen.tsx`: 2 instances (lines 143, 146)
 
 **Fix Applied**:
+
 - All `console.*` calls replaced with `logger.*` from `utils/logger.ts`
-- Logger automatically sanitizes sensitive fields (encrypted_*, password, token, etc.)
+- Logger automatically sanitizes sensitive fields (encrypted\_\*, password, token, etc.)
 - Error objects are now passed as second parameter (auto-sanitized)
 
 **Migration Required**: NO (code-only fix)
@@ -84,6 +88,7 @@ CREATE INDEX idx_chat_messages_conversation ON chat_messages(conversation_id);
 **Investigation Result**: Chat tables (`chat_conversations`, `chat_messages`) are **NOT** synced to Supabase. They are SQLite/IndexedDB-only for maximum privacy.
 
 **Fix Applied**:
+
 - Added security documentation to `useChatHistory.ts` header
 - Added comment to `db/client.ts` schema: "SQLite-only, never synced to Supabase"
 - NO RLS policies needed (chat data never leaves device)
@@ -106,11 +111,13 @@ CREATE INDEX idx_chat_messages_conversation ON chat_messages(conversation_id);
 ## Security Impact
 
 **Before Fixes**:
+
 - Column naming violated encryption-first convention (audit risk)
 - Console logs could leak journal entries, chat messages, step work
 - Unclear if chat data synced (potential RLS vulnerability)
 
 **After Fixes**:
+
 - All sensitive data clearly marked as encrypted in schema
 - All error logging sanitized (no sensitive data leakage)
 - Chat privacy model documented (SQLite-only, no cloud sync)
@@ -131,7 +138,7 @@ CREATE INDEX idx_chat_messages_conversation ON chat_messages(conversation_id);
 ## Future Considerations
 
 1. **Column Rename Migration**: Consider adding automatic migration in `runMigrations()` function
-2. **Logger Enforcement**: Add ESLint rule to prevent console.* in features/
+2. **Logger Enforcement**: Add ESLint rule to prevent console.\* in features/
 3. **RLS Policy Audit**: Run full audit on all Supabase tables (beyond chat)
 
 ---

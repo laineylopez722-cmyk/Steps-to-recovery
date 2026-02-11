@@ -18,6 +18,7 @@ import {
 import { logger } from '../utils/logger';
 import { navigateFromNotification } from '../navigation/navigationRef';
 import type { NotificationPayload } from '../types/notifications';
+import { registerPushToken, unregisterPushToken } from '../services/pushTokenService';
 
 interface NotificationContextValue {
   // Permission state
@@ -28,6 +29,8 @@ interface NotificationContextValue {
   // Actions
   requestPermissions: () => Promise<boolean>;
   checkPermissionStatus: () => Promise<void>;
+  registerPushTokenForUser: (userId: string) => Promise<void>;
+  unregisterPushTokenForUser: (userId: string) => Promise<void>;
 
   // Preferences
   notificationsEnabled: boolean;
@@ -77,6 +80,31 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       return false;
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  /**
+   * Register push token with Supabase for remote notifications
+   */
+  const registerPushTokenForUser = useCallback(async (userId: string): Promise<void> => {
+    try {
+      const success = await registerPushToken(userId);
+      if (!success) {
+        logger.warn('Push token registration returned false', { userId });
+      }
+    } catch (error) {
+      logger.error('Error registering push token', { error });
+    }
+  }, []);
+
+  /**
+   * Unregister push token from Supabase (called on logout)
+   */
+  const unregisterPushTokenForUser = useCallback(async (userId: string): Promise<void> => {
+    try {
+      await unregisterPushToken(userId);
+    } catch (error) {
+      logger.error('Error unregistering push token', { error });
     }
   }, []);
 
@@ -190,6 +218,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       isLoading,
       requestPermissions,
       checkPermissionStatus,
+      registerPushTokenForUser,
+      unregisterPushTokenForUser,
       notificationsEnabled,
       setNotificationsEnabled,
     }),
@@ -199,6 +229,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       isLoading,
       requestPermissions,
       checkPermissionStatus,
+      registerPushTokenForUser,
+      unregisterPushTokenForUser,
       notificationsEnabled,
       setNotificationsEnabled,
     ],

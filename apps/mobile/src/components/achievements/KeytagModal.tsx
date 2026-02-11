@@ -81,7 +81,9 @@ export const KeytagModal = memo(function KeytagModal({
                 }`}
                 style={[
                   { backgroundColor: isEarned ? hexColor : ds.colors.textTertiary },
-                  isWhite && isEarned ? { borderWidth: 3, borderColor: ds.colors.borderSubtle } : undefined,
+                  isWhite && isEarned
+                    ? { borderWidth: 3, borderColor: ds.colors.borderSubtle }
+                    : undefined,
                 ]}
               >
                 {/* Keytag hole */}

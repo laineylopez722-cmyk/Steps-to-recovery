@@ -55,12 +55,15 @@ export function useStepQuestionNavigation({
     scrollToQuestion(firstUnansweredQuestion);
   }, [firstUnansweredQuestion, scrollToQuestion]);
 
-  const onViewableItemsChanged = useCallback(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const firstVisibleQuestionNumber = getFirstVisibleQuestionNumber(viewableItems);
-    if (firstVisibleQuestionNumber !== null) {
-      setCurrentVisibleQuestion(firstVisibleQuestionNumber);
-    }
-  }, []);
+  const onViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
+      const firstVisibleQuestionNumber = getFirstVisibleQuestionNumber(viewableItems);
+      if (firstVisibleQuestionNumber !== null) {
+        setCurrentVisibleQuestion(firstVisibleQuestionNumber);
+      }
+    },
+    [],
+  );
 
   const viewabilityConfig = useMemo(
     () => ({

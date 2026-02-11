@@ -1,6 +1,6 @@
 /**
  * Modern Design Tokens - iOS Style
- * 
+ *
  * Following iOS Human Interface Guidelines
  * Premium app quality: Spotify, Apple Health, Calm
  */

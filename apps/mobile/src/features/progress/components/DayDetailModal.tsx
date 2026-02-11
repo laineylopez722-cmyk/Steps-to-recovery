@@ -76,11 +76,7 @@ function formatDisplayDate(dateStr: string): string {
   });
 }
 
-export function DayDetailModal({
-  visible,
-  onClose,
-  day,
-}: DayDetailModalProps): React.ReactElement {
+export function DayDetailModal({ visible, onClose, day }: DayDetailModalProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
@@ -130,11 +126,7 @@ export function DayDetailModal({
             completed={day.meetingAttended}
             icon="account-group"
           />
-          <ActivityRow
-            label="Step Work"
-            completed={day.stepWorkDone}
-            icon="stairs"
-          />
+          <ActivityRow label="Step Work" completed={day.stepWorkDone} icon="stairs" />
           <ActivityRow
             label="Gratitude List"
             completed={day.gratitudeCompleted}

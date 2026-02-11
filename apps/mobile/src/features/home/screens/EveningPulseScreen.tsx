@@ -1,15 +1,15 @@
 /**
  * Evening Reflection Screen
- * 
+ *
  * End of day check-in.
  * Reflection, gratitude, mood, craving.
  */
 
 import React, { useState, useCallback } from 'react';
-import { 
-  ScrollView, 
-  View, 
-  Text, 
+import {
+  ScrollView,
+  View,
+  Text,
   TextInput,
   Pressable,
   KeyboardAvoidingView,
@@ -46,24 +46,30 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   const [craving, setCraving] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleMood = useCallback((val: number) => {
-    if (val !== mood) {
-      hapticSelection();
-      setMood(val);
-    }
-  }, [mood]);
+  const handleMood = useCallback(
+    (val: number) => {
+      if (val !== mood) {
+        hapticSelection();
+        setMood(val);
+      }
+    },
+    [mood],
+  );
 
-  const handleCraving = useCallback((val: number) => {
-    if (val !== craving) {
-      hapticSelection();
-      if (val >= 7 && craving < 7) hapticWarning();
-      setCraving(val);
-    }
-  }, [craving]);
+  const handleCraving = useCallback(
+    (val: number) => {
+      if (val !== craving) {
+        hapticSelection();
+        if (val >= 7 && craving < 7) hapticWarning();
+        setCraving(val);
+      }
+    },
+    [craving],
+  );
 
   const handleSubmit = async () => {
     if (!reflection.trim() || isPending) return;
-    
+
     try {
       await createCheckIn({
         type: 'evening',
@@ -74,7 +80,7 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
       });
       hapticSuccess();
       setShowSuccess(true);
-      
+
       // Extract memories for AI companion (async)
       const content = [reflection.trim(), gratitude.trim()].filter(Boolean).join(' ');
       extractMemories(content, userId)
@@ -103,7 +109,7 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           style={styles.kav}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
@@ -118,9 +124,9 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
             >
               <Feather name="x" size={ds.sizes.iconLg} color={ds.colors.textSecondary} />
             </Pressable>
-            
+
             <Text style={styles.headerTitle}>Evening</Text>
-            
+
             <Pressable
               onPress={handleSubmit}
               disabled={!canSubmit}
@@ -136,7 +142,7 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
             </Pressable>
           </View>
 
-          <ScrollView 
+          <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
@@ -145,10 +151,10 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
             {/* Date */}
             <Animated.View entering={FadeInDown.duration(300)}>
               <Text style={styles.date}>
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </Text>
             </Animated.View>
@@ -210,10 +216,7 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
                   <Pressable
                     key={m}
                     onPress={() => handleMood(m)}
-                    style={[
-                      styles.moodDot,
-                      mood >= m && styles.moodDotActive,
-                    ]}
+                    style={[styles.moodDot, mood >= m && styles.moodDotActive]}
                     accessibilityRole="button"
                     accessibilityLabel={`Set mood level ${m} of 5`}
                     accessibilityState={{ selected: mood === m }}
@@ -228,7 +231,10 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
             </Animated.View>
 
             {/* Craving */}
-            <Animated.View entering={FadeInDown.delay(250).duration(400)} style={styles.cravingSection}>
+            <Animated.View
+              entering={FadeInDown.delay(250).duration(400)}
+              style={styles.cravingSection}
+            >
               <View style={styles.cravingHeader}>
                 <Text style={styles.label}>Craving</Text>
                 <Text style={[styles.cravingValue, { color: getCravingColor(craving) }]}>
@@ -247,7 +253,11 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
                     accessibilityRole="button"
                     accessibilityLabel={`Set craving level ${i} of 10`}
                     accessibilityState={{ selected: craving === i }}
-                    accessibilityHint={i >= 7 ? "High craving level - consider emergency support" : "Tap to select this craving level"}
+                    accessibilityHint={
+                      i >= 7
+                        ? 'High craving level - consider emergency support'
+                        : 'Tap to select this craving level'
+                    }
                   />
                 ))}
               </View>
@@ -266,10 +276,10 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
       <Modal visible={showSuccess} transparent animationType="fade">
         <View style={styles.modalBg}>
           <View style={styles.modalCard}>
-            <AnimatedCheckmark 
-              size={64} 
-              color={ds.colors.success} 
-              onAnimationComplete={handleDone} 
+            <AnimatedCheckmark
+              size={64}
+              color={ds.colors.success}
+              onAnimationComplete={handleDone}
             />
             <Text style={styles.modalTitle}>Day complete</Text>
             <Text style={styles.modalSub}>Rest well</Text>
@@ -280,195 +290,196 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
-  kav: {
-    flex: 1,
-  },
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
+    kav: {
+      flex: 1,
+    },
 
-  // Header
-  header: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    height: ds.sizes.headerHeight,
-    paddingHorizontal: ds.sizes.contentPadding,
-    borderBottomWidth: 1,
-    borderBottomColor: ds.colors.divider,
-  },
-  headerBtn: {
-    width: ds.sizes.touchMin,
-    height: ds.sizes.touchMin,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    marginLeft: -ds.space[2],
-  },
-  headerTitle: {
-    ...ds.typography.body,
-    fontWeight: ds.fontWeight.semibold,
-    color: ds.colors.textPrimary,
-  },
-  saveBtn: {
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[2],
-    backgroundColor: ds.colors.accent,
-    borderRadius: ds.radius.sm,
-  },
-  saveBtnDisabled: {
-    backgroundColor: ds.colors.bgTertiary,
-  },
-  saveBtnText: {
-    ...ds.typography.bodySm,
-    fontWeight: ds.fontWeight.semibold,
-    color: ds.colors.bgPrimary,
-  },
-  saveBtnTextDisabled: {
-    color: ds.colors.textQuaternary,
-  },
+    // Header
+    header: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      height: ds.sizes.headerHeight,
+      paddingHorizontal: ds.sizes.contentPadding,
+      borderBottomWidth: 1,
+      borderBottomColor: ds.colors.divider,
+    },
+    headerBtn: {
+      width: ds.sizes.touchMin,
+      height: ds.sizes.touchMin,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginLeft: -ds.space[2],
+    },
+    headerTitle: {
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.textPrimary,
+    },
+    saveBtn: {
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[2],
+      backgroundColor: ds.colors.accent,
+      borderRadius: ds.radius.sm,
+    },
+    saveBtnDisabled: {
+      backgroundColor: ds.colors.bgTertiary,
+    },
+    saveBtnText: {
+      ...ds.typography.bodySm,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.bgPrimary,
+    },
+    saveBtnTextDisabled: {
+      color: ds.colors.textQuaternary,
+    },
 
-  // Content
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: ds.sizes.contentPadding,
-    paddingTop: ds.space[6],
-  },
+    // Content
+    scroll: {
+      flex: 1,
+    },
+    content: {
+      paddingHorizontal: ds.sizes.contentPadding,
+      paddingTop: ds.space[6],
+    },
 
-  date: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginBottom: ds.space[6],
-  },
+    date: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginBottom: ds.space[6],
+    },
 
-  reminder: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.md,
-    padding: ds.space[4],
-    marginBottom: ds.space[6],
-  },
-  reminderLabel: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginBottom: ds.space[1],
-  },
-  reminderText: {
-    ...ds.typography.bodySm,
-    color: ds.colors.textSecondary,
-    fontStyle: 'italic' as const,
-  },
+    reminder: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.md,
+      padding: ds.space[4],
+      marginBottom: ds.space[6],
+    },
+    reminderLabel: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginBottom: ds.space[1],
+    },
+    reminderText: {
+      ...ds.typography.bodySm,
+      color: ds.colors.textSecondary,
+      fontStyle: 'italic' as const,
+    },
 
-  label: {
-    ...ds.typography.caption,
-    color: ds.colors.textSecondary,
-    marginBottom: ds.space[3],
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
-  },
-  labelRow: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    marginBottom: ds.space[3],
-  },
-  optional: {
-    ...ds.typography.micro,
-    color: ds.colors.textQuaternary,
-  },
+    label: {
+      ...ds.typography.caption,
+      color: ds.colors.textSecondary,
+      marginBottom: ds.space[3],
+      textTransform: 'uppercase' as const,
+      letterSpacing: 0.5,
+    },
+    labelRow: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+      marginBottom: ds.space[3],
+    },
+    optional: {
+      ...ds.typography.micro,
+      color: ds.colors.textQuaternary,
+    },
 
-  input: {
-    ...ds.typography.h3,
-    color: ds.colors.textPrimary,
-    minHeight: 100,
-    marginBottom: ds.space[6],
-  },
+    input: {
+      ...ds.typography.h3,
+      color: ds.colors.textPrimary,
+      minHeight: 100,
+      marginBottom: ds.space[6],
+    },
 
-  divider: {
-    height: 1,
-    backgroundColor: ds.colors.divider,
-    marginVertical: ds.space[4],
-  },
+    divider: {
+      height: 1,
+      backgroundColor: ds.colors.divider,
+      marginVertical: ds.space[4],
+    },
 
-  // Mood
-  moodTrack: {
-    flexDirection: 'row' as const,
-    gap: ds.space[2],
-    marginBottom: ds.space[2],
-  },
-  moodDot: {
-    flex: 1,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: ds.colors.bgTertiary,
-  },
-  moodDotActive: {
-    backgroundColor: ds.colors.accent,
-  },
-  trackLabels: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    marginBottom: ds.space[6],
-  },
-  trackLabelText: {
-    ...ds.typography.micro,
-    color: ds.colors.textQuaternary,
-  },
+    // Mood
+    moodTrack: {
+      flexDirection: 'row' as const,
+      gap: ds.space[2],
+      marginBottom: ds.space[2],
+    },
+    moodDot: {
+      flex: 1,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: ds.colors.bgTertiary,
+    },
+    moodDotActive: {
+      backgroundColor: ds.colors.accent,
+    },
+    trackLabels: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      marginBottom: ds.space[6],
+    },
+    trackLabelText: {
+      ...ds.typography.micro,
+      color: ds.colors.textQuaternary,
+    },
 
-  // Craving
-  cravingSection: {
-    marginTop: ds.space[2],
-  },
-  cravingHeader: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    marginBottom: ds.space[3],
-  },
-  cravingValue: {
-    ...ds.typography.h2,
-    fontWeight: ds.fontWeight.bold,
-  },
-  cravingTrack: {
-    flexDirection: 'row' as const,
-    gap: ds.space[1],
-    marginBottom: ds.space[2],
-  },
-  cravingDot: {
-    flex: 1,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: ds.colors.bgTertiary,
-  },
+    // Craving
+    cravingSection: {
+      marginTop: ds.space[2],
+    },
+    cravingHeader: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+      marginBottom: ds.space[3],
+    },
+    cravingValue: {
+      ...ds.typography.h2,
+      fontWeight: ds.fontWeight.bold,
+    },
+    cravingTrack: {
+      flexDirection: 'row' as const,
+      gap: ds.space[1],
+      marginBottom: ds.space[2],
+    },
+    cravingDot: {
+      flex: 1,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: ds.colors.bgTertiary,
+    },
 
-  // Modal
-  modalBg: {
-    flex: 1,
-    backgroundColor: ds.semantic.surface.overlayModal,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  modalCard: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.xl,
-    paddingVertical: ds.space[12],
-    paddingHorizontal: ds.space[10],
-    alignItems: 'center' as const,
-    minWidth: 240,
-  },
-  modalTitle: {
-    ...ds.typography.h2,
-    color: ds.colors.textPrimary,
-    marginTop: ds.space[6],
-  },
-  modalSub: {
-    ...ds.typography.body,
-    color: ds.colors.textSecondary,
-    marginTop: ds.space[2],
-  },
-} as const);
+    // Modal
+    modalBg: {
+      flex: 1,
+      backgroundColor: ds.semantic.surface.overlayModal,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    modalCard: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.xl,
+      paddingVertical: ds.space[12],
+      paddingHorizontal: ds.space[10],
+      alignItems: 'center' as const,
+      minWidth: 240,
+    },
+    modalTitle: {
+      ...ds.typography.h2,
+      color: ds.colors.textPrimary,
+      marginTop: ds.space[6],
+    },
+    modalSub: {
+      ...ds.typography.body,
+      color: ds.colors.textSecondary,
+      marginTop: ds.space[2],
+    },
+  }) as const;

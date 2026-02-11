@@ -50,6 +50,7 @@ export function initSentry(): void {
 
     integrations: [Sentry.reactNativeTracingIntegration()],
     tracesSampleRate: 0.2,
+    sendDefaultPii: true, // Required for AI monitoring (captures inputs/outputs)
   });
 }
 

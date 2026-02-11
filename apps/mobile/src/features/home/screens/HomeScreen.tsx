@@ -32,10 +32,12 @@ import { Action } from '../../../design-system/primitives';
 import { useCleanTime, useMilestones } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
 import { MilestoneCelebrationModal } from '../../../components/MilestoneCelebrationModal';
+import { TodayWidget } from '../../../components/TodayWidget';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import type { HomeStackParamList } from '../../../navigation/types';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { UpcomingMilestones } from '../components/UpcomingMilestones';
 
 interface HomeScreenProps {
   userId: string;
@@ -111,7 +113,9 @@ function PremiumProgressHero({
       <View style={styles.heroTopRow}>
         <Text style={styles.heroTitle}>Clean Time</Text>
         <View style={styles.heroBadge}>
-          <Text style={styles.heroBadgeText}>{days > 0 ? 'Streak intact' : 'Day zero, still progress'}</Text>
+          <Text style={styles.heroBadgeText}>
+            {days > 0 ? 'Streak intact' : 'Day zero, still progress'}
+          </Text>
         </View>
       </View>
 
@@ -150,12 +154,18 @@ function PremiumProgressHero({
         <View style={styles.ringCenter}>
           <Text style={styles.dayCount}>{days}</Text>
           <Text style={styles.dayLabel}>{days === 1 ? 'day clean' : 'days clean'}</Text>
-          <Text style={styles.heroClock}>{String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}</Text>
+          <Text style={styles.heroClock}>
+            {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}
+          </Text>
         </View>
       </View>
 
       <View style={styles.miniStatsRow}>
-        <MiniStat label="Check-ins" value={`${completedToday}/2`} tint={ds.semantic.intent.primary.solid} />
+        <MiniStat
+          label="Check-ins"
+          value={`${completedToday}/2`}
+          tint={ds.semantic.intent.primary.solid}
+        />
         <MiniStat label="Year path" value={`${Math.round(yearProgress * 100)}%`} />
         <MiniStat label="Current step" value="1/12" />
       </View>
@@ -198,7 +208,12 @@ function ShortcutCard({
       </Action.Icon>
       <Action.Title style={styles.shortcutTitle}>{title}</Action.Title>
       <Action.Subtitle style={styles.shortcutSubtitle}>{subtitle}</Action.Subtitle>
-      <Feather name="arrow-up-right" size={14} color={ds.semantic.text.muted} style={styles.shortcutArrow} />
+      <Feather
+        name="arrow-up-right"
+        size={14}
+        color={ds.semantic.text.muted}
+        style={styles.shortcutArrow}
+      />
     </ActionCard>
   );
 }
@@ -247,10 +262,23 @@ function HomeScreenSkeleton() {
 
 export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  const { days, hours, minutes, isLoading: loadingDays, error: daysError, refetch: refetchDays } = useCleanTime(userId);
-  const { morning, evening, isLoading: loadingCheckins, error: checkinsError, refetch: refetchCheckins } = useTodayCheckIns(userId);
+  const {
+    days,
+    hours,
+    minutes,
+    isLoading: loadingDays,
+    error: daysError,
+    refetch: refetchDays,
+  } = useCleanTime(userId);
+  const {
+    morning,
+    evening,
+    isLoading: loadingCheckins,
+    error: checkinsError,
+    refetch: refetchCheckins,
+  } = useTodayCheckIns(userId);
   const { newMilestone, checkForNewMilestones } = useMilestones(userId);
-  
+
   const [refreshing, setRefreshing] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
   const lastCelebratedKeyRef = useRef<string | null>(null);
@@ -287,7 +315,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
     impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
-    
+
     try {
       await Promise.all([refetchDays?.(), refetchCheckins?.()]);
     } finally {
@@ -335,6 +363,16 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     navigation.getParent()?.navigate('Profile' as never);
   }, [navigation]);
 
+  const handleJournal = useCallback(() => {
+    hapticLight();
+    navigation.getParent()?.navigate('Journal' as never);
+  }, [navigation]);
+
+  const handleMeetings = useCallback(() => {
+    hapticLight();
+    navigation.getParent()?.navigate('Meetings' as never);
+  }, [navigation]);
+
   const intentionPills = [
     { label: 'Stay present', icon: 'sun' as const, onPress: handleMorning },
     { label: 'Read one page', icon: 'book-open' as const, onPress: handleReading },
@@ -379,7 +417,10 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
             <Pressable
               onPress={handleProfile}
-              style={({ pressed }) => [styles.profileButton, pressed && styles.profileButtonPressed]}
+              style={({ pressed }) => [
+                styles.profileButton,
+                pressed && styles.profileButtonPressed,
+              ]}
               accessibilityRole="button"
               accessibilityLabel="Open profile"
             >
@@ -401,6 +442,15 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             completedToday={completedToday}
           />
 
+          <TodayWidget
+            userId={userId}
+            onCheckIn={handleMorning}
+            onJournal={handleJournal}
+            onMeeting={handleMeetings}
+          />
+
+          <UpcomingMilestones userId={userId} />
+
           <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Daily intention</Text>
@@ -409,10 +459,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
             <View style={styles.pillsRow}>
               {intentionPills.map((pill, index) => (
-                <Animated.View
-                  key={pill.label}
-                  entering={FadeInUp.delay(300 + index * 50)}
-                >
+                <Animated.View key={pill.label} entering={FadeInUp.delay(300 + index * 50)}>
                   <Action.Root
                     onPress={pill.onPress}
                     contentStyle={styles.intentionPill}
@@ -436,7 +483,11 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           >
             <View style={styles.companionCard}>
               <View style={styles.companionIcon}>
-                <Feather name="message-circle" size={24} color={ds.semantic.intent.primary.onSolid} />
+                <Feather
+                  name="message-circle"
+                  size={24}
+                  color={ds.semantic.intent.primary.onSolid}
+                />
               </View>
               <View style={styles.companionContent}>
                 <Text style={styles.companionTitle}>Talk to your companion</Text>
@@ -492,360 +543,361 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-  },
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
+    scroll: {
+      flex: 1,
+    },
+    content: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+    },
 
-  // Loading skeleton styles
-  loadingContainer: {
-    flex: 1,
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-    paddingTop: ds.space[6],
-  },
-  skeletonHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingBottom: ds.space[4],
-  },
-  skeletonLine: {
-    height: 16,
-    backgroundColor: ds.semantic.surface.interactive,
-    borderRadius: 8,
-  },
-  skeletonAvatar: {
-    width: ds.sizes.touchMin,
-    height: ds.sizes.touchMin,
-    borderRadius: ds.sizes.touchMin / 2,
-    backgroundColor: ds.semantic.surface.interactive,
-  },
-  skeletonHero: {
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: ds.radius.xl,
-    padding: ds.space[5],
-    marginTop: ds.space[4],
-  },
-  skeletonRing: {
-    width: 214,
-    height: 214,
-    borderRadius: 107,
-    backgroundColor: ds.semantic.surface.elevated,
-    alignSelf: 'center',
-    marginVertical: ds.space[4],
-  },
-  skeletonStats: {
-    flexDirection: 'row',
-    gap: ds.space[2],
-  },
-  skeletonStat: {
-    flex: 1,
-    height: 50,
-    backgroundColor: ds.semantic.surface.elevated,
-    borderRadius: ds.radius.lg,
-  },
-  skeletonPills: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: ds.space[2],
-    marginTop: ds.space[3],
-  },
-  skeletonPill: {
-    width: 120,
-    height: 36,
-    backgroundColor: ds.semantic.surface.elevated,
-    borderRadius: ds.radius.full,
-  },
+    // Loading skeleton styles
+    loadingContainer: {
+      flex: 1,
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[6],
+    },
+    skeletonHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      paddingBottom: ds.space[4],
+    },
+    skeletonLine: {
+      height: 16,
+      backgroundColor: ds.semantic.surface.interactive,
+      borderRadius: 8,
+    },
+    skeletonAvatar: {
+      width: ds.sizes.touchMin,
+      height: ds.sizes.touchMin,
+      borderRadius: ds.sizes.touchMin / 2,
+      backgroundColor: ds.semantic.surface.interactive,
+    },
+    skeletonHero: {
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.xl,
+      padding: ds.space[5],
+      marginTop: ds.space[4],
+    },
+    skeletonRing: {
+      width: 214,
+      height: 214,
+      borderRadius: 107,
+      backgroundColor: ds.semantic.surface.elevated,
+      alignSelf: 'center',
+      marginVertical: ds.space[4],
+    },
+    skeletonStats: {
+      flexDirection: 'row',
+      gap: ds.space[2],
+    },
+    skeletonStat: {
+      flex: 1,
+      height: 50,
+      backgroundColor: ds.semantic.surface.elevated,
+      borderRadius: ds.radius.lg,
+    },
+    skeletonPills: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: ds.space[2],
+      marginTop: ds.space[3],
+    },
+    skeletonPill: {
+      width: 120,
+      height: 36,
+      backgroundColor: ds.semantic.surface.elevated,
+      borderRadius: ds.radius.full,
+    },
 
-  // Error banner
-  errorBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.semantic.intent.alert.subtle,
-    borderRadius: ds.radius.lg,
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[3],
-    marginBottom: ds.space[4],
-    gap: ds.space[2],
-  },
-  errorText: {
-    ...ds.typography.caption,
-    color: ds.semantic.intent.alert.solid,
-    flex: 1,
-  },
+    // Error banner
+    errorBanner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.semantic.intent.alert.subtle,
+      borderRadius: ds.radius.lg,
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[3],
+      marginBottom: ds.space[4],
+      gap: ds.space[2],
+    },
+    errorText: {
+      ...ds.typography.caption,
+      color: ds.semantic.intent.alert.solid,
+      flex: 1,
+    },
 
-  bgLayerTop: {
-    position: 'absolute',
-    top: -120,
-    right: -70,
-    width: 260,
-    height: 260,
-    borderRadius: ds.radius.full,
-    backgroundColor: ds.semantic.intent.secondary.subtle,
-  },
-  bgLayerMid: {
-    position: 'absolute',
-    top: 210,
-    left: -120,
-    width: 300,
-    height: 300,
-    borderRadius: ds.radius.full,
-    backgroundColor: ds.semantic.intent.primary.subtle,
-  },
-  bgLayerBottom: {
-    position: 'absolute',
-    bottom: -180,
-    right: -140,
-    width: 360,
-    height: 360,
-    borderRadius: ds.radius.full,
-    backgroundColor: ds.semantic.surface.interactive,
-  },
+    bgLayerTop: {
+      position: 'absolute',
+      top: -120,
+      right: -70,
+      width: 260,
+      height: 260,
+      borderRadius: ds.radius.full,
+      backgroundColor: ds.semantic.intent.secondary.subtle,
+    },
+    bgLayerMid: {
+      position: 'absolute',
+      top: 210,
+      left: -120,
+      width: 300,
+      height: 300,
+      borderRadius: ds.radius.full,
+      backgroundColor: ds.semantic.intent.primary.subtle,
+    },
+    bgLayerBottom: {
+      position: 'absolute',
+      bottom: -180,
+      right: -140,
+      width: 360,
+      height: 360,
+      borderRadius: ds.radius.full,
+      backgroundColor: ds.semantic.surface.interactive,
+    },
 
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    paddingTop: ds.space[6],
-    paddingBottom: ds.space[4],
-  },
-  date: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: ds.space[1],
-  },
-  greeting: {
-    ...ds.semantic.typography.screenTitle,
-    color: ds.semantic.text.primary,
-  },
-  subtitle: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
-    marginTop: ds.space[1],
-  },
-  profileButton: {
-    width: ds.sizes.touchMin,
-    height: ds.sizes.touchMin,
-    borderRadius: ds.radius.full,
-    backgroundColor: ds.semantic.surface.card,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ds.colors.borderDefault,
-  },
-  profileButtonPressed: {
-    backgroundColor: ds.semantic.surface.interactive,
-  },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      paddingTop: ds.space[6],
+      paddingBottom: ds.space[4],
+    },
+    date: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.tertiary,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: ds.space[1],
+    },
+    greeting: {
+      ...ds.semantic.typography.screenTitle,
+      color: ds.semantic.text.primary,
+    },
+    subtitle: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.tertiary,
+      marginTop: ds.space[1],
+    },
+    profileButton: {
+      width: ds.sizes.touchMin,
+      height: ds.sizes.touchMin,
+      borderRadius: ds.radius.full,
+      backgroundColor: ds.semantic.surface.card,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: ds.colors.borderDefault,
+    },
+    profileButtonPressed: {
+      backgroundColor: ds.semantic.surface.interactive,
+    },
 
-  heroCard: {
-    backgroundColor: ds.semantic.surface.elevated,
-    borderRadius: ds.radius.xl,
-    paddingHorizontal: ds.space[5],
-    paddingTop: ds.space[4],
-    paddingBottom: ds.space[5],
-    marginBottom: ds.space[5],
-    borderWidth: 1,
-    borderColor: ds.semantic.intent.primary.muted,
-    ...ds.shadows.lg,
-  },
-  heroTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  heroTitle: {
-    ...ds.typography.body,
-    color: ds.semantic.text.primary,
-    fontWeight: '700',
-  },
-  heroBadge: {
-    backgroundColor: ds.semantic.intent.primary.muted,
-    paddingHorizontal: ds.space[3],
-    paddingVertical: ds.space[1],
-    borderRadius: ds.radius.full,
-  },
-  heroBadgeText: {
-    ...ds.typography.micro,
-    color: ds.semantic.intent.primary.solid,
-    fontWeight: '700',
-  },
-  ringWrap: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: ds.space[4],
-  },
-  ringCenter: {
-    position: 'absolute',
-    alignItems: 'center',
-  },
-  dayCount: {
-    fontSize: 52,
-    fontWeight: '700',
-    color: ds.semantic.text.primary,
-    letterSpacing: -1,
-  },
-  dayLabel: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
-    marginTop: -2,
-  },
-  heroClock: {
-    ...ds.typography.micro,
-    color: ds.semantic.intent.primary.solid,
-    marginTop: ds.space[1],
-    letterSpacing: 0.4,
-  },
-  miniStatsRow: {
-    flexDirection: 'row',
-    backgroundColor: ds.semantic.surface.overlay,
-    borderRadius: ds.radius.lg,
-    overflow: 'hidden',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ds.colors.borderDefault,
-  },
-  miniStat: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: ds.space[3],
-  },
-  miniStatValue: {
-    ...ds.typography.body,
-    color: ds.semantic.text.primary,
-    fontWeight: '700',
-  },
-  miniStatLabel: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.muted,
-    marginTop: 2,
-  },
+    heroCard: {
+      backgroundColor: ds.semantic.surface.elevated,
+      borderRadius: ds.radius.xl,
+      paddingHorizontal: ds.space[5],
+      paddingTop: ds.space[4],
+      paddingBottom: ds.space[5],
+      marginBottom: ds.space[5],
+      borderWidth: 1,
+      borderColor: ds.semantic.intent.primary.muted,
+      ...ds.shadows.lg,
+    },
+    heroTopRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    heroTitle: {
+      ...ds.typography.body,
+      color: ds.semantic.text.primary,
+      fontWeight: '700',
+    },
+    heroBadge: {
+      backgroundColor: ds.semantic.intent.primary.muted,
+      paddingHorizontal: ds.space[3],
+      paddingVertical: ds.space[1],
+      borderRadius: ds.radius.full,
+    },
+    heroBadgeText: {
+      ...ds.typography.micro,
+      color: ds.semantic.intent.primary.solid,
+      fontWeight: '700',
+    },
+    ringWrap: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: ds.space[4],
+    },
+    ringCenter: {
+      position: 'absolute',
+      alignItems: 'center',
+    },
+    dayCount: {
+      fontSize: 52,
+      fontWeight: '700',
+      color: ds.semantic.text.primary,
+      letterSpacing: -1,
+    },
+    dayLabel: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.tertiary,
+      marginTop: -2,
+    },
+    heroClock: {
+      ...ds.typography.micro,
+      color: ds.semantic.intent.primary.solid,
+      marginTop: ds.space[1],
+      letterSpacing: 0.4,
+    },
+    miniStatsRow: {
+      flexDirection: 'row',
+      backgroundColor: ds.semantic.surface.overlay,
+      borderRadius: ds.radius.lg,
+      overflow: 'hidden',
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: ds.colors.borderDefault,
+    },
+    miniStat: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: ds.space[3],
+    },
+    miniStatValue: {
+      ...ds.typography.body,
+      color: ds.semantic.text.primary,
+      fontWeight: '700',
+    },
+    miniStatLabel: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.muted,
+      marginTop: 2,
+    },
 
-  section: {
-    marginTop: ds.space[2],
-  },
-  sectionHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: ds.space[3],
-    marginLeft: ds.space[1],
-  },
-  sectionTitle: {
-    ...ds.semantic.typography.sectionLabel,
-    color: ds.semantic.text.tertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 1.5,
-  },
-  sectionHint: {
-    ...ds.typography.micro,
-    color: ds.semantic.text.muted,
-  },
+    section: {
+      marginTop: ds.space[2],
+    },
+    sectionHeaderRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: ds.space[3],
+      marginLeft: ds.space[1],
+    },
+    sectionTitle: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.tertiary,
+      textTransform: 'uppercase',
+      letterSpacing: 1.5,
+    },
+    sectionHint: {
+      ...ds.typography.micro,
+      color: ds.semantic.text.muted,
+    },
 
-  pillsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: ds.space[2],
-    marginBottom: ds.space[3],
-  },
-  intentionPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: ds.space[2],
-    backgroundColor: ds.semantic.surface.interactive,
-    borderRadius: ds.radius.full,
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[2],
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ds.semantic.intent.primary.muted,
-  },
-  intentionPillText: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.secondary,
-    fontWeight: '600',
-  },
+    pillsRow: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: ds.space[2],
+      marginBottom: ds.space[3],
+    },
+    intentionPill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: ds.space[2],
+      backgroundColor: ds.semantic.surface.interactive,
+      borderRadius: ds.radius.full,
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[2],
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: ds.semantic.intent.primary.muted,
+    },
+    intentionPillText: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+      fontWeight: '600',
+    },
 
-  shortcutsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: ds.space[3],
-    marginBottom: ds.space[2],
-  },
-  shortcutCard: {
-    width: '48%',
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: ds.radius.lg,
-    padding: ds.space[4],
-    minHeight: 112,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ds.colors.borderDefault,
-  },
-  shortcutIconWrap: {
-    width: 30,
-    height: 30,
-    borderRadius: ds.radius.md,
-    backgroundColor: ds.semantic.intent.primary.muted,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: ds.space[2],
-  },
-  shortcutTitle: {
-    ...ds.typography.body,
-    color: ds.semantic.text.primary,
-    fontWeight: '600',
-  },
-  shortcutSubtitle: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
-    marginTop: ds.space[1],
-    paddingRight: ds.space[4],
-  },
-  shortcutArrow: {
-    position: 'absolute',
-    right: ds.space[3],
-    top: ds.space[3],
-  },
+    shortcutsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: ds.space[3],
+      marginBottom: ds.space[2],
+    },
+    shortcutCard: {
+      width: '48%',
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.lg,
+      padding: ds.space[4],
+      minHeight: 112,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: ds.colors.borderDefault,
+    },
+    shortcutIconWrap: {
+      width: 30,
+      height: 30,
+      borderRadius: ds.radius.md,
+      backgroundColor: ds.semantic.intent.primary.muted,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: ds.space[2],
+    },
+    shortcutTitle: {
+      ...ds.typography.body,
+      color: ds.semantic.text.primary,
+      fontWeight: '600',
+    },
+    shortcutSubtitle: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.tertiary,
+      marginTop: ds.space[1],
+      paddingRight: ds.space[4],
+    },
+    shortcutArrow: {
+      position: 'absolute',
+      right: ds.space[3],
+      top: ds.space[3],
+    },
 
-  companionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.semantic.intent.primary.solid,
-    borderRadius: ds.radius.xl,
-    paddingVertical: ds.space[5],
-    paddingHorizontal: ds.space[5],
-    marginBottom: ds.space[2],
-    ...ds.shadows.md,
-  },
-  companionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: ds.radius.lg,
-    backgroundColor: ds.semantic.surface.overlay,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  companionContent: {
-    flex: 1,
-    marginLeft: ds.space[4],
-  },
-  companionTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: ds.semantic.intent.primary.onSolid,
-  },
-  companionSubtitle: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.muted,
-    marginTop: 2,
-  },
-} as const);
+    companionCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.semantic.intent.primary.solid,
+      borderRadius: ds.radius.xl,
+      paddingVertical: ds.space[5],
+      paddingHorizontal: ds.space[5],
+      marginBottom: ds.space[2],
+      ...ds.shadows.md,
+    },
+    companionIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: ds.radius.lg,
+      backgroundColor: ds.semantic.surface.overlay,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    companionContent: {
+      flex: 1,
+      marginLeft: ds.space[4],
+    },
+    companionTitle: {
+      fontSize: 17,
+      fontWeight: '700',
+      color: ds.semantic.intent.primary.onSolid,
+    },
+    companionSubtitle: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.muted,
+      marginTop: 2,
+    },
+  }) as const;

@@ -13,7 +13,12 @@
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { AmendsStatus, AmendsType } from '@recovery/shared';
 import * as Haptics from 'expo-haptics';
@@ -181,7 +186,11 @@ export function AmendsCard({
               <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Type of Amends</Text>
                 <View style={styles.typeContainer}>
-                  <Feather name={TYPE_ICONS[amendsType]} size={16} color={ds.colors.textSecondary} />
+                  <Feather
+                    name={TYPE_ICONS[amendsType]}
+                    size={16}
+                    color={ds.colors.textSecondary}
+                  />
                   <Text style={styles.typeText}>{TYPE_LABELS[amendsType]}</Text>
                 </View>
               </View>

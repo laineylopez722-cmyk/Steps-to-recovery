@@ -28,6 +28,7 @@ import { RootNavigator } from './src/navigation/RootNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
 import { BiometricLockScreen } from './src/components/BiometricLockScreen';
 import { useBiometricLock } from './src/hooks/useBiometricLock';
+import { useQuickEscape, QuickEscapeTapZone } from './src/hooks/useQuickEscape';
 import { navigationRef } from './src/navigation/navigationRef';
 import { PortalHost } from '@rn-primitives/portal';
 
@@ -36,32 +37,52 @@ import { PortalHost } from '@rn-primitives/portal';
  * Shows lock screen when app is locked. Must be inside DsProvider for theming.
  */
 function BiometricLockOverlay({ children }: { children: React.ReactNode }): React.ReactElement {
-  const {
-    isLocked,
-    authenticate,
-    validatePin,
-    emergencyUnlock,
-    biometricType,
-    hasPinSet,
-  } = useBiometricLock();
+  const { isLocked, authenticate, validatePin, emergencyUnlock, biometricType, hasPinSet } =
+    useBiometricLock();
+  const { isEnabled: quickEscapeEnabled, isEscapeTriggered, registerTap, resetEscape } =
+    useQuickEscape();
 
   const handleEmergencyAccess = useCallback(() => {
     emergencyUnlock();
+    resetEscape();
     if (navigationRef.isReady()) {
       navigationRef.navigate('MainApp', {
         screen: 'Home',
         params: { screen: 'Emergency' },
       });
     }
-  }, [emergencyUnlock]);
+  }, [emergencyUnlock, resetEscape]);
+
+  const handleAuthenticate = useCallback(async (): Promise<boolean> => {
+    const success = await authenticate();
+    if (success) {
+      resetEscape();
+    }
+    return success;
+  }, [authenticate, resetEscape]);
+
+  const handlePinValidate = useCallback(async (pin: string): Promise<boolean> => {
+    const success = await validatePin(pin);
+    if (success) {
+      resetEscape();
+    }
+    return success;
+  }, [validatePin, resetEscape]);
+
+  const shouldShowLock = isLocked || isEscapeTriggered;
 
   return (
     <>
-      {children}
-      {isLocked ? (
+      <QuickEscapeTapZone
+        onTripleTap={registerTap}
+        enabled={quickEscapeEnabled}
+      >
+        {children}
+      </QuickEscapeTapZone>
+      {shouldShowLock ? (
         <BiometricLockScreen
-          onAuthenticate={authenticate}
-          onPinValidate={validatePin}
+          onAuthenticate={handleAuthenticate}
+          onPinValidate={handlePinValidate}
           onEmergencyAccess={handleEmergencyAccess}
           biometricType={biometricType}
           hasPinSet={hasPinSet}
@@ -150,25 +171,25 @@ function App(): React.ReactElement {
             <GestureHandlerRootView style={{ flex: 1 }}>
               <ThemeProvider>
                 <DsProvider>
-                <DatabaseProvider>
-                  <AuthProvider>
-                    <SyncProvider>
-                      <NotificationProvider>
-                        <BiometricLockOverlay>
-                          <Suspense fallback={<LoadingFallback />}>
-                            <RootNavigator />
-                          </Suspense>
-                        </BiometricLockOverlay>
-                        <StatusBar
-                          style="light"
-                          backgroundColor="#000000"
-                          translucent={Platform.OS === 'android'}
-                        />
-                        <PortalHost />
-                      </NotificationProvider>
-                    </SyncProvider>
-                  </AuthProvider>
-                </DatabaseProvider>
+                  <DatabaseProvider>
+                    <AuthProvider>
+                      <SyncProvider>
+                        <NotificationProvider>
+                          <BiometricLockOverlay>
+                            <Suspense fallback={<LoadingFallback />}>
+                              <RootNavigator />
+                            </Suspense>
+                          </BiometricLockOverlay>
+                          <StatusBar
+                            style="light"
+                            backgroundColor="#000000"
+                            translucent={Platform.OS === 'android'}
+                          />
+                          <PortalHost />
+                        </NotificationProvider>
+                      </SyncProvider>
+                    </AuthProvider>
+                  </DatabaseProvider>
                 </DsProvider>
               </ThemeProvider>
             </GestureHandlerRootView>

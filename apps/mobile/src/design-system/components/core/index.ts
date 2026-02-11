@@ -1,6 +1,6 @@
 /**
  * Material Design 3 Core Components
- * 
+ *
  * A unified, accessible component library following MD3 specifications.
  * All components include:
  * - WCAG AAA accessibility compliance
@@ -35,14 +35,7 @@ export {
 // CARD COMPONENT
 // ============================================================================
 
-export {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from './Card';
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from './Card';
 export type {
   CardProps,
   CardHeaderProps,

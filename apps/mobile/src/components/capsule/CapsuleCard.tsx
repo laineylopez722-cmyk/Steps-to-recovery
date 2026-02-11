@@ -81,23 +81,22 @@ function CapsuleCardComponent({ capsule, onPress, enteringDelay = 0 }: CapsuleCa
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
-        accessibilityHint={capsule.isUnlocked ? 'Read your message' : isReady ? 'Open your capsule' : 'View capsule details'}
+        accessibilityHint={
+          capsule.isUnlocked
+            ? 'Read your message'
+            : isReady
+              ? 'Open your capsule'
+              : 'View capsule details'
+        }
       >
         <GlassCard
           gradient={capsule.isUnlocked ? 'elevated' : 'card'}
-          style={[
-            styles.card,
-            isReady && !capsule.isUnlocked && styles.readyCard,
-          ]}
+          style={[styles.card, isReady && !capsule.isUnlocked && styles.readyCard]}
         >
           <View style={styles.container}>
             {/* Icon */}
             <View style={[styles.iconContainer, { backgroundColor: statusConfig.bgColor }]}>
-              <Feather
-                name={statusConfig.icon}
-                size={24}
-                color={statusConfig.iconColor}
-              />
+              <Feather name={statusConfig.icon} size={24} color={statusConfig.iconColor} />
             </View>
 
             {/* Content */}

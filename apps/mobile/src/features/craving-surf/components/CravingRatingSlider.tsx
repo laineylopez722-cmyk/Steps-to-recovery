@@ -11,6 +11,7 @@ import { Text } from '../../../design-system/components/Text';
 import { Button } from '../../../design-system/components/Button';
 import { useDs } from '../../../design-system/DsProvider';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { ds } from '../../../design-system/tokens/ds';
 
 interface CravingRatingSliderProps {
   title: string;
@@ -22,16 +23,16 @@ interface CravingRatingSliderProps {
 }
 
 const RATING_COLORS = [
-  '#22C55E', // 1 - green
-  '#4ADE80', // 2
-  '#86EFAC', // 3
-  '#BEF264', // 4
-  '#FDE047', // 5 - yellow
-  '#FBBF24', // 6
-  '#FB923C', // 7
-  '#F87171', // 8
-  '#EF4444', // 9
-  '#DC2626', // 10 - red
+  ds.colors.success,       // 1 - green
+  ds.palette.sageGreen,    // 2
+  ds.colors.successMuted,  // 3
+  ds.palette.amberLight,   // 4
+  ds.palette.amberLight,   // 5 - yellow
+  ds.colors.accent,        // 6
+  ds.palette.orange,       // 7
+  ds.colors.error,         // 8
+  ds.colors.error,         // 9
+  ds.palette.red,          // 10 - red
 ];
 
 function getRatingColor(rating: number): string {
@@ -78,7 +79,7 @@ const createStyles = (ds: DS) =>
     ratingNumber: {
       fontSize: 40,
       fontWeight: '800' as const,
-      color: '#FFFFFF',
+      color: ds.semantic.text.onDark,
     },
     ratingLabel: {
       fontSize: 16,

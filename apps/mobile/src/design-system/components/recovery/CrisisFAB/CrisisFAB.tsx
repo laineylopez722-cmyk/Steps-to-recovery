@@ -8,13 +8,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  AccessibilityInfo,
-  useColorScheme,
-} from 'react-native';
+import { View, Text, TouchableOpacity, AccessibilityInfo, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -73,7 +67,7 @@ export function CrisisFAB({
         withDelay(200, withTiming(1.3, { duration: 500 })),
         withTiming(1, { duration: 500 }),
         withDelay(200, withTiming(1.3, { duration: 500 })),
-        withTiming(1, { duration: 500 })
+        withTiming(1, { duration: 500 }),
       );
 
       pulseOpacity.value = withSequence(
@@ -82,7 +76,7 @@ export function CrisisFAB({
         withDelay(200, withTiming(0.3, { duration: 500 })),
         withTiming(0, { duration: 500 }),
         withDelay(200, withTiming(0.3, { duration: 500 })),
-        withTiming(0, { duration: 500 })
+        withTiming(0, { duration: 500 }),
       );
     }
   }, [pulseOnMount, reducedMotion]);
@@ -102,7 +96,7 @@ export function CrisisFAB({
     if (!reducedMotion) {
       pressScale.value = withSequence(
         withTiming(0.9, { duration: ANIMATION.accelerated }),
-        withSpring(1, { damping: 12, stiffness: 200 })
+        withSpring(1, { damping: 12, stiffness: 200 }),
       );
     }
 
@@ -111,7 +105,7 @@ export function CrisisFAB({
 
     // Announce for screen readers
     AccessibilityInfo.announceForAccessibility(
-      'Opening safety kit. Emergency resources available.'
+      'Opening safety kit. Emergency resources available.',
     );
 
     if (showSOSOverlay) {
@@ -205,9 +199,7 @@ export function CrisisFAB({
       </View>
 
       {/* SOS Overlay */}
-      {showSOSOverlay && (
-        <SOSOverlay visible={sosVisible} onClose={() => setSOSVisible(false)} />
-      )}
+      {showSOSOverlay && <SOSOverlay visible={sosVisible} onClose={() => setSOSVisible(false)} />}
     </View>
   );
 }
@@ -235,7 +227,7 @@ export function CompactCrisisButton({
     if (!reducedMotion) {
       scale.value = withSequence(
         withTiming(0.95, { duration: ANIMATION.accelerated }),
-        withTiming(1, { duration: ANIMATION.standard })
+        withTiming(1, { duration: ANIMATION.standard }),
       );
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -280,4 +272,3 @@ export function CompactCrisisButton({
     </AnimatedTouchable>
   );
 }
-

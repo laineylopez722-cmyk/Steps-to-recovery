@@ -214,6 +214,19 @@ describe('useCheckin', () => {
   });
 
   it('should return 0 checkin rate with empty history', () => {
+    mockUseCheckinStore.mockReturnValue({
+      todayCheckin: null,
+      history: [],
+      isLoading: false,
+      error: null,
+      checkinStreak: 0,
+      averageMood: 0,
+      averageCraving: 0,
+      loadTodayCheckin: mockLoadTodayCheckin,
+      loadHistory: mockLoadHistory,
+      submitCheckin: mockSubmitCheckin,
+    } as ReturnType<typeof useCheckinStore>);
+
     const { result } = renderHook(() => useCheckin());
 
     expect(result.current.checkinRate).toBe(0);

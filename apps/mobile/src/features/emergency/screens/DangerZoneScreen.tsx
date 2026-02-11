@@ -334,7 +334,9 @@ export function DangerZoneScreen({
                 }}
                 variant="primary"
                 size="medium"
-                icon={<MaterialCommunityIcons name="plus" size={20} color={ds.semantic.text.onDark} />}
+                icon={
+                  <MaterialCommunityIcons name="plus" size={20} color={ds.semantic.text.onDark} />
+                }
               />
             </Card>
           ) : (
@@ -393,93 +395,94 @@ export function DangerZoneScreen({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 32,
-  },
-  header: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  iconContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  summaryCard: {
-    padding: 16,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  summaryItem: {
-    alignItems: 'center',
-    padding: 16,
-  },
-  howItWorksCard: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  howItWorksStep: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    width: '100%',
-  },
-  stepNumber: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  addButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  contactsList: {
-    marginTop: 8,
-  },
-  emptyCard: {
-    padding: 32,
-    alignItems: 'center',
-  },
-  loadingCard: {
-    padding: 32,
-    alignItems: 'center',
-  },
-  errorCard: {
-    padding: 32,
-    alignItems: 'center',
-  },
-  privacyCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    centerContent: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingBottom: 32,
+    },
+    header: {
+      alignItems: 'center',
+      paddingVertical: 24,
+    },
+    iconContainer: {
+      width: 96,
+      height: 96,
+      borderRadius: 48,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    summaryCard: {
+      padding: 16,
+    },
+    summaryRow: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+    summaryItem: {
+      alignItems: 'center',
+      padding: 16,
+    },
+    howItWorksCard: {
+      padding: 20,
+      alignItems: 'center',
+    },
+    howItWorksStep: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+      width: '100%',
+    },
+    stepNumber: {
+      width: 24,
+      height: 24,
+      borderRadius: 12,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    addButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    contactsList: {
+      marginTop: 8,
+    },
+    emptyCard: {
+      padding: 32,
+      alignItems: 'center',
+    },
+    loadingCard: {
+      padding: 32,
+      alignItems: 'center',
+    },
+    errorCard: {
+      padding: 32,
+      alignItems: 'center',
+    },
+    privacyCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+    },
+  }) as const;

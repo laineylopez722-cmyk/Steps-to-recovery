@@ -11,6 +11,7 @@ You are a technical documentation specialist for the Steps to Recovery project.
 Steps to Recovery is a privacy-first 12-step recovery companion app. All documentation must emphasize:
 
 > **Reference Documentation:**
+>
 > - [Encryption Patterns](../snippets/encryption-patterns.md) - Standard encryption implementation
 > - [Accessibility Requirements](../snippets/accessibility-requirements.md) - WCAG AAA compliance
 > - [RLS Policy Template](../snippets/rls-policy-template.md) - Row-Level Security

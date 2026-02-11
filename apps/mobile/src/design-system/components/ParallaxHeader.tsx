@@ -219,77 +219,78 @@ export function StickyHeader({ scrollY, title, threshold }: StickyHeaderProps): 
   );
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    overflow: 'hidden',
-  },
-  imageContainer: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  defaultGradient: {
-    flex: 1,
-  },
-  gradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  titleContainer: {
-    position: 'absolute',
-    bottom: spacing[4],
-    left: spacing[4],
-    right: spacing[4],
-  },
-  title: {
-    ...typography.h1,
-    color: ds.semantic.text.onDark,
-    textShadowColor: ds.colors.shadow,
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  subtitle: {
-    ...typography.bodyLarge,
-    color: ds.semantic.text.onDark,
-    opacity: 0.8,
-    marginTop: spacing[1],
-    textShadowColor: ds.colors.shadow,
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  collapsedTitleContainer: {
-    position: 'absolute',
-    bottom: spacing[2],
-    left: spacing[4],
-    right: spacing[4],
-  },
-  collapsedTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-  },
-  scrollContainer: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: spacing[3],
-  },
-  stickyHeader: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    justifyContent: 'flex-end',
-    paddingHorizontal: spacing[4],
-    paddingBottom: spacing[2],
-    zIndex: 100,
-  },
-  stickyTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      overflow: 'hidden',
+    },
+    imageContainer: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    defaultGradient: {
+      flex: 1,
+    },
+    gradientOverlay: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    titleContainer: {
+      position: 'absolute',
+      bottom: spacing[4],
+      left: spacing[4],
+      right: spacing[4],
+    },
+    title: {
+      ...typography.h1,
+      color: ds.semantic.text.onDark,
+      textShadowColor: ds.colors.shadow,
+      textShadowOffset: { width: 0, height: 2 },
+      textShadowRadius: 4,
+    },
+    subtitle: {
+      ...typography.bodyLarge,
+      color: ds.semantic.text.onDark,
+      opacity: 0.8,
+      marginTop: spacing[1],
+      textShadowColor: ds.colors.shadow,
+      textShadowOffset: { width: 0, height: 1 },
+      textShadowRadius: 2,
+    },
+    collapsedTitleContainer: {
+      position: 'absolute',
+      bottom: spacing[2],
+      left: spacing[4],
+      right: spacing[4],
+    },
+    collapsedTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+    },
+    scrollContainer: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: spacing[3],
+    },
+    stickyHeader: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 60,
+      justifyContent: 'flex-end',
+      paddingHorizontal: spacing[4],
+      paddingBottom: spacing[2],
+      zIndex: 100,
+    },
+    stickyTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+    },
+  });

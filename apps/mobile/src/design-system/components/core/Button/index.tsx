@@ -1,27 +1,27 @@
 /**
  * Material Design 3 Button Component
- * 
+ *
  * A comprehensive button system following MD3 specifications:
  * - Filled, Outlined, Text, Elevated, Tonal variants
  * - Press animation with scale feedback (0.95 → 1.0, 150ms)
  * - Haptic feedback on press
  * - Full accessibility support (WCAG AAA)
  * - Loading and disabled states
- * 
+ *
  * @example
  * ```tsx
  * // Filled button (default)
  * <Button onPress={handlePress}>Save Entry</Button>
- * 
+ *
  * // Outlined button
  * <Button variant="outlined" onPress={handleCancel}>Cancel</Button>
- * 
+ *
  * // With icon
  * <Button icon={<PlusIcon />} onPress={handleAdd}>Add New</Button>
- * 
+ *
  * // Loading state
  * <Button loading onPress={handleSubmit}>Submit</Button>
- * 
+ *
  * // Full width
  * <Button fullWidth onPress={handleConfirm}>Confirm</Button>
  * ```
@@ -48,11 +48,7 @@ import Animated, {
 import { useTheme } from '../../../hooks/useTheme';
 import { hapticLight, hapticMedium } from '../../../../utils/haptics';
 import { cn } from '../../../../lib/utils';
-import {
-  buttonVariants,
-  buttonTextVariants,
-  type ButtonVariantProps,
-} from './variants';
+import { buttonVariants, buttonTextVariants, type ButtonVariantProps } from './variants';
 import { Text } from '../../Text';
 
 // ============================================================================
@@ -60,8 +56,7 @@ import { Text } from '../../Text';
 // ============================================================================
 
 export interface ButtonProps
-  extends Omit<PressableProps, 'children' | 'style'>,
-    ButtonVariantProps {
+  extends Omit<PressableProps, 'children' | 'style'>, ButtonVariantProps {
   /**
    * Button label text
    */
@@ -128,7 +123,7 @@ const SPRING_CONFIG = {
 
 /**
  * Material Design 3 Button
- * 
+ *
  * Features:
  * - Press scale animation (0.95 → 1.0)
  * - Haptic feedback
@@ -285,10 +280,7 @@ export const Button = forwardRef<View, ButtonProps>(
         testID={testID}
         {...pressableProps}
       >
-        <Animated.View
-          style={[animatedStyle, style]}
-          className={containerClasses}
-        >
+        <Animated.View style={[animatedStyle, style]} className={containerClasses}>
           {loading ? (
             <ActivityIndicator
               size="small"
@@ -298,11 +290,7 @@ export const Button = forwardRef<View, ButtonProps>(
             />
           ) : (
             <>
-              {icon && (
-                <Animated.View pointerEvents="none">
-                  {icon}
-                </Animated.View>
-              )}
+              {icon && <Animated.View pointerEvents="none">{icon}</Animated.View>}
               <Text className={textClasses}>{children}</Text>
             </>
           )}

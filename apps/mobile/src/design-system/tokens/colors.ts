@@ -229,14 +229,14 @@ export const md3ColorsDark = {
 
 export const lightColors = {
   // Primary accent - Olive/Sage
-  primary: '#6B7B5E',           // Muted olive
-  primaryLight: '#8A9A7C',      // Lighter sage
-  primaryDark: '#4A5A42',       // Darker olive
+  primary: '#6B7B5E', // Muted olive
+  primaryLight: '#8A9A7C', // Lighter sage
+  primaryDark: '#4A5A42', // Darker olive
 
   // Secondary - Cream/Gold
-  secondary: '#D4C5A9',         // Warm cream
-  secondaryLight: '#E8DCC6',    // Light cream
-  secondaryDark: '#B8A88C',     // Darker cream
+  secondary: '#D4C5A9', // Warm cream
+  secondaryLight: '#E8DCC6', // Light cream
+  secondaryDark: '#B8A88C', // Darker cream
 
   // Semantic colors
   danger: '#C45C5C',
@@ -329,14 +329,14 @@ export const lightColors = {
 
 export const darkColors = {
   // Primary accent - Enhanced for OLED vibrancy
-  primary: '#F0E8D8',           // Vibrant warm cream (OLED-enhanced)
-  primaryLight: '#FFF8E8',      // Bright cream with subtle glow
-  primaryDark: '#D4C8B8',       // Muted cream
+  primary: '#F0E8D8', // Vibrant warm cream (OLED-enhanced)
+  primaryLight: '#FFF8E8', // Bright cream with subtle glow
+  primaryDark: '#D4C8B8', // Muted cream
 
   // Secondary - Olive/Sage (for subtle elements)
-  secondary: '#8A9A7C',         // Sage green
-  secondaryLight: '#9DAD8F',    // Light sage
-  secondaryDark: '#6B7B5E',     // Darker olive
+  secondary: '#8A9A7C', // Sage green
+  secondaryLight: '#9DAD8F', // Light sage
+  secondaryDark: '#6B7B5E', // Darker olive
 
   // Semantic colors
   danger: '#D47474',
@@ -352,7 +352,7 @@ export const darkColors = {
   disabled: '#5A5A5C',
 
   // Background colors - OLED-optimized true blacks
-  background: '#000000',        // Pure black for OLED power savings
+  background: '#000000', // Pure black for OLED power savings
   surface: 'rgba(255, 255, 255, 0.05)', // Subtle frosted glass
   surfaceElevated: 'rgba(255, 255, 255, 0.08)',
   surfaceVariant: 'rgba(255, 255, 255, 0.03)',
@@ -400,13 +400,13 @@ export const darkColors = {
       },
     },
     surface: {
-      app: '#000000',              // OLED true black
+      app: '#000000', // OLED true black
       canvas: 'rgba(255, 255, 255, 0.05)',
       card: 'rgba(255, 255, 255, 0.05)',
       elevated: 'rgba(255, 255, 255, 0.08)',
       interactive: 'rgba(255, 255, 255, 0.03)',
       overlay: 'rgba(0, 0, 0, 0.7)',
-      overlayModal: 'rgba(0, 0, 0, 0.95)',  // Almost pure black for modals
+      overlayModal: 'rgba(0, 0, 0, 0.95)', // Almost pure black for modals
     },
     text: {
       primary: '#FFFFFF',
@@ -432,13 +432,13 @@ export const darkColors = {
  * Category colors - Muted naturals
  */
 export const categoryColors = {
-  gratitude: '#8A9A7C',   // Sage
-  reflection: '#7A8AAA',  // Soft blue
-  action: '#8AAD8A',      // Soft green
-  connection: '#A89A8A',  // Warm taupe
+  gratitude: '#8A9A7C', // Sage
+  reflection: '#7A8AAA', // Soft blue
+  action: '#8AAD8A', // Soft green
+  connection: '#A89A8A', // Warm taupe
   'self-care': '#AA8A9A', // Dusty rose
-  sponsor: '#D4C5A9',     // Cream
-  meeting: '#8AAD8A',     // Soft green
+  sponsor: '#D4C5A9', // Cream
+  meeting: '#8AAD8A', // Soft green
 } as const;
 
 // =============================================================================

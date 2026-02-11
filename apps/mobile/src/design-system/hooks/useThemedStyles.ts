@@ -21,12 +21,9 @@ import type { DS } from '../tokens/ds';
  * The factory must be defined at module level (outside the component)
  * so useMemo can rely on a stable reference.
  */
-export function useThemedStyles<T extends StyleSheet.NamedStyles<T>>(
-  factory: (ds: DS) => T,
-): T {
+export function useThemedStyles<T extends StyleSheet.NamedStyles<T>>(factory: (ds: DS) => T): T {
   const ds = useDs();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  return useMemo(() => StyleSheet.create(factory(ds)), [ds]);
+  return useMemo(() => StyleSheet.create(factory(ds)), [ds]); // factory should be stable
 }
 
 export type { DS };

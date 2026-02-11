@@ -1,12 +1,20 @@
 /**
  * Onboarding Flow
- * 
+ *
  * Apple-inspired introduction.
  * Bold statements, minimal decoration.
  */
 
 import React, { useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, Pressable, type NativeScrollEvent, type NativeSyntheticEvent } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Pressable,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   type SharedValue,
@@ -64,11 +72,7 @@ function OnboardingPage({
   index: number;
   scrollX: SharedValue<number>;
 }) {
-  const inputRange = [
-    (index - 1) * SCREEN_WIDTH, 
-    index * SCREEN_WIDTH, 
-    (index + 1) * SCREEN_WIDTH
-  ];
+  const inputRange = [(index - 1) * SCREEN_WIDTH, index * SCREEN_WIDTH, (index + 1) * SCREEN_WIDTH];
 
   const iconStyle = useAnimatedStyle(() => ({
     opacity: interpolate(scrollX.value, inputRange, [0, 1, 0], Extrapolation.CLAMP),
@@ -92,7 +96,7 @@ function OnboardingPage({
           <Feather name={step.icon} size={56} color={step.color} />
         </View>
       </Animated.View>
-      
+
       <Animated.View style={[styles.textWrap, textStyle]}>
         <Text style={styles.title}>{step.title}</Text>
         <Text style={styles.description}>{step.description}</Text>
@@ -111,12 +115,12 @@ function Dot({
   onPress: () => void;
 }) {
   const isActive = index === currentIndex;
-  
+
   const animStyle = useAnimatedStyle(() => ({
     width: withSpring(isActive ? 28 : 8, ds.spring.snappy),
     backgroundColor: withSpring(
       isActive ? ds.colors.accent : ds.colors.bgQuaternary,
-      ds.spring.snappy
+      ds.spring.snappy,
     ),
   }));
 
@@ -155,7 +159,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
 
   const handleContinue = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-    
+
     if (currentIndex < STEPS.length - 1) {
       scrollTo(currentIndex + 1);
     } else {
@@ -171,7 +175,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
         {/* Skip button */}
         {!isLast && (
           <View style={styles.skipWrap}>
-            <Pressable 
+            <Pressable
               onPress={onComplete}
               style={({ pressed }) => [styles.skipBtn, pressed && styles.skipBtnPressed]}
             >
@@ -211,16 +215,16 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
 
           <Pressable
             onPress={handleContinue}
-            style={({ pressed }) => [
-              styles.continueBtn,
-              pressed && styles.continueBtnPressed,
-            ]}
+            style={({ pressed }) => [styles.continueBtn, pressed && styles.continueBtnPressed]}
           >
-            <Text style={styles.continueText}>
-              {isLast ? 'Get Started' : 'Continue'}
-            </Text>
+            <Text style={styles.continueText}>{isLast ? 'Get Started' : 'Continue'}</Text>
             {!isLast && (
-              <Feather name="arrow-right" size={20} color={ds.colors.text} style={{ marginLeft: 8 }} />
+              <Feather
+                name="arrow-right"
+                size={20}
+                color={ds.colors.text}
+                style={{ marginLeft: 8 }}
+              />
             )}
           </Pressable>
         </View>

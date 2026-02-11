@@ -4,7 +4,11 @@
  */
 
 /** @type {import('tailwindcss').Config} */
-export const content = ['./App.{js,jsx,ts,tsx}', './index.{js,jsx,ts,tsx}', './src/**/*.{js,jsx,ts,tsx}'];
+export const content = [
+  './App.{js,jsx,ts,tsx}',
+  './index.{js,jsx,ts,tsx}',
+  './src/**/*.{js,jsx,ts,tsx}',
+];
 export const presets = [require('nativewind/preset')];
 export const theme = {
   extend: {

@@ -7,7 +7,11 @@
 const { resolve } = require('path');
 const expoPreset = require('jest-expo/jest-preset');
 
-const { transform: _transform, setupFilesAfterEnv: _setupFilesAfterEnv, moduleNameMapper: _moduleNameMapper } = expoPreset;
+const {
+  transform: _transform,
+  setupFilesAfterEnv: _setupFilesAfterEnv,
+  moduleNameMapper: _moduleNameMapper,
+} = expoPreset;
 
 module.exports = {
   ...expoPreset,
@@ -78,7 +82,15 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.(spec|test).[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
 
   // Files to ignore
-  testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/', '/.expo/', '/.claude/', '/.codex/', '/.cursor/'],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/android/',
+    '/ios/',
+    '/.expo/',
+    '/.claude/',
+    '/.codex/',
+    '/.cursor/',
+  ],
 
   // Coverage configuration
   collectCoverageFrom: [

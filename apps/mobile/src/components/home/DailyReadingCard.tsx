@@ -28,8 +28,16 @@ interface DailyReadingCardProps {
 
 export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
   const router = useRouterCompat();
-  const { todayReading, hasReflectedToday, readingStreak, shortDate, readingPreview, isLoading, error } =
-    useReading();
+  const {
+    todayReading,
+    hasReflectedToday,
+    readingStreak,
+    shortDate,
+    readingPreview,
+    isLoading,
+    error,
+    loadTodayReading,
+  } = useReading();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -40,8 +48,8 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
 
   const handleRetry = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-    // TODO: Implement refetch when useReading hook supports it
-  }, []);
+    loadTodayReading();
+  }, [loadTodayReading]);
 
   // Loading skeleton
   if (isLoading) {
@@ -107,9 +115,7 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
 
           {/* Preview */}
           <Text style={styles.preview} numberOfLines={3}>
-            {todayReading.external_url
-              ? "Tap to read today's meditation"
-              : readingPreview}
+            {todayReading.external_url ? "Tap to read today's meditation" : readingPreview}
           </Text>
 
           {/* Divider */}
@@ -146,134 +152,135 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  card: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-  },
-  errorCard: {
-    borderColor: ds.semantic.intent.alert.solid,
-    borderWidth: 1,
-  },
-  errorContent: {
-    alignItems: 'center',
-    padding: 16,
-  },
-  errorTitle: {
-    color: ds.semantic.intent.alert.solid,
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 8,
-  },
-  errorSubtitle: {
-    color: ds.colors.textTertiary,
-    fontSize: 14,
-    marginTop: 4,
-  },
-  skeleton: {
-    opacity: 0.5,
-  },
-  skeletonHeader: {
-    height: 16,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 4,
-    width: '30%',
-    marginBottom: 12,
-  },
-  skeletonTitle: {
-    height: 24,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 4,
-    width: '70%',
-    marginBottom: 12,
-  },
-  skeletonLine: {
-    height: 16,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: ds.colors.textSecondary,
-  },
-  dateText: {
-    fontSize: 14,
-    color: ds.colors.textSecondary,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: ds.semantic.text.onDark,
-    marginBottom: 8,
-    lineHeight: 28,
-  },
-  preview: {
-    fontSize: 16,
-    color: ds.colors.textTertiary,
-    lineHeight: 24,
-    marginBottom: 16,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: ds.colors.borderSubtle,
-    marginBottom: 12,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  footerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  reflectedBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  reflectedText: {
-    color: ds.colors.success,
-    fontSize: 14,
-  },
-  tapHint: {
-    color: ds.colors.textSecondary,
-    fontSize: 14,
-  },
-  footerRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  streakBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.colors.warningMuted,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 4,
-  },
-  streakText: {
-    color: ds.colors.warning,
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  arrow: {
-    marginLeft: 4,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    card: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 16,
+    },
+    errorCard: {
+      borderColor: ds.semantic.intent.alert.solid,
+      borderWidth: 1,
+    },
+    errorContent: {
+      alignItems: 'center',
+      padding: 16,
+    },
+    errorTitle: {
+      color: ds.semantic.intent.alert.solid,
+      fontSize: 16,
+      fontWeight: '600',
+      marginTop: 8,
+    },
+    errorSubtitle: {
+      color: ds.colors.textTertiary,
+      fontSize: 14,
+      marginTop: 4,
+    },
+    skeleton: {
+      opacity: 0.5,
+    },
+    skeletonHeader: {
+      height: 16,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 4,
+      width: '30%',
+      marginBottom: 12,
+    },
+    skeletonTitle: {
+      height: 24,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 4,
+      width: '70%',
+      marginBottom: 12,
+    },
+    skeletonLine: {
+      height: 16,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 4,
+      marginBottom: 8,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    headerLabel: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: ds.colors.textSecondary,
+    },
+    dateText: {
+      fontSize: 14,
+      color: ds.colors.textSecondary,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: ds.semantic.text.onDark,
+      marginBottom: 8,
+      lineHeight: 28,
+    },
+    preview: {
+      fontSize: 16,
+      color: ds.colors.textTertiary,
+      lineHeight: 24,
+      marginBottom: 16,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: ds.colors.borderSubtle,
+      marginBottom: 12,
+    },
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    footerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    reflectedBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    reflectedText: {
+      color: ds.colors.success,
+      fontSize: 14,
+    },
+    tapHint: {
+      color: ds.colors.textSecondary,
+      fontSize: 14,
+    },
+    footerRight: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    streakBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.colors.warningMuted,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+      gap: 4,
+    },
+    streakText: {
+      color: ds.colors.warning,
+      fontSize: 12,
+      fontWeight: '500',
+    },
+    arrow: {
+      marginLeft: 4,
+    },
+  }) as const;

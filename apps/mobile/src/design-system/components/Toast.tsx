@@ -141,7 +141,9 @@ export function Toast({
       accessible={true}
     >
       <MaterialIcons name={config.icon} size={20} color={config.iconColor} />
-      <Text style={[styles.message, theme.typography.body, { color: ds.semantic.text.onDark }]}>{message}</Text>
+      <Text style={[styles.message, theme.typography.body, { color: ds.semantic.text.onDark }]}>
+        {message}
+      </Text>
     </Animated.View>
   );
 }

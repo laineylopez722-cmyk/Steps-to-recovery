@@ -1,10 +1,6 @@
 import CryptoJS from 'crypto-js';
 import type { JournalEntryDecrypted } from '@recovery/shared';
-import {
-  encryptSharedEntry,
-  decryptSharedEntry,
-  buildShareMessage,
-} from '../sponsorShareService';
+import { encryptSharedEntry, decryptSharedEntry, buildShareMessage } from '../sponsorShareService';
 import type { SharedEntryPayload } from '../sponsorShareService';
 
 describe('sponsorShareService', () => {

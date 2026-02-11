@@ -108,7 +108,7 @@ export class AccessibilityErrorBoundary extends Component<
       setTimeout(() => {
         const { AccessibilityInfo } = require('react-native');
         AccessibilityInfo.announceForAccessibility(
-          'Animations disabled due to an error. Content is still accessible.'
+          'Animations disabled due to an error. Content is still accessible.',
         );
       }, 0);
     }
@@ -215,9 +215,7 @@ export function AnimationDisabledBanner(): React.ReactElement {
       accessibilityRole="alert"
       accessibilityLabel="Animations disabled for accessibility"
     >
-      <Text style={styles.bannerText}>
-        Animations disabled
-      </Text>
+      <Text style={styles.bannerText}>Animations disabled</Text>
     </View>
   );
 }

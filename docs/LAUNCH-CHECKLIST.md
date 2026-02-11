@@ -1,6 +1,7 @@
 # Launch Checklist
 
 ## Phase 1: Internal Testing (This Week)
+
 - [ ] Deploy Supabase edge function (`supabase functions deploy ai-chat`)
 - [ ] Set OPENAI_API_KEY in Supabase secrets
 - [ ] Run AI usage migration (`supabase db push`)
@@ -9,6 +10,7 @@
 - [ ] Fix any critical bugs found
 
 ## Phase 2: Closed Beta (2 weeks)
+
 - [ ] Recruit 10-20 beta testers from recovery communities
 - [ ] Set up feedback channel (Discord/Telegram group)
 - [ ] Monitor crash reports (Sentry)
@@ -16,6 +18,7 @@
 - [ ] Iterate based on feedback
 
 ## Phase 3: App Store Prep
+
 - [ ] App Store screenshots (6.5" and 5.5" iPhone)
 - [ ] Play Store screenshots (phone + tablet)
 - [ ] App icon finalized
@@ -26,12 +29,14 @@
 - [ ] Support email
 
 ## Phase 4: Submission
+
 - [ ] Build production APK/IPA
 - [ ] Submit to Google Play (internal track first)
 - [ ] Submit to App Store
 - [ ] Respond to any review feedback
 
 ## Phase 5: Launch
+
 - [ ] Announce on recovery subreddits (r/stopdrinking, r/REDDITORSINRECOVERY)
 - [ ] Post in AA/NA online communities
 - [ ] Product Hunt listing
@@ -60,6 +65,7 @@ Your recovery journey is yours. All data is encrypted on-device. No cloud syncin
 Not just a day counter. Guided exercises for all 12 steps. Fourth step inventory builder. Amends tracker. Daily tenth step review.
 
 📱 **Built for Real Recovery**
+
 - One-tap sponsor call
 - Crisis button with your personal resources
 - Daily readings from the Big Book
@@ -68,6 +74,7 @@ Not just a day counter. Guided exercises for all 12 steps. Fourth step inventory
 - Sobriety milestones
 
 **Free Features:**
+
 - Unlimited journaling
 - Sobriety counter
 - Step tracker
@@ -75,6 +82,7 @@ Not just a day counter. Guided exercises for all 12 steps. Fourth step inventory
 - 20 AI messages/day
 
 **Premium (or bring your own API key):**
+
 - Unlimited AI companion
 - Priority support
 - Future features first

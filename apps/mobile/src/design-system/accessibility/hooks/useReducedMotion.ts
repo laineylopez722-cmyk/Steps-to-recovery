@@ -104,7 +104,7 @@ export function useReducedMotion(): UseReducedMotionReturn {
         if (mountedRef.current) {
           setSystemPreference(isEnabled);
         }
-      }
+      },
     );
 
     return () => {
@@ -160,7 +160,7 @@ export function useReducedMotion(): UseReducedMotionReturn {
       }
       return baseDuration;
     },
-    [isReducedMotion]
+    [isReducedMotion],
   );
 
   /**
@@ -178,7 +178,7 @@ export function useReducedMotion(): UseReducedMotionReturn {
       }
       return config;
     },
-    [isReducedMotion]
+    [isReducedMotion],
   );
 
   return {

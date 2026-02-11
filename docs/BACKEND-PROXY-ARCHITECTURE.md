@@ -13,17 +13,20 @@ Make the AI companion "just work" for everyone, like how ChatGPT just works when
 ## Options Considered
 
 ### Option 1: BYOK Only (Current)
+
 - Users bring their own key
 - **Pros:** Zero backend cost, privacy-first
 - **Cons:** Kills adoption, complex for users
 
 ### Option 2: Backend Proxy (Recommended)
+
 - We run a proxy that forwards requests to OpenAI/Anthropic
 - Users don't need their own keys
 - **Pros:** Frictionless UX, we control the experience
 - **Cons:** We pay for API costs, need rate limiting
 
 ### Option 3: Hybrid
+
 - Free tier with limits (e.g., 20 messages/day)
 - Power users can add their own key for unlimited
 - **Pros:** Best of both, sustainable
@@ -35,11 +38,11 @@ Make the AI companion "just work" for everyone, like how ChatGPT just works when
 
 ### Tiers
 
-| Tier | Messages/Day | API Key | Cost |
-|------|-------------|---------|------|
-| Free | 20 | Ours (proxied) | Free |
-| BYOK | Unlimited | User's own | Free |
-| Premium | Unlimited | Ours (proxied) | $X/month |
+| Tier    | Messages/Day | API Key        | Cost     |
+| ------- | ------------ | -------------- | -------- |
+| Free    | 20           | Ours (proxied) | Free     |
+| BYOK    | Unlimited    | User's own     | Free     |
+| Premium | Unlimited    | Ours (proxied) | $X/month |
 
 ### Backend Components
 
@@ -101,7 +104,7 @@ CREATE TABLE ai_usage (
   token_count INT NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  
+
   UNIQUE(user_id, date)
 );
 
@@ -120,7 +123,7 @@ CREATE TABLE user_ai_settings (
 
 ```typescript
 // Simplified example
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
 const DAILY_LIMIT = 20;
 const OUR_OPENAI_KEY = Deno.env.get('OPENAI_API_KEY')!;
@@ -129,8 +132,10 @@ Deno.serve(async (req) => {
   // 1. Authenticate
   const authHeader = req.headers.get('Authorization');
   const supabase = createClient(/* ... */);
-  const { data: { user } } = await supabase.auth.getUser(authHeader?.replace('Bearer ', ''));
-  
+  const {
+    data: { user },
+  } = await supabase.auth.getUser(authHeader?.replace('Bearer ', ''));
+
   if (!user) {
     return new Response('Unauthorized', { status: 401 });
   }
@@ -152,10 +157,13 @@ Deno.serve(async (req) => {
       .single();
 
     if ((usage?.message_count || 0) >= DAILY_LIMIT) {
-      return new Response(JSON.stringify({ 
-        error: 'daily_limit_reached',
-        message: 'You\'ve reached your daily limit. Add your own API key for unlimited access.'
-      }), { status: 429 });
+      return new Response(
+        JSON.stringify({
+          error: 'daily_limit_reached',
+          message: "You've reached your daily limit. Add your own API key for unlimited access.",
+        }),
+        { status: 429 },
+      );
     }
   }
 
@@ -167,7 +175,7 @@ Deno.serve(async (req) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OUR_OPENAI_KEY}`,
+      Authorization: `Bearer ${OUR_OPENAI_KEY}`,
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini', // Cost-effective for free tier
@@ -192,14 +200,15 @@ Deno.serve(async (req) => {
 ### Cost Estimation
 
 Assuming GPT-4o-mini at $0.15/1M input tokens, $0.60/1M output tokens:
+
 - Average conversation: ~1000 input tokens, ~500 output tokens
 - Cost per message: ~$0.00045
 
-| Users | Messages/Day | Monthly Cost |
-|-------|-------------|--------------|
-| 100 | 1,000 | ~$13 |
-| 1,000 | 10,000 | ~$135 |
-| 10,000 | 100,000 | ~$1,350 |
+| Users  | Messages/Day | Monthly Cost |
+| ------ | ------------ | ------------ |
+| 100    | 1,000        | ~$13         |
+| 1,000  | 10,000       | ~$135        |
+| 10,000 | 100,000      | ~$1,350      |
 
 This is very manageable. The premium tier could pay for the free tier.
 
@@ -208,16 +217,19 @@ This is very manageable. The premium tier could pay for the free tier.
 ## Implementation Plan
 
 ### Phase 1: BYOK (Current)
+
 - Already implemented
 - Users can add their own key
 
 ### Phase 2: Backend Proxy
+
 1. Create Supabase Edge Function
 2. Add usage tracking tables
 3. Update mobile app to use proxy by default
 4. Fall back to BYOK if user has key
 
 ### Phase 3: Premium Tier
+
 1. Add Stripe/RevenueCat integration
 2. Create premium subscription
 3. Remove limits for paying users
@@ -242,16 +254,16 @@ if (hasOwnKey) {
 
 async function proxyAPICall(messages: ChatMessage[], options: ChatOptions) {
   const session = await supabase.auth.getSession();
-  
+
   const response = await fetch(`${SUPABASE_URL}/functions/v1/ai/chat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${session.data.session?.access_token}`,
+      Authorization: `Bearer ${session.data.session?.access_token}`,
     },
     body: JSON.stringify({ messages, ...options }),
   });
-  
+
   // Handle streaming...
 }
 ```

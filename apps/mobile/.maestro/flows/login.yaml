@@ -8,7 +8,6 @@ tags:
   - critical
 
 ---
-
 # Launch app with clear state
 - launchApp:
     clearState: true
@@ -20,29 +19,29 @@ tags:
 # ============================================
 
 # Verify login screen loaded
-- assertVisible: "Welcome Back"
-- assertVisible: "Your recovery journey continues here"
+- assertVisible: 'Welcome Back'
+- assertVisible: 'Your recovery journey continues here'
 
 # Enter email
 - tapOn:
-    id: "login-email-input"
-- inputText: "{{TEST_USER_EMAIL}}"
+    id: 'login-email-input'
+- inputText: '{{TEST_USER_EMAIL}}'
 
 # Enter password
 - tapOn:
-    id: "login-password-input"
-- inputText: "{{TEST_USER_PASSWORD}}"
+    id: 'login-password-input'
+- inputText: '{{TEST_USER_PASSWORD}}'
 
 # Tap login button
 - tapOn:
-    id: "login-submit-button"
+    id: 'login-submit-button'
 
 # Wait for main app to load
 - extendedWaitUntil:
     visible:
       oneOf:
-        - "Clean Time"
-        - "Welcome to Recovery"
+        - 'Clean Time'
+        - 'Welcome to Recovery'
     timeout: 20000
 
 # ============================================
@@ -51,9 +50,9 @@ tags:
 
 - runFlow:
     when:
-      visible: "Welcome to Recovery"
+      visible: 'Welcome to Recovery'
     commands:
-      - tapOn: "Skip"
+      - tapOn: 'Skip'
       - waitForAnimationToEnd
 
 # ============================================
@@ -61,12 +60,12 @@ tags:
 # ============================================
 
 # Verify we're on home screen
-- assertVisible: "Clean Time"
+- assertVisible: 'Clean Time'
 
 # Verify bottom tabs
-- assertVisible: "Home"
+- assertVisible: 'Home'
 
 # Verify daily intention section
-- assertVisible: "Daily intention"
+- assertVisible: 'Daily intention'
 
 - takeScreenshot: login-flow-complete

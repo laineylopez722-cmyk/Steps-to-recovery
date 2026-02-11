@@ -45,10 +45,7 @@ export const MilestoneCard = memo(function MilestoneCard({
     <Animated.View entering={FadeIn.delay(enteringDelay * 50)}>
       <GlassCard
         gradient={isAchieved ? 'elevated' : 'card'}
-        style={[
-          styles.card,
-          isAchieved && styles.achievedCard,
-        ]}
+        style={[styles.card, isAchieved && styles.achievedCard]}
         accessible
         accessibilityLabel={accessibilityLabel}
         accessibilityRole="text"
@@ -97,9 +94,7 @@ export const MilestoneCard = memo(function MilestoneCard({
         {!isAchieved && progress > 0 && (
           <View style={styles.progressContainer}>
             <View style={styles.progressTrack}>
-              <View
-                style={[styles.progressFill, { width: `${Math.min(progress, 100)}%` }]}
-              />
+              <View style={[styles.progressFill, { width: `${Math.min(progress, 100)}%` }]} />
             </View>
             <Text style={styles.progressText}>{Math.round(progress)}% complete</Text>
           </View>

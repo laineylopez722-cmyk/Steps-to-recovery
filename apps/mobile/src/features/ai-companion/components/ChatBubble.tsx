@@ -1,6 +1,6 @@
 /**
  * Chat Bubble Component
- * 
+ *
  * Apple Messages-inspired bubbles.
  * Smooth animations, no harsh edges.
  */
@@ -30,7 +30,7 @@ export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps
       if (!isUser) {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
       }
-      
+
       Animated.parallel([
         Animated.timing(fadeAnim, {
           toValue: 1,
@@ -59,30 +59,16 @@ export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps
       accessibilityRole="text"
       accessibilityLabel={`${isUser ? 'You' : 'Companion'} said: ${message.content}`}
     >
-      <View
-        style={[
-          styles.bubble,
-          isUser ? styles.bubbleUser : styles.bubbleAssistant,
-        ]}
-      >
+      <View style={[styles.bubble, isUser ? styles.bubbleUser : styles.bubbleAssistant]}>
         {isTyping ? (
           <TypingDots />
         ) : (
-          <Text 
-            style={[
-              styles.text,
-              isUser ? styles.textUser : styles.textAssistant,
-            ]}
-            selectable
-          >
+          <Text style={[styles.text, isUser ? styles.textUser : styles.textAssistant]} selectable>
             {message.content}
           </Text>
         )}
 
-        <Text style={[
-          styles.time,
-          isUser ? styles.timeUser : styles.timeAssistant,
-        ]}>
+        <Text style={[styles.time, isUser ? styles.timeUser : styles.timeAssistant]}>
           {formatTime(message.createdAt)}
         </Text>
       </View>
@@ -113,7 +99,7 @@ function TypingDots() {
             easing: Easing.in(Easing.ease),
             useNativeDriver: true,
           }),
-        ])
+        ]),
       );
     };
 
@@ -135,10 +121,7 @@ function TypingDots() {
   return (
     <View style={styles.dots} accessibilityLabel="Typing...">
       {[dot1, dot2, dot3].map((dot, i) => (
-        <Animated.View
-          key={i}
-          style={[styles.dot, { transform: [{ translateY: dot }] }]}
-        />
+        <Animated.View key={i} style={[styles.dot, { transform: [{ translateY: dot }] }]} />
       ))}
     </View>
   );
@@ -148,67 +131,68 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flexDirection: 'row',
-    marginBottom: ds.space[3],
-    paddingHorizontal: ds.space[4],
-  },
-  containerUser: {
-    justifyContent: 'flex-end',
-  },
-  containerAssistant: {
-    justifyContent: 'flex-start',
-  },
-  
-  bubble: {
-    maxWidth: '80%',
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[3],
-  },
-  bubbleUser: {
-    backgroundColor: ds.colors.accent,
-    borderRadius: 22,
-    borderBottomRightRadius: 6,
-  },
-  bubbleAssistant: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 22,
-    borderBottomLeftRadius: 6,
-  },
-  
-  text: {
-    fontSize: 17,
-    lineHeight: 24,
-  },
-  textUser: {
-    color: ds.colors.text,
-  },
-  textAssistant: {
-    color: ds.colors.textPrimary,
-  },
-  
-  time: {
-    fontSize: 11,
-    marginTop: ds.space[2],
-  },
-  timeUser: {
-    color: ds.colors.textMuted,
-  },
-  timeAssistant: {
-    color: ds.colors.textQuaternary,
-  },
-  
-  dots: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 24,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: ds.colors.textTertiary,
-    marginHorizontal: 2,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flexDirection: 'row',
+      marginBottom: ds.space[3],
+      paddingHorizontal: ds.space[4],
+    },
+    containerUser: {
+      justifyContent: 'flex-end',
+    },
+    containerAssistant: {
+      justifyContent: 'flex-start',
+    },
+
+    bubble: {
+      maxWidth: '80%',
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[3],
+    },
+    bubbleUser: {
+      backgroundColor: ds.colors.accent,
+      borderRadius: 22,
+      borderBottomRightRadius: 6,
+    },
+    bubbleAssistant: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 22,
+      borderBottomLeftRadius: 6,
+    },
+
+    text: {
+      fontSize: 17,
+      lineHeight: 24,
+    },
+    textUser: {
+      color: ds.colors.text,
+    },
+    textAssistant: {
+      color: ds.colors.textPrimary,
+    },
+
+    time: {
+      fontSize: 11,
+      marginTop: ds.space[2],
+    },
+    timeUser: {
+      color: ds.colors.textMuted,
+    },
+    timeAssistant: {
+      color: ds.colors.textQuaternary,
+    },
+
+    dots: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      height: 24,
+    },
+    dot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: ds.colors.textTertiary,
+      marginHorizontal: 2,
+    },
+  }) as const;

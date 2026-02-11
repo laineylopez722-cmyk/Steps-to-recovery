@@ -11,3 +11,6 @@ export type {
   RecoveryAnalytics,
 } from './useRecoveryAnalytics';
 export { useCommitmentCalendar } from './useCommitmentCalendar';
+export { useWeeklyReport } from './useWeeklyReport';
+export { useRecoveryStrength } from './useRecoveryStrength';
+export type { RecoveryStrengthResult, RecoveryMetrics } from './useRecoveryStrength';

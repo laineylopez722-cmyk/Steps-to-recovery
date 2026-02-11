@@ -1,4 +1,10 @@
-import type { InventoryCoverageSummary, ScreenInventoryEntry, UxRouteStatus, UxRiskLevel, UxStack } from './types';
+import type {
+  InventoryCoverageSummary,
+  ScreenInventoryEntry,
+  UxRouteStatus,
+  UxRiskLevel,
+  UxStack,
+} from './types';
 
 export const ROOT_ROUTE_NAMES = ['Onboarding'] as const;
 export const AUTH_ROUTE_NAMES = ['Login', 'SignUp', 'ForgotPassword'] as const;
@@ -41,7 +47,10 @@ export const APP_AUDIT_ROUTE_NAMES = [
 
 export type AuditRouteName = (typeof APP_AUDIT_ROUTE_NAMES)[number];
 
-type InventoryEntryByRoute = Record<AuditRouteName, ScreenInventoryEntry & { route: AuditRouteName }>;
+type InventoryEntryByRoute = Record<
+  AuditRouteName,
+  ScreenInventoryEntry & { route: AuditRouteName }
+>;
 
 export const SCREEN_INVENTORY: InventoryEntryByRoute = {
   Onboarding: {
@@ -363,7 +372,9 @@ export function getScreenInventory(): Array<ScreenInventoryEntry & { route: Audi
   return APP_AUDIT_ROUTE_NAMES.map((route) => SCREEN_INVENTORY[route]);
 }
 
-export function getRoutesByStack(stack: UxStack): Array<ScreenInventoryEntry & { route: AuditRouteName }> {
+export function getRoutesByStack(
+  stack: UxStack,
+): Array<ScreenInventoryEntry & { route: AuditRouteName }> {
   return getScreenInventory().filter((entry) => entry.stack === stack);
 }
 

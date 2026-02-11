@@ -1,6 +1,6 @@
 /**
  * GradientButton - Versatile Button Component
- * 
+ *
  * Premium app quality with:
  * - 48px minimum touch target (36px for small)
  * - Multiple variants (primary, secondary, ghost, danger)
@@ -9,19 +9,8 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  Pressable,
-  StyleSheet,
-  View,
-  Text,
-  ActivityIndicator,
-  type ViewStyle,
-} from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import { Pressable, StyleSheet, View, Text, ActivityIndicator, type ViewStyle } from 'react-native';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { aestheticColors, buttonSizes } from '../tokens/aesthetic';
 
@@ -105,8 +94,8 @@ export function GradientButton({
       case 'danger':
         return { bg: aestheticColors.semantic.danger, text: '#FFFFFF' };
       case 'outline':
-        return { 
-          bg: 'transparent', 
+        return {
+          bg: 'transparent',
           text: aestheticColors.text.primary,
           border: aestheticColors.dark.border,
         };

@@ -22,6 +22,7 @@ Reference `_common-patterns.md` for project standards.
 ## Design Principles
 
 ### Offline-First Architecture
+
 ```
 Local Write → SQLite (source of truth) → Sync Queue → Supabase (encrypted backup)
 ```
@@ -29,16 +30,19 @@ Local Write → SQLite (source of truth) → Sync Queue → Supabase (encrypted 
 ### Encryption Rules
 
 **MUST Encrypt**:
+
 - User-generated content (journal, step work, reflections)
 - Chat messages, memory content
 - Any free-text user input
 
 **NO Encryption**:
+
 - IDs, foreign keys, timestamps
 - Boolean flags, enum values
 - Reference data (meeting locations)
 
 ### RLS Policy Pattern
+
 > **Reference**: See [RLS Policy Template](../snippets/rls-policy-template.md) for complete policy patterns and validation checklist.
 
 Every user data table MUST have Row-Level Security enabled. Basic pattern:
@@ -59,7 +63,8 @@ For detailed patterns including shared data policies, see the [RLS Policy Templa
 
 CREATE INDEX idx_table_user ON table_name(user_id);
 CREATE INDEX idx_table_sync ON table_name(sync_status);
-```
+
+````
 
 ### Supabase Schema (Cloud Backup)
 ```sql
@@ -79,16 +84,17 @@ CREATE POLICY "Users access own data"
   USING (auth.uid() = user_id);
 
 CREATE INDEX idx_table_user ON table_name(user_id);
-```
+````
 
 ## Migration Template
 
 ### Local Migration
+
 ```typescript
 // apps/mobile/src/utils/database.ts
 async function runMigrations(db: SQLiteDatabase) {
   const version = await getSchemaVersion(db);
-  
+
   if (version < 5) {
     // Check if column exists
     if (!(await columnExists(db, 'table_name', 'new_column'))) {
@@ -152,6 +158,7 @@ CREATE INDEX idx_new_table_user ON new_table(user_id);
 ## Sync Queue Integration
 
 Every syncable table needs:
+
 1. `sync_status` column (pending/synced/error)
 2. `supabase_id` column (for idempotent upserts)
 3. Writes call `addToSyncQueue()` or `addDeleteToSyncQueue()`

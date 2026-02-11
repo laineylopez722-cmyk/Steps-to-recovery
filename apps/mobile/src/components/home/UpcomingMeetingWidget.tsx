@@ -69,10 +69,13 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
     router.push('/my-meetings/add');
   }, [router]);
 
-  const handleMeetingPress = useCallback((meetingId: string) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-    router.push(`/my-meetings/${meetingId}`);
-  }, [router]);
+  const handleMeetingPress = useCallback(
+    (meetingId: string) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      router.push(`/my-meetings/${meetingId}`);
+    },
+    [router],
+  );
 
   // Loading skeleton
   if (isLoading) {
@@ -105,7 +108,7 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
               </View>
               <Text style={styles.emptyTitle}>No Meetings Scheduled</Text>
               <Text style={styles.emptySubtitle}>
-                Add your home group to get reminders and track attendance
+                Finding your people is part of recovery. Add your home group to get started.
               </Text>
               <View style={styles.addButton}>
                 <Text style={styles.addButtonText}>Add Meeting →</Text>
@@ -187,7 +190,12 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
               accessibilityLabel="Prepare to share"
               accessibilityHint="Opens share preparation screen"
             >
-              <Feather name="edit-3" size={16} color={ds.semantic.text.onDark} style={styles.buttonIcon} />
+              <Feather
+                name="edit-3"
+                size={16}
+                color={ds.semantic.text.onDark}
+                style={styles.buttonIcon}
+              />
               <Text style={styles.shareButtonText}>Prepare to Share</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -264,240 +272,241 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
   return null;
 }
 
-const createStyles = (ds: DS) => ({
-  card: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-  },
-  todayCard: {
-    borderColor: ds.colors.success,
-    borderWidth: 1,
-  },
-  emptyCard: {
-    borderColor: ds.colors.borderSubtle,
-    borderWidth: 1,
-  },
-  skeleton: {
-    opacity: 0.5,
-  },
-  skeletonHeader: {
-    height: 20,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 4,
-    width: '40%',
-    marginBottom: 12,
-  },
-  skeletonContent: {
-    height: 60,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 8,
-  },
-  emptyContent: {
-    alignItems: 'center',
-    padding: 8,
-  },
-  emptyIconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: ds.colors.bgSecondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-    marginBottom: 4,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: ds.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  addButton: {
-    backgroundColor: ds.colors.bgSecondary,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  addButtonText: {
-    color: ds.colors.info,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-  },
-  todayHeaderTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: ds.colors.success,
-  },
-  todayIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: ds.colors.successMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  viewAllText: {
-    fontSize: 14,
-    color: ds.colors.info,
-  },
-  todayMeetingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.colors.bgSecondary,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-  },
-  todayMeetingContent: {
-    flex: 1,
-  },
-  todayMeetingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  todayMeetingName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-    flex: 1,
-  },
-  todayHomeBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.colors.warningMuted,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-    gap: 4,
-  },
-  todayHomeText: {
-    fontSize: 10,
-    fontWeight: '500',
-    color: ds.colors.warning,
-  },
-  todayMeetingMeta: {
-    fontSize: 14,
-    color: ds.colors.textTertiary,
-    marginTop: 2,
-  },
-  todayBadge: {
-    backgroundColor: ds.colors.successMuted,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginLeft: 8,
-  },
-  todayBadgeText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: ds.colors.success,
-  },
-  moreMeetingsText: {
-    fontSize: 14,
-    color: ds.colors.success,
-    marginBottom: 12,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  shareButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: ds.colors.success,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  buttonIcon: {
-    marginRight: 8,
-  },
-  shareButtonText: {
-    color: ds.semantic.text.onDark,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  logButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: ds.colors.bgTertiary,
-    borderWidth: 1,
-    borderColor: ds.colors.success,
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  logButtonText: {
-    color: ds.colors.success,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  nextMeetingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.colors.bgSecondary,
-    borderRadius: 12,
-    padding: 12,
-  },
-  nextMeetingContent: {
-    flex: 1,
-  },
-  nextMeetingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  nextMeetingName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-    flex: 1,
-  },
-  nextHomeBadge: {
-    backgroundColor: ds.colors.warningMuted,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 12,
-  },
-  nextMeetingMeta: {
-    fontSize: 14,
-    color: ds.colors.textTertiary,
-    marginTop: 2,
-  },
-  daysUntilBadge: {
-    backgroundColor: ds.colors.bgSecondary,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginLeft: 8,
-  },
-  daysUntilText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: ds.colors.info,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    card: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 16,
+    },
+    todayCard: {
+      borderColor: ds.colors.success,
+      borderWidth: 1,
+    },
+    emptyCard: {
+      borderColor: ds.colors.borderSubtle,
+      borderWidth: 1,
+    },
+    skeleton: {
+      opacity: 0.5,
+    },
+    skeletonHeader: {
+      height: 20,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 4,
+      width: '40%',
+      marginBottom: 12,
+    },
+    skeletonContent: {
+      height: 60,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 8,
+    },
+    emptyContent: {
+      alignItems: 'center',
+      padding: 8,
+    },
+    emptyIconContainer: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: ds.colors.bgSecondary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 12,
+    },
+    emptyTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+      marginBottom: 4,
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: ds.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 16,
+    },
+    addButton: {
+      backgroundColor: ds.colors.bgSecondary,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 20,
+    },
+    addButtonText: {
+      color: ds.colors.info,
+      fontWeight: '600',
+      fontSize: 14,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    headerTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+    },
+    todayHeaderTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: ds.colors.success,
+    },
+    todayIconContainer: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: ds.colors.successMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    viewAllText: {
+      fontSize: 14,
+      color: ds.colors.info,
+    },
+    todayMeetingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.colors.bgSecondary,
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 8,
+    },
+    todayMeetingContent: {
+      flex: 1,
+    },
+    todayMeetingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    todayMeetingName: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+      flex: 1,
+    },
+    todayHomeBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.colors.warningMuted,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 4,
+      gap: 4,
+    },
+    todayHomeText: {
+      fontSize: 10,
+      fontWeight: '500',
+      color: ds.colors.warning,
+    },
+    todayMeetingMeta: {
+      fontSize: 14,
+      color: ds.colors.textTertiary,
+      marginTop: 2,
+    },
+    todayBadge: {
+      backgroundColor: ds.colors.successMuted,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      marginLeft: 8,
+    },
+    todayBadgeText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: ds.colors.success,
+    },
+    moreMeetingsText: {
+      fontSize: 14,
+      color: ds.colors.success,
+      marginBottom: 12,
+    },
+    actions: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    shareButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: ds.colors.success,
+      paddingVertical: 12,
+      borderRadius: 10,
+    },
+    buttonIcon: {
+      marginRight: 8,
+    },
+    shareButtonText: {
+      color: ds.semantic.text.onDark,
+      fontWeight: '600',
+      fontSize: 14,
+    },
+    logButton: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: ds.colors.bgTertiary,
+      borderWidth: 1,
+      borderColor: ds.colors.success,
+      paddingVertical: 12,
+      borderRadius: 10,
+    },
+    logButtonText: {
+      color: ds.colors.success,
+      fontWeight: '600',
+      fontSize: 14,
+    },
+    nextMeetingContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.colors.bgSecondary,
+      borderRadius: 12,
+      padding: 12,
+    },
+    nextMeetingContent: {
+      flex: 1,
+    },
+    nextMeetingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    nextMeetingName: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+      flex: 1,
+    },
+    nextHomeBadge: {
+      backgroundColor: ds.colors.warningMuted,
+      paddingHorizontal: 8,
+      paddingVertical: 3,
+      borderRadius: 12,
+    },
+    nextMeetingMeta: {
+      fontSize: 14,
+      color: ds.colors.textTertiary,
+      marginTop: 2,
+    },
+    daysUntilBadge: {
+      backgroundColor: ds.colors.bgSecondary,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      marginLeft: 8,
+    },
+    daysUntilText: {
+      fontSize: 13,
+      fontWeight: '500',
+      color: ds.colors.info,
+    },
+  }) as const;

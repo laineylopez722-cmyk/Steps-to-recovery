@@ -269,9 +269,9 @@ describe('safeDialService', () => {
     it('should throw on error', async () => {
       mockSingle.mockResolvedValue({ data: null, error: { message: 'Update error' } });
 
-      await expect(
-        updateRiskyContact('rc-1', { name: 'Test' }),
-      ).rejects.toEqual({ message: 'Update error' });
+      await expect(updateRiskyContact('rc-1', { name: 'Test' })).rejects.toEqual({
+        message: 'Update error',
+      });
     });
   });
 

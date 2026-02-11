@@ -70,9 +70,7 @@ describe('performLogoutCleanup', () => {
   it('deletes encryption keys', async () => {
     await performLogoutCleanup({ db: mockDb });
     expect(mockDeleteEncryptionKey).toHaveBeenCalled();
-    expect(logger.info).toHaveBeenCalledWith(
-      expect.stringContaining('Deleting encryption keys'),
-    );
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Deleting encryption keys'));
   });
 
   it('clears secure storage session', async () => {
@@ -86,9 +84,7 @@ describe('performLogoutCleanup', () => {
   it('clears local database when db is provided', async () => {
     await performLogoutCleanup({ db: mockDb });
     expect(mockClearDatabase).toHaveBeenCalledWith(mockDb);
-    expect(logger.info).toHaveBeenCalledWith(
-      expect.stringContaining('Clearing local database'),
-    );
+    expect(logger.info).toHaveBeenCalledWith(expect.stringContaining('Clearing local database'));
   });
 
   it('warns when no database instance is provided', async () => {
@@ -103,7 +99,9 @@ describe('performLogoutCleanup', () => {
     // Re-mock Platform as 'web' to skip the shared data step (dynamic import)
     jest.resetModules();
     jest.doMock('react-native', () => ({ Platform: { OS: 'web' } }));
-    jest.doMock('../encryption', () => ({ deleteEncryptionKey: jest.fn().mockResolvedValue(undefined) }));
+    jest.doMock('../encryption', () => ({
+      deleteEncryptionKey: jest.fn().mockResolvedValue(undefined),
+    }));
     jest.doMock('../database', () => ({ clearDatabase: jest.fn().mockResolvedValue(undefined) }));
     jest.doMock('../../adapters/secureStorage', () => ({
       secureStorage: { clearSession: jest.fn().mockResolvedValue(undefined) },
@@ -113,7 +111,8 @@ describe('performLogoutCleanup', () => {
     }));
 
     /* eslint-disable @typescript-eslint/no-require-imports */
-    const { performLogoutCleanup: cleanupWeb } = require('../logoutCleanup') as typeof import('../logoutCleanup');
+    const { performLogoutCleanup: cleanupWeb } =
+      require('../logoutCleanup') as typeof import('../logoutCleanup');
     const { logger: webLogger } = require('../logger') as typeof import('../logger');
 
     await cleanupWeb({ db: mockDb });

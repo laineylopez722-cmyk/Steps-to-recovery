@@ -21,7 +21,7 @@ export function RootNavigator() {
   const [checkingProfile, setCheckingProfile] = useState(true);
   const instanceIdRef = useRef<number | null>(null);
   const hasCheckedProfileRef = useRef(false);
-  
+
   if (instanceIdRef.current === null) {
     instanceIdRef.current = navigatorInstanceCounter++;
   }
@@ -91,14 +91,14 @@ export function RootNavigator() {
     if (hasCheckedProfileRef.current) {
       return;
     }
-    
+
     if (!user) {
       setCheckingProfile(false);
       return;
     }
 
     hasCheckedProfileRef.current = true;
-    
+
     const timeoutId = setTimeout(() => {
       logger.warn('Onboarding profile check timed out, skipping onboarding');
       setNeedsOnboarding(false); // Skip onboarding on timeout
@@ -109,7 +109,7 @@ export function RootNavigator() {
       // First check local storage (fallback for when Supabase table doesn't exist)
       const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
       const localComplete = await AsyncStorage.getItem(`onboarding_complete_${user.id}`);
-      
+
       if (localComplete === 'true') {
         logger.info('Onboarding already completed (from local storage)');
         setNeedsOnboarding(false);

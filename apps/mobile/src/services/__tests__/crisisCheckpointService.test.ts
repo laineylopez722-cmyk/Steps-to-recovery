@@ -170,9 +170,7 @@ describe('crisisCheckpointService', () => {
       const result = await markWaitedTenMinutes('cp-123', 'user-1');
 
       expect(result).toEqual({ success: true });
-      expect(mockUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({ waited_10_minutes: true }),
-      );
+      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({ waited_10_minutes: true }));
     });
 
     it('should return error on failure', async () => {
@@ -199,9 +197,7 @@ describe('crisisCheckpointService', () => {
       const result = await markSponsorContact('cp-123', 'user-1', 'call');
 
       expect(result).toEqual({ success: true });
-      expect(mockUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({ called_sponsor: true }),
-      );
+      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({ called_sponsor: true }));
     });
 
     it('should mark texted_sponsor when action is text', async () => {
@@ -212,9 +208,7 @@ describe('crisisCheckpointService', () => {
       const result = await markSponsorContact('cp-123', 'user-1', 'text');
 
       expect(result).toEqual({ success: true });
-      expect(mockUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({ texted_sponsor: true }),
-      );
+      expect(mockUpdate).toHaveBeenCalledWith(expect.objectContaining({ texted_sponsor: true }));
     });
 
     it('should return error on failure', async () => {

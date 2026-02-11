@@ -1,6 +1,6 @@
 /**
  * Database Client
- * 
+ *
  * Drizzle ORM with expo-sqlite.
  */
 

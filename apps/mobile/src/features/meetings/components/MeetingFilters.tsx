@@ -141,7 +141,8 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedDay === day.value ? ds.semantic.text.onDark : theme.colors.text,
+                      color:
+                        selectedDay === day.value ? ds.semantic.text.onDark : theme.colors.text,
                     },
                   ]}
                 >
@@ -179,7 +180,8 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedTime === time.value ? ds.semantic.text.onDark : theme.colors.text,
+                      color:
+                        selectedTime === time.value ? ds.semantic.text.onDark : theme.colors.text,
                     },
                   ]}
                 >
@@ -218,7 +220,9 @@ export function MeetingFilters({
                   style={[
                     theme.typography.body,
                     {
-                      color: selectedTypes.includes(type) ? ds.semantic.text.onDark : theme.colors.text,
+                      color: selectedTypes.includes(type)
+                        ? ds.semantic.text.onDark
+                        : theme.colors.text,
                     },
                   ]}
                 >
@@ -253,39 +257,40 @@ export function MeetingFilters({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  chipContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    minHeight: 48, // WCAG minimum touch target
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    scrollContent: {
+      padding: 16,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 24,
+    },
+    section: {
+      marginBottom: 24,
+    },
+    chipContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    chip: {
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      borderRadius: 20,
+      borderWidth: 1,
+      minHeight: 48, // WCAG minimum touch target
+    },
+    footer: {
+      padding: 16,
+      borderTopWidth: 1,
+    },
+  }) as const;

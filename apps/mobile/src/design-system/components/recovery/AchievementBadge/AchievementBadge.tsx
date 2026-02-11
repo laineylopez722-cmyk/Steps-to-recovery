@@ -4,13 +4,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  AccessibilityInfo,
-  useColorScheme,
-} from 'react-native';
+import { View, Text, TouchableOpacity, AccessibilityInfo, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -72,29 +66,17 @@ function ConfettiParticle({ color, index, reducedMotion }: ConfettiParticleProps
     const randomX = (Math.random() - 0.5) * 200;
     const randomRotation = (Math.random() - 0.5) * 720;
 
-    translateY.value = withDelay(
-      delay,
-      withTiming(150, { duration: 2000 })
-    );
-    translateX.value = withDelay(
-      delay,
-      withTiming(randomX, { duration: 2000 })
-    );
-    rotate.value = withDelay(
-      delay,
-      withTiming(randomRotation, { duration: 2000 })
-    );
+    translateY.value = withDelay(delay, withTiming(150, { duration: 2000 }));
+    translateX.value = withDelay(delay, withTiming(randomX, { duration: 2000 }));
+    rotate.value = withDelay(delay, withTiming(randomRotation, { duration: 2000 }));
     opacity.value = withDelay(
       delay,
       withSequence(
         withTiming(1, { duration: 100 }),
-        withDelay(1000, withTiming(0, { duration: 500 }))
-      )
+        withDelay(1000, withTiming(0, { duration: 500 })),
+      ),
     );
-    scale.value = withDelay(
-      delay,
-      withTiming(1, { duration: 300 })
-    );
+    scale.value = withDelay(delay, withTiming(1, { duration: 300 }));
   }, [reducedMotion]);
 
   const particleStyle = useAnimatedStyle(() => ({
@@ -146,19 +128,19 @@ export function AchievementBadge({
       // Scale bounce
       badgeScale.value = withSequence(
         withSpring(1.1, { damping: 8, stiffness: 100 }),
-        withSpring(1.0, { damping: 12, stiffness: 100 })
+        withSpring(1.0, { damping: 12, stiffness: 100 }),
       );
 
       // Rotation
       rotation.value = withSequence(
         withTiming(0, { duration: 0 }),
-        withSpring(360, { damping: 10, stiffness: 50 })
+        withSpring(360, { damping: 10, stiffness: 50 }),
       );
 
       // Glow effect
       glowOpacity.value = withSequence(
         withTiming(1, { duration: 300 }),
-        withDelay(1500, withTiming(0, { duration: 500 }))
+        withDelay(1500, withTiming(0, { duration: 500 })),
       );
 
       // Haptic sequence
@@ -176,7 +158,7 @@ export function AchievementBadge({
 
       // Announce unlock
       AccessibilityInfo.announceForAccessibility(
-        `Achievement unlocked! ${achievement.name}. ${achievement.description}`
+        `Achievement unlocked! ${achievement.name}. ${achievement.description}`,
       );
 
       // Show confetti
@@ -193,22 +175,14 @@ export function AchievementBadge({
   }));
 
   const badgeStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: badgeScale.value },
-      { rotate: `${rotation.value}deg` },
-    ],
+    transform: [{ scale: badgeScale.value }, { rotate: `${rotation.value}deg` }],
   }));
 
   const glowStyle = useAnimatedStyle(() => ({
     opacity: glowOpacity.value,
     transform: [
       {
-        scale: interpolate(
-          glowOpacity.value,
-          [0, 1],
-          [1, 1.3],
-          Extrapolate.CLAMP
-        ),
+        scale: interpolate(glowOpacity.value, [0, 1], [1, 1.3], Extrapolate.CLAMP),
       },
     ],
   }));
@@ -230,7 +204,7 @@ export function AchievementBadge({
     if (!reducedMotion) {
       scale.value = withSequence(
         withTiming(0.95, { duration: ANIMATION.accelerated }),
-        withTiming(1, { duration: ANIMATION.standard })
+        withTiming(1, { duration: ANIMATION.standard }),
       );
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -321,10 +295,7 @@ export function AchievementBadge({
           ]}
         >
           {isLocked ? (
-            <Lock
-              size={32}
-              color={isDark ? COLORS.gray500 : COLORS.gray400}
-            />
+            <Lock size={32} color={isDark ? COLORS.gray500 : COLORS.gray400} />
           ) : (
             <IconComponent size={36} color={COLORS.white} />
           )}
@@ -340,8 +311,8 @@ export function AchievementBadge({
                 ? COLORS.gray500
                 : COLORS.gray400
               : isDark
-              ? COLORS.white
-              : COLORS.gray900,
+                ? COLORS.white
+                : COLORS.gray900,
             marginTop: SPACING.sm,
             textAlign: 'center',
             maxWidth: size + 16,

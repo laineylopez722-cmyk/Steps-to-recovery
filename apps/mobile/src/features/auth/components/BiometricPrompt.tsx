@@ -175,7 +175,10 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
 
   return (
     <View style={styles.lockContainer}>
-      <LinearGradient colors={[darkAccent.background, ds.colors.bgTertiary]} style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={[darkAccent.background, ds.colors.bgTertiary]}
+        style={StyleSheet.absoluteFill}
+      />
       <View style={styles.lockContent}>
         <View style={styles.appIcon}>
           <LinearGradient colors={gradients.primary} style={styles.appIconGradient}>
@@ -206,65 +209,66 @@ export function AppLockScreen({ onUnlock }: AppLockScreenProps): React.ReactElem
   );
 }
 
-const createStyles = (ds: DS) => ({
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: ds.colors.bgOverlay,
-    zIndex: 1000,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
-  },
-  container: { width: '100%', maxWidth: 320 },
-  card: { padding: spacing[4], alignItems: 'center' },
-  iconContainer: {
-    width: 100,
-    height: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing[4],
-  },
-  pulseRing: {
-    position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: darkAccent.success,
-  },
-  iconGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: { ...typography.h2, color: darkAccent.text, marginBottom: spacing[2] },
-  description: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    textAlign: 'center',
-    marginBottom: spacing[4],
-  },
-  buttons: { width: '100%', gap: spacing[2] },
-  lockContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  lockContent: { alignItems: 'center' },
-  appIcon: { marginBottom: spacing[4] },
-  appIconGradient: {
-    width: 100,
-    height: 100,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  appName: { ...typography.h2, color: darkAccent.text, marginBottom: spacing[1] },
-  lockMessage: { ...typography.body, color: darkAccent.textMuted, marginBottom: spacing[6] },
-  lockButton: { marginBottom: spacing[3] },
-  lockButtonGradient: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  lockHint: { ...typography.bodySmall, color: darkAccent.textSubtle },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: ds.colors.bgOverlay,
+      zIndex: 1000,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 24,
+    },
+    container: { width: '100%', maxWidth: 320 },
+    card: { padding: spacing[4], alignItems: 'center' },
+    iconContainer: {
+      width: 100,
+      height: 100,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: spacing[4],
+    },
+    pulseRing: {
+      position: 'absolute',
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      backgroundColor: darkAccent.success,
+    },
+    iconGradient: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    title: { ...typography.h2, color: darkAccent.text, marginBottom: spacing[2] },
+    description: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      textAlign: 'center',
+      marginBottom: spacing[4],
+    },
+    buttons: { width: '100%', gap: spacing[2] },
+    lockContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    lockContent: { alignItems: 'center' },
+    appIcon: { marginBottom: spacing[4] },
+    appIconGradient: {
+      width: 100,
+      height: 100,
+      borderRadius: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    appName: { ...typography.h2, color: darkAccent.text, marginBottom: spacing[1] },
+    lockMessage: { ...typography.body, color: darkAccent.textMuted, marginBottom: spacing[6] },
+    lockButton: { marginBottom: spacing[3] },
+    lockButtonGradient: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    lockHint: { ...typography.bodySmall, color: darkAccent.textSubtle },
+  }) as const;

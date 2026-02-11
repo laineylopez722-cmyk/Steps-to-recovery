@@ -242,7 +242,7 @@ function getEarlyRecoveryMessage(soberDays: number): string {
   } else {
     return `${soberDays} days! You're approaching 90 days. This is when real change takes root. Keep going!`;
   }
-} 
+}
 
 /**
  * Track last trigger times to enforce cooldowns

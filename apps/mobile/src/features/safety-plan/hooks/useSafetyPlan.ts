@@ -30,7 +30,10 @@ const safetyPlanKeys = {
 
 async function decryptSafetyPlan(row: SafetyPlanRow): Promise<SafetyPlanData> {
   const planJson = await decryptContent(row.encrypted_plan);
-  const plan = JSON.parse(planJson) as Omit<SafetyPlanData, 'id' | 'userId' | 'createdAt' | 'updatedAt'>;
+  const plan = JSON.parse(planJson) as Omit<
+    SafetyPlanData,
+    'id' | 'userId' | 'createdAt' | 'updatedAt'
+  >;
 
   return {
     ...plan,

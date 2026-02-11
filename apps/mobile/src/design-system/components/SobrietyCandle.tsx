@@ -1,6 +1,6 @@
 /**
  * SobrietyCandle Component
- * 
+ *
  * Interactive candle that grows lighter and brighter as sobriety days increase.
  * - Candle height grows with days
  * - Flame size and intensity increases
@@ -43,35 +43,23 @@ export interface SobrietyCandleProps {
 // Calculate candle properties based on days
 function getCandleProperties(days: number, maxDays: number) {
   const progress = Math.min(days / maxDays, 1);
-  
+
   // Candle grows from 40% to 100% height
-  const heightPercent = 0.4 + (progress * 0.6);
-  
+  const heightPercent = 0.4 + progress * 0.6;
+
   // Flame grows from 60% to 100% size
-  const flameScale = 0.6 + (progress * 0.4);
-  
+  const flameScale = 0.6 + progress * 0.4;
+
   // Glow intensity from 20% to 100%
-  const glowIntensity = 0.2 + (progress * 0.8);
-  
+  const glowIntensity = 0.2 + progress * 0.8;
+
   // Flame color shifts from dim orange to bright golden
   const flameColor = {
-    inner: interpolateColor(
-      progress,
-      [0, 0.5, 1],
-      ['#FF9500', '#FFB800', '#FFD700']
-    ),
-    outer: interpolateColor(
-      progress,
-      [0, 0.5, 1],
-      ['#FF6B00', '#FF8C00', '#FFA500']
-    ),
-    tip: interpolateColor(
-      progress,
-      [0, 0.5, 1],
-      ['#FF4500', '#FF6347', '#FF7F50']
-    ),
+    inner: interpolateColor(progress, [0, 0.5, 1], ['#FF9500', '#FFB800', '#FFD700']),
+    outer: interpolateColor(progress, [0, 0.5, 1], ['#FF6B00', '#FF8C00', '#FFA500']),
+    tip: interpolateColor(progress, [0, 0.5, 1], ['#FF4500', '#FF6347', '#FF7F50']),
   };
-  
+
   return {
     heightPercent,
     flameScale,
@@ -89,12 +77,12 @@ export function SobrietyCandle({
   showDays = false,
 }: SobrietyCandleProps): React.ReactElement {
   const props = getCandleProperties(days, maxDays);
-  
+
   // Animation values
   const flameFlicker = useSharedValue(0);
   const flameScale = useSharedValue(props.flameScale);
   const glowPulse = useSharedValue(0);
-  
+
   // Flame flickering animation
   useEffect(() => {
     flameFlicker.value = withRepeat(
@@ -105,9 +93,9 @@ export function SobrietyCandle({
         withTiming(0.6, { duration: 140 + Math.random() * 100 }),
       ),
       -1,
-      false
+      false,
     );
-    
+
     // Glow pulse
     glowPulse.value = withRepeat(
       withSequence(
@@ -115,50 +103,50 @@ export function SobrietyCandle({
         withTiming(0, { duration: 2000, easing: Easing.inOut(Easing.ease) }),
       ),
       -1,
-      false
+      false,
     );
   }, []);
-  
+
   // Update flame scale when days change
   useEffect(() => {
     flameScale.value = withSpring(props.flameScale, { damping: 15 });
   }, [days, props.flameScale]);
-  
+
   // Base dimensions
   const baseWidth = 60 * size;
   const maxHeight = 180 * size;
   const candleHeight = maxHeight * props.heightPercent;
   const flameBaseSize = 40 * size;
-  
+
   // Animated styles
   const flameAnimatedStyle = useAnimatedStyle(() => {
     const flickerScale = interpolate(flameFlicker.value, [0, 1], [0.95, 1.05]);
     const flickerRotate = interpolate(flameFlicker.value, [0, 1], [-2, 2]);
-    
+
     return {
-      transform: [
-        { scale: flameScale.value * flickerScale },
-        { rotate: `${flickerRotate}deg` },
-      ],
+      transform: [{ scale: flameScale.value * flickerScale }, { rotate: `${flickerRotate}deg` }],
     };
   });
-  
+
   const glowAnimatedStyle = useAnimatedStyle(() => {
     const pulseOpacity = interpolate(glowPulse.value, [0, 1], [0.6, 1]);
     const pulseScale = interpolate(glowPulse.value, [0, 1], [0.95, 1.05]);
-    
+
     return {
       opacity: props.glowIntensity * pulseOpacity,
       transform: [{ scale: pulseScale }],
     };
   });
-  
+
   const Container = onPress ? Pressable : View;
-  
+
   return (
     <Container
       onPress={onPress}
-      style={[styles.container, { width: baseWidth * 2.5, height: maxHeight + flameBaseSize * 1.5 }]}
+      style={[
+        styles.container,
+        { width: baseWidth * 2.5, height: maxHeight + flameBaseSize * 1.5 },
+      ]}
     >
       {/* Outer glow */}
       <Animated.View
@@ -174,7 +162,7 @@ export function SobrietyCandle({
           },
         ]}
       />
-      
+
       {/* Inner glow around flame */}
       <Animated.View
         style={[
@@ -189,7 +177,7 @@ export function SobrietyCandle({
           },
         ]}
       />
-      
+
       {/* Candle body */}
       <View
         style={[
@@ -207,21 +195,19 @@ export function SobrietyCandle({
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
-        
+
         {/* Wax drips */}
         <View style={[styles.waxDrip, { left: baseWidth * 0.15, height: candleHeight * 0.15 }]} />
         <View style={[styles.waxDrip, { right: baseWidth * 0.2, height: candleHeight * 0.1 }]} />
-        
+
         {/* Day count display */}
         {showDays && (
           <View style={styles.dayCountContainer}>
-            <Animated.Text style={[styles.dayCount, { fontSize: 18 * size }]}>
-              {days}
-            </Animated.Text>
+            <Animated.Text style={[styles.dayCount, { fontSize: 18 * size }]}>{days}</Animated.Text>
           </View>
         )}
       </View>
-      
+
       {/* Wick */}
       <View
         style={[
@@ -233,7 +219,7 @@ export function SobrietyCandle({
           },
         ]}
       />
-      
+
       {/* Flame */}
       <Animated.View
         style={[
@@ -255,22 +241,15 @@ export function SobrietyCandle({
               <Stop offset="100%" stopColor="#FF5722" stopOpacity="0" />
             </RadialGradient>
           </Defs>
-          
+
           {/* Outer flame */}
-          <Path
-            d="M20 5 C10 20, 5 35, 20 55 C35 35, 30 20, 20 5"
-            fill="url(#flameGradient)"
-          />
-          
+          <Path d="M20 5 C10 20, 5 35, 20 55 C35 35, 30 20, 20 5" fill="url(#flameGradient)" />
+
           {/* Inner bright core */}
-          <Path
-            d="M20 15 C15 25, 12 35, 20 48 C28 35, 25 25, 20 15"
-            fill="#FFFDE7"
-            opacity={0.9}
-          />
+          <Path d="M20 15 C15 25, 12 35, 20 48 C28 35, 25 25, 20 15" fill="#FFFDE7" opacity={0.9} />
         </Svg>
       </Animated.View>
-      
+
       {/* Flame tip spark (for higher days) */}
       {props.progress > 0.3 && (
         <Animated.View

@@ -7,6 +7,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../../../design-system/hooks/useTheme';
+import { ds } from '../../../design-system/tokens/ds';
 import { Badge } from '../../../design-system/components/Badge';
 import type { MeetingWithDetails } from '../types/meeting';
 import { formatMeetingTime, formatDayOfWeek, getMeetingTypeLabel } from '../types/meeting';
@@ -17,7 +18,7 @@ export interface MeetingCardProps {
   showFavoriteIcon?: boolean;
 }
 
-export function MeetingCard({
+export const MeetingCard = React.memo(function MeetingCard({
   meeting,
   onPress,
   showFavoriteIcon = true,
@@ -46,7 +47,8 @@ export function MeetingCard({
 
   const meetingName = meeting.name?.trim() || 'Unnamed meeting';
   const locationName = meeting.location?.trim() || 'Location details unavailable';
-  const addressLine = [meeting.address, meeting.city].filter(Boolean).join(', ') || 'Address unavailable';
+  const addressLine =
+    [meeting.address, meeting.city].filter(Boolean).join(', ') || 'Address unavailable';
 
   return (
     <Pressable
@@ -143,7 +145,8 @@ export function MeetingCard({
       )}
     </Pressable>
   );
-}
+});
+MeetingCard.displayName = 'MeetingCard';
 
 const styles = StyleSheet.create({
   container: {
@@ -152,7 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     // Shadow for iOS
-    shadowColor: '#000',
+    shadowColor: ds.colors.shadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,

@@ -81,7 +81,7 @@ export function useSOSActions(): UseSOSActionsReturn {
                 await hapticWarning();
                 Alert.alert(
                   'No Sponsor Found',
-                  'You don\'t have an active sponsor connection. Would you like to call the crisis hotline instead?',
+                  "You don't have an active sponsor connection. Would you like to call the crisis hotline instead?",
                   [
                     { text: 'Cancel', style: 'cancel' },
                     {
@@ -112,7 +112,10 @@ export function useSOSActions(): UseSOSActionsReturn {
       } catch (error) {
         logger.error('SOS action failed', error);
         await hapticWarning();
-        Alert.alert('Action Failed', 'Something went wrong. Please try again or call 988 directly.');
+        Alert.alert(
+          'Action Failed',
+          'Something went wrong. Please try again or call 988 directly.',
+        );
       } finally {
         setIsExecuting(false);
       }

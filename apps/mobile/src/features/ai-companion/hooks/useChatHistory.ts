@@ -46,7 +46,12 @@ export interface UseChatHistoryReturn {
   updateConversationTitle: (id: string, title: string) => Promise<void>;
 
   // Message management
-  addMessage: (conversationId: string, role: 'user' | 'assistant', content: string, metadata?: Record<string, unknown>) => Promise<Message>;
+  addMessage: (
+    conversationId: string,
+    role: 'user' | 'assistant',
+    content: string,
+    metadata?: Record<string, unknown>,
+  ) => Promise<Message>;
   getMessages: (conversationId: string, limit?: number) => Promise<Message[]>;
 
   // Utilities
@@ -156,7 +161,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         `SELECT * FROM chat_conversations 
          WHERE user_id = ? AND status = 'active' 
          ORDER BY updated_at DESC`,
-        [userId]
+        [userId],
       );
       setConversations(rows.map(rowToConversation));
     } catch (err) {
@@ -217,11 +222,11 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
           `INSERT INTO chat_conversations 
            (id, user_id, title, type, step_number, status, created_at, updated_at)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [id, userId, title, type, stepNumber ?? null, 'active', now, now]
+          [id, userId, title, type, stepNumber ?? null, 'active', now, now],
         );
 
         // Update local state
-        setConversations(prev => [conversation, ...prev]);
+        setConversations((prev) => [conversation, ...prev]);
 
         return conversation;
       } catch (err) {
@@ -229,7 +234,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         throw err;
       }
     },
-    [db, isReady, userId]
+    [db, isReady, userId],
   );
 
   /**
@@ -242,7 +247,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       try {
         const row = await db.getFirstAsync<ConversationRow>(
           'SELECT * FROM chat_conversations WHERE id = ? AND user_id = ?',
-          [id, userId]
+          [id, userId],
         );
 
         if (!row) return null;
@@ -252,7 +257,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         return null;
       }
     },
-    [db, isReady, userId]
+    [db, isReady, userId],
   );
 
   /**
@@ -265,17 +270,17 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       try {
         await db.runAsync(
           `UPDATE chat_conversations SET status = 'archived', updated_at = ? WHERE id = ?`,
-          [new Date().toISOString(), id]
+          [new Date().toISOString(), id],
         );
 
         // Update local state
-        setConversations(prev => prev.filter(c => c.id !== id));
+        setConversations((prev) => prev.filter((c) => c.id !== id));
       } catch (err) {
         logger.error('Failed to archive conversation', err);
         throw err;
       }
     },
-    [db, isReady]
+    [db, isReady],
   );
 
   /**
@@ -286,7 +291,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       conversationId: string,
       role: 'user' | 'assistant',
       content: string,
-      metadata?: Record<string, unknown>
+      metadata?: Record<string, unknown>,
     ): Promise<Message> => {
       if (!db || !isReady) {
         throw new Error('Database not ready');
@@ -321,20 +326,27 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         await db.runAsync(
           `INSERT INTO chat_messages (id, conversation_id, role, encrypted_content, metadata, created_at)
            VALUES (?, ?, ?, ?, ?, ?)`,
-          [id, conversationId, role, encryptedContent, metadata ? JSON.stringify(metadata) : null, now]
+          [
+            id,
+            conversationId,
+            role,
+            encryptedContent,
+            metadata ? JSON.stringify(metadata) : null,
+            now,
+          ],
         );
 
         // Update conversation's updated_at timestamp
-        await db.runAsync(
-          `UPDATE chat_conversations SET updated_at = ? WHERE id = ?`,
-          [now, conversationId]
-        );
+        await db.runAsync(`UPDATE chat_conversations SET updated_at = ? WHERE id = ?`, [
+          now,
+          conversationId,
+        ]);
 
         // Update title if this is the first user message
         if (role === 'user') {
           const msgCount = await db.getFirstAsync<{ count: number }>(
             'SELECT COUNT(*) as count FROM chat_messages WHERE conversation_id = ?',
-            [conversationId]
+            [conversationId],
           );
 
           if (msgCount?.count === 1) {
@@ -342,7 +354,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
             const title = content.length > 50 ? content.substring(0, 47) + '...' : content;
             await db.runAsync(
               `UPDATE chat_conversations SET title = ? WHERE id = ? AND title IS NULL`,
-              [title, conversationId]
+              [title, conversationId],
             );
           }
         }
@@ -353,7 +365,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         throw err;
       }
     },
-    [db, isReady]
+    [db, isReady],
   );
 
   /**
@@ -387,7 +399,9 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
               decryptedContent = await decryptContent(row.encrypted_content);
             } catch {
               // Likely an unencrypted legacy message — return as-is
-              logger.warn('Message decryption failed, returning raw content (possible legacy data)');
+              logger.warn(
+                'Message decryption failed, returning raw content (possible legacy data)',
+              );
               decryptedContent = row.encrypted_content;
             }
           }
@@ -400,7 +414,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
         return [];
       }
     },
-    [db, isReady]
+    [db, isReady],
   );
 
   /**
@@ -411,21 +425,22 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       if (!db || !isReady) return;
 
       try {
-        await db.runAsync(
-          `UPDATE chat_conversations SET title = ?, updated_at = ? WHERE id = ?`,
-          [title, new Date().toISOString(), conversationId]
-        );
+        await db.runAsync(`UPDATE chat_conversations SET title = ?, updated_at = ? WHERE id = ?`, [
+          title,
+          new Date().toISOString(),
+          conversationId,
+        ]);
 
         // Update local state
-        setConversations(prev =>
-          prev.map(c => (c.id === conversationId ? { ...c, title } : c))
+        setConversations((prev) =>
+          prev.map((c) => (c.id === conversationId ? { ...c, title } : c)),
         );
       } catch (err) {
         logger.error('Failed to update conversation title', err);
         throw err;
       }
     },
-    [db, isReady]
+    [db, isReady],
   );
 
   return {

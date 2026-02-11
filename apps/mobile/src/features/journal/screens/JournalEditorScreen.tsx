@@ -1,6 +1,6 @@
 /**
  * Journal Editor - Apple Notes Style
- * 
+ *
  * Full-screen, distraction-free writing.
  * Title is first line, large and bold.
  * Bottom toolbar with actions.
@@ -21,21 +21,20 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { 
-  FadeIn,
-  SlideInDown,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
-import { hapticSuccess, hapticLight } from '../../../utils/haptics';
+import { hapticSuccess, hapticLight, hapticWarning } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 import {
   useCreateJournalEntry,
   useUpdateJournalEntry,
   useJournalEntries,
+  useDeleteJournalEntry,
 } from '../hooks/useJournalEntries';
 import { extractMemories } from '../utils/memoryExtraction';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
+import { ShareEntryModal } from '../components/ShareEntryModal';
 
 interface Props {
   userId: string;
@@ -48,24 +47,28 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const params = route.params as { mode?: 'create' | 'edit'; entryId?: string } | undefined;
-  
+
   const { entries } = useJournalEntries(userId);
   const { createEntry, isPending: isCreating } = useCreateJournalEntry(userId);
   const { updateEntry, isPending: isUpdating } = useUpdateJournalEntry(userId);
+  const { deleteEntry } = useDeleteJournalEntry(userId);
   const memoryStore = useMemoryStore(userId);
-  
+
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [isSaved, setIsSaved] = useState(true);
-  
+  const [showShareModal, setShowShareModal] = useState(false);
+
   const bodyRef = useRef<TextInput>(null);
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
   const originalTitle = useRef('');
   const originalBody = useRef('');
-  
+
   const isEditMode = params?.mode === 'edit';
   const entryId = params?.entryId;
-  
+  const currentEntry =
+    isEditMode && entryId ? (entries.find((e) => e.id === entryId) ?? null) : null;
+
   // Load existing entry
   useEffect(() => {
     if (isEditMode && entryId) {
@@ -78,40 +81,40 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
       }
     }
   }, [isEditMode, entryId, entries]);
-  
+
   // Check if content changed
   const hasChanges = title !== originalTitle.current || body !== originalBody.current;
-  
+
   // Auto-save
   useEffect(() => {
     if (!hasChanges) {
       setIsSaved(true);
       return;
     }
-    
+
     setIsSaved(false);
-    
+
     if (saveTimeout.current) {
       clearTimeout(saveTimeout.current);
     }
-    
+
     saveTimeout.current = setTimeout(() => {
       handleAutoSave();
     }, 2000);
-    
+
     return () => {
       if (saveTimeout.current) {
         clearTimeout(saveTimeout.current);
       }
     };
   }, [title, body]);
-  
+
   const handleAutoSave = async () => {
     const trimmedTitle = title.trim();
     const trimmedBody = body.trim();
-    
+
     if (!trimmedTitle && !trimmedBody) return;
-    
+
     try {
       if (isEditMode && entryId) {
         await updateEntry(entryId, {
@@ -130,11 +133,11 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
           tags: [],
         });
       }
-      
+
       setIsSaved(true);
       originalTitle.current = title;
       originalBody.current = body;
-      
+
       // Extract memories for AI companion (async, don't block)
       const fullContent = `${trimmedTitle} ${trimmedBody}`;
       extractMemories(fullContent, userId, entryId)
@@ -147,10 +150,10 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
           logger.warn('Memory extraction failed', err);
         });
     } catch (err) {
-logger.error('Auto-save failed', err);
+      logger.error('Auto-save failed', err);
     }
   };
-  
+
   const handleBack = async () => {
     // Save before leaving if there are changes
     if (hasChanges && (title.trim() || body.trim())) {
@@ -159,27 +162,47 @@ logger.error('Auto-save failed', err);
     hapticLight();
     navigation.goBack();
   };
-  
-  const handleShare = () => {
+
+  const handleShare = (): void => {
     hapticLight();
-    // TODO: Implement share
+    setShowShareModal(true);
   };
-  
-  const handleMore = () => {
+
+  const handleDelete = (): void => {
+    if (!entryId) return;
+    hapticWarning();
+    Alert.alert('Delete Entry', 'Are you sure? This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteEntry(entryId);
+            navigation.goBack();
+          } catch (err) {
+            logger.error('Failed to delete journal entry', err);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleMore = (): void => {
     hapticLight();
-    // TODO: Show more options (delete, etc.)
+    handleDelete();
   };
-  
+
   const handleTitleSubmit = () => {
     bodyRef.current?.focus();
   };
-  
+
   const handleNewEntry = async () => {
     // Save current entry first
     if (hasChanges && (title.trim() || body.trim())) {
       await handleAutoSave();
     }
-    
+
     // Reset for new entry
     setTitle('');
     setBody('');
@@ -187,7 +210,7 @@ logger.error('Auto-save failed', err);
     originalBody.current = '';
     hapticLight();
   };
-  
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -224,17 +247,17 @@ logger.error('Auto-save failed', err);
               <Pressable
                 onPress={handleMore}
                 style={styles.actionBtn}
-                accessibilityLabel="More options"
+                accessibilityLabel="Delete journal entry"
                 accessibilityRole="button"
-                accessibilityHint="Opens menu with additional entry options"
+                accessibilityHint="Permanently removes this journal entry"
               >
                 <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} />
               </Pressable>
             </View>
           </View>
-          
+
           {/* Content */}
-          <ScrollView 
+          <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.scrollContent}
             keyboardShouldPersistTaps="handled"
@@ -257,7 +280,7 @@ logger.error('Auto-save failed', err);
               accessibilityHint="Enter a title for your journal entry, maximum 200 characters"
               testID="journal-title-input"
             />
-            
+
             {/* Body */}
             <TextInput
               ref={bodyRef}
@@ -274,9 +297,9 @@ logger.error('Auto-save failed', err);
               testID="journal-content-input"
             />
           </ScrollView>
-          
+
           {/* Bottom Toolbar */}
-          <Animated.View 
+          <Animated.View
             entering={SlideInDown.duration(300)}
             style={[styles.toolbar, { paddingBottom: insets.bottom || ds.space[4] }]}
           >
@@ -305,7 +328,7 @@ logger.error('Auto-save failed', err);
                 <Feather name="at-sign" size={20} color={ds.colors.textSecondary} />
               </Pressable>
             </View>
-            
+
             {/* Saving indicator */}
             <View style={styles.saveStatus}>
               {!isSaved && (
@@ -314,7 +337,7 @@ logger.error('Auto-save failed', err);
                 </Animated.Text>
               )}
             </View>
-            
+
             {/* New note button */}
             <Pressable
               onPress={handleNewEntry}
@@ -328,123 +351,129 @@ logger.error('Auto-save failed', err);
           </Animated.View>
         </KeyboardAvoidingView>
       </SafeAreaView>
+      <ShareEntryModal
+        visible={showShareModal}
+        entry={currentEntry}
+        onClose={() => setShowShareModal(false)}
+      />
     </View>
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
-  kav: {
-    flex: 1,
-  },
-  
-  // Header
-  header: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    paddingHorizontal: ds.space[4],
-    paddingTop: ds.space[2],
-    paddingBottom: ds.space[3],
-  },
-  backBtn: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  backBtnInner: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: ds.colors.bgTertiary,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  actionsPill: {
-    flexDirection: 'row' as const,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 20,
-    paddingHorizontal: ds.space[2],
-    paddingVertical: ds.space[2],
-    gap: ds.space[1],
-  },
-  actionBtn: {
-    width: 36,
-    height: 28,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  
-  // Content
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: ds.sizes.contentPadding,
-    paddingTop: ds.space[2],
-    paddingBottom: ds.space[20],
-  },
-  titleInput: {
-    fontSize: 28,
-    fontWeight: '700' as const,
-    color: ds.colors.textPrimary,
-    marginBottom: ds.space[3],
-    paddingVertical: 0,
-  },
-  bodyInput: {
-    fontSize: 17,
-    lineHeight: 26,
-    color: ds.colors.textPrimary,
-    minHeight: 200,
-    paddingVertical: 0,
-  },
-  
-  // Toolbar
-  toolbar: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    paddingHorizontal: ds.space[4],
-    paddingTop: ds.space[3],
-    backgroundColor: ds.colors.bgPrimary,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: ds.colors.divider,
-  },
-  toolsPill: {
-    flexDirection: 'row' as const,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 20,
-    paddingHorizontal: ds.space[3],
-    paddingVertical: ds.space[2],
-    gap: ds.space[3],
-  },
-  toolBtn: {
-    width: 32,
-    height: 28,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  saveStatus: {
-    flex: 1,
-    alignItems: 'center' as const,
-  },
-  savingText: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-  },
-  newNoteBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: ds.colors.accentMuted,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
+    kav: {
+      flex: 1,
+    },
+
+    // Header
+    header: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      paddingHorizontal: ds.space[4],
+      paddingTop: ds.space[2],
+      paddingBottom: ds.space[3],
+    },
+    backBtn: {
+      width: 44,
+      height: 44,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    backBtnInner: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: ds.colors.bgTertiary,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    actionsPill: {
+      flexDirection: 'row' as const,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 20,
+      paddingHorizontal: ds.space[2],
+      paddingVertical: ds.space[2],
+      gap: ds.space[1],
+    },
+    actionBtn: {
+      width: 36,
+      height: 28,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+
+    // Content
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: ds.sizes.contentPadding,
+      paddingTop: ds.space[2],
+      paddingBottom: ds.space[20],
+    },
+    titleInput: {
+      fontSize: 28,
+      fontWeight: '700' as const,
+      color: ds.colors.textPrimary,
+      marginBottom: ds.space[3],
+      paddingVertical: 0,
+    },
+    bodyInput: {
+      fontSize: 17,
+      lineHeight: 26,
+      color: ds.colors.textPrimary,
+      minHeight: 200,
+      paddingVertical: 0,
+    },
+
+    // Toolbar
+    toolbar: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      paddingHorizontal: ds.space[4],
+      paddingTop: ds.space[3],
+      backgroundColor: ds.colors.bgPrimary,
+      borderTopWidth: StyleSheet.hairlineWidth,
+      borderTopColor: ds.colors.divider,
+    },
+    toolsPill: {
+      flexDirection: 'row' as const,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 20,
+      paddingHorizontal: ds.space[3],
+      paddingVertical: ds.space[2],
+      gap: ds.space[3],
+    },
+    toolBtn: {
+      width: 32,
+      height: 28,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    saveStatus: {
+      flex: 1,
+      alignItems: 'center' as const,
+    },
+    savingText: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+    },
+    newNoteBtn: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      backgroundColor: ds.colors.accentMuted,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+  }) as const;

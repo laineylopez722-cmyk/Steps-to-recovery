@@ -155,17 +155,16 @@ function findHighRiskTimes(heatmap: CravingHeatmapData[]): string[] {
         endHour = startHour;
       }
     }
-    riskWindows.push(
-      `${DAY_NAMES[day]} ${getHourLabel(startHour)}-${getHourLabel(endHour + 1)}`,
-    );
+    riskWindows.push(`${DAY_NAMES[day]} ${getHourLabel(startHour)}-${getHourLabel(endHour + 1)}`);
   }
 
   return riskWindows.slice(0, 5);
 }
 
-function calculateTrend(
-  dataPoints: CravingDataPoint[],
-): { trend: 'decreasing' | 'stable' | 'increasing'; weeklyChange: number } {
+function calculateTrend(dataPoints: CravingDataPoint[]): {
+  trend: 'decreasing' | 'stable' | 'increasing';
+  weeklyChange: number;
+} {
   if (dataPoints.length < 7) return { trend: 'stable', weeklyChange: 0 };
 
   const sorted = [...dataPoints].sort((a, b) => a.date.localeCompare(b.date));
@@ -241,8 +240,7 @@ function generateInsights(
   // Low morning cravings
   const morningPoints = dataPoints.filter((p) => p.hourOfDay >= 5 && p.hourOfDay < 12);
   if (morningPoints.length > 0) {
-    const morningAvg =
-      morningPoints.reduce((s, p) => s + p.intensity, 0) / morningPoints.length;
+    const morningAvg = morningPoints.reduce((s, p) => s + p.intensity, 0) / morningPoints.length;
     if (morningAvg <= 2) {
       insights.push('Morning cravings are rare for you — your routine is working');
     }
@@ -468,6 +466,7 @@ export function useCravingAnalysis(timeRange: TimeRange): UseCravingAnalysisRetu
     surfSummary: query.data?.surfSummary ?? null,
     dataPoints: query.data?.dataPoints ?? [],
     isLoading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : query.error ? String(query.error) : null,
+    error:
+      query.error instanceof Error ? query.error.message : query.error ? String(query.error) : null,
   };
 }

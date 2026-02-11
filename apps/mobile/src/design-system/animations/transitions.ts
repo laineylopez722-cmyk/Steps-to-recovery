@@ -242,57 +242,46 @@ export const EnterAnimations = {
    * For dropdowns, notifications
    */
   fadeFromTop: (delay = 0) =>
-    FadeInUp.duration(Durations.standard)
-      .easing(MD3Easing.decelerated)
-      .delay(delay),
+    FadeInUp.duration(Durations.standard).easing(MD3Easing.decelerated).delay(delay),
 
   /**
    * Fade in from left
    * For slide-in navigation
    */
   fadeFromLeft: (delay = 0) =>
-    FadeInLeft.duration(Durations.standard)
-      .easing(MD3Easing.decelerated)
-      .delay(delay),
+    FadeInLeft.duration(Durations.standard).easing(MD3Easing.decelerated).delay(delay),
 
   /**
    * Fade in from right
    * For slide-in navigation
    */
   fadeFromRight: (delay = 0) =>
-    FadeInRight.duration(Durations.standard)
-      .easing(MD3Easing.decelerated)
-      .delay(delay),
+    FadeInRight.duration(Durations.standard).easing(MD3Easing.decelerated).delay(delay),
 
   /**
    * Slide in from bottom (spring)
    * For modals, sheets
    */
-  slideFromBottom: (delay = 0) =>
-    SlideInUp.springify().damping(25).stiffness(300).delay(delay),
+  slideFromBottom: (delay = 0) => SlideInUp.springify().damping(25).stiffness(300).delay(delay),
 
   /**
    * Slide in from top
    * For dropdown menus
    */
-  slideFromTop: (delay = 0) =>
-    SlideInDown.springify().damping(25).stiffness(300).delay(delay),
+  slideFromTop: (delay = 0) => SlideInDown.springify().damping(25).stiffness(300).delay(delay),
 
   /**
    * Scale up with fade (300ms)
    * For dialogs, popovers
    */
   scaleUp: (delay = 0) =>
-    ZoomIn.duration(Durations.emphasized)
-      .easing(MD3Easing.emphasized)
-      .delay(delay),
+    ZoomIn.duration(Durations.emphasized).easing(MD3Easing.emphasized).delay(delay),
 
   /**
    * Spring bounce in
    * For playful entrances
    */
-  bounce: (delay = 0) =>
-    FadeIn.springify().damping(12).stiffness(200).delay(delay),
+  bounce: (delay = 0) => FadeIn.springify().damping(12).stiffness(200).delay(delay),
 } as const;
 
 /**
@@ -308,29 +297,25 @@ export const ExitAnimations = {
    * Fade out to bottom
    * For content leaving downward
    */
-  fadeToBottom: () =>
-    FadeOutDown.duration(Durations.accelerated).easing(MD3Easing.accelerated),
+  fadeToBottom: () => FadeOutDown.duration(Durations.accelerated).easing(MD3Easing.accelerated),
 
   /**
    * Fade out to top
    * For content leaving upward
    */
-  fadeToTop: () =>
-    FadeOutUp.duration(Durations.accelerated).easing(MD3Easing.accelerated),
+  fadeToTop: () => FadeOutUp.duration(Durations.accelerated).easing(MD3Easing.accelerated),
 
   /**
    * Slide out to bottom
    * For dismissible modals
    */
-  slideToBottom: () =>
-    SlideOutDown.duration(Durations.standard).easing(MD3Easing.accelerated),
+  slideToBottom: () => SlideOutDown.duration(Durations.standard).easing(MD3Easing.accelerated),
 
   /**
    * Scale down with fade
    * For closing dialogs
    */
-  scaleDown: () =>
-    ZoomOut.duration(Durations.accelerated).easing(MD3Easing.accelerated),
+  scaleDown: () => ZoomOut.duration(Durations.accelerated).easing(MD3Easing.accelerated),
 } as const;
 
 // ============================================================================
@@ -504,8 +489,7 @@ export const ComponentTransitions = {
   /**
    * Modal entrance
    */
-  modalEnter: () =>
-    FadeInUp.duration(Durations.standard).springify().damping(18),
+  modalEnter: () => FadeInUp.duration(Durations.standard).springify().damping(18),
 
   /**
    * Button press feedback
@@ -518,9 +502,7 @@ export const ComponentTransitions = {
   /**
    * Chip/Tag entrance
    */
-  chipEnter: (index = 0) =>
-    FadeIn.duration(Durations.decelerated)
-      .delay(index * 30),
+  chipEnter: (index = 0) => FadeIn.duration(Durations.decelerated).delay(index * 30),
 
   /**
    * Skeleton loading entrance
@@ -543,15 +525,17 @@ export const NavigationTransitions = {
   iosSlide: {
     gestureEnabled: true,
     gestureDirection: 'horizontal' as const,
-    cardStyleInterpolator: ({ current, layouts }: { current: { progress: number }; layouts: { screen: { width: number } } }) => ({
+    cardStyleInterpolator: ({
+      current,
+      layouts,
+    }: {
+      current: { progress: number };
+      layouts: { screen: { width: number } };
+    }) => ({
       cardStyle: {
         transform: [
           {
-            translateX: interpolate(
-              current.progress,
-              [0, 1],
-              [layouts.screen.width, 0],
-            ),
+            translateX: interpolate(current.progress, [0, 1], [layouts.screen.width, 0]),
           },
         ],
       },
@@ -571,11 +555,7 @@ export const NavigationTransitions = {
         opacity: current.progress,
         transform: [
           {
-            scale: interpolate(
-              current.progress,
-              [0, 1],
-              [0.95, 1],
-            ),
+            scale: interpolate(current.progress, [0, 1], [0.95, 1]),
           },
         ],
       },
@@ -596,11 +576,7 @@ export const NavigationTransitions = {
       cardStyle: {
         transform: [
           {
-            translateY: interpolate(
-              current.progress,
-              [0, 1],
-              [300, 0],
-            ),
+            translateY: interpolate(current.progress, [0, 1], [300, 0]),
           },
         ],
       },
@@ -621,7 +597,7 @@ export const NavigationTransitions = {
  */
 export function createCustomTransition(
   duration: number,
-  easing: (value: number) => number = MD3Easing.standard
+  easing: (value: number) => number = MD3Easing.standard,
 ): { duration: number; easing: (value: number) => number } {
   return { duration, easing };
 }
@@ -631,7 +607,7 @@ export function createCustomTransition(
  */
 export function withDelay<T extends { delay: (ms: number) => T }>(
   animation: T,
-  delayMs: number
+  delayMs: number,
 ): T {
   return animation.delay(delayMs);
 }
@@ -647,6 +623,6 @@ export function combineTransitions(
       ...acc,
       ...curr,
     }),
-    {}
+    {},
   );
 }

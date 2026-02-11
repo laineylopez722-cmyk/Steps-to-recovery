@@ -35,8 +35,7 @@ jest.mock('@recovery/shared', () => ({
   getNextMilestone: (...args: unknown[]) => mockGetNextMilestone(...args),
   getLatestMilestone: (...args: unknown[]) => mockGetLatestMilestone(...args),
   getAchievedMilestones: (...args: unknown[]) => mockGetAchievedMilestones(...args),
-  scheduleMilestoneNotification: (...args: unknown[]) =>
-    mockScheduleMilestoneNotification(...args),
+  scheduleMilestoneNotification: (...args: unknown[]) => mockScheduleMilestoneNotification(...args),
 }));
 
 import { renderHook } from '@testing-library/react-native';
@@ -170,7 +169,9 @@ describe('useSobriety', () => {
   });
 
   describe('formattedDuration', () => {
-    function setupWithDays(days: number): ReturnType<typeof renderHook<ReturnType<typeof useSobriety>, unknown>> {
+    function setupWithDays(
+      days: number,
+    ): ReturnType<typeof renderHook<ReturnType<typeof useSobriety>, unknown>> {
       mockUseProfileStore.mockReturnValue({
         profile: { id: '1', sobrietyDate: new Date('2024-01-01') },
         soberDays: days,

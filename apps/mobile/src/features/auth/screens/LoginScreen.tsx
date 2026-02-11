@@ -222,36 +222,37 @@ export function LoginScreen({ navigation }: Props) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  header: {
-    // Styles now inline with theme
-  },
-  form: {
-    gap: 8,
-  },
-  errorContainer: {
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginVertical: 8,
-  },
-  forgotPassword: {
-    alignSelf: 'center',
-    marginTop: 12,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    safeArea: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: 20,
+      justifyContent: 'center',
+    },
+    header: {
+      // Styles now inline with theme
+    },
+    form: {
+      gap: 8,
+    },
+    errorContainer: {
+      padding: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+      marginVertical: 8,
+    },
+    forgotPassword: {
+      alignSelf: 'center',
+      marginTop: 12,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+  }) as const;

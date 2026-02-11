@@ -1,9 +1,9 @@
 /**
  * Card Component - Premium App Quality
- * 
+ *
  * iOS-style card with subtle shadow elevation
  * ChatGPT-style gradient backgrounds for depth
- * 
+ *
  * Follows iOS Human Interface Guidelines:
  * - 12-16px border radius
  * - Subtle shadow for elevation
@@ -19,7 +19,15 @@ import { useTheme } from '../hooks/useTheme';
 import { getGradients } from '../tokens/theme';
 import { useDs } from '../DsProvider';
 
-export type GradientType = 'none' | 'card' | 'elevated' | 'surface' | 'inset' | 'highlight' | 'button' | 'header';
+export type GradientType =
+  | 'none'
+  | 'card'
+  | 'elevated'
+  | 'surface'
+  | 'inset'
+  | 'highlight'
+  | 'button'
+  | 'header';
 
 export interface GlassCardProps extends ViewProps {
   /** @deprecated No effect - kept for compatibility */
@@ -102,7 +110,7 @@ export function GlassCard({
   const getGradientColors = (): readonly [string, string, ...string[]] | null => {
     if (gradientColors) return gradientColors;
     if (gradient === 'none') return null;
-    
+
     switch (gradient) {
       case 'card':
         return gradients.card;
@@ -128,7 +136,11 @@ export function GlassCard({
 
   // iOS-style card with subtle shadow
   const cardStyle: ViewStyle = {
-    backgroundColor: useGradient ? 'transparent' : (elevated ? theme.colors.surfaceElevated : theme.colors.surface),
+    backgroundColor: useGradient
+      ? 'transparent'
+      : elevated
+        ? theme.colors.surfaceElevated
+        : theme.colors.surface,
     borderRadius: 12,
     // Subtle shadow for elevation (iOS style)
     shadowColor: ds.colors.shadow,
@@ -198,9 +210,9 @@ export function GlassCard({
   }
 
   return (
-    <View 
-      style={[containerStyle, useGradient && styles.noPaddingOverride]} 
-      accessibilityLabel={accessibilityLabel} 
+    <View
+      style={[containerStyle, useGradient && styles.noPaddingOverride]}
+      accessibilityLabel={accessibilityLabel}
       {...props}
     >
       {renderContent()}

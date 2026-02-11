@@ -17,7 +17,7 @@ import { Feather } from '@expo/vector-icons';
   <Action.Trailing style={styles.trailing}>
     <Feather name="chevron-right" size={16} color="#6B7280" />
   </Action.Trailing>
-</Action.Root>
+</Action.Root>;
 ```
 
 ## Motion-only hook
@@ -27,5 +27,5 @@ const motion = useActionMotion({ scaleTo: 0.98 });
 
 <Pressable onPressIn={motion.onPressIn} onPressOut={motion.onPressOut}>
   <Animated.View style={motion.animatedStyle}>{children}</Animated.View>
-</Pressable>
+</Pressable>;
 ```

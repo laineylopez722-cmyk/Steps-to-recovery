@@ -1,6 +1,6 @@
 /**
  * Card Component
- * 
+ *
  * Apple-inspired card with no visible borders.
  * Depth through background differentiation and subtle shadows.
  */
@@ -13,10 +13,7 @@ function Card({ className, ...props }: ViewProps & React.RefAttributes<View>) {
   return (
     <TextClassContext.Provider value="text-card-foreground">
       <View
-        className={cn(
-          'bg-gray-900 flex flex-col gap-5 rounded-[20px] p-5',
-          className,
-        )}
+        className={cn('bg-gray-900 flex flex-col gap-5 rounded-[20px] p-5', className)}
         {...props}
       />
     </TextClassContext.Provider>

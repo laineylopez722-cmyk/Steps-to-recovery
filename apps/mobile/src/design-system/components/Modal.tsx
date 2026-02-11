@@ -16,7 +16,12 @@ import {
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { Button } from './Button';
-import Animated, { type AnimatedProps, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import Animated, {
+  type AnimatedProps,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from 'react-native-reanimated';
 import type { ReactElement } from 'react';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -54,13 +59,13 @@ export function Modal({
   testID,
 }: ModalProps): ReactElement {
   const theme = useTheme();
-    const slideAnim = useSharedValue(SCREEN_HEIGHT);
+  const slideAnim = useSharedValue(SCREEN_HEIGHT);
   const fadeAnim = useSharedValue(0);
 
   useEffect(() => {
     if (visible) {
       // Animate in
-                        fadeAnim.value = withTiming(1, { duration: theme.animations.durations.normal });
+      fadeAnim.value = withTiming(1, { duration: theme.animations.durations.normal });
       if (variant === 'bottom') {
         slideAnim.value = withSpring(0, { damping: 25, stiffness: 300 });
       } else {
@@ -82,7 +87,7 @@ export function Modal({
     variant === 'center' ? styles.centerContainer : styles.bottomContainer;
 
   const contentStyle: ViewStyle =
-      variant === 'center' ? styles.centerContent : styles.bottomContent;
+    variant === 'center' ? styles.centerContent : styles.bottomContent;
 
   return (
     <RNModal
@@ -104,7 +109,9 @@ export function Modal({
           ]}
         >
           <TouchableWithoutFeedback>
-            <Animated.View style={[containerStyle, contentStyle as ViewStyle & AnimatedProps<ViewStyle> ]}>
+            <Animated.View
+              style={[containerStyle, contentStyle as ViewStyle & AnimatedProps<ViewStyle>]}
+            >
               {/* Header */}
               {title && (
                 <View style={styles.header}>

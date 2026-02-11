@@ -24,16 +24,17 @@ export function StepQuestionCounter({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  questionCounter: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    backgroundColor: ds.colors.bgSecondary,
-    borderColor: ds.colors.borderSubtle,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    questionCounter: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      marginHorizontal: 16,
+      marginBottom: 8,
+      borderRadius: 12,
+      borderWidth: 1,
+      alignItems: 'center',
+      backgroundColor: ds.colors.bgSecondary,
+      borderColor: ds.colors.borderSubtle,
+    },
+  }) as const;

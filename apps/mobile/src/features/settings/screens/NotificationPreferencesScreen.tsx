@@ -105,9 +105,7 @@ export function NotificationPreferencesScreen(): React.ReactElement {
               {channels.map((channel, index) => (
                 <View key={channel.id}>
                   <View style={styles.channelRow}>
-                    <View
-                      style={[styles.channelIcon, { backgroundColor: ds.colors.accentMuted }]}
-                    >
+                    <View style={[styles.channelIcon, { backgroundColor: ds.colors.accentMuted }]}>
                       <MaterialIcons
                         name={channel.icon as IconName}
                         size={20}
@@ -167,7 +165,11 @@ export function NotificationPreferencesScreen(): React.ReactElement {
             <View style={styles.previewCard}>
               <View style={styles.previewHeader}>
                 <View style={styles.previewAppIcon}>
-                  <MaterialIcons name="self-improvement" size={16} color={ds.semantic.text.onDark} />
+                  <MaterialIcons
+                    name="self-improvement"
+                    size={16}
+                    color={ds.semantic.text.onDark}
+                  />
                 </View>
                 <Text style={styles.previewAppName}>Steps to Recovery</Text>
                 <Text style={styles.previewTime}>Now</Text>
@@ -196,187 +198,188 @@ function TimeSelector({ label, time }: { label: string; time: string }) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing[3],
-    gap: spacing[4],
-  },
-  title: {
-    ...typography.h1,
-    color: darkAccent.text,
-    marginBottom: spacing[1],
-  },
-  subtitle: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-  },
-  masterToggle: {
-    padding: spacing[3],
-  },
-  masterToggleContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[3],
-  },
-  masterToggleIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.lg,
-    backgroundColor: ds.colors.accentMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  masterToggleText: {
-    flex: 1,
-  },
-  masterToggleTitle: {
-    ...typography.bodyLarge,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-  masterToggleDesc: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  sectionTitle: {
-    ...typography.h4,
-    color: darkAccent.text,
-    marginBottom: spacing[2],
-  },
-  channelRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing[2],
-    gap: spacing[2],
-  },
-  channelIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  channelInfo: {
-    flex: 1,
-  },
-  channelTitle: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '500',
-  },
-  channelDesc: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: darkAccent.border,
-  },
-  quietHoursHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing[2],
-  },
-  quietHoursInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing[2],
-  },
-  quietHoursText: {
-    flex: 1,
-  },
-  quietHoursTitle: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '500',
-  },
-  quietHoursDesc: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  timeSelectors: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: spacing[3],
-    paddingBottom: spacing[2],
-    borderTopWidth: 1,
-    borderTopColor: darkAccent.border,
-    gap: spacing[3],
-  },
-  timeSelector: {
-    alignItems: 'center',
-  },
-  timeLabel: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginBottom: spacing[1],
-  },
-  timeValue: {
-    backgroundColor: darkAccent.surfaceHigh,
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[1.5],
-    borderRadius: radius.md,
-  },
-  timeText: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-  timeArrow: {
-    marginTop: spacing[2],
-  },
-  previewCard: {
-    backgroundColor: darkAccent.surface,
-    borderRadius: radius.lg,
-    padding: spacing[3],
-    borderWidth: 1,
-    borderColor: darkAccent.border,
-  },
-  previewHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing[2],
-  },
-  previewAppIcon: {
-    width: 24,
-    height: 24,
-    borderRadius: radius.sm,
-    backgroundColor: darkAccent.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing[1.5],
-  },
-  previewAppName: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    flex: 1,
-  },
-  previewTime: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-  },
-  previewTitle: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-    marginBottom: spacing[0.5],
-  },
-  previewBody: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    content: {
+      padding: spacing[3],
+      gap: spacing[4],
+    },
+    title: {
+      ...typography.h1,
+      color: darkAccent.text,
+      marginBottom: spacing[1],
+    },
+    subtitle: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+    },
+    masterToggle: {
+      padding: spacing[3],
+    },
+    masterToggleContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[3],
+    },
+    masterToggleIcon: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.lg,
+      backgroundColor: ds.colors.accentMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    masterToggleText: {
+      flex: 1,
+    },
+    masterToggleTitle: {
+      ...typography.bodyLarge,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+    masterToggleDesc: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    sectionTitle: {
+      ...typography.h4,
+      color: darkAccent.text,
+      marginBottom: spacing[2],
+    },
+    channelRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing[2],
+      gap: spacing[2],
+    },
+    channelIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: radius.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    channelInfo: {
+      flex: 1,
+    },
+    channelTitle: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '500',
+    },
+    channelDesc: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: darkAccent.border,
+    },
+    quietHoursHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: spacing[2],
+    },
+    quietHoursInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      gap: spacing[2],
+    },
+    quietHoursText: {
+      flex: 1,
+    },
+    quietHoursTitle: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '500',
+    },
+    quietHoursDesc: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    timeSelectors: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: spacing[3],
+      paddingBottom: spacing[2],
+      borderTopWidth: 1,
+      borderTopColor: darkAccent.border,
+      gap: spacing[3],
+    },
+    timeSelector: {
+      alignItems: 'center',
+    },
+    timeLabel: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginBottom: spacing[1],
+    },
+    timeValue: {
+      backgroundColor: darkAccent.surfaceHigh,
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[1.5],
+      borderRadius: radius.md,
+    },
+    timeText: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+    timeArrow: {
+      marginTop: spacing[2],
+    },
+    previewCard: {
+      backgroundColor: darkAccent.surface,
+      borderRadius: radius.lg,
+      padding: spacing[3],
+      borderWidth: 1,
+      borderColor: darkAccent.border,
+    },
+    previewHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: spacing[2],
+    },
+    previewAppIcon: {
+      width: 24,
+      height: 24,
+      borderRadius: radius.sm,
+      backgroundColor: darkAccent.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: spacing[1.5],
+    },
+    previewAppName: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      flex: 1,
+    },
+    previewTime: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+    },
+    previewTitle: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+      marginBottom: spacing[0.5],
+    },
+    previewBody: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+    },
+  }) as const;

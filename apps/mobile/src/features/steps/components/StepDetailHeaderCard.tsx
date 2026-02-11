@@ -18,7 +18,7 @@ interface StepDetailHeaderCardProps {
   onReviewAnswers: () => void;
 }
 
-export function StepDetailHeaderCard({
+export const StepDetailHeaderCard = React.memo(function StepDetailHeaderCard({
   stepNumber,
   title,
   principle,
@@ -49,7 +49,10 @@ export function StepDetailHeaderCard({
               {principle}
             </Badge>
             <Text
-              style={[theme.typography.caption, { color: theme.colors.textSecondary, marginLeft: 8 }]}
+              style={[
+                theme.typography.caption,
+                { color: theme.colors.textSecondary, marginLeft: 8 },
+              ]}
             >
               {totalQuestions} questions
             </Text>
@@ -77,7 +80,12 @@ export function StepDetailHeaderCard({
           accessibilityRole="button"
         >
           <MaterialCommunityIcons name="play-circle-outline" size={20} color={ds.colors.accent} />
-          <Text style={[theme.typography.body, { color: ds.colors.accent, marginLeft: 8, fontWeight: '600' }]}>
+          <Text
+            style={[
+              theme.typography.body,
+              { color: ds.colors.accent, marginLeft: 8, fontWeight: '600' },
+            ]}
+          >
             Continue at Question {firstUnansweredQuestion}
           </Text>
         </TouchableOpacity>
@@ -95,66 +103,68 @@ export function StepDetailHeaderCard({
       </View>
     </Card>
   );
-}
+});
+StepDetailHeaderCard.displayName = 'StepDetailHeaderCard';
 
-const createStyles = (ds: DS) => ({
-  headerCard: {
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  stepBadge: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-    backgroundColor: ds.colors.accent,
-  },
-  stepBadgeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: ds.semantic.text.onDark,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  badgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  principleBadge: {
-    alignSelf: 'flex-start',
-  },
-  progressSection: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: 8,
-  },
-  continueButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginTop: 12,
-    backgroundColor: ds.colors.accentMuted,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    headerCard: {
+      marginHorizontal: 16,
+      marginTop: 8,
+      marginBottom: 12,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    stepBadge: {
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 16,
+      backgroundColor: ds.colors.accent,
+    },
+    stepBadgeText: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: ds.semantic.text.onDark,
+    },
+    headerContent: {
+      flex: 1,
+    },
+    badgeRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    principleBadge: {
+      alignSelf: 'flex-start',
+    },
+    progressSection: {
+      paddingTop: 16,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+    },
+    progressHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    progressBar: {
+      height: 8,
+    },
+    continueButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 12,
+      marginTop: 12,
+      backgroundColor: ds.colors.accentMuted,
+    },
+  }) as const;

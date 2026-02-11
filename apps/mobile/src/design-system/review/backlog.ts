@@ -42,8 +42,7 @@ export const UX_PRIORITY_BACKLOG: UxIssue[] = [
     severity: 'high',
     status: 'open',
     categories: ['consistency', 'hierarchy'],
-    summary:
-      'Design docs reference `*Modern` screens that do not exist in the current codebase.',
+    summary: 'Design docs reference `*Modern` screens that do not exist in the current codebase.',
     impact: 'Team decisions can drift from reality, causing rework and roadmap confusion.',
     recommendation:
       'Update docs to reflect active screen files and explicitly mark non-shipped concepts as future-state.',
@@ -97,8 +96,7 @@ export const UX_PRIORITY_BACKLOG: UxIssue[] = [
     categories: ['accessibility', 'recoverySafety'],
     summary:
       '`EmergencyScreen` marks a major scroll container as `accessibilityRole=\"scrollbar\"`, which is not a semantically appropriate role for the content.',
-    impact:
-      'Screen reader users may receive misleading navigation semantics in crisis context.',
+    impact: 'Screen reader users may receive misleading navigation semantics in crisis context.',
     recommendation:
       'Keep non-deceptive container semantics (no forced `scrollbar` role) and preserve clear heading/button structure.',
     affectedRoutes: ['Emergency'],
@@ -165,8 +163,7 @@ export const UX_PRIORITY_BACKLOG: UxIssue[] = [
     severity: 'medium',
     status: 'open',
     categories: ['hierarchy', 'accessibility', 'visualPolish'],
-    summary:
-      'Bottom tab labels are hidden globally, reducing route discoverability for new users.',
+    summary: 'Bottom tab labels are hidden globally, reducing route discoverability for new users.',
     impact:
       'Lower wayfinding confidence and weaker first-time clarity, especially with similar icon metaphors.',
     recommendation:
@@ -188,8 +185,7 @@ export const UX_PRIORITY_BACKLOG: UxIssue[] = [
     categories: ['motionPerformance', 'consistency', 'visualPolish'],
     summary:
       'Animation strategy varies by feature (`react-native-reanimated`, static transitions, and token-driven motion) with no shared choreography standard.',
-    impact:
-      'Uneven perceived quality and interaction rhythm between high-traffic flows.',
+    impact: 'Uneven perceived quality and interaction rhythm between high-traffic flows.',
     recommendation:
       'Define motion tiers and interaction templates (screen enter, card enter, modal) reused by all stacks.',
     affectedRoutes: ['HomeMain', 'JournalList', 'MeetingFinder', 'StepDetail'],

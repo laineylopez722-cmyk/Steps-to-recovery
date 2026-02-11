@@ -1,7 +1,7 @@
 /**
  * Micro-Animations System
  * Subtle, purposeful animations for premium feel
- * 
+ *
  * Principles:
  * - Fast (150-300ms) for feedback
  * - Gentle (spring, ease-out) for comfort
@@ -49,7 +49,7 @@ export const pressAnimation = {
 export function usePressAnimation(variant: 'standard' | 'card' | 'premium' = 'standard') {
   const scale = useSharedValue(1);
   const translateY = useSharedValue(0);
-  
+
   const config = pressAnimation[variant];
   // Type guard for lift property
   const hasLift = 'lift' in config && config.lift !== undefined;
@@ -67,10 +67,7 @@ export function usePressAnimation(variant: 'standard' | 'card' | 'premium' = 'st
   }, [scale, translateY, config]);
 
   const style = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ scale: scale.value }, { translateY: translateY.value }],
   }));
 
   return { onPressIn, onPressOut, style };
@@ -162,12 +159,9 @@ export function useSuccessAnimation() {
     scale.value = withSequence(
       withTiming(0, { duration: 0 }),
       withSpring(1.2, { damping: 10, stiffness: 200 }),
-      withSpring(1, { damping: 15, stiffness: 300 })
+      withSpring(1, { damping: 15, stiffness: 300 }),
     );
-    opacity.value = withSequence(
-      withTiming(0, { duration: 0 }),
-      withTiming(1, { duration: 200 })
-    );
+    opacity.value = withSequence(withTiming(0, { duration: 0 }), withTiming(1, { duration: 200 }));
   }, [scale, opacity]);
 
   const reset = useCallback(() => {
@@ -216,7 +210,7 @@ export function useAttentionAnimation(type: 'bounce' | 'shake' | 'pulse' = 'boun
         translateY.value = withSequence(
           withTiming(0, { duration: 0 }),
           withTiming(-6, { duration: 200, easing: Easing.out(Easing.cubic) }),
-          withTiming(0, { duration: 400, easing: Easing.out(Easing.bounce) })
+          withTiming(0, { duration: 400, easing: Easing.out(Easing.bounce) }),
         );
         break;
       case 'shake':
@@ -226,7 +220,7 @@ export function useAttentionAnimation(type: 'bounce' | 'shake' | 'pulse' = 'boun
           withTiming(4, { duration: 50 }),
           withTiming(-4, { duration: 50 }),
           withTiming(4, { duration: 50 }),
-          withTiming(0, { duration: 50 })
+          withTiming(0, { duration: 50 }),
         );
         break;
       case 'pulse':
@@ -234,10 +228,10 @@ export function useAttentionAnimation(type: 'bounce' | 'shake' | 'pulse' = 'boun
           withSequence(
             withTiming(1, { duration: 0 }),
             withTiming(1.15, { duration: 400, easing: Easing.inOut(Easing.ease) }),
-            withTiming(1, { duration: 400, easing: Easing.inOut(Easing.ease) })
+            withTiming(1, { duration: 400, easing: Easing.inOut(Easing.ease) }),
           ),
           2,
-          false
+          false,
         );
         break;
     }
@@ -286,7 +280,7 @@ export function useShimmerAnimation() {
         easing: Easing.inOut(Easing.ease),
       }),
       -1,
-      true
+      true,
     );
   }, [translateX]);
 
@@ -326,13 +320,13 @@ export function useBreathingAnimation() {
       withTiming(1, {
         duration: breathingAnimation.exhale,
         easing: Easing.inOut(Easing.ease),
-      })
+      }),
     );
 
     opacity.value = withSequence(
       withTiming(0.8, { duration: breathingAnimation.inhale }),
       withTiming(0.8, { duration: breathingAnimation.hold }),
-      withTiming(0.5, { duration: breathingAnimation.exhale })
+      withTiming(0.5, { duration: breathingAnimation.exhale }),
     );
   }, [scale, opacity]);
 
@@ -354,9 +348,12 @@ export function useBreathingAnimation() {
 // ============================================================================
 
 export function useStaggerAnimation(itemCount: number, baseDelay: number = 50) {
-  const getDelay = useCallback((index: number) => {
-    return index * baseDelay;
-  }, [baseDelay]);
+  const getDelay = useCallback(
+    (index: number) => {
+      return index * baseDelay;
+    },
+    [baseDelay],
+  );
 
   return { getDelay };
 }

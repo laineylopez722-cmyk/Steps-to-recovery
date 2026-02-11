@@ -153,7 +153,7 @@ export function SectionErrorFallback({
 }) {
   return (
     <View className="p-4 bg-amber-500/10 rounded-xl items-center border border-amber-500/20">
-      <Feather name="alert-circle" size={24} color="#fbbf24" />
+      <Feather name="alert-circle" size={24} color={ds.colors.warning} />
       <Text className="text-amber-300 text-center mt-2 mb-3">{message}</Text>
       {onRetry && (
         <TouchableOpacity

@@ -37,15 +37,8 @@ export function GratitudeScreen({ userId }: Props): React.ReactElement {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
-  const {
-    todayEntry,
-    todayLoading,
-    streak,
-    history,
-    historyLoading,
-    saveGratitude,
-    isSaving,
-  } = useGratitude();
+  const { todayEntry, todayLoading, streak, history, historyLoading, saveGratitude, isSaving } =
+    useGratitude();
 
   const [item1, setItem1] = useState('');
   const [item2, setItem2] = useState('');
@@ -53,10 +46,7 @@ export function GratitudeScreen({ userId }: Props): React.ReactElement {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const canSubmit =
-    item1.trim().length > 0 &&
-    item2.trim().length > 0 &&
-    item3.trim().length > 0 &&
-    !isSaving;
+    item1.trim().length > 0 && item2.trim().length > 0 && item3.trim().length > 0 && !isSaving;
 
   const handleSubmit = useCallback(async (): Promise<void> => {
     if (!canSubmit) return;
@@ -196,9 +186,7 @@ export function GratitudeScreen({ userId }: Props): React.ReactElement {
             {/* Today: Input State */}
             {!todayEntry && (
               <Animated.View entering={FadeIn.delay(200).duration(400)}>
-                <Text style={styles.prompt}>
-                  What are 3 things you're grateful for today?
-                </Text>
+                <Text style={styles.prompt}>What are 3 things you're grateful for today?</Text>
 
                 <GratitudeInput
                   index={1}

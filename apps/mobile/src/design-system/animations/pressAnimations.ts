@@ -183,10 +183,14 @@ export interface PressAnimationResult {
  * </Pressable>
  * ```
  */
-export function usePressAnimation(
-  options: UsePressAnimationOptions = {}
-): PressAnimationResult {
-  const { variant = 'button', config: customConfig, onPressIn, onPressOut, disabled = false } = options;
+export function usePressAnimation(options: UsePressAnimationOptions = {}): PressAnimationResult {
+  const {
+    variant = 'button',
+    config: customConfig,
+    onPressIn,
+    onPressOut,
+    disabled = false,
+  } = options;
 
   const scale = useSharedValue(1);
   const translateY = useSharedValue(0);
@@ -259,10 +263,7 @@ export function usePressAnimation(
   }, [scale, translateY, opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ scale: scale.value }, { translateY: translateY.value }],
     opacity: opacity.value,
   }));
 
@@ -349,18 +350,22 @@ export function useRippleEffect(config: Partial<RippleConfig> = {}) {
         easing: Easing.out(Easing.cubic),
       });
     },
-    [x, y, scale, opacity, isActive, mergedConfig]
+    [x, y, scale, opacity, isActive, mergedConfig],
   );
 
   const onPressOut = useCallback(() => {
-    opacity.value = withTiming(0, {
-      duration: mergedConfig.duration * 0.5,
-    }, (finished) => {
-      if (finished) {
-        isActive.value = false;
-        scale.value = 0;
-      }
-    });
+    opacity.value = withTiming(
+      0,
+      {
+        duration: mergedConfig.duration * 0.5,
+      },
+      (finished) => {
+        if (finished) {
+          isActive.value = false;
+          scale.value = 0;
+        }
+      },
+    );
   }, [opacity, scale, isActive, mergedConfig.duration]);
 
   const rippleStyle = useAnimatedStyle(() => ({
@@ -422,7 +427,7 @@ export interface LongPressAnimationConfig {
  * ```
  */
 export function useLongPressAnimation(
-  config: LongPressAnimationConfig & { onComplete?: () => void }
+  config: LongPressAnimationConfig & { onComplete?: () => void },
 ) {
   const { maxScale, fillDuration, hapticAtProgress = 0.5, onProgress, onComplete } = config;
 
@@ -447,7 +452,7 @@ export function useLongPressAnimation(
         if (finished && isPressed.value && onComplete) {
           runOnJS(onComplete)();
         }
-      }
+      },
     );
   }, [maxScale, fillDuration, scale, progress, isPressed, hapticTriggered, onComplete]);
 
@@ -512,10 +517,7 @@ export interface ToggleAnimationConfig {
  * </Pressable>
  * ```
  */
-export function useToggleAnimation(
-  isOn: boolean,
-  config: Partial<ToggleAnimationConfig> = {}
-) {
+export function useToggleAnimation(isOn: boolean, config: Partial<ToggleAnimationConfig> = {}) {
   const mergedConfig: ToggleAnimationConfig = {
     activeScale: 1.1,
     inactiveScale: 1,
@@ -528,24 +530,21 @@ export function useToggleAnimation(
   const scale = useSharedValue(1);
 
   useEffect(() => {
-    translateX.value = withSpring(
-      isOn ? mergedConfig.travelDistance : 0,
-      { damping: 20, stiffness: 300 }
-    );
+    translateX.value = withSpring(isOn ? mergedConfig.travelDistance : 0, {
+      damping: 20,
+      stiffness: 300,
+    });
   }, [isOn, translateX, mergedConfig.travelDistance]);
 
   const onPress = useCallback(() => {
     scale.value = withSequence(
       withTiming(mergedConfig.activeScale, { duration: 100 }),
-      withTiming(mergedConfig.inactiveScale, { duration: 100 })
+      withTiming(mergedConfig.inactiveScale, { duration: 100 }),
     );
   }, [scale, mergedConfig]);
 
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: translateX.value }, { scale: scale.value }],
   }));
 
   const trackStyle = useAnimatedStyle(() => ({
@@ -650,7 +649,7 @@ export function useCardFeedback(config: Partial<CardFeedbackConfig> = {}) {
  */
 export function usePressFeedback(
   pressOptions: UsePressAnimationOptions = {},
-  rippleConfig: Partial<RippleConfig> = {}
+  rippleConfig: Partial<RippleConfig> = {},
 ) {
   const press = usePressAnimation(pressOptions);
   const ripple = useRippleEffect(rippleConfig);
@@ -660,7 +659,7 @@ export function usePressFeedback(
       press.onPressIn();
       ripple.onPressIn(event);
     },
-    [press, ripple]
+    [press, ripple],
   );
 
   const onPressOut = useCallback(() => {

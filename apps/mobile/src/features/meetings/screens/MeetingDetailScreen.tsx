@@ -30,14 +30,20 @@ import { CheckInModal } from '../components/CheckInModal';
 import { PreMeetingReflectionModal } from '../components/PreMeetingReflectionModal';
 import { PostMeetingReflectionModal } from '../components/PostMeetingReflectionModal';
 import { getCachedMeetingById } from '../services/meetingCacheService';
-import { savePreMeetingReflection, type PreMeetingPrompts } from '../../../services/meetingReflectionService';
+import {
+  savePreMeetingReflection,
+  type PreMeetingPrompts,
+} from '../../../services/meetingReflectionService';
 import type { CachedMeeting } from '../types/meeting';
 import { formatMeetingTime, formatDayOfWeek, getMeetingTypeLabel } from '../types/meeting';
 import type { MeetingsStackScreenProps } from '../../../navigation/types';
 
 type MeetingDetailScreenProps = MeetingsStackScreenProps<'MeetingDetail'>;
 
-export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenProps): React.ReactElement {
+export function MeetingDetailScreen({
+  route,
+  navigation,
+}: MeetingDetailScreenProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
@@ -152,7 +158,11 @@ export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenPr
   const handleShareMeeting = useCallback(async (): Promise<void> => {
     if (!meeting) return;
 
-    const summary = [meeting.name, meeting.address, [meeting.city, meeting.state].filter(Boolean).join(', ')]
+    const summary = [
+      meeting.name,
+      meeting.address,
+      [meeting.city, meeting.state].filter(Boolean).join(', '),
+    ]
       .filter(Boolean)
       .join('\n');
 
@@ -324,147 +334,153 @@ export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenPr
         style={[styles.container, { backgroundColor: theme.colors.background }]}
         contentContainerStyle={styles.content}
       >
-      {/* Meeting Name */}
-      <View style={styles.header}>
-        <Text style={[theme.typography.h1, { color: theme.colors.text, flex: 1 }]}>{meetingName}</Text>
-        <Pressable
-          onPress={() => void handleToggleFavorite()}
-          accessibilityRole="button"
-          accessibilityLabel={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-          accessibilityHint={isFavorited ? 'Removes this meeting from your favorites list' : 'Adds this meeting to your favorites list'}
-          accessibilityState={{ selected: isFavorited }}
-          style={({ pressed }) => [
-            styles.favoriteIconButton,
-            {
-              backgroundColor: isFavorited ? theme.colors.danger : theme.colors.surface,
-              borderColor: theme.colors.border,
-              opacity: pressed ? 0.8 : 1,
-            },
-          ]}
-        >
-          <MaterialIcons
-            name={isFavorited ? 'favorite' : 'favorite-border'}
-            size={22}
-            color={isFavorited ? ds.semantic.text.onDark : theme.colors.text}
-          />
-        </Pressable>
-      </View>
-
-      <View style={styles.actionRow}>
-        <Button
-          variant="primary"
-          onPress={() => void handleOpenDirections()}
-          style={styles.actionButton}
-          accessibilityLabel="Get directions"
-          accessibilityHint="Opens maps with directions to this meeting location"
-        >
-          Directions
-        </Button>
-        <Button
-          variant="outline"
-          onPress={() => void handleShareMeeting()}
-          style={styles.actionButton}
-          accessibilityLabel="Share meeting"
-          accessibilityHint="Opens share sheet to share meeting details with others"
-        >
-          Share
-        </Button>
-      </View>
-
-      <View style={styles.actionRow}>
-        <Button
-          variant="outline"
-          onPress={handleOpenFavorites}
-          style={styles.actionButton}
-          accessibilityLabel="View favorite meetings"
-          accessibilityHint="Opens your saved meetings list"
-        >
-          Favorites
-        </Button>
-        <Button
-          variant="primary"
-          onPress={handleStartCheckInFlow}
-          disabled={isCheckInStatusLoading || hasCheckedIn || isCheckingIn}
-          style={styles.actionButton}
-          accessibilityLabel={hasCheckedIn ? 'Already checked in today' : 'Check in to meeting'}
-          accessibilityHint={
-            hasCheckedIn
-              ? 'You have already checked in to this meeting today'
-              : 'Start pre-meeting reflection and check in flow'
-          }
-          accessibilityState={{
-            disabled: isCheckInStatusLoading || hasCheckedIn || isCheckingIn,
-          }}
-        >
-          {isCheckingIn ? 'Checking In...' : hasCheckedIn ? 'Checked In Today' : 'Check In'}
-        </Button>
-      </View>
-
-      {/* Time and Day */}
-      <Card style={styles.section}>
-        <View style={styles.infoRow}>
-          <MaterialIcons name="schedule" size={24} color={theme.colors.primary} />
-          <View style={styles.infoText}>
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-              When
-            </Text>
-            <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
-              {dayText} at {timeText}
-            </Text>
-          </View>
-        </View>
-      </Card>
-
-      {/* Location */}
-      <Card style={styles.section}>
-        <View style={styles.infoRow}>
-          <MaterialIcons name="place" size={24} color={theme.colors.primary} />
-          <View style={styles.infoText}>
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-              Where
-            </Text>
-            <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
-              {meetingLocation}
-            </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              {meetingAddress}
-            </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              {meetingCityStateLine}
-            </Text>
-          </View>
-        </View>
-      </Card>
-
-      {/* Meeting Types */}
-      {meetingTypes.length > 0 && (
-        <Card style={styles.section}>
-          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
-            Meeting Type
+        {/* Meeting Name */}
+        <View style={styles.header}>
+          <Text style={[theme.typography.h1, { color: theme.colors.text, flex: 1 }]}>
+            {meetingName}
           </Text>
-          <View style={styles.typesContainer}>
-            {meetingTypes.map((type, index) => (
-              <Badge key={`${type}-${index}`} variant="primary" size="medium">
-                {getMeetingTypeLabel(type)}
-              </Badge>
-            ))}
+          <Pressable
+            onPress={() => void handleToggleFavorite()}
+            accessibilityRole="button"
+            accessibilityLabel={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+            accessibilityHint={
+              isFavorited
+                ? 'Removes this meeting from your favorites list'
+                : 'Adds this meeting to your favorites list'
+            }
+            accessibilityState={{ selected: isFavorited }}
+            style={({ pressed }) => [
+              styles.favoriteIconButton,
+              {
+                backgroundColor: isFavorited ? theme.colors.danger : theme.colors.surface,
+                borderColor: theme.colors.border,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
+          >
+            <MaterialIcons
+              name={isFavorited ? 'favorite' : 'favorite-border'}
+              size={22}
+              color={isFavorited ? ds.semantic.text.onDark : theme.colors.text}
+            />
+          </Pressable>
+        </View>
+
+        <View style={styles.actionRow}>
+          <Button
+            variant="primary"
+            onPress={() => void handleOpenDirections()}
+            style={styles.actionButton}
+            accessibilityLabel="Get directions"
+            accessibilityHint="Opens maps with directions to this meeting location"
+          >
+            Directions
+          </Button>
+          <Button
+            variant="outline"
+            onPress={() => void handleShareMeeting()}
+            style={styles.actionButton}
+            accessibilityLabel="Share meeting"
+            accessibilityHint="Opens share sheet to share meeting details with others"
+          >
+            Share
+          </Button>
+        </View>
+
+        <View style={styles.actionRow}>
+          <Button
+            variant="outline"
+            onPress={handleOpenFavorites}
+            style={styles.actionButton}
+            accessibilityLabel="View favorite meetings"
+            accessibilityHint="Opens your saved meetings list"
+          >
+            Favorites
+          </Button>
+          <Button
+            variant="primary"
+            onPress={handleStartCheckInFlow}
+            disabled={isCheckInStatusLoading || hasCheckedIn || isCheckingIn}
+            style={styles.actionButton}
+            accessibilityLabel={hasCheckedIn ? 'Already checked in today' : 'Check in to meeting'}
+            accessibilityHint={
+              hasCheckedIn
+                ? 'You have already checked in to this meeting today'
+                : 'Start pre-meeting reflection and check in flow'
+            }
+            accessibilityState={{
+              disabled: isCheckInStatusLoading || hasCheckedIn || isCheckingIn,
+            }}
+          >
+            {isCheckingIn ? 'Checking In...' : hasCheckedIn ? 'Checked In Today' : 'Check In'}
+          </Button>
+        </View>
+
+        {/* Time and Day */}
+        <Card style={styles.section}>
+          <View style={styles.infoRow}>
+            <MaterialIcons name="schedule" size={24} color={theme.colors.primary} />
+            <View style={styles.infoText}>
+              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+                When
+              </Text>
+              <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
+                {dayText} at {timeText}
+              </Text>
+            </View>
           </View>
         </Card>
-      )}
 
-      {/* Notes */}
-      {meeting.notes && (
+        {/* Location */}
         <Card style={styles.section}>
-          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 8 }]}>
-            Meeting Notes
-          </Text>
-          <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-            {meeting.notes}
-          </Text>
+          <View style={styles.infoRow}>
+            <MaterialIcons name="place" size={24} color={theme.colors.primary} />
+            <View style={styles.infoText}>
+              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+                Where
+              </Text>
+              <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
+                {meetingLocation}
+              </Text>
+              <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+                {meetingAddress}
+              </Text>
+              <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+                {meetingCityStateLine}
+              </Text>
+            </View>
+          </View>
         </Card>
-      )}
 
-      {/* Personal Notes */}
+        {/* Meeting Types */}
+        {meetingTypes.length > 0 && (
+          <Card style={styles.section}>
+            <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+              Meeting Type
+            </Text>
+            <View style={styles.typesContainer}>
+              {meetingTypes.map((type, index) => (
+                <Badge key={`${type}-${index}`} variant="primary" size="medium">
+                  {getMeetingTypeLabel(type)}
+                </Badge>
+              ))}
+            </View>
+          </Card>
+        )}
+
+        {/* Notes */}
+        {meeting.notes && (
+          <Card style={styles.section}>
+            <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 8 }]}>
+              Meeting Notes
+            </Text>
+            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+              {meeting.notes}
+            </Text>
+          </Card>
+        )}
+
+        {/* Personal Notes */}
         <Card style={styles.section}>
           <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
             Personal Notes
@@ -532,59 +548,60 @@ export function MeetingDetailScreen({ route, navigation }: MeetingDetailScreenPr
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    padding: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-    gap: 12,
-  },
-  favoriteIconButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  actionRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
-  },
-  actionButton: {
-    flex: 1,
-  },
-  section: {
-    marginBottom: 16,
-    padding: 16,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  infoText: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  typesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  saveButton: {
-    marginTop: 12,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    centerContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    content: {
+      padding: 16,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 12,
+      gap: 12,
+    },
+    favoriteIconButton: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+    },
+    actionRow: {
+      flexDirection: 'row',
+      gap: 8,
+      marginBottom: 16,
+    },
+    actionButton: {
+      flex: 1,
+    },
+    section: {
+      marginBottom: 16,
+      padding: 16,
+    },
+    infoRow: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    infoText: {
+      flex: 1,
+      marginLeft: 12,
+    },
+    typesContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    saveButton: {
+      marginTop: 12,
+    },
+  }) as const;

@@ -1,6 +1,6 @@
 /**
  * WCAG AAA Accessibility Constants
- * 
+ *
  * WCAG AAA is the highest level of accessibility conformance,
  * ensuring the app is accessible to the widest range of users.
  */

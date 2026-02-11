@@ -271,8 +271,12 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   }, [user, db, isReady, updatePendingCount]);
 
   /**
-   * Set up AppState listener to sync when app comes to foreground
-   * On web, use visibilitychange API instead
+   * Set up AppState listener to sync when app comes to foreground.
+   * On web, use visibilitychange API instead.
+   *
+   * This also serves as retry-on-foreground: if a previous sync failed
+   * (e.g. network dropped mid-sync), the next foreground event will
+   * re-trigger sync and process any remaining items in the queue.
    */
   useEffect(() => {
     if (!user) return;

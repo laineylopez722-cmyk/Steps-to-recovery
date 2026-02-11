@@ -5,6 +5,7 @@ model: sonnet
 ---
 
 > **Reference Documentation:**
+>
 > - [Accessibility Requirements](../snippets/accessibility-requirements.md) - WCAG AAA compliance patterns
 > - [TypeScript Patterns](../snippets/typescript-patterns.md) - Component type definitions
 

@@ -9,6 +9,7 @@ import type { UserRuntimeTheme } from './types';
  * - confirm table/view name and RLS policy
  * - formalize payload validation (zod)
  * - support ETag/version conflict handling
+ * Remote config integration deferred to Phase 3+.
  */
 export async function fetchRuntimeThemeFromSupabase(): Promise<UserRuntimeTheme | null> {
   try {

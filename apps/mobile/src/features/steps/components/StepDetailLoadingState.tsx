@@ -9,12 +9,15 @@ export function StepDetailLoadingState(): React.ReactElement {
   const styles = useThemedStyles(createStyles);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]} edges={['bottom']}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={['bottom']}
+    >
       <View style={styles.loadingSkeletonContainer}>
         <Card variant="elevated" style={styles.headerCard}>
           <View style={styles.header}>
             <Skeleton width={50} height={50} borderRadius={25} />
-            <View style={[styles.headerContent, { gap: 8 }]}> 
+            <View style={[styles.headerContent, { gap: 8 }]}>
               <Skeleton width="80%" height={20} />
               <Skeleton width="50%" height={14} />
             </View>
@@ -41,34 +44,35 @@ export function StepDetailLoadingState(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  loadingSkeletonContainer: {
-    flex: 1,
-  },
-  headerCard: {
-    marginHorizontal: 16,
-    marginTop: 8,
-    marginBottom: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  headerContent: {
-    flex: 1,
-  },
-  progressSection: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-  descriptionCard: {
-    marginHorizontal: 16,
-    marginBottom: 8,
-    borderColor: ds.colors.borderSubtle,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    loadingSkeletonContainer: {
+      flex: 1,
+    },
+    headerCard: {
+      marginHorizontal: 16,
+      marginTop: 8,
+      marginBottom: 12,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    headerContent: {
+      flex: 1,
+    },
+    progressSection: {
+      paddingTop: 16,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+    },
+    descriptionCard: {
+      marginHorizontal: 16,
+      marginBottom: 8,
+      borderColor: ds.colors.borderSubtle,
+    },
+  }) as const;

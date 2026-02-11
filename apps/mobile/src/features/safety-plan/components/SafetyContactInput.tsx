@@ -92,7 +92,11 @@ export function SafetyContactInput({
   }, [index, onRemove]);
 
   return (
-    <View style={styles.container} accessibilityRole="none" accessibilityLabel={`Contact ${index + 1}`}>
+    <View
+      style={styles.container}
+      accessibilityRole="none"
+      accessibilityLabel={`Contact ${index + 1}`}
+    >
       <View style={styles.header}>
         <View style={styles.fieldsContainer}>
           <Input
@@ -131,11 +135,7 @@ export function SafetyContactInput({
           accessibilityLabel={`Remove contact ${index + 1}`}
           accessibilityRole="button"
         >
-          <MaterialCommunityIcons
-            name="close-circle"
-            size={24}
-            color={ds.semantic.text.muted}
-          />
+          <MaterialCommunityIcons name="close-circle" size={24} color={ds.semantic.text.muted} />
         </Pressable>
       </View>
     </View>

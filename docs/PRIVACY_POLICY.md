@@ -11,6 +11,7 @@
 Steps to Recovery ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect your information when you use our 12-Step Recovery Companion mobile application (the "App").
 
 **Our Core Privacy Promise:**
+
 - Your recovery journey is **private and confidential**
 - All sensitive data is **encrypted on your device** before storage
 - We **cannot read your journal entries, step work, or personal reflections**
@@ -23,6 +24,7 @@ Steps to Recovery ("we," "us," or "our") is committed to protecting your privacy
 ### 1. Account Information
 
 When you create an account, we collect:
+
 - **Email address** (for authentication and account recovery)
 - **Secure authentication tokens** (managed by Supabase Auth)
 - **Account creation date**
@@ -31,27 +33,30 @@ When you create an account, we collect:
 
 All recovery-related content is encrypted on your device using AES-256-CBC encryption **before** being stored or transmitted. We cannot access the decrypted content:
 
-| Data Type | Description | Encryption |
-|-----------|-------------|------------|
-| **Journal Entries** | Your personal reflections and daily writings | Encrypted locally |
-| **Daily Check-ins** | Mood, urges, gratitude, and daily reflections | Encrypted locally |
-| **Step Work** | 12-step worksheets, inventories, and progress | Encrypted locally |
-| **Reading Reflections** | Notes on daily recovery readings | Encrypted locally |
-| **Meeting Notes** | Personal notes about meetings attended | Encrypted locally |
-| **Clean Time Tracker** | Sobriety dates and milestones (dates only, optional) | Stored locally |
+| Data Type               | Description                                          | Encryption        |
+| ----------------------- | ---------------------------------------------------- | ----------------- |
+| **Journal Entries**     | Your personal reflections and daily writings         | Encrypted locally |
+| **Daily Check-ins**     | Mood, urges, gratitude, and daily reflections        | Encrypted locally |
+| **Step Work**           | 12-step worksheets, inventories, and progress        | Encrypted locally |
+| **Reading Reflections** | Notes on daily recovery readings                     | Encrypted locally |
+| **Meeting Notes**       | Personal notes about meetings attended               | Encrypted locally |
+| **Clean Time Tracker**  | Sobriety dates and milestones (dates only, optional) | Stored locally    |
 
 ### 3. Optional Features Data
 
 **Meeting Finder (Optional):**
+
 - Location data (only when you actively search)
 - Meeting preferences (day, time, type)
 - Favorite meetings list (stored locally)
 
 **Sponsor Connections (Optional):**
+
 - Connection codes you generate or enter
 - Shared progress (only what you explicitly choose to share)
 
 **AI Companion (Optional):**
+
 - Conversation history (stored locally on your device)
 - Memory context (anonymized, local only)
 - AI interactions never sent to third parties without consent
@@ -59,11 +64,13 @@ All recovery-related content is encrypted on your device using AES-256-CBC encry
 ### 4. Technical Data
 
 **App Performance:**
+
 - Crash logs and error reports (via Sentry, anonymized)
 - App version and device type (for compatibility)
 - Anonymous usage statistics (only with your explicit consent)
 
 **Sync Information:**
+
 - Sync timestamps (to manage data consistency)
 - Queue status (for offline sync management)
 - Device identifiers (for multi-device sync)
@@ -87,6 +94,7 @@ Sync to Cloud (Encrypted) → Supabase
 ```
 
 **Encryption Details:**
+
 - **Algorithm:** AES-256-CBC
 - **Key Derivation:** PBKDF2 with 100,000 iterations
 - **Authentication:** HMAC-SHA256 (encrypt-then-MAC)
@@ -101,11 +109,11 @@ Sync to Cloud (Encrypted) → Supabase
 
 ### Third-Party Services
 
-| Service | Purpose | Data Shared |
-|---------|---------|-------------|
+| Service      | Purpose                                 | Data Shared                |
+| ------------ | --------------------------------------- | -------------------------- |
 | **Supabase** | Authentication & encrypted cloud backup | Encrypted data only, email |
-| **Sentry** | Error tracking | Anonymized crash logs |
-| **Expo** | App infrastructure | None (build service only) |
+| **Sentry**   | Error tracking                          | Anonymized crash logs      |
+| **Expo**     | App infrastructure                      | None (build service only)  |
 
 **Important:** We do not and will not sell your personal information to third parties.
 
@@ -116,6 +124,7 @@ Sync to Cloud (Encrypted) → Supabase
 ### Right to Access
 
 You can access all your data at any time through the app:
+
 - View all journal entries, check-ins, and step work
 - Review your progress and milestones
 - Access your account information
@@ -123,6 +132,7 @@ You can access all your data at any time through the app:
 ### Right to Export
 
 You can export your data in a portable format:
+
 - **Export Location:** Settings → Privacy → Export My Data
 - **Format:** JSON with all decrypted content
 - **Timeline:** Available instantly
@@ -133,11 +143,13 @@ You can export your data in a portable format:
 You can delete your data at any time:
 
 **Option 1: Delete Specific Content**
+
 - Delete individual journal entries
 - Remove specific check-ins or step work
 - Data is permanently removed from your device and cloud
 
 **Option 2: Delete Account (Complete Data Removal)**
+
 - **Location:** Settings → Privacy → Delete Account
 - **What Happens:**
   1. All local data is wiped from your device
@@ -149,6 +161,7 @@ You can delete your data at any time:
 ### Right to Restrict Processing
 
 You can use the app in offline-only mode:
+
 - Disable cloud sync in Settings
 - All data remains local to your device
 - No data transmitted to our servers
@@ -156,6 +169,7 @@ You can use the app in offline-only mode:
 ### Right to Object
 
 You can opt out of:
+
 - Anonymous analytics collection
 - Error reporting
 - Push notifications
@@ -181,6 +195,7 @@ You can opt out of:
 ### Legal Requirements
 
 We may retain data longer if required by law or to:
+
 - Comply with legal obligations
 - Resolve disputes
 - Enforce our agreements
@@ -202,6 +217,7 @@ We may retain data longer if required by law or to:
 ### For European Union Users (GDPR)
 
 If you are in the EU, you have additional rights:
+
 - **Right to be informed** (this Privacy Policy)
 - **Right of access** (export your data)
 - **Right to rectification** (correct inaccurate data)
@@ -211,6 +227,7 @@ If you are in the EU, you have additional rights:
 - **Right to object** (opt out of analytics)
 
 **Legal Basis for Processing:**
+
 - Contract performance (providing the app service)
 - Legal obligations
 - Your consent (for optional features)
@@ -225,12 +242,14 @@ Email: dpo@stepstorecovery.app
 ### For California Residents (CCPA)
 
 California residents have the following rights:
+
 - **Right to know** what personal information is collected
 - **Right to delete** personal information
 - **Right to opt-out** of sale of personal information (we do not sell data)
 - **Right to non-discrimination** for exercising privacy rights
 
 **Categories of Personal Information Collected:**
+
 - Identifiers (email address)
 - Protected classifications (recovery-related data, encrypted)
 - Commercial information (app usage)
@@ -244,11 +263,13 @@ We do not sell your personal information. We never have and never will.
 ## Push Notifications
 
 We may send you push notifications for:
+
 - Daily check-in reminders (if you enable them)
 - Milestone celebrations
 - Meeting reminders (if configured)
 
 **How to Control:**
+
 - iOS: Settings → Notifications → Steps to Recovery
 - Android: Settings → Apps → Steps to Recovery → Notifications
 - In-App: Settings → Notifications
@@ -265,6 +286,7 @@ We may send you push notifications for:
 - You can use the app without enabling location services
 
 **How to Control:**
+
 - iOS: Settings → Privacy & Security → Location Services → Steps to Recovery
 - Android: Settings → Location → App permissions → Steps to Recovery
 
@@ -273,11 +295,13 @@ We may send you push notifications for:
 ## AI Companion Privacy
 
 **Local-First AI:**
+
 - AI conversations are stored locally on your device
 - No conversation data is sent to third-party AI services without explicit consent
 - AI memory is device-specific and encrypted
 
 **Optional Cloud AI:**
+
 - If enabled, only anonymized messages are processed
 - No personally identifiable information is shared
 - You can disable AI features at any time
@@ -289,6 +313,7 @@ We may send you push notifications for:
 We implement industry-standard security measures:
 
 ### Technical Safeguards
+
 - ✅ AES-256-CBC encryption for all sensitive data
 - ✅ PBKDF2 key derivation (100,000 iterations)
 - ✅ HMAC-SHA256 authentication
@@ -297,6 +322,7 @@ We implement industry-standard security measures:
 - ✅ Row-Level Security (RLS) on all database tables
 
 ### Organizational Safeguards
+
 - ✅ Minimal data collection principle
 - ✅ Regular security audits
 - ✅ No third-party analytics without consent
@@ -304,7 +330,9 @@ We implement industry-standard security measures:
 - ✅ Incident response plan
 
 ### Incident Response
+
 In the unlikely event of a data breach:
+
 1. We will notify affected users within 72 hours
 2. We will provide details of the breach and remediation steps
 3. We will report to authorities as required by law
@@ -314,11 +342,13 @@ In the unlikely event of a data breach:
 ## Changes to This Privacy Policy
 
 We may update this Privacy Policy from time to time. We will notify you of any changes by:
+
 - Posting the new Privacy Policy in the app
 - Updating the "Last Updated" date at the top of this policy
 - Sending a notification for significant changes
 
 **Review History:**
+
 - February 9, 2026: Initial Privacy Policy published
 
 ---
@@ -332,6 +362,7 @@ If you have any questions, concerns, or requests regarding this Privacy Policy o
 **Data Requests:** Please include "Data Request" in the subject line
 
 **Mailing Address:**
+
 ```
 Steps to Recovery Privacy Team
 [Your Business Address]
@@ -349,4 +380,4 @@ You trust us with your most personal thoughts, struggles, and victories. We take
 
 ---
 
-*This Privacy Policy is designed to be transparent and easy to understand. If you have any questions about specific sections, please don't hesitate to contact us.*
+_This Privacy Policy is designed to be transparent and easy to understand. If you have any questions about specific sections, please don't hesitate to contact us._

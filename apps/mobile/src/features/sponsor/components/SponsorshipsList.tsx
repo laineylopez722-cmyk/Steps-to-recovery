@@ -91,7 +91,11 @@ export function SponsorshipsList({
                   />
                   {connection.status === 'pending' && (
                     <View style={[styles.statusBadge, styles.pendingBadge]}>
-                      <MaterialCommunityIcons name="clock-outline" size={10} color={ds.semantic.text.onDark} />
+                      <MaterialCommunityIcons
+                        name="clock-outline"
+                        size={10}
+                        color={ds.semantic.text.onDark}
+                      />
                     </View>
                   )}
                   {connection.unreadCount && connection.unreadCount > 0 && (
@@ -131,80 +135,81 @@ export function SponsorshipsList({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    gap: spacing[2],
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: spacing[6],
-  },
-  emptyText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginTop: spacing[2],
-    textAlign: 'center',
-  },
-  card: {
-    padding: spacing[3],
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[2],
-  },
-  iconContainer: {
-    position: 'relative',
-  },
-  statusBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pendingBadge: {
-    backgroundColor: darkAccent.warning,
-  },
-  unreadBadge: {
-    position: 'absolute',
-    bottom: -2,
-    right: -2,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: darkAccent.danger,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 4,
-  },
-  unreadText: {
-    ...typography.caption,
-    color: ds.semantic.text.onDark,
-    fontSize: 10,
-    fontWeight: '700',
-  },
-  info: {
-    flex: 1,
-  },
-  name: {
-    ...typography.h4,
-    color: darkAccent.text,
-    marginBottom: 2,
-  },
-  role: {
-    ...typography.caption,
-    color: darkAccent.primary,
-    textTransform: 'uppercase',
-    fontWeight: '600',
-    marginBottom: 2,
-  },
-  lastContact: {
-    ...typography.caption,
-    color: darkAccent.textSubtle,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      gap: spacing[2],
+    },
+    emptyContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: spacing[6],
+    },
+    emptyText: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      marginTop: spacing[2],
+      textAlign: 'center',
+    },
+    card: {
+      padding: spacing[3],
+    },
+    cardContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[2],
+    },
+    iconContainer: {
+      position: 'relative',
+    },
+    statusBadge: {
+      position: 'absolute',
+      top: -2,
+      right: -2,
+      width: 16,
+      height: 16,
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    pendingBadge: {
+      backgroundColor: darkAccent.warning,
+    },
+    unreadBadge: {
+      position: 'absolute',
+      bottom: -2,
+      right: -2,
+      minWidth: 18,
+      height: 18,
+      borderRadius: 9,
+      backgroundColor: darkAccent.danger,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 4,
+    },
+    unreadText: {
+      ...typography.caption,
+      color: ds.semantic.text.onDark,
+      fontSize: 10,
+      fontWeight: '700',
+    },
+    info: {
+      flex: 1,
+    },
+    name: {
+      ...typography.h4,
+      color: darkAccent.text,
+      marginBottom: 2,
+    },
+    role: {
+      ...typography.caption,
+      color: darkAccent.primary,
+      textTransform: 'uppercase',
+      fontWeight: '600',
+      marginBottom: 2,
+    },
+    lastContact: {
+      ...typography.caption,
+      color: darkAccent.textSubtle,
+    },
+  }) as const;

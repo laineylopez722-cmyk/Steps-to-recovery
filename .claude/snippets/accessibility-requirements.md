@@ -23,7 +23,7 @@
 ```typescript
 const styles = StyleSheet.create({
   button: {
-    minHeight: 48,  // Minimum 48x48dp for all interactive elements
+    minHeight: 48, // Minimum 48x48dp for all interactive elements
     minWidth: 48,
     paddingHorizontal: 16,
     paddingVertical: 12,

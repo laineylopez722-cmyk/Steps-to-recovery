@@ -1,9 +1,9 @@
 /**
  * DailyCheckInCard Component - Material Design 3
- * 
+ *
  * Two-section layout (morning | evening) with progress indicators.
  * States: Incomplete → One done → Both done.
- * 
+ *
  * Features:
  * - 160dp height card
  * - Two-section layout (morning | evening)
@@ -31,7 +31,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';
-import { md3ElevationLight, md3ElevationDark, md3Shape, md3Motion, md3Typography } from '../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  md3Shape,
+  md3Motion,
+  md3Typography,
+} from '../tokens/md3-elevation';
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -87,27 +93,25 @@ function CheckInSectionComponent({
 }: CheckInSectionProps): React.ReactElement {
   const iconName = type === 'morning' ? 'sunrise' : 'sunset';
   const scaleValue = useSharedValue(1);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scaleValue.value }],
   }));
-  
+
   const handlePressIn = () => {
     scaleValue.value = withTiming(0.95, { duration: 100 });
   };
-  
+
   const handlePressOut = () => {
     scaleValue.value = withSpring(1, md3Motion.spring.quick);
   };
-  
+
   return (
     <AnimatedTouchable
       style={[
         styles.section,
         {
-          backgroundColor: isComplete 
-            ? colors.primaryContainer 
-            : colors.surfaceContainerHigh,
+          backgroundColor: isComplete ? colors.primaryContainer : colors.surfaceContainerHigh,
           borderWidth: isComplete ? 0 : 1,
           borderColor: isComplete ? 'transparent' : colors.outlineVariant,
         },
@@ -123,50 +127,53 @@ function CheckInSectionComponent({
       accessibilityState={{ selected: isComplete }}
     >
       <View style={styles.sectionHeader}>
-        <View style={[
-          styles.iconContainer,
-          {
-            backgroundColor: isComplete 
-              ? colors.primary 
-              : colors.surfaceContainerHighest,
-          },
-        ]}>
-          <Feather 
-            name={iconName} 
-            size={16} 
-            color={isComplete ? colors.onPrimary : colors.onSurfaceVariant} 
+        <View
+          style={[
+            styles.iconContainer,
+            {
+              backgroundColor: isComplete ? colors.primary : colors.surfaceContainerHighest,
+            },
+          ]}
+        >
+          <Feather
+            name={iconName}
+            size={16}
+            color={isComplete ? colors.onPrimary : colors.onSurfaceVariant}
           />
         </View>
         {isComplete && (
-          <View style={[
-            styles.checkmark,
-            { backgroundColor: colors.primary },
-          ]}>
+          <View style={[styles.checkmark, { backgroundColor: colors.primary }]}>
             <Feather name="check" size={12} color={colors.onPrimary} />
           </View>
         )}
       </View>
-      
-      <Text style={[
-        styles.sectionLabel,
-        { color: isComplete ? colors.onPrimaryContainer : colors.onSurfaceVariant },
-      ]}>
+
+      <Text
+        style={[
+          styles.sectionLabel,
+          { color: isComplete ? colors.onPrimaryContainer : colors.onSurfaceVariant },
+        ]}
+      >
         {label}
       </Text>
-      
+
       {/* Progress indicator */}
       <View style={styles.progressContainer}>
-        <View style={[
-          styles.progressTrack,
-          { backgroundColor: isDark ? colors.surfaceContainerHighest : colors.outlineVariant },
-        ]}>
-          <View style={[
-            styles.progressFill,
-            {
-              backgroundColor: isComplete ? colors.primary : colors.outline,
-              width: isComplete ? '100%' : '0%',
-            },
-          ]} />
+        <View
+          style={[
+            styles.progressTrack,
+            { backgroundColor: isDark ? colors.surfaceContainerHighest : colors.outlineVariant },
+          ]}
+        >
+          <View
+            style={[
+              styles.progressFill,
+              {
+                backgroundColor: isComplete ? colors.primary : colors.outline,
+                width: isComplete ? '100%' : '0%',
+              },
+            ]}
+          />
         </View>
       </View>
     </AnimatedTouchable>
@@ -190,40 +197,36 @@ export function DailyCheckInCard({
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
-  
+
   const { morning, evening } = state;
   const completedCount = (morning ? 1 : 0) + (evening ? 1 : 0);
   const isFullyComplete = completedCount === 2;
-  
+
   // Animation values
   const cardScale = useSharedValue(0.95);
   const cardOpacity = useSharedValue(0);
-  
+
   useEffect(() => {
     cardScale.value = withSpring(1, md3Motion.spring.gentle);
     cardOpacity.value = withTiming(1, { duration: 400 });
   }, []);
-  
+
   const cardAnimatedStyle = useAnimatedStyle(() => ({
     opacity: cardOpacity.value,
     transform: [{ scale: cardScale.value }],
   }));
-  
+
   // Determine card background based on completion
-  const cardBackground = isFullyComplete 
-    ? colors.primaryContainer 
-    : colors.surfaceContainerLow;
-  
+  const cardBackground = isFullyComplete ? colors.primaryContainer : colors.surfaceContainerLow;
+
   // CTA badge text
-  const ctaText = completedCount === 0 
-    ? 'Complete today' 
-    : completedCount === 1 
-      ? 'One more to go' 
-      : 'All done!';
-  
-  const a11yLabel = accessibilityLabel || 
+  const ctaText =
+    completedCount === 0 ? 'Complete today' : completedCount === 1 ? 'One more to go' : 'All done!';
+
+  const a11yLabel =
+    accessibilityLabel ||
     `Daily check-in. ${morning ? 'Morning complete.' : 'Morning pending.'} ${evening ? 'Evening complete.' : 'Evening pending.'}`;
-  
+
   return (
     <Animated.View
       style={[
@@ -241,48 +244,48 @@ export function DailyCheckInCard({
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <View style={[
-            styles.headerIcon,
-            { backgroundColor: isFullyComplete ? colors.primary : colors.secondaryContainer },
-          ]}>
-            <Feather 
-              name="check-circle" 
-              size={18} 
-              color={isFullyComplete ? colors.onPrimary : colors.onSecondaryContainer} 
+          <View
+            style={[
+              styles.headerIcon,
+              { backgroundColor: isFullyComplete ? colors.primary : colors.secondaryContainer },
+            ]}
+          >
+            <Feather
+              name="check-circle"
+              size={18}
+              color={isFullyComplete ? colors.onPrimary : colors.onSecondaryContainer}
             />
           </View>
           <View>
-            <Text style={[styles.headerTitle, { color: colors.onSurface }]}>
-              Daily Check-In
-            </Text>
+            <Text style={[styles.headerTitle, { color: colors.onSurface }]}>Daily Check-In</Text>
             <Text style={[styles.headerSubtitle, { color: colors.onSurfaceVariant }]}>
               {completedCount}/2 completed
             </Text>
           </View>
         </View>
-        
+
         {/* CTA Badge */}
-        <View style={[
-          styles.ctaBadge,
-          {
-            backgroundColor: isFullyComplete 
-              ? colors.primary 
-              : colors.secondaryContainer,
-          },
-        ]}>
-          <Text style={[
-            styles.ctaText,
+        <View
+          style={[
+            styles.ctaBadge,
             {
-              color: isFullyComplete 
-                ? colors.onPrimary 
-                : colors.onSecondaryContainer,
+              backgroundColor: isFullyComplete ? colors.primary : colors.secondaryContainer,
             },
-          ]}>
+          ]}
+        >
+          <Text
+            style={[
+              styles.ctaText,
+              {
+                color: isFullyComplete ? colors.onPrimary : colors.onSecondaryContainer,
+              },
+            ]}
+          >
             {ctaText}
           </Text>
         </View>
       </View>
-      
+
       {/* Sections */}
       <View style={styles.sectionsContainer}>
         <CheckInSectionComponent
@@ -293,9 +296,9 @@ export function DailyCheckInCard({
           colors={colors}
           isDark={isDark}
         />
-        
+
         <View style={[styles.divider, { backgroundColor: colors.outlineVariant }]} />
-        
+
         <CheckInSectionComponent
           type="evening"
           isComplete={evening}
@@ -305,20 +308,24 @@ export function DailyCheckInCard({
           isDark={isDark}
         />
       </View>
-      
+
       {/* Overall progress bar */}
       <View style={styles.overallProgressContainer}>
-        <View style={[
-          styles.overallProgressTrack,
-          { backgroundColor: isDark ? colors.surfaceContainerHighest : colors.outlineVariant },
-        ]}>
-          <Animated.View style={[
-            styles.overallProgressFill,
-            {
-              backgroundColor: isFullyComplete ? colors.primary : colors.secondary,
-              width: `${(completedCount / 2) * 100}%`,
-            },
-          ]} />
+        <View
+          style={[
+            styles.overallProgressTrack,
+            { backgroundColor: isDark ? colors.surfaceContainerHighest : colors.outlineVariant },
+          ]}
+        >
+          <Animated.View
+            style={[
+              styles.overallProgressFill,
+              {
+                backgroundColor: isFullyComplete ? colors.primary : colors.secondary,
+                width: `${(completedCount / 2) * 100}%`,
+              },
+            ]}
+          />
         </View>
       </View>
     </Animated.View>

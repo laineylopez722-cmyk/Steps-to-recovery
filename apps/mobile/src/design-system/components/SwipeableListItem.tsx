@@ -225,7 +225,9 @@ export function SwipeableListItem({
         >
           {action.icon}
           {action.label && (
-            <Text style={[styles.actionLabel, { color: ds.semantic.text.onDark }]}>{action.label}</Text>
+            <Text style={[styles.actionLabel, { color: ds.semantic.text.onDark }]}>
+              {action.label}
+            </Text>
           )}
         </View>
       </Animated.View>

@@ -41,21 +41,21 @@ Simply describe what you want to build, fix, or improve. The **Swarm Coordinator
 
 ### Primary Agent (Always Start Here)
 
-| Agent | Description | When to Use |
-|-------|-------------|-------------|
+| Agent                 | Description                              | When to Use      |
+| --------------------- | ---------------------------------------- | ---------------- |
 | **swarm-coordinator** | Meta-orchestrator, routes to specialists | **ALL requests** |
 
 ### Specialized Agents (Auto-Selected)
 
-| Agent | Specialty | Auto-Triggered By |
-|-------|-----------|-------------------|
-| **security-auditor** | Encryption, RLS, key storage | Data changes, auth |
-| **database-architect** | Schema, migrations, RLS | New tables/columns |
-| **feature-developer** | Components, hooks, screens | Feature implementation |
-| **testing-specialist** | Tests, coverage, mocks | Post-implementation |
-| **performance-optimizer** | Cold start, rendering, bundles | Performance issues |
-| **accessibility-validator** | WCAG AAA, screen readers | UI components |
-| **documentation-agent** | Docs, comments, guides | Documentation needs |
+| Agent                       | Specialty                      | Auto-Triggered By      |
+| --------------------------- | ------------------------------ | ---------------------- |
+| **security-auditor**        | Encryption, RLS, key storage   | Data changes, auth     |
+| **database-architect**      | Schema, migrations, RLS        | New tables/columns     |
+| **feature-developer**       | Components, hooks, screens     | Feature implementation |
+| **testing-specialist**      | Tests, coverage, mocks         | Post-implementation    |
+| **performance-optimizer**   | Cold start, rendering, bundles | Performance issues     |
+| **accessibility-validator** | WCAG AAA, screen readers       | UI components          |
+| **documentation-agent**     | Docs, comments, guides         | Documentation needs    |
 
 ---
 
@@ -113,12 +113,12 @@ Complete ✅ (or route to fixes)
 
 Every swarm execution automatically enforces:
 
-| Gate | Requirement | Enforced By |
-|------|-------------|-------------|
-| **Type Safety** | `npx tsc --noEmit` = 0 errors | All agents |
-| **Security** | Encryption, RLS, SecureStore | Security Auditor |
-| **Tests** | Coverage targets met | Testing Specialist |
-| **Accessibility** | WCAG AAA compliance | Accessibility Validator |
+| Gate              | Requirement                   | Enforced By             |
+| ----------------- | ----------------------------- | ----------------------- |
+| **Type Safety**   | `npx tsc --noEmit` = 0 errors | All agents              |
+| **Security**      | Encryption, RLS, SecureStore  | Security Auditor        |
+| **Tests**         | Coverage targets met          | Testing Specialist      |
+| **Accessibility** | WCAG AAA compliance           | Accessibility Validator |
 
 ---
 
@@ -129,6 +129,7 @@ Every swarm execution automatically enforces:
 ```
 "I need a table for storing user affirmations"
 ```
+
 Agents: Database Architect → Security Auditor → Feature Developer
 
 ### Build a Screen
@@ -136,6 +137,7 @@ Agents: Database Architect → Security Auditor → Feature Developer
 ```
 "Create a screen for viewing achievement history"
 ```
+
 Agents: Feature Developer → Accessibility Validator → Testing Specialist
 
 ### Fix a Bug
@@ -143,6 +145,7 @@ Agents: Feature Developer → Accessibility Validator → Testing Specialist
 ```
 "Fix the sync queue not processing deletes"
 ```
+
 Agents: Feature Developer → Testing Specialist → Security Auditor
 
 ### Optimize Performance
@@ -150,6 +153,7 @@ Agents: Feature Developer → Testing Specialist → Security Auditor
 ```
 "The app is slow to start, optimize cold start"
 ```
+
 Agents: Performance Optimizer → Testing Specialist
 
 ### Add Tests
@@ -157,6 +161,7 @@ Agents: Performance Optimizer → Testing Specialist
 ```
 "Add tests for the daily check-in feature"
 ```
+
 Agents: Testing Specialist
 
 ### Security Audit
@@ -164,6 +169,7 @@ Agents: Testing Specialist
 ```
 "Audit all encryption implementations"
 ```
+
 Agents: Security Auditor
 
 ---
@@ -188,14 +194,14 @@ Agents: Security Auditor
 
 ## Expected Timelines
 
-| Task Type | Typical Duration | Agents Involved |
-|-----------|-----------------|-----------------|
-| Simple bug fix | 1-2 hours | 1-2 |
-| New component | 2-4 hours | 2-3 |
-| New feature | 1-3 days | 3-5 |
-| Complex feature | 3-5 days | 4-6 |
-| Security audit | 2-4 hours | 1-2 |
-| Performance optimization | 1-2 days | 1-2 |
+| Task Type                | Typical Duration | Agents Involved |
+| ------------------------ | ---------------- | --------------- |
+| Simple bug fix           | 1-2 hours        | 1-2             |
+| New component            | 2-4 hours        | 2-3             |
+| New feature              | 1-3 days         | 3-5             |
+| Complex feature          | 3-5 days         | 4-6             |
+| Security audit           | 2-4 hours        | 1-2             |
+| Performance optimization | 1-2 days         | 1-2             |
 
 ---
 
@@ -237,6 +243,7 @@ The Swarm Coordinator will provide:
 ## File Locations
 
 ### Agent Definitions
+
 ```
 .claude/agents/
 ├── swarm-coordinator.md      # Primary orchestrator
@@ -249,6 +256,7 @@ The Swarm Coordinator will provide:
 ```
 
 ### Planning Documents
+
 ```
 .claude/
 ├── AGENT-SWARM-PLAN.md       # Complete swarm plan

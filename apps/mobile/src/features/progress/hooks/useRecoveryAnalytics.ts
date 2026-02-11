@@ -16,6 +16,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
+import { STEP_PROMPTS } from '@recovery/shared';
 
 export interface MoodDataPoint {
   date: string;
@@ -66,21 +67,10 @@ export interface RecoveryAnalytics {
   error: string | null;
 }
 
-// Total questions per step (simplified for Step 1, placeholders for 2-12)
-const STEP_QUESTIONS: Record<number, number> = {
-  1: 15,
-  2: 12,
-  3: 10,
-  4: 20,
-  5: 15,
-  6: 12,
-  7: 8,
-  8: 15,
-  9: 12,
-  10: 10,
-  11: 12,
-  12: 15,
-};
+/** Canonical question counts per step derived from shared step prompts. */
+const STEP_TOTAL_QUESTIONS: Record<number, number> = Object.fromEntries(
+  STEP_PROMPTS.map((step) => [step.step, step.prompts.length]),
+);
 
 export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
   const { db, isReady } = useDatabase();
@@ -319,35 +309,29 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
             10
           : 0;
 
-      // Get step work progress
+      // Get step work progress (count completed questions per step)
       const stepWork = await db.getAllAsync<{
         step_number: number;
-        question_number: number;
-        is_complete: number;
-      }>(`SELECT step_number, question_number, is_complete FROM step_work WHERE user_id = ?`, [
-        userId,
-      ]);
+        answered: number;
+      }>(
+        `SELECT step_number, SUM(CASE WHEN is_complete = 1 THEN 1 ELSE 0 END) as answered
+         FROM step_work WHERE user_id = ? GROUP BY step_number`,
+        [userId],
+      );
 
-      const stepProgressMap = new Map<number, { answered: number; complete: boolean }>();
-      for (const work of stepWork) {
-        if (!stepProgressMap.has(work.step_number)) {
-          stepProgressMap.set(work.step_number, { answered: 0, complete: false });
-        }
-        const progress = stepProgressMap.get(work.step_number)!;
-        progress.answered++;
-        if (work.is_complete) {
-          progress.complete = true;
-        }
-      }
+      const answeredMap = new Map<number, number>(
+        stepWork.map((row) => [row.step_number, row.answered || 0]),
+      );
 
       const stepProgress: StepProgress[] = [];
       for (let step = 1; step <= 12; step++) {
-        const progress = stepProgressMap.get(step);
+        const totalQuestions = STEP_TOTAL_QUESTIONS[step] || 0;
+        const answeredQuestions = answeredMap.get(step) || 0;
         stepProgress.push({
           stepNumber: step,
-          totalQuestions: STEP_QUESTIONS[step] || 10,
-          answeredQuestions: progress?.answered || 0,
-          isComplete: progress?.complete || false,
+          totalQuestions,
+          answeredQuestions,
+          isComplete: totalQuestions > 0 && answeredQuestions >= totalQuestions,
         });
       }
 

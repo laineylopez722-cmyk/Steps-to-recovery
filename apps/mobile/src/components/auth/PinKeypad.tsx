@@ -85,7 +85,9 @@ export const PinKeypadComponent = memo(function PinKeypadComponent({
                 }
                 accessibilityRole="button"
                 accessibilityLabel={isBackspace ? 'Delete recent digit' : `Enter ${digit}`}
-                accessibilityHint={isBackspace ? 'Removes the last entered digit' : `Adds ${digit} to your PIN`}
+                accessibilityHint={
+                  isBackspace ? 'Removes the last entered digit' : `Adds ${digit} to your PIN`
+                }
                 accessibilityState={{ disabled: disabled === true }}
                 // Additional hit slop for motor accessibility
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}

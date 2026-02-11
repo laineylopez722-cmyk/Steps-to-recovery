@@ -16,6 +16,7 @@
 **File**: `apps/mobile/eas.json`
 
 **Change**:
+
 ```json
 "base": {
   "node": "20.19.4",  // Changed from "20.18.0"
@@ -34,6 +35,7 @@
 **File**: `apps/mobile/scripts/fix-datetimepicker-imports.js`
 
 **Change**:
+
 ```javascript
 // Before (ES6 - caused error)
 import { existsSync, readFileSync, writeFileSync } from 'fs';
@@ -59,6 +61,7 @@ const { join } = require('path');
 **Changes**:
 
 1. Added platform type imports:
+
 ```typescript
 import type {
   // ... existing imports
@@ -71,6 +74,7 @@ import type {
 ```
 
 2. Updated Platform export as union:
+
 ```typescript
 // Before (incorrect)
 export const Platform: PlatformStatic;
@@ -87,6 +91,7 @@ export const Platform:
 **Impact**: All 111 `Property 'OS' does not exist on type 'PlatformStatic'` errors eliminated.
 
 **Files Fixed** (examples):
+
 - `apps/mobile/src/adapters/secureStorage/index.ts`
 - `apps/mobile/src/adapters/storage/index.ts`
 - `apps/mobile/src/components/ui/Button.tsx`
@@ -103,6 +108,7 @@ export const Platform:
 **File**: `apps/mobile/tsconfig.json`
 
 **Change**:
+
 ```json
 "paths": {
   "@/*": ["./src/*"],
@@ -131,6 +137,7 @@ export const Platform:
 **File**: `packages/shared/jitai/engine.ts`
 
 **Change**:
+
 ```typescript
 // Removed this line:
 // import { unknown } from 'zod/v4/mini';
@@ -147,6 +154,7 @@ export const Platform:
 **Problem**: AI companion memories (people, triggers, struggles, victories) stored in **plaintext** in local SQLite database.
 
 **Security Risk**: HIGH
+
 - Extracted memories contain highly sensitive personal information
 - Examples: "my sponsor John", "stress at work makes me crave", "can't stop thinking about using"
 - No encryption = privacy violation if device is compromised
@@ -156,11 +164,13 @@ export const Platform:
 **Changes**:
 
 #### 1. Added encryption imports:
+
 ```typescript
 import { encryptContent, decryptContent } from '../utils/encryption';
 ```
 
 #### 2. Updated schema (lines 108-120):
+
 ```typescript
 CREATE TABLE IF NOT EXISTS memories (
   ...
@@ -171,6 +181,7 @@ CREATE TABLE IF NOT EXISTS memories (
 ```
 
 #### 3. Updated `MemoryRow` interface:
+
 ```typescript
 interface MemoryRow {
   ...
@@ -181,6 +192,7 @@ interface MemoryRow {
 ```
 
 #### 4. Updated `addMemories` function:
+
 ```typescript
 // Encrypt before storing
 const encryptedContent = await encryptContent(memory.content);
@@ -193,6 +205,7 @@ await db.runAsync(
 ```
 
 #### 5. Updated `updateMemory` function:
+
 ```typescript
 // Encrypt updates
 if (updates.content !== undefined) {
@@ -203,6 +216,7 @@ if (updates.content !== undefined) {
 ```
 
 #### 6. Updated `rowToMemory` helper:
+
 ```typescript
 // Changed from sync to async
 async function rowToMemory(row: MemoryRow): Promise<Memory> {
@@ -215,12 +229,14 @@ async function rowToMemory(row: MemoryRow): Promise<Memory> {
 ```
 
 #### 7. Updated all query functions:
+
 ```typescript
 // All functions now use Promise.all for decryption
 return Promise.all(rows.map(rowToMemory));
 ```
 
 **Affected functions**:
+
 - `getAllMemories()`
 - `getMemoriesByType()`
 - `getRecentMemories()`
@@ -231,15 +247,19 @@ return Promise.all(rows.map(rowToMemory));
 **Problem**: SQLite `LIKE` queries don't work on encrypted data.
 
 **Solution**: Fetch all, decrypt, then filter in memory:
+
 ```typescript
 const rows = await db.getAllAsync<MemoryRow>('SELECT * FROM memories WHERE user_id = ?', [userId]);
 const memories = await Promise.all(rows.map(rowToMemory));
 
 // Filter decrypted content
-return memories.filter(
-  (m) => m.content.toLowerCase().includes(query.toLowerCase()) ||
-         (m.context && m.context.toLowerCase().includes(query.toLowerCase()))
-).slice(0, 20);
+return memories
+  .filter(
+    (m) =>
+      m.content.toLowerCase().includes(query.toLowerCase()) ||
+      (m.context && m.context.toLowerCase().includes(query.toLowerCase())),
+  )
+  .slice(0, 20);
 ```
 
 **Performance Note**: For >1000 memories, consider Full-Text Search (FTS) with encrypted index (future optimization).
@@ -268,6 +288,7 @@ cd apps/mobile && npx tsc --noEmit
 ### Security Audit ✅
 
 **Encryption Coverage** (now complete):
+
 - ✅ Journal entries (`encrypted_body`)
 - ✅ Daily check-ins (`encrypted_*`)
 - ✅ Step work (`encrypted_*`)
@@ -275,6 +296,7 @@ cd apps/mobile && npx tsc --noEmit
 - ✅ **Memory store** (`encrypted_content`, `encrypted_context`) - NEW
 
 **Key Storage** (secure):
+
 - All encryption keys stored in SecureStore (Keychain/Keystore on mobile, encrypted IndexedDB on web)
 - No keys in AsyncStorage, SQLite, or Supabase
 - Keys never logged or exposed
@@ -283,12 +305,12 @@ cd apps/mobile && npx tsc --noEmit
 
 ## Performance Impact
 
-| Component | Operation | Before | After | Delta |
-|-----------|-----------|--------|-------|-------|
-| **TypeScript** | Compile time | ~45s | ~38s | -7s (fewer errors) |
-| **Memory Store** | Add memory | ~1ms | ~5ms | +4ms (encryption) |
-| **Memory Store** | Get 10 memories | ~10ms | ~50ms | +40ms (decryption) |
-| **Memory Store** | Search | ~5ms | ~100ms | +95ms (decrypt all) |
+| Component        | Operation       | Before | After  | Delta               |
+| ---------------- | --------------- | ------ | ------ | ------------------- |
+| **TypeScript**   | Compile time    | ~45s   | ~38s   | -7s (fewer errors)  |
+| **Memory Store** | Add memory      | ~1ms   | ~5ms   | +4ms (encryption)   |
+| **Memory Store** | Get 10 memories | ~10ms  | ~50ms  | +40ms (decryption)  |
+| **Memory Store** | Search          | ~5ms   | ~100ms | +95ms (decrypt all) |
 
 **Overall**: Minimal user-facing impact. Memory operations are not performance-critical (background tasks).
 
@@ -297,12 +319,15 @@ cd apps/mobile && npx tsc --noEmit
 ## Migration Required
 
 ### For New Installs
+
 ✅ No action required - schema automatically uses encrypted columns.
 
 ### For Existing Users
+
 ⚠️ **Migration needed** - see `MIGRATION-MEMORY-ENCRYPTION.md` for detailed migration script.
 
 **Summary**:
+
 1. Check if old `content` column exists
 2. Add new `encrypted_content` and `encrypted_context` columns
 3. Encrypt all existing plaintext memories
@@ -313,20 +338,25 @@ cd apps/mobile && npx tsc --noEmit
 ## Files Modified
 
 ### Build Configuration
+
 - `apps/mobile/eas.json` - Node version updated
 - `apps/mobile/scripts/fix-datetimepicker-imports.js` - ES6 → CommonJS
 
 ### TypeScript Types
+
 - `apps/mobile/react-19-types.d.ts` - Platform.OS union fix
 - `apps/mobile/tsconfig.json` - Path alias specificity
 
 ### Code Cleanup
+
 - `packages/shared/jitai/engine.ts` - Removed unused import
 
 ### Security (Encryption)
+
 - `apps/mobile/src/hooks/useMemoryStore.ts` - Full encryption implementation
 
 ### Documentation (New Files)
+
 - `MIGRATION-MEMORY-ENCRYPTION.md` - Detailed migration guide
 - `FIX-SUMMARY-2026-02-09.md` - This file
 
@@ -349,6 +379,7 @@ cd apps/mobile && npx tsc --noEmit
 ## Next Steps
 
 ### Immediate (Priority 1)
+
 1. ✅ **COMPLETED**: All critical fixes applied
 2. ⏳ **Run encryption tests** (after fixing jest-expo ESM issue):
    ```bash
@@ -357,6 +388,7 @@ cd apps/mobile && npx tsc --noEmit
 3. ⏳ **Security audit**: Invoke security-auditor agent for comprehensive review
 
 ### Short-term (Priority 2)
+
 1. **Implement migration script** for existing users (see `MIGRATION-MEMORY-ENCRYPTION.md`)
 2. **Test EAS build** to verify Node version fix:
    ```bash
@@ -368,6 +400,7 @@ cd apps/mobile && npx tsc --noEmit
    - Search memory → verify filtering works
 
 ### Long-term (Priority 3)
+
 1. **Optimize memory search**: Implement Full-Text Search (FTS) with encrypted index
 2. **Add memory compression**: Compress before encrypting (60% storage reduction)
 3. **Cloud sync**: Double encryption for Supabase (local key + cloud key)
@@ -379,6 +412,7 @@ cd apps/mobile && npx tsc --noEmit
 If critical issues arise:
 
 1. **Revert files** (use git):
+
    ```bash
    git checkout HEAD~1 apps/mobile/src/hooks/useMemoryStore.ts
    git checkout HEAD~1 apps/mobile/eas.json
@@ -395,6 +429,7 @@ If critical issues arise:
 ## Related Issues
 
 ### Fixed
+
 - ✅ EAS build failure (Node version mismatch)
 - ✅ Postinstall script ESM error
 - ✅ Platform.OS type errors (111 errors)
@@ -402,6 +437,7 @@ If critical issues arise:
 - ✅ Memory store plaintext storage (SECURITY)
 
 ### Outstanding (Not Part of This Fix)
+
 - ⏳ Jest ESM module resolution (non-blocking)
 - ⏳ Other TypeScript warnings (non-critical)
 
@@ -411,11 +447,13 @@ If critical issues arise:
 
 **WCAG AAA**: N/A (backend changes only)
 **OWASP**: ✅ Compliant
+
 - All sensitive data encrypted at rest
 - Keys stored in secure storage
 - No plaintext in logs or database
 
 **Privacy**: ✅ Enhanced
+
 - User memories now fully encrypted
 - Even local device access can't read plaintext
 - Encryption keys derived from user session
@@ -431,6 +469,7 @@ If critical issues arise:
 ---
 
 **Commit Message**:
+
 ```
 fix(mobile): critical fixes - EAS build, TypeScript errors, memory encryption
 

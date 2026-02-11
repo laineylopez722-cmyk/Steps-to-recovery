@@ -134,8 +134,16 @@ function ToastItem({
     { icon: IconName; color: string; gradient: readonly string[] }
   > = {
     success: { icon: 'check-circle', color: darkAccent.success, gradient: gradients.success },
-    error: { icon: 'error', color: darkAccent.error, gradient: [ds.semantic.intent.alert.solid, darkAccent.error] },
-    warning: { icon: 'warning', color: darkAccent.warning, gradient: [ds.colors.warning, darkAccent.warning] },
+    error: {
+      icon: 'error',
+      color: darkAccent.error,
+      gradient: [ds.semantic.intent.alert.solid, darkAccent.error],
+    },
+    warning: {
+      icon: 'warning',
+      color: darkAccent.warning,
+      gradient: [ds.colors.warning, darkAccent.warning],
+    },
     info: { icon: 'info', color: darkAccent.primary, gradient: gradients.primary },
   };
 
@@ -195,55 +203,56 @@ export function useToastHelpers() {
   };
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 9999,
-    pointerEvents: 'box-none',
-  },
-  toast: {
-    position: 'absolute',
-    left: spacing[3],
-    right: spacing[3],
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: darkAccent.surface,
-    borderRadius: radius.lg,
-    padding: spacing[2.5],
-    shadowColor: ds.colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 10,
-    overflow: 'hidden',
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing[2],
-  },
-  content: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  message: {
-    ...typography.body,
-    color: darkAccent.text,
-    flex: 1,
-  },
-  action: {
-    marginLeft: spacing[2],
-  },
-  actionText: {
-    ...typography.bodySmall,
-    fontWeight: '700',
-  },
-  closeButton: {
-    padding: spacing[1],
-    marginLeft: spacing[1],
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 9999,
+      pointerEvents: 'box-none',
+    },
+    toast: {
+      position: 'absolute',
+      left: spacing[3],
+      right: spacing[3],
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: darkAccent.surface,
+      borderRadius: radius.lg,
+      padding: spacing[2.5],
+      shadowColor: ds.colors.shadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 12,
+      elevation: 10,
+      overflow: 'hidden',
+    },
+    iconContainer: {
+      width: 36,
+      height: 36,
+      borderRadius: radius.md,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: spacing[2],
+    },
+    content: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    message: {
+      ...typography.body,
+      color: darkAccent.text,
+      flex: 1,
+    },
+    action: {
+      marginLeft: spacing[2],
+    },
+    actionText: {
+      ...typography.bodySmall,
+      fontWeight: '700',
+    },
+    closeButton: {
+      padding: spacing[1],
+      marginLeft: spacing[1],
+    },
+  });

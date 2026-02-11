@@ -22,6 +22,7 @@ interface ReadingStore {
   loadTodayReading: () => Promise<void>;
   loadReflections: () => Promise<void>;
   saveReflection: (reflection: string) => Promise<DailyReadingReflection>;
+  deleteReflection: (readingDate: string) => Promise<void>;
   markAsRead: (readingId: string) => Promise<void>;
   getReadingForDate: (date: Date) => Promise<DailyReading | null>;
   getReflectionForDate: (date: Date) => Promise<DailyReadingReflection | null>;
@@ -135,6 +136,29 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
       logger.error('Failed to save reflection', error);
       set({ error: error instanceof Error ? error.message : 'Failed to save reflection' });
       throw error;
+    }
+  },
+
+  deleteReflection: async (readingDate: string): Promise<void> => {
+    try {
+      // Remove matching reflection from the array
+      const { reflections, todayReflection } = get();
+      const updatedReflections = reflections.filter((r) => r.readingDate !== readingDate);
+      set({ reflections: updatedReflections });
+
+      // Clear todayReflection if it matches
+      if (todayReflection && todayReflection.readingDate === readingDate) {
+        set({ todayReflection: null });
+      }
+
+      // Recalculate streak
+      const newStreak = await get().calculateStreak();
+      set({ readingStreak: newStreak });
+
+      logger.info('Reflection deleted from store', { readingDate });
+    } catch (error) {
+      logger.error('Failed to delete reflection from store', error);
+      set({ error: error instanceof Error ? error.message : 'Failed to delete reflection' });
     }
   },
 

@@ -20,9 +20,8 @@ export function useStepDetailScreenSetup() {
     stepNumber,
   };
 
-  const { stepData, isLocked, questions, isLoading, saveAnswer } = useStepDetailData(
-    stepDetailDataParams
-  );
+  const { stepData, isLocked, questions, isLoading, saveAnswer } =
+    useStepDetailData(stepDetailDataParams);
 
   return {
     navigation,

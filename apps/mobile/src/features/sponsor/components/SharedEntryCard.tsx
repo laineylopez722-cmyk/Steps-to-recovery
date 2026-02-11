@@ -50,7 +50,13 @@ export function SharedEntryCard({
 
   const getMoodColor = (mood: number | null) => {
     if (!mood) return darkAccent.textSubtle;
-    const colors = [ds.semantic.intent.alert.solid, ds.colors.warning, ds.colors.textTertiary, ds.colors.success, ds.colors.info];
+    const colors = [
+      ds.semantic.intent.alert.solid,
+      ds.colors.warning,
+      ds.colors.textTertiary,
+      ds.colors.success,
+      ds.colors.info,
+    ];
     return colors[mood - 1] || darkAccent.textSubtle;
   };
 
@@ -127,89 +133,90 @@ export function SharedEntryCard({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  card: {
-    marginBottom: spacing[2],
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing[2],
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    gap: spacing[1.5],
-  },
-  moodIndicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  title: {
-    ...typography.h4,
-    color: darkAccent.text,
-    flex: 1,
-  },
-  date: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginLeft: spacing[2],
-  },
-  body: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginBottom: spacing[2],
-    lineHeight: 20,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[1.5],
-    flexWrap: 'wrap',
-  },
-  moodChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: radius.full,
-    backgroundColor: `${darkAccent.primary}10`,
-  },
-  moodText: {
-    ...typography.caption,
-    fontWeight: '600',
-  },
-  cravingChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: radius.full,
-  },
-  highCraving: {
-    backgroundColor: ds.colors.warningMuted,
-  },
-  cravingText: {
-    ...typography.caption,
-    color: ds.colors.warning,
-    fontWeight: '600',
-  },
-  tagContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  tagText: {
-    ...typography.caption,
-    color: darkAccent.textSubtle,
-    maxWidth: 100,
-  },
-  spacer: {
-    flex: 1,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    card: {
+      marginBottom: spacing[2],
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing[2],
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+      gap: spacing[1.5],
+    },
+    moodIndicator: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+    },
+    title: {
+      ...typography.h4,
+      color: darkAccent.text,
+      flex: 1,
+    },
+    date: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginLeft: spacing[2],
+    },
+    body: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      marginBottom: spacing[2],
+      lineHeight: 20,
+    },
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[1.5],
+      flexWrap: 'wrap',
+    },
+    moodChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: radius.full,
+      backgroundColor: `${darkAccent.primary}10`,
+    },
+    moodText: {
+      ...typography.caption,
+      fontWeight: '600',
+    },
+    cravingChip: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: radius.full,
+    },
+    highCraving: {
+      backgroundColor: ds.colors.warningMuted,
+    },
+    cravingText: {
+      ...typography.caption,
+      color: ds.colors.warning,
+      fontWeight: '600',
+    },
+    tagContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    tagText: {
+      ...typography.caption,
+      color: darkAccent.textSubtle,
+      maxWidth: 100,
+    },
+    spacer: {
+      flex: 1,
+    },
+  }) as const;

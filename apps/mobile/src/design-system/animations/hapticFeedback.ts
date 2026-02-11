@@ -401,7 +401,7 @@ export async function hapticDescending(): Promise<void> {
  * ```
  */
 export async function hapticButtonPress(
-  importance: 'low' | 'medium' | 'high' = 'medium'
+  importance: 'low' | 'medium' | 'high' = 'medium',
 ): Promise<void> {
   switch (importance) {
     case 'low':
@@ -469,11 +469,7 @@ export async function hapticStepper(direction: 'up' | 'down'): Promise<void> {
  * />
  * ```
  */
-export function hapticSlider(
-  currentValue: number,
-  lastHapticValue: number,
-  step: number
-): void {
+export function hapticSlider(currentValue: number, lastHapticValue: number, step: number): void {
   const currentStep = Math.floor(currentValue / step);
   const lastStep = Math.floor(lastHapticValue / step);
 

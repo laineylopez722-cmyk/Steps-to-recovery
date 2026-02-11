@@ -48,7 +48,11 @@ function getDaysForRange(range: TimeRange): number {
   }
 }
 
-function calculateRollingAverage(data: MoodDataPoint[], field: 'mood' | 'craving', windowSize: number): number {
+function calculateRollingAverage(
+  data: MoodDataPoint[],
+  field: 'mood' | 'craving',
+  windowSize: number,
+): number {
   if (data.length === 0) return 0;
   const window = data.slice(-windowSize);
   const sum = window.reduce((acc, d) => acc + d[field], 0);
@@ -257,6 +261,7 @@ export function useMoodTrends(timeRange: TimeRange): {
   return {
     data: query.data ?? null,
     isLoading: query.isLoading,
-    error: query.error instanceof Error ? query.error.message : query.error ? String(query.error) : null,
+    error:
+      query.error instanceof Error ? query.error.message : query.error ? String(query.error) : null,
   };
 }

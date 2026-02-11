@@ -9,7 +9,7 @@
 import { useCallback, useEffect } from 'react';
 import { useDatabase } from '../contexts/DatabaseContext';
 import { useReadingStore } from '../store/readingStore';
-import { addToSyncQueue } from '../services/syncService';
+import { addToSyncQueue, addDeleteToSyncQueue } from '../services/syncService';
 import { logger } from '../utils/logger';
 import { generateId } from '../utils/id';
 import { generateFullYearReadings } from '../data/dailyReadings';
@@ -264,6 +264,52 @@ export function useReadingDatabase() {
     [db, isReady],
   );
 
+  // Delete reflection from database
+  const deleteReflection = useCallback(
+    async (readingDate: string): Promise<void> => {
+      if (!db || !isReady) return;
+
+      try {
+        // Look up the reflection to check for supabase_id
+        const existing = await db.getFirstAsync<{
+          id: string;
+          user_id: string;
+          supabase_id: string | null;
+        }>('SELECT id, user_id, supabase_id FROM reading_reflections WHERE reading_date = ?', [
+          readingDate,
+        ]);
+
+        if (!existing) {
+          logger.info('No reflection found to delete', { readingDate });
+          return;
+        }
+
+        // Queue delete for sync before removing locally
+        if (existing.supabase_id) {
+          await addDeleteToSyncQueue(db, 'reading_reflections', existing.id, existing.user_id);
+        }
+
+        await db.runAsync('DELETE FROM reading_reflections WHERE reading_date = ?', [readingDate]);
+
+        // Clear today's reflection in store if it matches
+        const today = new Date();
+        const todayKey = formatDateKey(today);
+        if (readingDate === todayKey) {
+          useReadingStore.setState({ todayReflection: null });
+        }
+
+        // Recalculate streak
+        const newStreak = await calculateStreak();
+        useReadingStore.setState({ readingStreak: newStreak });
+
+        logger.info('Reflection deleted successfully', { readingDate });
+      } catch (error) {
+        logger.error('Failed to delete reflection', error);
+      }
+    },
+    [db, isReady],
+  );
+
   // Initialize on mount
   useEffect(() => {
     if (isReady) {
@@ -277,6 +323,7 @@ export function useReadingDatabase() {
     loadTodayReading,
     loadTodayReflection,
     saveReflection,
+    deleteReflection,
     calculateStreak,
     getReflectionForDate,
 

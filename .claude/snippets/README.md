@@ -5,17 +5,21 @@ This directory contains shared code patterns and templates used across multiple 
 ## Available Snippets
 
 ### 1. [RLS Policy Template](./rls-policy-template.md)
+
 Standard and shared data Row-Level Security policy patterns for Supabase.
 
 **Used by:**
+
 - `database-architect.md`
 - `security-auditor.md`
 - `security-privacy-auditor.md`
 
 ### 2. [Encryption Patterns](./encryption-patterns.md)
-Client-side encryption/decryption patterns using AES-256-GCM with SecureStore key management.
+
+Client-side encryption/decryption patterns using AES-256-CBC with HMAC-SHA256 with SecureStore key management.
 
 **Used by:**
+
 - `feature-developer.md`
 - `documentation-agent.md`
 - `swarm-coordinator.md`
@@ -23,17 +27,21 @@ Client-side encryption/decryption patterns using AES-256-GCM with SecureStore ke
 - `token-optimization-specialist.md`
 
 ### 3. [Sync Queue Integration](./sync-queue-integration.md)
+
 Patterns for integrating with the offline-first sync queue for cloud backup.
 
 **Used by:**
+
 - `database-architect.md`
 - `feature-developer.md`
 - `token-optimization-specialist.md`
 
 ### 4. [Accessibility Requirements](./accessibility-requirements.md)
+
 WCAG AAA compliance patterns and requirements for UI components.
 
 **Used by:**
+
 - `accessibility-validator.md`
 - `documentation-agent.md`
 - `feature-developer.md`
@@ -41,9 +49,11 @@ WCAG AAA compliance patterns and requirements for UI components.
 - `swarm-coordinator.md`
 
 ### 5. [TypeScript Patterns](./typescript-patterns.md)
+
 Strict TypeScript patterns including component props, hooks, and error handling.
 
 **Used by:**
+
 - `feature-developer.md`
 - (Reference for all TypeScript-focused agents)
 

@@ -124,7 +124,11 @@ export const StepTimelineCard = memo(function StepTimelineCard({
                 >
                   {isCompleted ? 'Review Step' : 'Continue Step Work'}
                 </Text>
-                <Feather name="arrow-right" size={14} color={isCurrent ? ds.colors.info : ds.colors.textSecondary} />
+                <Feather
+                  name="arrow-right"
+                  size={14}
+                  color={isCurrent ? ds.colors.info : ds.colors.textSecondary}
+                />
               </View>
             )}
           </BlurView>

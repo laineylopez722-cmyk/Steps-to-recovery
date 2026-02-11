@@ -71,15 +71,10 @@ function ChapterCardComponent({
 
             {/* Content */}
             <View style={styles.content}>
-              <Text
-                style={[styles.chapterLabel, isCompleted && styles.chapterLabelCompleted]}
-              >
+              <Text style={[styles.chapterLabel, isCompleted && styles.chapterLabelCompleted]}>
                 Chapter {chapter.number}
               </Text>
-              <Text
-                style={[styles.title, isCompleted && styles.titleCompleted]}
-                numberOfLines={2}
-              >
+              <Text style={[styles.title, isCompleted && styles.titleCompleted]} numberOfLines={2}>
                 {chapter.title}
               </Text>
               {hasNotes && (

@@ -38,6 +38,7 @@
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
     "@types/base-64": "^1.0.2",
     "@types/react": "~19.1.10",
+    "babel-plugin-dynamic-import-node": "^2.3.3",
     "dotenv": "^17.2.3",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
@@ -50,10 +51,9 @@
   },
   "dependencies": {
     "@react-native/debugger-frontend": "^0.83.1",
-    "audit": "^0.0.6",
+    "@sentry/nextjs": "^10.38.0",
     "expo": "~54.0.33",
     "expo-device": "~8.0.10",
-    "fix": "^0.0.6",
     "react": "19.1.0",
     "react-native": "0.81.5"
   }

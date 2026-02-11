@@ -41,19 +41,22 @@ export function SyncStatusIndicator() {
   const hasError = !!legacyError;
 
   // Handle sync press - triggers both legacy and new sync
-  const handlePress = useCallback(async (event: GestureResponderEvent) => {
-    if (isSyncing || !isOnline) return;
+  const handlePress = useCallback(
+    async (event: GestureResponderEvent) => {
+      if (isSyncing || !isOnline) return;
 
-    try {
-      // Trigger legacy sync
-      await triggerSync();
+      try {
+        // Trigger legacy sync
+        await triggerSync();
 
-      // Also sync any React Query pending mutations
-      await syncPendingMutations();
-    } catch (error) {
-      logger.error('Manual sync failed', error);
-    }
-  }, [isSyncing, isOnline, triggerSync, syncPendingMutations]);
+        // Also sync any React Query pending mutations
+        await syncPendingMutations();
+      } catch (error) {
+        logger.error('Manual sync failed', error);
+      }
+    },
+    [isSyncing, isOnline, triggerSync, syncPendingMutations],
+  );
 
   // Determine sync status
   const getStatus = () => {

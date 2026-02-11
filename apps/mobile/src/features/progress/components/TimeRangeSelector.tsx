@@ -20,7 +20,10 @@ const RANGES: { value: TimeRange; label: string }[] = [
   { value: '90d', label: '90 Days' },
 ];
 
-export function TimeRangeSelector({ selected, onSelect }: TimeRangeSelectorProps): React.ReactElement {
+export function TimeRangeSelector({
+  selected,
+  onSelect,
+}: TimeRangeSelectorProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 

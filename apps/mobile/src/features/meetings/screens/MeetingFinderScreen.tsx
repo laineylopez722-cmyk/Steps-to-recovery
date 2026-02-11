@@ -25,13 +25,21 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const [showFilters, setShowFilters] = useState<boolean>(false);
-  const { onPressIn: onFilterPressIn, onPressOut: onFilterPressOut, animatedStyle: filterAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
+  const {
+    onPressIn: onFilterPressIn,
+    onPressOut: onFilterPressOut,
+    animatedStyle: filterAnimatedStyle,
+  } = useMotionPress({ scaleTo: motionScale.pressButton });
   const {
     onPressIn: onFavoritesPressIn,
     onPressOut: onFavoritesPressOut,
     animatedStyle: favoritesAnimatedStyle,
   } = useMotionPress({ scaleTo: motionScale.pressButton });
-  const { onPressIn: onClosePressIn, onPressOut: onClosePressOut, animatedStyle: closeAnimatedStyle } = useMotionPress({ scaleTo: motionScale.pressButton });
+  const {
+    onPressIn: onClosePressIn,
+    onPressOut: onClosePressOut,
+    animatedStyle: closeAnimatedStyle,
+  } = useMotionPress({ scaleTo: motionScale.pressButton });
 
   const {
     meetings,
@@ -125,7 +133,9 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
 
   if (isLoading && meetings.length === 0) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <View
+        style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}
+      >
         <ActivityIndicator size="large" color={theme.colors.semantic.intent.primary.solid} />
       </View>
     );
@@ -169,7 +179,9 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
       <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <Animated.View entering={MotionTransitions.fade()} style={styles.emptyHeader}>
           <View>
-            <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>Meeting finder</Text>
+            <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>
+              Meeting finder
+            </Text>
             <Text style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}>
               Find nearby support right now
             </Text>
@@ -233,7 +245,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
           description={
             hasFilters
               ? 'Try adjusting your filters or search radius.'
-              : 'No meetings found in your area. Try expanding your search radius.'
+              : 'Finding your people is part of recovery. Try expanding your search radius.'
           }
           actionLabel={hasFilters ? 'Clear Filters' : 'Search Again'}
           onAction={hasFilters ? clearFilters : handleSearch}
@@ -261,8 +273,12 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
         ListHeaderComponent={
           <Animated.View entering={MotionTransitions.fade()} style={styles.listHeader}>
             <View>
-              <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>Meeting finder</Text>
-              <Text style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}>
+              <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>
+                Meeting finder
+              </Text>
+              <Text
+                style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}
+              >
                 {meetings.length} meetings nearby
               </Text>
             </View>
@@ -325,72 +341,73 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  listContent: {
-    paddingVertical: ds.space[4],
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-    gap: ds.space[2],
-  },
-  listHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: ds.space[3],
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: ds.radius.xl,
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[4],
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  emptyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-    paddingTop: ds.space[4],
-    marginBottom: ds.space[3],
-  },
-  screenTitle: {
-    ...ds.semantic.typography.screenTitle,
-  },
-  screenSubtitle: {
-    ...ds.semantic.typography.meta,
-    marginTop: 2,
-  },
-  iconButton: {
-    minWidth: ds.semantic.layout.touchTarget,
-    minHeight: ds.semantic.layout.touchTarget,
-    borderRadius: ds.radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  filterButton: {
-    minWidth: ds.semantic.layout.touchTarget,
-    minHeight: ds.semantic.layout.touchTarget,
-    borderRadius: ds.radius.full,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: ds.space[2],
-    alignItems: 'center',
-  },
-  filterHeader: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-    paddingTop: ds.space[4],
-    paddingBottom: ds.space[2],
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    centerContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    listContent: {
+      paddingVertical: ds.space[4],
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      gap: ds.space[2],
+    },
+    listHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: ds.space[3],
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.xl,
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[4],
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    emptyHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[4],
+      marginBottom: ds.space[3],
+    },
+    screenTitle: {
+      ...ds.semantic.typography.screenTitle,
+    },
+    screenSubtitle: {
+      ...ds.semantic.typography.meta,
+      marginTop: 2,
+    },
+    iconButton: {
+      minWidth: ds.semantic.layout.touchTarget,
+      minHeight: ds.semantic.layout.touchTarget,
+      borderRadius: ds.radius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    filterButton: {
+      minWidth: ds.semantic.layout.touchTarget,
+      minHeight: ds.semantic.layout.touchTarget,
+      borderRadius: ds.radius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+    },
+    headerActions: {
+      flexDirection: 'row',
+      gap: ds.space[2],
+      alignItems: 'center',
+    },
+    filterHeader: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[4],
+      paddingBottom: ds.space[2],
+    },
+  }) as const;

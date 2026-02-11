@@ -1,15 +1,15 @@
 /**
  * Morning Intention Screen
- * 
+ *
  * Clean journaling interface.
  * No distractions, just writing.
  */
 
 import React, { useState, useCallback } from 'react';
-import { 
-  ScrollView, 
-  View, 
-  Text, 
+import {
+  ScrollView,
+  View,
+  Text,
   TextInput,
   Pressable,
   KeyboardAvoidingView,
@@ -43,21 +43,24 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   const [mood, setMood] = useState(3);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const handleMood = useCallback((val: number) => {
-    if (val !== mood) {
-      hapticSelection();
-      setMood(val);
-    }
-  }, [mood]);
+  const handleMood = useCallback(
+    (val: number) => {
+      if (val !== mood) {
+        hapticSelection();
+        setMood(val);
+      }
+    },
+    [mood],
+  );
 
   const handleSubmit = async () => {
     if (!text.trim() || isPending) return;
-    
+
     try {
       await createCheckIn({ type: 'morning', intention: text.trim(), mood });
       hapticSuccess();
       setShowSuccess(true);
-      
+
       // Extract memories for AI companion (async)
       extractMemories(text.trim(), userId)
         .then((memories) => {
@@ -87,7 +90,7 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           style={styles.kav}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
@@ -102,9 +105,9 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
             >
               <Feather name="x" size={ds.sizes.iconLg} color={ds.colors.textSecondary} />
             </Pressable>
-            
+
             <Text style={styles.headerTitle}>Morning</Text>
-            
+
             <Pressable
               onPress={handleSubmit}
               disabled={!canSubmit}
@@ -120,7 +123,7 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
             </Pressable>
           </View>
 
-          <ScrollView 
+          <ScrollView
             style={styles.scroll}
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
@@ -129,10 +132,10 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
             {/* Date */}
             <Animated.View entering={FadeInDown.duration(300)}>
               <Text style={styles.date}>
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </Text>
             </Animated.View>
@@ -156,19 +159,19 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
             </Animated.View>
 
             {/* Mood */}
-            <Animated.View entering={FadeInDown.delay(200).duration(400)} style={styles.moodSection}>
+            <Animated.View
+              entering={FadeInDown.delay(200).duration(400)}
+              style={styles.moodSection}
+            >
               <Text style={styles.label}>How are you feeling?</Text>
-              <Text style={styles.moodValue}>{moods.find(m => m.val === mood)?.label}</Text>
-              
+              <Text style={styles.moodValue}>{moods.find((m) => m.val === mood)?.label}</Text>
+
               <View style={styles.moodTrack}>
                 {moods.map((m) => (
                   <Pressable
                     key={m.val}
                     onPress={() => handleMood(m.val)}
-                    style={[
-                      styles.moodDot,
-                      mood >= m.val && styles.moodDotActive,
-                    ]}
+                    style={[styles.moodDot, mood >= m.val && styles.moodDotActive]}
                     accessibilityRole="button"
                     accessibilityLabel={`Set mood to ${m.label}`}
                     accessibilityState={{ selected: mood === m.val }}
@@ -176,7 +179,7 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
                   />
                 ))}
               </View>
-              
+
               <View style={styles.moodLabels}>
                 <Text style={styles.moodLabelText}>Struggling</Text>
                 <Text style={styles.moodLabelText}>Great</Text>
@@ -192,10 +195,10 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
       <Modal visible={showSuccess} transparent animationType="fade">
         <View style={styles.modalBg}>
           <View style={styles.modalCard}>
-            <AnimatedCheckmark 
-              size={64} 
-              color={ds.colors.success} 
-              onAnimationComplete={handleDone} 
+            <AnimatedCheckmark
+              size={64}
+              color={ds.colors.success}
+              onAnimationComplete={handleDone}
             />
             <Text style={styles.modalTitle}>Saved</Text>
             <Text style={styles.modalSub}>Have a good day</Text>
@@ -206,145 +209,146 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
-  kav: {
-    flex: 1,
-  },
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
+    kav: {
+      flex: 1,
+    },
 
-  // Header
-  header: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    height: ds.sizes.headerHeight,
-    paddingHorizontal: ds.sizes.contentPadding,
-    borderBottomWidth: 1,
-    borderBottomColor: ds.colors.divider,
-  },
-  headerBtn: {
-    width: ds.sizes.touchMin,
-    height: ds.sizes.touchMin,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    marginLeft: -ds.space[2],
-  },
-  headerTitle: {
-    ...ds.typography.body,
-    fontWeight: ds.fontWeight.semibold,
-    color: ds.colors.textPrimary,
-  },
-  saveBtn: {
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[2],
-    backgroundColor: ds.colors.accent,
-    borderRadius: ds.radius.sm,
-  },
-  saveBtnDisabled: {
-    backgroundColor: ds.colors.bgTertiary,
-  },
-  saveBtnText: {
-    ...ds.typography.bodySm,
-    fontWeight: ds.fontWeight.semibold,
-    color: ds.colors.bgPrimary,
-  },
-  saveBtnTextDisabled: {
-    color: ds.colors.textQuaternary,
-  },
+    // Header
+    header: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      height: ds.sizes.headerHeight,
+      paddingHorizontal: ds.sizes.contentPadding,
+      borderBottomWidth: 1,
+      borderBottomColor: ds.colors.divider,
+    },
+    headerBtn: {
+      width: ds.sizes.touchMin,
+      height: ds.sizes.touchMin,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginLeft: -ds.space[2],
+    },
+    headerTitle: {
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.textPrimary,
+    },
+    saveBtn: {
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[2],
+      backgroundColor: ds.colors.accent,
+      borderRadius: ds.radius.sm,
+    },
+    saveBtnDisabled: {
+      backgroundColor: ds.colors.bgTertiary,
+    },
+    saveBtnText: {
+      ...ds.typography.bodySm,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.bgPrimary,
+    },
+    saveBtnTextDisabled: {
+      color: ds.colors.textQuaternary,
+    },
 
-  // Content
-  scroll: {
-    flex: 1,
-  },
-  content: {
-    paddingHorizontal: ds.sizes.contentPadding,
-    paddingTop: ds.space[6],
-  },
+    // Content
+    scroll: {
+      flex: 1,
+    },
+    content: {
+      paddingHorizontal: ds.sizes.contentPadding,
+      paddingTop: ds.space[6],
+    },
 
-  date: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginBottom: ds.space[8],
-  },
+    date: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginBottom: ds.space[8],
+    },
 
-  label: {
-    ...ds.typography.caption,
-    color: ds.colors.textSecondary,
-    marginBottom: ds.space[3],
-    textTransform: 'uppercase' as const,
-    letterSpacing: 0.5,
-  },
+    label: {
+      ...ds.typography.caption,
+      color: ds.colors.textSecondary,
+      marginBottom: ds.space[3],
+      textTransform: 'uppercase' as const,
+      letterSpacing: 0.5,
+    },
 
-  input: {
-    ...ds.typography.h3,
-    color: ds.colors.textPrimary,
-    minHeight: 160,
-    marginBottom: ds.space[10],
-  },
+    input: {
+      ...ds.typography.h3,
+      color: ds.colors.textPrimary,
+      minHeight: 160,
+      marginBottom: ds.space[10],
+    },
 
-  // Mood
-  moodSection: {
-    paddingTop: ds.space[6],
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.divider,
-  },
-  moodValue: {
-    ...ds.typography.h2,
-    color: ds.colors.textPrimary,
-    marginBottom: ds.space[6],
-  },
-  moodTrack: {
-    flexDirection: 'row' as const,
-    gap: ds.space[2],
-    marginBottom: ds.space[2],
-  },
-  moodDot: {
-    flex: 1,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: ds.colors.bgTertiary,
-  },
-  moodDotActive: {
-    backgroundColor: ds.colors.accent,
-  },
-  moodLabels: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-  },
-  moodLabelText: {
-    ...ds.typography.micro,
-    color: ds.colors.textQuaternary,
-  },
+    // Mood
+    moodSection: {
+      paddingTop: ds.space[6],
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.divider,
+    },
+    moodValue: {
+      ...ds.typography.h2,
+      color: ds.colors.textPrimary,
+      marginBottom: ds.space[6],
+    },
+    moodTrack: {
+      flexDirection: 'row' as const,
+      gap: ds.space[2],
+      marginBottom: ds.space[2],
+    },
+    moodDot: {
+      flex: 1,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: ds.colors.bgTertiary,
+    },
+    moodDotActive: {
+      backgroundColor: ds.colors.accent,
+    },
+    moodLabels: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+    },
+    moodLabelText: {
+      ...ds.typography.micro,
+      color: ds.colors.textQuaternary,
+    },
 
-  // Modal
-  modalBg: {
-    flex: 1,
-    backgroundColor: ds.semantic.surface.overlayModal,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-  },
-  modalCard: {
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: ds.radius.xl,
-    paddingVertical: ds.space[12],
-    paddingHorizontal: ds.space[10],
-    alignItems: 'center' as const,
-    minWidth: 240,
-  },
-  modalTitle: {
-    ...ds.typography.h2,
-    color: ds.colors.textPrimary,
-    marginTop: ds.space[6],
-  },
-  modalSub: {
-    ...ds.typography.body,
-    color: ds.colors.textSecondary,
-    marginTop: ds.space[2],
-  },
-} as const);
+    // Modal
+    modalBg: {
+      flex: 1,
+      backgroundColor: ds.semantic.surface.overlayModal,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    modalCard: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.xl,
+      paddingVertical: ds.space[12],
+      paddingHorizontal: ds.space[10],
+      alignItems: 'center' as const,
+      minWidth: 240,
+    },
+    modalTitle: {
+      ...ds.typography.h2,
+      color: ds.colors.textPrimary,
+      marginTop: ds.space[6],
+    },
+    modalSub: {
+      ...ds.typography.body,
+      color: ds.colors.textSecondary,
+      marginTop: ds.space[2],
+    },
+  }) as const;

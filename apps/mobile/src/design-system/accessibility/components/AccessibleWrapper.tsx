@@ -266,9 +266,8 @@ export function AccessibleWrapper({
   useEffect(() => {
     if (!announceChanges || !stateValue) return;
     if (stateValue !== prevStateValueRef.current) {
-      const message = generatedLabel || label
-        ? `${generatedLabel || label}: ${stateValue}`
-        : stateValue;
+      const message =
+        generatedLabel || label ? `${generatedLabel || label}: ${stateValue}` : stateValue;
       announce(message, { priority: 'normal' });
       prevStateValueRef.current = stateValue;
     }
@@ -279,7 +278,7 @@ export function AccessibleWrapper({
     (event: AccessibilityActionEvent) => {
       onAccessibilityAction?.(event);
     },
-    [onAccessibilityAction]
+    [onAccessibilityAction],
   );
 
   const accessibilityLabel = label || generatedLabel || undefined;
@@ -328,7 +327,7 @@ export function AccessibleWrapper({
  */
 export function withAccessibility<P extends object>(
   Component: React.ComponentType<P>,
-  defaultProps: Partial<AccessibleWrapperProps> = {}
+  defaultProps: Partial<AccessibleWrapperProps> = {},
 ): React.FC<P & AccessibleWrapperProps> {
   return function AccessibleComponent(props: P & AccessibleWrapperProps) {
     const { children, ...componentProps } = props;
@@ -399,11 +398,7 @@ export function AccessibleImage({
   ...props
 }: Omit<AccessibleWrapperProps, 'role'>): React.ReactElement {
   return (
-    <AccessibleWrapper
-      role="image"
-      label={label || 'Image'}
-      {...props}
-    >
+    <AccessibleWrapper role="image" label={label || 'Image'} {...props}>
       {children}
     </AccessibleWrapper>
   );

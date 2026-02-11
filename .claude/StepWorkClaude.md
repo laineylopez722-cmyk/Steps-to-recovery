@@ -9,7 +9,8 @@ Provide UI and data models for working through the 12 steps with guided forms an
 - `apps/mobile/src/features/steps/screens/StepsListScreen.tsx`
 - `apps/mobile/src/features/steps/screens/StepDetailScreen.tsx`
 - `apps/mobile/src/features/steps/components/StepCard.tsx`
-- `apps/mobile/src/lib/database/steps.ts`
+- `apps/mobile/src/features/steps/hooks/useStepWork.ts` - Step work data hooks
+- `apps/mobile/src/features/steps/data/stepQuestions.ts` - Step question definitions
 
 ## Requirements
 

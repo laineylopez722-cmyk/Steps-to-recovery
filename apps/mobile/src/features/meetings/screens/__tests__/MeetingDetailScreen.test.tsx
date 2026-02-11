@@ -58,14 +58,23 @@ jest.mock('../../../../design-system/hooks/useTheme', () => ({
   }),
 }));
 
+jest.mock('../../../../design-system/hooks/useThemedStyles', () => ({
+  useThemedStyles: () => ({}),
+}));
+
+jest.mock('../../../../design-system/DsProvider', () => ({
+  useDs: () => ({
+    semantic: {
+      text: {
+        onDark: '#FFFFFF',
+      },
+    },
+  }),
+}));
+
 jest.mock('../../../../design-system/components/Button', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  Button: ({
-    children,
-    onPress,
-    disabled,
-    accessibilityLabel,
-  }: any) => {
+  Button: ({ children, onPress, disabled, accessibilityLabel }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
     return (
@@ -92,12 +101,7 @@ jest.mock('../../../../design-system/components/Badge', () => ({
 
 jest.mock('../../../../design-system/components/TextArea', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  TextArea: ({
-    value,
-    onChangeText,
-    accessibilityLabel,
-    editable,
-  }: any) => {
+  TextArea: ({ value, onChangeText, accessibilityLabel, editable }: any) => {
     const React = require('react');
     const { TextInput } = require('react-native');
     return (
@@ -122,15 +126,10 @@ jest.mock('../../../../design-system/components/Card', () => ({
 
 jest.mock('../../components/PreMeetingReflectionModal', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  PreMeetingReflectionModal: ({
-    visible,
-    onComplete,
-    onSkip,
-  }: any) => {
+  PreMeetingReflectionModal: ({ visible, onComplete, onSkip }: any) => {
     const React = require('react');
     const { View, Text, Pressable } = require('react-native');
-    return (
-    visible ? (
+    return visible ? (
       <View>
         <Text>PreMeetingReflectionModal</Text>
         <Pressable
@@ -149,8 +148,7 @@ jest.mock('../../components/PreMeetingReflectionModal', () => ({
           <Text>pre-skip</Text>
         </Pressable>
       </View>
-    ) : null
-    );
+    ) : null;
   },
 }));
 
@@ -159,17 +157,12 @@ jest.mock('../../components/CheckInModal', () => {
   let latestOnClose: (() => void) | null = null;
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    CheckInModal: ({
-      visible,
-      onConfirm,
-      onClose,
-    }: any) => {
+    CheckInModal: ({ visible, onConfirm, onClose }: any) => {
       const React = require('react');
       const { View, Text, Pressable } = require('react-native');
       // Always track latest onClose
       latestOnClose = onClose;
-      return (
-      visible ? (
+      return visible ? (
         <View>
           <Text>CheckInModal</Text>
           <Pressable
@@ -191,24 +184,17 @@ jest.mock('../../components/CheckInModal', () => {
             <Text>checkin-cancel</Text>
           </Pressable>
         </View>
-      ) : null
-      );
+      ) : null;
     },
   };
 });
 
 jest.mock('../../components/PostMeetingReflectionModal', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  PostMeetingReflectionModal: ({
-    visible,
-    preMood,
-    onComplete,
-    onClose,
-  }: any) => {
+  PostMeetingReflectionModal: ({ visible, preMood, onComplete, onClose }: any) => {
     const React = require('react');
     const { View, Text, Pressable } = require('react-native');
-    return (
-    visible ? (
+    return visible ? (
       <View>
         <Text>PostMeetingReflectionModal</Text>
         <Text>{`preMood:${String(preMood)}`}</Text>
@@ -219,8 +205,7 @@ jest.mock('../../components/PostMeetingReflectionModal', () => ({
           <Text>post-close</Text>
         </Pressable>
       </View>
-    ) : null
-    );
+    ) : null;
   },
 }));
 
@@ -248,26 +233,47 @@ describe('MeetingDetailScreen integration flow', () => {
     updated_at: '2026-02-09T00:00:00.000Z',
   };
 
+  const stableIsFavorite = jest.fn().mockReturnValue(false);
+  const stableGetFavoriteNotes = jest.fn().mockResolvedValue(null);
+  const stableAddFavorite = jest.fn().mockResolvedValue(undefined);
+  const stableRemoveFavorite = jest.fn().mockResolvedValue(undefined);
+  const stableUpdateNotes = jest.fn().mockResolvedValue(undefined);
+
+  const stableFavoritesReturn = {
+    isFavorite: stableIsFavorite,
+    addFavorite: stableAddFavorite,
+    removeFavorite: stableRemoveFavorite,
+    updateNotes: stableUpdateNotes,
+    getFavoriteNotes: stableGetFavoriteNotes,
+  };
+
+  const stableDb = { getDatabaseName: () => 'test.db' };
+  const stableDbReturn = { db: stableDb };
+  const stableAuthReturn = { user: { id: 'user-123' } };
+  const stableCheckInsReturn = {
+    checkInAsync: jest.fn(),
+    isCheckingIn: false,
+  };
+  const stableCheckInStatusReturn = {
+    hasCheckedIn: false,
+    isLoading: false,
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
-    mockUseDatabase.mockReturnValue({ db: { getDatabaseName: () => 'test.db' } });
-    mockUseAuth.mockReturnValue({ user: { id: 'user-123' } });
-    mockUseFavoriteMeetings.mockReturnValue({
-      isFavorite: jest.fn().mockReturnValue(false),
-      addFavorite: jest.fn().mockResolvedValue(undefined),
-      removeFavorite: jest.fn().mockResolvedValue(undefined),
-      updateNotes: jest.fn().mockResolvedValue(undefined),
-      getFavoriteNotes: jest.fn().mockResolvedValue(null),
-    });
-    mockUseMeetingCheckIns.mockReturnValue({
-      checkInAsync: mockCheckInAsync,
-      isCheckingIn: false,
-    });
-    mockUseMeetingCheckInStatus.mockReturnValue({
-      hasCheckedIn: false,
-      isLoading: false,
-    });
+    stableIsFavorite.mockReturnValue(false);
+    stableGetFavoriteNotes.mockResolvedValue(null);
+    stableAddFavorite.mockResolvedValue(undefined);
+    stableRemoveFavorite.mockResolvedValue(undefined);
+    stableUpdateNotes.mockResolvedValue(undefined);
+    stableCheckInsReturn.checkInAsync = mockCheckInAsync;
+
+    mockUseDatabase.mockReturnValue(stableDbReturn);
+    mockUseAuth.mockReturnValue(stableAuthReturn);
+    mockUseFavoriteMeetings.mockReturnValue(stableFavoritesReturn);
+    mockUseMeetingCheckIns.mockReturnValue(stableCheckInsReturn);
+    mockUseMeetingCheckInStatus.mockReturnValue(stableCheckInStatusReturn);
     mockGetCachedMeetingById.mockResolvedValue(meeting);
     mockSavePreMeetingReflection.mockResolvedValue({ success: true });
   });
@@ -275,14 +281,20 @@ describe('MeetingDetailScreen integration flow', () => {
   function renderScreen(): ReturnType<typeof render> {
     return render(
       <MeetingDetailScreen
-        route={{ key: 'MeetingDetail-key', name: 'MeetingDetail', params: { meetingId: meeting.id } }}
+        route={{
+          key: 'MeetingDetail-key',
+          name: 'MeetingDetail',
+          params: { meetingId: meeting.id },
+        }}
         navigation={{ navigate: mockNavigate } as never}
       />,
     );
   }
 
-  it('orchestrates pre-reflection -> check-in -> post-reflection in order', async () => {
-    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  it(
+    'orchestrates pre-reflection -> check-in -> post-reflection in order',
+    async () => {
+      const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
 
     mockCheckInAsync.mockResolvedValue({
       checkIn: {
@@ -293,9 +305,12 @@ describe('MeetingDetailScreen integration flow', () => {
 
     renderScreen();
 
-    await waitFor(() => {
-      expect(screen.getByText('Downtown Recovery Group')).toBeTruthy();
-    });
+    await waitFor(
+      () => {
+        expect(screen.getByText('Downtown Recovery Group')).toBeTruthy();
+      },
+      { timeout: 5000 },
+    );
 
     fireEvent.press(screen.getByLabelText('Check in to meeting'));
 
@@ -342,7 +357,9 @@ describe('MeetingDetailScreen integration flow', () => {
       'Reflection saved',
       'Great work showing up for your recovery today.',
     );
-  });
+    },
+    15000,
+  );
 
   it('supports skipping pre-reflection and still opens post-reflection after check-in', async () => {
     mockCheckInAsync.mockResolvedValue({

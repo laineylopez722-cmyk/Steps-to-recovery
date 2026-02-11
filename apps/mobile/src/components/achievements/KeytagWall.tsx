@@ -13,7 +13,12 @@
 import { memo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components';
 import type { KeytagWithStatus } from '@recovery/shared';
 import type { ReactElement } from 'react';
@@ -56,10 +61,7 @@ export const KeytagWall = memo(function KeytagWall({
           accessibilityLabel={`Keytag collection, ${earnedCount} of ${keytags.length} earned`}
         >
           {keytags.map((keytag, index) => (
-            <View
-              key={keytag.id}
-              style={styles.gridCell}
-            >
+            <View key={keytag.id} style={styles.gridCell}>
               <KeytagItem
                 keytag={keytag}
                 onPress={() => onKeytagPress?.(keytag)}
@@ -191,9 +193,7 @@ export const KeytagItem = memo(function KeytagItem({
         {!isEarned && progress !== undefined && progress > 0 && size !== 'small' && (
           <View style={styles.progressContainer}>
             <View style={styles.progressTrack}>
-              <View
-                style={[styles.progressFill, { width: `${progress}%` }]}
-              />
+              <View style={[styles.progressFill, { width: `${progress}%` }]} />
             </View>
           </View>
         )}
@@ -237,7 +237,12 @@ export const FeaturedKeytag = memo(function FeaturedKeytag({
           <KeytagItem keytag={current} size="large" />
           {next && (
             <View style={styles.nextContainer}>
-              <Feather name="arrow-right" size={14} color={ds.colors.textSecondary} style={styles.nextIcon} />
+              <Feather
+                name="arrow-right"
+                size={14}
+                color={ds.colors.textSecondary}
+                style={styles.nextIcon}
+              />
               <Text style={styles.nextText}>
                 Next: {next.title} in {next.daysUntil} days
               </Text>

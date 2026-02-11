@@ -3,6 +3,7 @@
 const mockScheduleNotificationAsync = jest.fn();
 const mockCancelScheduledNotificationAsync = jest.fn();
 const mockGetAllScheduledNotificationsAsync = jest.fn();
+const mockCancelAllScheduledNotificationsAsync = jest.fn();
 
 jest.mock('expo-notifications', () => ({
   scheduleNotificationAsync: (...args: unknown[]) => mockScheduleNotificationAsync(...args),
@@ -10,10 +11,15 @@ jest.mock('expo-notifications', () => ({
     mockCancelScheduledNotificationAsync(...args),
   getAllScheduledNotificationsAsync: (...args: unknown[]) =>
     mockGetAllScheduledNotificationsAsync(...args),
-  AndroidNotificationPriority: { HIGH: 'high', MAX: 'max' },
+  cancelAllScheduledNotificationsAsync: (...args: unknown[]) =>
+    mockCancelAllScheduledNotificationsAsync(...args),
+  AndroidNotificationPriority: { HIGH: 'high', MAX: 'max', DEFAULT: 'default' },
   SchedulableTriggerInputTypes: { DAILY: 'daily', DATE: 'date' },
 }));
 jest.mock('../../utils/logger');
+jest.mock('../encouragementMessages', () => ({
+  getRandomEncouragementMessage: () => 'You are doing great!',
+}));
 
 import {
   scheduleMorningReminder,
@@ -25,8 +31,14 @@ import {
   scheduleAllMilestones,
   cancelAllMilestones,
   getScheduledNotifications,
+  scheduleDailyReading,
+  scheduleGratitudeReminder,
+  sendEncouragementNotification,
+  cancelAllScheduled,
+  rescheduleAll,
   NOTIFICATION_IDS,
   DEFAULT_REMINDERS,
+  DEFAULT_PREFERENCES,
   MILESTONE_DAYS,
 } from '../notificationService';
 import type { NotificationRequest } from 'expo-notifications';
@@ -36,11 +48,13 @@ describe('notificationService', () => {
   const mockSchedule = mockScheduleNotificationAsync;
   const mockCancel = mockCancelScheduledNotificationAsync;
   const mockGetAll = mockGetAllScheduledNotificationsAsync;
+  const mockCancelAll = mockCancelAllScheduledNotificationsAsync;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockSchedule.mockResolvedValue('notif-id-123');
     mockCancel.mockResolvedValue(undefined);
+    mockCancelAll.mockResolvedValue(undefined);
     mockGetAll.mockResolvedValue([]);
   });
 
@@ -435,6 +449,143 @@ describe('notificationService', () => {
 
       expect(result).toEqual([]);
       expect(logger.error).toHaveBeenCalled();
+    });
+  });
+
+  // ========================================
+  // scheduleDailyReading
+  // ========================================
+
+  describe('scheduleDailyReading', () => {
+    it('should schedule daily reading reminder', async () => {
+      const result = await scheduleDailyReading({ enabled: true, hour: 7, minute: 30 });
+
+      expect(mockCancel).toHaveBeenCalledWith(NOTIFICATION_IDS.DAILY_READING);
+      expect(mockSchedule).toHaveBeenCalledWith(
+        expect.objectContaining({
+          identifier: NOTIFICATION_IDS.DAILY_READING,
+          content: expect.objectContaining({
+            title: '📖 Daily Reading',
+          }),
+          trigger: expect.objectContaining({
+            hour: 7,
+            minute: 30,
+          }),
+        }),
+      );
+      expect(result).toBe('notif-id-123');
+    });
+
+    it('should return null when disabled', async () => {
+      const result = await scheduleDailyReading({ enabled: false, hour: 7, minute: 30 });
+
+      expect(mockSchedule).not.toHaveBeenCalled();
+      expect(result).toBeNull();
+    });
+  });
+
+  // ========================================
+  // scheduleGratitudeReminder
+  // ========================================
+
+  describe('scheduleGratitudeReminder', () => {
+    it('should schedule gratitude reminder', async () => {
+      const result = await scheduleGratitudeReminder({ enabled: true, hour: 21, minute: 0 });
+
+      expect(mockCancel).toHaveBeenCalledWith(NOTIFICATION_IDS.GRATITUDE_REMINDER);
+      expect(mockSchedule).toHaveBeenCalledWith(
+        expect.objectContaining({
+          identifier: NOTIFICATION_IDS.GRATITUDE_REMINDER,
+          content: expect.objectContaining({
+            title: '🙏 Gratitude Moment',
+          }),
+          trigger: expect.objectContaining({
+            hour: 21,
+            minute: 0,
+          }),
+        }),
+      );
+      expect(result).toBe('notif-id-123');
+    });
+
+    it('should return null when disabled', async () => {
+      const result = await scheduleGratitudeReminder({ enabled: false, hour: 21, minute: 0 });
+
+      expect(mockSchedule).not.toHaveBeenCalled();
+      expect(result).toBeNull();
+    });
+  });
+
+  // ========================================
+  // sendEncouragementNotification
+  // ========================================
+
+  describe('sendEncouragementNotification', () => {
+    it('should send immediate encouragement notification', async () => {
+      await sendEncouragementNotification();
+
+      expect(mockSchedule).toHaveBeenCalledWith(
+        expect.objectContaining({
+          identifier: NOTIFICATION_IDS.ENCOURAGEMENT,
+          content: expect.objectContaining({
+            title: '💜 A Moment of Encouragement',
+          }),
+          trigger: null,
+        }),
+      );
+      expect(logger.info).toHaveBeenCalledWith('Encouragement notification sent');
+    });
+  });
+
+  // ========================================
+  // cancelAllScheduled
+  // ========================================
+
+  describe('cancelAllScheduled', () => {
+    it('should cancel all scheduled notifications', async () => {
+      await cancelAllScheduled();
+
+      expect(mockCancelAll).toHaveBeenCalled();
+      expect(logger.info).toHaveBeenCalledWith('All scheduled notifications cancelled');
+    });
+  });
+
+  // ========================================
+  // rescheduleAll
+  // ========================================
+
+  describe('rescheduleAll', () => {
+    it('should cancel all and reschedule enabled notifications', async () => {
+      await rescheduleAll(DEFAULT_PREFERENCES);
+
+      expect(mockCancelAll).toHaveBeenCalled();
+      // 4 timed notifications should be scheduled (morning, evening, reading, gratitude)
+      expect(mockSchedule).toHaveBeenCalledTimes(4);
+    });
+
+    it('should only schedule enabled notifications', async () => {
+      await rescheduleAll({
+        ...DEFAULT_PREFERENCES,
+        morningCheckIn: { ...DEFAULT_PREFERENCES.morningCheckIn, enabled: false },
+        dailyReading: { ...DEFAULT_PREFERENCES.dailyReading, enabled: false },
+      });
+
+      // Only evening and gratitude should be scheduled
+      expect(mockSchedule).toHaveBeenCalledTimes(2);
+    });
+
+    it('should schedule nothing when all disabled', async () => {
+      await rescheduleAll({
+        morningCheckIn: { enabled: false, hour: 8, minute: 0 },
+        eveningCheckIn: { enabled: false, hour: 20, minute: 0 },
+        dailyReading: { enabled: false, hour: 7, minute: 30 },
+        gratitudeReminder: { enabled: false, hour: 21, minute: 0 },
+        milestoneAlerts: { enabled: false },
+        encouragement: { enabled: false },
+      });
+
+      expect(mockCancelAll).toHaveBeenCalled();
+      expect(mockSchedule).not.toHaveBeenCalled();
     });
   });
 });

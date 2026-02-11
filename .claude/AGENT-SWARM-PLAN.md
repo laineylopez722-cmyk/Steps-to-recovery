@@ -14,27 +14,27 @@ This document defines a **coordinated Agent Swarm** for autonomous, high-quality
 
 ### Core Swarm Members
 
-| Agent | Role | Activation Trigger | Priority |
-|-------|------|-------------------|----------|
-| **Swarm Coordinator** | Meta-orchestrator, task routing, progress tracking | Every session | CRITICAL |
-| **Security Auditor** | Encryption, RLS, key storage validation | All data/storage changes | CRITICAL |
-| **Feature Developer** | Implementation of features, hooks, screens | New features, bug fixes | HIGH |
-| **Testing Specialist** | Test creation, coverage validation, TDD | Post-implementation | HIGH |
-| **Database Architect** | Schema design, migrations, RLS policies | New tables/columns | HIGH |
-| **Performance Optimizer** | Cold start, rendering, bundle analysis | Performance issues | MEDIUM |
-| **Accessibility Validator** | WCAG AAA compliance, screen readers | UI components | MEDIUM |
-| **Documentation Agent** | AGENTS.md, API docs, inline comments | Documentation drift | MEDIUM |
-| **BMAD Analyst** | Metrics, user feedback analysis, decisions | Measurement phase | LOW |
+| Agent                       | Role                                               | Activation Trigger       | Priority |
+| --------------------------- | -------------------------------------------------- | ------------------------ | -------- |
+| **Swarm Coordinator**       | Meta-orchestrator, task routing, progress tracking | Every session            | CRITICAL |
+| **Security Auditor**        | Encryption, RLS, key storage validation            | All data/storage changes | CRITICAL |
+| **Feature Developer**       | Implementation of features, hooks, screens         | New features, bug fixes  | HIGH     |
+| **Testing Specialist**      | Test creation, coverage validation, TDD            | Post-implementation      | HIGH     |
+| **Database Architect**      | Schema design, migrations, RLS policies            | New tables/columns       | HIGH     |
+| **Performance Optimizer**   | Cold start, rendering, bundle analysis             | Performance issues       | MEDIUM   |
+| **Accessibility Validator** | WCAG AAA compliance, screen readers                | UI components            | MEDIUM   |
+| **Documentation Agent**     | AGENTS.md, API docs, inline comments               | Documentation drift      | MEDIUM   |
+| **BMAD Analyst**            | Metrics, user feedback analysis, decisions         | Measurement phase        | LOW      |
 
 ### Specialized Roles
 
-| Agent | Role | Activation Trigger |
-|-------|------|-------------------|
-| **Recovery UX Specialist** | 12-step program patterns, crisis intervention UI | Recovery-specific features |
-| **Encryption Specialist** | crypto-js, key derivation, secure storage | Encryption modifications |
-| **Sync Engineer** | Offline-first, queue processing, conflict resolution | Sync-related changes |
-| **iOS Design Specialist** | iOS HIG compliance, design system consistency | UI refinements |
-| **Emergency Protocol Agent** | Crisis tools, offline functionality, safety | Emergency features |
+| Agent                        | Role                                                 | Activation Trigger         |
+| ---------------------------- | ---------------------------------------------------- | -------------------------- |
+| **Recovery UX Specialist**   | 12-step program patterns, crisis intervention UI     | Recovery-specific features |
+| **Encryption Specialist**    | crypto-js, key derivation, secure storage            | Encryption modifications   |
+| **Sync Engineer**            | Offline-first, queue processing, conflict resolution | Sync-related changes       |
+| **iOS Design Specialist**    | iOS HIG compliance, design system consistency        | UI refinements             |
+| **Emergency Protocol Agent** | Crisis tools, offline functionality, safety          | Emergency features         |
 
 ---
 
@@ -68,13 +68,13 @@ Feature Developer ─┘         ↓
 
 ### Phase 3: Quality Gates (Mandatory)
 
-| Gate | Requirements | Enforced By |
-|------|--------------|-------------|
-| **Security Gate** | Encryption audit pass, RLS validation, no plaintext storage | Security Auditor |
-| **Type Safety Gate** | `npx tsc --noEmit` returns 0 errors | Feature Developer |
-| **Test Coverage Gate** | Encryption 90%, sync 70%, features 50% | Testing Specialist |
-| **Accessibility Gate** | WCAG AAA props, 48x48dp touch targets, 7:1 contrast | Accessibility Validator |
-| **Performance Gate** | Cold start <2s, no render-blocking | Performance Optimizer |
+| Gate                   | Requirements                                                | Enforced By             |
+| ---------------------- | ----------------------------------------------------------- | ----------------------- |
+| **Security Gate**      | Encryption audit pass, RLS validation, no plaintext storage | Security Auditor        |
+| **Type Safety Gate**   | `npx tsc --noEmit` returns 0 errors                         | Feature Developer       |
+| **Test Coverage Gate** | Encryption 90%, sync 70%, features 50%                      | Testing Specialist      |
+| **Accessibility Gate** | WCAG AAA props, 48x48dp touch targets, 7:1 contrast         | Accessibility Validator |
+| **Performance Gate**   | Cold start <2s, no render-blocking                          | Performance Optimizer   |
 
 ---
 
@@ -84,16 +84,17 @@ Feature Developer ─┘         ↓
 
 **Status**: Core infrastructure complete, features need refinement
 
-| Feature | Status | Next Steps | Assigned Agent |
-|---------|--------|------------|----------------|
-| Journal Entry CRUD | ✅ Implemented | Add search, tags | Feature Developer |
-| Step Work (12 Steps) | ✅ Implemented | Progress tracking | Feature Developer |
-| AI Companion | ✅ Implemented | Memory optimization | Performance Optimizer |
-| Daily Check-ins | ✅ Implemented | Streak tracking | Feature Developer |
-| **Tests** | ⚠️ Partial | Increase coverage | Testing Specialist |
-| **Security Audit** | ⏳ Pending | Post-test validation | Security Auditor |
+| Feature              | Status         | Next Steps           | Assigned Agent        |
+| -------------------- | -------------- | -------------------- | --------------------- |
+| Journal Entry CRUD   | ✅ Implemented | Add search, tags     | Feature Developer     |
+| Step Work (12 Steps) | ✅ Implemented | Progress tracking    | Feature Developer     |
+| AI Companion         | ✅ Implemented | Memory optimization  | Performance Optimizer |
+| Daily Check-ins      | ✅ Implemented | Streak tracking      | Feature Developer     |
+| **Tests**            | ⚠️ Partial     | Increase coverage    | Testing Specialist    |
+| **Security Audit**   | ⏳ Pending     | Post-test validation | Security Auditor      |
 
 **Phase 2 Completion Criteria**:
+
 - [ ] All journal operations tested with 90% coverage
 - [ ] Step work progress persistence verified
 - [ ] Memory store search optimized (if >1000 memories)
@@ -104,31 +105,31 @@ Feature Developer ─┘         ↓
 
 **Prerequisites**: Phase 2 complete, security audit pass
 
-| Feature | Complexity | Agents Required | Est. Effort |
-|---------|-----------|-----------------|-------------|
-| Sponsor invite flow | Medium | Feature Developer, Security Auditor | 2 days |
-| Sponsorship management | Medium | Database Architect, Feature Developer | 2 days |
-| Selective entry sharing | High | Security Auditor, Encryption Specialist | 3 days |
-| RLS policies for sharing | Medium | Database Architect, Security Auditor | 1 day |
-| **Tests** | - | Testing Specialist | 2 days |
+| Feature                  | Complexity | Agents Required                         | Est. Effort |
+| ------------------------ | ---------- | --------------------------------------- | ----------- |
+| Sponsor invite flow      | Medium     | Feature Developer, Security Auditor     | 2 days      |
+| Sponsorship management   | Medium     | Database Architect, Feature Developer   | 2 days      |
+| Selective entry sharing  | High       | Security Auditor, Encryption Specialist | 3 days      |
+| RLS policies for sharing | Medium     | Database Architect, Security Auditor    | 1 day       |
+| **Tests**                | -          | Testing Specialist                      | 2 days      |
 
 ### Phase 4: Notifications, Geofencing & Streaks (PLANNED)
 
-| Feature | Complexity | Key Considerations |
-|---------|-----------|-------------------|
-| Daily reminders | Low | Expo Notifications, user preferences |
-| Geofencing for meetings | High | Location permissions, background tasks, privacy |
-| Sobriety streak counter | Medium | Date calculation, milestone detection |
-| Achievements system | Medium | Badge unlocks, celebrations |
+| Feature                 | Complexity | Key Considerations                              |
+| ----------------------- | ---------- | ----------------------------------------------- |
+| Daily reminders         | Low        | Expo Notifications, user preferences            |
+| Geofencing for meetings | High       | Location permissions, background tasks, privacy |
+| Sobriety streak counter | Medium     | Date calculation, milestone detection           |
+| Achievements system     | Medium     | Badge unlocks, celebrations                     |
 
 ### Phase 5: Polish & Production (PLANNED)
 
-| Focus Area | Tasks |
-|------------|-------|
-| Accessibility | Screen reader testing, font scaling, color contrast |
-| Performance | Bundle analysis, lazy loading, image optimization |
-| Testing | E2E tests, integration tests, edge cases |
-| Documentation | User guide, privacy policy, API docs |
+| Focus Area        | Tasks                                                 |
+| ----------------- | ----------------------------------------------------- |
+| Accessibility     | Screen reader testing, font scaling, color contrast   |
+| Performance       | Bundle analysis, lazy loading, image optimization     |
+| Testing           | E2E tests, integration tests, edge cases              |
+| Documentation     | User guide, privacy policy, API docs                  |
 | Store Preparation | Screenshots, description, App Store/Play Store assets |
 
 ---
@@ -155,7 +156,7 @@ await db.runAsync('INSERT ...', [encrypted]); // ✅ NEVER store plaintext
 
 // Key storage verification:
 await secureStorage.setItemAsync('key', value); // ✅ SecureStore only
-await AsyncStorage.setItem('key', value);       // ❌ NEVER for sensitive data
+await AsyncStorage.setItem('key', value); // ❌ NEVER for sensitive data
 ```
 
 ### RLS Policy Template (Auto-Generated)
@@ -175,23 +176,23 @@ CREATE POLICY "Users can only access their own data"
 
 ### Measurement Points
 
-| Metric | Collection Method | Analysis Frequency |
-|--------|------------------|-------------------|
-| Test Coverage | Jest coverage report | Per PR |
-| TypeScript Errors | `npx tsc --noEmit` | Per commit |
-| Bundle Size | Source maps | Weekly |
-| Cold Start Time | Expo profiling | Bi-weekly |
-| Security Issues | Security Auditor | Per data feature |
+| Metric            | Collection Method    | Analysis Frequency |
+| ----------------- | -------------------- | ------------------ |
+| Test Coverage     | Jest coverage report | Per PR             |
+| TypeScript Errors | `npx tsc --noEmit`   | Per commit         |
+| Bundle Size       | Source maps          | Weekly             |
+| Cold Start Time   | Expo profiling       | Bi-weekly          |
+| Security Issues   | Security Auditor     | Per data feature   |
 
 ### Decision Triggers
 
-| Condition | Decision | Action |
-|-----------|----------|--------|
-| Coverage < 75% | Block release | Add tests |
-| TypeScript errors > 0 | Block merge | Fix errors |
-| Security audit fail | Block merge | Fix vulnerabilities |
-| Cold start > 2s | Optimize | Performance review |
-| Bundle > 5MB | Optimize | Code splitting |
+| Condition             | Decision      | Action              |
+| --------------------- | ------------- | ------------------- |
+| Coverage < 75%        | Block release | Add tests           |
+| TypeScript errors > 0 | Block merge   | Fix errors          |
+| Security audit fail   | Block merge   | Fix vulnerabilities |
+| Cold start > 2s       | Optimize      | Performance review  |
+| Bundle > 5MB          | Optimize      | Code splitting      |
 
 ---
 
@@ -266,14 +267,14 @@ All agent outputs follow this structure:
 
 ## 🎯 Success Metrics
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| TypeScript Errors | 0 | `npx tsc --noEmit` |
-| Test Coverage | >75% | Jest coverage |
-| Security Issues | 0 critical | Security audit |
-| Cold Start | <2s | Expo profiling |
-| Bundle Size | <5MB | Source maps |
-| Accessibility | WCAG AAA | Manual + automated |
+| Metric            | Target     | Measurement        |
+| ----------------- | ---------- | ------------------ |
+| TypeScript Errors | 0          | `npx tsc --noEmit` |
+| Test Coverage     | >75%       | Jest coverage      |
+| Security Issues   | 0 critical | Security audit     |
+| Cold Start        | <2s        | Expo profiling     |
+| Bundle Size       | <5MB       | Source maps        |
+| Accessibility     | WCAG AAA   | Manual + automated |
 
 ---
 
@@ -321,13 +322,13 @@ Every week, the Swarm Coordinator analyzes:
 
 ### Essential Context Files
 
-| File | Purpose | Maintained By |
-|------|---------|---------------|
-| `CLAUDE.md` | Development patterns, security rules | Documentation Agent |
-| `AGENTS.md` | Agent instructions | Documentation Agent |
-| `FIX-SUMMARY-*.md` | Change history | Swarm Coordinator |
-| `MIGRATION-*.md` | Database migrations | Database Architect |
-| `docs/API.md` | Data model, sync patterns | Feature Developer |
+| File               | Purpose                              | Maintained By       |
+| ------------------ | ------------------------------------ | ------------------- |
+| `CLAUDE.md`        | Development patterns, security rules | Documentation Agent |
+| `AGENTS.md`        | Agent instructions                   | Documentation Agent |
+| `FIX-SUMMARY-*.md` | Change history                       | Swarm Coordinator   |
+| `MIGRATION-*.md`   | Database migrations                  | Database Architect  |
+| `docs/API.md`      | Data model, sync patterns            | Feature Developer   |
 
 ### Skills Library
 

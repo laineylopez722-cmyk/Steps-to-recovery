@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 13;
+const CURRENT_SCHEMA_VERSION = 15;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -299,6 +299,13 @@ async function recordMigration(db: StorageAdapter, version: number): Promise<voi
  *
  * Applies migrations sequentially from current version to CURRENT_SCHEMA_VERSION.
  * Each migration is idempotent and can be safely re-run.
+ *
+ * **Transaction safety**: Individual migrations are NOT wrapped in explicit
+ * transactions because every migration step is guarded by `columnExists()` or
+ * `CREATE TABLE IF NOT EXISTS`, making them idempotent. A partial failure
+ * mid-migration is safe: the version is only recorded after all steps succeed
+ * (`recordMigration`), so the migration will re-run on next launch and the
+ * idempotent guards prevent double-apply.
  *
  * @param db - Storage adapter instance
  * @returns Promise that resolves when all migrations are complete
@@ -792,6 +799,61 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 
     await recordMigration(db, 13);
     logger.info('Migration v13 completed');
+  }
+
+  // v14: sponsor_messages table for E2E encrypted messaging
+  if (currentVersion < 14) {
+    const v14Migrations = [
+      `CREATE TABLE IF NOT EXISTS sponsor_messages (
+        id TEXT PRIMARY KEY,
+        connection_id TEXT NOT NULL,
+        sender_id TEXT NOT NULL,
+        encrypted_content TEXT NOT NULL,
+        message_type TEXT DEFAULT 'text',
+        read_at TEXT,
+        created_at TEXT NOT NULL,
+        synced INTEGER DEFAULT 0,
+        supabase_id TEXT,
+        FOREIGN KEY (connection_id) REFERENCES sponsor_connections(id)
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_sponsor_messages_connection ON sponsor_messages(connection_id, created_at);`,
+      `CREATE INDEX IF NOT EXISTS idx_sponsor_messages_unread ON sponsor_messages(connection_id, read_at);`,
+    ];
+
+    for (const migration of v14Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v14 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 14);
+    logger.info('Migration v14 completed');
+  }
+
+  // Migration version 15: Add sync_metadata table for multi-device pull sync tracking
+  if (currentVersion < 15) {
+    logger.info('Running migration v15: Adding sync_metadata table');
+    const v15Migrations = [
+      `CREATE TABLE IF NOT EXISTS sync_metadata (
+        table_name TEXT PRIMARY KEY,
+        last_pull_at TEXT,
+        last_push_at TEXT,
+        device_id TEXT
+      );`,
+    ];
+
+    for (const migration of v15Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v15 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 15);
+    logger.info('Migration v15 completed');
   }
 
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });

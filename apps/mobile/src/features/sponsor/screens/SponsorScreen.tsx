@@ -373,6 +373,13 @@ export function SponsorScreen(): React.ReactElement {
                 textStyle={{ color: theme.colors.danger }}
                 style={{ marginTop: theme.spacing.md }}
               />
+              <Button
+                title="Message Sponsor"
+                onPress={() => navigation.navigate('SponsorChat', { connectionId: mySponsor.id })}
+                variant="primary"
+                size="small"
+                style={{ marginTop: theme.spacing.sm }}
+              />
             </Card>
           )}
 
@@ -418,6 +425,17 @@ export function SponsorScreen(): React.ReactElement {
                     variant="outline"
                     size="small"
                     style={{ marginTop: theme.spacing.md }}
+                  />
+                  <Button
+                    title="Message Sponsee"
+                    onPress={() =>
+                      navigation.navigate('SponsorChat', {
+                        connectionId: sponsee.id,
+                      })
+                    }
+                    variant="primary"
+                    size="small"
+                    style={{ marginTop: theme.spacing.sm }}
                   />
                   <Button
                     title="Remove Sponsee"
@@ -629,4 +647,3 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
-

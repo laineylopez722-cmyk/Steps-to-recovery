@@ -18,28 +18,28 @@ Generated: 09/02/2026, 5:33:07 pm
 
 ## Top 20 Dependencies by Size
 
-| Package | Size | Category |
-|---------|------|----------|
-| eslint | 2.83 MB | 🚨 massive |
-| @expo/vector-icons | 0 B | 🟢 small |
-| @hookform/resolvers | 0 B | 🟢 small |
-| @react-native-async-storage/async-storage | 0 B | 🟢 small |
-| @react-native-community/datetimepicker | 0 B | 🟢 small |
-| @react-native-community/netinfo | 0 B | 🟢 small |
-| @react-native-community/slider | 0 B | 🟢 small |
-| @react-navigation/bottom-tabs | 0 B | 🟢 small |
-| @react-navigation/native | 0 B | 🟢 small |
-| @react-navigation/native-stack | 0 B | 🟢 small |
-| @recovery/shared | 0 B | 🟢 small |
-| @rn-primitives/accordion | 0 B | 🟢 small |
-| @rn-primitives/alert-dialog | 0 B | 🟢 small |
-| @rn-primitives/avatar | 0 B | 🟢 small |
-| @rn-primitives/checkbox | 0 B | 🟢 small |
-| @rn-primitives/dialog | 0 B | 🟢 small |
-| @rn-primitives/label | 0 B | 🟢 small |
-| @rn-primitives/portal | 0 B | 🟢 small |
-| @rn-primitives/progress | 0 B | 🟢 small |
-| @rn-primitives/separator | 0 B | 🟢 small |
+| Package                                   | Size    | Category   |
+| ----------------------------------------- | ------- | ---------- |
+| eslint                                    | 2.83 MB | 🚨 massive |
+| @expo/vector-icons                        | 0 B     | 🟢 small   |
+| @hookform/resolvers                       | 0 B     | 🟢 small   |
+| @react-native-async-storage/async-storage | 0 B     | 🟢 small   |
+| @react-native-community/datetimepicker    | 0 B     | 🟢 small   |
+| @react-native-community/netinfo           | 0 B     | 🟢 small   |
+| @react-native-community/slider            | 0 B     | 🟢 small   |
+| @react-navigation/bottom-tabs             | 0 B     | 🟢 small   |
+| @react-navigation/native                  | 0 B     | 🟢 small   |
+| @react-navigation/native-stack            | 0 B     | 🟢 small   |
+| @recovery/shared                          | 0 B     | 🟢 small   |
+| @rn-primitives/accordion                  | 0 B     | 🟢 small   |
+| @rn-primitives/alert-dialog               | 0 B     | 🟢 small   |
+| @rn-primitives/avatar                     | 0 B     | 🟢 small   |
+| @rn-primitives/checkbox                   | 0 B     | 🟢 small   |
+| @rn-primitives/dialog                     | 0 B     | 🟢 small   |
+| @rn-primitives/label                      | 0 B     | 🟢 small   |
+| @rn-primitives/portal                     | 0 B     | 🟢 small   |
+| @rn-primitives/progress                   | 0 B     | 🟢 small   |
+| @rn-primitives/separator                  | 0 B     | 🟢 small   |
 
 ## Optimization Recommendations
 
@@ -76,28 +76,27 @@ Generated: 09/02/2026, 5:33:07 pm
 
 Star imports (`import * as X`) can increase bundle size by importing unused exports.
 
-| File | Line | Module |
-|------|------|--------|
-| src\adapters\secureStorage\native.ts | 11 | expo-secure-store |
-| src\components\achievements\KeytagWall.tsx | 20 | expo-haptics |
-| src\components\capsule\CapsuleCard.tsx | 19 | expo-haptics |
-| src\components\common\CrisisButton.tsx | 16 | expo-haptics |
-| src\components\common\EmptyState.tsx | 18 | expo-haptics |
-| src\components\common\SponsorWidget.tsx | 25 | expo-haptics |
-| src\components\contacts\ContactCard.tsx | 21 | expo-haptics |
-| src\components\home\DailyReadingCard.tsx | 20 | expo-haptics |
-| src\components\home\PhoneWidget.tsx | 23 | expo-haptics |
-| src\components\home\StatsRow.tsx | 19 | expo-haptics |
-| src\components\home\UpcomingMeetingWidget.tsx | 22 | expo-haptics |
-| src\components\journal\ReflectionCard.tsx | 23 | expo-haptics |
-| src\components\literature\ChapterCard.tsx | 19 | expo-haptics |
-| src\components\meetings\MeetingCard.tsx | 22 | expo-haptics |
-| src\components\meetings\SharePrepCard.tsx | 20 | expo-haptics |
-| src\components\step-work\AmendsCard.tsx | 19 | expo-haptics |
-| src\components\step-work\InventoryEntryCard.tsx | 19 | expo-haptics |
-| src\components\step-work\ReviewCard.tsx | 18 | expo-haptics |
-| src\components\ui\accordion.tsx | 4 | @rn-primitives/accordion |
-| src\components\ui\alert-dialog.tsx | 5 | @rn-primitives/alert-dialog |
+| File                                            | Line | Module                      |
+| ----------------------------------------------- | ---- | --------------------------- |
+| src\adapters\secureStorage\native.ts            | 11   | expo-secure-store           |
+| src\components\achievements\KeytagWall.tsx      | 20   | expo-haptics                |
+| src\components\capsule\CapsuleCard.tsx          | 19   | expo-haptics                |
+| src\components\common\CrisisButton.tsx          | 16   | expo-haptics                |
+| src\components\common\EmptyState.tsx            | 18   | expo-haptics                |
+| src\components\common\SponsorWidget.tsx         | 25   | expo-haptics                |
+| src\components\contacts\ContactCard.tsx         | 21   | expo-haptics                |
+| src\components\home\DailyReadingCard.tsx        | 20   | expo-haptics                |
+| src\components\home\PhoneWidget.tsx             | 23   | expo-haptics                |
+| src\components\home\StatsRow.tsx                | 19   | expo-haptics                |
+| src\components\home\UpcomingMeetingWidget.tsx   | 22   | expo-haptics                |
+| src\components\journal\ReflectionCard.tsx       | 23   | expo-haptics                |
+| src\components\literature\ChapterCard.tsx       | 19   | expo-haptics                |
+| src\components\meetings\MeetingCard.tsx         | 22   | expo-haptics                |
+| src\components\meetings\SharePrepCard.tsx       | 20   | expo-haptics                |
+| src\components\step-work\AmendsCard.tsx         | 19   | expo-haptics                |
+| src\components\step-work\InventoryEntryCard.tsx | 19   | expo-haptics                |
+| src\components\step-work\ReviewCard.tsx         | 18   | expo-haptics                |
+| src\components\ui\accordion.tsx                 | 4    | @rn-primitives/accordion    |
+| src\components\ui\alert-dialog.tsx              | 5    | @rn-primitives/alert-dialog |
 
 ... and 66 more. Use --verbose to see all.
-

@@ -14,7 +14,12 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { usePhoneCalls } from '../../hooks/usePhoneCalls';
@@ -61,12 +66,13 @@ function ProgressBar({
         accessibilityValue={{ min: 0, max: 100, now: Math.round(progress * 100) }}
       >
         <View
-          style={[styles.progressFill, { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: getProgressColor() }]}
+          style={[
+            styles.progressFill,
+            { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: getProgressColor() },
+          ]}
         />
       </View>
-      {progress >= 1 && (
-        <Text style={styles.goalReachedText}>✓ Daily goal reached!</Text>
-      )}
+      {progress >= 1 && <Text style={styles.goalReachedText}>✓ Daily goal reached!</Text>}
     </View>
   );
 }
@@ -104,7 +110,10 @@ function QuickCallButton({
   }, [onPress]);
 
   return (
-    <Animated.View entering={FadeIn.delay(delay)} style={[styles.quickCallContainer, animatedStyle]}>
+    <Animated.View
+      entering={FadeIn.delay(delay)}
+      style={[styles.quickCallContainer, animatedStyle]}
+    >
       <TouchableOpacity
         onPress={handlePress}
         onPressIn={handlePressIn}
@@ -131,14 +140,8 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const {
-    todayCalls,
-    stats,
-    loadTodayCalls,
-    formatCallTime,
-    formatDuration,
-    logCallWithContact,
-  } = usePhoneCalls();
+  const { todayCalls, stats, loadTodayCalls, formatCallTime, formatDuration, logCallWithContact } =
+    usePhoneCalls();
 
   const { contacts, sponsor, callContact, loadContacts } = useContacts();
 
@@ -163,7 +166,9 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
 
   // Get suggested contacts to call (haven't called today)
   const suggestedContacts = contacts
-    .filter((c: RecoveryContact) => !todayCalls.some((call: PhoneCallLog) => call.contactId === c.id))
+    .filter(
+      (c: RecoveryContact) => !todayCalls.some((call: PhoneCallLog) => call.contactId === c.id),
+    )
     .slice(0, 3);
 
   const handleQuickCall = useCallback(
@@ -175,7 +180,7 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
         logger.error('Failed to initiate call', err);
       }
     },
-    [callContact, logCallWithContact]
+    [callContact, logCallWithContact],
   );
 
   const handleViewAll = useCallback(() => {
@@ -211,7 +216,11 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
           <View style={styles.errorContent}>
             <Feather name="alert-circle" size={24} color={ds.semantic.intent.alert.solid} />
             <Text style={styles.errorTitle}>Couldn't load calls</Text>
-            <TouchableOpacity onPress={() => {}} accessibilityRole="button" accessibilityLabel="Retry loading">
+            <TouchableOpacity
+              onPress={() => {}}
+              accessibilityRole="button"
+              accessibilityLabel="Retry loading"
+            >
               <Text style={styles.errorSubtitle}>Tap to retry</Text>
             </TouchableOpacity>
           </View>
@@ -251,7 +260,10 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
           <View style={styles.callsSection}>
             <Text style={styles.sectionTitle}>Today</Text>
             {todayCalls.slice(0, 3).map((call: PhoneCallLog, index: number) => (
-              <View key={call.id} style={[styles.callItem, index < todayCalls.length - 1 && styles.callItemBorder]}>
+              <View
+                key={call.id}
+                style={[styles.callItem, index < todayCalls.length - 1 && styles.callItemBorder]}
+              >
                 <View style={styles.callIconContainer}>
                   <Feather name="check" size={14} color={ds.colors.success} />
                 </View>
@@ -270,7 +282,9 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
         {/* Suggested Contacts */}
         {suggestedContacts.length > 0 && (
           <View style={styles.suggestedSection}>
-            <Text style={styles.sectionTitle}>{todayCalls.length > 0 ? 'Call Next' : 'Suggested'}</Text>
+            <Text style={styles.sectionTitle}>
+              {todayCalls.length > 0 ? 'Call Next' : 'Suggested'}
+            </Text>
             <View style={styles.suggestedGrid}>
               {suggestedContacts.map((contact: RecoveryContact, index: number) => (
                 <QuickCallButton
@@ -314,202 +328,203 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  card: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-  },
-  errorCard: {
-    borderColor: ds.semantic.intent.alert.solid,
-    borderWidth: 1,
-  },
-  errorContent: {
-    alignItems: 'center',
-    padding: 16,
-  },
-  errorTitle: {
-    color: ds.semantic.intent.alert.solid,
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: 8,
-  },
-  errorSubtitle: {
-    color: ds.colors.textTertiary,
-    fontSize: 14,
-    marginTop: 4,
-  },
-  skeleton: {
-    opacity: 0.5,
-  },
-  skeletonHeader: {
-    height: 20,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 4,
-    width: '50%',
-    marginBottom: 16,
-  },
-  skeletonProgress: {
-    height: 8,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 4,
-    marginBottom: 16,
-  },
-  skeletonButtons: {
-    height: 60,
-    backgroundColor: ds.colors.bgTertiary,
-    borderRadius: 8,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-  },
-  viewAllText: {
-    fontSize: 14,
-    color: ds.colors.info,
-  },
-  progressContainer: {
-    marginBottom: 16,
-  },
-  progressHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  progressLabel: {
-    fontSize: 14,
-    color: ds.colors.textTertiary,
-  },
-  progressValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-  },
-  progressTrack: {
-    height: 8,
-    backgroundColor: ds.colors.bgSecondary,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: 4,
-  },
-  goalReachedText: {
-    fontSize: 12,
-    color: ds.colors.success,
-    marginTop: 4,
-  },
-  callsSection: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: ds.colors.textSecondary,
-    textTransform: 'uppercase',
-    marginBottom: 8,
-  },
-  callItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  callItemBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: ds.colors.borderSubtle,
-  },
-  callIconContainer: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: ds.colors.successMuted,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  callInfo: {
-    flex: 1,
-  },
-  callName: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: ds.semantic.text.onDark,
-  },
-  callMeta: {
-    fontSize: 12,
-    color: ds.colors.textSecondary,
-    marginTop: 2,
-  },
-  suggestedSection: {
-    marginBottom: 16,
-  },
-  suggestedGrid: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  quickCallContainer: {
-    flex: 1,
-  },
-  quickCallButton: {
-    backgroundColor: ds.colors.bgSecondary,
-    borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
-  },
-  quickCallIcon: {
-    fontSize: 20,
-    marginBottom: 4,
-  },
-  quickCallName: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: ds.semantic.text.onDark,
-    textAlign: 'center',
-  },
-  sponsorButton: {
-    backgroundColor: ds.colors.warningMuted,
-    marginTop: 8,
-  },
-  sponsorName: {
-    color: ds.colors.warning,
-  },
-  sponsorLabel: {
-    fontSize: 10,
-    color: ds.colors.warning,
-    marginTop: 2,
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  emptyText: {
-    color: ds.colors.textSecondary,
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  addButton: {
-    backgroundColor: ds.colors.info,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  addButtonText: {
-    color: ds.semantic.text.onDark,
-    fontWeight: '500',
-    fontSize: 14,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    card: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 16,
+    },
+    errorCard: {
+      borderColor: ds.semantic.intent.alert.solid,
+      borderWidth: 1,
+    },
+    errorContent: {
+      alignItems: 'center',
+      padding: 16,
+    },
+    errorTitle: {
+      color: ds.semantic.intent.alert.solid,
+      fontSize: 16,
+      fontWeight: '600',
+      marginTop: 8,
+    },
+    errorSubtitle: {
+      color: ds.colors.textTertiary,
+      fontSize: 14,
+      marginTop: 4,
+    },
+    skeleton: {
+      opacity: 0.5,
+    },
+    skeletonHeader: {
+      height: 20,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 4,
+      width: '50%',
+      marginBottom: 16,
+    },
+    skeletonProgress: {
+      height: 8,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 4,
+      marginBottom: 16,
+    },
+    skeletonButtons: {
+      height: 60,
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: 8,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    headerLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    headerTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+    },
+    viewAllText: {
+      fontSize: 14,
+      color: ds.colors.info,
+    },
+    progressContainer: {
+      marginBottom: 16,
+    },
+    progressHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 4,
+    },
+    progressLabel: {
+      fontSize: 14,
+      color: ds.colors.textTertiary,
+    },
+    progressValue: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+    },
+    progressTrack: {
+      height: 8,
+      backgroundColor: ds.colors.bgSecondary,
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: 4,
+    },
+    goalReachedText: {
+      fontSize: 12,
+      color: ds.colors.success,
+      marginTop: 4,
+    },
+    callsSection: {
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: 12,
+      fontWeight: '600',
+      color: ds.colors.textSecondary,
+      textTransform: 'uppercase',
+      marginBottom: 8,
+    },
+    callItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 8,
+    },
+    callItemBorder: {
+      borderBottomWidth: 1,
+      borderBottomColor: ds.colors.borderSubtle,
+    },
+    callIconContainer: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: ds.colors.successMuted,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    callInfo: {
+      flex: 1,
+    },
+    callName: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: ds.semantic.text.onDark,
+    },
+    callMeta: {
+      fontSize: 12,
+      color: ds.colors.textSecondary,
+      marginTop: 2,
+    },
+    suggestedSection: {
+      marginBottom: 16,
+    },
+    suggestedGrid: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    quickCallContainer: {
+      flex: 1,
+    },
+    quickCallButton: {
+      backgroundColor: ds.colors.bgSecondary,
+      borderRadius: 12,
+      padding: 12,
+      alignItems: 'center',
+    },
+    quickCallIcon: {
+      fontSize: 20,
+      marginBottom: 4,
+    },
+    quickCallName: {
+      fontSize: 12,
+      fontWeight: '500',
+      color: ds.semantic.text.onDark,
+      textAlign: 'center',
+    },
+    sponsorButton: {
+      backgroundColor: ds.colors.warningMuted,
+      marginTop: 8,
+    },
+    sponsorName: {
+      color: ds.colors.warning,
+    },
+    sponsorLabel: {
+      fontSize: 10,
+      color: ds.colors.warning,
+      marginTop: 2,
+    },
+    emptyState: {
+      alignItems: 'center',
+      paddingVertical: 16,
+    },
+    emptyText: {
+      color: ds.colors.textSecondary,
+      fontSize: 14,
+      marginBottom: 12,
+    },
+    addButton: {
+      backgroundColor: ds.colors.info,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+    },
+    addButtonText: {
+      color: ds.semantic.text.onDark,
+      fontWeight: '500',
+      fontSize: 14,
+    },
+  }) as const;

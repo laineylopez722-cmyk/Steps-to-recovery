@@ -15,6 +15,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { darkAccent, spacing, typography } from '../design-system/tokens/modern';
+import { ds } from '../design-system/tokens/ds';
 
 // ========================================
 // Types
@@ -161,7 +162,7 @@ export function CircularProgressRing({
             cx={centerX}
             cy={centerY}
             r={dayRadius}
-            stroke="rgba(148, 163, 184, 0.1)"
+            stroke={ds.colors.borderDefault}
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -184,7 +185,7 @@ export function CircularProgressRing({
             cx={centerX}
             cy={centerY}
             r={hourRadius}
-            stroke="rgba(148, 163, 184, 0.1)"
+            stroke={ds.colors.borderDefault}
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -207,7 +208,7 @@ export function CircularProgressRing({
             cx={centerX}
             cy={centerY}
             r={minuteRadius}
-            stroke="rgba(148, 163, 184, 0.1)"
+            stroke={ds.colors.borderDefault}
             strokeWidth={strokeWidth}
             fill="none"
           />

@@ -37,12 +37,7 @@ jest.mock('react-native-reanimated', () => {
 
 jest.mock('../../../../design-system/components/GradientButton', () => ({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  GradientButton: ({
-    title,
-    onPress,
-    disabled,
-    accessibilityLabel,
-  }: any) => {
+  GradientButton: ({ title, onPress, disabled, accessibilityLabel }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
     return (
@@ -106,7 +101,13 @@ describe('CheckInModal', () => {
     const onConfirm = jest.fn().mockResolvedValue(false);
 
     render(
-      <CheckInModal visible meeting={meeting} onClose={onClose} onConfirm={onConfirm} isLoading={false} />,
+      <CheckInModal
+        visible
+        meeting={meeting}
+        onClose={onClose}
+        onConfirm={onConfirm}
+        isLoading={false}
+      />,
     );
 
     fireEvent.changeText(screen.getByLabelText('Meeting notes'), '  tough day  ');
@@ -126,7 +127,13 @@ describe('CheckInModal', () => {
     const hapticsSpy = jest.spyOn(Haptics, 'notificationAsync').mockResolvedValue(undefined);
 
     render(
-      <CheckInModal visible meeting={meeting} onClose={onClose} onConfirm={onConfirm} isLoading={false} />,
+      <CheckInModal
+        visible
+        meeting={meeting}
+        onClose={onClose}
+        onConfirm={onConfirm}
+        isLoading={false}
+      />,
     );
 
     fireEvent.changeText(screen.getByLabelText('Meeting notes'), 'helpful shares');
@@ -150,7 +157,13 @@ describe('CheckInModal', () => {
     const onConfirm = jest.fn().mockResolvedValue(true);
 
     render(
-      <CheckInModal visible meeting={meeting} onClose={onClose} onConfirm={onConfirm} isLoading={false} />,
+      <CheckInModal
+        visible
+        meeting={meeting}
+        onClose={onClose}
+        onConfirm={onConfirm}
+        isLoading={false}
+      />,
     );
 
     fireEvent.press(screen.getByText('Cancel'));

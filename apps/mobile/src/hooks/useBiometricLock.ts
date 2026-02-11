@@ -18,6 +18,7 @@ import { AppState, type AppStateStatus } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { secureStorage } from '../adapters/secureStorage';
 import { logger } from '../utils/logger';
+import { constantTimeEqual } from '../utils/encryption';
 
 const SETTINGS_KEY = 'biometric_lock_settings';
 const PIN_KEY = 'biometric_lock_pin';
@@ -222,7 +223,7 @@ export function useBiometricLock(): UseBiometricLockReturn {
   const validatePin = useCallback(async (pin: string): Promise<boolean> => {
     try {
       const storedPin = await secureStorage.getItemAsync(PIN_KEY);
-      if (storedPin === pin) {
+      if (storedPin !== null && constantTimeEqual(storedPin, pin)) {
         setIsLocked(false);
         isLockedRef.current = false;
         logger.info('PIN authentication successful');
@@ -247,20 +248,23 @@ export function useBiometricLock(): UseBiometricLockReturn {
     }
   }, []);
 
-  const updateSettings = useCallback(async (updates: Partial<BiometricLockSettings>): Promise<void> => {
-    try {
-      const newSettings: BiometricLockSettings = {
-        ...settingsRef.current,
-        ...updates,
-      };
-      await secureStorage.setItemAsync(SETTINGS_KEY, JSON.stringify(newSettings));
-      setSettings(newSettings);
-      logger.info('Biometric lock settings updated');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      logger.error('Failed to update settings', { error: message });
-    }
-  }, []);
+  const updateSettings = useCallback(
+    async (updates: Partial<BiometricLockSettings>): Promise<void> => {
+      try {
+        const newSettings: BiometricLockSettings = {
+          ...settingsRef.current,
+          ...updates,
+        };
+        await secureStorage.setItemAsync(SETTINGS_KEY, JSON.stringify(newSettings));
+        setSettings(newSettings);
+        logger.info('Biometric lock settings updated');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        logger.error('Failed to update settings', { error: message });
+      }
+    },
+    [],
+  );
 
   const emergencyUnlock = useCallback((): void => {
     setIsLocked(false);

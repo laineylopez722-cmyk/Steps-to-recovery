@@ -56,3 +56,25 @@ export interface CravingSurfSummary {
   successRate: number; // percentage where final < initial
   mostEffectiveTechnique: string | null;
 }
+
+// Risk Assessment Types
+
+export type RiskLevel = 'low' | 'moderate' | 'elevated' | 'high';
+
+export interface RiskFactor {
+  id: string;
+  name: string;
+  weight: number; // contribution to overall score
+  description: string;
+  currentValue: number;
+  threshold: number;
+  isTriggered: boolean;
+}
+
+export interface RiskAssessment {
+  level: RiskLevel;
+  score: number; // 0-100
+  factors: RiskFactor[];
+  recommendations: string[];
+  assessedAt: string;
+}

@@ -177,7 +177,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
             screenReaderEnabled: isEnabled,
           }));
         }
-      }
+      },
     );
 
     return () => {
@@ -198,7 +198,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
             boldTextEnabled: isEnabled,
           }));
         }
-      }
+      },
     );
 
     return () => {
@@ -220,7 +220,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
             highContrast: isEnabled || prev.invertColorsEnabled,
           }));
         }
-      }
+      },
     );
 
     return () => {
@@ -240,7 +240,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
             highContrast: isEnabled || prev.grayscaleEnabled,
           }));
         }
-      }
+      },
     );
 
     return () => {
@@ -266,7 +266,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
       const boldAdjustment = state.boldTextEnabled ? 0.95 : 1;
       return Math.round(baseSize * cappedScale * boldAdjustment);
     },
-    [state.textScale, state.boldTextEnabled]
+    [state.textScale, state.boldTextEnabled],
   );
 
   /**

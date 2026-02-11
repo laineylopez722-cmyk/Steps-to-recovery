@@ -1,6 +1,6 @@
 /**
  * Card Surface Styles - iOS Dark Mode
- * 
+ *
  * No blur/glassmorphism - clean, modern surfaces
  * Following iOS Human Interface Guidelines
  */
@@ -77,11 +77,11 @@ export const glass = {
 
 // Accent glow colors (use very sparingly)
 export const glow = {
-  primary: 'rgba(245, 158, 11, 0.2)',   // amber
-  success: 'rgba(48, 209, 88, 0.2)',    // green
-  warning: 'rgba(255, 214, 10, 0.2)',   // yellow
-  danger: 'rgba(255, 69, 58, 0.2)',     // red
-  calm: 'rgba(10, 132, 255, 0.15)',     // blue
+  primary: 'rgba(245, 158, 11, 0.2)', // amber
+  success: 'rgba(48, 209, 88, 0.2)', // green
+  warning: 'rgba(255, 214, 10, 0.2)', // yellow
+  danger: 'rgba(255, 69, 58, 0.2)', // red
+  calm: 'rgba(10, 132, 255, 0.15)', // blue
 } as const;
 
 // Solid backgrounds (no gradients)

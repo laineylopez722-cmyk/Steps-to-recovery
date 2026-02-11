@@ -223,7 +223,7 @@ export const ReducedMotionDurations = {
  */
 export function getReducedMotionDuration(
   normalDuration: number,
-  strategy: 'instant' | 'subtle' = 'instant'
+  strategy: 'instant' | 'subtle' = 'instant',
 ): number {
   if (strategy === 'instant') {
     return ReducedMotionDurations.INSTANT;
@@ -239,7 +239,7 @@ export function getReducedMotionDuration(
  * @returns Spring config for reduced motion (instant)
  */
 export function getReducedMotionSpring<T extends { damping?: number; stiffness?: number }>(
-  normalSpring: T
+  normalSpring: T,
 ): T {
   return {
     ...normalSpring,
@@ -364,7 +364,7 @@ export const ReducedMotionPresets = {
  */
 export function getMotionPreset(
   presetName: keyof typeof MotionPresets,
-  isReducedMotion: boolean
+  isReducedMotion: boolean,
 ): MotionPreset {
   if (isReducedMotion) {
     return ReducedMotionPresets[presetName];

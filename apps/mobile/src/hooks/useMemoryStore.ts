@@ -38,28 +38,28 @@ export interface MemorySummary {
     relationship?: string;
     lastMentioned: Date;
   }>;
-  
+
   // Known triggers
   triggers: string[];
-  
+
   // Coping strategies that work
   copingStrategies: string[];
-  
+
   // Recent victories
   recentVictories: Array<{
     content: string;
     date: Date;
   }>;
-  
+
   // Current struggles
   currentStruggles: string[];
-  
+
   // Goals
   goals: string[];
-  
+
   // Key insights
   insights: string[];
-  
+
   // Emotional patterns
   emotionalTrends: {
     positive: string[];
@@ -70,42 +70,42 @@ export interface MemorySummary {
 export interface UseMemoryStoreReturn {
   // Add new memories
   addMemories: (memories: Memory[]) => Promise<void>;
-  
+
   // Get all memories
   getAllMemories: () => Promise<Memory[]>;
-  
+
   // Get memories by type
   getMemoriesByType: (type: MemoryType) => Promise<Memory[]>;
-  
+
   // Get recent memories
   getRecentMemories: (days?: number) => Promise<Memory[]>;
-  
+
   // Search memories
   searchMemories: (query: string) => Promise<Memory[]>;
-  
+
   // Get AI-ready summary
   getMemorySummary: () => Promise<MemorySummary>;
-  
+
   // Generate context string for AI
   generateAIContext: () => Promise<string>;
-  
+
   // Update a memory
   updateMemory: (id: string, updates: Partial<Memory>) => Promise<void>;
-  
+
   // Delete a memory
   deleteMemory: (id: string) => Promise<void>;
-  
+
   isLoading: boolean;
 }
 
 export function useMemoryStore(userId: string): UseMemoryStoreReturn {
   const { db, isReady } = useDatabase();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Ensure memory table exists
   useEffect(() => {
     if (!db || !isReady) return;
-    
+
     const initTable = async () => {
       try {
         await db.execAsync(`
@@ -132,167 +132,181 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         });
       }
     };
-    
+
     initTable();
   }, [db, isReady]);
-  
-  const addMemories = useCallback(async (memories: Memory[]) => {
-    if (!db || !isReady || memories.length === 0) return;
-    
-    setIsLoading(true);
-    try {
-      for (const memory of memories) {
-        // Check if memory with same key exists (for deduplication)
-        if (memory.key) {
-          const existing = await db.getFirstAsync<{ id: string }>(
-            'SELECT id FROM memories WHERE user_id = ? AND key = ?',
-            [userId, memory.key]
-          );
-          
-          if (existing) {
-            // Update existing memory - encrypt before storing
-            const encryptedContent = await encryptContent(memory.content);
-            const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
 
-            await db.runAsync(
-              `UPDATE memories SET
+  const addMemories = useCallback(
+    async (memories: Memory[]) => {
+      if (!db || !isReady || memories.length === 0) return;
+
+      setIsLoading(true);
+      try {
+        for (const memory of memories) {
+          // Check if memory with same key exists (for deduplication)
+          if (memory.key) {
+            const existing = await db.getFirstAsync<{ id: string }>(
+              'SELECT id FROM memories WHERE user_id = ? AND key = ?',
+              [userId, memory.key],
+            );
+
+            if (existing) {
+              // Update existing memory - encrypt before storing
+              const encryptedContent = await encryptContent(memory.content);
+              const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
+
+              await db.runAsync(
+                `UPDATE memories SET
                 encrypted_content = ?, encrypted_context = ?, confidence = ?, updated_at = ?
               WHERE id = ?`,
-              [
-                encryptedContent,
-                encryptedContext,
-                memory.confidence,
-                new Date().toISOString(),
-                existing.id,
-              ]
-            );
-            continue;
+                [
+                  encryptedContent,
+                  encryptedContext,
+                  memory.confidence,
+                  new Date().toISOString(),
+                  existing.id,
+                ],
+              );
+              continue;
+            }
           }
-        }
 
-        // Insert new memory - encrypt before storing
-        const encryptedContent = await encryptContent(memory.content);
-        const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
+          // Insert new memory - encrypt before storing
+          const encryptedContent = await encryptContent(memory.content);
+          const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
 
-        await db.runAsync(
-          `INSERT INTO memories
+          await db.runAsync(
+            `INSERT INTO memories
             (id, user_id, type, encrypted_content, encrypted_context, confidence, source, source_id, key, created_at, updated_at)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            memory.id,
-            userId,
-            memory.type,
-            encryptedContent,
-            encryptedContext,
-            memory.confidence,
-            memory.source,
-            memory.sourceId || null,
-            memory.key || null,
-            memory.createdAt.toISOString(),
-            memory.updatedAt.toISOString(),
-          ]
-        );
+            [
+              memory.id,
+              userId,
+              memory.type,
+              encryptedContent,
+              encryptedContext,
+              memory.confidence,
+              memory.source,
+              memory.sourceId || null,
+              memory.key || null,
+              memory.createdAt.toISOString(),
+              memory.updatedAt.toISOString(),
+            ],
+          );
+        }
+      } catch (err) {
+        logger.error('Failed to add memories', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      logger.error('Failed to add memories', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [db, isReady, userId]);
-  
+    },
+    [db, isReady, userId],
+  );
+
   const getAllMemories = useCallback(async (): Promise<Memory[]> => {
     if (!db || !isReady) return [];
 
     try {
       const rows = await db.getAllAsync<MemoryRow>(
         'SELECT * FROM memories WHERE user_id = ? ORDER BY created_at DESC',
-        [userId]
+        [userId],
       );
       return Promise.all(rows.map(rowToMemory));
     } catch (err) {
       logger.error('Failed to get memories', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
+        errorType: err instanceof Error ? err.name : 'Unknown',
+      });
       return [];
     }
   }, [db, isReady, userId]);
 
-  const getMemoriesByType = useCallback(async (type: MemoryType): Promise<Memory[]> => {
-    if (!db || !isReady) return [];
+  const getMemoriesByType = useCallback(
+    async (type: MemoryType): Promise<Memory[]> => {
+      if (!db || !isReady) return [];
 
-    try {
-      const rows = await db.getAllAsync<MemoryRow>(
-        'SELECT * FROM memories WHERE user_id = ? AND type = ? ORDER BY created_at DESC',
-        [userId, type]
-      );
-      return Promise.all(rows.map(rowToMemory));
-    } catch (err) {
-      logger.error('Failed to get memories by type', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
-      return [];
-    }
-  }, [db, isReady, userId]);
+      try {
+        const rows = await db.getAllAsync<MemoryRow>(
+          'SELECT * FROM memories WHERE user_id = ? AND type = ? ORDER BY created_at DESC',
+          [userId, type],
+        );
+        return Promise.all(rows.map(rowToMemory));
+      } catch (err) {
+        logger.error('Failed to get memories by type', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
+        return [];
+      }
+    },
+    [db, isReady, userId],
+  );
 
-  const getRecentMemories = useCallback(async (days = 7): Promise<Memory[]> => {
-    if (!db || !isReady) return [];
+  const getRecentMemories = useCallback(
+    async (days = 7): Promise<Memory[]> => {
+      if (!db || !isReady) return [];
 
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - days);
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - days);
 
-    try {
-      const rows = await db.getAllAsync<MemoryRow>(
-        'SELECT * FROM memories WHERE user_id = ? AND created_at > ? ORDER BY created_at DESC',
-        [userId, cutoff.toISOString()]
-      );
-      return Promise.all(rows.map(rowToMemory));
-    } catch (err) {
-      logger.error('Failed to get recent memories', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
-      return [];
-    }
-  }, [db, isReady, userId]);
+      try {
+        const rows = await db.getAllAsync<MemoryRow>(
+          'SELECT * FROM memories WHERE user_id = ? AND created_at > ? ORDER BY created_at DESC',
+          [userId, cutoff.toISOString()],
+        );
+        return Promise.all(rows.map(rowToMemory));
+      } catch (err) {
+        logger.error('Failed to get recent memories', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
+        return [];
+      }
+    },
+    [db, isReady, userId],
+  );
 
-  const searchMemories = useCallback(async (query: string): Promise<Memory[]> => {
-    if (!db || !isReady || !query.trim()) return [];
+  const searchMemories = useCallback(
+    async (query: string): Promise<Memory[]> => {
+      if (!db || !isReady || !query.trim()) return [];
 
-    try {
-      // NOTE: Search on encrypted columns won't work - we need to decrypt all and filter
-      // For MVP, we'll fetch all memories and filter in memory
-      // TODO: Future optimization - use FTS (Full-Text Search) with encrypted index
-      const rows = await db.getAllAsync<MemoryRow>(
-        'SELECT * FROM memories WHERE user_id = ? ORDER BY confidence DESC, created_at DESC',
-        [userId]
-      );
+      try {
+        // NOTE: Search on encrypted columns won't work - we need to decrypt all and filter
+        // For MVP, we'll fetch all memories and filter in memory
+        // TODO: Future optimization - use FTS (Full-Text Search) with encrypted index
+        const rows = await db.getAllAsync<MemoryRow>(
+          'SELECT * FROM memories WHERE user_id = ? ORDER BY confidence DESC, created_at DESC',
+          [userId],
+        );
 
-      const memories = await Promise.all(rows.map(rowToMemory));
+        const memories = await Promise.all(rows.map(rowToMemory));
 
-      // Filter decrypted memories by query
-      const lowerQuery = query.toLowerCase();
-      return memories.filter(
-        (m) =>
-          m.content.toLowerCase().includes(lowerQuery) ||
-          (m.context && m.context.toLowerCase().includes(lowerQuery))
-      ).slice(0, 20);
-    } catch (err) {
-      logger.error('Failed to search memories', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
-      return [];
-    }
-  }, [db, isReady, userId]);
-  
+        // Filter decrypted memories by query
+        const lowerQuery = query.toLowerCase();
+        return memories
+          .filter(
+            (m) =>
+              m.content.toLowerCase().includes(lowerQuery) ||
+              (m.context && m.context.toLowerCase().includes(lowerQuery)),
+          )
+          .slice(0, 20);
+      } catch (err) {
+        logger.error('Failed to search memories', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
+        return [];
+      }
+    },
+    [db, isReady, userId],
+  );
+
   const getMemorySummary = useCallback(async (): Promise<MemorySummary> => {
     if (!db || !isReady) {
       return emptyMemorySummary();
     }
-    
+
     try {
       const all = await getAllMemories();
-      
+
       const summary: MemorySummary = {
         people: [],
         triggers: [],
@@ -303,7 +317,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         insights: [],
         emotionalTrends: { positive: [], negative: [] },
       };
-      
+
       for (const memory of all) {
         switch (memory.type) {
           case 'person':
@@ -343,9 +357,11 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
             break;
           case 'emotion':
             // Parse emotions
-            const emotions = memory.content.split(',').map(e => e.trim());
+            const emotions = memory.content.split(',').map((e) => e.trim());
             for (const emotion of emotions) {
-              if (['happy', 'grateful', 'proud', 'hopeful', 'calm'].some(p => emotion.includes(p))) {
+              if (
+                ['happy', 'grateful', 'proud', 'hopeful', 'calm'].some((p) => emotion.includes(p))
+              ) {
                 if (!summary.emotionalTrends.positive.includes(emotion)) {
                   summary.emotionalTrends.positive.push(emotion);
                 }
@@ -358,7 +374,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
             break;
         }
       }
-      
+
       // Limit arrays
       summary.people = summary.people.slice(0, 10);
       summary.triggers = summary.triggers.slice(0, 10);
@@ -367,105 +383,108 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
       summary.currentStruggles = summary.currentStruggles.slice(0, 5);
       summary.goals = summary.goals.slice(0, 5);
       summary.insights = summary.insights.slice(0, 5);
-      
+
       return summary;
     } catch (err) {
       logger.error('Failed to get memory summary', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
+        errorType: err instanceof Error ? err.name : 'Unknown',
+      });
       return emptyMemorySummary();
     }
   }, [db, isReady, getAllMemories]);
-  
+
   const generateAIContext = useCallback(async (): Promise<string> => {
     const summary = await getMemorySummary();
-    
+
     const parts: string[] = [];
-    
+
     if (summary.people.length > 0) {
-      parts.push(`People in their life: ${summary.people.map(p => p.name).join(', ')}`);
+      parts.push(`People in their life: ${summary.people.map((p) => p.name).join(', ')}`);
     }
-    
+
     if (summary.triggers.length > 0) {
       parts.push(`Known triggers: ${summary.triggers.join(', ')}`);
     }
-    
+
     if (summary.copingStrategies.length > 0) {
       parts.push(`Coping strategies that work: ${summary.copingStrategies.join(', ')}`);
     }
-    
+
     if (summary.recentVictories.length > 0) {
-      parts.push(`Recent wins: ${summary.recentVictories.map(v => v.content).join('; ')}`);
+      parts.push(`Recent wins: ${summary.recentVictories.map((v) => v.content).join('; ')}`);
     }
-    
+
     if (summary.currentStruggles.length > 0) {
       parts.push(`Current struggles: ${summary.currentStruggles.join(', ')}`);
     }
-    
+
     if (summary.goals.length > 0) {
       parts.push(`Goals: ${summary.goals.join(', ')}`);
     }
-    
+
     if (summary.insights.length > 0) {
       parts.push(`Key insights: ${summary.insights.join('; ')}`);
     }
-    
+
     return parts.join('\n');
   }, [getMemorySummary]);
-  
-  const updateMemory = useCallback(async (id: string, updates: Partial<Memory>) => {
-    if (!db || !isReady) return;
 
-    try {
-      const fields: string[] = [];
-      const values: (string | number | null)[] = [];
+  const updateMemory = useCallback(
+    async (id: string, updates: Partial<Memory>) => {
+      if (!db || !isReady) return;
 
-      // Encrypt content if updated
-      if (updates.content !== undefined) {
-        fields.push('encrypted_content = ?');
-        const encryptedContent = await encryptContent(updates.content);
-        values.push(encryptedContent);
+      try {
+        const fields: string[] = [];
+        const values: (string | number | null)[] = [];
+
+        // Encrypt content if updated
+        if (updates.content !== undefined) {
+          fields.push('encrypted_content = ?');
+          const encryptedContent = await encryptContent(updates.content);
+          values.push(encryptedContent);
+        }
+
+        // Encrypt context if updated
+        if (updates.context !== undefined) {
+          fields.push('encrypted_context = ?');
+          const encryptedContext = updates.context ? await encryptContent(updates.context) : null;
+          values.push(encryptedContext);
+        }
+
+        if (updates.confidence !== undefined) {
+          fields.push('confidence = ?');
+          values.push(updates.confidence);
+        }
+
+        fields.push('updated_at = ?');
+        values.push(new Date().toISOString());
+        values.push(id);
+
+        await db.runAsync(`UPDATE memories SET ${fields.join(', ')} WHERE id = ?`, values);
+      } catch (err) {
+        logger.error('Failed to update memory', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
       }
+    },
+    [db, isReady],
+  );
 
-      // Encrypt context if updated
-      if (updates.context !== undefined) {
-        fields.push('encrypted_context = ?');
-        const encryptedContext = updates.context ? await encryptContent(updates.context) : null;
-        values.push(encryptedContext);
+  const deleteMemory = useCallback(
+    async (id: string) => {
+      if (!db || !isReady) return;
+
+      try {
+        await db.runAsync('DELETE FROM memories WHERE id = ?', [id]);
+      } catch (err) {
+        logger.error('Failed to delete memory', {
+          errorType: err instanceof Error ? err.name : 'Unknown',
+        });
       }
+    },
+    [db, isReady],
+  );
 
-      if (updates.confidence !== undefined) {
-        fields.push('confidence = ?');
-        values.push(updates.confidence);
-      }
-
-      fields.push('updated_at = ?');
-      values.push(new Date().toISOString());
-      values.push(id);
-
-      await db.runAsync(
-        `UPDATE memories SET ${fields.join(', ')} WHERE id = ?`,
-        values
-      );
-    } catch (err) {
-      logger.error('Failed to update memory', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
-    }
-  }, [db, isReady]);
-  
-  const deleteMemory = useCallback(async (id: string) => {
-    if (!db || !isReady) return;
-    
-    try {
-      await db.runAsync('DELETE FROM memories WHERE id = ?', [id]);
-    } catch (err) {
-      logger.error('Failed to delete memory', {
-      errorType: err instanceof Error ? err.name : 'Unknown',
-    });
-    }
-  }, [db, isReady]);
-  
   return {
     addMemories,
     getAllMemories,

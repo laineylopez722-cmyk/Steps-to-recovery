@@ -1,6 +1,6 @@
 /**
  * Material Design 3 Card Component
- * 
+ *
  * A versatile container component following MD3 specifications:
  * - Surface background with tonal elevation
  * - MD3 elevation levels (0-5) with shadow overlays
@@ -8,12 +8,12 @@
  * - 16dp padding (p-4)
  * - Optional ripple on press
  * - Hover/focus states for web
- * 
+ *
  * MD3 Card Types:
  * - Elevated: Card with shadow at level 1
  * - Filled: Card with solid color at level 0
  * - Outlined: Card with outline border
- * 
+ *
  * @example
  * ```tsx
  * // Basic card
@@ -22,7 +22,7 @@
  *     <Text>Card content</Text>
  *   </CardContent>
  * </Card>
- * 
+ *
  * // Elevated card
  * <Card variant="elevated" elevation={2}>
  *   <CardHeader>
@@ -30,7 +30,7 @@
  *   </CardHeader>
  *   <CardContent>Content</CardContent>
  * </Card>
- * 
+ *
  * // Interactive card with press
  * <Card onPress={handlePress}>
  *   <CardContent>Tap me</CardContent>
@@ -59,7 +59,11 @@ import Animated, {
 import { useTheme } from '../../../hooks/useTheme';
 import { hapticLight } from '../../../../utils/haptics';
 import { cn } from '../../../../lib/utils';
-import { md3ElevationLight, md3ElevationDark, type ElevationStyle } from '../../../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  type ElevationStyle,
+} from '../../../tokens/md3-elevation';
 
 // ============================================================================
 // TYPES
@@ -155,10 +159,7 @@ const SPRING_CONFIG = {
 /**
  * Get elevation styles based on theme and level
  */
-function getElevationStyles(
-  isDark: boolean,
-  level: CardElevation,
-): ElevationStyle {
+function getElevationStyles(isDark: boolean, level: CardElevation): ElevationStyle {
   const elevations = isDark ? md3ElevationDark : md3ElevationLight;
   const key = `level${level}` as const;
   return elevations[key] || elevations.level0;
@@ -170,7 +171,7 @@ function getElevationStyles(
 
 /**
  * Material Design 3 Card
- * 
+ *
  * Features:
  * - MD3 elevation system with surface tint
  * - Interactive ripple on press
@@ -228,13 +229,13 @@ export const Card = forwardRef<View, CardProps>(
 
     const handlePress = async () => {
       if (!isInteractive) return;
-      
+
       try {
         await hapticLight();
       } catch {
         // Haptics may not be available
       }
-      
+
       onPress?.();
     };
 
@@ -248,18 +249,21 @@ export const Card = forwardRef<View, CardProps>(
     );
 
     // Compute shadow/elevation styles
-    const shadowStyles: ViewStyle = variant === 'elevated' ? {
-      shadowColor: elevationStyles.shadowColor,
-      shadowOffset: elevationStyles.shadowOffset,
-      shadowOpacity: elevationStyles.shadowOpacity,
-      shadowRadius: elevationStyles.shadowRadius,
-      elevation: elevationStyles.elevation,
-    } : {};
+    const shadowStyles: ViewStyle =
+      variant === 'elevated'
+        ? {
+            shadowColor: elevationStyles.shadowColor,
+            shadowOffset: elevationStyles.shadowOffset,
+            shadowOpacity: elevationStyles.shadowOpacity,
+            shadowRadius: elevationStyles.shadowRadius,
+            elevation: elevationStyles.elevation,
+          }
+        : {};
 
     // Accessibility configuration
     const computedAccessibilityRole: AccessibilityRole | undefined =
       accessibilityRole ?? (isInteractive ? 'button' : undefined);
-    
+
     const accessibilityState: AccessibilityState | undefined = isInteractive
       ? { disabled: false }
       : undefined;
@@ -309,11 +313,7 @@ Card.displayName = 'Card';
  */
 export const CardHeader = forwardRef<View, CardHeaderProps>(
   ({ children, className, ...props }, ref): ReactElement => (
-    <View
-      ref={ref}
-      className={cn('flex flex-col gap-1 mb-3', className)}
-      {...props}
-    >
+    <View ref={ref} className={cn('flex flex-col gap-1 mb-3', className)} {...props}>
       {children}
     </View>
   ),
@@ -327,10 +327,7 @@ CardHeader.displayName = 'CardHeader';
 export const CardTitle = forwardRef<View, CardTitleProps>(
   ({ children, className, ...props }, ref): ReactElement => (
     <View ref={ref} className={cn('', className)} {...props}>
-      <Animated.Text
-        className="text-lg font-semibold text-onSurface"
-        accessibilityRole="header"
-      >
+      <Animated.Text className="text-lg font-semibold text-onSurface" accessibilityRole="header">
         {children}
       </Animated.Text>
     </View>
@@ -345,9 +342,7 @@ CardTitle.displayName = 'CardTitle';
 export const CardDescription = forwardRef<View, CardDescriptionProps>(
   ({ children, className, ...props }, ref): ReactElement => (
     <View ref={ref} className={cn('', className)} {...props}>
-      <Animated.Text className="text-sm text-onSurfaceVariant">
-        {children}
-      </Animated.Text>
+      <Animated.Text className="text-sm text-onSurfaceVariant">{children}</Animated.Text>
     </View>
   ),
 );
@@ -359,11 +354,7 @@ CardDescription.displayName = 'CardDescription';
  */
 export const CardContent = forwardRef<View, CardContentProps>(
   ({ children, className, ...props }, ref): ReactElement => (
-    <View
-      ref={ref}
-      className={cn('', className)}
-      {...props}
-    >
+    <View ref={ref} className={cn('', className)} {...props}>
       {children}
     </View>
   ),

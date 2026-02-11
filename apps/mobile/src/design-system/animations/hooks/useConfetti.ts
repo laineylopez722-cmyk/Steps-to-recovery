@@ -127,10 +127,7 @@ const DEFAULT_OPTIONS: Required<UseConfettiOptions> = {
 /**
  * Generate a random confetti particle
  */
-function generateParticle(
-  index: number,
-  config: Required<UseConfettiOptions>
-): ConfettiParticle {
+function generateParticle(index: number, config: Required<UseConfettiOptions>): ConfettiParticle {
   const { origin, colors, sizeRange, shapes, spread } = config;
   const [minSize, maxSize] = sizeRange;
 
@@ -163,9 +160,7 @@ function generateParticle(
  * Generate all confetti particles
  */
 function generateParticles(config: Required<UseConfettiOptions>): ConfettiParticle[] {
-  return Array.from({ length: config.particleCount }, (_, i) =>
-    generateParticle(i, config)
-  );
+  return Array.from({ length: config.particleCount }, (_, i) => generateParticle(i, config));
 }
 
 // ============================================================================
@@ -224,7 +219,9 @@ export function useConfetti(options: UseConfettiOptions = {}): UseConfettiReturn
 // ============================================================================
 
 /** Subtle confetti preset */
-export function useSubtleConfetti(options: Omit<UseConfettiOptions, 'particleCount'> = {}): UseConfettiReturn {
+export function useSubtleConfetti(
+  options: Omit<UseConfettiOptions, 'particleCount'> = {},
+): UseConfettiReturn {
   return useConfetti({
     particleCount: 30,
     sizeRange: [6, 12],
@@ -233,7 +230,9 @@ export function useSubtleConfetti(options: Omit<UseConfettiOptions, 'particleCou
 }
 
 /** Grand confetti preset */
-export function useGrandConfetti(options: Omit<UseConfettiOptions, 'particleCount'> = {}): UseConfettiReturn {
+export function useGrandConfetti(
+  options: Omit<UseConfettiOptions, 'particleCount'> = {},
+): UseConfettiReturn {
   return useConfetti({
     particleCount: 100,
     sizeRange: [8, 20],
@@ -242,7 +241,9 @@ export function useGrandConfetti(options: Omit<UseConfettiOptions, 'particleCoun
 }
 
 /** Center burst preset */
-export function useCenterBurstConfetti(options: Omit<UseConfettiOptions, 'origin'> = {}): UseConfettiReturn {
+export function useCenterBurstConfetti(
+  options: Omit<UseConfettiOptions, 'origin'> = {},
+): UseConfettiReturn {
   return useConfetti({
     origin: { x: SCREEN_WIDTH / 2, y: SCREEN_HEIGHT / 2 },
     spread: 360,

@@ -45,21 +45,17 @@ describe('database utilities', () => {
       expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS user_profile'))).toBe(
         true,
       );
-      expect(
-        calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS journal_entries')),
-      ).toBe(true);
-      expect(
-        calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS daily_checkins')),
-      ).toBe(true);
-      expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS step_work'))).toBe(
+      expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS journal_entries'))).toBe(
         true,
       );
+      expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS daily_checkins'))).toBe(
+        true,
+      );
+      expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS step_work'))).toBe(true);
       expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS achievements'))).toBe(
         true,
       );
-      expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS sync_queue'))).toBe(
-        true,
-      );
+      expect(calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS sync_queue'))).toBe(true);
       expect(
         calls.some((sql) => sql.includes('CREATE TABLE IF NOT EXISTS schema_migrations')),
       ).toBe(true);
@@ -68,9 +64,9 @@ describe('database utilities', () => {
       expect(calls.some((sql) => sql.includes('CREATE INDEX IF NOT EXISTS idx_journal_user'))).toBe(
         true,
       );
-      expect(
-        calls.some((sql) => sql.includes('CREATE INDEX IF NOT EXISTS idx_checkin_date')),
-      ).toBe(true);
+      expect(calls.some((sql) => sql.includes('CREATE INDEX IF NOT EXISTS idx_checkin_date'))).toBe(
+        true,
+      );
 
       expect(logger.info).toHaveBeenCalledWith(
         'Database initialization complete',
@@ -113,8 +109,8 @@ describe('database utilities', () => {
     it('skips migrations when schema is up to date', async () => {
       const freshName = `fresh-${Date.now()}.db`;
       mockDb.getDatabaseName.mockReturnValue(freshName);
-      // Return a high version that equals CURRENT_SCHEMA_VERSION (12)
-      mockDb.getFirstAsync.mockResolvedValue({ version: 12 });
+      // Return a high version that equals CURRENT_SCHEMA_VERSION (15)
+      mockDb.getFirstAsync.mockResolvedValue({ version: 15 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -123,7 +119,7 @@ describe('database utilities', () => {
     });
 
     it('sets WAL journal mode pragma', async () => {
-      mockDb.getFirstAsync.mockResolvedValue({ version: 12 });
+      mockDb.getFirstAsync.mockResolvedValue({ version: 15 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -135,7 +131,7 @@ describe('database utilities', () => {
     it('handles pragma failures gracefully', async () => {
       const pragmaName = `pragma-${Date.now()}.db`;
       mockDb.getDatabaseName.mockReturnValue(pragmaName);
-      mockDb.getFirstAsync.mockResolvedValue({ version: 12 });
+      mockDb.getFirstAsync.mockResolvedValue({ version: 15 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       // Make pragmas fail but table creation succeed
@@ -243,11 +239,12 @@ describe('database utilities', () => {
 
       const runCalls = mockDb.runAsync.mock.calls;
       const migrationRecords = runCalls.filter(
-        (c) => typeof c[0] === 'string' && (c[0] as string).includes('INSERT INTO schema_migrations'),
+        (c) =>
+          typeof c[0] === 'string' && (c[0] as string).includes('INSERT INTO schema_migrations'),
       );
 
-      // Should have recorded migrations 1 through 12
-      expect(migrationRecords.length).toBe(12);
+      // Should have recorded migrations 1 through 15
+      expect(migrationRecords.length).toBe(15);
     });
   });
 });

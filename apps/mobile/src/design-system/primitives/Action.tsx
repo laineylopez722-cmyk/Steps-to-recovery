@@ -66,28 +66,60 @@ function Root({
       }}
       {...pressableProps}
     >
-      <Animated.View style={[contentStyle, motion.animatedStyle, animatedStyle]}>{children}</Animated.View>
+      <Animated.View style={[contentStyle, motion.animatedStyle, animatedStyle]}>
+        {children}
+      </Animated.View>
     </Pressable>
   );
 }
 
-function Icon({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }): React.ReactElement {
+function Icon({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}): React.ReactElement {
   return <View style={style}>{children}</View>;
 }
 
-function Content({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }): React.ReactElement {
+function Content({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}): React.ReactElement {
   return <View style={style}>{children}</View>;
 }
 
-function Title({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }): React.ReactElement {
+function Title({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<TextStyle>;
+}): React.ReactElement {
   return <Text style={style}>{children}</Text>;
 }
 
-function Subtitle({ children, style }: { children: React.ReactNode; style?: StyleProp<TextStyle> }): React.ReactElement {
+function Subtitle({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<TextStyle>;
+}): React.ReactElement {
   return <Text style={style}>{children}</Text>;
 }
 
-function Trailing({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }): React.ReactElement {
+function Trailing({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}): React.ReactElement {
   return <View style={style}>{children}</View>;
 }
 

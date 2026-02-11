@@ -1,6 +1,6 @@
 /**
  * Progress Dashboard Screen - Organic Calming + Dark Luxury
- * 
+ *
  * Features:
  * - Glass stat cards with glow
  * - Animated chart bars
@@ -20,7 +20,11 @@ import { useTheme, GlassCard, SkeletonCard } from '../../../design-system';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
-import { useRecoveryAnalytics, type RecoveryInsight } from '../hooks/useRecoveryAnalytics';
+import {
+  useRecoveryAnalytics,
+  type RecoveryInsight,
+  type StepProgress,
+} from '../hooks/useRecoveryAnalytics';
 import { useMoodTrends, type TimeRange } from '../hooks/useMoodTrends';
 import { useCravingAnalysis } from '../hooks/useCravingAnalysis';
 import { TimeRangeSelector } from '../components/TimeRangeSelector';
@@ -31,6 +35,9 @@ import { CravingHeatmap } from '../components/CravingHeatmap';
 import { CravingInsightsCard } from '../components/CravingInsightsCard';
 import { CravingSurfStats } from '../components/CravingSurfStats';
 import { CommitmentCalendar } from '../components/CommitmentCalendar';
+import { RecoveryStrengthCard } from '../components/RecoveryStrengthCard';
+import { WeeklyReportCard } from '../components/WeeklyReportCard';
+import { useWeeklyReport } from '../hooks/useWeeklyReport';
 
 interface ProgressDashboardScreenProps {
   userId: string;
@@ -70,7 +77,7 @@ function MiniBarChart({
                 opacity: 0.3 + (value / maxValue) * 0.7,
                 shadowColor: color,
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: value / maxValue * 0.5,
+                shadowOpacity: (value / maxValue) * 0.5,
                 shadowRadius: 4,
               },
             ]}
@@ -133,9 +140,12 @@ function StatCard({
   const styles = useThemedStyles(createStyles);
 
   return (
-    <GlassCard 
+    <GlassCard
       intensity="card"
-      style={[styles.statCard, glow && { shadowColor: color, shadowOpacity: 0.3, shadowRadius: 16 }]}
+      style={[
+        styles.statCard,
+        glow && { shadowColor: color, shadowOpacity: 0.3, shadowRadius: 16 },
+      ]}
       glow={glow}
       glowColor={color}
     >
@@ -149,6 +159,58 @@ function StatCard({
   );
 }
 
+function StepProgressCard({ step }: { step: StepProgress }): React.ReactElement {
+  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
+  const percent =
+    step.totalQuestions > 0 ? Math.round((step.answeredQuestions / step.totalQuestions) * 100) : 0;
+
+  const barColor = step.isComplete
+    ? theme.colors.success
+    : percent > 0
+      ? aestheticColors.primary[500]
+      : theme.colors.textSecondary;
+
+  return (
+    <View style={styles.stepRow}>
+      <View style={styles.stepLabelContainer}>
+        {step.isComplete ? (
+          <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.success} />
+        ) : (
+          <Text style={[styles.stepNumber, { color: theme.colors.textSecondary }]}>
+            {step.stepNumber}
+          </Text>
+        )}
+        <Text
+          style={[
+            styles.stepLabel,
+            { color: step.isComplete ? theme.colors.success : theme.colors.text },
+          ]}
+        >
+          Step {step.stepNumber}
+        </Text>
+      </View>
+      <View style={styles.stepBarContainer}>
+        <View style={[styles.stepBarBackground, { backgroundColor: theme.colors.border }]}>
+          <Animated.View
+            entering={ScreenAnimations.fadeDelayed(step.stepNumber * 40)}
+            style={[
+              styles.stepBarFill,
+              {
+                width: `${percent}%`,
+                backgroundColor: barColor,
+              },
+            ]}
+          />
+        </View>
+      </View>
+      <Text style={[styles.stepPercent, { color: barColor }]}>
+        {percent === 0 ? 'Not started' : `${percent}%`}
+      </Text>
+    </View>
+  );
+}
+
 export function ProgressDashboardScreen({
   userId,
 }: ProgressDashboardScreenProps): React.ReactElement {
@@ -158,6 +220,7 @@ export function ProgressDashboardScreen({
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
   const moodTrends = useMoodTrends(timeRange);
   const cravingAnalysis = useCravingAnalysis(timeRange);
+  const weeklyReport = useWeeklyReport();
 
   // Loading state
   if (analytics.isLoading) {
@@ -197,7 +260,7 @@ export function ProgressDashboardScreen({
     <View style={styles.container}>
       {/* Background */}
       <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
-      
+
       {/* Glow Orbs */}
       <View style={styles.glowOrbTop} pointerEvents="none" />
       <View style={styles.glowOrbBottom} pointerEvents="none" />
@@ -227,8 +290,20 @@ export function ProgressDashboardScreen({
             />
           </Animated.View>
 
+          {/* Recovery Strength Score */}
+          <RecoveryStrengthCard userId={userId} />
+
           {/* Commitment Calendar */}
           <CommitmentCalendar userId={userId} />
+
+          {/* Weekly Recovery Report */}
+          <WeeklyReportCard
+            report={weeklyReport.currentReport}
+            previousReport={weeklyReport.pastReports[1] ?? null}
+            isLoading={weeklyReport.isLoading}
+            isGenerating={weeklyReport.isGenerating}
+            onGenerate={weeklyReport.generate}
+          />
 
           {/* Mood Dashboard Section */}
           <Animated.View entering={ScreenAnimations.item(0)}>
@@ -301,8 +376,31 @@ export function ProgressDashboardScreen({
             </Animated.View>
           )}
 
-          {/* Recovery Insights */}
+          {/* Step Work Progress */}
           <Animated.View entering={ScreenAnimations.item(2)} style={styles.insightsSection}>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons
+                name="stairs"
+                size={20}
+                color={aestheticColors.primary[500]}
+              />
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                Step Work Progress
+              </Text>
+              <Text style={[styles.stepSummary, { color: theme.colors.textSecondary }]}>
+                {analytics.totalStepsCompleted}/12 complete
+              </Text>
+            </View>
+
+            <GlassCard intensity="subtle" style={styles.stepProgressCard}>
+              {analytics.stepProgress.map((step) => (
+                <StepProgressCard key={step.stepNumber} step={step} />
+              ))}
+            </GlassCard>
+          </Animated.View>
+
+          {/* Recovery Insights */}
+          <Animated.View entering={ScreenAnimations.item(3)} style={styles.insightsSection}>
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons
                 name="lightbulb-outline"
@@ -321,7 +419,11 @@ export function ProgressDashboardScreen({
 
           {/* Privacy Notice */}
           <Animated.View entering={ScreenAnimations.fadeDelayed(400)} style={styles.privacyNotice}>
-            <MaterialCommunityIcons name="shield-lock" size={14} color={theme.colors.textSecondary} />
+            <MaterialCommunityIcons
+              name="shield-lock"
+              size={14}
+              color={theme.colors.textSecondary}
+            />
             <Text style={[styles.privacyText, { color: theme.colors.textSecondary }]}>
               All analytics are calculated on your device. Your data never leaves your phone
               unencrypted.
@@ -333,193 +435,241 @@ export function ProgressDashboardScreen({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  loadingContent: {
-    padding: 20,
-    gap: 16,
-  },
-  glowOrbTop: {
-    position: 'absolute',
-    top: -50,
-    right: -50,
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: aestheticColors.gold.DEFAULT,
-    opacity: 0.05,
-  } as ViewStyle,
-  glowOrbBottom: {
-    position: 'absolute',
-    bottom: 100,
-    left: -100,
-    width: 300,
-    height: 300,
-    borderRadius: 150,
-    backgroundColor: aestheticColors.secondary[500],
-    opacity: 0.04,
-  } as ViewStyle,
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  errorText: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginTop: 16,
-  },
-  errorSubtext: {
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-    gap: 12,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 20,
-  },
-  statIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: '700',
-  },
-  statLabel: {
-    fontSize: 12,
-    marginTop: 4,
-  },
-  statSubtext: {
-    fontSize: 11,
-    marginTop: 2,
-  },
-  chartCard: {
-    marginBottom: 20,
-    padding: 20,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  cardTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  trendBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  trendText: {
-    fontSize: 12,
-    fontWeight: '500',
-    textTransform: 'capitalize',
-  },
-  chartContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    justifyContent: 'space-evenly',
-    paddingHorizontal: 8,
-  },
-  bar: {
-    borderRadius: 2,
-    marginHorizontal: 1,
-  },
-  chartLegend: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-  legendText: {
-    fontSize: 12,
-  },
-  averageText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  emptyChart: {
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  emptyChartText: {
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  insightsSection: {
-    marginBottom: 20,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  insightCard: {
-    marginBottom: 12,
-    padding: 16,
-  },
-  insightHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  insightTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  insightDescription: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  privacyNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingHorizontal: 8,
-  },
-  privacyText: {
-    fontSize: 11,
-    flex: 1,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    contentContainer: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    loadingContent: {
+      padding: 20,
+      gap: 16,
+    },
+    glowOrbTop: {
+      position: 'absolute',
+      top: -50,
+      right: -50,
+      width: 200,
+      height: 200,
+      borderRadius: 100,
+      backgroundColor: aestheticColors.gold.DEFAULT,
+      opacity: 0.05,
+    } as ViewStyle,
+    glowOrbBottom: {
+      position: 'absolute',
+      bottom: 100,
+      left: -100,
+      width: 300,
+      height: 300,
+      borderRadius: 150,
+      backgroundColor: aestheticColors.secondary[500],
+      opacity: 0.04,
+    } as ViewStyle,
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 40,
+    },
+    errorText: {
+      fontSize: 18,
+      fontWeight: '600',
+      marginTop: 16,
+    },
+    errorSubtext: {
+      fontSize: 14,
+      marginTop: 8,
+      textAlign: 'center',
+    },
+    statsRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 20,
+      gap: 12,
+    },
+    statCard: {
+      flex: 1,
+      alignItems: 'center',
+      padding: 20,
+    },
+    statIconContainer: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    statValue: {
+      fontSize: 32,
+      fontWeight: '700',
+    },
+    statLabel: {
+      fontSize: 12,
+      marginTop: 4,
+    },
+    statSubtext: {
+      fontSize: 11,
+      marginTop: 2,
+    },
+    chartCard: {
+      marginBottom: 20,
+      padding: 20,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    cardTitleRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    cardTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    trendBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    trendText: {
+      fontSize: 12,
+      fontWeight: '500',
+      textTransform: 'capitalize',
+    },
+    chartContainer: {
+      flexDirection: 'row',
+      alignItems: 'flex-end',
+      justifyContent: 'space-evenly',
+      paddingHorizontal: 8,
+    },
+    bar: {
+      borderRadius: 2,
+      marginHorizontal: 1,
+    },
+    chartLegend: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+    },
+    legendText: {
+      fontSize: 12,
+    },
+    averageText: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    emptyChart: {
+      height: 60,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    emptyChartText: {
+      fontSize: 14,
+      textAlign: 'center',
+    },
+    insightsSection: {
+      marginBottom: 20,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 12,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+    },
+    insightCard: {
+      marginBottom: 12,
+      padding: 16,
+    },
+    insightHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 8,
+    },
+    insightTitle: {
+      fontSize: 15,
+      fontWeight: '600',
+    },
+    insightDescription: {
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    privacyNotice: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      paddingHorizontal: 8,
+    },
+    privacyText: {
+      fontSize: 11,
+      flex: 1,
+    },
+    stepProgressCard: {
+      padding: 16,
+      gap: 10,
+    },
+    stepRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    stepLabelContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+      width: 68,
+    },
+    stepNumber: {
+      fontSize: 13,
+      fontWeight: '600',
+      width: 18,
+      textAlign: 'center',
+    },
+    stepLabel: {
+      fontSize: 13,
+      fontWeight: '500',
+    },
+    stepBarContainer: {
+      flex: 1,
+    },
+    stepBarBackground: {
+      height: 6,
+      borderRadius: 3,
+      overflow: 'hidden',
+    },
+    stepBarFill: {
+      height: '100%',
+      borderRadius: 3,
+    },
+    stepPercent: {
+      fontSize: 11,
+      fontWeight: '600',
+      width: 64,
+      textAlign: 'right',
+    },
+    stepSummary: {
+      fontSize: 12,
+      marginLeft: 'auto',
+    },
+  }) as const;

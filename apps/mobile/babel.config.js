@@ -49,6 +49,18 @@ module.exports = function (api) {
       // Reanimated plugin must be last
       'react-native-reanimated/plugin',
     ],
+    // Transform dynamic import() to require() in tests so Jest can mock them
+    // Only apply to project source, not node_modules
+    ...(isTest
+      ? {
+          overrides: [
+            {
+              test: ['./src/**'],
+              plugins: ['babel-plugin-dynamic-import-node'],
+            },
+          ],
+        }
+      : {}),
     // Exclude node_modules from transformation except specific packages
     // Use patterns like expo(-[^/]*)? to match expo, expo-modules-core, expo-sqlite, etc.
     exclude: [

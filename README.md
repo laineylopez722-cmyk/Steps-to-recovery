@@ -93,6 +93,7 @@ npm run test:encryption
 ```
 
 **Current Coverage:**
+
 - Journal Hooks: 96% (37 tests)
 - Sync Service: 75% (28 tests)
 - Encryption: 94% (12 tests)
@@ -117,6 +118,7 @@ See [Maestro README](apps/mobile/.maestro/README.md) for details.
 ## 📦 Building
 
 ### Prerequisites
+
 - Expo account
 - EAS CLI: `npm install -g eas-cli`
 - Apple Developer account (for iOS)
@@ -125,6 +127,7 @@ See [Maestro README](apps/mobile/.maestro/README.md) for details.
 ### Environment Setup
 
 Create `apps/mobile/.env`:
+
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
 EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
@@ -175,17 +178,17 @@ See [Privacy Policy](./docs/PRIVACY_POLICY.md) and [Security Policy](./SECURITY.
 
 ## 📖 Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Setup Guide](./SETUP.md) | Complete setup and installation |
-| [Testing Guide](./TESTING.md) | Testing strategy and commands |
-| [Deployment Guide](./DEPLOYMENT.md) | Build and release process |
-| [Beta Release Checklist](./docs/BETA_RELEASE_CHECKLIST.md) | Pre-release verification |
-| [Status Report](./docs/STATUS_REPORT.md) | Current project status |
-| [Privacy Policy](./docs/PRIVACY_POLICY.md) | User privacy information |
-| [Terms of Service](./docs/TERMS_OF_SERVICE.md) | Legal terms |
-| [API & Data Model](./docs/API.md) | Technical documentation |
-| [Troubleshooting](./TROUBLESHOOTING.md) | Common issues and fixes |
+| Document                                                   | Description                     |
+| ---------------------------------------------------------- | ------------------------------- |
+| [Setup Guide](./SETUP.md)                                  | Complete setup and installation |
+| [Testing Guide](./TESTING.md)                              | Testing strategy and commands   |
+| [Deployment Guide](./DEPLOYMENT.md)                        | Build and release process       |
+| [Beta Release Checklist](./docs/BETA_RELEASE_CHECKLIST.md) | Pre-release verification        |
+| [Status Report](./docs/STATUS_REPORT.md)                   | Current project status          |
+| [Privacy Policy](./docs/PRIVACY_POLICY.md)                 | User privacy information        |
+| [Terms of Service](./docs/TERMS_OF_SERVICE.md)             | Legal terms                     |
+| [API & Data Model](./docs/API.md)                          | Technical documentation         |
+| [Troubleshooting](./TROUBLESHOOTING.md)                    | Common issues and fixes         |
 
 ## 🤝 Contributing
 

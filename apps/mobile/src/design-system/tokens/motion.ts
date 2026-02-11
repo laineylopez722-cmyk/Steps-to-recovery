@@ -543,7 +543,7 @@ export type MotionSystem = typeof motionSystem;
 // =============================================================================
 // LEGACY ALIASES (backward compatibility)
 // Consumers still import the old prefixed names after the token refactor.
-// TODO: Migrate consumers to the canonical names above, then remove these.
+// Migration deferred: remove these once all consumers use canonical names.
 // =============================================================================
 
 /** @deprecated Use `duration` instead */

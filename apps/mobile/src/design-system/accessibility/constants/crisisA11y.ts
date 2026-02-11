@@ -227,7 +227,7 @@ export const CRISIS_FOCUS_RING_COLOR = '#DC2626';
  * Get crisis announcement delay based on priority
  */
 export function getCrisisAnnouncementDelay(
-  priority: keyof typeof CRISIS_ANNOUNCEMENT_DELAY
+  priority: keyof typeof CRISIS_ANNOUNCEMENT_DELAY,
 ): number {
   return CRISIS_ANNOUNCEMENT_DELAY[priority];
 }
@@ -258,7 +258,7 @@ export function meetsCrisisContrast(ratio: number): boolean {
  */
 export function getEmergencyColor(
   type: 'primary' | 'warning' | 'success' | 'info',
-  isDarkMode = false
+  isDarkMode = false,
 ): string {
   switch (type) {
     case 'primary':

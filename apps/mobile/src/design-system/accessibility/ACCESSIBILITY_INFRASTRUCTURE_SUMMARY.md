@@ -137,6 +137,7 @@ Comprehensive accessibility utilities and animation systems created for the Step
 ## Key Features
 
 ### Crisis-First Accessibility
+
 - **<100ms guaranteed response time** for emergency buttons
 - **No decorative animations** in crisis mode
 - **Maximum contrast** (10:1) for emergency UI
@@ -144,12 +145,14 @@ Comprehensive accessibility utilities and animation systems created for the Step
 - **Immediate announcements** with no delay
 
 ### Reduced Motion Support
+
 - All animation hooks detect and respect reduced motion preference
 - Fallback to instant or minimal animations
 - User override support with AsyncStorage persistence
 - System setting change listeners
 
 ### WCAG AAA Compliance
+
 - Contrast ratio validation (7:1 for normal text)
 - Minimum touch target size (48dp)
 - Screen reader support with proper labels
@@ -157,6 +160,7 @@ Comprehensive accessibility utilities and animation systems created for the Step
 - Text scaling support (up to 200%)
 
 ### TypeScript
+
 - Strict mode compatible
 - Comprehensive type exports
 - Generic support for flexible configurations
@@ -190,7 +194,7 @@ const { animatedStyle, fadeIn } = useFadeAnimation({ autoPlay: true });
 // Emergency button
 <EmergencyButton label="Get help now" onPress={handleEmergency}>
   Get Help Now
-</EmergencyButton>
+</EmergencyButton>;
 ```
 
 ## Testing

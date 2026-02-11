@@ -28,7 +28,7 @@ export interface ReadingData {
 }
 
 export const NA_JFT_URL = 'https://www.jftna.org/jft/';
-export const PLACEHOLDER_CONTENT = 'Visit the official NA website to read today\'s meditation.';
+export const PLACEHOLDER_CONTENT = "Visit the official NA website to read today's meditation.";
 
 export const DAILY_READINGS: ReadingData[] = [
   // January

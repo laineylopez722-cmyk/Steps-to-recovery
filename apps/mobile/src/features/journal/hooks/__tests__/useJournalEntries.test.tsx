@@ -255,9 +255,7 @@ describe('useJournalEntries', () => {
       ];
 
       mockDbInstance.getAllAsync.mockResolvedValue(dbEntries);
-      mockDecryptContent
-        .mockResolvedValueOnce('Older')
-        .mockResolvedValueOnce('Newer');
+      mockDecryptContent.mockResolvedValueOnce('Older').mockResolvedValueOnce('Newer');
 
       renderHook(() => useJournalEntries(testUserId), {
         wrapper: createWrapper(),
@@ -312,11 +310,11 @@ describe('useJournalEntries', () => {
       });
 
       // Wait a bit
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
       // Verify no db call was made since isReady is false
       expect(mockDbInstance.getAllAsync).not.toHaveBeenCalled();
-      
+
       // Restore for other tests
       mockDbIsReady = true;
     });
@@ -439,7 +437,7 @@ describe('useJournalEntries', () => {
       // Get the actual call arguments
       const insertCall = mockDbInstance.runAsync.mock.calls[0];
       const params = insertCall[1];
-      
+
       // encrypted_title should be null when empty (index 2)
       expect(params[2]).toBeNull();
       // encrypted_mood should be null (index 5)
@@ -531,7 +529,7 @@ describe('useJournalEntries', () => {
       ).rejects.toThrow('Database error');
 
       // Verify rollback occurred
-      const cachedData = queryClient.getQueryData<typeof existingEntry[]>(
+      const cachedData = queryClient.getQueryData<(typeof existingEntry)[]>(
         journalKeys.byUser(testUserId),
       );
       expect(cachedData).toHaveLength(1);
@@ -809,7 +807,7 @@ describe('useJournalEntries', () => {
       // The SQL uses a parameterized query: sync_status = ?
       // The value 'pending' is passed as a parameter, not in the SQL string
       expect(updateCall).toContain('sync_status = ?');
-      
+
       // Verify the parameters include 'pending'
       const params = mockDbInstance.runAsync.mock.calls[0][1];
       expect(params).toContain('pending');
@@ -1090,9 +1088,7 @@ describe('useJournalEntries', () => {
       ];
 
       mockDbInstance.getAllAsync.mockResolvedValue(dbEntries);
-      mockDecryptContent
-        .mockResolvedValueOnce('Body')
-        .mockResolvedValueOnce('not valid json');
+      mockDecryptContent.mockResolvedValueOnce('Body').mockResolvedValueOnce('not valid json');
 
       const { result } = renderHook(() => useJournalEntries(testUserId), {
         wrapper: createWrapper(),

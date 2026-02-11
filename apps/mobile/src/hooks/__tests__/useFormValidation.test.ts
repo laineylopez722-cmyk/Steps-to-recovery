@@ -20,7 +20,7 @@ jest.mock('../../utils/logger', () => ({
   },
 }));
 
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 import { useFormValidation, validators } from '../useFormValidation';
 
 interface TestFormValues {
@@ -36,9 +36,7 @@ describe('useFormValidation', () => {
   });
 
   it('should set initial values correctly', () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     expect(result.current.values).toEqual(initialValues);
     expect(result.current.errors).toEqual({});
@@ -49,9 +47,7 @@ describe('useFormValidation', () => {
   });
 
   it('should update values on handleChange', () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     act(() => {
       result.current.handleChange('email', 'test@example.com');
@@ -72,13 +68,13 @@ describe('useFormValidation', () => {
       }),
     );
 
-    act(() => {
+    await act(async () => {
       result.current.handleChange('email', '');
+      // Allow the async void validation to settle
+      await Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(result.current.errors.email).toBe('Email required');
-    });
+    expect(result.current.errors.email).toBe('Email required');
   });
 
   it('should clear error when valid input is provided', async () => {
@@ -92,27 +88,23 @@ describe('useFormValidation', () => {
       }),
     );
 
-    act(() => {
+    await act(async () => {
       result.current.handleChange('email', '');
+      await Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(result.current.errors.email).toBe('Email required');
-    });
+    expect(result.current.errors.email).toBe('Email required');
 
-    act(() => {
+    await act(async () => {
       result.current.handleChange('email', 'test@example.com');
+      await Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(result.current.errors.email).toBeUndefined();
-    });
+    expect(result.current.errors.email).toBeUndefined();
   });
 
   it('should mark field as touched on handleBlur', () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     act(() => {
       result.current.handleBlur('email');
@@ -133,13 +125,12 @@ describe('useFormValidation', () => {
       }),
     );
 
-    act(() => {
+    await act(async () => {
       result.current.handleBlur('email');
+      await Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(result.current.errors.email).toBe('Email required');
-    });
+    expect(result.current.errors.email).toBe('Email required');
   });
 
   it('should call onSubmit when form is valid', async () => {
@@ -190,9 +181,7 @@ describe('useFormValidation', () => {
   });
 
   it('should mark all fields as touched on submit', async () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     await act(async () => {
       await result.current.handleSubmit();
@@ -204,9 +193,7 @@ describe('useFormValidation', () => {
   });
 
   it('should return isValid true when there are no errors', () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     expect(result.current.isValid).toBe(true);
   });
@@ -222,17 +209,12 @@ describe('useFormValidation', () => {
       }),
     );
 
-    act(() => {
+    await act(async () => {
       result.current.handleChange('email', '');
+      await Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(result.current.errors.email).toBe('Required');
-    });
-
-    // isValid checks errors object — 'Required' is truthy so isValid should be false
-    // But note: the hook stores error as `error || undefined`, so empty string input
-    // will set errors.email = 'Required', making isValid false
+    expect(result.current.errors.email).toBe('Required');
     expect(result.current.isValid).toBe(false);
   });
 
@@ -268,8 +250,6 @@ describe('useFormValidation', () => {
 
   it('should support async validators', async () => {
     const asyncValidator = async (value: unknown): Promise<string | null> => {
-      // Simulate async check
-      await new Promise((resolve) => setTimeout(resolve, 10));
       return value === 'taken@example.com' ? 'Email already taken' : null;
     };
 
@@ -281,13 +261,12 @@ describe('useFormValidation', () => {
       }),
     );
 
-    act(() => {
+    await act(async () => {
       result.current.handleChange('email', 'taken@example.com');
+      await Promise.resolve();
     });
 
-    await waitFor(() => {
-      expect(result.current.errors.email).toBe('Email already taken');
-    });
+    expect(result.current.errors.email).toBe('Email already taken');
   });
 
   it('should handle submit failure gracefully', async () => {
@@ -312,9 +291,7 @@ describe('useFormValidation', () => {
   });
 
   it('should set error manually via setError', () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     act(() => {
       result.current.setError('email', 'Custom error');
@@ -324,9 +301,7 @@ describe('useFormValidation', () => {
   });
 
   it('should provide accessibility error props', () => {
-    const { result } = renderHook(() =>
-      useFormValidation({ initialValues }),
-    );
+    const { result } = renderHook(() => useFormValidation({ initialValues }));
 
     const props = result.current.getFieldErrorProps('email');
     expect(props.accessibilityLabel).toBe('email');

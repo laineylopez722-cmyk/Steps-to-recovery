@@ -144,7 +144,17 @@ export function useMotionPress(options: UseMotionPressOptions = {}): UseMotionPr
     if (onPressStart) {
       runOnJS(onPressStart)();
     }
-  }, [disabled, haptic, scaleTo, springConfig, reducedMotionDuration, isReducedMotion, onPressStart, scale, triggerHaptic]);
+  }, [
+    disabled,
+    haptic,
+    scaleTo,
+    springConfig,
+    reducedMotionDuration,
+    isReducedMotion,
+    onPressStart,
+    scale,
+    triggerHaptic,
+  ]);
 
   // Handle press out
   const onPressOut = useCallback(() => {
@@ -190,7 +200,9 @@ export function useMotionPress(options: UseMotionPressOptions = {}): UseMotionPr
  * Button press animation hook
  * Pre-configured for button feedback
  */
-export function useButtonPress(options: Omit<UseMotionPressOptions, 'scaleTo'> = {}): UseMotionPressReturn {
+export function useButtonPress(
+  options: Omit<UseMotionPressOptions, 'scaleTo'> = {},
+): UseMotionPressReturn {
   return useMotionPress({
     scaleTo: 0.965,
     haptic: options.haptic ?? 'light',
@@ -202,7 +214,9 @@ export function useButtonPress(options: Omit<UseMotionPressOptions, 'scaleTo'> =
  * Card press animation hook
  * Subtle feedback for card interactions
  */
-export function useCardPress(options: Omit<UseMotionPressOptions, 'scaleTo'> = {}): UseMotionPressReturn {
+export function useCardPress(
+  options: Omit<UseMotionPressOptions, 'scaleTo'> = {},
+): UseMotionPressReturn {
   return useMotionPress({
     scaleTo: 0.985,
     haptic: options.haptic ?? false,
@@ -219,7 +233,9 @@ export function useCardPress(options: Omit<UseMotionPressOptions, 'scaleTo'> = {
  * Icon press animation hook
  * Snappy feedback for icon buttons
  */
-export function useIconPress(options: Omit<UseMotionPressOptions, 'scaleTo'> = {}): UseMotionPressReturn {
+export function useIconPress(
+  options: Omit<UseMotionPressOptions, 'scaleTo'> = {},
+): UseMotionPressReturn {
   return useMotionPress({
     scaleTo: 0.88,
     haptic: options.haptic ?? 'light',
@@ -236,7 +252,9 @@ export function useIconPress(options: Omit<UseMotionPressOptions, 'scaleTo'> = {
  * FAB press animation hook
  * Pronounced feedback for floating action buttons
  */
-export function useFABPress(options: Omit<UseMotionPressOptions, 'scaleTo'> = {}): UseMotionPressReturn {
+export function useFABPress(
+  options: Omit<UseMotionPressOptions, 'scaleTo'> = {},
+): UseMotionPressReturn {
   return useMotionPress({
     scaleTo: 0.92,
     haptic: options.haptic ?? 'medium',

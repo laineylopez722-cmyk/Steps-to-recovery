@@ -1,6 +1,6 @@
 /**
  * Illustration System
- * 
+ *
  * Premium illustration handling with:
  * - Lottie animation support
  * - Fallback for static images
@@ -26,9 +26,8 @@ interface LottieViewProps {
 }
 
 // Lottie is an optional dependency - gracefully degrade if not available.
-let LottieView: React.ComponentType<
-  LottieViewProps & React.RefAttributes<LottiePlayerRef>
-> | null = null;
+let LottieView: React.ComponentType<LottieViewProps & React.RefAttributes<LottiePlayerRef>> | null =
+  null;
 try {
   LottieView = require('lottie-react-native').default;
 } catch {
@@ -209,11 +208,7 @@ export function Illustration({
   return (
     <Animated.View
       entering={FadeIn.duration(500)}
-      style={[
-        styles.container,
-        dimensions,
-        style,
-      ]}
+      style={[styles.container, dimensions, style]}
       accessibilityLabel={accessibilityLabel}
       accessibilityRole="image"
     >
@@ -314,11 +309,7 @@ const badgeColors = {
   completion: aestheticColors.success.DEFAULT,
 };
 
-export function BadgeIllustration({
-  type,
-  size = 'md',
-  style,
-}: BadgeIllustrationProps) {
+export function BadgeIllustration({ type, size = 'md', style }: BadgeIllustrationProps) {
   return (
     <Illustration
       source={badgeAnimations[type]}
@@ -361,11 +352,7 @@ const emptyStateColors = {
   error: ds.semantic.intent.alert.solid,
 };
 
-export function EmptyStateIllustration({
-  type,
-  size = 'lg',
-  style,
-}: EmptyStateIllustrationProps) {
+export function EmptyStateIllustration({ type, size = 'lg', style }: EmptyStateIllustrationProps) {
   return (
     <Illustration
       source={emptyStateAnimations[type]}

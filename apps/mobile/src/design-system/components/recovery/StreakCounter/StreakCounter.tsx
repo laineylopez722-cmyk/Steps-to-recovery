@@ -4,13 +4,7 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  AccessibilityInfo,
-  useColorScheme,
-} from 'react-native';
+import { View, Text, TouchableOpacity, AccessibilityInfo, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -24,7 +18,15 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Svg, Circle } from 'react-native-svg';
 import * as Haptics from 'expo-haptics';
-import { COLORS, ANIMATION, DIMENSIONS, TYPOGRAPHY, SHADOWS, SPACING, MILESTONE_MESSAGES } from '../constants';
+import {
+  COLORS,
+  ANIMATION,
+  DIMENSIONS,
+  TYPOGRAPHY,
+  SHADOWS,
+  SPACING,
+  MILESTONE_MESSAGES,
+} from '../constants';
 import type { StreakData, DailyActivity } from '../types';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -80,7 +82,7 @@ export function StreakCounter({
         // Celebration animation sequence
         scale.value = withSequence(
           withSpring(1.1, { damping: 10, stiffness: 100 }),
-          withSpring(1.0, { damping: 10, stiffness: 100 })
+          withSpring(1.0, { damping: 10, stiffness: 100 }),
         );
 
         // Pulse animation
@@ -90,7 +92,7 @@ export function StreakCounter({
           withDelay(200, withTiming(1, { duration: 500 })),
           withTiming(0, { duration: 500 }),
           withDelay(200, withTiming(1, { duration: 500 })),
-          withTiming(0, { duration: 500 })
+          withTiming(0, { duration: 500 }),
         );
 
         // Haptic feedback
@@ -99,7 +101,7 @@ export function StreakCounter({
         // Announce milestone
         if (milestoneMessage) {
           AccessibilityInfo.announceForAccessibility(
-            `Milestone reached! ${data.days} days clean. ${milestoneMessage}`
+            `Milestone reached! ${data.days} days clean. ${milestoneMessage}`,
           );
         }
       }
@@ -114,20 +116,10 @@ export function StreakCounter({
   }));
 
   const pulseStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(
-      pulseAnimation.value,
-      [0, 1],
-      [0, 0.3],
-      Extrapolate.CLAMP
-    ),
+    opacity: interpolate(pulseAnimation.value, [0, 1], [0, 0.3], Extrapolate.CLAMP),
     transform: [
       {
-        scale: interpolate(
-          pulseAnimation.value,
-          [0, 1],
-          [1, 1.2],
-          Extrapolate.CLAMP
-        ),
+        scale: interpolate(pulseAnimation.value, [0, 1], [1, 1.2], Extrapolate.CLAMP),
       },
     ],
   }));
@@ -160,7 +152,7 @@ export function StreakCounter({
     if (!reducedMotion) {
       scale.value = withSequence(
         withTiming(0.95, { duration: ANIMATION.accelerated }),
-        withTiming(1, { duration: ANIMATION.standard })
+        withTiming(1, { duration: ANIMATION.standard }),
       );
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -234,10 +226,7 @@ export function StreakCounter({
             </Svg>
 
             {/* Center content */}
-            <View
-              className="absolute inset-0 items-center justify-center"
-              pointerEvents="none"
-            >
+            <View className="absolute inset-0 items-center justify-center" pointerEvents="none">
               <Text
                 style={{
                   fontSize: TYPOGRAPHY.headingLarge.fontSize,

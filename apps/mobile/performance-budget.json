@@ -159,13 +159,7 @@
   "monitoring": {
     "enabled": true,
     "sampleRate": 1.0,
-    "metrics": [
-      "renderTime",
-      "screenLoad",
-      "coldStart",
-      "memoryUsage",
-      "bundleSize"
-    ],
+    "metrics": ["renderTime", "screenLoad", "coldStart", "memoryUsage", "bundleSize"],
     "alerting": {
       "enabled": true,
       "channels": ["console", "sentry"],

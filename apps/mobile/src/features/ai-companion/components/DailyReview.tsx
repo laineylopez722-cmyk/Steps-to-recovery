@@ -23,10 +23,22 @@ export interface DailyReviewData {
 }
 
 const PROMPTS = [
-  { key: 'wasSelfish', question: 'Was I selfish today?', placeholder: 'Where did I put myself first unfairly...' },
-  { key: 'wasDishonest', question: 'Was I dishonest?', placeholder: 'Any lies, even small ones...' },
+  {
+    key: 'wasSelfish',
+    question: 'Was I selfish today?',
+    placeholder: 'Where did I put myself first unfairly...',
+  },
+  {
+    key: 'wasDishonest',
+    question: 'Was I dishonest?',
+    placeholder: 'Any lies, even small ones...',
+  },
   { key: 'wasAfraid', question: 'Was I afraid?', placeholder: 'What fears drove my actions...' },
-  { key: 'oweApology', question: 'Do I owe anyone an apology?', placeholder: 'Who did I wrong today...' },
+  {
+    key: 'oweApology',
+    question: 'Do I owe anyone an apology?',
+    placeholder: 'Who did I wrong today...',
+  },
   { key: 'didWell', question: 'What did I do well?', placeholder: 'Acknowledge your wins...' },
   { key: 'gratefulFor', question: 'What am I grateful for?', placeholder: 'Three things...' },
 ];
@@ -34,10 +46,10 @@ const PROMPTS = [
 export function DailyReview({ onComplete, date }: DailyReviewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  
+
   const currentPrompt = PROMPTS[currentIndex];
   const isLast = currentIndex === PROMPTS.length - 1;
-  
+
   const handleNext = () => {
     if (isLast) {
       onComplete({
@@ -53,33 +65,31 @@ export function DailyReview({ onComplete, date }: DailyReviewProps) {
       setCurrentIndex(currentIndex + 1);
     }
   };
-  
+
   const handleSkip = () => {
     if (!isLast) setCurrentIndex(currentIndex + 1);
   };
-  
+
   return (
     <View className="flex-1 bg-black p-4">
       {/* Progress */}
       <View className="flex-row gap-1 mb-8">
         {PROMPTS.map((_, i) => (
-          <View 
-            key={i} 
-            className={`flex-1 h-1 rounded-full ${i <= currentIndex ? 'bg-amber-500' : 'bg-gray-800'}`} 
+          <View
+            key={i}
+            className={`flex-1 h-1 rounded-full ${i <= currentIndex ? 'bg-amber-500' : 'bg-gray-800'}`}
           />
         ))}
       </View>
-      
+
       {/* Question */}
-      <Text className="text-2xl font-bold text-white mb-2">
-        {currentPrompt.question}
-      </Text>
+      <Text className="text-2xl font-bold text-white mb-2">{currentPrompt.question}</Text>
       <Text className="text-gray-500 mb-6">Step 10 · Daily Inventory</Text>
-      
+
       {/* Answer */}
       <TextInput
         value={answers[currentPrompt.key] || ''}
-        onChangeText={(v) => setAnswers(prev => ({ ...prev, [currentPrompt.key]: v }))}
+        onChangeText={(v) => setAnswers((prev) => ({ ...prev, [currentPrompt.key]: v }))}
         placeholder={currentPrompt.placeholder}
         placeholderTextColor={ds.colors.textTertiary}
         multiline
@@ -87,32 +97,24 @@ export function DailyReview({ onComplete, date }: DailyReviewProps) {
         textAlignVertical="top"
         autoFocus
       />
-      
+
       {/* Navigation */}
       <View className="flex-row gap-3 mt-4">
         {currentIndex > 0 && (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setCurrentIndex(currentIndex - 1)}
             className="bg-gray-800 rounded-xl py-4 px-6"
           >
             <Text className="text-white">Back</Text>
           </TouchableOpacity>
         )}
-        
-        <TouchableOpacity 
-          onPress={handleSkip}
-          className="bg-gray-800 rounded-xl py-4 px-6"
-        >
+
+        <TouchableOpacity onPress={handleSkip} className="bg-gray-800 rounded-xl py-4 px-6">
           <Text className="text-gray-400">Skip</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
-          onPress={handleNext}
-          className="flex-1 bg-amber-500 rounded-xl py-4"
-        >
-          <Text className="text-black text-center font-medium">
-            {isLast ? 'Complete' : 'Next'}
-          </Text>
+
+        <TouchableOpacity onPress={handleNext} className="flex-1 bg-amber-500 rounded-xl py-4">
+          <Text className="text-black text-center font-medium">{isLast ? 'Complete' : 'Next'}</Text>
         </TouchableOpacity>
       </View>
     </View>

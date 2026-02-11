@@ -5,11 +5,7 @@
 
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { COLORS, SPACING, TYPOGRAPHY } from '../constants';
 import type { DailyActivity } from '../types';
@@ -33,19 +29,21 @@ export function StreakHistoryGraph({
   const isDark = colorScheme === 'dark';
 
   // Animation values
-  const barAnimations = React.useRef(
-    Array.from({ length: 30 }, () => useSharedValue(0))
-  ).current;
+  const barAnimations = React.useRef(Array.from({ length: 30 }, () => useSharedValue(0))).current;
 
   // Animate bars on mount
   React.useEffect(() => {
     if (!reducedMotion) {
       barAnimations.forEach((anim, index) => {
-        anim.value = withTiming(1, {
-          duration: 300,
-        }, () => {
-          // Delay for staggered effect
-        });
+        anim.value = withTiming(
+          1,
+          {
+            duration: 300,
+          },
+          () => {
+            // Delay for staggered effect
+          },
+        );
       });
     } else {
       barAnimations.forEach((anim) => {
@@ -63,16 +61,14 @@ export function StreakHistoryGraph({
       const date = new Date(today);
       date.setDate(date.getDate() - i);
 
-      const existingDay = history.find(
-        (h) => h.date.toDateString() === date.toDateString()
-      );
+      const existingDay = history.find((h) => h.date.toDateString() === date.toDateString());
 
       days.push(
         existingDay || {
           date,
           morningCompleted: false,
           eveningCompleted: false,
-        }
+        },
       );
     }
 
@@ -151,11 +147,12 @@ export function StreakHistoryGraph({
       <View className="flex-row justify-between items-end h-24">
         {last30Days.map((day, index) => {
           const isToday = index === 29;
-          const height = day.morningCompleted && day.eveningCompleted
-            ? 100
-            : day.morningCompleted || day.eveningCompleted
-            ? 60
-            : 20;
+          const height =
+            day.morningCompleted && day.eveningCompleted
+              ? 100
+              : day.morningCompleted || day.eveningCompleted
+                ? 60
+                : 20;
           const barColor = getBarColor(day, isToday);
 
           const animatedStyle = useAnimatedStyle(() => ({
@@ -172,10 +169,10 @@ export function StreakHistoryGraph({
                 day.morningCompleted && day.eveningCompleted
                   ? 'Both check-ins complete'
                   : day.morningCompleted
-                  ? 'Morning check-in complete'
-                  : day.eveningCompleted
-                  ? 'Evening check-in complete'
-                  : 'No check-ins'
+                    ? 'Morning check-in complete'
+                    : day.eveningCompleted
+                      ? 'Evening check-in complete'
+                      : 'No check-ins'
               }`}
               accessibilityRole="button"
               style={{
@@ -222,10 +219,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
 
   return (
     <View className="flex-row items-center">
-      <View
-        className="w-3 h-3 rounded-sm mr-2"
-        style={{ backgroundColor: color }}
-      />
+      <View className="w-3 h-3 rounded-sm mr-2" style={{ backgroundColor: color }} />
       <Text
         style={{
           fontSize: TYPOGRAPHY.labelSmall.fontSize,

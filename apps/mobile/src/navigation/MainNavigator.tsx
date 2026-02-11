@@ -59,7 +59,6 @@ const StepsStack = createNativeStackNavigator<StepsStackParamList>();
 const MeetingsStack = createNativeStackNavigator<MeetingsStackParamList>();
 const ProfileStack = createNativeStackNavigator<ProfileStackParamList>();
 
-
 function SafeDialInterventionRouteScreen({
   route,
   navigation,
@@ -223,10 +222,7 @@ function JournalStackNavigator(): React.ReactElement {
       <JournalStack.Screen name="JournalList" options={{ headerShown: false }}>
         {() => <JournalListScreen userId={userId} />}
       </JournalStack.Screen>
-      <JournalStack.Screen
-        name="JournalEditor"
-        options={{ headerShown: false }}
-      >
+      <JournalStack.Screen name="JournalEditor" options={{ headerShown: false }}>
         {() => <JournalEditorScreen userId={userId} />}
       </JournalStack.Screen>
     </JournalStack.Navigator>
@@ -411,64 +407,63 @@ export function MainNavigator(): React.ReactElement {
           tabBarHideOnKeyboard: true,
         }}
       >
-      <Tab.Screen
-        name="Home"
-        component={HomeStackNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon focused={focused} color={color} size={size} name="home" />
-          ),
-          tabBarAccessibilityLabel: 'Home',
-          tabBarLabel: 'Home',
-        }}
-      />
-      <Tab.Screen
-        name="Journal"
-        component={JournalStackNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon focused={focused} color={color} size={size} name="book-open-variant" />
-          ),
-          tabBarAccessibilityLabel: 'Journal',
-          tabBarLabel: 'Journal',
-        }}
-      />
-      <Tab.Screen
-        name="Steps"
-        component={StepsStackNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon focused={focused} color={color} size={size} name="stairs" />
-          ),
-          tabBarAccessibilityLabel: 'Steps',
-          tabBarLabel: 'Steps',
-        }}
-      />
-      <Tab.Screen
-        name="Meetings"
-        component={MeetingsStackNavigator}
-        options={{
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon focused={focused} color={color} size={size} name="map-marker-multiple" />
-          ),
-          tabBarAccessibilityLabel: 'Meetings',
-          tabBarLabel: 'Meetings',
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileStackNavigator}
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <TabIcon focused={focused} color={color} size={size} name="account" />
-          ),
-          tabBarAccessibilityLabel: 'Profile',
-          tabBarLabel: 'Profile',
-        }}
-      />
-    </Tab.Navigator>
+        <Tab.Screen
+          name="Home"
+          component={HomeStackNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabIcon focused={focused} color={color} size={size} name="home" />
+            ),
+            tabBarAccessibilityLabel: 'Home',
+            tabBarLabel: 'Home',
+          }}
+        />
+        <Tab.Screen
+          name="Journal"
+          component={JournalStackNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabIcon focused={focused} color={color} size={size} name="book-open-variant" />
+            ),
+            tabBarAccessibilityLabel: 'Journal',
+            tabBarLabel: 'Journal',
+          }}
+        />
+        <Tab.Screen
+          name="Steps"
+          component={StepsStackNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabIcon focused={focused} color={color} size={size} name="stairs" />
+            ),
+            tabBarAccessibilityLabel: 'Steps',
+            tabBarLabel: 'Steps',
+          }}
+        />
+        <Tab.Screen
+          name="Meetings"
+          component={MeetingsStackNavigator}
+          options={{
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabIcon focused={focused} color={color} size={size} name="map-marker-multiple" />
+            ),
+            tabBarAccessibilityLabel: 'Meetings',
+            tabBarLabel: 'Meetings',
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileStackNavigator}
+          options={{
+            headerShown: false,
+            tabBarIcon: ({ focused, color, size }) => (
+              <TabIcon focused={focused} color={color} size={size} name="account" />
+            ),
+            tabBarAccessibilityLabel: 'Profile',
+            tabBarLabel: 'Profile',
+          }}
+        />
+      </Tab.Navigator>
     </>
   );
 }
-

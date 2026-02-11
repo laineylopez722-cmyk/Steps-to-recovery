@@ -40,10 +40,7 @@ export {
 } from './useA11yAnnouncer';
 
 // Legacy hook (re-export from parent for compatibility)
-export {
-  useAccessibility,
-  type UseAccessibilityReturn,
-} from '../useAccessibility';
+export { useAccessibility, type UseAccessibilityReturn } from '../useAccessibility';
 
 // Re-export from useAccessibility for convenience
 export {

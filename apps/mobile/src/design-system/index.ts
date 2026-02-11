@@ -106,7 +106,14 @@ export {
   getSereneTextureOverlay,
 } from './tokens/serene';
 // Legacy motion exports
-export { MotionTransitions, motionDuration, motionSpring, motionScale, motionTiming, motionShimmer } from './tokens/motion';
+export {
+  MotionTransitions,
+  motionDuration,
+  motionSpring,
+  motionScale,
+  motionTiming,
+  motionShimmer,
+} from './tokens/motion';
 
 // Material Design 3 Motion System
 export {
@@ -136,26 +143,22 @@ export {
   premiumEffects,
   componentPatterns,
 } from './tokens/aesthetic';
-export { useTheme as useThemeTokens, darkColors, lightColors, spacing as themeSpacing, typography as themeTypography, borderRadius as themeBorderRadius } from './tokens/theme';
+export {
+  useTheme as useThemeTokens,
+  darkColors,
+  lightColors,
+  spacing as themeSpacing,
+  typography as themeTypography,
+  borderRadius as themeBorderRadius,
+} from './tokens/theme';
 export type { Theme } from './tokens/theme';
 
 // Material Design 3 Token System
-export {
-  md3Colors,
-  md3ColorsDark,
-} from './tokens/colors';
-export type {
-  MD3Colors,
-  MD3ColorsDark,
-} from './tokens/colors';
+export { md3Colors, md3ColorsDark } from './tokens/colors';
+export type { MD3Colors, MD3ColorsDark } from './tokens/colors';
 
-export {
-  md3Typography,
-  typographySystem,
-} from './tokens/typography';
-export type {
-  MD3TypographyStyle,
-} from './tokens/typography';
+export { md3Typography, typographySystem } from './tokens/typography';
+export type { MD3TypographyStyle } from './tokens/typography';
 
 export {
   md3Spacing,
@@ -164,11 +167,7 @@ export {
   spacingSystem,
   getSpacing,
 } from './tokens/spacing';
-export type {
-  MD3SpacingKey,
-  MD3ComponentSpacingKey,
-  MD3ElevationKey,
-} from './tokens/spacing';
+export type { MD3SpacingKey, MD3ComponentSpacingKey, MD3ElevationKey } from './tokens/spacing';
 
 export {
   md3Shadows,
@@ -182,10 +181,7 @@ export {
   md3ComponentShadowsDark,
   shadowSystem,
 } from './tokens/shadows';
-export type {
-  MD3ShadowLevel,
-  MD3ComponentShadowKey,
-} from './tokens/shadows';
+export type { MD3ShadowLevel, MD3ComponentShadowKey } from './tokens/shadows';
 export type { ActionRootProps, UseActionMotionOptions } from './primitives';
 export {
   pressAnimation,
@@ -299,12 +295,5 @@ export * from './review';
 
 // Theme-aware design system tokens
 export { DsProvider, useDs, useDsIsDark } from './DsProvider';
-export {
-  ds,
-  createDs,
-  paletteLight,
-  colorsLight,
-  semanticLight,
-  shadowsLight,
-} from './tokens/ds';
+export { ds, createDs, paletteLight, colorsLight, semanticLight, shadowsLight } from './tokens/ds';
 export type { DS } from './tokens/ds';

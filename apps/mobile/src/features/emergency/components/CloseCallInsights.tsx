@@ -5,13 +5,7 @@
  */
 
 import { type ReactElement } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  type StyleProp,
-  type ViewStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Card, useTheme } from '../../../design-system';
@@ -22,16 +16,11 @@ interface CloseCallInsightsProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function CloseCallInsights({
-  stats,
-  style,
-}: CloseCallInsightsProps): ReactElement {
+export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): ReactElement {
   const theme = useTheme();
 
   const resistanceRate =
-    stats.totalCloseCalls > 0
-      ? Math.round((stats.timesResisted / stats.totalCloseCalls) * 100)
-      : 0;
+    stats.totalCloseCalls > 0 ? Math.round((stats.timesResisted / stats.totalCloseCalls) * 100) : 0;
 
   const lastCloseCallText = stats.lastCloseCall
     ? formatLastCloseCall(stats.lastCloseCall)
@@ -55,16 +44,9 @@ export function CloseCallInsights({
           {/* Total Close Calls */}
           <View style={styles.statBox}>
             <View
-              style={[
-                styles.statIconContainer,
-                { backgroundColor: theme.colors.warning + '20' },
-              ]}
+              style={[styles.statIconContainer, { backgroundColor: theme.colors.warning + '20' }]}
             >
-              <MaterialCommunityIcons
-                name="alert-circle"
-                size={28}
-                color={theme.colors.warning}
-              />
+              <MaterialCommunityIcons name="alert-circle" size={28} color={theme.colors.warning} />
             </View>
             <Text style={[theme.typography.h1, { color: theme.colors.text, marginTop: 8 }]}>
               {stats.totalCloseCalls}
@@ -77,16 +59,9 @@ export function CloseCallInsights({
           {/* Times Resisted */}
           <View style={styles.statBox}>
             <View
-              style={[
-                styles.statIconContainer,
-                { backgroundColor: theme.colors.success + '20' },
-              ]}
+              style={[styles.statIconContainer, { backgroundColor: theme.colors.success + '20' }]}
             >
-              <MaterialCommunityIcons
-                name="shield-check"
-                size={28}
-                color={theme.colors.success}
-              />
+              <MaterialCommunityIcons name="shield-check" size={28} color={theme.colors.success} />
             </View>
             <Text style={[theme.typography.h1, { color: theme.colors.success, marginTop: 8 }]}>
               {stats.timesResisted}
@@ -113,10 +88,7 @@ export function CloseCallInsights({
                 Resistance Rate
               </Text>
               <Text
-                style={[
-                  theme.typography.h2,
-                  { color: theme.colors.success, fontWeight: 'bold' },
-                ]}
+                style={[theme.typography.h2, { color: theme.colors.success, fontWeight: 'bold' }]}
               >
                 {resistanceRate}%
               </Text>
@@ -180,8 +152,7 @@ export function CloseCallInsights({
                 </Text>
               </View>
               <Text style={[theme.typography.bodyBold, { color: theme.colors.textSecondary }]}>
-                {stats.longestStreakDays}{' '}
-                {stats.longestStreakDays === 1 ? 'day' : 'days'}
+                {stats.longestStreakDays} {stats.longestStreakDays === 1 ? 'day' : 'days'}
               </Text>
             </View>
           )}

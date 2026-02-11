@@ -10,3 +10,6 @@ web
 *.log
 package-lock.json
 _bmad-output
+.claude
+**/*.template.ts
+**/*.template.md

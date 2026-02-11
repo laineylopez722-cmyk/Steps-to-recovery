@@ -1,6 +1,6 @@
 /**
  * Theme Toggle Component
- * 
+ *
  * Elegant dark/light mode toggle with:
  * - Smooth animated transitions
  * - Haptic feedback
@@ -9,11 +9,7 @@
  */
 
 import React, { useCallback } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -103,13 +99,13 @@ export function ThemeToggle({
 
   const handlePress = useCallback(() => {
     hapticLight();
-    
+
     // Button press animation
     scale.value = withSequence(
       withTiming(0.95, { duration: 100 }),
-      withTiming(1, { duration: 100 })
+      withTiming(1, { duration: 100 }),
     );
-    
+
     onToggle();
   }, [onToggle, scale]);
 
@@ -121,14 +117,11 @@ export function ThemeToggle({
       progress.value,
       [0, 1],
       [0, config.container.width - config.knob.width - config.padding * 2],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
-    
+
     return {
-      transform: [
-        { translateX },
-        { scale: scale.value },
-      ],
+      transform: [{ translateX }, { scale: scale.value }],
     };
   });
 
@@ -136,7 +129,7 @@ export function ThemeToggle({
   const backgroundStyle = useAnimatedStyle(() => {
     // Use opacity to blend between light and dark backgrounds
     return {
-      backgroundColor: isDark 
+      backgroundColor: isDark
         ? `rgba(245, 158, 11, ${0.2 + progress.value * 0.1})`
         : `rgba(20, 184, 166, ${0.2 + (1 - progress.value) * 0.1})`,
     };
@@ -144,19 +137,9 @@ export function ThemeToggle({
 
   // Icon rotation
   const iconStyle = useAnimatedStyle(() => {
-    const rotate = interpolate(
-      progress.value,
-      [0, 1],
-      [0, 180],
-      Extrapolate.CLAMP
-    );
-    
-    const opacity = interpolate(
-      progress.value,
-      [0, 0.5, 1],
-      [1, 0.5, 1],
-      Extrapolate.CLAMP
-    );
+    const rotate = interpolate(progress.value, [0, 1], [0, 180], Extrapolate.CLAMP);
+
+    const opacity = interpolate(progress.value, [0, 0.5, 1], [1, 0.5, 1], Extrapolate.CLAMP);
 
     return {
       transform: [{ rotate: `${rotate}deg` }],
@@ -179,19 +162,13 @@ export function ThemeToggle({
       accessibilityState={{ checked: isDark }}
       style={[styles.wrapper, style]}
     >
-      <Animated.View
-        style={[
-          styles.container,
-          config.container,
-          backgroundStyle,
-        ]}
-      >
+      <Animated.View style={[styles.container, config.container, backgroundStyle]}>
         <BlurView
           intensity={blurIntensity}
           tint={isDark ? 'dark' : 'light'}
           style={[StyleSheet.absoluteFill, { borderRadius: config.container.borderRadius }]}
         />
-        
+
         {/* Icons */}
         <View style={styles.iconsContainer}>
           <Feather
@@ -207,7 +184,7 @@ export function ThemeToggle({
             style={styles.rightIcon}
           />
         </View>
-        
+
         {/* Animated Knob */}
         <Animated.View
           style={[
@@ -233,7 +210,7 @@ export function ThemeToggle({
           </Animated.View>
         </Animated.View>
       </Animated.View>
-      
+
       {showLabel && (
         <Animated.Text
           entering={FadeIn.duration(200)}
@@ -259,11 +236,7 @@ interface CompactThemeToggleProps {
   style?: StyleProp<ViewStyle>;
 }
 
-export function CompactThemeToggle({
-  isDark,
-  onToggle,
-  style,
-}: CompactThemeToggleProps) {
+export function CompactThemeToggle({ isDark, onToggle, style }: CompactThemeToggleProps) {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const scale = useSharedValue(1);
@@ -271,24 +244,21 @@ export function CompactThemeToggle({
 
   const handlePress = useCallback(() => {
     hapticLight();
-    
+
     scale.value = withSequence(
       withTiming(0.9, { duration: 100 }),
-      withTiming(1, { duration: 150 })
+      withTiming(1, { duration: 150 }),
     );
-    
+
     rotate.value = withTiming(rotate.value + 180, {
       duration: 300,
     });
-    
+
     onToggle();
   }, [onToggle, scale, rotate]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { scale: scale.value },
-      { rotate: `${rotate.value}deg` },
-    ],
+    transform: [{ scale: scale.value }, { rotate: `${rotate.value}deg` }],
   }));
 
   return (
@@ -298,11 +268,7 @@ export function CompactThemeToggle({
       accessibilityLabel={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       accessibilityRole="button"
     >
-      <BlurView
-        intensity={40}
-        tint={isDark ? 'dark' : 'light'}
-        style={StyleSheet.absoluteFill}
-      />
+      <BlurView intensity={40} tint={isDark ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
       <Animated.View style={animatedStyle}>
         <Feather
           name={isDark ? 'moon' : 'sun'}
@@ -318,51 +284,52 @@ export function CompactThemeToggle({
 // STYLES
 // ============================================================================
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  wrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  container: {
-    justifyContent: 'center',
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  iconsContainer: {
-    ...StyleSheet.absoluteFillObject,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 6,
-  },
-  leftIcon: {
-    marginLeft: 2,
-  },
-  rightIcon: {
-    marginRight: 2,
-  },
-  knob: {
-    position: 'absolute',
-    left: 3,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  compactContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-    backgroundColor: ds.colors.bgSecondary,
-    opacity: 0.05,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    wrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+    },
+    container: {
+      justifyContent: 'center',
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    iconsContainer: {
+      ...StyleSheet.absoluteFillObject,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 6,
+    },
+    leftIcon: {
+      marginLeft: 2,
+    },
+    rightIcon: {
+      marginRight: 2,
+    },
+    knob: {
+      position: 'absolute',
+      left: 3,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    compactContainer: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
+      backgroundColor: ds.colors.bgSecondary,
+      opacity: 0.05,
+    },
+  });
 
 export default ThemeToggle;

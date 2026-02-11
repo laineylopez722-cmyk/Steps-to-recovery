@@ -109,9 +109,7 @@ interface MockAchievement {
   unlockedAt?: Date;
 }
 
-function createMockAchievement(
-  overrides: Partial<MockAchievement> = {},
-): MockAchievement {
+function createMockAchievement(overrides: Partial<MockAchievement> = {}): MockAchievement {
   return {
     id: `achievement-${Date.now()}`,
     category: 'sobriety',
@@ -340,6 +338,32 @@ describe('useAchievements', () => {
   });
 
   it('should not check achievements when not initialized', async () => {
+    mockUseAchievementStore.mockReturnValue({
+      achievements: [],
+      keytags: [],
+      isLoading: false,
+      isInitialized: false,
+      totalUnlocked: 0,
+      totalAchievements: 50,
+      totalKeytags: 9,
+      earnedKeytags: 0,
+      recentUnlock: null,
+      categoryProgress: {},
+      initialize: mockInitialize,
+      loadAchievements: mockLoadAchievements,
+      updateKeytagsForDays: mockUpdateKeytagsForDays,
+      checkAutoAchievements: mockCheckAutoAchievements,
+      selfCheckAchievement: mockSelfCheckAchievement,
+      saveReflection: mockSaveReflection,
+      getReflection: mockGetReflection,
+      dismissRecentUnlock: mockDismissRecentUnlock,
+      getAchievementsByCategory: mockGetAchievementsByCategory,
+    } as unknown as ReturnType<typeof useAchievementStore>);
+
+    mockUseSobriety.mockReturnValue({
+      soberDays: 0,
+    } as ReturnType<typeof useSobriety>);
+
     const { result } = renderHook(() => useAchievements());
 
     let unlocked: unknown[] = [];

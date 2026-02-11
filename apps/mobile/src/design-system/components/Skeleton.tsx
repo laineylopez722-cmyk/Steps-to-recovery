@@ -1,7 +1,7 @@
 /**
  * Skeleton Loading Components
  * Premium loading placeholders with shimmer animation
- * 
+ *
  * Usage:
  * <SkeletonCard />
  * <SkeletonList items={3} />
@@ -9,7 +9,14 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Animated, type DimensionValue, type StyleProp, type ViewStyle } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Animated,
+  type DimensionValue,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 
 export interface SkeletonProps {
@@ -44,7 +51,7 @@ export function Skeleton({
           duration: 1500,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     );
     shimmer.start();
     return () => shimmer.stop();
@@ -73,9 +80,7 @@ export function Skeleton({
           styles.shimmer,
           {
             transform: [{ translateX }],
-            backgroundColor: theme.isDark
-              ? 'rgba(255,255,255,0.05)'
-              : 'rgba(0,0,0,0.05)',
+            backgroundColor: theme.isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
           },
         ]}
       />
@@ -88,7 +93,7 @@ export function Skeleton({
  */
 export function SkeletonCard({ lines = 3 }: { lines?: number }): React.ReactElement {
   const theme = useTheme();
-  
+
   return (
     <View
       style={[
@@ -101,7 +106,7 @@ export function SkeletonCard({ lines = 3 }: { lines?: number }): React.ReactElem
     >
       {/* Title */}
       <Skeleton width="60%" height={20} borderRadius={6} />
-      
+
       {/* Content lines */}
       <View style={styles.lines}>
         {Array.from({ length: lines }).map((_, i) => (
@@ -126,7 +131,7 @@ export function SkeletonListItem(): React.ReactElement {
     <View style={styles.listItem}>
       {/* Avatar */}
       <Skeleton width={48} height={48} borderRadius={24} />
-      
+
       {/* Content */}
       <View style={styles.listContent}>
         <Skeleton width="50%" height={16} borderRadius={6} />
@@ -169,13 +174,13 @@ export const SkeletonJournalList = SkeletonList;
  */
 export function SkeletonHome(): React.ReactElement {
   const theme = useTheme();
-  
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <Skeleton width="50%" height={28} borderRadius={8} />
       <Skeleton width="80%" height={16} borderRadius={6} style={styles.line} />
-      
+
       {/* Clean time tracker */}
       <View
         style={[
@@ -189,10 +194,10 @@ export function SkeletonHome(): React.ReactElement {
         <Skeleton width="40%" height={48} borderRadius={8} />
         <Skeleton width="60%" height={16} borderRadius={6} style={styles.line} />
       </View>
-      
+
       {/* Check-in card */}
       <SkeletonCard lines={2} />
-      
+
       {/* Quick actions */}
       <View style={styles.actions}>
         <Skeleton width="48%" height={80} borderRadius={12} />

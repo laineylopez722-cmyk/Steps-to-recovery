@@ -36,7 +36,9 @@ function assertScoreInRange(score: number, category: UxAuditCategory): void {
   }
 }
 
-export function validateUxAuditWeights(weights: UxAuditWeights = UX_AUDIT_WEIGHTS): WeightValidationResult {
+export function validateUxAuditWeights(
+  weights: UxAuditWeights = UX_AUDIT_WEIGHTS,
+): WeightValidationResult {
   const errors: string[] = [];
   let total = 0;
 

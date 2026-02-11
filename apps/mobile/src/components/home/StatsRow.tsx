@@ -13,7 +13,12 @@
 import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import * as Haptics from 'expo-haptics';
@@ -30,7 +35,15 @@ interface StatItemProps {
   delay?: number;
 }
 
-function StatItem({ value, label, icon, color = 'primary', onPress, isLoading, delay = 0 }: StatItemProps) {
+function StatItem({
+  value,
+  label,
+  icon,
+  color = 'primary',
+  onPress,
+  isLoading,
+  delay = 0,
+}: StatItemProps) {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const scale = useSharedValue(1);
@@ -167,61 +180,62 @@ export function StatsRow({
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 16,
-    marginVertical: 8,
-  },
-  statContainer: {
-    flex: 1,
-  },
-  touchable: {
-    width: '100%',
-  },
-  statCard: {
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statContent: {
-    alignItems: 'center',
-  },
-  statIcon: {
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: ds.colors.textSecondary,
-    marginTop: 2,
-  },
-  skeleton: {
-    alignItems: 'center',
-    opacity: 0.5,
-  },
-  skeletonIcon: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: ds.colors.bgTertiary,
-    marginBottom: 4,
-  },
-  skeletonValue: {
-    width: 40,
-    height: 28,
-    borderRadius: 4,
-    backgroundColor: ds.colors.bgTertiary,
-    marginBottom: 4,
-  },
-  skeletonLabel: {
-    width: 50,
-    height: 14,
-    borderRadius: 4,
-    backgroundColor: ds.colors.bgTertiary,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flexDirection: 'row',
+      gap: 12,
+      paddingHorizontal: 16,
+      marginVertical: 8,
+    },
+    statContainer: {
+      flex: 1,
+    },
+    touchable: {
+      width: '100%',
+    },
+    statCard: {
+      padding: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    statContent: {
+      alignItems: 'center',
+    },
+    statIcon: {
+      marginBottom: 4,
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+    },
+    statLabel: {
+      fontSize: 12,
+      color: ds.colors.textSecondary,
+      marginTop: 2,
+    },
+    skeleton: {
+      alignItems: 'center',
+      opacity: 0.5,
+    },
+    skeletonIcon: {
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: ds.colors.bgTertiary,
+      marginBottom: 4,
+    },
+    skeletonValue: {
+      width: 40,
+      height: 28,
+      borderRadius: 4,
+      backgroundColor: ds.colors.bgTertiary,
+      marginBottom: 4,
+    },
+    skeletonLabel: {
+      width: 50,
+      height: 14,
+      borderRadius: 4,
+      backgroundColor: ds.colors.bgTertiary,
+    },
+  }) as const;

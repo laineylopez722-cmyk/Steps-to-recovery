@@ -1,6 +1,6 @@
 /**
  * Steps Overview Screen
- * 
+ *
  * Apple-inspired step progress display.
  * Clean cards, clear hierarchy.
  */
@@ -43,18 +43,74 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  { number: 1, title: 'Admit powerlessness', description: 'We admitted we were powerless over our addiction - that our lives had become unmanageable.' },
-  { number: 2, title: 'Believe in a higher power', description: 'Came to believe that a Power greater than ourselves could restore us to sanity.' },
-  { number: 3, title: 'Decide to turn will over', description: 'Made a decision to turn our will and our lives over to the care of God as we understood Him.' },
-  { number: 4, title: 'Make a moral inventory', description: 'Made a searching and fearless moral inventory of ourselves.' },
-  { number: 5, title: 'Admit wrongs', description: 'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.' },
-  { number: 6, title: 'Be ready for change', description: 'Were entirely ready to have God remove all these defects of character.' },
-  { number: 7, title: 'Ask for removal', description: 'Humbly asked Him to remove our shortcomings.' },
-  { number: 8, title: 'Make a list', description: 'Made a list of all persons we had harmed, and became willing to make amends to them all.' },
-  { number: 9, title: 'Make amends', description: 'Made direct amends to such people wherever possible, except when to do so would injure them or others.' },
-  { number: 10, title: 'Continue inventory', description: 'Continued to take personal inventory and when we were wrong promptly admitted it.' },
-  { number: 11, title: 'Seek conscious contact', description: 'Sought through prayer and meditation to improve our conscious contact with God as we understood Him.' },
-  { number: 12, title: 'Carry the message', description: 'Having had a spiritual awakening as the result of these steps, we tried to carry this message to addicts.' },
+  {
+    number: 1,
+    title: 'Admit powerlessness',
+    description:
+      'We admitted we were powerless over our addiction - that our lives had become unmanageable.',
+  },
+  {
+    number: 2,
+    title: 'Believe in a higher power',
+    description: 'Came to believe that a Power greater than ourselves could restore us to sanity.',
+  },
+  {
+    number: 3,
+    title: 'Decide to turn will over',
+    description:
+      'Made a decision to turn our will and our lives over to the care of God as we understood Him.',
+  },
+  {
+    number: 4,
+    title: 'Make a moral inventory',
+    description: 'Made a searching and fearless moral inventory of ourselves.',
+  },
+  {
+    number: 5,
+    title: 'Admit wrongs',
+    description:
+      'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.',
+  },
+  {
+    number: 6,
+    title: 'Be ready for change',
+    description: 'Were entirely ready to have God remove all these defects of character.',
+  },
+  {
+    number: 7,
+    title: 'Ask for removal',
+    description: 'Humbly asked Him to remove our shortcomings.',
+  },
+  {
+    number: 8,
+    title: 'Make a list',
+    description:
+      'Made a list of all persons we had harmed, and became willing to make amends to them all.',
+  },
+  {
+    number: 9,
+    title: 'Make amends',
+    description:
+      'Made direct amends to such people wherever possible, except when to do so would injure them or others.',
+  },
+  {
+    number: 10,
+    title: 'Continue inventory',
+    description:
+      'Continued to take personal inventory and when we were wrong promptly admitted it.',
+  },
+  {
+    number: 11,
+    title: 'Seek conscious contact',
+    description:
+      'Sought through prayer and meditation to improve our conscious contact with God as we understood Him.',
+  },
+  {
+    number: 12,
+    title: 'Carry the message',
+    description:
+      'Having had a spiritual awakening as the result of these steps, we tried to carry this message to addicts.',
+  },
 ];
 
 // Pulse for current step
@@ -72,10 +128,7 @@ function PulseRing() {
       -1,
     );
     opacity.value = withRepeat(
-      withSequence(
-        withTiming(0, { duration: 1200 }),
-        withTiming(0.5, { duration: 1200 }),
-      ),
+      withSequence(withTiming(0, { duration: 1200 }), withTiming(0.5, { duration: 1200 })),
       -1,
     );
   }, []);
@@ -108,46 +161,59 @@ function StepCard({
   onPress: () => void;
   delay: number;
 }) {
-  const { onPressIn, onPressOut, animatedStyle } = useMotionPress({ scaleTo: motionScale.pressCard });
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress({
+    scaleTo: motionScale.pressCard,
+  });
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
   return (
-    <Animated.View entering={MotionTransitions.cardEnter(Math.max(0, Math.round((delay - 100) / 50)))}>
+    <Animated.View
+      entering={MotionTransitions.cardEnter(Math.max(0, Math.round((delay - 100) / 50)))}
+    >
       <Pressable
         onPress={onPress}
         onPressIn={onPressIn}
         onPressOut={onPressOut}
         accessibilityRole="button"
         accessibilityLabel={`Step ${step.number}: ${step.title}`}
-        accessibilityHint={isLocked ? 'Locked - coming in a future update' : isCompleted ? `Completed - ${answeredCount} of ${totalQuestions} questions answered` : isCurrent ? `Current step - ${answeredCount} of ${totalQuestions} questions answered` : `View step ${step.number}`}
+        accessibilityHint={
+          isLocked
+            ? 'Locked - coming in a future update'
+            : isCompleted
+              ? `Completed - ${answeredCount} of ${totalQuestions} questions answered`
+              : isCurrent
+                ? `Current step - ${answeredCount} of ${totalQuestions} questions answered`
+                : `View step ${step.number}`
+        }
         accessibilityState={{ disabled: false }}
       >
-        <Animated.View style={[
-          styles.stepCard,
-          isCurrent && styles.stepCardCurrent,
-          isCompleted && styles.stepCardCompleted,
-          isLocked && styles.stepCardLocked,
-          animatedStyle,
-        ]}>
+        <Animated.View
+          style={[
+            styles.stepCard,
+            isCurrent && styles.stepCardCurrent,
+            isCompleted && styles.stepCardCompleted,
+            isLocked && styles.stepCardLocked,
+            animatedStyle,
+          ]}
+        >
           {/* Number Badge */}
           <View style={styles.badgeWrap}>
             {isCurrent && !isCompleted && <PulseRing />}
-            <View style={[
-              styles.badge,
-              isCompleted && styles.badgeCompleted,
-              isCurrent && !isCompleted && styles.badgeCurrent,
-              isLocked && styles.badgeLocked,
-            ]}>
+            <View
+              style={[
+                styles.badge,
+                isCompleted && styles.badgeCompleted,
+                isCurrent && !isCompleted && styles.badgeCurrent,
+                isLocked && styles.badgeLocked,
+              ]}
+            >
               {isLocked ? (
                 <Feather name="lock" size={18} color={ds.colors.textQuaternary} />
               ) : isCompleted ? (
                 <Feather name="check" size={22} color={ds.semantic.text.onDark} />
               ) : (
-                <Text style={[
-                  styles.badgeText,
-                  isCurrent && styles.badgeTextCurrent,
-                ]}>
+                <Text style={[styles.badgeText, isCurrent && styles.badgeTextCurrent]}>
                   {step.number}
                 </Text>
               )}
@@ -160,13 +226,13 @@ function StepCard({
               <Text style={styles.stepTitle} numberOfLines={2}>
                 Step {step.number}
               </Text>
-              <Feather 
-                name={isLocked ? 'lock' : 'chevron-right'} 
-                size={18} 
-                color={ds.colors.textQuaternary} 
+              <Feather
+                name={isLocked ? 'lock' : 'chevron-right'}
+                size={18}
+                color={ds.colors.textQuaternary}
               />
             </View>
-            
+
             <Text style={styles.stepName} numberOfLines={1}>
               {step.title}
             </Text>
@@ -234,7 +300,9 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
         <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
           <Text style={styles.headerEyebrow}>Step work</Text>
           <Text style={styles.headerTitle}>The 12 Steps</Text>
-          <Text style={styles.headerSubtitle}>Your recovery journey, one honest action at a time.</Text>
+          <Text style={styles.headerSubtitle}>
+            Your recovery journey, one honest action at a time.
+          </Text>
 
           {/* Progress */}
           <View style={styles.progressCard}>
@@ -266,7 +334,13 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
             const answeredCount = detail?.answered ?? 0;
             const totalQuestions = detail?.total ?? stepTotalsFallback.get(step.number) ?? 0;
             const completed = stepsCompleted.includes(step.number);
-            const isLocked = false;
+            const prevDetail = step.number > 1 ? stepDetailMap.get(step.number - 1) : undefined;
+            const prevPercent = prevDetail
+              ? prevDetail.total > 0
+                ? Math.round((prevDetail.answered / prevDetail.total) * 100)
+                : 0
+              : 100;
+            const isLocked = step.number > 1 && prevPercent < 50;
             const current = !isLocked && step.number === currentStep && !completed;
 
             return (
@@ -288,7 +362,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
           <Animated.View entering={MotionTransitions.fadeDelayed(360)} style={styles.infoCard}>
             <Feather name="info" size={18} color={ds.colors.info} />
             <Text style={styles.infoText}>
-              All 12 steps are available. Work at your own pace with your sponsor.
+              Steps unlock progressively. Complete 50% of a step to unlock the next one.
             </Text>
           </Animated.View>
 
@@ -322,240 +396,241 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
 
-  // Header
-  header: {
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-    paddingTop: ds.space[5],
-    paddingBottom: ds.space[6],
-    backgroundColor: ds.semantic.surface.canvas,
-  },
-  headerEyebrow: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: ds.space[1],
-  },
-  headerTitle: {
-    fontSize: 34,
-    fontWeight: '700',
-    color: ds.colors.textPrimary,
-    letterSpacing: -0.5,
-  },
-  headerSubtitle: {
-    ...ds.typography.body,
-    color: ds.colors.textTertiary,
-    marginTop: ds.space[1],
-  },
+    // Header
+    header: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[5],
+      paddingBottom: ds.space[6],
+      backgroundColor: ds.semantic.surface.canvas,
+    },
+    headerEyebrow: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      textTransform: 'uppercase',
+      letterSpacing: 1.2,
+      marginBottom: ds.space[1],
+    },
+    headerTitle: {
+      fontSize: 34,
+      fontWeight: '700',
+      color: ds.colors.textPrimary,
+      letterSpacing: -0.5,
+    },
+    headerSubtitle: {
+      ...ds.typography.body,
+      color: ds.colors.textTertiary,
+      marginTop: ds.space[1],
+    },
 
-  // Progress
-  progressCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: ds.radius.xl,
-    padding: ds.semantic.layout.cardPadding,
-    marginTop: ds.space[5],
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  progressCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: ds.colors.successMuted,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  progressPercent: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: ds.colors.success,
-  },
-  progressStats: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginLeft: ds.space[4],
-  },
-  stat: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: ds.colors.textPrimary,
-  },
-  statLabel: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginTop: 2,
-  },
-  statDivider: {
-    width: 1,
-    height: 40,
-    backgroundColor: ds.colors.divider,
-  },
+    // Progress
+    progressCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.xl,
+      padding: ds.semantic.layout.cardPadding,
+      marginTop: ds.space[5],
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    progressCircle: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      backgroundColor: ds.colors.successMuted,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    progressPercent: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: ds.colors.success,
+    },
+    progressStats: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginLeft: ds.space[4],
+    },
+    stat: {
+      alignItems: 'center',
+    },
+    statNumber: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: ds.colors.textPrimary,
+    },
+    statLabel: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginTop: 2,
+    },
+    statDivider: {
+      width: 1,
+      height: 40,
+      backgroundColor: ds.colors.divider,
+    },
 
-  // Scroll
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: ds.semantic.layout.screenPadding,
-    paddingTop: ds.space[4],
-  },
+    // Scroll
+    scroll: {
+      flex: 1,
+    },
+    scrollContent: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[4],
+    },
 
-  // Step Card
-  stepCard: {
-    flexDirection: 'row',
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: ds.radius.lg,
-    padding: ds.semantic.layout.cardPadding,
-    marginBottom: ds.space[3],
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  stepCardCurrent: {
-    borderWidth: 2,
-    borderColor: ds.colors.accent,
-  },
-  stepCardCompleted: {
-    backgroundColor: ds.colors.successMuted,
-  },
-  stepCardLocked: {
-    opacity: 0.7,
-  },
+    // Step Card
+    stepCard: {
+      flexDirection: 'row',
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.lg,
+      padding: ds.semantic.layout.cardPadding,
+      marginBottom: ds.space[3],
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    stepCardCurrent: {
+      borderWidth: 2,
+      borderColor: ds.colors.accent,
+    },
+    stepCardCompleted: {
+      backgroundColor: ds.colors.successMuted,
+    },
+    stepCardLocked: {
+      opacity: 0.7,
+    },
 
-  // Badge
-  badgeWrap: {
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pulseRing: {
-    position: 'absolute',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: ds.colors.accent,
-  },
-  badge: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: ds.colors.bgQuaternary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeCompleted: {
-    backgroundColor: ds.colors.success,
-  },
-  badgeCurrent: {
-    backgroundColor: ds.colors.accent,
-  },
-  badgeLocked: {
-    backgroundColor: ds.colors.bgQuaternary,
-  },
-  badgeText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: ds.colors.textTertiary,
-  },
-  badgeTextCurrent: {
-    color: ds.semantic.surface.app,
-  },
+    // Badge
+    badgeWrap: {
+      width: 48,
+      height: 48,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    pulseRing: {
+      position: 'absolute',
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: ds.colors.accent,
+    },
+    badge: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      backgroundColor: ds.colors.bgQuaternary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    badgeCompleted: {
+      backgroundColor: ds.colors.success,
+    },
+    badgeCurrent: {
+      backgroundColor: ds.colors.accent,
+    },
+    badgeLocked: {
+      backgroundColor: ds.colors.bgQuaternary,
+    },
+    badgeText: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: ds.colors.textTertiary,
+    },
+    badgeTextCurrent: {
+      color: ds.semantic.surface.app,
+    },
 
-  // Content
-  stepContent: {
-    flex: 1,
-    marginLeft: ds.space[4],
-  },
-  stepHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  stepTitle: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  stepName: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.colors.textPrimary,
-    marginTop: ds.space[1],
-  },
+    // Content
+    stepContent: {
+      flex: 1,
+      marginLeft: ds.space[4],
+    },
+    stepHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    stepTitle: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    stepName: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.colors.textPrimary,
+      marginTop: ds.space[1],
+    },
 
-  // Status
-  statusRow: {
-    flexDirection: 'row',
-    gap: ds.space[2],
-    marginTop: ds.space[2],
-  },
-  statusBadgeCurrent: {
-    backgroundColor: ds.colors.accentMuted,
-    paddingHorizontal: ds.space[2],
-    paddingVertical: 2,
-    borderRadius: ds.radius.xs,
-  },
-  statusBadgeTextCurrent: {
-    ...ds.typography.micro,
-    color: ds.colors.accent,
-  },
-  statusBadgeComplete: {
-    backgroundColor: ds.colors.successMuted,
-    paddingHorizontal: ds.space[2],
-    paddingVertical: 2,
-    borderRadius: ds.radius.xs,
-  },
-  statusBadgeTextComplete: {
-    ...ds.typography.micro,
-    color: ds.colors.success,
-  },
-  statusBadgeLocked: {
-    backgroundColor: ds.colors.bgQuaternary,
-    paddingHorizontal: ds.space[2],
-    paddingVertical: 2,
-    borderRadius: ds.radius.xs,
-  },
-  statusBadgeTextLocked: {
-    ...ds.typography.micro,
-    color: ds.colors.textQuaternary,
-  },
+    // Status
+    statusRow: {
+      flexDirection: 'row',
+      gap: ds.space[2],
+      marginTop: ds.space[2],
+    },
+    statusBadgeCurrent: {
+      backgroundColor: ds.colors.accentMuted,
+      paddingHorizontal: ds.space[2],
+      paddingVertical: 2,
+      borderRadius: ds.radius.xs,
+    },
+    statusBadgeTextCurrent: {
+      ...ds.typography.micro,
+      color: ds.colors.accent,
+    },
+    statusBadgeComplete: {
+      backgroundColor: ds.colors.successMuted,
+      paddingHorizontal: ds.space[2],
+      paddingVertical: 2,
+      borderRadius: ds.radius.xs,
+    },
+    statusBadgeTextComplete: {
+      ...ds.typography.micro,
+      color: ds.colors.success,
+    },
+    statusBadgeLocked: {
+      backgroundColor: ds.colors.bgQuaternary,
+      paddingHorizontal: ds.space[2],
+      paddingVertical: 2,
+      borderRadius: ds.radius.xs,
+    },
+    statusBadgeTextLocked: {
+      ...ds.typography.micro,
+      color: ds.colors.textQuaternary,
+    },
 
-  progressText: {
-    ...ds.typography.caption,
-    color: ds.colors.textTertiary,
-    marginTop: ds.space[2],
-  },
+    progressText: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      marginTop: ds.space[2],
+    },
 
-  // Info
-  infoCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: ds.colors.infoMuted,
-    borderRadius: ds.radius.lg,
-    padding: ds.space[4],
-    marginTop: ds.space[4],
-    gap: ds.space[3],
-  },
-  infoText: {
-    flex: 1,
-    ...ds.typography.caption,
-    color: ds.colors.textSecondary,
-    lineHeight: 18,
-  },
-} as const);
+    // Info
+    infoCard: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      backgroundColor: ds.colors.infoMuted,
+      borderRadius: ds.radius.lg,
+      padding: ds.space[4],
+      marginTop: ds.space[4],
+      gap: ds.space[3],
+    },
+    infoText: {
+      flex: 1,
+      ...ds.typography.caption,
+      color: ds.colors.textSecondary,
+      lineHeight: 18,
+    },
+  }) as const;

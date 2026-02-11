@@ -21,10 +21,11 @@ import { StreakCounter } from './index';
   }}
   onPress={() => {}}
   onShowHistory={() => {}}
-/>
+/>;
 ```
 
 **Features:**
+
 - 120dp circular display with progress ring
 - Milestone celebration animations (pulse + scale)
 - Context card with last reset date and next milestone
@@ -38,13 +39,11 @@ import { StreakCounter } from './index';
 ```tsx
 import { StreakHistoryGraph } from './index';
 
-<StreakHistoryGraph
-  history={dailyActivityData}
-  onDayPress={(day) => {}}
-/>
+<StreakHistoryGraph history={dailyActivityData} onDayPress={(day) => {}} />;
 ```
 
 **Features:**
+
 - 30 small bars representing daily activity
 - Color coding: Both check-ins (green), One (amber), None (gray)
 - Trend indicator
@@ -65,10 +64,11 @@ import { DailyCheckInCard } from './index';
   }}
   onMorningPress={() => {}}
   onEveningPress={() => {}}
-/>
+/>;
 ```
 
 **Features:**
+
 - 160dp height with two-section layout
 - States: Incomplete → One done → Both done
 - CTA badge: "Complete today"
@@ -95,10 +95,11 @@ import { JournalEntryCard } from './index';
   }}
   onPress={(entry) => {}}
   onSharePress={(entry) => {}}
-/>
+/>;
 ```
 
 **Features:**
+
 - 120dp height with split layout
 - Large mood emoji display
 - Tag chips
@@ -113,14 +114,11 @@ Horizontal progress tracker for the 12-step recovery program.
 ```tsx
 import { StepProgressTracker } from './index';
 
-<StepProgressTracker
-  steps={steps}
-  currentStep={4}
-  onStepPress={(step) => {}}
-/>
+<StepProgressTracker steps={steps} currentStep={4} onStepPress={(step) => {}} />;
 ```
 
 **Features:**
+
 - 12 step nodes in horizontal scroll view
 - 44dp circular nodes
 - States: completed (checkmark), current (outlined), not-started (gray)
@@ -147,10 +145,11 @@ import { AchievementBadge } from './index';
   }}
   onPress={(achievement) => {}}
   showConfetti={true}
-/>
+/>;
 ```
 
 **Features:**
+
 - 96dp square badge with 24dp radius
 - Locked state: grayscale 50% opacity
 - Unlock animation: Scale bounce + rotate + confetti
@@ -178,6 +177,7 @@ import { CrisisFAB, CompactCrisisButton } from './index';
 ```
 
 **Features:**
+
 - 56dp standard or 96dp extended sizes
 - Secondary amber color
 - Always accessible, never hidden
@@ -188,6 +188,7 @@ import { CrisisFAB, CompactCrisisButton } from './index';
 ## Design Tokens
 
 ### Colors
+
 - **Primary**: #6B9B8D (Warm sage green)
 - **Secondary**: #D4A574 (Warm amber)
 - **Tertiary**: #E8A89A (Soft coral)
@@ -196,6 +197,7 @@ import { CrisisFAB, CompactCrisisButton } from './index';
 - **Error**: #E07856
 
 ### Dimensions
+
 - Streak Counter: 120dp
 - Daily Check-In: 160dp height
 - Journal Entry: 120dp height
@@ -205,6 +207,7 @@ import { CrisisFAB, CompactCrisisButton } from './index';
 - Touch Target Min: 48dp
 
 ### Animation Durations
+
 - Standard: 200ms
 - Emphasized: 500ms
 - Milestone: 1200ms
@@ -212,6 +215,7 @@ import { CrisisFAB, CompactCrisisButton } from './index';
 ## Accessibility
 
 All components support:
+
 - **WCAG AAA compliance**
 - **Screen reader optimization** with comprehensive labels
 - **Reduced motion support** (respects system settings)
@@ -236,14 +240,8 @@ function HomeScreen() {
     <View style={{ flex: 1 }}>
       <ScrollView>
         <StreakCounter data={streakData} />
-        <DailyCheckInCard
-          date={new Date()}
-          checkInData={checkInData}
-        />
-        <StepProgressTracker
-          steps={steps}
-          currentStep={4}
-        />
+        <DailyCheckInCard date={new Date()} checkInData={checkInData} />
+        <StepProgressTracker steps={steps} currentStep={4} />
       </ScrollView>
       <CrisisFAB onPress={openCrisisKit} extended />
     </View>

@@ -110,7 +110,9 @@ export async function hapticSelection(): Promise<void> {
  * Button press with appropriate feedback
  * Automatically selects impact based on button importance
  */
-export async function hapticButtonPress(importance: 'low' | 'medium' | 'high' = 'medium'): Promise<void> {
+export async function hapticButtonPress(
+  importance: 'low' | 'medium' | 'high' = 'medium',
+): Promise<void> {
   switch (importance) {
     case 'low':
       return hapticLight();

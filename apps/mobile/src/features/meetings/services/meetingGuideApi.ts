@@ -1,15 +1,18 @@
 /**
  * Meeting Guide API Client
- * Fetches meeting data from Meeting Guide standard API
+ * Fetches meeting data from TSML-compatible feeds (Meeting Guide spec)
  * @see https://github.com/code4recovery/spec
+ *
+ * Primary data source: TSML API service (aggregates multiple feeds)
+ * Fallback: Direct AA San Jose endpoint
  */
 
 import { logger } from '../../../utils/logger';
 import type { MeetingGuideResponse, CachedMeeting, MeetingSearchParams } from '../types/meeting';
+import { fetchTSMLMeetings } from '../../../services/meetingApiService';
 
 /**
- * Meeting Guide API base URL
- * Using AA San Jose as primary endpoint (follows Meeting Guide spec)
+ * Meeting Guide API base URL (legacy single-feed fallback)
  */
 const MEETING_GUIDE_API_BASE = 'https://aasanjose.org/api/meetings';
 
@@ -22,9 +25,10 @@ const REQUEST_TIMEOUT_MS = 15000;
 
 /**
  * Search for meetings near a location
+ * Uses TSML multi-feed service as primary source, falls back to legacy endpoint
  * @param params Search parameters (lat, lng, radius)
  * @returns Array of cached meetings
- * @throws Error if API call fails after retries
+ * @throws Error if all sources fail
  */
 export async function searchMeetings(params: MeetingSearchParams): Promise<CachedMeeting[]> {
   const { latitude, longitude, radius_miles } = params;
@@ -35,6 +39,33 @@ export async function searchMeetings(params: MeetingSearchParams): Promise<Cache
     radius_miles,
   });
 
+  // Try TSML multi-feed service first
+  try {
+    const tsmlMeetings = await fetchTSMLMeetings(params);
+
+    logger.info('TSML meeting search successful', {
+      count: tsmlMeetings.length,
+    });
+
+    return tsmlMeetings;
+  } catch (tsmlError) {
+    logger.warn('TSML service failed, falling back to legacy endpoint', {
+      error: tsmlError instanceof Error ? tsmlError.message : 'Unknown error',
+    });
+  }
+
+  // Fallback: legacy single-endpoint search
+  return searchMeetingsLegacy(params);
+}
+
+/**
+ * Legacy single-endpoint meeting search (fallback)
+ * @param params Search parameters
+ * @returns Array of cached meetings
+ * @throws Error if API call fails after retries
+ */
+async function searchMeetingsLegacy(params: MeetingSearchParams): Promise<CachedMeeting[]> {
+  const { latitude, longitude, radius_miles } = params;
   let lastError: Error | null = null;
 
   // Retry logic with exponential backoff
@@ -91,7 +122,7 @@ export async function searchMeetings(params: MeetingSearchParams): Promise<Cache
         throw new Error('Meeting search service returned an unexpected payload');
       }
 
-      logger.info('Meeting search successful', {
+      logger.info('Legacy meeting search successful', {
         count: data.length,
         attempt,
       });
@@ -103,7 +134,7 @@ export async function searchMeetings(params: MeetingSearchParams): Promise<Cache
     } catch (error) {
       lastError = error instanceof Error ? error : new Error('Unknown error');
 
-      logger.warn('Meeting search attempt failed', {
+      logger.warn('Legacy meeting search attempt failed', {
         attempt,
         maxRetries: MAX_RETRIES,
         error: lastError.message,

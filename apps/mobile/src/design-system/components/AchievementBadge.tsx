@@ -1,8 +1,8 @@
 /**
  * AchievementBadge Component - Material Design 3
- * 
+ *
  * Achievement badge with unlock animation and states.
- * 
+ *
  * Features:
  * - 96dp square, rounded 24dp
  * - Locked: Grayscale 50% opacity
@@ -33,7 +33,13 @@ import Animated, {
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';
-import { md3ElevationLight, md3ElevationDark, md3Shape, md3Typography, md3Motion } from '../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  md3Shape,
+  md3Typography,
+  md3Motion,
+} from '../tokens/md3-elevation';
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -78,7 +84,7 @@ export interface AchievementBadgeProps {
 
 function useUnlockAnimation(
   isUnlocked: boolean,
-  animateOnMount: boolean
+  animateOnMount: boolean,
 ): {
   scale: SharedValue<number>;
   rotation: SharedValue<number>;
@@ -88,7 +94,7 @@ function useUnlockAnimation(
   const scale = useSharedValue(isUnlocked ? 1 : 0.95);
   const rotation = useSharedValue(0);
   const glowOpacity = useSharedValue(0);
-  
+
   useEffect(() => {
     if (isUnlocked) {
       if (animateOnMount) {
@@ -96,18 +102,18 @@ function useUnlockAnimation(
         scale.value = withSequence(
           withTiming(0.8, { duration: 100 }),
           withSpring(1.15, { ...md3Motion.spring.bouncy, damping: 8 }),
-          withSpring(1, md3Motion.spring.gentle)
+          withSpring(1, md3Motion.spring.gentle),
         );
-        
+
         rotation.value = withSequence(
           withTiming(-10, { duration: 100 }),
           withTiming(10, { duration: 100 }),
-          withTiming(0, { duration: 100 })
+          withTiming(0, { duration: 100 }),
         );
-        
+
         glowOpacity.value = withSequence(
           withTiming(1, { duration: 300 }),
-          withTiming(0.3, { duration: 500 })
+          withTiming(0.3, { duration: 500 }),
         );
       } else {
         scale.value = withSpring(1, md3Motion.spring.gentle);
@@ -117,11 +123,11 @@ function useUnlockAnimation(
       glowOpacity.value = withTiming(0, { duration: 200 });
     }
   }, [isUnlocked, animateOnMount]);
-  
+
   const glowStyle = useAnimatedStyle(() => ({
     opacity: glowOpacity.value,
   }));
-  
+
   return { scale, rotation, glowOpacity, glowStyle };
 }
 
@@ -143,41 +149,39 @@ export function AchievementBadge({
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
-  
+
   const { scale, rotation, glowStyle } = useUnlockAnimation(isUnlocked, animateUnlock);
-  
+
   // Press animation
   const pressScale = useSharedValue(1);
-  
+
   const handlePressIn = () => {
     pressScale.value = withTiming(0.95, { duration: 100 });
   };
-  
+
   const handlePressOut = () => {
     pressScale.value = withSpring(1, md3Motion.spring.quick);
   };
-  
+
   const pressAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pressScale.value }],
   }));
-  
+
   // Combine animations
   const combinedStyle = useAnimatedStyle(() => {
     const unlockScale = scale.value;
     const unlockRotate = rotation.value;
     const pressS = pressScale.value;
-    
+
     return {
-      transform: [
-        { scale: unlockScale * pressS },
-        { rotate: `${unlockRotate}deg` },
-      ],
+      transform: [{ scale: unlockScale * pressS }, { rotate: `${unlockRotate}deg` }],
     };
   });
-  
-  const a11yLabel = accessibilityLabel || 
+
+  const a11yLabel =
+    accessibilityLabel ||
     `${achievement.title}. ${achievement.description}. ${isUnlocked ? 'Unlocked' : 'Locked'}`;
-  
+
   return (
     <AnimatedTouchable
       style={[styles.container, combinedStyle, style]}
@@ -193,18 +197,18 @@ export function AchievementBadge({
     >
       {/* Glow effect for unlocked */}
       {isUnlocked && (
-        <Animated.View 
+        <Animated.View
           style={[
             styles.glow,
-            { 
+            {
               backgroundColor: gradientColors[0],
               shadowColor: gradientColors[0],
             },
             glowStyle,
-          ]} 
+          ]}
         />
       )}
-      
+
       {/* Badge Content */}
       {isUnlocked ? (
         <LinearGradient
@@ -218,7 +222,7 @@ export function AchievementBadge({
           ) : (
             <Feather name={achievement.icon} size={32} color="#FFFFFF" />
           )}
-          
+
           {/* Points badge */}
           {achievement.points && (
             <View style={styles.pointsBadge}>
@@ -227,16 +231,22 @@ export function AchievementBadge({
           )}
         </LinearGradient>
       ) : (
-        <View style={[styles.badge, styles.lockedBadge, { backgroundColor: colors.surfaceContainerHighest }]}>
+        <View
+          style={[
+            styles.badge,
+            styles.lockedBadge,
+            { backgroundColor: colors.surfaceContainerHighest },
+          ]}
+        >
           <Feather name="lock" size={24} color={colors.onSurfaceVariant} />
         </View>
       )}
-      
+
       {/* Title */}
-      <Text 
+      <Text
         style={[
           styles.title,
-          { 
+          {
             color: isUnlocked ? colors.onSurface : colors.onSurfaceVariant,
           },
         ]}
@@ -244,15 +254,9 @@ export function AchievementBadge({
       >
         {achievement.title}
       </Text>
-      
+
       {/* Description */}
-      <Text 
-        style={[
-          styles.description,
-          { color: colors.onSurfaceVariant },
-        ]}
-        numberOfLines={1}
-      >
+      <Text style={[styles.description, { color: colors.onSurfaceVariant }]} numberOfLines={1}>
         {isUnlocked ? 'Unlocked!' : achievement.description}
       </Text>
     </AnimatedTouchable>
@@ -279,7 +283,7 @@ export function AchievementGrid({
   const theme = useTheme();
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
-  
+
   return (
     <View style={[styles.gridContainer, style]}>
       {achievements.map((achievement, index) => (

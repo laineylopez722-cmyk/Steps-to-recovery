@@ -1,11 +1,11 @@
 /**
  * Material Design 3 Color Tokens - Warm Recovery Theme
- * 
+ *
  * Colors:
  * - Sage Green: #6B9B8D (Primary)
  * - Amber: #D4A574 (Secondary)
  * - Coral: #E8A89A (Tertiary)
- * 
+ *
  * Following MD3 color system with tonal palettes
  */
 
@@ -139,49 +139,49 @@ export const md3LightColors = {
   onPrimary: sageGreen[100],
   primaryContainer: sageGreen[90],
   onPrimaryContainer: sageGreen[10],
-  
+
   // Secondary
   secondary: amber[40],
   onSecondary: amber[100],
   secondaryContainer: amber[90],
   onSecondaryContainer: amber[10],
-  
+
   // Tertiary
   tertiary: coral[40],
   onTertiary: coral[100],
   tertiaryContainer: coral[90],
   onTertiaryContainer: coral[10],
-  
+
   // Error
   error: error[40],
   onError: error[100],
   errorContainer: error[90],
   onErrorContainer: error[10],
-  
+
   // Surface
   surface: neutral[99],
   onSurface: neutral[10],
   surfaceVariant: neutralVariant[90],
   onSurfaceVariant: neutralVariant[30],
   surfaceTint: sageGreen[40],
-  
+
   // Background
   background: neutral[99],
   onBackground: neutral[10],
-  
+
   // Outline
   outline: neutralVariant[50],
   outlineVariant: neutralVariant[80],
-  
+
   // Shadow
   shadow: neutral[0],
   scrim: neutral[0],
-  
+
   // Inverse
   inverseSurface: neutral[20],
   inverseOnSurface: neutral[95],
   inversePrimary: sageGreen[80],
-  
+
   // Fixed (MD3 adaptive colors)
   primaryFixed: sageGreen[90],
   primaryFixedDim: sageGreen[80],
@@ -195,7 +195,7 @@ export const md3LightColors = {
   tertiaryFixedDim: coral[80],
   onTertiaryFixed: coral[10],
   onTertiaryFixedVariant: coral[30],
-  
+
   // Surface containers (MD3 elevation)
   surfaceContainerHighest: neutralVariant[90],
   surfaceContainerHigh: neutralVariant[90],
@@ -204,14 +204,14 @@ export const md3LightColors = {
   surfaceContainerLowest: neutralVariant[99],
   surfaceBright: neutralVariant[95],
   surfaceDim: neutralVariant[80],
-  
+
   // Status colors
   success: sageGreen[40],
   successContainer: sageGreen[90],
   warning: amber[40],
   warningContainer: amber[90],
   info: '#5A7A8A',
-  
+
   // Legacy aliases for compatibility
   primaryLight: sageGreen[60],
   primaryDark: sageGreen[30],
@@ -231,49 +231,49 @@ export const md3DarkColors = {
   onPrimary: sageGreen[20],
   primaryContainer: sageGreen[30],
   onPrimaryContainer: sageGreen[90],
-  
+
   // Secondary
   secondary: amber[80],
   onSecondary: amber[20],
   secondaryContainer: amber[30],
   onSecondaryContainer: amber[90],
-  
+
   // Tertiary
   tertiary: coral[80],
   onTertiary: coral[20],
   tertiaryContainer: coral[30],
   onTertiaryContainer: coral[90],
-  
+
   // Error
   error: error[80],
   onError: error[20],
   errorContainer: error[30],
   onErrorContainer: error[90],
-  
+
   // Surface
   surface: neutral[10],
   onSurface: neutral[90],
   surfaceVariant: neutralVariant[30],
   onSurfaceVariant: neutralVariant[80],
   surfaceTint: sageGreen[80],
-  
+
   // Background
   background: neutral[10],
   onBackground: neutral[90],
-  
+
   // Outline
   outline: neutralVariant[60],
   outlineVariant: neutralVariant[30],
-  
+
   // Shadow
   shadow: neutral[0],
   scrim: neutral[0],
-  
+
   // Inverse
   inverseSurface: neutral[90],
   inverseOnSurface: neutral[20],
   inversePrimary: sageGreen[40],
-  
+
   // Fixed
   primaryFixed: sageGreen[90],
   primaryFixedDim: sageGreen[80],
@@ -287,7 +287,7 @@ export const md3DarkColors = {
   tertiaryFixedDim: coral[80],
   onTertiaryFixed: coral[10],
   onTertiaryFixedVariant: coral[30],
-  
+
   // Surface containers - using valid neutralVariant tones
   surfaceContainerHighest: neutralVariant[30],
   surfaceContainerHigh: neutralVariant[30],
@@ -296,14 +296,14 @@ export const md3DarkColors = {
   surfaceContainerLowest: neutralVariant[10],
   surfaceBright: neutralVariant[40],
   surfaceDim: neutralVariant[20],
-  
+
   // Status colors
   success: sageGreen[80],
   successContainer: sageGreen[30],
   warning: amber[80],
   warningContainer: amber[30],
   info: '#7A9AAA',
-  
+
   // Legacy aliases
   primaryLight: sageGreen[70],
   primaryDark: sageGreen[90],

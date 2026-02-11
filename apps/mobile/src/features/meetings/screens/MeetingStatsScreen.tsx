@@ -137,7 +137,11 @@ export function MeetingStatsScreen(): React.ReactElement {
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
               >
-                <MaterialIcons name="local-fire-department" size={24} color={ds.semantic.text.onDark} />
+                <MaterialIcons
+                  name="local-fire-department"
+                  size={24}
+                  color={ds.semantic.text.onDark}
+                />
               </LinearGradient>
               <Text style={styles.statValue}>{currentStreak}</Text>
               <Text style={styles.statLabel}>Day Streak</Text>
@@ -318,254 +322,255 @@ export function MeetingStatsScreen(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-  },
-  backButton: {
-    padding: spacing.sm,
-  },
-  headerTitle: {
-    ...typography.h2,
-    color: darkAccent.text,
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  scrollView: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  statCard: {
-    flex: 1,
-    alignItems: 'center',
-    padding: spacing.md,
-    gap: spacing.sm,
-  },
-  statIconBg: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  statValue: {
-    ...typography.h1,
-    color: darkAccent.text,
-    fontWeight: '800',
-  },
-  statLabel: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    textAlign: 'center',
-  },
-  ninetyCard: {
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-  },
-  ninetyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  ninetyTitleContainer: {
-    flex: 1,
-  },
-  ninetyTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-    fontWeight: '700',
-  },
-  ninetySubtitle: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginTop: spacing.xs,
-  },
-  progressContainer: {
-    gap: spacing.sm,
-  },
-  progressTrack: {
-    height: 24,
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: radius.full,
-    overflow: 'hidden',
-  },
-  progressGradient: {
-    flex: 1,
-  },
-  progressText: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  statusBadges: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: spacing.md,
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.full,
-  },
-  completeBadge: {
-    backgroundColor: ds.colors.successMuted,
-  },
-  completeBadgeText: {
-    ...typography.caption,
-    color: ds.colors.success,
-    fontWeight: '600',
-  },
-  onTrackBadge: {
-    backgroundColor: ds.colors.successMuted,
-  },
-  onTrackBadgeText: {
-    ...typography.caption,
-    color: ds.colors.success,
-    fontWeight: '600',
-  },
-  behindBadge: {
-    backgroundColor: ds.colors.warningMuted,
-  },
-  behindBadgeText: {
-    ...typography.caption,
-    color: ds.colors.warning,
-    fontWeight: '600',
-  },
-  startDateText: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-  },
-  section: {
-    marginBottom: spacing.xl,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  sectionTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-    fontWeight: '700',
-  },
-  viewAllText: {
-    ...typography.body,
-    color: darkAccent.primary,
-    fontWeight: '600',
-  },
-  achievementsGrid: {
-    flexDirection: 'row',
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  achievementCard: {
-    width: 72,
-    height: 72,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.lg,
-    position: 'relative',
-  },
-  achievementLocked: {
-    opacity: 0.5,
-  },
-  achievementBadge: {
-    position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: ds.colors.success,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  lockIcon: {
-    position: 'absolute',
-    bottom: 4,
-    right: 4,
-  },
-  achievementCount: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    textAlign: 'center',
-  },
-  emptyCard: {
-    alignItems: 'center',
-    padding: spacing.xl,
-    gap: spacing.sm,
-  },
-  emptyText: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-  emptySubtext: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    textAlign: 'center',
-  },
-  checkInCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing.md,
-    gap: spacing.md,
-    marginBottom: spacing.sm,
-  },
-  checkInIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: ds.colors.successMuted,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkInContent: {
-    flex: 1,
-  },
-  checkInName: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-    marginBottom: spacing.xs,
-  },
-  checkInAddress: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginBottom: spacing.xs,
-  },
-  checkInDate: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: spacing.lg,
+      paddingVertical: spacing.md,
+    },
+    backButton: {
+      padding: spacing.sm,
+    },
+    headerTitle: {
+      ...typography.h2,
+      color: darkAccent.text,
+      flex: 1,
+      textAlign: 'center',
+    },
+    headerSpacer: {
+      width: 40,
+    },
+    scrollView: {
+      flex: 1,
+      padding: spacing.lg,
+    },
+    statsRow: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      marginBottom: spacing.lg,
+    },
+    statCard: {
+      flex: 1,
+      alignItems: 'center',
+      padding: spacing.md,
+      gap: spacing.sm,
+    },
+    statIconBg: {
+      width: 48,
+      height: 48,
+      borderRadius: 24,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    statValue: {
+      ...typography.h1,
+      color: darkAccent.text,
+      fontWeight: '800',
+    },
+    statLabel: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      textAlign: 'center',
+    },
+    ninetyCard: {
+      padding: spacing.lg,
+      marginBottom: spacing.lg,
+    },
+    ninetyHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.md,
+      marginBottom: spacing.lg,
+    },
+    ninetyTitleContainer: {
+      flex: 1,
+    },
+    ninetyTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+      fontWeight: '700',
+    },
+    ninetySubtitle: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      marginTop: spacing.xs,
+    },
+    progressContainer: {
+      gap: spacing.sm,
+    },
+    progressTrack: {
+      height: 24,
+      backgroundColor: darkAccent.surfaceHigh,
+      borderRadius: radius.full,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      borderRadius: radius.full,
+      overflow: 'hidden',
+    },
+    progressGradient: {
+      flex: 1,
+    },
+    progressText: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+      textAlign: 'center',
+    },
+    statusBadges: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: spacing.md,
+    },
+    statusBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing.xs,
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      borderRadius: radius.full,
+    },
+    completeBadge: {
+      backgroundColor: ds.colors.successMuted,
+    },
+    completeBadgeText: {
+      ...typography.caption,
+      color: ds.colors.success,
+      fontWeight: '600',
+    },
+    onTrackBadge: {
+      backgroundColor: ds.colors.successMuted,
+    },
+    onTrackBadgeText: {
+      ...typography.caption,
+      color: ds.colors.success,
+      fontWeight: '600',
+    },
+    behindBadge: {
+      backgroundColor: ds.colors.warningMuted,
+    },
+    behindBadgeText: {
+      ...typography.caption,
+      color: ds.colors.warning,
+      fontWeight: '600',
+    },
+    startDateText: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+    },
+    section: {
+      marginBottom: spacing.xl,
+    },
+    sectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: spacing.md,
+    },
+    sectionTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+      fontWeight: '700',
+    },
+    viewAllText: {
+      ...typography.body,
+      color: darkAccent.primary,
+      fontWeight: '600',
+    },
+    achievementsGrid: {
+      flexDirection: 'row',
+      gap: spacing.md,
+      marginBottom: spacing.sm,
+    },
+    achievementCard: {
+      width: 72,
+      height: 72,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: darkAccent.surfaceHigh,
+      borderRadius: radius.lg,
+      position: 'relative',
+    },
+    achievementLocked: {
+      opacity: 0.5,
+    },
+    achievementBadge: {
+      position: 'absolute',
+      top: 4,
+      right: 4,
+      width: 20,
+      height: 20,
+      borderRadius: 10,
+      backgroundColor: ds.colors.success,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    lockIcon: {
+      position: 'absolute',
+      bottom: 4,
+      right: 4,
+    },
+    achievementCount: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      textAlign: 'center',
+    },
+    emptyCard: {
+      alignItems: 'center',
+      padding: spacing.xl,
+      gap: spacing.sm,
+    },
+    emptyText: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+    emptySubtext: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      textAlign: 'center',
+    },
+    checkInCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing.md,
+      gap: spacing.md,
+      marginBottom: spacing.sm,
+    },
+    checkInIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: ds.colors.successMuted,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    checkInContent: {
+      flex: 1,
+    },
+    checkInName: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+      marginBottom: spacing.xs,
+    },
+    checkInAddress: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginBottom: spacing.xs,
+    },
+    checkInDate: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+    },
+  }) as const;

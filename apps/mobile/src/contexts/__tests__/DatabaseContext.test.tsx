@@ -64,9 +64,11 @@ describe('DatabaseContext', () => {
   // Helper to flush the full async initialization chain
   // (dynamic import → openDatabaseAsync → createStorageAdapter → initDatabase → setState)
   const flushAsyncInit = async (): Promise<void> => {
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    });
+    for (let i = 0; i < 5; i++) {
+      await act(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      });
+    }
   };
 
   beforeEach(() => {

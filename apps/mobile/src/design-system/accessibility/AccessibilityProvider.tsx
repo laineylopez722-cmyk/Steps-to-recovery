@@ -1,6 +1,6 @@
 /**
  * AccessibilityProvider
- * 
+ *
  * Context provider for accessibility settings.
  * Tracks and persists user accessibility preferences including
  * high contrast, reduced motion, large text, and screen reader state.
@@ -31,7 +31,7 @@ export interface AccessibilityContextValue extends AccessibilitySettings {
   /** Update a specific setting */
   setSetting: <K extends keyof AccessibilitySettings>(
     key: K,
-    value: AccessibilitySettings[K]
+    value: AccessibilitySettings[K],
   ) => Promise<void>;
   /** Toggle high contrast mode */
   toggleHighContrast: () => Promise<void>;
@@ -56,7 +56,9 @@ export interface AccessibilityProviderProps {
  * Provider component for accessibility settings
  * Automatically detects and tracks system accessibility preferences
  */
-export function AccessibilityProvider({ children }: AccessibilityProviderProps): React.ReactElement {
+export function AccessibilityProvider({
+  children,
+}: AccessibilityProviderProps): React.ReactElement {
   const [settings, setSettings] = useState<AccessibilitySettings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -67,7 +69,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
         const saved = await AsyncStorage.getItem(STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved) as Partial<AccessibilitySettings>;
-          setSettings(prev => ({ ...prev, ...parsed }));
+          setSettings((prev) => ({ ...prev, ...parsed }));
         }
       } catch (error) {
         console.error('Failed to load accessibility settings:', error);
@@ -91,7 +93,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   // Listen for system screen reader changes
   useEffect(() => {
     const handleScreenReaderChange = (enabled: boolean): void => {
-      setSettings(prev => ({ ...prev, screenReaderEnabled: enabled }));
+      setSettings((prev) => ({ ...prev, screenReaderEnabled: enabled }));
     };
 
     // Get initial state
@@ -111,7 +113,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   // Listen for reduce motion changes
   useEffect(() => {
     const handleReduceMotionChange = (enabled: boolean): void => {
-      setSettings(prev => ({ ...prev, reduceMotion: enabled }));
+      setSettings((prev) => ({ ...prev, reduceMotion: enabled }));
     };
 
     // Get initial state
@@ -134,7 +136,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   useEffect(() => {
     if (AccessibilityInfo.isBoldTextEnabled) {
       const handleBoldTextChange = (enabled: boolean): void => {
-        setSettings(prev => ({ ...prev, boldTextEnabled: enabled }));
+        setSettings((prev) => ({ ...prev, boldTextEnabled: enabled }));
       };
 
       AccessibilityInfo.isBoldTextEnabled().then(handleBoldTextChange);
@@ -154,7 +156,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   useEffect(() => {
     if (AccessibilityInfo.isGrayscaleEnabled) {
       const handleGrayscaleChange = (enabled: boolean): void => {
-        setSettings(prev => ({ ...prev, grayscaleEnabled: enabled }));
+        setSettings((prev) => ({ ...prev, grayscaleEnabled: enabled }));
       };
 
       AccessibilityInfo.isGrayscaleEnabled().then(handleGrayscaleChange);
@@ -174,7 +176,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   useEffect(() => {
     if (AccessibilityInfo.isInvertColorsEnabled) {
       const handleInvertColorsChange = (enabled: boolean): void => {
-        setSettings(prev => ({ ...prev, invertColorsEnabled: enabled }));
+        setSettings((prev) => ({ ...prev, invertColorsEnabled: enabled }));
       };
 
       AccessibilityInfo.isInvertColorsEnabled().then(handleInvertColorsChange);
@@ -191,14 +193,17 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   }, []);
 
   // Update setting helper
-  const setSetting = useCallback(async <K extends keyof AccessibilitySettings>(
-    key: K,
-    value: AccessibilitySettings[K],
-  ): Promise<void> => {
-    const newSettings = { ...settings, [key]: value };
-    setSettings(newSettings);
-    await persistSettings(newSettings);
-  }, [settings, persistSettings]);
+  const setSetting = useCallback(
+    async <K extends keyof AccessibilitySettings>(
+      key: K,
+      value: AccessibilitySettings[K],
+    ): Promise<void> => {
+      const newSettings = { ...settings, [key]: value };
+      setSettings(newSettings);
+      await persistSettings(newSettings);
+    },
+    [settings, persistSettings],
+  );
 
   // Toggle high contrast
   const toggleHighContrast = useCallback(async (): Promise<void> => {
@@ -211,10 +216,13 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
   }, [settings.reduceMotion, setSetting]);
 
   // Set text scale
-  const setTextScale = useCallback(async (scale: number): Promise<void> => {
-    const clampedScale = Math.max(1, Math.min(2, scale));
-    await setSetting('largeText', clampedScale);
-  }, [setSetting]);
+  const setTextScale = useCallback(
+    async (scale: number): Promise<void> => {
+      const clampedScale = Math.max(1, Math.min(2, scale));
+      await setSetting('largeText', clampedScale);
+    },
+    [setSetting],
+  );
 
   // Reset all settings
   const resetSettings = useCallback(async (): Promise<void> => {
@@ -232,11 +240,7 @@ export function AccessibilityProvider({ children }: AccessibilityProviderProps):
     isLoading,
   };
 
-  return (
-    <AccessibilityContext.Provider value={value}>
-      {children}
-    </AccessibilityContext.Provider>
-  );
+  return <AccessibilityContext.Provider value={value}>{children}</AccessibilityContext.Provider>;
 }
 
 /**

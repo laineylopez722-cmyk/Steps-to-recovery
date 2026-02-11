@@ -98,10 +98,10 @@ export function useBreathingAnimation(config: Partial<BreathingConfig> = {}) {
         withTiming(mergedConfig.minScale, {
           duration: mergedConfig.duration / 2,
           easing: Easing.inOut(Easing.ease),
-        })
+        }),
       ),
       -1, // Infinite
-      true
+      true,
     );
 
     opacity.value = withRepeat(
@@ -111,10 +111,10 @@ export function useBreathingAnimation(config: Partial<BreathingConfig> = {}) {
         }),
         withTiming(mergedConfig.minOpacity, {
           duration: mergedConfig.duration / 2,
-        })
+        }),
       ),
       -1,
-      true
+      true,
     );
   }, [scale, opacity, isActive, mergedConfig]);
 
@@ -219,11 +219,11 @@ export function usePulsingDotsAnimation(config: Partial<PulsingDotsConfig> = {})
             withTiming(mergedConfig.minScale, {
               duration: mergedConfig.duration / 2,
               easing: Easing.inOut(Easing.ease),
-            })
+            }),
           ),
           -1,
-          true
-        )
+          true,
+        ),
       );
     });
 
@@ -235,11 +235,11 @@ export function usePulsingDotsAnimation(config: Partial<PulsingDotsConfig> = {})
         withRepeat(
           withSequence(
             withTiming(1, { duration: mergedConfig.duration / 2 }),
-            withTiming(0.5, { duration: mergedConfig.duration / 2 })
+            withTiming(0.5, { duration: mergedConfig.duration / 2 }),
           ),
           -1,
-          true
-        )
+          true,
+        ),
       );
     });
   }, [scales, opacities, mergedConfig]);
@@ -262,7 +262,7 @@ export function usePulsingDotsAnimation(config: Partial<PulsingDotsConfig> = {})
     useAnimatedStyle(() => ({
       transform: [{ scale: scale.value }],
       opacity: opacities[index]?.value ?? 0.5,
-    }))
+    })),
   );
 
   return {
@@ -396,7 +396,7 @@ export function useSkeletonAnimation(config: Partial<SkeletonConfig> = {}) {
         easing: Easing.linear,
       }),
       -1,
-      false
+      false,
     );
   }, [translateX, mergedConfig]);
 
@@ -451,7 +451,7 @@ export interface ProgressRingConfig {
  */
 export function useProgressRingAnimation(
   targetProgress: number,
-  config: Partial<ProgressRingConfig> = {}
+  config: Partial<ProgressRingConfig> = {},
 ) {
   const mergedConfig: ProgressRingConfig = {
     size: 48,
@@ -478,7 +478,7 @@ export function useProgressRingAnimation(
           easing: Easing.linear,
         }),
         -1,
-        false
+        false,
       );
     }
 
@@ -542,7 +542,7 @@ export function useSpinnerAnimation(config: Partial<SpinnerConfig> = {}) {
         easing: mergedConfig.easing,
       }),
       -1,
-      false
+      false,
     );
   }, [rotation, mergedConfig]);
 
@@ -599,9 +599,7 @@ export interface StaggeredSkeletonConfig {
  * ))}
  * ```
  */
-export function useStaggeredSkeletonAnimation(
-  config: Partial<StaggeredSkeletonConfig> = {}
-) {
+export function useStaggeredSkeletonAnimation(config: Partial<StaggeredSkeletonConfig> = {}) {
   const mergedConfig: StaggeredSkeletonConfig = {
     count: 3,
     staggerDelay: 100,
@@ -619,7 +617,7 @@ export function useStaggeredSkeletonAnimation(
     opacities.forEach((opacity, index) => {
       opacity.value = withDelay(
         index * mergedConfig.staggerDelay,
-        withTiming(1, { duration: mergedConfig.duration })
+        withTiming(1, { duration: mergedConfig.duration }),
       );
     });
   }, [opacities, mergedConfig]);
@@ -700,10 +698,7 @@ export function useContentFadeAnimation(config: Partial<ContentFadeConfig> = {})
     opacities.forEach((opacity, index) => {
       const delay = mergedConfig.delay + index * mergedConfig.sectionDelay;
 
-      opacity.value = withDelay(
-        delay,
-        withTiming(1, { duration: mergedConfig.duration })
-      );
+      opacity.value = withDelay(delay, withTiming(1, { duration: mergedConfig.duration }));
     });
 
     translateYs.forEach((translateY, index) => {
@@ -714,7 +709,7 @@ export function useContentFadeAnimation(config: Partial<ContentFadeConfig> = {})
         withTiming(0, {
           duration: mergedConfig.duration,
           easing: Easing.out(Easing.cubic),
-        })
+        }),
       );
     });
   }, [opacities, translateYs, mergedConfig]);
@@ -737,7 +732,7 @@ export function useContentFadeAnimation(config: Partial<ContentFadeConfig> = {})
     useAnimatedStyle(() => ({
       opacity: opacity.value,
       transform: [{ translateY: translateYs[index]?.value ?? 0 }],
-    }))
+    })),
   );
 
   return {

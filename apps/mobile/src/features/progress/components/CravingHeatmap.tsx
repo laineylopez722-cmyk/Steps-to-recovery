@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, GlassCard } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import type { CravingHeatmapData } from '../types';
 
 interface CravingHeatmapProps {
@@ -32,11 +33,11 @@ const GAP = 2;
 
 function getCellColor(intensity: number, hasData: boolean): string {
   if (!hasData || intensity === 0) return 'transparent';
-  if (intensity <= 2) return '#16A34A';
-  if (intensity <= 4) return '#22C55E';
-  if (intensity <= 5) return '#EAB308';
-  if (intensity <= 7) return '#F97316';
-  return '#EF4444';
+  if (intensity <= 2) return ds.palette.sageGreen;
+  if (intensity <= 4) return ds.colors.success;
+  if (intensity <= 5) return ds.palette.amberLight;
+  if (intensity <= 7) return ds.palette.orange;
+  return ds.colors.error;
 }
 
 function getCellOpacity(intensity: number, hasData: boolean): number {
@@ -56,7 +57,11 @@ function formatHourForA11y(hour: number): string {
   return `${hour - 12} PM`;
 }
 
-export function CravingHeatmap({ data, peakHour, peakDay }: CravingHeatmapProps): React.ReactElement {
+export function CravingHeatmap({
+  data,
+  peakHour,
+  peakDay,
+}: CravingHeatmapProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
@@ -79,11 +84,7 @@ export function CravingHeatmap({ data, peakHour, peakDay }: CravingHeatmapProps)
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <MaterialCommunityIcons
-            name="grid"
-            size={20}
-            color={aestheticColors.warning.DEFAULT}
-          />
+          <MaterialCommunityIcons name="grid" size={20} color={aestheticColors.warning.DEFAULT} />
           <Text style={[styles.title, { color: theme.colors.text }]}>Craving Heatmap</Text>
         </View>
         {hasAnyData && (
@@ -102,10 +103,7 @@ export function CravingHeatmap({ data, peakHour, peakDay }: CravingHeatmapProps)
               {Array.from({ length: 24 }, (_, hour) => {
                 const labelEntry = HOUR_LABELS.find((h) => h.hour === hour);
                 return (
-                  <View
-                    key={hour}
-                    style={[styles.cell, styles.hourLabelCell]}
-                  >
+                  <View key={hour} style={[styles.cell, styles.hourLabelCell]}>
                     {labelEntry && (
                       <Text style={[styles.hourLabel, { color: theme.colors.textSecondary }]}>
                         {labelEntry.label}
@@ -128,8 +126,7 @@ export function CravingHeatmap({ data, peakHour, peakDay }: CravingHeatmapProps)
                   const cellData = getCellData(dayIndex, hour);
                   const intensity = cellData?.averageIntensity ?? 0;
                   const count = cellData?.count ?? 0;
-                  const isPeak =
-                    peakHour === hour && peakDay === getDayName(dayIndex) && count > 0;
+                  const isPeak = peakHour === hour && peakDay === getDayName(dayIndex) && count > 0;
 
                   return (
                     <View

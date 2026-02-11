@@ -1,8 +1,8 @@
 /**
  * CrisisFAB Component - Material Design 3
- * 
+ *
  * Emergency Floating Action Button with pulse animation.
- * 
+ *
  * Features:
  * - 56dp standard or 96dp extended size
  * - Secondary amber color (#D4A574)
@@ -34,7 +34,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors, amber } from '../tokens/md3-colors';
-import { md3ElevationLight, md3ElevationDark, md3Shape, md3Typography, md3Motion } from '../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  md3Shape,
+  md3Typography,
+  md3Motion,
+} from '../tokens/md3-elevation';
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -95,7 +101,7 @@ const POSITION_STYLES: Record<string, ViewStyle> = {
   'bottom-left': { position: 'absolute', bottom: 24, left: 24 },
   'top-right': { position: 'absolute', top: 24, right: 24 },
   'top-left': { position: 'absolute', top: 24, left: 24 },
-  'custom': {},
+  custom: {},
 };
 
 // ============================================================================
@@ -109,36 +115,41 @@ interface PulseRingProps {
   color: string;
 }
 
-function PulseRing({ isActive, intensity, baseSize, color }: PulseRingProps): React.ReactElement | null {
+function PulseRing({
+  isActive,
+  intensity,
+  baseSize,
+  color,
+}: PulseRingProps): React.ReactElement | null {
   const scale = useSharedValue(1);
   const opacity = useSharedValue(0);
-  
+
   const intensityConfig = {
     subtle: { scale: 1.3, opacity: 0.3, duration: 2000 },
     medium: { scale: 1.5, opacity: 0.4, duration: 1500 },
     strong: { scale: 1.7, opacity: 0.5, duration: 1000 },
   };
-  
+
   const config = intensityConfig[intensity];
-  
+
   useEffect(() => {
     if (isActive) {
       scale.value = withRepeat(
         withSequence(
           withTiming(1, { duration: 0 }),
-          withTiming(config.scale, { duration: config.duration, easing: Easing.out(Easing.ease) })
+          withTiming(config.scale, { duration: config.duration, easing: Easing.out(Easing.ease) }),
         ),
         -1,
-        false
+        false,
       );
-      
+
       opacity.value = withRepeat(
         withSequence(
           withTiming(config.opacity, { duration: config.duration * 0.3 }),
-          withTiming(0, { duration: config.duration * 0.7, easing: Easing.out(Easing.ease) })
+          withTiming(0, { duration: config.duration * 0.7, easing: Easing.out(Easing.ease) }),
         ),
         -1,
-        false
+        false,
       );
     } else {
       cancelAnimation(scale);
@@ -146,13 +157,13 @@ function PulseRing({ isActive, intensity, baseSize, color }: PulseRingProps): Re
       scale.value = withTiming(1, { duration: 200 });
       opacity.value = withTiming(0, { duration: 200 });
     }
-    
+
     return () => {
       cancelAnimation(scale);
       cancelAnimation(opacity);
     };
   }, [isActive, intensity]);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
@@ -160,16 +171,8 @@ function PulseRing({ isActive, intensity, baseSize, color }: PulseRingProps): Re
     height: baseSize,
     borderRadius: baseSize / 2,
   }));
-  
-  return (
-    <Animated.View 
-      style={[
-        styles.pulseRing,
-        { backgroundColor: color },
-        animatedStyle,
-      ]} 
-    />
-  );
+
+  return <Animated.View style={[styles.pulseRing, { backgroundColor: color }, animatedStyle]} />;
 }
 
 // ============================================================================
@@ -195,63 +198,64 @@ export function CrisisFAB({
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
-  
+
   // Amber secondary color from MD3
   const amberColor = backgroundColor || amber[80];
   const onAmberColor = amber[20];
-  
+
   const sizeConfig = SIZE_MAP[variant][size];
   const baseSize = typeof sizeConfig.height === 'number' ? sizeConfig.height : 56;
-  
+
   // Animation values
   const scale = useSharedValue(1);
   const elevationValue = useSharedValue(lowered ? 2 : 4);
-  
+
   const handlePressIn = useCallback(() => {
     scale.value = withTiming(0.95, { duration: 100 });
     elevationValue.value = withTiming(lowered ? 1 : 2, { duration: 100 });
   }, [lowered]);
-  
+
   const handlePressOut = useCallback(() => {
     scale.value = withSpring(1, md3Motion.spring.quick);
     elevationValue.value = withTiming(lowered ? 2 : 4, { duration: 200 });
   }, [lowered]);
-  
+
   const handlePress = useCallback(() => {
     // Announce for accessibility
     AccessibilityInfo.announceForAccessibility('Opening Safety Kit');
     onPress();
   }, [onPress]);
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-  
+
   const positionStyle = POSITION_STYLES[position];
-  
-  const a11yLabel = accessibilityLabel || 
+
+  const a11yLabel =
+    accessibilityLabel ||
     `Safety Kit. ${pulsing ? 'Active emergency support available' : ''}. Double tap to open.`;
-  
+
   return (
     <View style={[styles.container, positionStyle, style]}>
       {/* Pulse rings */}
       {pulsing && (
         <>
-          <PulseRing 
-            isActive={pulsing} 
-            intensity={pulseIntensity} 
+          <PulseRing
+            isActive={pulsing}
+            intensity={pulseIntensity}
             baseSize={baseSize}
             color={amberColor}
           />
-          <PulseRing 
-            isActive={pulsing} 
-            intensity={pulseIntensity} 
+          <PulseRing
+            isActive={pulsing}
+            intensity={pulseIntensity}
             baseSize={baseSize}
             color={amberColor}
           />
         </>
       )}
-      
+
       {/* Main Button */}
       <AnimatedTouchable
         style={[
@@ -284,15 +288,9 @@ export function CrisisFAB({
         accessibilityHint="Opens the safety kit with emergency resources"
         accessibilityState={{ selected: pulsing }}
       >
-        <Feather 
-          name={icon} 
-          size={sizeConfig.iconSize} 
-          color={onAmberColor} 
-        />
+        <Feather name={icon} size={sizeConfig.iconSize} color={onAmberColor} />
         {variant === 'extended' && (
-          <Text style={[styles.label, { color: onAmberColor }]}>
-            {label}
-          </Text>
+          <Text style={[styles.label, { color: onAmberColor }]}>{label}</Text>
         )}
       </AnimatedTouchable>
     </View>
@@ -325,32 +323,26 @@ export function CrisisButtonGroup({
   const theme = useTheme();
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
-  
+
   return (
     <View style={[styles.buttonGroup, style]}>
       <TouchableOpacity
-        style={[
-          styles.groupButton,
-          styles.primaryButton,
-          { backgroundColor: amber[80] },
-        ]}
+        style={[styles.groupButton, styles.primaryButton, { backgroundColor: amber[80] }]}
         onPress={onPrimaryPress}
         accessible
         accessibilityLabel={primaryLabel}
         accessibilityRole="button"
       >
         <Feather name="phone" size={20} color={amber[20]} />
-        <Text style={[styles.groupButtonText, { color: amber[20] }]}>
-          {primaryLabel}
-        </Text>
+        <Text style={[styles.groupButtonText, { color: amber[20] }]}>{primaryLabel}</Text>
       </TouchableOpacity>
-      
+
       {onSecondaryPress && (
         <TouchableOpacity
           style={[
             styles.groupButton,
             styles.secondaryButton,
-            { 
+            {
               backgroundColor: colors.surfaceContainerHighest,
               borderColor: colors.outline,
             },

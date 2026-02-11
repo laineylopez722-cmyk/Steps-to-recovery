@@ -14,7 +14,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useContacts } from '../../hooks/useContacts';
 import { ds } from '../../design-system/tokens/ds';
@@ -89,30 +94,26 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
 
     // Confirmation dialog to prevent accidental sends
-    Alert.alert(
-      'Send SOS Message?',
-      `This will text your sponsor: "${SOS_MESSAGE}"`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Send',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
-              const result = await sendSOSMessage(sponsor!.phone, sponsor!.name);
-              if (result.success) {
-                await markContacted(sponsor!.id);
-                Alert.alert('Message Sent', `SOS message sent to ${sponsor!.name}`);
-              }
-            } catch (error) {
-              logger.error('Failed to send SOS', error);
-              Alert.alert('Failed', 'Unable to send SOS message. Please try calling directly.');
+    Alert.alert('Send SOS Message?', `This will text your sponsor: "${SOS_MESSAGE}"`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Send',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+            const result = await sendSOSMessage(sponsor!.phone, sponsor!.name);
+            if (result.success) {
+              await markContacted(sponsor!.id);
+              Alert.alert('Message Sent', `SOS message sent to ${sponsor!.name}`);
             }
-          },
+          } catch (error) {
+            logger.error('Failed to send SOS', error);
+            Alert.alert('Failed', 'Unable to send SOS message. Please try calling directly.');
+          }
         },
-      ]
-    );
+      },
+    ]);
   }, [sponsor, markContacted]);
 
   const handleAddSponsor = useCallback(() => {

@@ -4,23 +4,15 @@ import { useStepDetailDisplayState } from './useStepDetailDisplayState';
 import { useStepDetailFlowContext } from './useStepDetailFlowContext';
 
 export function useStepDetailRenderModel() {
-  const {
+  const { navigation, stepNumber, backgroundColor, stepData, isLocked, isLoading, questionFlow } =
+    useStepDetailFlowContext();
+
+  const { handleBackToStepOne, handleBackToSteps, mainContentProps } = useStepDetailContentContext({
     navigation,
     stepNumber,
-    backgroundColor,
     stepData,
-    isLocked,
-    isLoading,
     questionFlow,
-  } = useStepDetailFlowContext();
-
-  const { handleBackToStepOne, handleBackToSteps, mainContentProps } =
-    useStepDetailContentContext({
-      navigation,
-      stepNumber,
-      stepData,
-      questionFlow,
-    });
+  });
 
   const { hasStepData, contentState } = useStepDetailDisplayState({
     stepData,

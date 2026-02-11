@@ -1,6 +1,6 @@
 /**
  * Material Design 3 Input Component
- * 
+ *
  * A text input following MD3 specifications:
  * - 56dp height (h-14)
  * - 12dp corner radius (rounded-xl)
@@ -9,7 +9,7 @@
  * - Error state with helper text
  * - Leading/trailing icons support
  * - Full accessibility (WCAG AAA)
- * 
+ *
  * @example
  * ```tsx
  * // Basic input
@@ -18,7 +18,7 @@
  *   value={email}
  *   onChangeText={setEmail}
  * />
- * 
+ *
  * // With icon and error
  * <Input
  *   label="Password"
@@ -29,7 +29,7 @@
  *   error={passwordError}
  *   helperText="Must be at least 8 characters"
  * />
- * 
+ *
  * // Disabled state
  * <Input
  *   label="Username"
@@ -149,7 +149,7 @@ const ANIMATION_DURATION = 200;
 
 /**
  * Material Design 3 Input
- * 
+ *
  * Features:
  * - Floating label animation
  * - Focus/error state transitions
@@ -233,12 +233,7 @@ export const Input = forwardRef<TextInput, InputProps>(
             ),
           },
         ],
-        opacity: interpolate(
-          labelProgress.value,
-          [0, 1],
-          [0.7, 1],
-          Extrapolation.CLAMP,
-        ),
+        opacity: interpolate(labelProgress.value, [0, 1], [0.7, 1], Extrapolation.CLAMP),
       };
     });
 
@@ -269,9 +264,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     );
 
     // Determine effective secure text entry
-    const effectiveSecureTextEntry = secureTextEntry
-      ? !isPasswordVisible
-      : false;
+    const effectiveSecureTextEntry = secureTextEntry ? !isPasswordVisible : false;
 
     // Determine border color based on state
     const getBorderColor = () => {
@@ -295,11 +288,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     };
 
     return (
-      <View
-        className="mb-4"
-        style={containerStyle}
-        testID={testID}
-      >
+      <View className="mb-4" style={containerStyle} testID={testID}>
         {/* Input Container */}
         <View
           className={cn(
@@ -310,11 +299,7 @@ export const Input = forwardRef<TextInput, InputProps>(
           )}
         >
           {/* Left Icon */}
-          {leftIcon && (
-            <View className="pl-3 justify-center items-center">
-              {leftIcon}
-            </View>
-          )}
+          {leftIcon && <View className="pl-3 justify-center items-center">{leftIcon}</View>}
 
           {/* Input and Label Container */}
           <View className="flex-1 justify-center h-14 px-3">
@@ -333,11 +318,7 @@ export const Input = forwardRef<TextInput, InputProps>(
               <Animated.Text
                 className={cn(
                   'text-base',
-                  hasError
-                    ? 'text-error'
-                    : isFocused
-                    ? 'text-primary'
-                    : 'text-onSurfaceVariant',
+                  hasError ? 'text-error' : isFocused ? 'text-primary' : 'text-onSurfaceVariant',
                 )}
                 accessibilityElementsHidden
               >
@@ -391,19 +372,14 @@ export const Input = forwardRef<TextInput, InputProps>(
               />
             </View>
           ) : rightIcon ? (
-            <View className="pr-3 justify-center items-center">
-              {rightIcon}
-            </View>
+            <View className="pr-3 justify-center items-center">{rightIcon}</View>
           ) : null}
         </View>
 
         {/* Helper Text or Error */}
         {(helperText || error) && (
           <Animated.Text
-            className={cn(
-              'text-xs mt-1 ml-1',
-              hasError ? 'text-error' : 'text-onSurfaceVariant',
-            )}
+            className={cn('text-xs mt-1 ml-1', hasError ? 'text-error' : 'text-onSurfaceVariant')}
             accessibilityRole={hasError ? 'alert' : undefined}
             accessibilityLiveRegion={hasError ? 'polite' : undefined}
           >
@@ -440,10 +416,7 @@ function PasswordToggle({ isVisible, onToggle }: PasswordToggleProps): ReactElem
       accessible
     >
       {/* Using text as placeholder for icon */}
-      <Animated.Text
-        className="text-onSurfaceVariant text-lg"
-        onPress={onToggle}
-      >
+      <Animated.Text className="text-onSurfaceVariant text-lg" onPress={onToggle}>
         {isVisible ? '🙈' : '👁️'}
       </Animated.Text>
     </View>

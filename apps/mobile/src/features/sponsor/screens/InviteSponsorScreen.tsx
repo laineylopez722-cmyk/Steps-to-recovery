@@ -287,51 +287,52 @@ function InfoItem({ theme, text }: { theme: Theme; text: string }): React.ReactE
   );
 }
 
-const createStyles = (_ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  buttonContainer: {
-    marginTop: 16,
-  },
-  button: {
-    marginTop: 16,
-  },
-  payloadCard: {
-    marginTop: 20,
-    padding: 16,
-  },
-  payloadActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  infoCard: {
-    marginTop: 24,
-    padding: 16,
-    backgroundColor: 'transparent',
-  },
-  infoList: {
-    gap: 8,
-  },
-  infoItem: {
-    flexDirection: 'row',
-  },
-  confirmCard: {
-    marginTop: 24,
-    padding: 16,
-  },
-} as const);
+const createStyles = (_ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    contentContainer: {
+      padding: 20,
+      paddingBottom: 40,
+    },
+    header: {
+      marginBottom: 24,
+    },
+    buttonContainer: {
+      marginTop: 16,
+    },
+    button: {
+      marginTop: 16,
+    },
+    payloadCard: {
+      marginTop: 20,
+      padding: 16,
+    },
+    payloadActions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 12,
+    },
+    infoCard: {
+      marginTop: 24,
+      padding: 16,
+      backgroundColor: 'transparent',
+    },
+    infoList: {
+      gap: 8,
+    },
+    infoItem: {
+      flexDirection: 'row',
+    },
+    confirmCard: {
+      marginTop: 24,
+      padding: 16,
+    },
+  }) as const;

@@ -54,45 +54,43 @@ function logStorage(operation: string, key: string, extra?: Record<string, unkno
   }
 }
 
-const ExpoSecureStoreAdapter =
-  IS_WEB
-    ? {
-        getItem: async (key: string) => {
-          logStorage('getItem', key);
-          return AsyncStorage.getItem(key);
-        },
-        setItem: async (key: string, value: string) => {
-          logStorage('setItem', key, { valueLength: value.length });
-          await AsyncStorage.setItem(key, value);
-        },
-        removeItem: async (key: string) => {
-          logStorage('removeItem', key);
-          await AsyncStorage.removeItem(key);
-        },
-      }
-    : {
-        getItem: async (key: string) => {
-          logStorage('getItem', key);
-          return SecureStore.getItemAsync(key);
-        },
-        setItem: async (key: string, value: string) => {
-          logStorage('setItem', key, { valueLength: value.length });
-          await SecureStore.setItemAsync(key, value);
-        },
-        removeItem: async (key: string) => {
-          logStorage('removeItem', key);
-          await SecureStore.deleteItemAsync(key);
-        },
-      };
+const ExpoSecureStoreAdapter = IS_WEB
+  ? {
+      getItem: async (key: string) => {
+        logStorage('getItem', key);
+        return AsyncStorage.getItem(key);
+      },
+      setItem: async (key: string, value: string) => {
+        logStorage('setItem', key, { valueLength: value.length });
+        await AsyncStorage.setItem(key, value);
+      },
+      removeItem: async (key: string) => {
+        logStorage('removeItem', key);
+        await AsyncStorage.removeItem(key);
+      },
+    }
+  : {
+      getItem: async (key: string) => {
+        logStorage('getItem', key);
+        return SecureStore.getItemAsync(key);
+      },
+      setItem: async (key: string, value: string) => {
+        logStorage('setItem', key, { valueLength: value.length });
+        await SecureStore.setItemAsync(key, value);
+      },
+      removeItem: async (key: string) => {
+        logStorage('removeItem', key);
+        await SecureStore.deleteItemAsync(key);
+      },
+    };
 
 if (__DEV__) {
   logger.info('Supabase storage adapter initialized', {
     platform: CURRENT_PLATFORM,
     usingSecureStore: !IS_WEB,
-    webSecurityNote:
-      IS_WEB
-        ? 'Using AsyncStorage (not encrypted)'
-        : 'Using SecureStore (encrypted)',
+    webSecurityNote: IS_WEB
+      ? 'Using AsyncStorage (not encrypted)'
+      : 'Using SecureStore (encrypted)',
   });
 }
 

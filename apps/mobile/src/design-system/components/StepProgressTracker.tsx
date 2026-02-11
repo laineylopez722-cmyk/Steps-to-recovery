@@ -1,8 +1,8 @@
 /**
  * StepProgressTracker Component - Material Design 3
- * 
+ *
  * 12-step progress tracker with horizontal scroll view.
- * 
+ *
  * Features:
  * - 12 step nodes in horizontal scroll
  * - Nodes: 44dp circles
@@ -33,7 +33,13 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';
-import { md3ElevationLight, md3ElevationDark, md3Shape, md3Typography, md3Motion } from '../tokens/md3-elevation';
+import {
+  md3ElevationLight,
+  md3ElevationDark,
+  md3Shape,
+  md3Typography,
+  md3Motion,
+} from '../tokens/md3-elevation';
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -93,13 +99,13 @@ function generateDefaultSteps(currentStep = 1, completedSteps: number[] = []): S
   return DEFAULT_STEP_TITLES.map((title, index) => {
     const stepNumber = index + 1;
     let status: StepStatus = 'not-started';
-    
+
     if (completedSteps.includes(stepNumber) || stepNumber < currentStep) {
       status = 'completed';
     } else if (stepNumber === currentStep) {
       status = 'current';
     }
-    
+
     return {
       number: stepNumber,
       title,
@@ -123,42 +129,42 @@ interface StepNodeProps {
 function StepNode({ step, isLast, onPress, colors, isDark }: StepNodeProps): React.ReactElement {
   const scale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
-  
+
   // Pulse animation for current step
   useEffect(() => {
     if (step.status === 'current') {
       pulseScale.value = withSequence(
         withTiming(1.1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
       );
-      
+
       // Repeat pulse
       const interval = setInterval(() => {
         pulseScale.value = withSequence(
           withTiming(1.1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
-          withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) })
+          withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) }),
         );
       }, 2000);
-      
+
       return () => clearInterval(interval);
     }
   }, [step.status]);
-  
+
   const handlePressIn = () => {
     scale.value = withTiming(0.9, { duration: 100 });
   };
-  
+
   const handlePressOut = () => {
     scale.value = withSpring(1, md3Motion.spring.quick);
   };
-  
+
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       { scale: scale.value },
       { scale: step.status === 'current' ? pulseScale.value : 1 },
     ],
   }));
-  
+
   // Determine colors based on status
   const getNodeColors = () => {
     switch (step.status) {
@@ -183,9 +189,9 @@ function StepNode({ step, isLast, onPress, colors, isDark }: StepNodeProps): Rea
         };
     }
   };
-  
+
   const nodeColors = getNodeColors();
-  
+
   return (
     <View style={styles.stepWrapper}>
       <AnimatedTouchable
@@ -204,7 +210,7 @@ function StepNode({ step, isLast, onPress, colors, isDark }: StepNodeProps): Rea
         accessible
         accessibilityLabel={`Step ${step.number}: ${step.title}. Status: ${step.status}`}
         accessibilityRole="button"
-        accessibilityState={{ 
+        accessibilityState={{
           selected: step.status === 'current',
           disabled: step.status === 'not-started',
         }}
@@ -212,38 +218,32 @@ function StepNode({ step, isLast, onPress, colors, isDark }: StepNodeProps): Rea
         {step.status === 'completed' ? (
           <Feather name="check" size={20} color={nodeColors.text} />
         ) : (
-          <Text style={[styles.nodeNumber, { color: nodeColors.text }]}>
-            {step.number}
-          </Text>
+          <Text style={[styles.nodeNumber, { color: nodeColors.text }]}>{step.number}</Text>
         )}
       </AnimatedTouchable>
-      
+
       {/* Step Title */}
-      <Text 
+      <Text
         style={[
           styles.stepTitle,
-          { 
-            color: step.status === 'completed' 
-              ? colors.onSurface 
-              : colors.onSurfaceVariant,
+          {
+            color: step.status === 'completed' ? colors.onSurface : colors.onSurfaceVariant,
           },
         ]}
         numberOfLines={1}
       >
         {step.title}
       </Text>
-      
+
       {/* Connector Line */}
       {!isLast && (
-        <View 
+        <View
           style={[
             styles.connector,
             {
-              backgroundColor: step.status === 'completed' 
-                ? colors.primary 
-                : colors.outlineVariant,
+              backgroundColor: step.status === 'completed' ? colors.primary : colors.outlineVariant,
             },
-          ]} 
+          ]}
         />
       )}
     </View>
@@ -268,33 +268,33 @@ export function StepProgressTracker({
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
-  
+
   const scrollViewRef = useRef<ScrollView>(null);
-  
+
   // Generate or use provided steps
   const steps = propSteps || generateDefaultSteps(currentStep, completedSteps);
-  
+
   // Calculate progress
-  const completedCount = steps.filter(s => s.status === 'completed').length;
+  const completedCount = steps.filter((s) => s.status === 'completed').length;
   const progressPercent = Math.round((completedCount / 12) * 100);
-  
+
   // Animation values
   const headerOpacity = useSharedValue(0);
   const headerTranslateY = useSharedValue(-20);
-  
+
   useEffect(() => {
     headerOpacity.value = withTiming(1, { duration: 400 });
     headerTranslateY.value = withSpring(0, md3Motion.spring.gentle);
   }, []);
-  
+
   const headerAnimatedStyle = useAnimatedStyle(() => ({
     opacity: headerOpacity.value,
     transform: [{ translateY: headerTranslateY.value }],
   }));
-  
+
   // Scroll to current step
   useEffect(() => {
-    const currentIndex = steps.findIndex(s => s.status === 'current');
+    const currentIndex = steps.findIndex((s) => s.status === 'current');
     if (currentIndex > 0 && scrollViewRef.current) {
       setTimeout(() => {
         scrollViewRef.current?.scrollTo({
@@ -304,10 +304,11 @@ export function StepProgressTracker({
       }, 500);
     }
   }, [steps]);
-  
-  const a11yLabel = accessibilityLabel || 
+
+  const a11yLabel =
+    accessibilityLabel ||
     `Step progress: ${completedCount} of 12 steps completed. ${progressPercent} percent complete.`;
-  
+
   return (
     <AnimatedView
       style={[
@@ -333,25 +334,21 @@ export function StepProgressTracker({
             <Feather name="list" size={18} color={colors.onPrimaryContainer} />
           </View>
           <View>
-            <Text style={[styles.headerTitle, { color: colors.onSurface }]}>
-              12-Step Progress
-            </Text>
+            <Text style={[styles.headerTitle, { color: colors.onSurface }]}>12-Step Progress</Text>
             <Text style={[styles.headerSubtitle, { color: colors.onSurfaceVariant }]}>
               {completedCount}/12 Steps ({progressPercent}%)
             </Text>
           </View>
         </View>
-        
+
         {/* Progress Ring */}
         <View style={styles.progressRing}>
           <View style={[styles.progressCircle, { borderColor: colors.primary }]}>
-            <Text style={[styles.progressText, { color: colors.primary }]}>
-              {progressPercent}%
-            </Text>
+            <Text style={[styles.progressText, { color: colors.primary }]}>{progressPercent}%</Text>
           </View>
         </View>
       </Animated.View>
-      
+
       {/* Steps ScrollView */}
       <ScrollView
         ref={scrollViewRef}

@@ -91,16 +91,14 @@ export function BreathingExercise({
   const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
-  const progress = breathingState
-    ? breathingState.elapsedMs / breathingState.totalMs
-    : 0;
+  const progress = breathingState ? breathingState.elapsedMs / breathingState.totalMs : 0;
 
   // Auto-start breathing when component mounts
   useEffect(() => {
     if (!isBreathing && !breathingState) {
       onStart();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // Intentionally run only on mount
 
   return (
     <View
@@ -137,9 +135,7 @@ export function BreathingExercise({
           </Text>
 
           <View style={styles.progressContainer}>
-            <ProgressBar
-              progress={progress}
-            />
+            <ProgressBar progress={progress} />
           </View>
 
           <Text style={styles.cycleLabel}>

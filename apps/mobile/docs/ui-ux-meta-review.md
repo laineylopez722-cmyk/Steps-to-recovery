@@ -59,14 +59,14 @@ This review is grounded in repository truth and deterministic heuristics:
 
 Scale: 1 (poor) to 5 (excellent), weighted by `UX_AUDIT_WEIGHTS`.
 
-| Journey | Weighted Score | Band | Notes |
-| --- | ---: | --- | --- |
-| Daily home (`HomeMain` + check-ins) | 3.63 | strong | Strong emotional tone, moderate system drift. |
-| Emergency support (`Emergency`, `BeforeYouUse`, `DangerZone`) | 3.41 | needs-work | Safety content strong, a11y semantics and consistency need work. |
-| Journaling (`JournalList`, `JournalEditor`) | 3.50 | strong | Good hierarchy, mixed component styles. |
-| Meetings (`MeetingFinder`, `MeetingDetail`, `FavoriteMeetings`) | 3.29 | needs-work | Functional but less premium and less cohesive than home/journal. |
-| Auth + onboarding | 3.43 | needs-work | Clear flow, style cohesion not fully aligned with home polish level. |
-| Profile + sponsor + settings | 3.15 | needs-work | Most visible consistency drift and route-contract gaps. |
+| Journey                                                         | Weighted Score | Band       | Notes                                                                |
+| --------------------------------------------------------------- | -------------: | ---------- | -------------------------------------------------------------------- |
+| Daily home (`HomeMain` + check-ins)                             |           3.63 | strong     | Strong emotional tone, moderate system drift.                        |
+| Emergency support (`Emergency`, `BeforeYouUse`, `DangerZone`)   |           3.41 | needs-work | Safety content strong, a11y semantics and consistency need work.     |
+| Journaling (`JournalList`, `JournalEditor`)                     |           3.50 | strong     | Good hierarchy, mixed component styles.                              |
+| Meetings (`MeetingFinder`, `MeetingDetail`, `FavoriteMeetings`) |           3.29 | needs-work | Functional but less premium and less cohesive than home/journal.     |
+| Auth + onboarding                                               |           3.43 | needs-work | Clear flow, style cohesion not fully aligned with home polish level. |
+| Profile + sponsor + settings                                    |           3.15 | needs-work | Most visible consistency drift and route-contract gaps.              |
 
 ## Phased Roadmap
 
@@ -80,6 +80,7 @@ Objective: lock one design-system direction and remove architecture ambiguity.
 - Add repeatable architecture checks (`npm run audit:uiux`).
 
 Exit criteria:
+
 - Decision record merged.
 - Token drift visible in CI/local audit output.
 - Navigation type/linking/registration mismatch resolved.
@@ -94,6 +95,7 @@ Objective: increase quality in highest-frequency and highest-risk journeys.
 - Accessibility pass for labels/roles/hints/touch targets.
 
 Exit criteria:
+
 - Flagship routes average >= 4.2 weighted score.
 - No critical a11y findings on emergency/auth routes.
 
@@ -106,6 +108,7 @@ Objective: bring all remaining routes to premium baseline.
 - Reduce design-system API ambiguity by deprecating overlap.
 
 Exit criteria:
+
 - All routes >= 3.5 weighted score.
 - No open high-severity consistency issues.
 
@@ -118,6 +121,7 @@ Objective: preserve quality and prevent drift regressions.
 - Keep docs synchronized to shipped screens.
 
 Exit criteria:
+
 - Review process is repeatable and enforced.
 - Documentation does not represent non-existent shipped states.
 

@@ -493,7 +493,7 @@ export async function scheduleGratitudeReminder(
       identifier: NOTIFICATION_IDS.GRATITUDE_REMINDER,
       content: {
         title: '🙏 Gratitude Moment',
-        body: "What are you grateful for today? Take a moment to reflect on the good things.",
+        body: 'What are you grateful for today? Take a moment to reflect on the good things.',
         sound: true,
         priority: Notifications.AndroidNotificationPriority.DEFAULT,
         data: {

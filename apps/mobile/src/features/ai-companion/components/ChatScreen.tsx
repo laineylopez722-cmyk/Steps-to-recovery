@@ -1,17 +1,17 @@
 /**
  * Chat Screen Component
- * 
+ *
  * Apple-inspired chat interface.
  * Clean, minimal, focused on content.
  */
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { 
-  View, 
-  FlatList, 
-  KeyboardAvoidingView, 
-  Platform, 
-  Text, 
+import {
+  View,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  Text,
   Pressable,
   StyleSheet,
 } from 'react-native';
@@ -37,7 +37,7 @@ interface ChatScreenProps {
 export function ChatScreen({ userId }: ChatScreenProps) {
   const styles = useThemedStyles(createStyles);
   const navigation = useNavigation();
-  
+
   const { soberDays } = useSobriety();
   const { sponsor } = useSponsorInfo(userId);
   const [showCrisis, setShowCrisis] = useState(false);
@@ -88,7 +88,14 @@ export function ChatScreen({ userId }: ChatScreenProps) {
       welcomeSentRef.current = true;
       sendWelcomeMessage();
     }
-  }, [currentConversation, messages.length, isAIConfigured, isLoading, isStreaming, sendWelcomeMessage]);
+  }, [
+    currentConversation,
+    messages.length,
+    isAIConfigured,
+    isLoading,
+    isStreaming,
+    sendWelcomeMessage,
+  ]);
 
   const showQuickActions = messages.length === 0;
 
@@ -98,7 +105,7 @@ export function ChatScreen({ userId }: ChatScreenProps) {
     (content: string) => {
       sendMessage(content);
     },
-    [sendMessage]
+    [sendMessage],
   );
 
   const displayMessages = React.useMemo(() => {
@@ -129,29 +136,21 @@ export function ChatScreen({ userId }: ChatScreenProps) {
           <View style={styles.header}>
             <Pressable
               onPress={() => navigation.goBack()}
-              style={({ pressed }) => [
-                styles.headerButton,
-                pressed && styles.headerButtonPressed,
-              ]}
+              style={({ pressed }) => [styles.headerButton, pressed && styles.headerButtonPressed]}
               accessibilityRole="button"
               accessibilityLabel="Go back"
             >
               <Icon as={ChevronLeft} size={26} className="text-white" />
             </Pressable>
-            
+
             <View style={styles.headerCenter}>
               <Text style={styles.headerTitle}>Chat</Text>
-              {!isAIConfigured && (
-                <Text style={styles.headerSubtitle}>Set up required</Text>
-              )}
+              {!isAIConfigured && <Text style={styles.headerSubtitle}>Set up required</Text>}
             </View>
-            
+
             <Pressable
-              onPress={() => (navigation as any).navigate('Profile', { screen: 'AISettings' })}
-              style={({ pressed }) => [
-                styles.headerButton,
-                pressed && styles.headerButtonPressed,
-              ]}
+              onPress={() => (navigation as { navigate: (screen: string, params?: Record<string, unknown>) => void }).navigate('Profile', { screen: 'AISettings' })}
+              style={({ pressed }) => [styles.headerButton, pressed && styles.headerButtonPressed]}
               accessibilityRole="button"
               accessibilityLabel="AI Settings"
             >
@@ -166,9 +165,8 @@ export function ChatScreen({ userId }: ChatScreenProps) {
                 {error.includes('API key') || error.includes('configured')
                   ? 'Tap settings to add your API key'
                   : error.includes('limit')
-                  ? 'Daily limit reached. Try again tomorrow.'
-                  : error
-                }
+                    ? 'Daily limit reached. Try again tomorrow.'
+                    : error}
               </Text>
             </Animated.View>
           )}
@@ -194,13 +192,9 @@ export function ChatScreen({ userId }: ChatScreenProps) {
                 ) : (
                   <Animated.View entering={FadeInUp.duration(400)} style={styles.emptyContent}>
                     <Text style={styles.emptyTitle}>
-                      {soberDays && soberDays > 0 
-                        ? `Day ${soberDays}` 
-                        : 'Hey'}
+                      {soberDays && soberDays > 0 ? `Day ${soberDays}` : 'Hey'}
                     </Text>
-                    <Text style={styles.emptySubtitle}>
-                      What's on your mind?
-                    </Text>
+                    <Text style={styles.emptySubtitle}>What's on your mind?</Text>
                   </Animated.View>
                 )}
               </View>
@@ -227,96 +221,97 @@ export function ChatScreen({ userId }: ChatScreenProps) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-    backgroundColor: ds.colors.bgPrimary,
-  },
-  safe: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  
-  // Header
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: ds.space[3],
-    paddingVertical: ds.space[2],
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: ds.colors.borderSubtle,
-  },
-  headerButton: {
-    width: 44,
-    height: 44,
-    borderRadius: ds.radius.full,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerButtonPressed: {
-    backgroundColor: ds.colors.bgTertiary,
-  },
-  headerCenter: {
-    alignItems: 'center',
-  },
-  headerTitle: {
-    ...ds.typography.body,
-    fontWeight: '600',
-    color: ds.colors.textPrimary,
-  },
-  headerSubtitle: {
-    ...ds.typography.micro,
-    color: ds.colors.accent,
-    marginTop: 1,
-  },
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.colors.bgPrimary,
+    },
+    safe: {
+      flex: 1,
+    },
+    keyboardView: {
+      flex: 1,
+    },
 
-  // Error
-  errorContainer: {
-    marginHorizontal: ds.space[5],
-    marginTop: ds.space[3],
-    paddingHorizontal: ds.space[4],
-    paddingVertical: ds.space[3],
-    backgroundColor: ds.colors.errorMuted,
-    borderRadius: ds.radius.md,
-  },
-  errorText: {
-    ...ds.typography.caption,
-    color: ds.colors.error,
-    textAlign: 'center',
-  },
+    // Header
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: ds.space[3],
+      paddingVertical: ds.space[2],
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: ds.colors.borderSubtle,
+    },
+    headerButton: {
+      width: 44,
+      height: 44,
+      borderRadius: ds.radius.full,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    headerButtonPressed: {
+      backgroundColor: ds.colors.bgTertiary,
+    },
+    headerCenter: {
+      alignItems: 'center',
+    },
+    headerTitle: {
+      ...ds.typography.body,
+      fontWeight: '600',
+      color: ds.colors.textPrimary,
+    },
+    headerSubtitle: {
+      ...ds.typography.micro,
+      color: ds.colors.accent,
+      marginTop: 1,
+    },
 
-  // Messages
-  messageList: {
-    paddingVertical: ds.space[4],
-    flexGrow: 1,
-  },
+    // Error
+    errorContainer: {
+      marginHorizontal: ds.space[5],
+      marginTop: ds.space[3],
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[3],
+      backgroundColor: ds.colors.errorMuted,
+      borderRadius: ds.radius.md,
+    },
+    errorText: {
+      ...ds.typography.caption,
+      color: ds.colors.error,
+      textAlign: 'center',
+    },
 
-  // Empty state
-  emptyState: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: ds.space[10],
-    transform: [{ scaleY: -1 }], // Flip for inverted list
-  },
-  emptyContent: {
-    alignItems: 'center',
-  },
-  emptyEmoji: {
-    fontSize: 48,
-  },
-  emptyTitle: {
-    ...ds.typography.h1,
-    color: ds.colors.textPrimary,
-    textAlign: 'center',
-    marginBottom: ds.space[2],
-  },
-  emptySubtitle: {
-    ...ds.typography.body,
-    color: ds.colors.textTertiary,
-    textAlign: 'center',
-  },
-} as const);
+    // Messages
+    messageList: {
+      paddingVertical: ds.space[4],
+      flexGrow: 1,
+    },
+
+    // Empty state
+    emptyState: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: ds.space[10],
+      transform: [{ scaleY: -1 }], // Flip for inverted list
+    },
+    emptyContent: {
+      alignItems: 'center',
+    },
+    emptyEmoji: {
+      fontSize: 48,
+    },
+    emptyTitle: {
+      ...ds.typography.h1,
+      color: ds.colors.textPrimary,
+      textAlign: 'center',
+      marginBottom: ds.space[2],
+    },
+    emptySubtitle: {
+      ...ds.typography.body,
+      color: ds.colors.textTertiary,
+      textAlign: 'center',
+    },
+  }) as const;

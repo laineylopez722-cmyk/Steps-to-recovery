@@ -6,13 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -62,7 +56,8 @@ const steps: StepData[] = [
     id: 'welcome',
     title: 'Welcome to Recovery',
     subtitle: 'Your journey starts here',
-    description: 'A safe, private space for your recovery journey. Track your progress, journal your thoughts, and connect with support— all with complete privacy.',
+    description:
+      'A safe, private space for your recovery journey. Track your progress, journal your thoughts, and connect with support— all with complete privacy.',
     illustration: 'welcome',
     primaryAction: 'Continue',
   },
@@ -70,7 +65,8 @@ const steps: StepData[] = [
     id: 'privacy',
     title: 'Privacy First',
     subtitle: 'Your data stays yours',
-    description: 'All your journal entries and personal data are encrypted on your device. We can\'t read your content— only you hold the key to your recovery story.',
+    description:
+      "All your journal entries and personal data are encrypted on your device. We can't read your content— only you hold the key to your recovery story.",
     illustration: 'privacy',
     primaryAction: 'I Understand',
   },
@@ -78,7 +74,8 @@ const steps: StepData[] = [
     id: 'ready',
     title: 'Ready to Begin',
     subtitle: 'One day at a time',
-    description: 'Recovery is a journey, not a destination. Take it one day at a time, celebrate small wins, and remember: you\'re never alone in this.',
+    description:
+      "Recovery is a journey, not a destination. Take it one day at a time, celebrate small wins, and remember: you're never alone in this.",
     illustration: 'ready',
     primaryAction: 'Get Started',
     secondaryAction: 'Skip Tour',
@@ -117,9 +114,9 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 
   const completeOnboarding = useCallback(async () => {
     if (isCompleting) return;
-    
+
     setIsCompleting(true);
-    
+
     // Save completion locally first (always works)
     try {
       const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
@@ -132,20 +129,18 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
     // Try Supabase (optional, may fail if table doesn't exist)
     if (user) {
       try {
-        await supabase
-          .from('profiles')
-          .upsert({
-            id: user.id,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          });
+        await supabase.from('profiles').upsert({
+          id: user.id,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
       } catch (err) {
         // Ignore Supabase errors - local storage is enough
       }
     }
 
     setIsCompleting(false);
-    
+
     // Always signal completion
     onComplete?.();
   }, [user, isCompleting, onComplete]);
@@ -199,14 +194,9 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
       slideAnim.value,
       [-1, 0, 1],
       [SCREEN_WIDTH, 0, -SCREEN_WIDTH],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
-    const opacity = interpolate(
-      slideAnim.value,
-      [-1, 0, 1],
-      [0, 1, 0],
-      Extrapolate.CLAMP
-    );
+    const opacity = interpolate(slideAnim.value, [-1, 0, 1], [0, 1, 0], Extrapolate.CLAMP);
     return {
       transform: [{ translateX }],
       opacity,
@@ -214,10 +204,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
   });
 
   return (
-    <LinearGradient
-      colors={gradients.background}
-      style={styles.container}
-    >
+    <LinearGradient colors={gradients.background} style={styles.container}>
       <StatusBar style="light" />
       <SafeAreaView style={styles.safeArea}>
         {/* Progress Bar */}
@@ -244,32 +231,20 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
         <Animated.View style={[styles.contentContainer, slideStyle]}>
           {/* Illustration */}
           <View style={styles.illustrationContainer}>
-            <OnboardingIllustration
-              step={currentStepData.illustration}
-              size="xl"
-            />
+            <OnboardingIllustration step={currentStepData.illustration} size="xl" />
           </View>
 
           {/* Text Content */}
           <View style={styles.textContainer}>
-            <Animated.Text
-              entering={FadeInUp.duration(400).delay(200)}
-              style={styles.subtitle}
-            >
+            <Animated.Text entering={FadeInUp.duration(400).delay(200)} style={styles.subtitle}>
               {currentStepData.subtitle}
             </Animated.Text>
 
-            <Animated.Text
-              entering={FadeInUp.duration(400).delay(300)}
-              style={styles.title}
-            >
+            <Animated.Text entering={FadeInUp.duration(400).delay(300)} style={styles.title}>
               {currentStepData.title}
             </Animated.Text>
 
-            <Animated.Text
-              entering={FadeInUp.duration(400).delay(400)}
-              style={styles.description}
-            >
+            <Animated.Text entering={FadeInUp.duration(400).delay(400)} style={styles.description}>
               {currentStepData.description}
             </Animated.Text>
           </View>
@@ -297,14 +272,13 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                       });
                     }
                   }}
-                  style={[
-                    styles.indicator,
-                    index === currentStep && styles.indicatorActive,
-                  ]}
+                  style={[styles.indicator, index === currentStep && styles.indicatorActive]}
                   accessibilityLabel={`Go to step ${index + 1}: ${steps[index].title}`}
                   accessibilityRole="button"
                   accessibilityState={{ selected: index === currentStep }}
-                  accessibilityHint={index === currentStep ? "Current step" : "Tap to jump to this step"}
+                  accessibilityHint={
+                    index === currentStep ? 'Current step' : 'Tap to jump to this step'
+                  }
                 />
               ))}
             </View>
@@ -329,9 +303,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
                 accessibilityRole="button"
                 accessibilityHint="Skip tour and go to main app"
               >
-                <Text style={styles.secondaryButtonText}>
-                  {currentStepData.secondaryAction}
-                </Text>
+                <Text style={styles.secondaryButtonText}>{currentStepData.secondaryAction}</Text>
               </TouchableOpacity>
             )}
 
@@ -358,123 +330,124 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 // STYLES
 // ============================================================================
 
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: ds.space[6],
-  },
-  progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingTop: ds.space[4],
-    marginBottom: ds.space[6],
-  },
-  progressBackground: {
-    flex: 1,
-    height: 4,
-    backgroundColor: ds.semantic.surface.interactive,
-    borderRadius: 2,
-    marginRight: ds.space[4],
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: aestheticColors.primary[500],
-    borderRadius: 2,
-  },
-  skipButton: {
-    paddingHorizontal: ds.space[3],
-    paddingVertical: ds.space[1],
-  },
-  skipText: {
-    fontSize: 14,
-    color: aestheticColors.navy[300],
-    fontWeight: '500',
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  illustrationContainer: {
-    marginBottom: ds.space[8],
-    alignItems: 'center',
-  },
-  textContainer: {
-    alignItems: 'center',
-    paddingHorizontal: ds.space[2],
-  },
-  subtitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: aestheticColors.primary[500],
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: ds.space[3],
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: ds.semantic.text.onDark,
-    textAlign: 'center',
-    marginBottom: ds.space[4],
-    lineHeight: 40,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 26,
-    color: aestheticColors.navy[200],
-    textAlign: 'center',
-    maxWidth: 320,
-  },
-  actionsContainer: {
-    marginTop: 'auto',
-    marginBottom: ds.space[4],
-  },
-  actionCard: {
-    padding: ds.space[6],
-    borderRadius: ds.radius.xl,
-  },
-  indicatorsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: ds.space[6],
-    gap: ds.space[2],
-  },
-  indicator: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: ds.semantic.surface.overlay,
-  },
-  indicatorActive: {
-    width: 24,
-    backgroundColor: aestheticColors.primary[500],
-  },
-  primaryButton: {
-    marginBottom: ds.space[4],
-  },
-  secondaryButton: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  secondaryButtonText: {
-    fontSize: 15,
-    color: aestheticColors.navy[300],
-    fontWeight: '500',
-  },
-  backButton: {
-    alignItems: 'center',
-    paddingVertical: 8,
-    marginTop: 8,
-  },
-  backButtonText: {
-    fontSize: 14,
-    color: aestheticColors.navy[400],
-    fontWeight: '500',
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+      paddingHorizontal: ds.space[6],
+    },
+    progressContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingTop: ds.space[4],
+      marginBottom: ds.space[6],
+    },
+    progressBackground: {
+      flex: 1,
+      height: 4,
+      backgroundColor: ds.semantic.surface.interactive,
+      borderRadius: 2,
+      marginRight: ds.space[4],
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      backgroundColor: aestheticColors.primary[500],
+      borderRadius: 2,
+    },
+    skipButton: {
+      paddingHorizontal: ds.space[3],
+      paddingVertical: ds.space[1],
+    },
+    skipText: {
+      fontSize: 14,
+      color: aestheticColors.navy[300],
+      fontWeight: '500',
+    },
+    contentContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    illustrationContainer: {
+      marginBottom: ds.space[8],
+      alignItems: 'center',
+    },
+    textContainer: {
+      alignItems: 'center',
+      paddingHorizontal: ds.space[2],
+    },
+    subtitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: aestheticColors.primary[500],
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: ds.space[3],
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: '700',
+      color: ds.semantic.text.onDark,
+      textAlign: 'center',
+      marginBottom: ds.space[4],
+      lineHeight: 40,
+    },
+    description: {
+      fontSize: 16,
+      lineHeight: 26,
+      color: aestheticColors.navy[200],
+      textAlign: 'center',
+      maxWidth: 320,
+    },
+    actionsContainer: {
+      marginTop: 'auto',
+      marginBottom: ds.space[4],
+    },
+    actionCard: {
+      padding: ds.space[6],
+      borderRadius: ds.radius.xl,
+    },
+    indicatorsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginBottom: ds.space[6],
+      gap: ds.space[2],
+    },
+    indicator: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: ds.semantic.surface.overlay,
+    },
+    indicatorActive: {
+      width: 24,
+      backgroundColor: aestheticColors.primary[500],
+    },
+    primaryButton: {
+      marginBottom: ds.space[4],
+    },
+    secondaryButton: {
+      alignItems: 'center',
+      paddingVertical: 12,
+    },
+    secondaryButtonText: {
+      fontSize: 15,
+      color: aestheticColors.navy[300],
+      fontWeight: '500',
+    },
+    backButton: {
+      alignItems: 'center',
+      paddingVertical: 8,
+      marginTop: 8,
+    },
+    backButtonText: {
+      fontSize: 14,
+      color: aestheticColors.navy[400],
+      fontWeight: '500',
+    },
+  }) as const;

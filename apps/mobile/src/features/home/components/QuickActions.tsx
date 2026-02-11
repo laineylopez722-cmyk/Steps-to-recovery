@@ -107,7 +107,11 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
             accessibilityHint={`Navigate to ${action.title}`}
           >
             <View style={[styles.iconContainer, { backgroundColor: action.color }]}>
-              <MaterialCommunityIcons name={action.icon} size={28} color={ds.semantic.text.onDark} />
+              <MaterialCommunityIcons
+                name={action.icon}
+                size={28}
+                color={ds.semantic.text.onDark}
+              />
             </View>
             <Text
               style={[
@@ -124,33 +128,34 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
   );
 }
 
-const createStyles = (_ds: DS) => ({
-  card: {
-    margin: 16,
-    marginTop: 8,
-  },
-  title: {
-    fontWeight: 'bold' as const,
-    marginBottom: 16,
-  },
-  actionsGrid: {
-    flexDirection: 'row' as const,
-    flexWrap: 'wrap' as const,
-    justifyContent: 'space-between' as const,
-  },
-  actionButton: {
-    width: '48%' as const,
-    alignItems: 'center' as const,
-    padding: 16,
-    marginBottom: 12,
-    borderRadius: 12,
-  },
-  iconContainer: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
-    marginBottom: 8,
-  },
-} as const);
+const createStyles = (_ds: DS) =>
+  ({
+    card: {
+      margin: 16,
+      marginTop: 8,
+    },
+    title: {
+      fontWeight: 'bold' as const,
+      marginBottom: 16,
+    },
+    actionsGrid: {
+      flexDirection: 'row' as const,
+      flexWrap: 'wrap' as const,
+      justifyContent: 'space-between' as const,
+    },
+    actionButton: {
+      width: '48%' as const,
+      alignItems: 'center' as const,
+      padding: 16,
+      marginBottom: 12,
+      borderRadius: 12,
+    },
+    iconContainer: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginBottom: 8,
+    },
+  }) as const;

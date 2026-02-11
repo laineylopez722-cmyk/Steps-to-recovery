@@ -32,6 +32,7 @@ export function useAchievements() {
     queryKey: ['achievements', userId],
     queryFn: () => (userId ? checkInService.getAchievements(userId) : []),
     enabled: !!userId,
+    staleTime: 30 * 60 * 1000, // 30 minutes - achievements change infrequently
   });
 
   // Get current stats for progress calculation
@@ -42,6 +43,7 @@ export function useAchievements() {
         ? checkInService.getMeetingStats(userId)
         : { totalMeetings: 0, currentStreak: 0, longestStreak: 0 },
     enabled: !!userId,
+    staleTime: 30 * 60 * 1000, // 30 minutes - stats change only on check-in
   });
 
   // Combine achievement definitions with unlock status

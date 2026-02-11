@@ -16,11 +16,13 @@ conditions:
 You're adding `any` type or missing return type annotation. CLAUDE.md requires strict TypeScript.
 
 **Why this matters:**
+
 - `any` disables type checking - introduces bugs
 - No return types make code harder to understand and maintain
 - This project enforces strict mode: NO `any` allowed
 
 **What to do:**
+
 1. Replace `any` with specific types
 2. Add explicit return types to functions
 3. Use `unknown` for errors, then type guard:

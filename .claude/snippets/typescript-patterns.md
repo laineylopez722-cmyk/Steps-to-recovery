@@ -6,15 +6,15 @@
 interface ComponentNameProps {
   prop1: string;
   prop2: number;
-  onAction?: () => void;  // Optional callbacks
-  children?: React.ReactNode;  // For children
+  onAction?: () => void; // Optional callbacks
+  children?: React.ReactNode; // For children
 }
 
-export function ComponentName({ 
-  prop1, 
-  prop2, 
-  onAction, 
-  children 
+export function ComponentName({
+  prop1,
+  prop2,
+  onAction,
+  children,
 }: ComponentNameProps): React.ReactElement {
   // Component implementation
 }
@@ -87,7 +87,7 @@ interface JournalEntry {
 // Use with database queries
 const entries = await db.getAllAsync<JournalEntry>(
   'SELECT * FROM journal_entries WHERE user_id = ?',
-  [userId]
+  [userId],
 );
 ```
 

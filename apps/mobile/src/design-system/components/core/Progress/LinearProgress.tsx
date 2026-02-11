@@ -1,28 +1,28 @@
 /**
  * Material Design 3 Linear Progress Indicator
- * 
+ *
  * A horizontal progress bar following MD3 specifications:
  * - 4dp height (h-1)
  * - Animated fill with smooth transitions
  * - Support for determinate and indeterminate states
  * - Track and indicator colors from theme
  * - Full accessibility support
- * 
+ *
  * @example
  * ```tsx
  * // Determinate progress
  * <LinearProgress value={75} />
- * 
+ *
  * // Indeterminate (loading)
  * <LinearProgress indeterminate />
- * 
+ *
  * // Custom colors
  * <LinearProgress
  *   value={50}
  *   color="bg-primary"
  *   trackColor="bg-surfaceVariant"
  * />
- * 
+ *
  * // With label
  * <LinearProgress value={progress} showLabel />
  * ```
@@ -110,7 +110,7 @@ const INDETERMINATE_DELAY = 500;
 
 /**
  * Material Design 3 Linear Progress Indicator
- * 
+ *
  * Features:
  * - Determinate and indeterminate modes
  * - Smooth animated transitions
@@ -131,7 +131,7 @@ export function LinearProgress({
   ...viewProps
 }: LinearProgressProps): ReactElement {
   const theme = useTheme();
-  
+
   // Clamp value between 0-100
   const clampedValue = useMemo(() => {
     if (value === undefined) return 0;
@@ -208,16 +208,10 @@ export function LinearProgress({
   });
 
   // Container classes
-  const containerClasses = cn(
-    'w-full rounded-full overflow-hidden',
-    trackColor,
-  );
+  const containerClasses = cn('w-full rounded-full overflow-hidden', trackColor);
 
   // Indicator classes
-  const indicatorClasses = cn(
-    'h-full rounded-full',
-    color,
-  );
+  const indicatorClasses = cn('h-full rounded-full', color);
 
   // Accessibility
   const computedAccessibilityLabel =
@@ -244,13 +238,10 @@ export function LinearProgress({
       >
         <Animated.View
           className={indicatorClasses}
-          style={[
-            { height },
-            indeterminate ? indeterminateStyle : determinateStyle,
-          ]}
+          style={[{ height }, indeterminate ? indeterminateStyle : determinateStyle]}
         />
       </View>
-      
+
       {/* Optional label */}
       {showLabel && !indeterminate && (
         <View className="flex-row justify-end mt-1">

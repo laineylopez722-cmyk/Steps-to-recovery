@@ -1,6 +1,6 @@
 /**
  * useAccessibility Hook
- * 
+ *
  * Primary hook for accessing accessibility settings and helpers.
  * Provides scaled sizes, animation status, and accessibility checks.
  */
@@ -35,7 +35,7 @@ export interface UseAccessibilityReturn {
   grayscaleEnabled: boolean;
   /** Invert colors enabled */
   invertColorsEnabled: boolean;
-  
+
   // Helpers
   /** Scale a size based on large text setting */
   scaleSize: (baseSize: number) => number;
@@ -48,7 +48,11 @@ export interface UseAccessibilityReturn {
   /** Get adjusted duration for animations */
   getAnimationDuration: (baseDuration: number) => number;
   /** Validate contrast ratio */
-  validateContrast: (foreground: string, background: string, isLargeText?: boolean) => ContrastValidation;
+  validateContrast: (
+    foreground: string,
+    background: string,
+    isLargeText?: boolean,
+  ) => ContrastValidation;
   /** Get accessible text color for background */
   getAccessibleText: (backgroundColor: string) => string;
   /** Check if touch target size is valid */
@@ -59,7 +63,7 @@ export interface UseAccessibilityReturn {
   formatAnnouncement: (text: string) => string;
   /** Whether settings are still loading */
   isLoading: boolean;
-  
+
   // Actions
   /** Toggle high contrast mode */
   toggleHighContrast: () => Promise<void>;
@@ -75,7 +79,7 @@ export interface UseAccessibilityReturn {
  */
 export function useAccessibility(): UseAccessibilityReturn {
   const context = useAccessibilityContext();
-  
+
   const {
     highContrast,
     reduceMotion,
@@ -151,7 +155,7 @@ export function useAccessibility(): UseAccessibilityReturn {
     (foreground: string, background: string, isLargeText = false): ContrastValidation => {
       const ratio = calculateContrastRatio(foreground, background);
       const requiredRatio = isLargeText ? 4.5 : MIN_CONTRAST_RATIO;
-      
+
       return {
         valid: ratio >= requiredRatio,
         ratio: Math.round(ratio * 100) / 100,
@@ -207,7 +211,7 @@ export function useAccessibility(): UseAccessibilityReturn {
     boldTextEnabled,
     grayscaleEnabled,
     invertColorsEnabled,
-    
+
     // Helpers
     scaleSize,
     scaleFontSize,
@@ -220,7 +224,7 @@ export function useAccessibility(): UseAccessibilityReturn {
     ensureTouchTarget,
     formatAnnouncement,
     isLoading,
-    
+
     // Actions
     toggleHighContrast,
     toggleReduceMotion,

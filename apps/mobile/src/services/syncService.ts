@@ -81,11 +81,14 @@ const VALID_SYNC_TABLES = [
   'daily_checkins',
   'favorite_meetings',
   'reading_reflections',
+  'sponsor_messages',
   'weekly_reports',
   'sponsor_connections',
   'sponsor_shared_entries',
   'personal_inventory',
   'craving_surf_sessions',
+  'gratitude_entries',
+  'safety_plans',
 ] as const;
 
 type ValidSyncTable = (typeof VALID_SYNC_TABLES)[number];

@@ -66,18 +66,68 @@ jest.mock('../../../../utils/id', () => ({
 // Mock STEP_PROMPTS with 12 steps
 jest.mock('@recovery/shared', () => ({
   STEP_PROMPTS: [
-    { step: 1, prompts: Array(35).fill('Step 1 question'), title: 'Powerlessness', principle: 'Honesty' },
+    {
+      step: 1,
+      prompts: Array(35).fill('Step 1 question'),
+      title: 'Powerlessness',
+      principle: 'Honesty',
+    },
     { step: 2, prompts: Array(30).fill('Step 2 question'), title: 'Hope', principle: 'Hope' },
     { step: 3, prompts: Array(30).fill('Step 3 question'), title: 'Surrender', principle: 'Faith' },
-    { step: 4, prompts: Array(70).fill('Step 4 question'), title: 'Inventory', principle: 'Courage' },
-    { step: 5, prompts: Array(25).fill('Step 5 question'), title: 'Admission', principle: 'Integrity' },
-    { step: 6, prompts: Array(25).fill('Step 6 question'), title: 'Readiness', principle: 'Willingness' },
-    { step: 7, prompts: Array(25).fill('Step 7 question'), title: 'Humility', principle: 'Humility' },
-    { step: 8, prompts: Array(35).fill('Step 8 question'), title: 'Willingness to Amend', principle: 'Brotherly Love' },
-    { step: 9, prompts: Array(35).fill('Step 9 question'), title: 'Making Amends', principle: 'Justice' },
-    { step: 10, prompts: Array(25).fill('Step 10 question'), title: 'Daily Inventory', principle: 'Perseverance' },
-    { step: 11, prompts: Array(20).fill('Step 11 question'), title: 'Prayer and Meditation', principle: 'Spiritual Awareness' },
-    { step: 12, prompts: Array(20).fill('Step 12 question'), title: 'Service', principle: 'Service' },
+    {
+      step: 4,
+      prompts: Array(70).fill('Step 4 question'),
+      title: 'Inventory',
+      principle: 'Courage',
+    },
+    {
+      step: 5,
+      prompts: Array(25).fill('Step 5 question'),
+      title: 'Admission',
+      principle: 'Integrity',
+    },
+    {
+      step: 6,
+      prompts: Array(25).fill('Step 6 question'),
+      title: 'Readiness',
+      principle: 'Willingness',
+    },
+    {
+      step: 7,
+      prompts: Array(25).fill('Step 7 question'),
+      title: 'Humility',
+      principle: 'Humility',
+    },
+    {
+      step: 8,
+      prompts: Array(35).fill('Step 8 question'),
+      title: 'Willingness to Amend',
+      principle: 'Brotherly Love',
+    },
+    {
+      step: 9,
+      prompts: Array(35).fill('Step 9 question'),
+      title: 'Making Amends',
+      principle: 'Justice',
+    },
+    {
+      step: 10,
+      prompts: Array(25).fill('Step 10 question'),
+      title: 'Daily Inventory',
+      principle: 'Perseverance',
+    },
+    {
+      step: 11,
+      prompts: Array(20).fill('Step 11 question'),
+      title: 'Prayer and Meditation',
+      principle: 'Spiritual Awareness',
+    },
+    {
+      step: 12,
+      prompts: Array(20).fill('Step 12 question'),
+      title: 'Service',
+      principle: 'Service',
+    },
   ],
 }));
 
@@ -239,9 +289,7 @@ describe('useStepWork', () => {
 
     it('should order questions by question_number ASC', async () => {
       // Mock decryptContent to return proper answers
-      mockDecryptContent
-        .mockResolvedValueOnce('Answer 3')
-        .mockResolvedValueOnce('Answer 1');
+      mockDecryptContent.mockResolvedValueOnce('Answer 3').mockResolvedValueOnce('Answer 1');
 
       const stepWork = [
         {
@@ -353,10 +401,7 @@ describe('useStepWork', () => {
       });
 
       expect(result.current.error).toBeTruthy();
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        'Failed to fetch step work',
-        expect.any(Error),
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to fetch step work', expect.any(Error));
     });
 
     it('should handle decryption errors gracefully', async () => {
@@ -419,7 +464,6 @@ describe('useStepWork', () => {
         );
       });
     });
-
   });
 
   describe('useSaveStepAnswer (Mutation Hook)', () => {
@@ -855,10 +899,9 @@ describe('useStepWork', () => {
       });
 
       await waitFor(() => {
-        expect(mockDbInstance.getAllAsync).toHaveBeenCalledWith(
-          expect.stringContaining('SELECT'),
-          [testUserId],
-        );
+        expect(mockDbInstance.getAllAsync).toHaveBeenCalledWith(expect.stringContaining('SELECT'), [
+          testUserId,
+        ]);
       });
     });
 

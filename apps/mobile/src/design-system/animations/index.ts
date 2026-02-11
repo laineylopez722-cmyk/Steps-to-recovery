@@ -376,9 +376,7 @@ export const AnimationIntensity = {
 /**
  * Get animation config based on intensity level
  */
-export function getAnimationConfig(
-  intensity: keyof typeof AnimationIntensity = 'standard'
-) {
+export function getAnimationConfig(intensity: keyof typeof AnimationIntensity = 'standard') {
   return AnimationIntensity[intensity];
 }
 
@@ -390,7 +388,7 @@ export function shouldAnimate(
     reduceMotion?: boolean;
     lowPowerMode?: boolean;
     userPreference?: 'minimal' | 'reduced' | 'standard' | 'enhanced';
-  } = {}
+  } = {},
 ): boolean {
   const { reduceMotion = false, lowPowerMode = false, userPreference = 'standard' } = options;
 
@@ -411,10 +409,7 @@ export function animationDelay(ms: number): Promise<void> {
 /**
  * Create a staggered animation sequence
  */
-export function createStaggeredSequence(
-  items: Array<() => void>,
-  staggerMs: number
-): (() => void) {
+export function createStaggeredSequence(items: Array<() => void>, staggerMs: number): () => void {
   return () => {
     items.forEach((item, index) => {
       setTimeout(item, index * staggerMs);

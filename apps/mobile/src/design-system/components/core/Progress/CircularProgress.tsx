@@ -1,24 +1,24 @@
 /**
  * Material Design 3 Circular Progress Indicator
- * 
+ *
  * A circular progress indicator following MD3 specifications:
  * - 48dp default size (adjustable)
  * - Smooth rotation animation
  * - Support for determinate and indeterminate states
  * - Center content support (percentage, icon, or custom)
  * - Full accessibility support
- * 
+ *
  * @example
  * ```tsx
  * // Determinate progress
  * <CircularProgress value={75} />
- * 
+ *
  * // Indeterminate loading
  * <CircularProgress indeterminate />
- * 
+ *
  * // With percentage label
  * <CircularProgress value={50} showLabel size={64} />
- * 
+ *
  * // Custom center content
  * <CircularProgress value={100}>
  *   <CheckIcon />
@@ -124,7 +124,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 /**
  * Material Design 3 Circular Progress Indicator
- * 
+ *
  * Features:
  * - Determinate and indeterminate modes
  * - Smooth animated transitions
@@ -209,7 +209,7 @@ export function CircularProgress({
       };
 
       animateArc();
-      
+
       // Restart arc animation periodically
       const interval = setInterval(animateArc, INDETERMINATE_ROTATION_DURATION);
       return () => clearInterval(interval);
@@ -256,17 +256,11 @@ export function CircularProgress({
     if (showLabel && !indeterminate) {
       return (
         <View className="items-center justify-center">
-          <Animated.Text
-            className="font-semibold text-onSurface"
-            style={{ fontSize: size * 0.25 }}
-          >
+          <Animated.Text className="font-semibold text-onSurface" style={{ fontSize: size * 0.25 }}>
             {Math.round(clampedValue)}%
           </Animated.Text>
           {label && (
-            <Animated.Text
-              className="text-onSurfaceVariant"
-              style={{ fontSize: size * 0.15 }}
-            >
+            <Animated.Text className="text-onSurfaceVariant" style={{ fontSize: size * 0.15 }}>
               {label}
             </Animated.Text>
           )}
@@ -280,9 +274,7 @@ export function CircularProgress({
   // Accessibility
   const computedAccessibilityLabel =
     accessibilityLabel ||
-    (indeterminate
-      ? 'Loading'
-      : `Progress: ${Math.round(clampedValue)} percent`);
+    (indeterminate ? 'Loading' : `Progress: ${Math.round(clampedValue)} percent`);
 
   return (
     <View

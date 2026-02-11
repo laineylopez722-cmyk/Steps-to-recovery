@@ -105,9 +105,7 @@ const DEFAULT_OPTIONS: Required<UseFadeAnimationOptions> = {
  * @param options - Animation configuration
  * @returns Animation controls and styles
  */
-export function useFadeAnimation(
-  options: UseFadeAnimationOptions = {}
-): UseFadeAnimationReturn {
+export function useFadeAnimation(options: UseFadeAnimationOptions = {}): UseFadeAnimationReturn {
   const {
     initialOpacity,
     targetOpacity,
@@ -128,7 +126,7 @@ export function useFadeAnimation(
   // Get effective duration based on reduced motion
   const effectiveDuration = getReducedMotionDuration(
     duration,
-    isReducedMotion ? 'instant' : 'subtle'
+    isReducedMotion ? 'instant' : 'subtle',
   );
 
   // Auto-play on mount
@@ -166,11 +164,22 @@ export function useFadeAnimation(
           { ...timingConfig, duration: effectiveDuration || duration },
           (finished) => {
             runOnJS(completionCallback)(finished);
-          }
+          },
         );
       }
     },
-    [targetOpacity, effectiveDuration, useSpring, springConfig, timingConfig, duration, isReducedMotion, opacity, onFadeIn, onComplete]
+    [
+      targetOpacity,
+      effectiveDuration,
+      useSpring,
+      springConfig,
+      timingConfig,
+      duration,
+      isReducedMotion,
+      opacity,
+      onFadeIn,
+      onComplete,
+    ],
   );
 
   // Fade out animation
@@ -198,11 +207,21 @@ export function useFadeAnimation(
           { ...timingConfig, duration: effectiveDuration || duration },
           (finished) => {
             runOnJS(completionCallback)(finished);
-          }
+          },
         );
       }
     },
-    [effectiveDuration, useSpring, springConfig, timingConfig, duration, isReducedMotion, opacity, onFadeOut, onComplete]
+    [
+      effectiveDuration,
+      useSpring,
+      springConfig,
+      timingConfig,
+      duration,
+      isReducedMotion,
+      opacity,
+      onFadeOut,
+      onComplete,
+    ],
   );
 
   // Toggle animation
@@ -226,7 +245,7 @@ export function useFadeAnimation(
         opacity.value = withTiming(value, { duration: effectiveDuration || 100 });
       }
     },
-    [isReducedMotion, effectiveDuration, opacity]
+    [isReducedMotion, effectiveDuration, opacity],
   );
 
   // Animated style
@@ -252,7 +271,9 @@ export function useFadeAnimation(
 /**
  * Quick fade for micro-interactions
  */
-export function useQuickFade(options: Omit<UseFadeAnimationOptions, 'duration'> = {}): UseFadeAnimationReturn {
+export function useQuickFade(
+  options: Omit<UseFadeAnimationOptions, 'duration'> = {},
+): UseFadeAnimationReturn {
   return useFadeAnimation({
     duration: Durations.QUICK,
     ...options,
@@ -262,7 +283,9 @@ export function useQuickFade(options: Omit<UseFadeAnimationOptions, 'duration'> 
 /**
  * Slow fade for emphasis
  */
-export function useSlowFade(options: Omit<UseFadeAnimationOptions, 'duration'> = {}): UseFadeAnimationReturn {
+export function useSlowFade(
+  options: Omit<UseFadeAnimationOptions, 'duration'> = {},
+): UseFadeAnimationReturn {
   return useFadeAnimation({
     duration: Durations.SLOW,
     ...options,
@@ -272,7 +295,9 @@ export function useSlowFade(options: Omit<UseFadeAnimationOptions, 'duration'> =
 /**
  * Spring fade for bouncy feel
  */
-export function useSpringFade(options: Omit<UseFadeAnimationOptions, 'useSpring'> = {}): UseFadeAnimationReturn {
+export function useSpringFade(
+  options: Omit<UseFadeAnimationOptions, 'useSpring'> = {},
+): UseFadeAnimationReturn {
   return useFadeAnimation({
     useSpring: true,
     springConfig: Springs.gentle,

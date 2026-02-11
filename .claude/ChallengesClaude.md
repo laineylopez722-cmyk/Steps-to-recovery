@@ -6,11 +6,12 @@ Implement milestone tracking (sobriety streak counter) and recovery challenges f
 
 ## Target Files
 
-- `apps/mobile/src/features/challenges/screens/DashboardScreen.tsx`
-- `apps/mobile/src/features/challenges/screens/MilestonesScreen.tsx`
-- `apps/mobile/src/features/challenges/screens/ChallengesScreen.tsx`
-- `apps/mobile/src/features/challenges/components/StreakCounter.tsx`
-- `apps/mobile/src/utils/streaks.ts`
+- `apps/mobile/src/features/progress/screens/ProgressDashboardScreen.tsx` - Progress dashboard
+- `apps/mobile/src/features/progress/components/` - Progress UI components (MoodChart, CommitmentCalendar, etc.)
+- `apps/mobile/src/features/progress/hooks/` - Analytics hooks (useMoodTrends, useRecoveryAnalytics, etc.)
+- `apps/mobile/src/hooks/useAchievements.ts` - Achievement tracking hook
+- `apps/mobile/src/features/meetings/screens/AchievementsScreen.tsx` - Achievements display
+- `apps/mobile/src/features/home/components/CleanTimeTracker.tsx` - Streak counter component
 
 ## Requirements
 

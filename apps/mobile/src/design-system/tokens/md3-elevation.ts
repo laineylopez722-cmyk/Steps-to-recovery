@@ -1,6 +1,6 @@
 /**
  * Material Design 3 Elevation System
- * 
+ *
  * MD3 uses surface tonal overlays instead of shadows in light mode
  * In dark mode, shadows are more pronounced with surface color overlays
  */
@@ -30,7 +30,7 @@ export const md3ElevationLight = {
     elevation: 0,
     backgroundColor: md3LightColors.surfaceContainerLowest,
   } as ElevationStyle,
-  
+
   level1: {
     shadowColor: md3LightColors.shadow,
     shadowOffset: { width: 0, height: 1 },
@@ -39,7 +39,7 @@ export const md3ElevationLight = {
     elevation: 1,
     backgroundColor: md3LightColors.surfaceContainerLow,
   } as ElevationStyle,
-  
+
   level2: {
     shadowColor: md3LightColors.shadow,
     shadowOffset: { width: 0, height: 2 },
@@ -48,7 +48,7 @@ export const md3ElevationLight = {
     elevation: 2,
     backgroundColor: md3LightColors.surfaceContainer,
   } as ElevationStyle,
-  
+
   level3: {
     shadowColor: md3LightColors.shadow,
     shadowOffset: { width: 0, height: 4 },
@@ -57,7 +57,7 @@ export const md3ElevationLight = {
     elevation: 3,
     backgroundColor: md3LightColors.surfaceContainerHigh,
   } as ElevationStyle,
-  
+
   level4: {
     shadowColor: md3LightColors.shadow,
     shadowOffset: { width: 0, height: 6 },
@@ -66,7 +66,7 @@ export const md3ElevationLight = {
     elevation: 4,
     backgroundColor: md3LightColors.surfaceContainerHigh,
   } as ElevationStyle,
-  
+
   level5: {
     shadowColor: md3LightColors.shadow,
     shadowOffset: { width: 0, height: 8 },
@@ -87,7 +87,7 @@ export const md3ElevationDark = {
     elevation: 0,
     backgroundColor: md3DarkColors.surfaceContainerLowest,
   } as ElevationStyle,
-  
+
   level1: {
     shadowColor: md3DarkColors.shadow,
     shadowOffset: { width: 0, height: 2 },
@@ -96,7 +96,7 @@ export const md3ElevationDark = {
     elevation: 2,
     backgroundColor: md3DarkColors.surfaceContainerLow,
   } as ElevationStyle,
-  
+
   level2: {
     shadowColor: md3DarkColors.shadow,
     shadowOffset: { width: 0, height: 4 },
@@ -105,7 +105,7 @@ export const md3ElevationDark = {
     elevation: 4,
     backgroundColor: md3DarkColors.surfaceContainer,
   } as ElevationStyle,
-  
+
   level3: {
     shadowColor: md3DarkColors.shadow,
     shadowOffset: { width: 0, height: 6 },
@@ -114,7 +114,7 @@ export const md3ElevationDark = {
     elevation: 6,
     backgroundColor: md3DarkColors.surfaceContainerHigh,
   } as ElevationStyle,
-  
+
   level4: {
     shadowColor: md3DarkColors.shadow,
     shadowOffset: { width: 0, height: 8 },
@@ -123,7 +123,7 @@ export const md3ElevationDark = {
     elevation: 8,
     backgroundColor: md3DarkColors.surfaceContainerHigh,
   } as ElevationStyle,
-  
+
   level5: {
     shadowColor: md3DarkColors.shadow,
     shadowOffset: { width: 0, height: 10 },
@@ -206,7 +206,7 @@ export const md3Motion = {
     extraLong3: 900,
     extraLong4: 1000,
   },
-  
+
   // Easing
   easing: {
     linear: 'linear',
@@ -220,7 +220,7 @@ export const md3Motion = {
     legacyDecelerate: 'cubic-bezier(0.0, 0.0, 0.2, 1.0)',
     legacyAccelerate: 'cubic-bezier(0.4, 0.0, 1.0, 1.0)',
   },
-  
+
   // Spring (React Native Reanimated compatible)
   spring: {
     gentle: { damping: 20, stiffness: 100 },
@@ -254,7 +254,7 @@ export const md3Typography = {
     lineHeight: 44,
     letterSpacing: 0,
   },
-  
+
   // Headline
   headlineLarge: {
     fontSize: 32,
@@ -274,7 +274,7 @@ export const md3Typography = {
     lineHeight: 32,
     letterSpacing: 0,
   },
-  
+
   // Title
   titleLarge: {
     fontSize: 22,
@@ -294,7 +294,7 @@ export const md3Typography = {
     lineHeight: 20,
     letterSpacing: 0.1,
   },
-  
+
   // Body
   bodyLarge: {
     fontSize: 16,
@@ -314,7 +314,7 @@ export const md3Typography = {
     lineHeight: 16,
     letterSpacing: 0.4,
   },
-  
+
   // Label
   labelLarge: {
     fontSize: 14,

@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Platform, TextInput, type TextInputProps } from 'react-native';
+import { ds } from '@/design-system/tokens/ds';
 
 interface TextareaProps extends TextInputProps {
   /**
@@ -25,7 +26,7 @@ function Textarea({
         props.editable === false && 'opacity-50',
         className,
       )}
-      placeholderTextColor="rgba(255, 255, 255, 0.48)" // text-tertiary from design system
+      placeholderTextColor={ds.colors.textTertiary}
       multiline={multiline}
       numberOfLines={numberOfLines}
       textAlignVertical="top"

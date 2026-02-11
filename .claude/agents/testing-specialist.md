@@ -1,6 +1,7 @@
 # Testing Specialist Agent
 
 > **Reference Documentation:**
+>
 > - [Encryption Patterns](../snippets/encryption-patterns.md) - Encryption testing patterns
 > - [Sync Queue Integration](../snippets/sync-queue-integration.md) - Sync testing patterns
 

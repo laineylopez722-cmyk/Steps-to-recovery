@@ -234,42 +234,43 @@ export function ForgotPasswordScreen({ navigation }: Props) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  header: {
-    // Styles inline with theme
-  },
-  form: {
-    gap: 8,
-  },
-  errorContainer: {
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginVertical: 8,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  successContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  successEmoji: {
-    fontSize: 64,
-    marginBottom: 24,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    safeArea: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: 20,
+      justifyContent: 'center',
+    },
+    header: {
+      // Styles inline with theme
+    },
+    form: {
+      gap: 8,
+    },
+    errorContainer: {
+      padding: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+      marginVertical: 8,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+    successContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 24,
+    },
+    successEmoji: {
+      fontSize: 64,
+      marginBottom: 24,
+    },
+  }) as const;

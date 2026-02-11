@@ -63,10 +63,7 @@ export const EmptyState = memo(function EmptyState({
   // Minimal variant - just text and optional button
   if (variant === 'minimal') {
     return (
-      <Animated.View
-        entering={FadeIn.delay(enteringDelay * 100)}
-        style={styles.minimalContainer}
-      >
+      <Animated.View entering={FadeIn.delay(enteringDelay * 100)} style={styles.minimalContainer}>
         {icon ? (
           <View style={[styles.iconCircleSmall, { backgroundColor: `${iconColor}20` }]}>
             <Feather name={icon} size={24} color={iconColor} />
@@ -125,10 +122,7 @@ export const EmptyState = memo(function EmptyState({
 
   // Default/Encouraging variant - full empty state
   return (
-    <Animated.View
-      entering={FadeInUp.delay(enteringDelay * 100)}
-      style={styles.fullContainer}
-    >
+    <Animated.View entering={FadeInUp.delay(enteringDelay * 100)} style={styles.fullContainer}>
       {/* Icon/Emoji in a circle */}
       <View style={[styles.mainIconCircle, { backgroundColor: `${iconColor}15` }]}>
         {icon ? (
@@ -240,152 +234,153 @@ export const EMPTY_STATES = {
   },
 } as const;
 
-const createStyles = (ds: DS) => ({
-  // Minimal variant
-  minimalContainer: {
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
-  iconCircle: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  emojiLarge: {
-    fontSize: 48,
-    marginBottom: 12,
-  },
-  messageText: {
-    fontSize: 16,
-    color: ds.colors.textSecondary,
-    textAlign: 'center',
-    paddingHorizontal: 24,
-  },
-  minimalButton: {
-    marginTop: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: ds.colors.bgSecondary,
-    borderRadius: 20,
-  },
-  minimalButtonText: {
-    color: ds.colors.info,
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  // Card variant
-  cardContainer: {
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 16,
-  },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconCircleSmall: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  emojiMedium: {
-    fontSize: 32,
-    marginRight: 12,
-  },
-  cardTextContainer: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: ds.semantic.text.onDark,
-    marginBottom: 2,
-  },
-  cardMessage: {
-    fontSize: 14,
-    color: ds.colors.textSecondary,
-  },
-  cardButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-  cardButtonText: {
-    color: ds.colors.info,
-    fontWeight: '600',
-    fontSize: 14,
-    marginRight: 6,
-  },
-  // Full/Default variant
-  fullContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-  },
-  mainIconCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 24,
-  },
-  emojiMain: {
-    fontSize: 40,
-  },
-  mainTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: ds.semantic.text.onDark,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  mainMessage: {
-    fontSize: 16,
-    color: ds.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 24,
-    paddingHorizontal: 16,
-    lineHeight: 24,
-  },
-  encouragementCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    marginBottom: 24,
-    marginHorizontal: 16,
-    width: '100%',
-    maxWidth: 320,
-  },
-  heartIcon: {
-    marginRight: 12,
-  },
-  encouragementText: {
-    flex: 1,
-    color: ds.colors.success,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  mainButton: {
-    backgroundColor: ds.colors.info,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    borderRadius: 12,
-  },
-  mainButtonText: {
-    color: ds.semantic.text.onDark,
-    fontWeight: '700',
-    fontSize: 16,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    // Minimal variant
+    minimalContainer: {
+      alignItems: 'center',
+      paddingVertical: 32,
+    },
+    iconCircle: {
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 12,
+    },
+    emojiLarge: {
+      fontSize: 48,
+      marginBottom: 12,
+    },
+    messageText: {
+      fontSize: 16,
+      color: ds.colors.textSecondary,
+      textAlign: 'center',
+      paddingHorizontal: 24,
+    },
+    minimalButton: {
+      marginTop: 16,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      backgroundColor: ds.colors.bgSecondary,
+      borderRadius: 20,
+    },
+    minimalButtonText: {
+      color: ds.colors.info,
+      fontWeight: '600',
+      fontSize: 14,
+    },
+    // Card variant
+    cardContainer: {
+      marginHorizontal: 16,
+      marginVertical: 8,
+      padding: 16,
+    },
+    cardContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    iconCircleSmall: {
+      width: 44,
+      height: 44,
+      borderRadius: 22,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    emojiMedium: {
+      fontSize: 32,
+      marginRight: 12,
+    },
+    cardTextContainer: {
+      flex: 1,
+    },
+    cardTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: ds.semantic.text.onDark,
+      marginBottom: 2,
+    },
+    cardMessage: {
+      fontSize: 14,
+      color: ds.colors.textSecondary,
+    },
+    cardButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+    },
+    cardButtonText: {
+      color: ds.colors.info,
+      fontWeight: '600',
+      fontSize: 14,
+      marginRight: 6,
+    },
+    // Full/Default variant
+    fullContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingHorizontal: 24,
+    },
+    mainIconCircle: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 24,
+    },
+    emojiMain: {
+      fontSize: 40,
+    },
+    mainTitle: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: ds.semantic.text.onDark,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    mainMessage: {
+      fontSize: 16,
+      color: ds.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
+      paddingHorizontal: 16,
+      lineHeight: 24,
+    },
+    encouragementCard: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      marginBottom: 24,
+      marginHorizontal: 16,
+      width: '100%',
+      maxWidth: 320,
+    },
+    heartIcon: {
+      marginRight: 12,
+    },
+    encouragementText: {
+      flex: 1,
+      color: ds.colors.success,
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    mainButton: {
+      backgroundColor: ds.colors.info,
+      paddingHorizontal: 28,
+      paddingVertical: 14,
+      borderRadius: 12,
+    },
+    mainButtonText: {
+      color: ds.semantic.text.onDark,
+      fontWeight: '700',
+      fontSize: 16,
+    },
+  }) as const;

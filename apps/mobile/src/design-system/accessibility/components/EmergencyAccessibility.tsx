@@ -112,13 +112,15 @@ export function EmergencyButton({
 
       // Log slow response in dev mode
       if (__DEV__ && responseTime > MAX_RESPONSE_TIME_MS) {
-        console.warn(`Emergency button response time: ${responseTime}ms (target: <${MAX_RESPONSE_TIME_MS}ms)`);
+        console.warn(
+          `Emergency button response time: ${responseTime}ms (target: <${MAX_RESPONSE_TIME_MS}ms)`,
+        );
       }
 
       // Call original handler
       onPress?.(event);
     },
-    [onPress, label, announcement, announceOnPress, announceCritical]
+    [onPress, label, announcement, announceOnPress, announceCritical],
   );
 
   const buttonStyle: ViewStyle[] = [
@@ -255,11 +257,7 @@ export function EmergencyText({
   ];
 
   return (
-    <Text
-      style={textStyle}
-      accessibilityRole={variant === 'title' ? 'header' : 'text'}
-      {...props}
-    >
+    <Text style={textStyle} accessibilityRole={variant === 'title' ? 'header' : 'text'} {...props}>
       {children}
     </Text>
   );
@@ -284,7 +282,7 @@ export function useEmergencyAnnouncer() {
       // Clear other announcements and announce immediately
       announceCritical(message, { interrupt: true, delay: 0 });
     },
-    [announceCritical]
+    [announceCritical],
   );
 
   /**
@@ -297,7 +295,7 @@ export function useEmergencyAnnouncer() {
         delay: 0,
       });
     },
-    [announce]
+    [announce],
   );
 
   /**
@@ -312,7 +310,7 @@ export function useEmergencyAnnouncer() {
       };
       announceEmergency(messages[status]);
     },
-    [announceEmergency]
+    [announceEmergency],
   );
 
   return {

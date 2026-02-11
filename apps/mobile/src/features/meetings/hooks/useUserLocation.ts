@@ -258,4 +258,3 @@ export function useUserLocation(): UseUserLocationReturn {
     clearError,
   };
 }
-

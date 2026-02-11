@@ -36,6 +36,7 @@ export function useMeetingCheckIns() {
         ? checkInService.getMeetingStats(userId)
         : { totalMeetings: 0, currentStreak: 0, longestStreak: 0 },
     enabled: !!userId,
+    staleTime: 30 * 60 * 1000, // 30 minutes - stats change only on check-in
   });
 
   // Mutation: Create new check-in

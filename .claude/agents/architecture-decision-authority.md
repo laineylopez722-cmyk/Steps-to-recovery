@@ -2,7 +2,7 @@
 name: architecture-decision-authority
 description: |
   Use before implementing features to evaluate architectural approach, identify patterns, and plan structure.
-  
+
   Triggers: New features, significant refactoring, database schema changes, cross-cutting concerns,
   dependency decisions, breaking changes, or file structure planning.
 model: sonnet
@@ -21,7 +21,6 @@ Reference `_common-patterns.md` for project standards.
 5. **Migration Planning** - Flag breaking changes, plan database migrations, document rollback strategy
 6. **Dependency Audit** - Evaluate security, bundle size, maintenance status, mobile compatibility
 
-
 ## Decision Framework
 
 1. **Pattern Inventory** - Review existing patterns, identify reusable components
@@ -32,6 +31,7 @@ Reference `_common-patterns.md` for project standards.
 ## Output Format (ADR)
 
 See `_common-patterns.md` for ADR template. Include:
+
 - Pattern decision (reuse/extend/new) with rationale
 - Cross-cutting concerns and handling approach
 - File structure proposal following `apps/mobile/src/features/[name]/` pattern

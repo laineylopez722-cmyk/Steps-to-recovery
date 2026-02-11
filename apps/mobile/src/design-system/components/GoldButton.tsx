@@ -1,6 +1,6 @@
 /**
  * GoldButton - Celebration & Milestone
- * 
+ *
  * Premium button for special moments:
  * - Milestone achievements
  * - Important CTAs
@@ -10,9 +10,9 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import type { TextStyle, ViewStyle } from 'react-native';
-import Animated, { 
-  useSharedValue, 
-  useAnimatedStyle, 
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
   withTiming,
   withRepeat,
   withSequence,
@@ -60,12 +60,9 @@ export function GoldButton({
   React.useEffect(() => {
     if (shimmer && !disabled) {
       pulseScale.value = withRepeat(
-        withSequence(
-          withTiming(1.02, { duration: 1000 }),
-          withTiming(1, { duration: 1000 })
-        ),
+        withSequence(withTiming(1.02, { duration: 1000 }), withTiming(1, { duration: 1000 })),
         -1,
-        true
+        true,
       );
     }
   }, [shimmer, disabled]);
@@ -120,9 +117,7 @@ export function GoldButton({
       ) : (
         <View style={styles.content}>
           {icon && <View style={styles.icon}>{icon}</View>}
-          <Text style={[styles.text, { fontSize: sizeConfig.fontSize }]}>
-            {title}
-          </Text>
+          <Text style={[styles.text, { fontSize: sizeConfig.fontSize }]}>{title}</Text>
         </View>
       )}
     </AnimatedPressable>

@@ -344,52 +344,53 @@ export function SignUpScreen({ navigation }: Props) {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    padding: 20,
-  },
-  header: {
-    marginTop: 32,
-  },
-  form: {
-    gap: 8,
-  },
-  privacyNotice: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  privacyIcon: {
-    fontSize: 20,
-  },
-  passwordStrength: {
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  strengthBar: {
-    flexDirection: 'row',
-    marginTop: 4,
-    gap: 2,
-  },
-  strengthSegment: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-  },
-  errorContainer: {
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginVertical: 8,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    safeArea: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      padding: 20,
+    },
+    header: {
+      marginTop: 32,
+    },
+    form: {
+      gap: 8,
+    },
+    privacyNotice: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    privacyIcon: {
+      fontSize: 20,
+    },
+    passwordStrength: {
+      marginTop: 8,
+      marginBottom: 4,
+    },
+    strengthBar: {
+      flexDirection: 'row',
+      marginTop: 4,
+      gap: 2,
+    },
+    strengthSegment: {
+      flex: 1,
+      height: 4,
+      borderRadius: 2,
+    },
+    errorContainer: {
+      padding: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+      marginVertical: 8,
+    },
+    footer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+    },
+  }) as const;

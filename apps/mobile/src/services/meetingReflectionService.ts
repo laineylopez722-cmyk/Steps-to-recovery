@@ -113,9 +113,7 @@ export async function savePreMeetingReflection(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // Encrypt sensitive fields before storage
-    const encryptedIntention = prompts.intention
-      ? await encryptContent(prompts.intention)
-      : null;
+    const encryptedIntention = prompts.intention ? await encryptContent(prompts.intention) : null;
     const encryptedMood = await encryptContent(String(prompts.mood));
     const encryptedHope = prompts.hope ? await encryptContent(prompts.hope) : null;
 
@@ -162,12 +160,8 @@ export async function savePostMeetingReflection(
       ? await encryptContent(prompts.keyTakeaway)
       : null;
     const encryptedMood = await encryptContent(String(prompts.mood));
-    const encryptedGratitude = prompts.gratitude
-      ? await encryptContent(prompts.gratitude)
-      : null;
-    const encryptedWillApply = prompts.willApply
-      ? await encryptContent(prompts.willApply)
-      : null;
+    const encryptedGratitude = prompts.gratitude ? await encryptContent(prompts.gratitude) : null;
+    const encryptedWillApply = prompts.willApply ? await encryptContent(prompts.willApply) : null;
 
     const { data: updatedRows, error: updateError } = await supabase
       .from('meeting_reflections')
@@ -326,4 +320,3 @@ export function getRandomPrePrompt(): string {
 export function getRandomPostPrompt(): string {
   return POST_TAKEAWAY_PROMPTS[Math.floor(Math.random() * POST_TAKEAWAY_PROMPTS.length)];
 }
-

@@ -2,7 +2,8 @@
  * BeforeYouUseScreen - Crisis Checkpoint
  *
  * Life-saving intervention flow when user is considering using.
- * Multi-stage process with sponsor quick-dial and delay tactics.
+ * Multi-stage process with grounding exercises, breathing techniques,
+ * emergency contacts, sponsor quick-dial, and delay tactics.
  */
 
 import { useEffect, useState, type ReactElement } from 'react';
@@ -10,7 +11,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { FadeIn, SlideInDown, ZoomIn } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn } from 'react-native-reanimated';
 import Slider from '@react-native-community/slider';
 import { useNavigation, type NavigationProp as RNNavigationProp } from '@react-navigation/native';
 
@@ -34,12 +35,16 @@ import { useSponsorInfo } from '../../../hooks/useSponsorInfo';
 import { RootStackParamList } from '../../../navigation/types';
 import { SponsorInfo } from '../../../types/index';
 import { makePhoneCall, sendSMS } from '@recovery/shared';
+import { BreathingExercise } from '../components/BreathingExercise';
+import { GroundingExercise } from '../components/GroundingExercise';
+import { CrisisContacts } from '../components/CrisisContacts';
+import { logger } from '../../../utils/logger';
 
 // ========================================
 // Types
 // ========================================
 
-type Stage = 'initial' | 'pause' | 'reflect' | 'contact' | 'complete';
+type Stage = 'initial' | 'pause' | 'grounding' | 'reflect' | 'contact' | 'complete';
 type ContactType = 'call' | 'text';
 type Outcome = 'resisted' | 'used';
 
@@ -132,10 +137,10 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
         await markWaitedTenMinutes(checkpointId, userId);
       }
 
-      setStage('reflect');
+      setStage('grounding');
     } catch {
       // Even if logging fails, continue the flow
-      setStage('reflect');
+      setStage('grounding');
     }
   }
 
@@ -150,7 +155,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
           style: 'destructive',
           onPress: () => {
             setTimerActive(false);
-            setStage('reflect');
+            setStage('grounding');
           },
         },
       ],
@@ -212,7 +217,9 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
       setStage('complete');
       Alert.alert(
         'Checkpoint saved',
-        outcome === 'resisted' ? 'Good work. Keep going.' : 'Logged. Reach out for support if you can.',
+        outcome === 'resisted'
+          ? 'Good work. Keep going.'
+          : 'Logged. Reach out for support if you can.',
         [{ text: 'OK', onPress: () => navigation.goBack() }],
       );
     }
@@ -228,7 +235,9 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
         <View style={styles.header}>
           <MaterialIcons name="pause-circle-filled" size={48} color={darkAccent.error} />
           <Text style={styles.title}>Before You Use</Text>
-          <Text style={styles.subtitle}>Let's pause for a moment. You're here because you're still fighting.</Text>
+          <Text style={styles.subtitle}>
+            Let's pause for a moment. You're here because you're still fighting.
+          </Text>
         </View>
 
         <View style={styles.section}>
@@ -271,7 +280,11 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
           />
         </View>
 
-        <GradientButton title="Start Checkpoint" onPress={handleStart} accessibilityLabel="Start crisis checkpoint" />
+        <GradientButton
+          title="Start Checkpoint"
+          onPress={handleStart}
+          accessibilityLabel="Start crisis checkpoint"
+        />
       </GlassCard>
     </Animated.View>
   );
@@ -290,7 +303,9 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
               </Text>
             </Animated.View>
             <Text style={styles.title}>Wait 10 Minutes</Text>
-            <Text style={styles.subtitle}>Cravings peak and pass. Just 10 minutes. You can do this.</Text>
+            <Text style={styles.subtitle}>
+              Cravings peak and pass. Just 10 minutes. You can do this.
+            </Text>
           </View>
 
           <View style={styles.tipsContainer}>
@@ -300,6 +315,16 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
             <TipItem icon="air" text="Practice deep breathing" />
             <TipItem icon="call" text="Call your sponsor" />
           </View>
+
+          {/* Breathing Exercise */}
+          <GlassCard intensity="heavy" style={styles.exerciseCard}>
+            <BreathingExercise targetCycles={4} />
+          </GlassCard>
+
+          {/* Crisis Contacts - immediate access */}
+          <GlassCard intensity="heavy" style={styles.exerciseCard}>
+            <CrisisContacts showCustomContacts={false} />
+          </GlassCard>
 
           <Pressable
             style={styles.skipButton}
@@ -314,13 +339,78 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
     );
   };
 
+  const renderGroundingStage = (): ReactElement => (
+    <Animated.View entering={FadeInDown.duration(400)} style={styles.stageContainer}>
+      <GlassCard intensity="heavy">
+        <View style={styles.header}>
+          <MaterialIcons name="self-improvement" size={48} color={darkAccent.success} />
+          <Text style={styles.title}>Ground Yourself</Text>
+          <Text style={styles.subtitle}>
+            Let's bring you back to the present moment. Take it one sense at a time.
+          </Text>
+        </View>
+
+        <GroundingExercise
+          onComplete={() => {
+            logger.info('Grounding exercise completed during crisis checkpoint', {
+              checkpointId,
+            });
+          }}
+        />
+      </GlassCard>
+
+      <View style={styles.safeNowSection}>
+        <GradientButton
+          title="I'm safe now ✓"
+          onPress={() => {
+            logger.info('User confirmed safety during crisis checkpoint', { checkpointId });
+            void handleComplete('resisted');
+          }}
+          variant="success"
+          accessibilityLabel="I am safe now. End crisis checkpoint."
+          accessibilityHint="Confirms you are feeling safe and logs this checkpoint"
+        />
+
+        <Pressable
+          onPress={() => setStage('reflect')}
+          style={styles.continueLink}
+          accessibilityLabel="Continue to reflection stage"
+          accessibilityRole="button"
+          accessibilityHint="Move to emotional reflection and journaling"
+        >
+          <Text style={styles.continueLinkText}>I want to keep going →</Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => {
+            logger.info('User requested to talk to someone', { checkpointId });
+            navigation.navigate('MainApp', {
+              screen: 'Home',
+              params: { screen: 'CompanionChat' },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } as any);
+          }}
+          style={styles.talkButton}
+          accessibilityLabel="Talk to someone"
+          accessibilityRole="button"
+          accessibilityHint="Opens AI companion chat for immediate support"
+        >
+          <MaterialIcons name="chat" size={20} color={darkAccent.primary} />
+          <Text style={styles.talkButtonText}>Talk to someone</Text>
+        </Pressable>
+      </View>
+    </Animated.View>
+  );
+
   const renderReflectStage = (): ReactElement => (
     <Animated.View entering={FadeIn} style={styles.stageContainer}>
       <GlassCard intensity="heavy">
         <View style={styles.header}>
           <MaterialIcons name="edit-note" size={48} color={darkAccent.primary} />
           <Text style={styles.title}>What Are You Feeling?</Text>
-          <Text style={styles.subtitle}>Name the emotions. They lose power when we acknowledge them.</Text>
+          <Text style={styles.subtitle}>
+            Name the emotions. They lose power when we acknowledge them.
+          </Text>
         </View>
 
         <View style={styles.section}>
@@ -336,7 +426,11 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
                   accessibilityLabel={`${emotion}${selected ? ' selected' : ''}`}
                   accessibilityRole="button"
                 >
-                  <Text style={[styles.emotionChipText, selected && styles.emotionChipTextSelected]}>{emotion}</Text>
+                  <Text
+                    style={[styles.emotionChipText, selected && styles.emotionChipTextSelected]}
+                  >
+                    {emotion}
+                  </Text>
                 </Pressable>
               );
             })}
@@ -353,10 +447,16 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
             onChangeText={setJournalEntry}
             multiline
             numberOfLines={6}
+            accessibilityLabel="Write about what you are feeling"
+            accessibilityHint="Optional: express your thoughts and emotions"
           />
         </View>
 
-        <GradientButton title="Continue" onPress={handleSaveReflection} accessibilityLabel="Save reflection and continue" />
+        <GradientButton
+          title="Continue"
+          onPress={handleSaveReflection}
+          accessibilityLabel="Save reflection and continue"
+        />
       </GlassCard>
     </Animated.View>
   );
@@ -367,7 +467,9 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
         <View style={styles.header}>
           <MaterialIcons name="support-agent" size={48} color={darkAccent.success} />
           <Text style={styles.title}>Reach Out</Text>
-          <Text style={styles.subtitle}>You don't have to do this alone. Your sponsor is here for moments like this.</Text>
+          <Text style={styles.subtitle}>
+            You don't have to do this alone. Your sponsor is here for moments like this.
+          </Text>
         </View>
 
         {sponsorInfo && !sponsorLoading ? (
@@ -401,9 +503,14 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
           </View>
         ) : (
           <View style={styles.noSponsorCard}>
-            <Text style={styles.noSponsorText}>No sponsor set up yet. You can add one in settings.</Text>
+            <Text style={styles.noSponsorText}>
+              No sponsor set up yet. You can add one in settings.
+            </Text>
           </View>
         )}
+
+        {/* All crisis contacts with tap-to-call */}
+        <CrisisContacts showCustomContacts />
 
         <View style={styles.section}>
           <Text style={styles.label}>How's the craving now?</Text>
@@ -419,6 +526,9 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
               minimumTrackTintColor={darkAccent.success}
               maximumTrackTintColor={ds.colors.bgQuaternary}
               thumbTintColor={darkAccent.success}
+              accessibilityLabel={`Final craving intensity: ${finalIntensity} out of 10`}
+              accessibilityRole="adjustable"
+              accessibilityHint="Slide to rate your current craving intensity"
             />
           </View>
         </View>
@@ -453,7 +563,11 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
           <Text style={styles.subtitle}>Your checkpoint has been saved.</Text>
         </View>
 
-        <GradientButton title="Done" onPress={() => navigation.goBack()} accessibilityLabel="Done" />
+        <GradientButton
+          title="Done"
+          onPress={() => navigation.goBack()}
+          accessibilityLabel="Done"
+        />
       </GlassCard>
     </Animated.View>
   );
@@ -464,20 +578,32 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
 
   return (
     <View style={styles.container}>
-      <LinearGradient colors={[darkAccent.background, ds.semantic.surface.app, darkAccent.surface]} style={StyleSheet.absoluteFill} />
+      <LinearGradient
+        colors={[darkAccent.background, ds.semantic.surface.app, darkAccent.surface]}
+        style={StyleSheet.absoluteFill}
+      />
 
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <View style={styles.headerBar}>
-          <Pressable onPress={() => navigation.goBack()} accessibilityLabel="Go back" accessibilityRole="button">
+          <Pressable
+            onPress={() => navigation.goBack()}
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+          >
             <MaterialIcons name="close" size={28} color={darkAccent.text} />
           </Pressable>
           <Text style={styles.headerTitle}>Crisis Checkpoint</Text>
           <View style={{ width: 28 }} />
         </View>
 
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
           {stage === 'initial' && renderInitialStage()}
           {stage === 'pause' && renderPauseStage()}
+          {stage === 'grounding' && renderGroundingStage()}
           {stage === 'reflect' && renderReflectStage()}
           {stage === 'contact' && renderContactStage()}
           {stage === 'complete' && renderCompleteStage()}
@@ -510,191 +636,229 @@ function TipItem({ icon, text }: TipItemProps): ReactElement {
 // Styles
 // ========================================
 
-const createStyles = (ds: DS) => ({
-  container: { flex: 1 },
-  safeArea: { flex: 1 },
+const createStyles = (ds: DS) =>
+  ({
+    container: { flex: 1 },
+    safeArea: { flex: 1 },
 
-  headerBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing[4],
-    paddingVertical: spacing[3],
-  },
-  headerTitle: {
-    ...typography.h3,
-    color: darkAccent.text,
-  },
+    headerBar: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: spacing[4],
+      paddingVertical: spacing[3],
+    },
+    headerTitle: {
+      ...typography.h3,
+      color: darkAccent.text,
+    },
 
-  scrollView: { flex: 1 },
-  scrollContent: { padding: spacing[4] },
+    scrollView: { flex: 1 },
+    scrollContent: { padding: spacing[4] },
 
-  stageContainer: { flex: 1 },
+    stageContainer: { flex: 1 },
 
-  header: {
-    alignItems: 'center',
-    marginBottom: spacing[6],
-  },
-  title: {
-    ...typography.h2,
-    color: darkAccent.text,
-    marginTop: spacing[3],
-    textAlign: 'center',
-  },
-  subtitle: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    marginTop: spacing[2],
-    textAlign: 'center',
-    lineHeight: 22,
-  },
+    header: {
+      alignItems: 'center',
+      marginBottom: spacing[6],
+    },
+    title: {
+      ...typography.h2,
+      color: darkAccent.text,
+      marginTop: spacing[3],
+      textAlign: 'center',
+    },
+    subtitle: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      marginTop: spacing[2],
+      textAlign: 'center',
+      lineHeight: 22,
+    },
 
-  section: { marginBottom: spacing[6] },
-  label: {
-    ...typography.label,
-    color: darkAccent.text,
-    marginBottom: spacing[2],
-    fontWeight: '600',
-  },
+    section: { marginBottom: spacing[6] },
+    label: {
+      ...typography.label,
+      color: darkAccent.text,
+      marginBottom: spacing[2],
+      fontWeight: '600',
+    },
 
-  sliderContainer: { alignItems: 'center' },
-  sliderValue: {
-    fontSize: 48,
-    fontWeight: '700',
-    color: darkAccent.primary,
-    marginBottom: spacing[2],
-  },
-  slider: { width: '100%', height: 40 },
-  sliderLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: spacing[2],
-  },
-  sliderLabel: { ...typography.caption, color: darkAccent.textMuted },
+    sliderContainer: { alignItems: 'center' },
+    sliderValue: {
+      fontSize: 48,
+      fontWeight: '700',
+      color: darkAccent.primary,
+      marginBottom: spacing[2],
+    },
+    slider: { width: '100%', height: 40 },
+    sliderLabels: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: '100%',
+      marginTop: spacing[2],
+    },
+    sliderLabel: { ...typography.caption, color: darkAccent.textMuted },
 
-  input: {
-    backgroundColor: ds.semantic.surface.interactive,
-    borderRadius: radius.lg,
-    padding: spacing[3],
-    color: darkAccent.text,
-    ...typography.body,
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  journalInput: {
-    minHeight: 120,
-    textAlignVertical: 'top',
-  },
+    input: {
+      backgroundColor: ds.semantic.surface.interactive,
+      borderRadius: radius.lg,
+      padding: spacing[3],
+      color: darkAccent.text,
+      ...typography.body,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    journalInput: {
+      minHeight: 120,
+      textAlignVertical: 'top',
+    },
 
-  timerCircle: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    backgroundColor: ds.colors.warningMuted,
-    borderWidth: 4,
-    borderColor: darkAccent.warning,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing[4],
-  },
-  timerText: {
-    fontSize: 48,
-    fontWeight: '700',
-    color: darkAccent.warning,
-  },
+    timerCircle: {
+      width: 160,
+      height: 160,
+      borderRadius: 80,
+      backgroundColor: ds.colors.warningMuted,
+      borderWidth: 4,
+      borderColor: darkAccent.warning,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: spacing[4],
+    },
+    timerText: {
+      fontSize: 48,
+      fontWeight: '700',
+      color: darkAccent.warning,
+    },
 
-  tipsContainer: {
-    backgroundColor: ds.semantic.surface.card,
-    borderRadius: radius.lg,
-    padding: spacing[4],
-    marginBottom: spacing[4],
-  },
-  tipsTitle: {
-    ...typography.label,
-    color: darkAccent.text,
-    fontWeight: '600',
-    marginBottom: spacing[3],
-  },
-  tipItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing[3],
-    marginBottom: spacing[2],
-  },
-  tipText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    flex: 1,
-  },
+    tipsContainer: {
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: radius.lg,
+      padding: spacing[4],
+      marginBottom: spacing[4],
+    },
+    tipsTitle: {
+      ...typography.label,
+      color: darkAccent.text,
+      fontWeight: '600',
+      marginBottom: spacing[3],
+    },
+    tipItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: spacing[3],
+      marginBottom: spacing[2],
+    },
+    tipText: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      flex: 1,
+    },
 
-  skipButton: { alignItems: 'center', padding: spacing[3] },
-  skipText: { ...typography.body, color: darkAccent.textMuted, textDecorationLine: 'underline' },
+    skipButton: { alignItems: 'center', padding: spacing[3] },
+    skipText: { ...typography.body, color: darkAccent.textMuted, textDecorationLine: 'underline' },
 
-  emotionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
-  emotionChip: {
-    paddingHorizontal: spacing[3],
-    paddingVertical: spacing[2],
-    borderRadius: radius.full,
-    backgroundColor: ds.semantic.surface.interactive,
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-  },
-  emotionChipSelected: {
-    backgroundColor: darkAccent.primary,
-    borderColor: darkAccent.primary,
-  },
-  emotionChipText: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-    fontSize: 14,
-  },
-  emotionChipTextSelected: {
-    color: ds.semantic.text.onDark,
-    fontWeight: '600',
-  },
+    emotionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing[2] },
+    emotionChip: {
+      paddingHorizontal: spacing[3],
+      paddingVertical: spacing[2],
+      borderRadius: radius.full,
+      backgroundColor: ds.semantic.surface.interactive,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    emotionChipSelected: {
+      backgroundColor: darkAccent.primary,
+      borderColor: darkAccent.primary,
+    },
+    emotionChipText: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      fontSize: 14,
+    },
+    emotionChipTextSelected: {
+      color: ds.semantic.text.onDark,
+      fontWeight: '600',
+    },
 
-  sponsorCard: {
-    backgroundColor: ds.colors.successMuted,
-    borderRadius: radius.lg,
-    padding: spacing[4],
-    marginBottom: spacing[6],
-    borderWidth: 1,
-    borderColor: darkAccent.success,
-  },
-  sponsorName: { ...typography.h3, color: darkAccent.text, marginBottom: spacing[1] },
-  sponsorPhone: { ...typography.body, color: darkAccent.textMuted, marginBottom: spacing[4] },
+    sponsorCard: {
+      backgroundColor: ds.colors.successMuted,
+      borderRadius: radius.lg,
+      padding: spacing[4],
+      marginBottom: spacing[6],
+      borderWidth: 1,
+      borderColor: darkAccent.success,
+    },
+    sponsorName: { ...typography.h3, color: darkAccent.text, marginBottom: spacing[1] },
+    sponsorPhone: { ...typography.body, color: darkAccent.textMuted, marginBottom: spacing[4] },
 
-  contactButtons: { flexDirection: 'row', gap: spacing[3] },
-  contactButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing[2],
-    padding: spacing[3],
-    borderRadius: radius.lg,
-  },
-  callButton: { backgroundColor: darkAccent.success },
-  textButton: { backgroundColor: darkAccent.primary },
-  contactButtonText: { ...typography.body, color: ds.semantic.text.onDark, fontWeight: '600' },
+    contactButtons: { flexDirection: 'row', gap: spacing[3] },
+    contactButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing[2],
+      padding: spacing[3],
+      borderRadius: radius.lg,
+    },
+    callButton: { backgroundColor: darkAccent.success },
+    textButton: { backgroundColor: darkAccent.primary },
+    contactButtonText: { ...typography.body, color: ds.semantic.text.onDark, fontWeight: '600' },
 
-  noSponsorCard: {
-    backgroundColor: ds.semantic.surface.interactive,
-    borderRadius: radius.lg,
-    padding: spacing[4],
-    marginBottom: spacing[6],
-  },
-  noSponsorText: { ...typography.body, color: darkAccent.textMuted, textAlign: 'center' },
+    noSponsorCard: {
+      backgroundColor: ds.semantic.surface.interactive,
+      borderRadius: radius.lg,
+      padding: spacing[4],
+      marginBottom: spacing[6],
+    },
+    noSponsorText: { ...typography.body, color: darkAccent.textMuted, textAlign: 'center' },
 
-  outcomeButtons: { gap: spacing[3] },
-  usedButton: {
-    padding: spacing[3],
-    borderRadius: radius.lg,
-    backgroundColor: ds.semantic.surface.interactive,
-    borderWidth: 1,
-    borderColor: ds.colors.borderSubtle,
-    alignItems: 'center',
-  },
-  usedButtonText: { ...typography.body, color: darkAccent.textMuted },
-} as const);
+    outcomeButtons: { gap: spacing[3] },
+    usedButton: {
+      padding: spacing[3],
+      borderRadius: radius.lg,
+      backgroundColor: ds.semantic.surface.interactive,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+      alignItems: 'center',
+    },
+    usedButtonText: { ...typography.body, color: darkAccent.textMuted },
+
+    // Grounding stage styles
+    exerciseCard: {
+      marginTop: spacing[4],
+    },
+    safeNowSection: {
+      marginTop: spacing[4],
+      gap: spacing[3],
+    },
+    continueLink: {
+      alignItems: 'center',
+      padding: spacing[2],
+      minHeight: 48,
+      justifyContent: 'center',
+    },
+    continueLinkText: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+      textDecorationLine: 'underline',
+    },
+    talkButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: spacing[2],
+      padding: spacing[3],
+      borderRadius: radius.lg,
+      backgroundColor: ds.semantic.surface.interactive,
+      borderWidth: 1,
+      borderColor: darkAccent.primary,
+      minHeight: 48,
+    },
+    talkButtonText: {
+      ...typography.body,
+      color: darkAccent.primary,
+      fontWeight: '600',
+    },
+  }) as const;

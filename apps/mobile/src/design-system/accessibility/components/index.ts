@@ -40,5 +40,3 @@ export {
   type EmergencyTextProps,
   type EmergencyContainerProps,
 } from './EmergencyAccessibility';
-
-

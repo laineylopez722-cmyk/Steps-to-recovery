@@ -1,0 +1,37 @@
+
+> steps-to-recovery-monorepo@1.0.0 format:check
+> prettier --check .
+
+Checking formatting...
+[error] .claude/skills/react-flow-node-ts/assets/template.tsx: SyntaxError: Identifier expected. (3:10)
+[error]   1 | import { memo, useCallback } from 'react';
+[error]   2 | import { NodeProps, Node, Handle, Position, NodeResizer } from '@xyflow/react';
+[error] > 3 | import { {{NodeData}} } from '@/types';
+[error]     |          ^
+[error]   4 | import { useAppStore } from '@/store';
+[error]   5 | import { cn } from '@/utils/utils';
+[error]   6 |
+[error] .claude/skills/react-flow-node-ts/assets/types.template.ts: SyntaxError: Declaration or statement expected. (8:1)
+[error]    6 |  * Extends Record<string, unknown> for React Flow compatibility.
+[error]    7 |  */
+[error] >  8 | export interface {{NodeData}} extends Record<string, unknown> {
+[error]      | ^
+[error]    9 |   /** Display title for the node */
+[error]   10 |   title: string;
+[error]   11 |   
+[error] apps/mobile/.maestro/flows/journal.yaml: SyntaxError: All collection items must start at the same column (131:3)
+[error]   129 |
+[error]   130 | # Go back to list
+[error] > 131 | - tapOn: "Go back"
+[error]       |   ^^^^^^^^^^^^^^^^
+[error] > 132 |     optional: true
+[error]       | ^^^^^^^^^^^^^^^^^^
+[error] > 133 |
+[error]       | ^
+[error]   134 | # Wait for return to list
+[error]   135 | - extendedWaitUntil:
+[error]   136 |     visible: "Journal"
+[warn] apps/mobile/src/global.css
+[warn] apps/mobile/src/services/__tests__/backgroundSync.test.ts
+[warn] docs/_bmad/bmm/workflows/bmad-quick-flow/quick-spec/steps/step-04-review.md
+Error occurred when checking code style in 3 files.

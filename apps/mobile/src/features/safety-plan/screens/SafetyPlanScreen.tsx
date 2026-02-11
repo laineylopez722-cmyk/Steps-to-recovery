@@ -62,7 +62,9 @@ interface SafetyPlanScreenProps {
   userId: string;
 }
 
-export function SafetyPlanScreen({ userId: propUserId }: SafetyPlanScreenProps): React.ReactElement {
+export function SafetyPlanScreen({
+  userId: propUserId,
+}: SafetyPlanScreenProps): React.ReactElement {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { user } = useAuth();
@@ -165,15 +167,9 @@ export function SafetyPlanScreen({ userId: propUserId }: SafetyPlanScreenProps):
     filterNonEmptyContacts,
   ]);
 
-  const stepConfig = useMemo(
-    () => SAFETY_PLAN_STEPS[currentStep],
-    [currentStep],
-  );
+  const stepConfig = useMemo(() => SAFETY_PLAN_STEPS[currentStep], [currentStep]);
 
-  const progress = useMemo(
-    () => (currentStep + 1) / TOTAL_STEPS,
-    [currentStep],
-  );
+  const progress = useMemo(() => (currentStep + 1) / TOTAL_STEPS, [currentStep]);
 
   const currentItems = useMemo((): string[] => {
     switch (currentStep) {
@@ -190,7 +186,14 @@ export function SafetyPlanScreen({ userId: propUserId }: SafetyPlanScreenProps):
       default:
         return [];
     }
-  }, [currentStep, warningSigns, copingStrategies, distractionPeople, safeEnvironment, reasonsToLive]);
+  }, [
+    currentStep,
+    warningSigns,
+    copingStrategies,
+    distractionPeople,
+    safeEnvironment,
+    reasonsToLive,
+  ]);
 
   const currentContacts = useMemo((): SafetyContact[] | undefined => {
     switch (currentStep) {

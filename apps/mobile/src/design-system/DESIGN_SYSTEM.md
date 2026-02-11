@@ -11,30 +11,33 @@
 ## Foundation
 
 ### Grid System
+
 - **Base unit**: 4px
 - **Spacing scale**: 4, 8, 12, 16, 24, 32, 48, 64, 80
 - **Content margins**: 20px (mobile)
 - **Component gaps**: 12px (tight), 16px (default), 24px (loose)
 
 ### Typography Scale
+
 Based on 1.25 ratio (Major Third)
 
-| Name      | Size | Weight | Line Height | Use |
-|-----------|------|--------|-------------|-----|
-| display   | 40px | 600    | 48px        | Hero numbers |
-| h1        | 32px | 600    | 40px        | Screen titles |
-| h2        | 24px | 600    | 32px        | Section headers |
-| h3        | 20px | 600    | 28px        | Card titles |
-| body      | 17px | 400    | 26px        | Main content |
-| body-sm   | 15px | 400    | 22px        | Secondary content |
-| caption   | 13px | 500    | 18px        | Labels, metadata |
-| micro     | 11px | 600    | 14px        | Badges, tags |
+| Name    | Size | Weight | Line Height | Use               |
+| ------- | ---- | ------ | ----------- | ----------------- |
+| display | 40px | 600    | 48px        | Hero numbers      |
+| h1      | 32px | 600    | 40px        | Screen titles     |
+| h2      | 24px | 600    | 32px        | Section headers   |
+| h3      | 20px | 600    | 28px        | Card titles       |
+| body    | 17px | 400    | 26px        | Main content      |
+| body-sm | 15px | 400    | 22px        | Secondary content |
+| caption | 13px | 500    | 18px        | Labels, metadata  |
+| micro   | 11px | 600    | 14px        | Badges, tags      |
 
 **Font**: System default (SF Pro on iOS, Roboto on Android)
 
 ### Color Palette
 
 **Background layers** (dark mode):
+
 ```
 bg-primary:    #000000  — True black base
 bg-secondary:  #0C0C0E  — Elevated surfaces
@@ -43,6 +46,7 @@ bg-quaternary: #1C1C1E  — Hover states
 ```
 
 **Text hierarchy**:
+
 ```
 text-primary:   #FFFFFF           — Headlines, key content
 text-secondary: rgba(255,255,255,0.72)  — Body text
@@ -51,6 +55,7 @@ text-quaternary: rgba(255,255,255,0.32) — Disabled, placeholders
 ```
 
 **Accent colors** (muted, sophisticated):
+
 ```
 accent-warm:   #E8A855  — Primary actions, progress (warm gold)
 accent-calm:   #6B9EBF  — Information, links (muted blue)
@@ -59,6 +64,7 @@ accent-alert:  #C97B7B  — Warnings, cravings (dusty rose)
 ```
 
 **Semantic**:
+
 ```
 success: #7BA873
 warning: #D4A853
@@ -67,6 +73,7 @@ info:    #6B9EBF
 ```
 
 ### Borders & Dividers
+
 ```
 border-subtle:  rgba(255,255,255,0.06)  — Card edges
 border-default: rgba(255,255,255,0.10)  — Input borders
@@ -75,6 +82,7 @@ divider:        rgba(255,255,255,0.08)  — Section dividers
 ```
 
 ### Shadows (minimal, subtle)
+
 ```
 shadow-sm: 0 1px 2px rgba(0,0,0,0.3)    — Slight lift
 shadow-md: 0 4px 12px rgba(0,0,0,0.4)   — Cards
@@ -82,6 +90,7 @@ shadow-lg: 0 8px 24px rgba(0,0,0,0.5)   — Modals
 ```
 
 ### Border Radius
+
 ```
 radius-sm:   8px   — Small buttons, tags
 radius-md:   12px  — Inputs, small cards
@@ -97,6 +106,7 @@ radius-full: 9999px — Pills, avatars
 ### Buttons
 
 **Primary** (warm gold):
+
 - Height: 52px
 - Padding: 0 24px
 - Radius: 12px
@@ -104,18 +114,21 @@ radius-full: 9999px — Pills, avatars
 - Text: #000000, 17px, weight 600
 
 **Secondary** (outlined):
+
 - Same dimensions
 - Background: transparent
 - Border: 1.5px border-default
 - Text: text-primary
 
 **Tertiary** (text only):
+
 - No background
 - Text: accent-calm
 
 ### Inputs
 
 **Text Input**:
+
 - Min height: 52px
 - Padding: 16px
 - Background: bg-tertiary
@@ -124,6 +137,7 @@ radius-full: 9999px — Pills, avatars
 - Text: 17px
 
 **Large Text Area** (journaling):
+
 - No visible border
 - Background: transparent
 - Just text on bg-secondary
@@ -132,6 +146,7 @@ radius-full: 9999px — Pills, avatars
 ### Cards
 
 **Standard Card**:
+
 - Background: bg-tertiary
 - Border: 1px border-subtle
 - Radius: 16px
@@ -139,10 +154,12 @@ radius-full: 9999px — Pills, avatars
 - No shadow (flat design)
 
 **Interactive Card** (tappable):
+
 - Same as above
 - Active state: bg-quaternary
 
 **Elevated Card** (important):
+
 - Background: bg-tertiary
 - Shadow: shadow-md
 - Radius: 16px
@@ -150,6 +167,7 @@ radius-full: 9999px — Pills, avatars
 ### Lists
 
 **List Item**:
+
 - Height: 60px (single line) or auto
 - Padding: 16px 20px
 - Divider: 1px divider, inset 20px from left
@@ -159,12 +177,14 @@ radius-full: 9999px — Pills, avatars
 ### Progress Indicators
 
 **Linear Progress**:
+
 - Height: 4px
 - Background: bg-quaternary
 - Fill: accent-warm
 - Radius: 2px
 
 **Circular Progress**:
+
 - Stroke: 6px
 - Track: rgba(255,255,255,0.08)
 - Fill: accent-warm
@@ -173,6 +193,7 @@ radius-full: 9999px — Pills, avatars
 ### Badges
 
 **Status Badge**:
+
 - Height: 24px
 - Padding: 0 10px
 - Radius: 12px
@@ -184,6 +205,7 @@ radius-full: 9999px — Pills, avatars
 ## Screen Layouts
 
 ### Standard Screen
+
 ```
 SafeAreaView
 ├── Header (56px)
@@ -198,6 +220,7 @@ SafeAreaView
 ```
 
 ### Home Screen
+
 ```
 SafeAreaView
 ├── Header
@@ -214,6 +237,7 @@ SafeAreaView
 ```
 
 ### Journal/Input Screen
+
 ```
 SafeAreaView
 ├── Header
@@ -233,16 +257,19 @@ SafeAreaView
 ## Motion
 
 ### Timing
+
 - **Quick**: 150ms — Micro-interactions
 - **Standard**: 250ms — Transitions
 - **Slow**: 400ms — Page transitions
 
 ### Easing
+
 - **Default**: cubic-bezier(0.4, 0, 0.2, 1)
 - **Enter**: cubic-bezier(0, 0, 0.2, 1)
 - **Exit**: cubic-bezier(0.4, 0, 1, 1)
 
 ### Patterns
+
 - Cards: Fade in + slight Y translate (8px)
 - Modals: Fade + scale from 0.95
 - Lists: Staggered fade (50ms delay per item)

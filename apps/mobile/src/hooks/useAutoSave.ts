@@ -80,12 +80,11 @@ export function useAutoSave<T>(options: AutoSaveOptions<T>): AutoSaveState & Aut
     isEqual = (a, b) => a === b,
   } = options;
 
-  const [state, setState] = useState<AutoSaveState>({
+  const [state, setState] = useState<Omit<AutoSaveState, 'statusText'>>({
     isSaving: false,
     lastSaved: null,
     error: null,
     isDirty: false,
-    statusText: '',
   });
 
   const contentRef = useRef<T>(content);
@@ -109,31 +108,21 @@ export function useAutoSave<T>(options: AutoSaveOptions<T>): AutoSaveState & Aut
     });
   }, [content, isEqual]);
 
-  // Update status text
-  useEffect(() => {
-    let statusText = '';
-
-    if (state.isSaving) {
-      statusText = 'Saving...';
-    } else if (state.error) {
-      statusText = 'Save failed';
-    } else if (state.isDirty) {
-      statusText = 'Unsaved changes';
-    } else if (state.lastSaved) {
-      const timeStr = state.lastSaved.toLocaleTimeString([], {
-        hour: 'numeric',
-        minute: '2-digit',
-      });
-      statusText = `Saved at ${timeStr}`;
-    }
-
-    setState((prev) => {
-      if (prev.statusText !== statusText) {
-        return { ...prev, statusText };
-      }
-      return prev;
+  // Derive status text from state (no effect needed)
+  let statusText = '';
+  if (state.isSaving) {
+    statusText = 'Saving...';
+  } else if (state.error) {
+    statusText = 'Save failed';
+  } else if (state.isDirty) {
+    statusText = 'Unsaved changes';
+  } else if (state.lastSaved) {
+    const timeStr = state.lastSaved.toLocaleTimeString([], {
+      hour: 'numeric',
+      minute: '2-digit',
     });
-  }, [state.isSaving, state.error, state.isDirty, state.lastSaved]);
+    statusText = `Saved at ${timeStr}`;
+  }
 
   const performSave = useCallback(async (): Promise<void> => {
     // Don't save if nothing changed
@@ -224,18 +213,27 @@ export function useAutoSave<T>(options: AutoSaveOptions<T>): AutoSaveState & Aut
     };
   }, []);
 
+  // Track dirty/disabled in refs for unmount save
+  const isDirtyRef = useRef(state.isDirty);
+  isDirtyRef.current = state.isDirty;
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
+  const performSaveRef = useRef(performSave);
+  performSaveRef.current = performSave;
+
   // Save on unmount if dirty (best effort)
   useEffect(() => {
     return () => {
-      if (state.isDirty && !disabled) {
+      if (isDirtyRef.current && !disabledRef.current) {
         // Fire and forget - component is unmounting
-        void performSave();
+        void performSaveRef.current();
       }
     };
-  }, [state.isDirty, disabled, performSave]);
+  }, []);
 
   return {
     ...state,
+    statusText,
     saveNow,
     markSaved,
     clearError,

@@ -30,9 +30,10 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
         ? theme.colors.warning
         : theme.colors.textSecondary;
 
-  const accessibilityDescription = summary.totalSessions > 0
-    ? `Craving surf stats: ${summary.totalSessions} sessions, ${summary.averageReduction.toFixed(1)} average reduction, ${summary.successRate}% success rate`
-    : 'No craving surf sessions recorded yet';
+  const accessibilityDescription =
+    summary.totalSessions > 0
+      ? `Craving surf stats: ${summary.totalSessions} sessions, ${summary.averageReduction.toFixed(1)} average reduction, ${summary.successRate}% success rate`
+      : 'No craving surf sessions recorded yet';
 
   return (
     <GlassCard
@@ -44,11 +45,7 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.titleRow}>
-          <MaterialCommunityIcons
-            name="waves"
-            size={20}
-            color={aestheticColors.primary[500]}
-          />
+          <MaterialCommunityIcons name="waves" size={20} color={aestheticColors.primary[500]} />
           <Text style={[styles.title, { color: theme.colors.text }]}>Craving Surf Sessions</Text>
         </View>
       </View>
@@ -58,8 +55,14 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
           {/* Stats Grid */}
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
-              <View style={[styles.statIcon, { backgroundColor: aestheticColors.primary[500] + '15' }]}>
-                <MaterialCommunityIcons name="counter" size={18} color={aestheticColors.primary[500]} />
+              <View
+                style={[styles.statIcon, { backgroundColor: aestheticColors.primary[500] + '15' }]}
+              >
+                <MaterialCommunityIcons
+                  name="counter"
+                  size={18}
+                  color={aestheticColors.primary[500]}
+                />
               </View>
               <Text
                 style={[styles.statValue, { color: theme.colors.text }]}
@@ -80,7 +83,8 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
                 style={[styles.statValue, { color: theme.colors.text }]}
                 accessibilityLabel={`Average reduction of ${summary.averageReduction.toFixed(1)} points`}
               >
-                {summary.averageReduction > 0 ? '-' : ''}{summary.averageReduction.toFixed(1)}
+                {summary.averageReduction > 0 ? '-' : ''}
+                {summary.averageReduction.toFixed(1)}
               </Text>
               <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
                 Avg Reduction
@@ -89,7 +93,11 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
 
             <View style={styles.statItem}>
               <View style={[styles.statIcon, { backgroundColor: successColor + '15' }]}>
-                <MaterialCommunityIcons name="check-circle-outline" size={18} color={successColor} />
+                <MaterialCommunityIcons
+                  name="check-circle-outline"
+                  size={18}
+                  color={successColor}
+                />
               </View>
               <Text
                 style={[styles.statValue, { color: theme.colors.text }]}
@@ -106,11 +114,7 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
           {/* Most Effective Technique */}
           {summary.mostEffectiveTechnique && (
             <View style={[styles.techniqueRow]}>
-              <MaterialCommunityIcons
-                name="star"
-                size={16}
-                color={aestheticColors.gold.DEFAULT}
-              />
+              <MaterialCommunityIcons name="star" size={16} color={aestheticColors.gold.DEFAULT} />
               <Text style={[styles.techniqueLabel, { color: theme.colors.textSecondary }]}>
                 Most Effective:
               </Text>

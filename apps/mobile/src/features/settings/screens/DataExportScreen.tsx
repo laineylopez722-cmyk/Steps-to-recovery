@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -15,112 +15,19 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { useDs } from '../../../design-system/DsProvider';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
+import {
+  exportAllUserData,
+  exportAsCSV,
+  deleteAllUserData,
+} from '../../../services/dataExportService';
+import type { ExportableTable } from '../../../services/dataExportService';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
 // Type workaround for expo-file-system directory constants
 const FileSystem = ExpoFileSystem as typeof ExpoFileSystem & {
   cacheDirectory: string | null;
-};
-
-interface JournalEntryRow {
-  id: string;
-  encrypted_title: string | null;
-  encrypted_body: string;
-  encrypted_mood: string | null;
-  encrypted_craving: string | null;
-  encrypted_tags: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface DailyCheckinRow {
-  id: string;
-  check_in_type: string;
-  check_in_date: string;
-  encrypted_intention: string | null;
-  encrypted_reflection: string | null;
-  encrypted_mood: string | null;
-  encrypted_craving: string | null;
-  encrypted_gratitude: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface FavoriteMeetingRow {
-  id: string;
-  meeting_id: string | null;
-  encrypted_notes: string | null;
-  notification_enabled: number;
-  created_at: string;
-}
-
-interface StepWorkRow {
-  id: string;
-  step_number: number;
-  question_number: number;
-  encrypted_answer: string;
-  is_complete: number;
-  completed_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-interface UserProfileRow {
-  id: string;
-  encrypted_email: string | null;
-  sobriety_start_date: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-const safeDecrypt = async (encrypted: string): Promise<string> => {
-  try {
-    return await decryptContent(encrypted);
-  } catch {
-    return '[decryption failed]';
-  }
-};
-
-const csvEscape = (value: string): string => {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`;
-  }
-  return value;
-};
-
-const convertToCSV = (data: Record<string, unknown>): string => {
-  const sections: string[] = [];
-
-  for (const [key, value] of Object.entries(data)) {
-    if (!Array.isArray(value)) {
-      if (value && typeof value === 'object') {
-        const obj = value as Record<string, unknown>;
-        const headers = Object.keys(obj);
-        sections.push(`--- ${key} ---`);
-        sections.push(headers.join(','));
-        sections.push(headers.map((h) => csvEscape(String(obj[h] ?? ''))).join(','));
-      }
-      continue;
-    }
-
-    if (value.length === 0) continue;
-
-    const headers = Object.keys(value[0] as Record<string, unknown>);
-    sections.push(`--- ${key} ---`);
-    sections.push(headers.join(','));
-
-    for (const row of value) {
-      const rowObj = row as Record<string, unknown>;
-      sections.push(headers.map((h) => csvEscape(String(rowObj[h] ?? ''))).join(','));
-    }
-
-    sections.push('');
-  }
-
-  return sections.join('\n');
 };
 
 const EXPORT_FORMATS = [
@@ -130,37 +37,39 @@ const EXPORT_FORMATS = [
 ];
 
 const DATA_TYPES = [
-  { id: 'journal', label: 'Journal Entries' },
-  { id: 'checkins', label: 'Daily Check-ins' },
-  { id: 'meetings', label: 'Meeting History' },
-  { id: 'steps', label: 'Step Work' },
-  { id: 'profile', label: 'Profile Data' },
+  { id: 'journal', label: 'Journal Entries', table: 'journal_entries' as ExportableTable },
+  { id: 'checkins', label: 'Daily Check-ins', table: 'daily_checkins' as ExportableTable },
+  { id: 'meetings', label: 'Meeting History', table: undefined },
+  { id: 'steps', label: 'Step Work', table: 'step_work' as ExportableTable },
+  { id: 'profile', label: 'Profile Data', table: undefined },
+  { id: 'safety_plans', label: 'Safety Plans', table: 'safety_plans' as ExportableTable },
+  { id: 'gratitude', label: 'Gratitude Entries', table: 'gratitude_entries' as ExportableTable },
+  { id: 'inventory', label: 'Personal Inventory', table: 'personal_inventory' as ExportableTable },
+  { id: 'cravings', label: 'Craving Surf Sessions', table: 'craving_surf_sessions' as ExportableTable },
+  { id: 'sponsor', label: 'Sponsor Connections', table: 'sponsor_connections' as ExportableTable },
 ];
 
 export function DataExportScreen(): React.ReactElement {
   const [selectedFormat, setSelectedFormat] = useState('json');
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([
-    'journal',
-    'checkins',
-    'meetings',
-    'steps',
-    'profile',
-  ]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(
+    DATA_TYPES.map((t) => t.id),
+  );
   const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [dataCounts, setDataCounts] = useState<Record<string, number>>({});
   const { showToast } = useToast();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { db, isReady } = useDatabase();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     if (!db || !isReady || !user) return;
 
     const loadCounts = async (): Promise<void> => {
       try {
-        const [journal, checkins, meetings, steps] = await Promise.all([
+        const [journal, checkins, meetings, steps, safetyPlans, gratitude, inventory, cravings, sponsor] = await Promise.all([
           db.getFirstAsync<{ count: number }>(
             'SELECT COUNT(*) as count FROM journal_entries WHERE user_id = ?',
             [user.id],
@@ -177,6 +86,26 @@ export function DataExportScreen(): React.ReactElement {
             'SELECT COUNT(*) as count FROM step_work WHERE user_id = ?',
             [user.id],
           ),
+          db.getFirstAsync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM safety_plans WHERE user_id = ?',
+            [user.id],
+          ),
+          db.getFirstAsync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM gratitude_entries WHERE user_id = ?',
+            [user.id],
+          ),
+          db.getFirstAsync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM personal_inventory WHERE user_id = ?',
+            [user.id],
+          ),
+          db.getFirstAsync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM craving_surf_sessions WHERE user_id = ?',
+            [user.id],
+          ),
+          db.getFirstAsync<{ count: number }>(
+            'SELECT COUNT(*) as count FROM sponsor_connections WHERE user_id = ?',
+            [user.id],
+          ),
         ]);
 
         setDataCounts({
@@ -184,6 +113,11 @@ export function DataExportScreen(): React.ReactElement {
           checkins: checkins?.count ?? 0,
           meetings: meetings?.count ?? 0,
           steps: steps?.count ?? 0,
+          safety_plans: safetyPlans?.count ?? 0,
+          gratitude: gratitude?.count ?? 0,
+          inventory: inventory?.count ?? 0,
+          cravings: cravings?.count ?? 0,
+          sponsor: sponsor?.count ?? 0,
         });
       } catch (error) {
         logger.error('Failed to load data counts', error);
@@ -217,119 +151,9 @@ export function DataExportScreen(): React.ReactElement {
     setProgress(0);
 
     try {
-      const exportData: Record<string, unknown> = {};
-      const totalSteps = selectedTypes.length;
-
-      for (let i = 0; i < selectedTypes.length; i++) {
-        const dataType = selectedTypes[i];
-        setProgress(Math.round((i / totalSteps) * 80));
-
-        switch (dataType) {
-          case 'journal': {
-            const rows = await db.getAllAsync<JournalEntryRow>(
-              'SELECT * FROM journal_entries WHERE user_id = ?',
-              [user.id],
-            );
-            exportData.journal = await Promise.all(
-              rows.map(async (row) => ({
-                id: row.id,
-                title: row.encrypted_title ? await safeDecrypt(row.encrypted_title) : null,
-                body: await safeDecrypt(row.encrypted_body),
-                mood: row.encrypted_mood ? await safeDecrypt(row.encrypted_mood) : null,
-                craving: row.encrypted_craving ? await safeDecrypt(row.encrypted_craving) : null,
-                tags: row.encrypted_tags ? await safeDecrypt(row.encrypted_tags) : null,
-                created_at: row.created_at,
-                updated_at: row.updated_at,
-              })),
-            );
-            break;
-          }
-          case 'checkins': {
-            const rows = await db.getAllAsync<DailyCheckinRow>(
-              'SELECT * FROM daily_checkins WHERE user_id = ?',
-              [user.id],
-            );
-            exportData.checkins = await Promise.all(
-              rows.map(async (row) => ({
-                id: row.id,
-                check_in_type: row.check_in_type,
-                check_in_date: row.check_in_date,
-                intention: row.encrypted_intention
-                  ? await safeDecrypt(row.encrypted_intention)
-                  : null,
-                reflection: row.encrypted_reflection
-                  ? await safeDecrypt(row.encrypted_reflection)
-                  : null,
-                mood: row.encrypted_mood ? await safeDecrypt(row.encrypted_mood) : null,
-                craving: row.encrypted_craving ? await safeDecrypt(row.encrypted_craving) : null,
-                gratitude: row.encrypted_gratitude
-                  ? await safeDecrypt(row.encrypted_gratitude)
-                  : null,
-                created_at: row.created_at,
-                updated_at: row.updated_at,
-              })),
-            );
-            break;
-          }
-          case 'meetings': {
-            const rows = await db.getAllAsync<FavoriteMeetingRow>(
-              'SELECT * FROM favorite_meetings WHERE user_id = ?',
-              [user.id],
-            );
-            exportData.meetings = await Promise.all(
-              rows.map(async (row) => ({
-                id: row.id,
-                meeting_id: row.meeting_id,
-                notes: row.encrypted_notes ? await safeDecrypt(row.encrypted_notes) : null,
-                notification_enabled: Boolean(row.notification_enabled),
-                created_at: row.created_at,
-              })),
-            );
-            break;
-          }
-          case 'steps': {
-            const rows = await db.getAllAsync<StepWorkRow>(
-              'SELECT * FROM step_work WHERE user_id = ?',
-              [user.id],
-            );
-            exportData.steps = await Promise.all(
-              rows.map(async (row) => ({
-                id: row.id,
-                step_number: row.step_number,
-                question_number: row.question_number,
-                answer: await safeDecrypt(row.encrypted_answer),
-                is_complete: Boolean(row.is_complete),
-                completed_at: row.completed_at,
-                created_at: row.created_at,
-                updated_at: row.updated_at,
-              })),
-            );
-            break;
-          }
-          case 'profile': {
-            const row = await db.getFirstAsync<UserProfileRow>(
-              'SELECT * FROM user_profile WHERE id = ?',
-              [user.id],
-            );
-            if (row) {
-              exportData.profile = {
-                id: row.id,
-                email: row.encrypted_email ? await safeDecrypt(row.encrypted_email) : null,
-                sobriety_start_date: row.sobriety_start_date,
-                created_at: row.created_at,
-                updated_at: row.updated_at,
-              };
-            }
-            break;
-          }
-        }
-      }
-
-      setProgress(90);
+      setProgress(10);
 
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const extension = selectedFormat === 'csv' ? 'csv' : 'json';
-      const fileName = `recovery-export-${timestamp}.${extension}`;
       const cacheDir = FileSystem.cacheDirectory;
 
       if (!cacheDir) {
@@ -338,18 +162,44 @@ export function DataExportScreen(): React.ReactElement {
         return;
       }
 
-      const filePath = `${cacheDir}${fileName}`;
-      let mimeType: string;
       let fileContent: string;
+      let mimeType: string;
+      let extension: string;
 
       if (selectedFormat === 'csv') {
-        fileContent = convertToCSV(exportData);
+        // For CSV, export all selected tables concatenated
+        const sections: string[] = [];
+        const totalSteps = selectedTypes.length;
+
+        for (let i = 0; i < selectedTypes.length; i++) {
+          const dataType = selectedTypes[i];
+          setProgress(Math.round(10 + (i / totalSteps) * 70));
+
+          const tableConfig = DATA_TYPES.find((t) => t.id === dataType);
+          if (tableConfig?.table) {
+            const csv = await exportAsCSV(db, user.id, tableConfig.table);
+            if (csv) {
+              sections.push(`--- ${tableConfig.label} ---`);
+              sections.push(csv);
+              sections.push('');
+            }
+          }
+        }
+
+        fileContent = sections.join('\n');
         mimeType = 'text/csv';
+        extension = 'csv';
       } else {
-        fileContent = JSON.stringify(exportData, null, 2);
+        setProgress(30);
+        fileContent = await exportAllUserData(db, user.id);
         mimeType = 'application/json';
+        extension = 'json';
       }
 
+      setProgress(90);
+
+      const fileName = `recovery-export-${timestamp}.${extension}`;
+      const filePath = `${cacheDir}${fileName}`;
       await ExpoFileSystem.writeAsStringAsync(filePath, fileContent);
       setProgress(100);
 
@@ -369,6 +219,109 @@ export function DataExportScreen(): React.ReactElement {
       logger.error('Data export failed', error);
       setIsExporting(false);
       showToast('Export failed. Please try again.', 'error');
+    }
+  };
+
+  const handleExportCategory = async (tableName: ExportableTable, label: string): Promise<void> => {
+    if (!db || !user) {
+      showToast('Database not ready. Please try again.', 'error');
+      return;
+    }
+
+    setIsExporting(true);
+    setProgress(0);
+
+    try {
+      setProgress(20);
+      const csv = await exportAsCSV(db, user.id, tableName);
+      setProgress(80);
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const cacheDir = FileSystem.cacheDirectory;
+
+      if (!cacheDir) {
+        showToast('File system not available on this platform.', 'error');
+        setIsExporting(false);
+        return;
+      }
+
+      const fileName = `recovery-${tableName}-${timestamp}.csv`;
+      const filePath = `${cacheDir}${fileName}`;
+      await ExpoFileSystem.writeAsStringAsync(filePath, csv);
+      setProgress(100);
+
+      const sharingAvailable = await Sharing.isAvailableAsync();
+      if (sharingAvailable) {
+        await Sharing.shareAsync(filePath, {
+          mimeType: 'text/csv',
+          dialogTitle: `Export ${label}`,
+        });
+      } else {
+        showToast('Sharing is not available on this device.', 'error');
+      }
+
+      setIsExporting(false);
+      showToast(`${label} exported successfully!`, 'success');
+    } catch (error) {
+      logger.error('Category export failed', { error, tableName });
+      setIsExporting(false);
+      showToast('Export failed. Please try again.', 'error');
+    }
+  };
+
+  const handleDeleteAccount = (): void => {
+    Alert.alert(
+      'Delete My Account',
+      'This will permanently delete ALL your data from this device and the cloud. This action cannot be undone.\n\nAre you sure you want to continue?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete Everything',
+          style: 'destructive',
+          onPress: () => confirmDeleteAccount(),
+        },
+      ],
+    );
+  };
+
+  const confirmDeleteAccount = (): void => {
+    Alert.alert(
+      'Final Confirmation',
+      'This is your last chance. All journal entries, check-ins, step work, and recovery data will be permanently erased.',
+      [
+        { text: 'Keep My Data', style: 'cancel' },
+        {
+          text: 'Yes, Delete Everything',
+          style: 'destructive',
+          onPress: () => void performDeletion(),
+        },
+      ],
+    );
+  };
+
+  const performDeletion = async (): Promise<void> => {
+    if (!db || !user) {
+      showToast('Database not ready. Please try again.', 'error');
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const result = await deleteAllUserData(db, user.id);
+
+      if (result.success) {
+        showToast('Account deleted successfully.', 'success');
+      } else {
+        showToast('Account deleted with some errors. Cloud data may need manual cleanup.', 'info');
+      }
+
+      // Sign out after deletion
+      await signOut();
+    } catch (error) {
+      logger.error('Account deletion failed', error);
+      showToast('Deletion failed. Please try again or contact support.', 'error');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -486,133 +439,212 @@ export function DataExportScreen(): React.ReactElement {
               />
             )}
           </Animated.View>
+
+          {/* Export by Category */}
+          <Animated.View entering={FadeInUp.delay(500)}>
+            <Text style={styles.sectionTitle}>Export by Category</Text>
+            <GlassCard intensity="light">
+              {DATA_TYPES.filter((t) => t.table != null).map((type, index, filtered) => (
+                <View key={type.id}>
+                  <Pressable
+                    style={styles.categoryRow}
+                    onPress={() => handleExportCategory(type.table!, type.label)}
+                    disabled={isExporting}
+                    accessibilityLabel={`Export ${type.label} as CSV`}
+                    accessibilityRole="button"
+                    accessibilityHint={`Exports your ${type.label.toLowerCase()} as a CSV file`}
+                  >
+                    <View style={styles.dataTypeInfo}>
+                      <Text style={styles.dataTypeLabel}>{type.label}</Text>
+                      {dataCounts[type.id] != null && (
+                        <Text style={styles.dataTypeCount}>{dataCounts[type.id]} items</Text>
+                      )}
+                    </View>
+                    <MaterialIcons name="file-download" size={22} color={darkAccent.primary} />
+                  </Pressable>
+                  {index < filtered.length - 1 && <View style={styles.divider} />}
+                </View>
+              ))}
+            </GlassCard>
+          </Animated.View>
+
+          {/* Delete Account Section */}
+          <Animated.View entering={FadeInUp.delay(600)}>
+            <Text style={styles.sectionTitle}>Danger Zone</Text>
+            <GlassCard intensity="light" style={styles.dangerCard}>
+              <View style={styles.dangerContent}>
+                <MaterialIcons name="warning" size={24} color={darkAccent.error} />
+                <Text style={styles.dangerTitle}>Delete My Account</Text>
+                <Text style={styles.dangerText}>
+                  Permanently delete all your data from this device and the cloud. This action
+                  cannot be undone. We recommend exporting your data first.
+                </Text>
+                <GradientButton
+                  title={isDeleting ? 'Deleting...' : 'Delete My Account'}
+                  variant="danger"
+                  size="lg"
+                  fullWidth
+                  disabled={isDeleting}
+                  icon={<MaterialIcons name="delete-forever" size={20} color="#FFFFFF" />}
+                  onPress={handleDeleteAccount}
+                  accessibilityLabel="Delete my account and all data permanently"
+                  accessibilityRole="button"
+                  accessibilityHint="Opens a confirmation dialog before deleting all your data"
+                />
+              </View>
+            </GlassCard>
+          </Animated.View>
         </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
 
-import { Pressable } from 'react-native';
-
-const createStyles = (ds: DS) => ({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: spacing[3],
-    gap: spacing[4],
-  },
-  title: {
-    ...typography.h1,
-    color: darkAccent.text,
-    marginBottom: spacing[1],
-  },
-  subtitle: {
-    ...typography.body,
-    color: darkAccent.textMuted,
-  },
-  sectionTitle: {
-    ...typography.h4,
-    color: darkAccent.text,
-    marginBottom: spacing[2],
-  },
-  formatGrid: {
-    flexDirection: 'row',
-    gap: spacing[2],
-  },
-  formatCard: {
-    flex: 1,
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.lg,
-    padding: spacing[3],
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  formatCardSelected: {
-    borderColor: darkAccent.primary,
-    backgroundColor: ds.colors.accentMuted,
-  },
-  formatLabel: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '600',
-    marginTop: spacing[1],
-  },
-  formatLabelSelected: {
-    color: darkAccent.primary,
-  },
-  formatDesc: {
-    ...typography.caption,
-    color: darkAccent.textSubtle,
-    textAlign: 'center',
-    marginTop: 2,
-  },
-  dataTypeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: spacing[2],
-  },
-  dataTypeInfo: {
-    flex: 1,
-  },
-  dataTypeLabel: {
-    ...typography.body,
-    color: darkAccent.text,
-    fontWeight: '500',
-  },
-  dataTypeCount: {
-    ...typography.caption,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: darkAccent.border,
-  },
-  privacyNotice: {
-    flexDirection: 'row',
-    gap: spacing[2],
-    backgroundColor: ds.colors.infoMuted,
-    padding: spacing[3],
-    borderRadius: radius.lg,
-  },
-  privacyText: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
-    flex: 1,
-  },
-  progressCard: {
-    padding: spacing[4],
-    alignItems: 'center',
-  },
-  progressTitle: {
-    ...typography.body,
-    color: darkAccent.text,
-    marginBottom: spacing[3],
-  },
-  progressBar: {
-    width: '100%',
-    height: 8,
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.full,
-    overflow: 'hidden',
-    marginBottom: spacing[2],
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: darkAccent.primary,
-    borderRadius: radius.full,
-  },
-  progressPercent: {
-    ...typography.h4,
-    color: darkAccent.primary,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    content: {
+      padding: spacing[3],
+      gap: spacing[4],
+    },
+    title: {
+      ...typography.h1,
+      color: darkAccent.text,
+      marginBottom: spacing[1],
+    },
+    subtitle: {
+      ...typography.body,
+      color: darkAccent.textMuted,
+    },
+    sectionTitle: {
+      ...typography.h4,
+      color: darkAccent.text,
+      marginBottom: spacing[2],
+    },
+    formatGrid: {
+      flexDirection: 'row',
+      gap: spacing[2],
+    },
+    formatCard: {
+      flex: 1,
+      backgroundColor: darkAccent.surfaceHigh,
+      borderRadius: radius.lg,
+      padding: spacing[3],
+      alignItems: 'center',
+      borderWidth: 2,
+      borderColor: 'transparent',
+    },
+    formatCardSelected: {
+      borderColor: darkAccent.primary,
+      backgroundColor: ds.colors.accentMuted,
+    },
+    formatLabel: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '600',
+      marginTop: spacing[1],
+    },
+    formatLabelSelected: {
+      color: darkAccent.primary,
+    },
+    formatDesc: {
+      ...typography.caption,
+      color: darkAccent.textSubtle,
+      textAlign: 'center',
+      marginTop: 2,
+    },
+    dataTypeRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: spacing[2],
+    },
+    dataTypeInfo: {
+      flex: 1,
+    },
+    dataTypeLabel: {
+      ...typography.body,
+      color: darkAccent.text,
+      fontWeight: '500',
+    },
+    dataTypeCount: {
+      ...typography.caption,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: darkAccent.border,
+    },
+    privacyNotice: {
+      flexDirection: 'row',
+      gap: spacing[2],
+      backgroundColor: ds.colors.infoMuted,
+      padding: spacing[3],
+      borderRadius: radius.lg,
+    },
+    privacyText: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+      flex: 1,
+    },
+    progressCard: {
+      padding: spacing[4],
+      alignItems: 'center',
+    },
+    progressTitle: {
+      ...typography.body,
+      color: darkAccent.text,
+      marginBottom: spacing[3],
+    },
+    progressBar: {
+      width: '100%',
+      height: 8,
+      backgroundColor: darkAccent.surfaceHigh,
+      borderRadius: radius.full,
+      overflow: 'hidden',
+      marginBottom: spacing[2],
+    },
+    progressFill: {
+      height: '100%',
+      backgroundColor: darkAccent.primary,
+      borderRadius: radius.full,
+    },
+    progressPercent: {
+      ...typography.h4,
+      color: darkAccent.primary,
+    },
+    categoryRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: spacing[2],
+      paddingHorizontal: spacing[1],
+    },
+    dangerCard: {
+      borderWidth: 1,
+      borderColor: darkAccent.error,
+    },
+    dangerContent: {
+      alignItems: 'center',
+      gap: spacing[2],
+      padding: spacing[2],
+    },
+    dangerTitle: {
+      ...typography.h4,
+      color: darkAccent.error,
+    },
+    dangerText: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+      textAlign: 'center',
+    },
+  }) as const;

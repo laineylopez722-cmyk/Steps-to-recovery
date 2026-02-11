@@ -235,142 +235,143 @@ export function CleanTimeTracker(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  card: {
-    margin: 16,
-    marginTop: 8,
-    padding: 20,
-  },
-  loadingContainer: {
-    padding: 40,
-    alignItems: 'center' as const,
-  },
-  header: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-between' as const,
-    alignItems: 'center' as const,
-    marginBottom: 20,
-  },
-  headerLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    gap: 8,
-  },
-  iconText: {
-    fontSize: 20,
-  },
-  title: {
-    fontWeight: '700' as const,
-    fontSize: 18,
-  },
-  circularContainer: {
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-    marginVertical: 16,
-  },
-  centerContent: {
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-  },
-  daysNumber: {
-    fontSize: 56,
-    fontWeight: '700' as const,
-    lineHeight: 64,
-  },
-  daysLabel: {
-    fontSize: 12,
-    fontWeight: '600' as const,
-    letterSpacing: 1,
-    marginTop: 4,
-  },
-  motivationalText: {
-    textAlign: 'center' as const,
-    fontSize: 14,
-    fontStyle: 'italic' as const,
-    marginTop: 12,
-    marginBottom: 20,
-  },
-  statsRow: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-around' as const,
-    alignItems: 'center' as const,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
-  },
-  statItem: {
-    flex: 1,
-    alignItems: 'center' as const,
-  },
-  statIcon: {
-    marginBottom: 8,
-  },
-  statNumber: {
-    fontSize: 24,
-    fontWeight: '700' as const,
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 10,
-    fontWeight: '600' as const,
-    letterSpacing: 0.5,
-  },
-  statDivider: {
-    width: 1,
-    height: 48,
-  },
-  milestoneContainer: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-  milestoneHeader: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    justifyContent: 'space-between' as const,
-    marginBottom: 12,
-  },
-  milestoneLeft: {
-    flexDirection: 'row' as const,
-    alignItems: 'center' as const,
-    flex: 1,
-  },
-  milestoneEmoji: {
-    fontSize: 28,
-    marginRight: 12,
-  },
-  milestoneTextContainer: {
-    flex: 1,
-  },
-  milestoneTitle: {
-    fontSize: 14,
-    fontWeight: '600' as const,
-    marginBottom: 2,
-  },
-  milestoneSubtitle: {
-    fontSize: 12,
-  },
-  progressBar: {
-    height: 8,
-    borderRadius: 4,
-  },
-  timeBreakdown: {
-    flexDirection: 'row' as const,
-    justifyContent: 'space-around' as const,
-    marginTop: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
-  },
-  timeItem: {
-    alignItems: 'center' as const,
-  },
-  timeNumber: {
-    fontSize: 20,
-    fontWeight: '600' as const,
-    marginBottom: 4,
-  },
-  timeLabel: {
-    fontSize: 11,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    card: {
+      margin: 16,
+      marginTop: 8,
+      padding: 20,
+    },
+    loadingContainer: {
+      padding: 40,
+      alignItems: 'center' as const,
+    },
+    header: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      alignItems: 'center' as const,
+      marginBottom: 20,
+    },
+    headerLeft: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: 8,
+    },
+    iconText: {
+      fontSize: 20,
+    },
+    title: {
+      fontWeight: '700' as const,
+      fontSize: 18,
+    },
+    circularContainer: {
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      marginVertical: 16,
+    },
+    centerContent: {
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+    },
+    daysNumber: {
+      fontSize: 56,
+      fontWeight: '700' as const,
+      lineHeight: 64,
+    },
+    daysLabel: {
+      fontSize: 12,
+      fontWeight: '600' as const,
+      letterSpacing: 1,
+      marginTop: 4,
+    },
+    motivationalText: {
+      textAlign: 'center' as const,
+      fontSize: 14,
+      fontStyle: 'italic' as const,
+      marginTop: 12,
+      marginBottom: 20,
+    },
+    statsRow: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-around' as const,
+      alignItems: 'center' as const,
+      paddingVertical: 16,
+      paddingHorizontal: 8,
+    },
+    statItem: {
+      flex: 1,
+      alignItems: 'center' as const,
+    },
+    statIcon: {
+      marginBottom: 8,
+    },
+    statNumber: {
+      fontSize: 24,
+      fontWeight: '700' as const,
+      marginBottom: 4,
+    },
+    statLabel: {
+      fontSize: 10,
+      fontWeight: '600' as const,
+      letterSpacing: 0.5,
+    },
+    statDivider: {
+      width: 1,
+      height: 48,
+    },
+    milestoneContainer: {
+      marginTop: 16,
+      paddingTop: 16,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+    },
+    milestoneHeader: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'space-between' as const,
+      marginBottom: 12,
+    },
+    milestoneLeft: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      flex: 1,
+    },
+    milestoneEmoji: {
+      fontSize: 28,
+      marginRight: 12,
+    },
+    milestoneTextContainer: {
+      flex: 1,
+    },
+    milestoneTitle: {
+      fontSize: 14,
+      fontWeight: '600' as const,
+      marginBottom: 2,
+    },
+    milestoneSubtitle: {
+      fontSize: 12,
+    },
+    progressBar: {
+      height: 8,
+      borderRadius: 4,
+    },
+    timeBreakdown: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-around' as const,
+      marginTop: 20,
+      paddingTop: 16,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+    },
+    timeItem: {
+      alignItems: 'center' as const,
+    },
+    timeNumber: {
+      fontSize: 20,
+      fontWeight: '600' as const,
+      marginBottom: 4,
+    },
+    timeLabel: {
+      fontSize: 11,
+    },
+  }) as const;

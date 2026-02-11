@@ -10,7 +10,8 @@ Implement user onboarding flows, including Sign Up/Sign In screens and initial u
 - `apps/mobile/src/features/auth/screens/SignUpScreen.tsx`
 - `apps/mobile/src/features/auth/screens/OnboardingScreen.tsx`
 - `apps/mobile/src/features/auth/components/AuthForm.tsx`
-- `apps/mobile/src/utils/auth.ts` - Auth helper functions
+- `apps/mobile/src/features/onboarding/OnboardingFlow.tsx` - Onboarding flow
+- `apps/mobile/src/features/auth/screens/` - Auth screens (Login, SignUp, ForgotPassword)
 
 ## Requirements
 

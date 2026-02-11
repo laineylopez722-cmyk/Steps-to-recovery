@@ -14,12 +14,12 @@ This migration adds end-to-end encryption to the AI companion's memory store. Pr
 
 **Table**: `memories`
 
-| Column Name | Before | After | Change |
-|------------|--------|-------|--------|
-| `content` | `TEXT NOT NULL` | _(removed)_ | Replaced with `encrypted_content` |
-| `context` | `TEXT` | _(removed)_ | Replaced with `encrypted_context` |
-| _(new)_ | - | `encrypted_content TEXT NOT NULL` | Stores encrypted memory content |
-| _(new)_ | - | `encrypted_context TEXT` | Stores encrypted memory context (optional) |
+| Column Name | Before          | After                             | Change                                     |
+| ----------- | --------------- | --------------------------------- | ------------------------------------------ |
+| `content`   | `TEXT NOT NULL` | _(removed)_                       | Replaced with `encrypted_content`          |
+| `context`   | `TEXT`          | _(removed)_                       | Replaced with `encrypted_context`          |
+| _(new)_     | -               | `encrypted_content TEXT NOT NULL` | Stores encrypted memory content            |
+| _(new)_     | -               | `encrypted_context TEXT`          | Stores encrypted memory context (optional) |
 
 ### Code Changes
 
@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS memories (
 #### 3. Updated `addMemories` Function
 
 **Before** (plaintext storage):
+
 ```typescript
 await db.runAsync(
   'INSERT INTO memories (..., content, context, ...) VALUES (...)',
@@ -60,6 +61,7 @@ await db.runAsync(
 ```
 
 **After** (encrypted storage):
+
 ```typescript
 const encryptedContent = await encryptContent(memory.content);
 const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
@@ -73,6 +75,7 @@ await db.runAsync(
 #### 4. Updated `updateMemory` Function
 
 Now encrypts content and context before updating:
+
 ```typescript
 if (updates.content !== undefined) {
   fields.push('encrypted_content = ?');
@@ -86,6 +89,7 @@ if (updates.content !== undefined) {
 Changed from synchronous to **async** to decrypt data:
 
 **Before**:
+
 ```typescript
 function rowToMemory(row: MemoryRow): Memory {
   return {
@@ -97,6 +101,7 @@ function rowToMemory(row: MemoryRow): Memory {
 ```
 
 **After**:
+
 ```typescript
 async function rowToMemory(row: MemoryRow): Promise<Memory> {
   const content = await decryptContent(row.encrypted_content);
@@ -123,6 +128,7 @@ return Promise.all(rows.map(rowToMemory));
 ```
 
 **Affected functions**:
+
 - `getAllMemories()`
 - `getMemoriesByType()`
 - `getRecentMemories()`
@@ -135,24 +141,29 @@ return Promise.all(rows.map(rowToMemory));
 **Solution**: Fetch all memories, decrypt in memory, then filter.
 
 ```typescript
-const searchMemories = useCallback(async (query: string): Promise<Memory[]> => {
-  // Fetch ALL memories for the user
-  const rows = await db.getAllAsync<MemoryRow>(
-    'SELECT * FROM memories WHERE user_id = ? ORDER BY confidence DESC, created_at DESC',
-    [userId]
-  );
+const searchMemories = useCallback(
+  async (query: string): Promise<Memory[]> => {
+    // Fetch ALL memories for the user
+    const rows = await db.getAllAsync<MemoryRow>(
+      'SELECT * FROM memories WHERE user_id = ? ORDER BY confidence DESC, created_at DESC',
+      [userId],
+    );
 
-  // Decrypt all memories
-  const memories = await Promise.all(rows.map(rowToMemory));
+    // Decrypt all memories
+    const memories = await Promise.all(rows.map(rowToMemory));
 
-  // Filter decrypted content
-  const lowerQuery = query.toLowerCase();
-  return memories.filter(
-    (m) =>
-      m.content.toLowerCase().includes(lowerQuery) ||
-      (m.context && m.context.toLowerCase().includes(lowerQuery))
-  ).slice(0, 20);
-}, [db, isReady, userId]);
+    // Filter decrypted content
+    const lowerQuery = query.toLowerCase();
+    return memories
+      .filter(
+        (m) =>
+          m.content.toLowerCase().includes(lowerQuery) ||
+          (m.context && m.context.toLowerCase().includes(lowerQuery)),
+      )
+      .slice(0, 20);
+  },
+  [db, isReady, userId],
+);
 ```
 
 **Performance Note**: This approach decrypts all memories before filtering. For large memory stores (>1000 memories), consider implementing Full-Text Search (FTS) with encrypted index in the future.
@@ -169,7 +180,7 @@ async function migrateMemoriesToEncrypted(db: StorageAdapter, userId: string) {
   try {
     // Check if migration is needed (old column exists)
     const hasOldSchema = await db.getFirstAsync(
-      "SELECT name FROM pragma_table_info('memories') WHERE name = 'content'"
+      "SELECT name FROM pragma_table_info('memories') WHERE name = 'content'",
     );
 
     if (!hasOldSchema) {
@@ -182,10 +193,7 @@ async function migrateMemoriesToEncrypted(db: StorageAdapter, userId: string) {
       id: string;
       content: string;
       context: string | null;
-    }>(
-      'SELECT id, content, context FROM memories WHERE user_id = ?',
-      [userId]
-    );
+    }>('SELECT id, content, context FROM memories WHERE user_id = ?', [userId]);
 
     // Add new columns
     await db.execAsync(`
@@ -200,7 +208,7 @@ async function migrateMemoriesToEncrypted(db: StorageAdapter, userId: string) {
 
       await db.runAsync(
         'UPDATE memories SET encrypted_content = ?, encrypted_context = ? WHERE id = ?',
-        [encryptedContent, encryptedContext, memory.id]
+        [encryptedContent, encryptedContext, memory.id],
       );
     }
 
@@ -259,21 +267,25 @@ No migration needed - the schema automatically creates encrypted columns.
 ### Manual Testing
 
 1. **Create a new memory**:
+
    ```typescript
-   await addMemories([{
-     id: 'test-1',
-     type: 'person',
-     content: 'my sponsor John',
-     context: 'helps me stay accountable',
-     confidence: 0.9,
-     source: 'journal',
-     sourceId: 'entry-123',
-     createdAt: new Date(),
-     updatedAt: new Date(),
-   }]);
+   await addMemories([
+     {
+       id: 'test-1',
+       type: 'person',
+       content: 'my sponsor John',
+       context: 'helps me stay accountable',
+       confidence: 0.9,
+       source: 'journal',
+       sourceId: 'entry-123',
+       createdAt: new Date(),
+       updatedAt: new Date(),
+     },
+   ]);
    ```
 
 2. **Inspect database directly**:
+
    ```sql
    SELECT encrypted_content FROM memories LIMIT 1;
    -- Should see something like: "a1b2c3d4...:encrypted_text:mac..."
@@ -281,6 +293,7 @@ No migration needed - the schema automatically creates encrypted columns.
    ```
 
 3. **Retrieve and verify decryption**:
+
    ```typescript
    const memories = await getAllMemories();
    console.log(memories[0].content); // Should print: "my sponsor John"
@@ -295,19 +308,21 @@ No migration needed - the schema automatically creates encrypted columns.
 ### Automated Testing
 
 Run encryption tests:
+
 ```bash
 cd apps/mobile && npm run test:encryption
 ```
 
 ## Performance Impact
 
-| Operation | Before | After | Impact |
-|-----------|--------|-------|--------|
-| **Add memory** | ~1ms | ~5ms | +4ms (encryption overhead) |
-| **Get memories** | ~10ms | ~50ms | +40ms (decrypt 10 memories) |
-| **Search** | ~5ms | ~100ms | +95ms (decrypt all before filter) |
+| Operation        | Before | After  | Impact                            |
+| ---------------- | ------ | ------ | --------------------------------- |
+| **Add memory**   | ~1ms   | ~5ms   | +4ms (encryption overhead)        |
+| **Get memories** | ~10ms  | ~50ms  | +40ms (decrypt 10 memories)       |
+| **Search**       | ~5ms   | ~100ms | +95ms (decrypt all before filter) |
 
 **Mitigation strategies**:
+
 - Use pagination (limit to 20 results)
 - Cache decrypted memories in memory (for repeated access)
 - Consider FTS with encrypted index (future optimization)

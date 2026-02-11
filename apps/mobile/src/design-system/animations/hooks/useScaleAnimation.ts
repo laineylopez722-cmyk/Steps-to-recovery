@@ -104,9 +104,7 @@ const DEFAULT_OPTIONS: Required<UseScaleAnimationOptions> = {
  * @param options - Animation configuration
  * @returns Animation controls and styles
  */
-export function useScaleAnimation(
-  options: UseScaleAnimationOptions = {}
-): UseScaleAnimationReturn {
+export function useScaleAnimation(options: UseScaleAnimationOptions = {}): UseScaleAnimationReturn {
   const {
     from,
     to,
@@ -141,19 +139,18 @@ export function useScaleAnimation(
 
         if (isReducedMotion) {
           // Reduced motion: simple fade to final
-          scale.value = withTiming(
-            final,
-            { duration: reducedMotionDuration },
-            (finished) => {
-              runOnJS(completionCallback)(finished);
-            }
-          );
+          scale.value = withTiming(final, { duration: reducedMotionDuration }, (finished) => {
+            runOnJS(completionCallback)(finished);
+          });
         } else if (bounce) {
           // Full animation: from → to → final with spring
           scale.value = withSequence(
             withTiming(from, { duration: 0 }),
             withSpring(to, spring),
-            withSpring(final, { ...spring, damping: (spring.damping ?? 10) * 1.2 } as typeof spring)
+            withSpring(final, {
+              ...spring,
+              damping: (spring.damping ?? 10) * 1.2,
+            } as typeof spring),
           );
 
           // Manual completion tracking for sequence
@@ -175,7 +172,20 @@ export function useScaleAnimation(
         startAnimation();
       }
     },
-    [from, to, final, spring, reducedMotionDuration, delay, bounce, isReducedMotion, scale, isAnimating, onComplete, onStart]
+    [
+      from,
+      to,
+      final,
+      spring,
+      reducedMotionDuration,
+      delay,
+      bounce,
+      isReducedMotion,
+      scale,
+      isAnimating,
+      onComplete,
+      onStart,
+    ],
   );
 
   // Reset to initial state
@@ -193,7 +203,7 @@ export function useScaleAnimation(
     (value: number) => {
       scale.value = value;
     },
-    [scale]
+    [scale],
   );
 
   // Animated style
@@ -219,7 +229,7 @@ export function useScaleAnimation(
  * Celebration scale animation (milestone, achievement)
  */
 export function useCelebrationScale(
-  options: Omit<UseScaleAnimationOptions, 'to' | 'bounce'> = {}
+  options: Omit<UseScaleAnimationOptions, 'to' | 'bounce'> = {},
 ): UseScaleAnimationReturn {
   return useScaleAnimation({
     from: 0,
@@ -235,7 +245,7 @@ export function useCelebrationScale(
  * Pulse scale animation (attention, emphasis)
  */
 export function usePulseScale(
-  options: Omit<UseScaleAnimationOptions, 'from' | 'to' | 'final'> = {}
+  options: Omit<UseScaleAnimationOptions, 'from' | 'to' | 'final'> = {},
 ): UseScaleAnimationReturn {
   return useScaleAnimation({
     from: 1,
@@ -251,7 +261,7 @@ export function usePulseScale(
  * Pop scale animation (buttons, icons)
  */
 export function usePopScale(
-  options: Omit<UseScaleAnimationOptions, 'from' | 'to' | 'final'> = {}
+  options: Omit<UseScaleAnimationOptions, 'from' | 'to' | 'final'> = {},
 ): UseScaleAnimationReturn {
   return useScaleAnimation({
     from: 0.8,

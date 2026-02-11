@@ -10,6 +10,7 @@ import Animated from 'react-native-reanimated';
 import { useTheme, GlassCard } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import type { MoodDataPoint } from '../hooks/useMoodTrends';
 
@@ -21,11 +22,11 @@ interface CravingChartProps {
 
 function getCravingColor(craving: number): string {
   // 0 = green, 5 = yellow, 10 = red
-  if (craving <= 2) return '#16A34A';
-  if (craving <= 4) return '#22C55E';
-  if (craving <= 6) return '#EAB308';
-  if (craving <= 8) return '#F97316';
-  return '#EF4444';
+  if (craving <= 2) return ds.palette.sageGreen;
+  if (craving <= 4) return ds.colors.success;
+  if (craving <= 6) return ds.palette.amberLight;
+  if (craving <= 8) return ds.palette.orange;
+  return ds.colors.error;
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -45,14 +46,16 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
         ? theme.colors.danger
         : theme.colors.textSecondary;
 
-  const trendLabel = trend === 'decreasing' ? 'improving' : trend === 'increasing' ? 'worsening' : 'stable';
+  const trendLabel =
+    trend === 'decreasing' ? 'improving' : trend === 'increasing' ? 'worsening' : 'stable';
 
   const chartHeight = 80;
   const barWidth = Math.max(4, (screenWidth - 120) / Math.max(data.length, 1) - 2);
 
-  const accessibilityDescription = data.length > 0
-    ? `Craving chart showing ${trendLabel} trend over ${data.length} days, average ${average.toFixed(1)} out of 10`
-    : 'No craving data available yet';
+  const accessibilityDescription =
+    data.length > 0
+      ? `Craving chart showing ${trendLabel} trend over ${data.length} days, average ${average.toFixed(1)} out of 10`
+      : 'No craving data available yet';
 
   return (
     <GlassCard

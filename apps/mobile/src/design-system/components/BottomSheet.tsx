@@ -181,94 +181,95 @@ export function ActionSheetDivider(): React.ReactElement {
   return <View style={styles.divider} />;
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: ds.colors.overlay,
-  },
-  sheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: darkAccent.surface,
-    borderTopLeftRadius: radius['2xl'],
-    borderTopRightRadius: radius['2xl'],
-    maxHeight: SCREEN_HEIGHT * 0.85,
-    shadowColor: ds.colors.shadow,
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 20,
-    elevation: 20,
-  },
-  dragHandleContainer: {
-    alignItems: 'center',
-    paddingTop: spacing[2],
-    paddingBottom: spacing[1],
-  },
-  dragHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: darkAccent.textSubtle,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: spacing[3],
-    paddingBottom: spacing[2],
-  },
-  title: {
-    ...typography.h3,
-    color: darkAccent.text,
-    flex: 1,
-  },
-  closeButton: {
-    width: 36,
-    height: 36,
-    borderRadius: radius.lg,
-    backgroundColor: darkAccent.surfaceHigh,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  content: {
-    padding: spacing[3],
-    paddingTop: 0,
-  },
-  actionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing[3],
-    backgroundColor: darkAccent.surfaceHigh,
-    borderRadius: radius.lg,
-    marginBottom: spacing[2],
-  },
-  actionItemPressed: {
-    backgroundColor: darkAccent.background,
-  },
-  actionItemDisabled: {
-    opacity: 0.5,
-  },
-  actionIcon: {
-    marginRight: spacing[3],
-  },
-  actionTextContainer: {
-    flex: 1,
-  },
-  actionTitle: {
-    ...typography.bodyLarge,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-  actionSubtitle: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: darkAccent.border,
-    marginVertical: spacing[2],
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    backdrop: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: ds.colors.overlay,
+    },
+    sheet: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: darkAccent.surface,
+      borderTopLeftRadius: radius['2xl'],
+      borderTopRightRadius: radius['2xl'],
+      maxHeight: SCREEN_HEIGHT * 0.85,
+      shadowColor: ds.colors.shadow,
+      shadowOffset: { width: 0, height: -4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 20,
+      elevation: 20,
+    },
+    dragHandleContainer: {
+      alignItems: 'center',
+      paddingTop: spacing[2],
+      paddingBottom: spacing[1],
+    },
+    dragHandle: {
+      width: 40,
+      height: 4,
+      borderRadius: 2,
+      backgroundColor: darkAccent.textSubtle,
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: spacing[3],
+      paddingBottom: spacing[2],
+    },
+    title: {
+      ...typography.h3,
+      color: darkAccent.text,
+      flex: 1,
+    },
+    closeButton: {
+      width: 36,
+      height: 36,
+      borderRadius: radius.lg,
+      backgroundColor: darkAccent.surfaceHigh,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    content: {
+      padding: spacing[3],
+      paddingTop: 0,
+    },
+    actionItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing[3],
+      backgroundColor: darkAccent.surfaceHigh,
+      borderRadius: radius.lg,
+      marginBottom: spacing[2],
+    },
+    actionItemPressed: {
+      backgroundColor: darkAccent.background,
+    },
+    actionItemDisabled: {
+      opacity: 0.5,
+    },
+    actionIcon: {
+      marginRight: spacing[3],
+    },
+    actionTextContainer: {
+      flex: 1,
+    },
+    actionTitle: {
+      ...typography.bodyLarge,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+    actionSubtitle: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: darkAccent.border,
+      marginVertical: spacing[2],
+    },
+  });

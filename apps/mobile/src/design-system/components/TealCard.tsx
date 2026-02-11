@@ -1,6 +1,6 @@
 /**
  * TealCard - Calming Content
- * 
+ *
  * iOS-style card with subtle teal accent
  * For meditation, calming exercises, peaceful content
  */
@@ -12,7 +12,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ds } from '../tokens/ds';
 
 // Accent colors - teal
-const ACCENT = ds.colors.info;         // iOS light blue
+const ACCENT = ds.colors.info; // iOS light blue
 const ACCENT_BG = ds.colors.infoMuted;
 const SURFACE = ds.colors.bgSecondary;
 
@@ -45,7 +45,7 @@ export function TealCard({
           {title && <Text style={styles.title}>{title}</Text>}
         </View>
       )}
-      
+
       {description && <Text style={styles.description}>{description}</Text>}
       {children}
     </View>

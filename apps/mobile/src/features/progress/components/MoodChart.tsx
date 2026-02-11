@@ -10,6 +10,7 @@ import Animated from 'react-native-reanimated';
 import { useTheme, GlassCard } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
+import { ds } from '../../../design-system/tokens/ds';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import type { MoodDataPoint } from '../hooks/useMoodTrends';
 
@@ -20,11 +21,11 @@ interface MoodChartProps {
 }
 
 const MOOD_COLORS: Record<number, string> = {
-  1: '#EF4444', // red
-  2: '#F97316', // orange
-  3: '#EAB308', // yellow
-  4: '#22C55E', // green
-  5: '#16A34A', // bright green
+  1: ds.colors.error,
+  2: ds.colors.warning,
+  3: ds.palette.amberLight,
+  4: ds.palette.sageGreen,
+  5: ds.colors.success,
 };
 
 function getMoodColor(mood: number): string {
@@ -51,9 +52,10 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
   const chartHeight = 80;
   const barWidth = Math.max(4, (screenWidth - 120) / Math.max(data.length, 1) - 2);
 
-  const accessibilityDescription = data.length > 0
-    ? `Mood chart showing ${trend} trend over ${data.length} days, average ${average.toFixed(1)} out of 5`
-    : 'No mood data available yet';
+  const accessibilityDescription =
+    data.length > 0
+      ? `Mood chart showing ${trend} trend over ${data.length} days, average ${average.toFixed(1)} out of 5`
+      : 'No mood data available yet';
 
   return (
     <GlassCard

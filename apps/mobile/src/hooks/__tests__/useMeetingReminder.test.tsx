@@ -37,7 +37,8 @@ const mockLoggerDebug = jest.fn();
 // jest.mock calls (hoisted, reference the mock functions declared above)
 jest.mock('expo-notifications', () => ({
   scheduleNotificationAsync: (...args: unknown[]) => mockScheduleNotificationAsync(...args),
-  cancelScheduledNotificationAsync: (...args: unknown[]) => mockCancelScheduledNotificationAsync(...args),
+  cancelScheduledNotificationAsync: (...args: unknown[]) =>
+    mockCancelScheduledNotificationAsync(...args),
   getPermissionsAsync: (...args: unknown[]) => mockGetPermissionsAsync(...args),
   requestPermissionsAsync: (...args: unknown[]) => mockRequestPermissionsAsync(...args),
   setNotificationHandler: jest.fn(),
@@ -51,8 +52,10 @@ jest.mock('expo-notifications', () => ({
 
 jest.mock('expo-location', () => ({
   getForegroundPermissionsAsync: (...args: unknown[]) => mockGetForegroundPermissionsAsync(...args),
-  requestForegroundPermissionsAsync: (...args: unknown[]) => mockRequestForegroundPermissionsAsync(...args),
-  requestBackgroundPermissionsAsync: (...args: unknown[]) => mockRequestBackgroundPermissionsAsync(...args),
+  requestForegroundPermissionsAsync: (...args: unknown[]) =>
+    mockRequestForegroundPermissionsAsync(...args),
+  requestBackgroundPermissionsAsync: (...args: unknown[]) =>
+    mockRequestBackgroundPermissionsAsync(...args),
   startGeofencingAsync: (...args: unknown[]) => mockStartGeofencingAsync(...args),
   stopGeofencingAsync: (...args: unknown[]) => mockStopGeofencingAsync(...args),
   GeofencingEventType: {
@@ -72,12 +75,20 @@ jest.mock('react-native/Libraries/Utilities/Platform', () => {
   return {
     __esModule: true,
     default: {
-      get OS() { return os; },
-      set OS(value: string) { os = value; },
+      get OS() {
+        return os;
+      },
+      set OS(value: string) {
+        os = value;
+      },
       select: jest.fn((obj: Record<string, unknown>) => obj[os]),
     },
-    get OS() { return os; },
-    set OS(value: string) { os = value; },
+    get OS() {
+      return os;
+    },
+    set OS(value: string) {
+      os = value;
+    },
     select: jest.fn((obj: Record<string, unknown>) => obj[os]),
   };
 });
@@ -432,9 +443,7 @@ describe('useMeetingReminder', () => {
 
       expect(notificationId).toBeNull();
       expect(mockScheduleNotificationAsync).not.toHaveBeenCalled();
-      expect(mockLoggerInfo).toHaveBeenCalledWith(
-        'Reminder time is in the past, skipping',
-      );
+      expect(mockLoggerInfo).toHaveBeenCalledWith('Reminder time is in the past, skipping');
     });
 
     it('should return null if meeting has no scheduled time', async () => {
@@ -764,9 +773,24 @@ describe('useMeetingReminder', () => {
       const now = new Date();
       const futureDayOfWeek = (now.getDay() + 3) % 7; // 3 days from now
 
-      const meeting1 = { id: 'meeting-1', name: 'Meeting 1', dayOfWeek: futureDayOfWeek, time: '20:00' };
-      const meeting2 = { id: 'meeting-2', name: 'Meeting 2', dayOfWeek: futureDayOfWeek, time: '18:00' };
-      const meeting3 = { id: 'meeting-3', name: 'Meeting 3', dayOfWeek: futureDayOfWeek, time: '19:00' };
+      const meeting1 = {
+        id: 'meeting-1',
+        name: 'Meeting 1',
+        dayOfWeek: futureDayOfWeek,
+        time: '20:00',
+      };
+      const meeting2 = {
+        id: 'meeting-2',
+        name: 'Meeting 2',
+        dayOfWeek: futureDayOfWeek,
+        time: '18:00',
+      };
+      const meeting3 = {
+        id: 'meeting-3',
+        name: 'Meeting 3',
+        dayOfWeek: futureDayOfWeek,
+        time: '19:00',
+      };
 
       mockScheduleNotificationAsync
         .mockResolvedValueOnce('reminder-3') // meeting1 at 20:00 - latest
@@ -912,10 +936,7 @@ describe('useMeetingReminder', () => {
       });
 
       expect(mockIsTaskDefined).toHaveBeenCalledWith('meeting-geofence-task');
-      expect(mockDefineTask).toHaveBeenCalledWith(
-        'meeting-geofence-task',
-        expect.any(Function),
-      );
+      expect(mockDefineTask).toHaveBeenCalledWith('meeting-geofence-task', expect.any(Function));
     });
 
     it('should start geofencing with correct parameters', async () => {
@@ -934,19 +955,16 @@ describe('useMeetingReminder', () => {
         await result.current.setupGeofence(meeting, 150);
       });
 
-      expect(mockStartGeofencingAsync).toHaveBeenCalledWith(
-        'meeting-geofence-task',
-        [
-          expect.objectContaining({
-            identifier: 'Test Meeting',
-            latitude: 40.7128,
-            longitude: -74.006,
-            radius: 150,
-            notifyOnEnter: true,
-            notifyOnExit: false,
-          }),
-        ],
-      );
+      expect(mockStartGeofencingAsync).toHaveBeenCalledWith('meeting-geofence-task', [
+        expect.objectContaining({
+          identifier: 'Test Meeting',
+          latitude: 40.7128,
+          longitude: -74.006,
+          radius: 150,
+          notifyOnEnter: true,
+          notifyOnExit: false,
+        }),
+      ]);
     });
 
     it('should use default radius of 100 meters', async () => {
@@ -965,14 +983,11 @@ describe('useMeetingReminder', () => {
         await result.current.setupGeofence(meeting);
       });
 
-      expect(mockStartGeofencingAsync).toHaveBeenCalledWith(
-        'meeting-geofence-task',
-        [
-          expect.objectContaining({
-            radius: 100,
-          }),
-        ],
-      );
+      expect(mockStartGeofencingAsync).toHaveBeenCalledWith('meeting-geofence-task', [
+        expect.objectContaining({
+          radius: 100,
+        }),
+      ]);
     });
 
     it('should set isGeofencingActive to true on success', async () => {
@@ -1061,10 +1076,7 @@ describe('useMeetingReminder', () => {
       });
 
       expect(success).toBe(false);
-      expect(mockLoggerWarn).toHaveBeenCalledWith(
-        'Failed to set up geofence',
-        expect.any(Error),
-      );
+      expect(mockLoggerWarn).toHaveBeenCalledWith('Failed to set up geofence', expect.any(Error));
     });
 
     it('should not redefine task if already defined', async () => {
@@ -1158,10 +1170,7 @@ describe('useMeetingReminder', () => {
         await result.current.removeGeofence('meeting-1');
       });
 
-      expect(mockLoggerWarn).toHaveBeenCalledWith(
-        'Failed to remove geofence',
-        expect.any(Error),
-      );
+      expect(mockLoggerWarn).toHaveBeenCalledWith('Failed to remove geofence', expect.any(Error));
     });
   });
 

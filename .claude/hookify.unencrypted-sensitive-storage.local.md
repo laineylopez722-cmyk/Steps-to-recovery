@@ -16,19 +16,23 @@ conditions:
 You're storing sensitive data in unencrypted storage (AsyncStorage/localStorage)!
 
 **Why this is CRITICAL:**
+
 - AsyncStorage is NOT secure - data is readable plaintext
 - Encryption keys MUST be stored in SecureStore only
 - User journal entries, check-ins, and step work MUST be encrypted before ANY storage
 - This violates the encryption-first principle and OWASP standards
 
 **What to do:**
+
 1. **For encryption keys:** Use SecureStore only
+
    ```typescript
    import { secureStorage } from '../adapters/secureStorage';
    await secureStorage.setItemAsync('encryption_key', key);
    ```
 
 2. **For sensitive data:** Encrypt FIRST, then store
+
    ```typescript
    import { encryptContent } from '../utils/encryption';
    const encrypted = await encryptContent(journalText);

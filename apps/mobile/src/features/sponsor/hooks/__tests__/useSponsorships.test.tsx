@@ -129,7 +129,9 @@ describe('useSponsorships', () => {
 
       expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
       expect(mockChainable.select).toHaveBeenCalledWith('*');
-      expect(mockChainable.or).toHaveBeenCalledWith(`sponsor_id.eq.${testUserId},sponsee_id.eq.${testUserId}`);
+      expect(mockChainable.or).toHaveBeenCalledWith(
+        `sponsor_id.eq.${testUserId},sponsee_id.eq.${testUserId}`,
+      );
       expect(mockChainable.order).toHaveBeenCalledWith('created_at', { ascending: false });
       expect(result.current.sponsorships).toEqual(mockSponsorships);
     });
@@ -164,7 +166,10 @@ describe('useSponsorships', () => {
 
       expect(result.current.error).toBeTruthy();
       expect(result.current.sponsorships).toEqual([]);
-      expect(mockLogger.warn).toHaveBeenCalledWith('Failed to fetch sponsorships', expect.anything());
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        'Failed to fetch sponsorships',
+        expect.anything(),
+      );
     });
 
     it('should not fetch when user is not authenticated', async () => {

@@ -28,13 +28,14 @@ export function StepPrivacyInfoCard(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) => ({
-  infoCard: {
-    marginTop: 8,
-    borderColor: ds.colors.borderSubtle,
-  },
-  infoContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    infoCard: {
+      marginTop: 8,
+      borderColor: ds.colors.borderSubtle,
+    },
+    infoContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+  }) as const;

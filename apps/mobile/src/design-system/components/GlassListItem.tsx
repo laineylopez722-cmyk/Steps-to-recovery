@@ -100,57 +100,58 @@ export function GlassListItem({
   );
 }
 
-const createStyles = (ds: DS) => StyleSheet.create({
-  container: {
-    marginHorizontal: spacing[2],
-    marginBottom: spacing[2],
-    borderRadius: radius.lg,
-    overflow: 'hidden',
-  },
-  glassBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: ds.colors.bgSecondary,
-    opacity: 0.6,
-    borderRadius: radius.lg,
-  },
-  borderGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: 1,
-    backgroundColor: darkAccent.primary,
-    opacity: 0.2,
-  },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: spacing[2.5],
-    gap: spacing[2],
-  },
-  iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textContainer: {
-    flex: 1,
-  },
-  title: {
-    ...typography.bodyLarge,
-    color: darkAccent.text,
-    fontWeight: '600',
-  },
-  subtitle: {
-    ...typography.bodySmall,
-    color: darkAccent.textMuted,
-    marginTop: 2,
-  },
-  description: {
-    ...typography.bodySmall,
-    color: darkAccent.textSubtle,
-    marginTop: 4,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      marginHorizontal: spacing[2],
+      marginBottom: spacing[2],
+      borderRadius: radius.lg,
+      overflow: 'hidden',
+    },
+    glassBackground: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: ds.colors.bgSecondary,
+      opacity: 0.6,
+      borderRadius: radius.lg,
+    },
+    borderGradient: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: 1,
+      backgroundColor: darkAccent.primary,
+      opacity: 0.2,
+    },
+    content: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: spacing[2.5],
+      gap: spacing[2],
+    },
+    iconContainer: {
+      width: 48,
+      height: 48,
+      borderRadius: radius.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    textContainer: {
+      flex: 1,
+    },
+    title: {
+      ...typography.bodyLarge,
+      color: darkAccent.text,
+      fontWeight: '600',
+    },
+    subtitle: {
+      ...typography.bodySmall,
+      color: darkAccent.textMuted,
+      marginTop: 2,
+    },
+    description: {
+      ...typography.bodySmall,
+      color: darkAccent.textSubtle,
+      marginTop: 4,
+    },
+  });

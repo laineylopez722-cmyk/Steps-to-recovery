@@ -33,7 +33,12 @@ interface ContactCardProps {
 
 const ROLE_CONFIG: Record<
   ContactRole,
-  { icon: React.ComponentProps<typeof Feather>['name']; color: string; bgColor: string; label: string }
+  {
+    icon: React.ComponentProps<typeof Feather>['name'];
+    color: string;
+    bgColor: string;
+    label: string;
+  }
 > = {
   sponsor: {
     icon: 'star',

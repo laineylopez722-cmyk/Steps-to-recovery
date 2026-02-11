@@ -275,17 +275,31 @@ export function SafeDialInterventionScreen({
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <MaterialCommunityIcons name="hand-back-right" size={120} color={ds.semantic.text.onDark} />
+          <MaterialCommunityIcons
+            name="hand-back-right"
+            size={120}
+            color={ds.semantic.text.onDark}
+          />
 
-          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: 32 }]}>STOP</Text>
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: 32 }]}>
+            STOP
+          </Text>
 
           <Text
-            style={[styles.mediumText, { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' }]}
+            style={[
+              styles.mediumText,
+              { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' },
+            ]}
           >
             Are you sure about this?
           </Text>
 
-          <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' }]}>
+          <Text
+            style={[
+              styles.bodyText,
+              { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' },
+            ]}
+          >
             You've been clean for {cleanDays} {cleanDays === 1 ? 'day' : 'days'}.{'\n'}
             Don't throw it away.
           </Text>
@@ -314,12 +328,17 @@ export function SafeDialInterventionScreen({
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <Text style={[styles.bigText, { color: ds.semantic.text.onDark }]}>Remember Why You Started</Text>
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark }]}>
+            Remember Why You Started
+          </Text>
 
           <View style={styles.whyContent}>
             <MaterialCommunityIcons name="heart" size={80} color={ds.semantic.text.onDark} />
             <Text
-              style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' }]}
+              style={[
+                styles.bodyText,
+                { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' },
+              ]}
             >
               {whyText}
             </Text>
@@ -512,7 +531,12 @@ export function SafeDialInterventionScreen({
             You Made the Right Choice 💙
           </Text>
 
-          <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' }]}>
+          <Text
+            style={[
+              styles.bodyText,
+              { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' },
+            ]}
+          >
             You just resisted a close call.{'\n'}
             That takes real strength.
           </Text>
@@ -549,75 +573,76 @@ export function SafeDialInterventionScreen({
   }
 }
 
-const createStyles = (ds: DS) => ({
-  stepContainer: {
-    flex: 1,
-  },
-  stepContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepInner: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    width: '100%',
-  },
-  bigText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  mediumText: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  bodyText: {
-    fontSize: 18,
-    lineHeight: 28,
-  },
-  smallLink: {
-    fontSize: 14,
-    textDecorationLine: 'underline',
-  },
-  whyContent: {
-    alignItems: 'center',
-    marginTop: 48,
-  },
-  alternativesContainer: {
-    width: '100%',
-    marginTop: 32,
-  },
-  alternativeButton: {
-    marginBottom: 16,
-  },
-  confirmInput: {
-    width: '100%',
-    borderWidth: 2,
-    borderRadius: 8,
-    padding: 16,
-    marginTop: 24,
-    textAlign: 'center',
-    fontSize: 18,
-  },
-  countdownContainer: {
-    marginTop: 24,
-  },
-  countdownText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  progressDots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 12,
-    marginTop: 48,
-  },
-  progressDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-} as const);
+const createStyles = (ds: DS) =>
+  ({
+    stepContainer: {
+      flex: 1,
+    },
+    stepContent: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    stepInner: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: 32,
+      width: '100%',
+    },
+    bigText: {
+      fontSize: 32,
+      fontWeight: 'bold',
+      textAlign: 'center',
+    },
+    mediumText: {
+      fontSize: 24,
+      fontWeight: '600',
+    },
+    bodyText: {
+      fontSize: 18,
+      lineHeight: 28,
+    },
+    smallLink: {
+      fontSize: 14,
+      textDecorationLine: 'underline',
+    },
+    whyContent: {
+      alignItems: 'center',
+      marginTop: 48,
+    },
+    alternativesContainer: {
+      width: '100%',
+      marginTop: 32,
+    },
+    alternativeButton: {
+      marginBottom: 16,
+    },
+    confirmInput: {
+      width: '100%',
+      borderWidth: 2,
+      borderRadius: 8,
+      padding: 16,
+      marginTop: 24,
+      textAlign: 'center',
+      fontSize: 18,
+    },
+    countdownContainer: {
+      marginTop: 24,
+    },
+    countdownText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+    },
+    progressDots: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 12,
+      marginTop: 48,
+    },
+    progressDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+    },
+  }) as const;

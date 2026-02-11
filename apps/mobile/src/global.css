@@ -19,114 +19,115 @@
     /* Dark theme (default) */
     /* === Background Layers (distinct for depth) === */
     --color-bg-primary: #000000;
-      --color-bg-secondary: #0A0A0C;
-      --color-bg-tertiary: #141416;
-      --color-bg-quaternary: #1C1C1E;
-      
-      /* === Text Hierarchy === */
-      --color-text-primary: #FFFFFF;
-      --color-text-secondary: rgba(255, 255, 255, 0.72);
-      --color-text-tertiary: rgba(255, 255, 255, 0.48);
-      --color-text-quaternary: rgba(255, 255, 255, 0.32);
-      
-      /* === Accent Colors (muted, sophisticated) === */
-      --color-accent-warm: #E8A855;
-      --color-accent-calm: #6B9EBF;
-      --color-accent-growth: #7BA873;
-      --color-accent-alert: #C97B7B;
-      
-      /* === Semantic Colors === */
-      --color-success: #7BA873;
-      --color-warning: #D4A853;
-      --color-error: #C97B7B;
-      --color-info: #6B9EBF;
-      
-      /* === Borders & Dividers === */
-      --color-border-subtle: rgba(255, 255, 255, 0.06);
-      --color-border-default: rgba(255, 255, 255, 0.10);
-      --color-border-strong: rgba(255, 255, 255, 0.16);
-      --color-divider: rgba(255, 255, 255, 0.08);
-      
-      /* === Interactive States === */
-      --color-ring: #E8A855;
-      
-      /* === Legacy/Compat (shadcn) === */
-      --background: #000000;
-      --foreground: #FFFFFF;
-      --card: #161618;
-      --card-foreground: #FFFFFF;
-      --popover: #161618;
-      --popover-foreground: #FFFFFF;
-      --primary: #E8A855;
-      --primary-foreground: #000000;
-      --secondary: #1C1C1E;
-      --secondary-foreground: #FFFFFF;
-      --muted: #1C1C1E;
-      --muted-foreground: rgba(255, 255, 255, 0.48);
-      --accent: #E8A855;
-      --accent-foreground: #000000;
-      --destructive: #C97B7B;
-      --destructive-foreground: #FFFFFF;
-      --border: rgba(255, 255, 255, 0.10);
-      --input: rgba(255, 255, 255, 0.10);
-    --ring: #E8A855;
+    --color-bg-secondary: #0a0a0c;
+    --color-bg-tertiary: #141416;
+    --color-bg-quaternary: #1c1c1e;
+
+    /* === Text Hierarchy === */
+    --color-text-primary: #ffffff;
+    --color-text-secondary: rgba(255, 255, 255, 0.72);
+    --color-text-tertiary: rgba(255, 255, 255, 0.48);
+    --color-text-quaternary: rgba(255, 255, 255, 0.32);
+
+    /* === Accent Colors (muted, sophisticated) === */
+    --color-accent-warm: #e8a855;
+    --color-accent-calm: #6b9ebf;
+    --color-accent-growth: #7ba873;
+    --color-accent-alert: #c97b7b;
+
+    /* === Semantic Colors === */
+    --color-success: #7ba873;
+    --color-warning: #d4a853;
+    --color-error: #c97b7b;
+    --color-info: #6b9ebf;
+
+    /* === Borders & Dividers === */
+    --color-border-subtle: rgba(255, 255, 255, 0.06);
+    --color-border-default: rgba(255, 255, 255, 0.1);
+    --color-border-strong: rgba(255, 255, 255, 0.16);
+    --color-divider: rgba(255, 255, 255, 0.08);
+
+    /* === Interactive States === */
+    --color-ring: #e8a855;
+
+    /* === Legacy/Compat (shadcn) === */
+    --background: #000000;
+    --foreground: #ffffff;
+    --card: #161618;
+    --card-foreground: #ffffff;
+    --popover: #161618;
+    --popover-foreground: #ffffff;
+    --primary: #e8a855;
+    --primary-foreground: #000000;
+    --secondary: #1c1c1e;
+    --secondary-foreground: #ffffff;
+    --muted: #1c1c1e;
+    --muted-foreground: rgba(255, 255, 255, 0.48);
+    --accent: #e8a855;
+    --accent-foreground: #000000;
+    --destructive: #c97b7b;
+    --destructive-foreground: #ffffff;
+    --border: rgba(255, 255, 255, 0.1);
+    --input: rgba(255, 255, 255, 0.1);
+    --ring: #e8a855;
   }
 
   /* Light theme (for accessibility option) */
-  .light, .light * {
+  .light,
+  .light * {
     /* === Background Layers === */
-      --color-bg-primary: #FFFFFF;
-      --color-bg-secondary: #F5F5F7;
-      --color-bg-tertiary: #EBEBED;
-      --color-bg-quaternary: #E0E0E2;
-      
-      /* === Text Hierarchy === */
-      --color-text-primary: #000000;
-      --color-text-secondary: rgba(0, 0, 0, 0.72);
-      --color-text-tertiary: rgba(0, 0, 0, 0.48);
-      --color-text-quaternary: rgba(0, 0, 0, 0.32);
-      
-      /* === Accent Colors === */
-      --color-accent-warm: #C4872A;
-      --color-accent-calm: #4A7A9A;
-      --color-accent-growth: #5A8A53;
-      --color-accent-alert: #A85858;
-      
-      /* === Semantic Colors === */
-      --color-success: #5A8A53;
-      --color-warning: #B58A33;
-      --color-error: #A85858;
-      --color-info: #4A7A9A;
-      
-      /* === Borders & Dividers === */
-      --color-border-subtle: rgba(0, 0, 0, 0.06);
-      --color-border-default: rgba(0, 0, 0, 0.10);
-      --color-border-strong: rgba(0, 0, 0, 0.16);
-      --color-divider: rgba(0, 0, 0, 0.08);
-      
-      /* === Interactive States === */
-      --color-ring: #C4872A;
-      
-      /* === Legacy/Compat (shadcn) === */
-      --background: #FFFFFF;
-      --foreground: #000000;
-      --card: #EBEBED;
-      --card-foreground: #000000;
-      --popover: #EBEBED;
-      --popover-foreground: #000000;
-      --primary: #C4872A;
-      --primary-foreground: #FFFFFF;
-      --secondary: #E0E0E2;
-      --secondary-foreground: #000000;
-      --muted: #E0E0E2;
-      --muted-foreground: rgba(0, 0, 0, 0.48);
-      --accent: #C4872A;
-      --accent-foreground: #FFFFFF;
-      --destructive: #A85858;
-      --destructive-foreground: #FFFFFF;
-      --border: rgba(0, 0, 0, 0.10);
-      --input: rgba(0, 0, 0, 0.10);
-    --ring: #C4872A;
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f5f5f7;
+    --color-bg-tertiary: #ebebed;
+    --color-bg-quaternary: #e0e0e2;
+
+    /* === Text Hierarchy === */
+    --color-text-primary: #000000;
+    --color-text-secondary: rgba(0, 0, 0, 0.72);
+    --color-text-tertiary: rgba(0, 0, 0, 0.48);
+    --color-text-quaternary: rgba(0, 0, 0, 0.32);
+
+    /* === Accent Colors === */
+    --color-accent-warm: #c4872a;
+    --color-accent-calm: #4a7a9a;
+    --color-accent-growth: #5a8a53;
+    --color-accent-alert: #a85858;
+
+    /* === Semantic Colors === */
+    --color-success: #5a8a53;
+    --color-warning: #b58a33;
+    --color-error: #a85858;
+    --color-info: #4a7a9a;
+
+    /* === Borders & Dividers === */
+    --color-border-subtle: rgba(0, 0, 0, 0.06);
+    --color-border-default: rgba(0, 0, 0, 0.1);
+    --color-border-strong: rgba(0, 0, 0, 0.16);
+    --color-divider: rgba(0, 0, 0, 0.08);
+
+    /* === Interactive States === */
+    --color-ring: #c4872a;
+
+    /* === Legacy/Compat (shadcn) === */
+    --background: #ffffff;
+    --foreground: #000000;
+    --card: #ebebed;
+    --card-foreground: #000000;
+    --popover: #ebebed;
+    --popover-foreground: #000000;
+    --primary: #c4872a;
+    --primary-foreground: #ffffff;
+    --secondary: #e0e0e2;
+    --secondary-foreground: #000000;
+    --muted: #e0e0e2;
+    --muted-foreground: rgba(0, 0, 0, 0.48);
+    --accent: #c4872a;
+    --accent-foreground: #ffffff;
+    --destructive: #a85858;
+    --destructive-foreground: #ffffff;
+    --border: rgba(0, 0, 0, 0.1);
+    --input: rgba(0, 0, 0, 0.1);
+    --ring: #c4872a;
   }
 }
 
@@ -147,14 +148,14 @@
   --spacing-12: 48px;
   --spacing-16: 64px;
   --spacing-20: 80px;
-  
+
   /* === Border Radius === */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-full: 9999px;
-  
+
   /* === Typography Scale (1.25 ratio) === */
   --font-size-micro: 11px;
   --font-size-caption: 13px;
@@ -164,7 +165,7 @@
   --font-size-h2: 24px;
   --font-size-h1: 32px;
   --font-size-display: 40px;
-  
+
   /* === Line Heights === */
   --line-height-micro: 14px;
   --line-height-caption: 18px;
@@ -174,12 +175,12 @@
   --line-height-h2: 32px;
   --line-height-h1: 40px;
   --line-height-display: 48px;
-  
+
   /* === Animation Timing === */
   --duration-quick: 150ms;
   --duration-standard: 250ms;
   --duration-slow: 400ms;
-  
+
   /* === Shadows (minimal) === */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);

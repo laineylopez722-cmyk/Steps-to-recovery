@@ -2,255 +2,248 @@
 
 ## Project Overview
 
-A privacy-first 12-Step Recovery Companion app built with:
+A privacy-first 12-step recovery companion mobile app built with:
 
-- **Mobile**: React Native + Expo (TypeScript)
+- **Mobile**: React Native 0.81.5 + Expo SDK ~54.0.0 (TypeScript)
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Architecture**: Monorepo with Turborepo
-- **Offline-First**: SQLite with encryption
-- **Security**: End-to-end encryption for journals
+- **Architecture**: Monorepo with Turborepo + npm workspaces
+- **Offline-First**: expo-sqlite (mobile) / IndexedDB (web)
+- **Encryption**: AES-256-CBC via crypto-js, keys in expo-secure-store
 
 ## Project Structure
 
 ```
 Steps-to-recovery/
 ├── apps/
-│   ├── mobile/          # Expo React Native app (MVP focus)
-│   └── web/             # Next.js app (future)
+│   └── mobile/              # Expo React Native app
 ├── packages/
-│   ├── shared/          # Shared types, constants, utils
-│   ├── api/             # API client abstractions (future)
-│   └── ui/              # Shared UI components (future)
-├── .claude/             # Claude Code prompt files
-├── plan.txt             # Comprehensive MVP plan
-├── tech stack.txt       # Detailed tech stack documentation
-└── package.json         # Monorepo workspace config
+│   └── shared/              # Shared types, constants (@recovery/shared)
+├── .claude/                 # Claude Code agents & prompts
+├── supabase-schema.sql      # Base Supabase schema with RLS
+├── turbo.json               # Turborepo task config
+└── package.json             # Monorepo workspace config
 ```
 
 ## Mobile App Structure
 
 ```
 apps/mobile/src/
-├── features/
-│   ├── auth/            # Authentication & onboarding
-│   ├── journal/         # Encrypted journaling
-│   ├── steps/           # 12-step work tracking
-│   ├── sponsor/         # Sponsor connection & sharing
-│   ├── notifications/   # Reminders & geofencing
-│   └── challenges/      # Milestones & streaks
-├── components/          # Shared UI components
-├── navigation/          # React Navigation setup
-├── contexts/            # React contexts (Auth, DB, Sync)
-├── lib/                 # Third-party integrations
-└── utils/               # Utility functions
+├── adapters/                # Platform abstraction (storage, secureStorage)
+├── components/              # Shared UI components
+├── config/                  # App configuration
+├── constants/               # App constants
+├── contexts/                # React contexts (Auth, Database, Sync)
+├── data/                    # Static data
+├── db/                      # Database utilities
+├── design-system/           # iOS-style design tokens & components
+├── features/                # Feature modules (see below)
+├── hooks/                   # Shared hooks
+├── lib/                     # Third-party integrations (Supabase, Sentry)
+├── navigation/              # React Navigation setup
+├── providers/               # Provider wrappers
+├── services/                # Background services (sync)
+├── store/                   # Zustand stores
+├── test-utils/              # Test helpers
+├── types/                   # Shared TypeScript types
+└── utils/                   # Utilities (encryption, logger, validation)
+```
+
+### Feature Modules (18)
+
+```
+apps/mobile/src/features/
+├── ai-companion/    # AI-powered companion
+├── auth/            # Authentication
+├── craving-surf/    # Craving management
+├── crisis/          # Crisis support
+├── emergency/       # Emergency toolkit
+├── gratitude/       # Gratitude lists
+├── home/            # Dashboard, clean time, check-ins
+├── inventory/       # Personal inventory
+├── journal/         # Encrypted journaling
+├── meetings/        # Meeting finder & tracking
+├── onboarding/      # Onboarding flow
+├── profile/         # User profile & settings
+├── progress/        # Progress tracking
+├── readings/        # Daily readings
+├── safety-plan/     # Safety planning
+├── settings/        # App settings
+├── sponsor/         # Sponsor connections & sharing
+└── steps/           # 12-step work tracking
 ```
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js >= 18
-- npm or yarn
-- Expo CLI (`npm install -g expo-cli`)
-- Supabase account (free tier)
+- Node.js >=20.0.0
+- npm (pinned: 10.9.2 via `packageManager` field)
+- Supabase account (free tier works)
+- Expo Go app (for physical device testing)
 
 ### Installation
 
-1. **Install dependencies**
+1. **Clone and install dependencies**
 
    ```bash
+   git clone https://github.com/RipKDR/Steps-to-recovery.git
+   cd Steps-to-recovery
    npm install
    ```
 
 2. **Set up Supabase**
-   - Create a new Supabase project at https://supabase.com
+   - Create a new project at https://supabase.com
+   - Run `supabase-schema.sql` in the SQL Editor to create tables with RLS
    - Copy your project URL and anon key
-   - Create `.env` file in root and `apps/mobile/.env`:
-     ```
-     EXPO_PUBLIC_SUPABASE_URL=your-project-url.supabase.co
-     EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-     ```
 
-3. **Navigate to mobile app**
+3. **Create environment file**
+
+   Create `apps/mobile/.env`:
 
    ```bash
-   cd apps/mobile
+   EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   EXPO_PUBLIC_SENTRY_DSN=              # Optional - for error monitoring
    ```
 
-4. **Start Expo development server**
+4. **Start development server**
 
    ```bash
-   npm start
+   # From root:
+   npm run mobile
+
+   # Or from mobile dir:
+   cd apps/mobile && npx expo start
    ```
 
 5. **Run on device/simulator**
    - Press `i` for iOS simulator (macOS only)
    - Press `a` for Android emulator
-   - Scan QR code with Expo Go app on physical device
+   - Scan QR code with Expo Go on physical device
+
+## Common Commands
+
+```bash
+# Development
+npm run mobile              # Start Expo dev server
+npm run android             # Run on Android
+npm run ios                 # Run on iOS
+
+# Testing
+npm test                    # Run all tests (via Turborepo)
+cd apps/mobile && npm test  # Run mobile tests directly
+npm run test:watch          # Watch mode (in apps/mobile)
+npm run test:coverage       # Coverage report (in apps/mobile)
+npm run test:encryption     # Encryption tests (in apps/mobile)
+
+# E2E (Maestro)
+cd apps/mobile
+npm run e2e                 # All flows
+npm run e2e:validate        # Dry-run syntax check
+
+# Quality
+npm run lint                # ESLint (via Turborepo)
+npm run type-check          # TypeScript check (via Turborepo)
+npm run format              # Prettier format
+npm run format:check        # Check formatting
+```
 
 ## Development Phases
 
 Following a BMAD (Build-Measure-Analyze-Decide) approach:
 
-### Phase 0: Setup & Scaffolding ✅ (Current)
+### Phase 1: Core Architecture & Auth ✅
 
-- [x] Monorepo structure
-- [x] Expo app initialization
-- [x] Shared package setup
-- [x] Claude prompt files
-- [ ] Install core dependencies
-- [ ] Basic navigation
-- [ ] Supabase integration
+- [x] Monorepo setup (Turborepo + npm workspaces)
+- [x] Supabase Auth integration
+- [x] Login/SignUp/Onboarding screens
+- [x] Secure token storage (expo-secure-store)
+- [x] Auth, Database, Sync contexts
 
-### Phase 1: Core Architecture & User Auth
+### Phase 2: Journaling & Step Work ✅
 
-- [ ] Supabase Auth integration
-- [ ] Login/SignUp screens
-- [ ] Onboarding flow
-- [ ] Secure token storage
-- [ ] Auth context
+- [x] AES-256-CBC encryption (crypto-js)
+- [x] expo-sqlite offline storage
+- [x] Queue-based background sync
+- [x] Encrypted journaling with mood/craving tracking
+- [x] Step work UI with guided questions
 
-### Phase 2: Journaling & Step Work
+### Phase 3: Sponsor Connection & Sharing ✅
 
-- [ ] Encrypted journaling
-- [ ] SQLite setup with encryption
-- [ ] Offline sync mechanism
-- [ ] Step work UI and data models
+- [x] Sponsor invite flow
+- [x] Sponsorship management
+- [x] Selective entry sharing
+- [x] Supabase RLS policies
 
-### Phase 3: Sponsor Connection & Sharing
+### Phase 4: Notifications, Geofencing & Streaks ✅
 
-- [ ] Sponsor invite flow
-- [ ] Sponsorship management
-- [ ] Selective entry sharing
-- [ ] RLS policies
+- [x] Daily reminders (expo-notifications)
+- [x] Geofencing for meetings (expo-location + expo-task-manager)
+- [x] Clean time tracker with milestones
+- [x] Achievements & streak tracking
 
-### Phase 4: Notifications, Geofencing & Streaks
+### Phase 5: Polish & Expansion (In Progress)
 
-- [ ] Daily reminders
-- [ ] Geofencing for meetings
-- [ ] Sobriety streak counter
-- [ ] Milestones & achievements
-
-### Phase 5: Polish
-
-- [ ] Accessibility improvements
-- [ ] UX refinements
-- [ ] Testing
-- [ ] Error handling
-
-## Claude Code Prompts
-
-The `.claude/` directory contains feature-specific prompts:
-
-- `AppCoreClaude.md` - Core app structure
-- `OnboardingClaude.md` - Auth & onboarding
-- `JournalingClaude.md` - Encrypted journaling
-- `StepWorkClaude.md` - 12-step tracking
-- `SponsorClaude.md` - Sponsor features
-- `NotificationsClaude.md` - Notifications & geofencing
-- `ChallengesClaude.md` - Streaks & challenges
-
-Use these prompts with Claude Code to generate feature implementations.
+- [x] WCAG AAA accessibility
+- [x] iOS-style design system with tokens
+- [x] Sentry error monitoring
+- [ ] Performance optimization (sub-2s cold start)
+- [ ] Additional feature modules (AI companion, crisis tools, etc.)
 
 ## Key Technologies
 
-- **React Native + Expo SDK ~50**
-- **TypeScript**
-- **React Navigation** - App navigation
-- **Supabase** - Backend (Auth, Database, Storage)
-- **SQLite** - Offline storage
-- **SQLCipher** - Database encryption
-- **Expo SecureStore** - Secure key storage
-- **Expo Notifications** - Local notifications
-- **Expo Location + TaskManager** - Geofencing
-- **React Query** - State management
-- **Zod** - Schema validation
+| Category         | Technology                | Version          |
+| ---------------- | ------------------------- | ---------------- |
+| Framework        | React Native + Expo       | 0.81.5 / ~54.0.0 |
+| Language         | TypeScript (strict)       | ~5.9.3           |
+| React            | React                     | 19.1.0           |
+| Backend          | Supabase                  | ^2.93.3          |
+| Offline Storage  | expo-sqlite               | ~16.0.10         |
+| Key Storage      | expo-secure-store         | ~15.0.8          |
+| Encryption       | crypto-js (AES-256-CBC)   | ^4.2.0           |
+| Server State     | @tanstack/react-query     | ^5.90.15         |
+| Client State     | Zustand                   | ^5.0.9           |
+| Navigation       | React Navigation          | ^7.x             |
+| Validation       | Zod                       | ^4.3.6           |
+| Styling          | NativeWind / Tailwind CSS | ~4.1.18          |
+| Error Monitoring | @sentry/react-native      | ~7.2.0           |
 
 ## Privacy & Security
 
-- End-to-end encryption for journals
-- Client-side encryption with AES-256
-- Supabase Row-Level Security
-- Secure key storage (device keychain)
-- No sensitive data logging
-- Privacy-first analytics (PostHog)
+- **Encryption**: AES-256-CBC with PBKDF2 key derivation (100k iterations), unique IV per encryption
+- **Key Storage**: expo-secure-store only (device Keychain/Keystore) — never AsyncStorage or SQLite
+- **Row-Level Security**: All Supabase tables enforce `auth.uid() = user_id`
+- **Logging**: Sanitized logger (no `console.*` with sensitive data)
+- **Sync**: Data remains encrypted end-to-end through sync pipeline
 
-## Error Monitoring with Sentry
+## Error Monitoring (Sentry)
 
-Sentry is configured for production error tracking with automatic sanitization of sensitive data.
+Sentry is configured for production error tracking with automatic sanitization.
 
-### Local Development Setup
+### Setup
 
-1. **Create Sentry account** (if needed)
-   - Go to https://sentry.io/signup/
-   - Create organization: `steps-to-recovery` (or your preferred name)
-
-2. **Create mobile project**
-   - Organization → Projects → Create Project
-   - Platform: React Native
-   - Project name: `mobile`
-
-3. **Get your DSN**
-   - Project Settings → Client Keys (DSN)
-   - Copy the DSN (format: `https://<key>@<org>.ingest.sentry.io/<project-id>`)
-
-4. **Add to local `.env`**
+1. Create a Sentry project (React Native platform) at https://sentry.io
+2. Add DSN to `apps/mobile/.env`:
    ```bash
-   # apps/mobile/.env
    EXPO_PUBLIC_SENTRY_DSN=https://your-key@your-org.ingest.sentry.io/your-project-id
    ```
-
-### Production Setup (EAS Build)
-
-For production builds, add the Sentry DSN to EAS Secrets:
-
-```bash
-# Set production Sentry DSN
-eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN --value "https://your-key@your-org.ingest.sentry.io/your-project-id" --type string
-
-# Verify it's set
-eas secret:list
-```
+3. For production (EAS Build):
+   ```bash
+   eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN \
+     --value "your-dsn" --type string
+   ```
 
 ### How It Works
 
-- **Automatic initialization**: Sentry is initialized early in `App.tsx` via `initSentry()`
-- **User tracking**: User ID (not email) is tracked via `setSentryUser()` in `AuthContext`
-- **Error capture**: Errors are automatically captured via `Sentry.wrap()` on the root component
-- **Logger integration**: `logger.error()` automatically sends errors to Sentry in production
-- **Data sanitization**: All sensitive fields (encrypted\_\*, journal, etc.) are automatically redacted
-- **Privacy-first**: Only runs in production builds (`__DEV__ = false`)
-
-### Testing Sentry
-
-To test Sentry in a preview build:
-
-```bash
-# Create preview build with Sentry
-eas build --platform android --profile preview
-
-# Test by triggering an error in the app
-# Errors should appear in Sentry dashboard within 30 seconds
-```
-
-### Sentry Configuration Files
-
-- `apps/mobile/src/lib/sentry.ts` - Sentry initialization & sanitization
-- `apps/mobile/app.json` - Sentry plugin config (`@sentry/react-native/expo`)
-- `apps/mobile/App.tsx` - Early initialization & root component wrapping
-
-## Next Steps
-
-1. Install remaining dependencies
-2. Set up Supabase database schema
-3. Implement authentication (Phase 1)
-4. Build encrypted journaling (Phase 2)
+- Initialized early via `initSentry()` — only active in production (`__DEV__ = false`)
+- User ID tracked (not email) via `setSentryUser()` in AuthContext
+- `logger.error()` auto-sends to Sentry; sensitive fields are redacted
+- Config files: `apps/mobile/src/lib/sentry.ts`, `apps/mobile/src/lib/sentrySanitizer.ts`
 
 ## Resources
 
 - [Expo Documentation](https://docs.expo.dev/)
 - [Supabase Documentation](https://supabase.com/docs)
 - [React Navigation](https://reactnavigation.org/)
-- [Sentry Documentation](https://docs.sentry.io/platforms/react-native/)
-- [Plan Document](./plan.txt)
-- [Tech Stack Details](./tech%20stack.txt)
+- [Sentry for React Native](https://docs.sentry.io/platforms/react-native/)
+- [CLAUDE.md](./CLAUDE.md) — Full architecture, conventions, and security patterns

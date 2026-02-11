@@ -16,7 +16,7 @@ const encryptedContent = await encryptContent(sensitiveData);
 
 await db.runAsync(
   'INSERT INTO table_name (id, user_id, encrypted_content, created_at) VALUES (?, ?, ?, ?)',
-  [id, userId, encryptedContent, new Date().toISOString()]
+  [id, userId, encryptedContent, new Date().toISOString()],
 );
 ```
 
@@ -26,7 +26,7 @@ await db.runAsync(
 // Decrypt data when reading from database
 const entries = await db.getAllAsync<JournalEntry>(
   'SELECT * FROM journal_entries WHERE user_id = ? ORDER BY created_at DESC',
-  [userId]
+  [userId],
 );
 
 // Decrypt entries for display
@@ -34,7 +34,7 @@ const decryptedEntries = await Promise.all(
   entries.map(async (entry) => ({
     ...entry,
     content: await decryptContent(entry.encrypted_content),
-  }))
+  })),
 );
 ```
 
