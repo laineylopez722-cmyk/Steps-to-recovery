@@ -10,8 +10,7 @@
  * - Error handling
  */
 
-import { renderHook, act, waitFor } from '@testing-library/react-native';
-import React from 'react';
+import { renderHook, act } from '@testing-library/react-native';
 
 // Mock encryption utilities
 const mockEncryptContent = jest.fn();
@@ -55,8 +54,8 @@ jest.mock('../../utils/logger', () => ({
 }));
 
 // Import hook after mocking
-import { useMemoryStore, MemorySummary } from '../useMemoryStore';
-import { Memory, MemoryType } from '../../features/journal/utils/memoryExtraction';
+import { useMemoryStore, type MemorySummary } from '../useMemoryStore';
+import { type Memory, type MemoryType } from '../../features/journal/utils/memoryExtraction';
 import { logger as mockLogger } from '../../utils/logger';
 
 // Helper to create mock memory
@@ -677,7 +676,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       const memories = await act(async () => {
-        return await result.current.getMemoriesByType('person');
+        return result.current.getMemoriesByType('person');
       });
 
       expect(memories).toEqual([]);
@@ -693,7 +692,7 @@ describe('useMemoryStore', () => {
       });
 
       const memories = await act(async () => {
-        return await result.current.getMemoriesByType('person');
+        return result.current.getMemoriesByType('person');
       });
 
       expect(memories).toEqual([]);
@@ -789,7 +788,7 @@ describe('useMemoryStore', () => {
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
       const memories = await act(async () => {
-        return await result.current.getRecentMemories(7);
+        return result.current.getRecentMemories(7);
       });
 
       expect(memories).toEqual([]);
@@ -937,7 +936,7 @@ describe('useMemoryStore', () => {
       });
 
       const memories = await act(async () => {
-        return await result.current.searchMemories('');
+        return result.current.searchMemories('');
       });
 
       expect(memories).toEqual([]);
@@ -952,7 +951,7 @@ describe('useMemoryStore', () => {
       });
 
       const memories = await act(async () => {
-        return await result.current.searchMemories('   ');
+        return result.current.searchMemories('   ');
       });
 
       expect(memories).toEqual([]);
@@ -968,7 +967,7 @@ describe('useMemoryStore', () => {
       });
 
       const memories = await act(async () => {
-        return await result.current.searchMemories('test');
+        return result.current.searchMemories('test');
       });
 
       expect(memories).toEqual([]);

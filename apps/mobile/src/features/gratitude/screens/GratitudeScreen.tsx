@@ -32,7 +32,7 @@ interface Props {
   userId: string;
 }
 
-export function GratitudeScreen({ userId }: Props): React.ReactElement {
+export function GratitudeScreen({ userId: _userId }: Props): React.ReactElement {
   const navigation = useNavigation();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();

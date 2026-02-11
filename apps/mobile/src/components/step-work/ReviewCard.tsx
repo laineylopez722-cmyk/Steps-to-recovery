@@ -127,7 +127,7 @@ export function ReviewCard({
 
           {/* Progress dots */}
           <View style={styles.dotsContainer}>
-            {REVIEW_ITEMS.map((item, index) => {
+            {REVIEW_ITEMS.map((item, _index) => {
               const isAnswered = answeredStatuses[item.key as keyof typeof answeredStatuses];
               return (
                 <View

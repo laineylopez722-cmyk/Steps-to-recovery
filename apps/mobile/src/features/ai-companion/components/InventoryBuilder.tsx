@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import type { ResentmentEntry } from '../types';
 import { ds } from '../../../design-system/tokens/ds';
 

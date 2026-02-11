@@ -25,7 +25,7 @@
  * ```
  */
 
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -52,7 +52,7 @@ const MAX_RESPONSE_TIME_MS = 100;
 const EMERGENCY_TOUCH_TARGET = 64;
 
 /** Enhanced contrast ratio for emergency UI */
-const EMERGENCY_CONTRAST_RATIO = 10;
+const _EMERGENCY_CONTRAST_RATIO = 10;
 
 // ============================================================================
 // EMERGENCY BUTTON

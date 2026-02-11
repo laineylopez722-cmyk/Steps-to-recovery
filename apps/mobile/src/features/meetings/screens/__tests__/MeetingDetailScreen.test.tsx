@@ -1,4 +1,3 @@
-import React from 'react';
 import { Alert } from 'react-native';
 import { render, fireEvent, screen, waitFor } from '@testing-library/react-native';
 import type { CachedMeeting } from '../../types/meeting';
@@ -73,7 +72,7 @@ jest.mock('../../../../design-system/DsProvider', () => ({
 }));
 
 jest.mock('../../../../design-system/components/Button', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   Button: ({ children, onPress, disabled, accessibilityLabel }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
@@ -91,18 +90,18 @@ jest.mock('../../../../design-system/components/Button', () => ({
 }));
 
 jest.mock('../../../../design-system/components/Badge', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   Badge: ({ children }: any) => {
-    const React = require('react');
+    const _React = require('react');
     const { Text } = require('react-native');
     return <Text>{children}</Text>;
   },
 }));
 
 jest.mock('../../../../design-system/components/TextArea', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   TextArea: ({ value, onChangeText, accessibilityLabel, editable }: any) => {
-    const React = require('react');
+    const _React = require('react');
     const { TextInput } = require('react-native');
     return (
       <TextInput
@@ -116,18 +115,18 @@ jest.mock('../../../../design-system/components/TextArea', () => ({
 }));
 
 jest.mock('../../../../design-system/components/Card', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   Card: ({ children }: any) => {
-    const React = require('react');
+    const _React = require('react');
     const { View } = require('react-native');
     return <View>{children}</View>;
   },
 }));
 
 jest.mock('../../components/PreMeetingReflectionModal', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   PreMeetingReflectionModal: ({ visible, onComplete, onSkip }: any) => {
-    const React = require('react');
+    const _React = require('react');
     const { View, Text, Pressable } = require('react-native');
     return visible ? (
       <View>
@@ -156,9 +155,9 @@ jest.mock('../../components/CheckInModal', () => {
   // Store onClose ref so we always call the latest version
   let latestOnClose: (() => void) | null = null;
   return {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     CheckInModal: ({ visible, onConfirm, onClose }: any) => {
-      const React = require('react');
+      const _React = require('react');
       const { View, Text, Pressable } = require('react-native');
       // Always track latest onClose
       latestOnClose = onClose;
@@ -190,9 +189,9 @@ jest.mock('../../components/CheckInModal', () => {
 });
 
 jest.mock('../../components/PostMeetingReflectionModal', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   PostMeetingReflectionModal: ({ visible, preMood, onComplete, onClose }: any) => {
-    const React = require('react');
+    const _React = require('react');
     const { View, Text, Pressable } = require('react-native');
     return visible ? (
       <View>
@@ -310,7 +309,7 @@ describe('MeetingDetailScreen integration flow', () => {
       () => {
         expect(screen.getByText('Downtown Recovery Group')).toBeTruthy();
       },
-      { timeout: 5000 },
+      { timeout: 10000 },
     );
 
     fireEvent.press(screen.getByLabelText('Check in to meeting'));

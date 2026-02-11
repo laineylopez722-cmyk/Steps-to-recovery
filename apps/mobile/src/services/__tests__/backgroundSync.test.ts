@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+ 
 
 // Factory mocks must be defined BEFORE imports
 const mockIsTaskRegisteredAsync = jest.fn();
-const mockDefineTask = jest.fn();
+const _mockDefineTask = jest.fn();
 
 const mockRegisterTaskAsync = jest.fn();
 const mockUnregisterTaskAsync = jest.fn();

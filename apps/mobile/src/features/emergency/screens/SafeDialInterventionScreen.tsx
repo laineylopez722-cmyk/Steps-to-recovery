@@ -573,7 +573,7 @@ export function SafeDialInterventionScreen({
   }
 }
 
-const createStyles = (ds: DS) =>
+const createStyles = (_ds: DS) =>
   ({
     stepContainer: {
       flex: 1,

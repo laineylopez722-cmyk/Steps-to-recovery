@@ -1,7 +1,7 @@
 import { useStepScreenAnimation } from './useStepScreenAnimation';
 import { useStepDetailMainContentModel } from './useStepDetailMainContentModel';
 import { useStepDetailMainInteractionsModel } from './useStepDetailMainInteractionsModel';
-import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
+import { type useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepPrompt } from '@recovery/shared';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StepsStackParamList } from '../../../navigation/types';

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+ 
 
 const mockScheduleNotificationAsync = jest.fn();
 const mockCancelScheduledNotificationAsync = jest.fn();

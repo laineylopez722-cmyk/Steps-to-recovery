@@ -18,7 +18,7 @@ const mockScheduleNotificationAsync = jest.fn();
 const mockCancelScheduledNotificationAsync = jest.fn();
 const mockGetPermissionsAsync = jest.fn();
 const mockRequestPermissionsAsync = jest.fn();
-const mockSetNotificationHandler = jest.fn();
+const _mockSetNotificationHandler = jest.fn();
 
 const mockGetForegroundPermissionsAsync = jest.fn();
 const mockRequestForegroundPermissionsAsync = jest.fn();

@@ -12,7 +12,6 @@ import {
   JournalEntryCard,
   StepProgressTracker,
   AchievementBadge,
-  CrisisFAB,
   CompactCrisisButton,
   type StreakData,
   type DailyActivity,
@@ -57,7 +56,7 @@ export function StreakCounterExample(): React.ReactElement {
 
 // Example: DailyCheckInCard
 export function DailyCheckInCardExample(): React.ReactElement {
-  const [checkInData, setCheckInData] = useState<CheckInData>({
+  const [checkInData, _setCheckInData] = useState<CheckInData>({
     morning: {
       completed: true,
       time: '7:30 AM',

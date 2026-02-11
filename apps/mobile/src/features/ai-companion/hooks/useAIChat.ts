@@ -14,7 +14,6 @@ import type { ExtractedSemanticMemory } from '../services/semanticMemoryExtracto
 import {
   isOfflineMode,
   getOfflineResponse,
-  cacheResponse,
   queuePendingMessage,
 } from '../services/offlineFallback';
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';

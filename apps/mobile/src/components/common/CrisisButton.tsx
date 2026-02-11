@@ -154,7 +154,7 @@ export function CrisisButton() {
 
             {/* Quick Actions */}
             <View className="gap-3">
-              {quickResources.map((resource: CrisisResource, index: number) => (
+              {quickResources.map((resource: CrisisResource, _index: number) => (
                 <TouchableOpacity
                   key={resource.id}
                   onPress={() => handleCallResource(resource)}

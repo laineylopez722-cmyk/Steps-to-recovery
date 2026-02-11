@@ -165,7 +165,7 @@ async function gatherWeeklyData(
   const currentStep = currentStepRow?.step_number ?? 1;
 
   // Meeting attendance
-  const meetingRow = await db.getFirstAsync<{ cnt: number }>(
+  const _meetingRow = await db.getFirstAsync<{ cnt: number }>(
     `SELECT COUNT(*) as cnt FROM meeting_checkins
      WHERE user_id = ? AND checked_in_at >= ? AND checked_in_at < ?`,
     [userId, weekStart, endExclusive],

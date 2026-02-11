@@ -5,8 +5,8 @@
  * In dark mode, shadows are more pronounced with surface color overlays
  */
 
-import { Platform, type ViewStyle } from 'react-native';
-import { md3LightColors, md3DarkColors, elevationOverlayOpacity } from './md3-colors';
+import { type ViewStyle } from 'react-native';
+import { md3LightColors, md3DarkColors } from './md3-colors';
 
 // ============================================================================
 // MD3 ELEVATION LEVELS (0-5)

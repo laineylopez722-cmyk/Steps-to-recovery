@@ -11,7 +11,7 @@
  */
 
 import React, { useCallback } from 'react';
-import { View, Text, TouchableOpacity, AccessibilityInfo } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';

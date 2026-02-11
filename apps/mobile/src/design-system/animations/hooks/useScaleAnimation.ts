@@ -28,7 +28,6 @@ import {
   withSpring,
   withTiming,
   withSequence,
-  withDelay,
   runOnJS,
   type WithSpringConfig,
 } from 'react-native-reanimated';
@@ -112,7 +111,7 @@ export function useScaleAnimation(options: UseScaleAnimationOptions = {}): UseSc
     spring,
     reducedMotionDuration,
     delay,
-    autoPlay,
+    autoPlay: _autoPlay,
     bounce,
     onComplete,
     onStart,

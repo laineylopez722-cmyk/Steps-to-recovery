@@ -47,7 +47,7 @@ interface ProgressDashboardScreenProps {
 const { width: screenWidth } = Dimensions.get('window');
 
 // Mini bar chart with animation
-function MiniBarChart({
+function _MiniBarChart({
   data,
   maxValue,
   color,

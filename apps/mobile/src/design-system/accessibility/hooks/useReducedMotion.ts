@@ -66,7 +66,7 @@ export function useReducedMotion(): UseReducedMotionReturn {
         if (saved !== null && mountedRef.current) {
           setUserOverrideState(saved === 'true' ? true : saved === 'false' ? false : null);
         }
-      } catch (error) {
+      } catch (_error) {
         // Silently fail - use system preference
       } finally {
         if (mountedRef.current) {
@@ -131,7 +131,7 @@ export function useReducedMotion(): UseReducedMotionReturn {
       if (mountedRef.current) {
         setUserOverrideState(value);
       }
-    } catch (error) {
+    } catch (_error) {
       // Silently fail
     }
   }, []);

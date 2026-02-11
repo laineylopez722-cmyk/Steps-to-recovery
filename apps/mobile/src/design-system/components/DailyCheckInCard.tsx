@@ -26,8 +26,6 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
-  interpolateColor,
-  Extrapolation,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';

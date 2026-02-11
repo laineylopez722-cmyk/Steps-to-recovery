@@ -116,6 +116,7 @@ export const linking: LinkingOptions<types.RootStackParamList> = {
               SharedEntries: 'profile/sponsor/shared/:connectionId',
               ShareEntries: 'profile/sponsor/share/:entryId?',
               NotificationSettings: 'profile/settings/notifications',
+              WidgetSettings: 'profile/settings/widget',
             } as Record<string, string>,
           },
         } as Record<string, unknown>,

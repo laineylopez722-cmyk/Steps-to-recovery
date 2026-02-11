@@ -7,7 +7,7 @@
  * @see https://m3.material.io/styles/motion/overview
  */
 
-import { Easing, FadeIn, FadeInDown, FadeOut, FadeOutUp, Layout } from 'react-native-reanimated';
+import { Easing, FadeIn, FadeInDown, Layout } from 'react-native-reanimated';
 
 // =============================================================================
 // DURATION SCALE

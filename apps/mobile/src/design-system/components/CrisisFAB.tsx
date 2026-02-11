@@ -17,7 +17,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   type ViewStyle,
-  type TextStyle,
   AccessibilityInfo,
 } from 'react-native';
 import Animated, {
@@ -28,8 +27,6 @@ import Animated, {
   withRepeat,
   withSequence,
   Easing,
-  interpolate,
-  Extrapolation,
   cancelAnimation,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
@@ -196,7 +193,7 @@ export function CrisisFAB({
 }: CrisisFABProps): React.ReactElement {
   const theme = useTheme();
   const isDark = theme?.isDark ?? false;
-  const colors = isDark ? md3DarkColors : md3LightColors;
+  const _colors = isDark ? md3DarkColors : md3LightColors;
   const elevation = isDark ? md3ElevationDark : md3ElevationLight;
 
   // Amber secondary color from MD3

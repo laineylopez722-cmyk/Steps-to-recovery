@@ -6,7 +6,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Dimensions, TouchableOpacity } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -134,7 +134,7 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         });
-      } catch (err) {
+      } catch (_err) {
         // Ignore Supabase errors - local storage is enough
       }
     }

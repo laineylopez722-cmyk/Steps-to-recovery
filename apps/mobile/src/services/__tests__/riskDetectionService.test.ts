@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+ 
 
 // Mock AsyncStorage BEFORE imports - source uses dynamic import()
 // which babel transpiles to require() in test env
@@ -97,9 +97,9 @@ describe('riskDetectionService', () => {
 
     it('should detect check-in gap', async () => {
       // Set up different responses per table
-      let callCount = 0;
-      mockFrom.mockImplementation((table: string) => {
-        callCount++;
+      let _callCount = 0;
+      mockFrom.mockImplementation((_table: string) => {
+        _callCount++;
         const chainObj = {
           select: jest.fn().mockReturnValue({
             eq: jest.fn().mockReturnValue({

@@ -47,7 +47,6 @@ import React, {
   useEffect,
   type ReactElement,
   type ReactNode,
-  type Ref,
 } from 'react';
 import {
   TextInput,
@@ -56,7 +55,6 @@ import {
   type ViewStyle,
   type StyleProp,
   type TextStyle,
-  type AccessibilityRole,
   type AccessibilityState,
   Platform,
 } from 'react-native';
@@ -179,7 +177,7 @@ export const Input = forwardRef<TextInput, InputProps>(
       testID,
       onFocus,
       onBlur,
-      onChange,
+      onChange: _onChange,
       ...textInputProps
     },
     forwardedRef,
@@ -406,7 +404,7 @@ interface PasswordToggleProps {
  * Password visibility toggle button
  */
 function PasswordToggle({ isVisible, onToggle }: PasswordToggleProps): ReactElement {
-  const theme = useTheme();
+  const _theme = useTheme();
 
   return (
     <View

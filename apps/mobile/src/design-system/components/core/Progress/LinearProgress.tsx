@@ -36,7 +36,6 @@ import Animated, {
   withTiming,
   withRepeat,
   withSequence,
-  withDelay,
   Easing,
   interpolate,
 } from 'react-native-reanimated';
@@ -102,7 +101,7 @@ export interface LinearProgressProps extends Omit<ViewProps, 'style'> {
 // ============================================================================
 
 const INDETERMINATE_DURATION = 1500;
-const INDETERMINATE_DELAY = 500;
+const _INDETERMINATE_DELAY = 500;
 
 // ============================================================================
 // COMPONENT
@@ -130,7 +129,7 @@ export function LinearProgress({
   testID,
   ...viewProps
 }: LinearProgressProps): ReactElement {
-  const theme = useTheme();
+  const _theme = useTheme();
 
   // Clamp value between 0-100
   const clampedValue = useMemo(() => {

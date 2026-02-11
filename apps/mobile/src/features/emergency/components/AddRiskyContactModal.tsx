@@ -424,7 +424,7 @@ export function AddRiskyContactModal({
   );
 }
 
-const createStyles = (ds: DS) =>
+const createStyles = (_ds: DS) =>
   ({
     container: {
       flex: 1,

@@ -10,7 +10,7 @@ import type { ViewStyle } from 'react-native';
 // iOS Dark Mode surface colors
 const SURFACE = '#1C1C1E';
 const SURFACE_ELEVATED = '#2C2C2E';
-const BORDER = '#38383A';
+const _BORDER = '#38383A';
 const BORDER_SUBTLE = '#2C2C2E';
 
 // Card variants

@@ -393,7 +393,7 @@ export function useInteractionTiming(
   }, []);
 
   const end = useCallback(() => {
-    const duration = performance.now() - startTimeRef.current;
+    const _duration = performance.now() - startTimeRef.current;
 
     interactionHandleRef.current = InteractionManager.runAfterInteractions(() => {
       const totalDuration = performance.now() - startTimeRef.current;

@@ -45,7 +45,7 @@ export function DatabaseProvider({ children }: DatabaseProviderProps): React.Rea
  */
 function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.ReactElement {
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
   const initStartedRef = useRef(false);
 
   useEffect(() => {

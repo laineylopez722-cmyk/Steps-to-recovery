@@ -8,7 +8,6 @@ import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
   withTiming,
   withSequence,
   interpolate,
@@ -40,7 +39,7 @@ export interface JournalEntryCardProps {
 export function JournalEntryCard({
   entry,
   onPress,
-  onSharePress,
+  onSharePress: _onSharePress,
   reducedMotion = false,
   testID,
 }: JournalEntryCardProps): React.ReactElement {
@@ -229,7 +228,7 @@ export function JournalEntryCard({
               </View>
 
               {/* Tags */}
-              {entry.tags.slice(0, 2).map((tag, index) => (
+              {entry.tags.slice(0, 2).map((tag, _index) => (
                 <View
                   key={tag}
                   className="px-2 py-1 rounded-full mr-1"

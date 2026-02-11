@@ -6,10 +6,9 @@
  * Bottom toolbar with actions.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
-  Text,
   TextInput,
   StyleSheet,
   Pressable,
@@ -24,7 +23,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
-import { hapticSuccess, hapticLight, hapticWarning } from '../../../utils/haptics';
+import { hapticLight, hapticWarning } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 import {
   useCreateJournalEntry,
@@ -49,8 +48,8 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const params = route.params as { mode?: 'create' | 'edit'; entryId?: string } | undefined;
 
   const { entries } = useJournalEntries(userId);
-  const { createEntry, isPending: isCreating } = useCreateJournalEntry(userId);
-  const { updateEntry, isPending: isUpdating } = useUpdateJournalEntry(userId);
+  const { createEntry, isPending: _isCreating } = useCreateJournalEntry(userId);
+  const { updateEntry, isPending: _isUpdating } = useUpdateJournalEntry(userId);
   const { deleteEntry } = useDeleteJournalEntry(userId);
   const memoryStore = useMemoryStore(userId);
 

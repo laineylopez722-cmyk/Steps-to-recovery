@@ -40,7 +40,7 @@ export async function syncContextToOpenClaw(metadata: RecoveryContextMetadata): 
     };
 
     // Send as a system-level context update via the provider
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+     
     for await (const _chunk of provider.chat(
       [
         {

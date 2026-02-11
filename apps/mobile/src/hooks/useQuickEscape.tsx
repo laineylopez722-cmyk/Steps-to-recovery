@@ -18,7 +18,7 @@
  */
 
 import { useState, useEffect, useCallback, useRef, type ReactElement } from 'react';
-import { AppState, Pressable, StyleSheet, type GestureResponderEvent } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 import { secureStorage } from '../adapters/secureStorage';

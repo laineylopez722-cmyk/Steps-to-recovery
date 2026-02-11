@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   TouchableOpacity,
   ScrollView,
@@ -234,7 +233,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
   );
 }
 
-const createStyles = (ds: DS) =>
+const createStyles = (_ds: DS) =>
   ({
     safeArea: {
       flex: 1,

@@ -12,7 +12,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
-import { useDs } from '../../../design-system/DsProvider';
 import { ProgressBar } from '../../../design-system/components/ProgressBar';
 import { useCravingSurf } from '../hooks/useCravingSurf';
 import { CravingRatingSlider } from '../components/CravingRatingSlider';

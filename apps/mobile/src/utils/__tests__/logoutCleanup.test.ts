@@ -1,3 +1,6 @@
+import type * as LogoutCleanupModule from '../logoutCleanup';
+import type * as LoggerModule from '../logger';
+
 jest.mock('../logger', () => ({
   logger: {
     info: jest.fn(),
@@ -110,10 +113,10 @@ describe('performLogoutCleanup', () => {
       logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn(), debug: jest.fn() },
     }));
 
-    /* eslint-disable @typescript-eslint/no-require-imports */
+     
     const { performLogoutCleanup: cleanupWeb } =
-      require('../logoutCleanup') as typeof import('../logoutCleanup');
-    const { logger: webLogger } = require('../logger') as typeof import('../logger');
+      require('../logoutCleanup') as typeof LogoutCleanupModule;
+    const { logger: webLogger } = require('../logger') as typeof LoggerModule;
 
     await cleanupWeb({ db: mockDb });
 

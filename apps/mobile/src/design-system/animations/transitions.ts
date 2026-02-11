@@ -406,7 +406,7 @@ export function useStaggerDelays(config: StaggerConfig): {
   getDelay: (index: number) => number;
   getDuration: (index: number) => number;
 } {
-  const { itemCount, staggerDelay, maxDelay = 500, baseDelay = 0 } = config;
+  const { itemCount: _itemCount, staggerDelay, maxDelay = 500, baseDelay = 0 } = config;
 
   const getDelay = (index: number): number => {
     const calculatedDelay = baseDelay + index * staggerDelay;

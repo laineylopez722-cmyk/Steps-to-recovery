@@ -10,7 +10,6 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import React from 'react';
 
 // Mock dependencies
 const mockSupabaseFrom = jest.fn();

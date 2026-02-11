@@ -69,6 +69,7 @@ export type ProfileStackParamList = {
   NotificationSettings: undefined;
   AISettings: undefined;
   SecuritySettings: undefined;
+  WidgetSettings: undefined;
 };
 
 // Meetings Stack

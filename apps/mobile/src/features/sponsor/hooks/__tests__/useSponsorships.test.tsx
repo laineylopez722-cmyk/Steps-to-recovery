@@ -11,7 +11,6 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import React from 'react';
 
 // Create stable mock user object
 const mockStableUser = { id: 'user-123', email: 'test@example.com' };

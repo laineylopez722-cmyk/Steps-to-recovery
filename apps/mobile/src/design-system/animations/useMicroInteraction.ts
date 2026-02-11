@@ -18,7 +18,7 @@
  * ```
  */
 
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useReducedMotion } from 'react-native-reanimated';
 import { AccessibilityInfo, type GestureResponderEvent } from 'react-native';
 
@@ -47,14 +47,12 @@ import {
   useRippleEffect,
   useCardFeedback,
   pressConfigs,
-  type PressVariant,
   type UsePressAnimationOptions,
 } from './pressAnimations';
 
 import {
   haptics,
   isHapticsAvailable,
-  type hapticCapabilities as HapticCapabilities,
 } from './hapticFeedback';
 
 import {

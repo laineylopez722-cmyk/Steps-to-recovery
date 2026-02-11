@@ -60,7 +60,7 @@ export function DailyCheckInCard({
   }, [checkInData]);
 
   const isComplete = status === 'complete';
-  const hasAnyCompleted = status !== 'incomplete';
+  const _hasAnyCompleted = status !== 'incomplete';
 
   // Celebration animation when completed
   React.useEffect(() => {

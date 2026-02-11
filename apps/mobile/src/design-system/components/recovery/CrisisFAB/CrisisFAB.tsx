@@ -16,9 +16,6 @@ import Animated, {
   withTiming,
   withSequence,
   withDelay,
-  withRepeat,
-  interpolate,
-  Extrapolate,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Shield, Phone } from 'lucide-react-native';
@@ -46,11 +43,11 @@ export function CrisisFAB({
   showSOSOverlay = true,
 }: CrisisFABProps): React.ReactElement {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const _isDark = colorScheme === 'dark';
   const [sosVisible, setSOSVisible] = useState(false);
 
   // Animation values
-  const scale = useSharedValue(1);
+  const _scale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
   const pulseOpacity = useSharedValue(0);
   const pressScale = useSharedValue(1);
@@ -219,7 +216,7 @@ export function CompactCrisisButton({
   testID,
 }: CompactCrisisButtonProps): React.ReactElement {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const _isDark = colorScheme === 'dark';
 
   const scale = useSharedValue(1);
 

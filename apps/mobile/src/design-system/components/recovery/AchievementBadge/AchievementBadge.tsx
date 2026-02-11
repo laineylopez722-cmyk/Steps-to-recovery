@@ -14,7 +14,6 @@ import Animated, {
   withDelay,
   interpolate,
   Extrapolate,
-  runOnJS,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Lock, Award, Trophy, Star, Zap, Heart, Target, Flame } from 'lucide-react-native';

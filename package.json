@@ -49,5 +49,7 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "react-native-worklets": "^0.7.3"
+  }
 }

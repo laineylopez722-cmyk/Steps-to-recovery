@@ -21,7 +21,7 @@ async function getSpeech(): Promise<SpeechModule | null> {
   if (_speechChecked) return _speech;
   _speechChecked = true;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+     
     _speech = require('expo-speech') as SpeechModule;
   } catch {
     logger.info('expo-speech not available — TTS disabled');

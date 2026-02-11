@@ -238,7 +238,7 @@ interface CompactThemeToggleProps {
 
 export function CompactThemeToggle({ isDark, onToggle, style }: CompactThemeToggleProps) {
   const styles = useThemedStyles(createStyles);
-  const ds = useDs();
+  const _ds = useDs();
   const scale = useSharedValue(1);
   const rotate = useSharedValue(0);
 

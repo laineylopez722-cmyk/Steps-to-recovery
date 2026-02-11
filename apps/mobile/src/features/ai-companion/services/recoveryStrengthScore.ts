@@ -58,7 +58,7 @@ function getGrade(score: number): { grade: string; emoji: string } {
   return { grade: 'Building', emoji: '🧱' };
 }
 
-function generateInsights(metrics: RecoveryMetrics, score: number): string[] {
+function generateInsights(metrics: RecoveryMetrics, _score: number): string[] {
   const insights: string[] = [];
 
   if (metrics.checkInConsistency >= 0.85) {

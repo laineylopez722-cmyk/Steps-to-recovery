@@ -16,9 +16,6 @@ import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, {
   FadeIn,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
 } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useContacts } from '../../hooks/useContacts';

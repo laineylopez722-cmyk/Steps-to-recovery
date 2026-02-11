@@ -15,7 +15,7 @@ import * as Haptics from 'expo-haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { spacing, radius } from '../../../design-system/tokens/modern';
 import { Text } from '../../../design-system/components/Text';
-import { useEmergencyAccess, type CrisisHotline } from '../../../hooks/useEmergencyAccess';
+import { useEmergencyAccess } from '../../../hooks/useEmergencyAccess';
 import { logger } from '../../../utils/logger';
 
 const PRIMARY_HOTLINES: Array<{
@@ -61,7 +61,7 @@ export function CrisisContacts({
   showCustomContacts = true,
 }: CrisisContactsProps): ReactElement {
   const styles = useThemedStyles(createStyles);
-  const { emergencyContacts, callCrisisLine } = useEmergencyAccess();
+  const { emergencyContacts, callCrisisLine: _callCrisisLine } = useEmergencyAccess();
 
   const triggerHaptic = useCallback(async (): Promise<void> => {
     try {

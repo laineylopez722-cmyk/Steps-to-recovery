@@ -9,7 +9,7 @@
  */
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import * as Notifications from 'expo-notifications';
+import type * as Notifications from 'expo-notifications';
 import { secureStorage } from '../adapters/secureStorage';
 import {
   DEFAULT_PREFERENCES,

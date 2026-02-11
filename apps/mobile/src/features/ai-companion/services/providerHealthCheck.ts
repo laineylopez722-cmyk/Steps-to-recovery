@@ -42,7 +42,7 @@ export async function checkProviderHealth(provider: AIProvider): Promise<Provide
 
       (async (): Promise<void> => {
         try {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+           
           for await (const _chunk of service.chat(testMessages, {
             maxTokens: 5,
             temperature: 0,

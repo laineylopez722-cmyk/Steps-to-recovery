@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Platform, type ViewToken } from 'react-native';
+import { type FlatList, Platform, type ViewToken } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import type { StepListItem } from '../utils/stepListItems';
 import { getFirstVisibleQuestionNumber } from '../utils/stepViewability';

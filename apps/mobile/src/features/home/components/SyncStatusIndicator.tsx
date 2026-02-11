@@ -42,7 +42,7 @@ export function SyncStatusIndicator() {
 
   // Handle sync press - triggers both legacy and new sync
   const handlePress = useCallback(
-    async (event: GestureResponderEvent) => {
+    async (_event: GestureResponderEvent) => {
       if (isSyncing || !isOnline) return;
 
       try {

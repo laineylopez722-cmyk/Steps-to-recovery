@@ -34,7 +34,6 @@ import Animated, {
   useAnimatedProps,
   withTiming,
   withRepeat,
-  withSpring,
   withSequence,
   Easing,
 } from 'react-native-reanimated';

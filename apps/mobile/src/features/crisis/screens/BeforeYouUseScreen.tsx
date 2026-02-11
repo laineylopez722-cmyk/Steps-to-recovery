@@ -32,8 +32,8 @@ import {
 } from '../../../services/crisisCheckpointService';
 
 import { useSponsorInfo } from '../../../hooks/useSponsorInfo';
-import { RootStackParamList } from '../../../navigation/types';
-import { SponsorInfo } from '../../../types/index';
+import { type RootStackParamList } from '../../../navigation/types';
+import { type SponsorInfo } from '../../../types/index';
 import { makePhoneCall, sendSMS } from '@recovery/shared';
 import { BreathingExercise } from '../components/BreathingExercise';
 import { GroundingExercise } from '../components/GroundingExercise';

@@ -12,6 +12,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.recovery.stepstorecovery",
+      "appGroupIdentifier": "group.com.recovery.stepstorecovery",
       "infoPlist": {
         "NSLocationAlwaysAndWhenInUseUsageDescription": "We use your location to notify you when you're near saved meeting locations to provide timely support.",
         "NSLocationWhenInUseUsageDescription": "We use your location to help you find nearby meetings and save locations for reminders.",

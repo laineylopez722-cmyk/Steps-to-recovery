@@ -21,8 +21,7 @@
  */
 
 import React, { Component, type ReactNode, type ErrorInfo } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import { useA11yAnnouncer } from '../../accessibility/hooks/useA11yAnnouncer';
+import { View, Text, StyleSheet } from 'react-native';
 
 // ============================================================================
 // TYPES

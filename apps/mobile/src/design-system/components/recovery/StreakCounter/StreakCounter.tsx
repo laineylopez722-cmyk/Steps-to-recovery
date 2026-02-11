@@ -42,7 +42,7 @@ export interface StreakCounterProps {
 
 export function StreakCounter({
   data,
-  history = [],
+  history: _history = [],
   onPress,
   onShowHistory,
   reducedMotion = false,

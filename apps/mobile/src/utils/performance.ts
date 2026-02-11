@@ -1,4 +1,4 @@
-import { InteractionManager, type EventSubscription } from 'react-native';
+import { InteractionManager } from 'react-native';
 import { logger } from './logger';
 
 /**

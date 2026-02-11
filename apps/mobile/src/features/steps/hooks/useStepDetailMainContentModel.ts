@@ -1,5 +1,5 @@
 import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
-import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
+import { type useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepPrompt } from '@recovery/shared';
 import type { StepDetailMainContentProps } from '../components/StepDetailMainContent';
 

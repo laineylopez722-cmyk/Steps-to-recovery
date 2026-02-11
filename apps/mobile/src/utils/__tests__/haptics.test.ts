@@ -1,10 +1,12 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
+ 
+import type * as HapticsModule from '../haptics';
+
 const mockImpactAsync = jest.fn().mockResolvedValue(undefined);
 const mockNotificationAsync = jest.fn().mockResolvedValue(undefined);
 const mockSelectionAsync = jest.fn().mockResolvedValue(undefined);
 
 // Helpers to load haptics module with a specific platform
-function loadHapticsForPlatform(os: string): typeof import('../haptics') {
+function loadHapticsForPlatform(os: string): typeof HapticsModule {
   jest.resetModules();
 
   jest.doMock('react-native', () => ({
@@ -18,7 +20,7 @@ function loadHapticsForPlatform(os: string): typeof import('../haptics') {
     selectionAsync: mockSelectionAsync,
   }));
 
-  return require('../haptics') as typeof import('../haptics');
+  return require('../haptics') as typeof HapticsModule;
 }
 
 describe('haptics utilities (native platform)', () => {

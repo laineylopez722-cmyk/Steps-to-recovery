@@ -19,14 +19,12 @@ import {
   TouchableOpacity,
   type ViewStyle,
   type TextStyle,
-  type GestureResponderEvent,
 } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
 import { md3LightColors, md3DarkColors } from '../tokens/md3-colors';

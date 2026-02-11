@@ -73,16 +73,13 @@ jest.mock('../../utils/logger', () => ({
   },
 }));
 
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 import { useAchievements } from '../useAchievements';
 import {
   useAchievementStore,
   useContactStore,
   useMeetingStore,
   useRegularMeetingStore,
-  useStepWorkStore,
-  useTenthStepStore,
-  usePhoneStore,
 } from '@recovery/shared';
 import { useSobriety } from '../useSobriety';
 import { useCheckin } from '../useCheckin';

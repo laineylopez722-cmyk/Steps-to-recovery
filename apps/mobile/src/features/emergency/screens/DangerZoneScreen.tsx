@@ -395,7 +395,7 @@ export function DangerZoneScreen({
   );
 }
 
-const createStyles = (ds: DS) =>
+const createStyles = (_ds: DS) =>
   ({
     container: {
       flex: 1,

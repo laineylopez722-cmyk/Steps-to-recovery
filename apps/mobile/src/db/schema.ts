@@ -5,7 +5,7 @@
  * Uses SQLite with expo-sqlite.
  */
 
-import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 // ============================================================================
 // USER PROFILE

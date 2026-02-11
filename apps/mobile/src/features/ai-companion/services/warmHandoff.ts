@@ -21,7 +21,7 @@ export function draftSponsorMessage(
   sponsorName: string,
   userName: string,
   severity: 'low' | 'medium' | 'high',
-  context?: string,
+  _context?: string,
 ): HandoffDraft {
   let message: string;
 

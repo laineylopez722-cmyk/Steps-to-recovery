@@ -152,7 +152,7 @@ export function useAccessibilityInfo(): UseAccessibilityInfoReturn {
             isLoading: false,
           });
         }
-      } catch (error) {
+      } catch (_error) {
         if (mountedRef.current) {
           setState((prev: AccessibilityInfoState) => ({ ...prev, isLoading: false }));
         }

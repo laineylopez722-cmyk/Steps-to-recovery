@@ -263,7 +263,7 @@ function formatTime(h: number, m: number): string {
 function TimePickerRow({
   label,
   time,
-  onTimeChange,
+  onTimeChange: _onTimeChange,
 }: {
   label: string;
   time: string;

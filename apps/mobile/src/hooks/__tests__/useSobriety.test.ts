@@ -43,7 +43,7 @@ import { useSobriety } from '../useSobriety';
 import { useProfileStore, useSettingsStore } from '@recovery/shared';
 
 const mockUseProfileStore = useProfileStore as jest.MockedFunction<typeof useProfileStore>;
-const mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
+const _mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;
 
 describe('useSobriety', () => {
   beforeEach(() => {

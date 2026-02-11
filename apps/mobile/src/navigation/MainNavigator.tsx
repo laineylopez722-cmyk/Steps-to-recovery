@@ -16,6 +16,7 @@ import { StepReviewScreen } from '../features/steps/screens/StepReviewScreen';
 import { ProfileScreen } from '../features/profile/screens/ProfileScreen';
 import { NotificationSettingsScreen } from '../features/settings/screens/NotificationSettingsScreen';
 import { SecuritySettingsScreen } from '../features/settings/screens/SecuritySettingsScreen';
+import { WidgetSettingsScreen } from '../features/settings/screens/WidgetSettingsScreen';
 import { SponsorScreen } from '../features/sponsor/screens/SponsorScreen';
 import { InviteSponsorScreen } from '../features/sponsor/screens/InviteSponsorScreen';
 import { SharedEntriesScreen } from '../features/sponsor/screens/SharedEntriesScreen';
@@ -332,6 +333,11 @@ function ProfileStackNavigator(): React.ReactElement {
         name="SecuritySettings"
         component={SecuritySettingsScreen}
         options={{ title: 'Privacy & Security', headerBackTitle: 'Back' }}
+      />
+      <ProfileStack.Screen
+        name="WidgetSettings"
+        component={WidgetSettingsScreen}
+        options={{ title: 'Home Screen Widget', headerBackTitle: 'Back' }}
       />
     </ProfileStack.Navigator>
   );

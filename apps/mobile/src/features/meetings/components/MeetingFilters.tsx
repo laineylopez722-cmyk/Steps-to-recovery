@@ -257,7 +257,7 @@ export function MeetingFilters({
   );
 }
 
-const createStyles = (ds: DS) =>
+const createStyles = (_ds: DS) =>
   ({
     container: {
       flex: 1,

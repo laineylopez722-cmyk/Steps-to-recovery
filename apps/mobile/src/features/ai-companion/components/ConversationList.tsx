@@ -7,7 +7,7 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { ChevronLeft, MessageCircle, Archive, Plus, Share2 } from 'lucide-react-native';
+import { ChevronLeft, Plus, Share2 } from 'lucide-react-native';
 import { Icon } from '../../../components/ui/Icon';
 import type { Conversation } from '../types';
 
@@ -60,7 +60,7 @@ export function ConversationList({
   onNewConversation,
   onArchive,
   onExport,
-  isLoading,
+  isLoading: _isLoading,
 }: ConversationListProps) {
   const navigation = useNavigation();
 

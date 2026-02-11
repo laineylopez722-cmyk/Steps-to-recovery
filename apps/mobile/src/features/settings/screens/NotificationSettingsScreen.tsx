@@ -193,7 +193,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
     radius: geofenceRadius,
     setRadius: setGeofenceRadius,
     permissionStatus: geoPermStatus,
-    requestPermission: requestGeoPerm,
+    requestPermission: _requestGeoPerm,
     isLoading: geoLoading,
   } = useGeofencing();
 

@@ -2,7 +2,6 @@ import { useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   TouchableOpacity,
   ScrollView,
@@ -222,7 +221,7 @@ export function LoginScreen({ navigation }: Props) {
   );
 }
 
-const createStyles = (ds: DS) =>
+const createStyles = (_ds: DS) =>
   ({
     safeArea: {
       flex: 1,

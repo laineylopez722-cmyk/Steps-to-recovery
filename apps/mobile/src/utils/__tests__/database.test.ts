@@ -109,8 +109,8 @@ describe('database utilities', () => {
     it('skips migrations when schema is up to date', async () => {
       const freshName = `fresh-${Date.now()}.db`;
       mockDb.getDatabaseName.mockReturnValue(freshName);
-      // Return a high version that equals CURRENT_SCHEMA_VERSION (15)
-      mockDb.getFirstAsync.mockResolvedValue({ version: 15 });
+      // Return a high version that equals CURRENT_SCHEMA_VERSION (18)
+      mockDb.getFirstAsync.mockResolvedValue({ version: 18 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -119,7 +119,7 @@ describe('database utilities', () => {
     });
 
     it('sets WAL journal mode pragma', async () => {
-      mockDb.getFirstAsync.mockResolvedValue({ version: 15 });
+      mockDb.getFirstAsync.mockResolvedValue({ version: 18 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -135,9 +135,9 @@ describe('database utilities', () => {
       mockDb.getAllAsync.mockResolvedValue([]);
 
       // Make pragmas fail but table creation succeed
-      let callIndex = 0;
+      let _callIndex = 0;
       mockDb.execAsync.mockImplementation(async (sql: string) => {
-        callIndex++;
+        _callIndex++;
         if (sql.includes('PRAGMA')) {
           throw new Error('PRAGMA not supported');
         }
@@ -204,7 +204,7 @@ describe('database utilities', () => {
       await initDatabase(mockDb);
 
       // Should have called PRAGMA table_info for column checks
-      const execCalls = mockDb.execAsync.mock.calls.map((c) => c[0] as string);
+      const _execCalls = mockDb.execAsync.mock.calls.map((c) => c[0] as string);
       const pragmaTableInfoCalls = mockDb.getAllAsync.mock.calls.filter(
         (c) => typeof c[0] === 'string' && (c[0] as string).includes('PRAGMA table_info'),
       );
@@ -243,8 +243,8 @@ describe('database utilities', () => {
           typeof c[0] === 'string' && (c[0] as string).includes('INSERT INTO schema_migrations'),
       );
 
-      // Should have recorded migrations 1 through 15
-      expect(migrationRecords.length).toBe(15);
+      // Should have recorded migrations 1 through 18
+      expect(migrationRecords.length).toBe(18);
     });
   });
 });

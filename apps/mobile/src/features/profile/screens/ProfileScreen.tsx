@@ -115,10 +115,10 @@ function CardGroup({ children, delay = 0 }: { children: React.ReactNode; delay?:
 
 export function ProfileScreen(): React.ReactElement {
   const navigation = useNavigation<ProfileScreenNavigationProp>();
-  const { user, signOut, loading } = useAuth();
+  const { user, signOut, loading: _loading } = useAuth();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
-  const [signingOut, setSigningOut] = useState(false);
+  const [_signingOut, setSigningOut] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const handleSignOut = useCallback(async () => {
@@ -209,6 +209,12 @@ export function ProfileScreen(): React.ReactElement {
                 title="Privacy & Security"
                 subtitle="Biometrics and encryption"
                 onPress={() => navigation.navigate('SecuritySettings')}
+              />
+              <ListItem
+                icon="smartphone"
+                title="Home Screen Widget"
+                subtitle="Recovery progress at a glance"
+                onPress={() => navigation.navigate('WidgetSettings')}
                 isLast
               />
             </CardGroup>

@@ -8,7 +8,7 @@ import { logger } from './logger';
 // Try to import Sentry dynamically
 let captureException: ((error: unknown) => void) | null = null;
 try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   const Sentry = require('@sentry/react-native');
   captureException = Sentry.captureException;
 } catch {

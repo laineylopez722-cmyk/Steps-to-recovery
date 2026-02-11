@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Text } from '../../../design-system/components/Text';
 import { Button } from '../../../design-system/components/Button';

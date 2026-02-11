@@ -17,17 +17,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   type ViewStyle,
-  type TextStyle,
-} from 'react-native';
-import Animated, {
+} from 'react-native';import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
   withSequence,
-  interpolate,
-  Easing,
-  Extrapolation,
   type SharedValue,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
@@ -43,7 +38,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
+const _AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
 // ============================================================================
 // TYPES
@@ -148,7 +143,7 @@ export function AchievementBadge({
   const theme = useTheme();
   const isDark = theme?.isDark ?? false;
   const colors = isDark ? md3DarkColors : md3LightColors;
-  const elevation = isDark ? md3ElevationDark : md3ElevationLight;
+  const _elevation = isDark ? md3ElevationDark : md3ElevationLight;
 
   const { scale, rotation, glowStyle } = useUnlockAnimation(isUnlocked, animateUnlock);
 
@@ -163,7 +158,7 @@ export function AchievementBadge({
     pressScale.value = withSpring(1, md3Motion.spring.quick);
   };
 
-  const pressAnimatedStyle = useAnimatedStyle(() => ({
+  const _pressAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: pressScale.value }],
   }));
 
@@ -282,11 +277,11 @@ export function AchievementGrid({
 }: AchievementGridProps): React.ReactElement {
   const theme = useTheme();
   const isDark = theme?.isDark ?? false;
-  const colors = isDark ? md3DarkColors : md3LightColors;
+  const _colors = isDark ? md3DarkColors : md3LightColors;
 
   return (
     <View style={[styles.gridContainer, style]}>
-      {achievements.map((achievement, index) => (
+      {achievements.map((achievement, _index) => (
         <AchievementBadge
           key={achievement.id}
           achievement={achievement}

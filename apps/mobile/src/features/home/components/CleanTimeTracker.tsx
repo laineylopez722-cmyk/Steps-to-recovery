@@ -12,7 +12,6 @@ import Animated, {
 import { Card, ProgressBar, Badge, CircularProgress } from '../../../design-system/components';
 import { useTheme } from '../../../design-system/hooks/useTheme';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
-import { useDs } from '../../../design-system/DsProvider';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCleanTime } from '../hooks/useCleanTime';
 

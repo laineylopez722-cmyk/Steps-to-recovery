@@ -198,7 +198,7 @@ export function SobrietyCounter({
   style,
   onShare,
 }: SobrietyCounterProps) {
-  const theme = useTheme();
+  const _theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const [lastReachedMilestone, setLastReachedMilestone] = useState<number>(-1);
@@ -288,7 +288,7 @@ export function SobrietyCounter({
         message,
         title: 'My Recovery Progress',
       });
-    } catch (error) {
+    } catch (_error) {
       // User cancelled or error occurred
     }
   }, [onShare, timeElapsed.days]);

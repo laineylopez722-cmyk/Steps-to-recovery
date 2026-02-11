@@ -25,7 +25,7 @@ import Svg, { Path, Defs, RadialGradient, Stop, Ellipse } from 'react-native-svg
 import { LinearGradient } from 'expo-linear-gradient';
 import { ds } from '../tokens/ds';
 
-const AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
+const _AnimatedEllipse = Animated.createAnimatedComponent(Ellipse);
 
 export interface SobrietyCandleProps {
   /** Number of days sober */

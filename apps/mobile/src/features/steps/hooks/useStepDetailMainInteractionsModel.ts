@@ -1,5 +1,5 @@
 import { useStepDetailInteractions } from './useStepDetailInteractions';
-import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
+import { type useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { StepsStackParamList } from '../../../navigation/types';
 

@@ -18,8 +18,6 @@ import Animated, {
   withSpring,
   withTiming,
   withSequence,
-  interpolate,
-  Extrapolate,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Check } from 'lucide-react-native';

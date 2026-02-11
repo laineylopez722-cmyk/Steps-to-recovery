@@ -11,7 +11,6 @@ import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme, Card, Button, TextArea, Modal } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
-import { useDs } from '../../../design-system/DsProvider';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useJournalEntries } from '../../journal/hooks/useJournalEntries';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';

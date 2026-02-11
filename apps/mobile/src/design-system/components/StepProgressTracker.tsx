@@ -126,7 +126,7 @@ interface StepNodeProps {
   isDark: boolean;
 }
 
-function StepNode({ step, isLast, onPress, colors, isDark }: StepNodeProps): React.ReactElement {
+function StepNode({ step, isLast, onPress, colors, isDark: _isDark }: StepNodeProps): React.ReactElement {
   const scale = useSharedValue(1);
   const pulseScale = useSharedValue(1);
 
@@ -259,7 +259,7 @@ export function StepProgressTracker({
   currentStep = 1,
   completedSteps = [],
   onStepPress,
-  showTitles = true,
+  showTitles: _showTitles = true,
   style,
   testID,
   accessibilityLabel,

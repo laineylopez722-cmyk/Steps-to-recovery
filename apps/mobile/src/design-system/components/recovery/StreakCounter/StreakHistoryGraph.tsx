@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, useColorScheme } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { COLORS, SPACING, TYPOGRAPHY } from '../constants';
+import { COLORS, TYPOGRAPHY } from '../constants';
 import type { DailyActivity } from '../types';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
@@ -34,7 +34,7 @@ export function StreakHistoryGraph({
   // Animate bars on mount
   React.useEffect(() => {
     if (!reducedMotion) {
-      barAnimations.forEach((anim, index) => {
+      barAnimations.forEach((anim, _index) => {
         anim.value = withTiming(
           1,
           {

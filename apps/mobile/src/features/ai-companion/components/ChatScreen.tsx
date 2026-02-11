@@ -28,7 +28,7 @@ import { useAIChat } from '../hooks/useAIChat';
 import { useSobriety } from '../../../hooks/useSobriety';
 import { useSponsorInfo } from '../../../hooks/useSponsorInfo';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
-import type { Message, CrisisSignal } from '../types';
+import type { CrisisSignal } from '../types';
 
 interface ChatScreenProps {
   userId: string;

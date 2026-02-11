@@ -10,7 +10,6 @@
  */
 
 import { renderHook, act, waitFor } from '@testing-library/react-native';
-import React from 'react';
 
 // Mock dependencies
 const mockCreateConversation = jest.fn();
@@ -94,7 +93,7 @@ describe('useAIChat', () => {
 
     mockGetAIService.mockResolvedValue(mockChatService);
     mockChatService.isConfigured.mockResolvedValue(true);
-    mockChatService.chat.mockImplementation((messages: unknown[]) => {
+    mockChatService.chat.mockImplementation((_messages: unknown[]) => {
       return mockStreamGenerator(['Hello, ', 'how ', 'can ', 'I ', 'help?']);
     });
     mockGetRecoverySystemPrompt.mockReturnValue('Mock system prompt');

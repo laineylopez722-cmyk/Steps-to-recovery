@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
 import * as Haptics from 'expo-haptics';
 import type { MeetingWithDetails } from '../../types/meeting';
@@ -36,7 +36,7 @@ jest.mock('react-native-reanimated', () => {
 });
 
 jest.mock('../../../../design-system/components/GradientButton', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   GradientButton: ({ title, onPress, disabled, accessibilityLabel }: any) => {
     const React = require('react');
     const { Pressable, Text } = require('react-native');
@@ -54,9 +54,9 @@ jest.mock('../../../../design-system/components/GradientButton', () => ({
 }));
 
 jest.mock('../../../../design-system/components/GlassCard', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   GlassCard: ({ children }: any) => {
-    const React = require('react');
+    const _React = require('react');
     const { View } = require('react-native');
     return <View>{children}</View>;
   },

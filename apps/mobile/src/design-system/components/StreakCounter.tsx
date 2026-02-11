@@ -27,8 +27,6 @@ import Animated, {
   withSpring,
   withTiming,
   useAnimatedStyle,
-  interpolate,
-  Extrapolation,
   type SharedValue,
 } from 'react-native-reanimated';
 import Svg, { Circle, G, Defs, LinearGradient, Stop } from 'react-native-svg';
@@ -113,7 +111,7 @@ interface CircularRingProps {
 }
 
 function CircularRing({
-  progress,
+  progress: _progress,
   size,
   strokeWidth,
   colors,
@@ -125,7 +123,7 @@ function CircularRing({
   const circumference = 2 * Math.PI * radius;
 
   const trackColor = isDark ? colors.surfaceContainerHighest : colors.surfaceVariant;
-  const progressColor = colors.primary;
+  const _progressColor = colors.primary;
 
   const animatedProps = useAnimatedProps(() => {
     const strokeDashoffset = circumference * (1 - animatedValue.value / 100);

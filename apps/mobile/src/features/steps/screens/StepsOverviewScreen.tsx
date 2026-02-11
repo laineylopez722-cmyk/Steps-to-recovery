@@ -12,7 +12,6 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Animated, {
-  FadeIn,
   useSharedValue,
   useAnimatedStyle,
   withRepeat,

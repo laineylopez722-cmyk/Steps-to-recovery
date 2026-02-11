@@ -19,12 +19,9 @@ import {
   useAnimatedStyle,
   withTiming,
   withRepeat,
-  withSpring,
   withDelay,
   withSequence,
   Easing,
-  interpolate,
-  Extrapolation,
   type SharedValue,
 } from 'react-native-reanimated';
 import { useCallback, useEffect } from 'react';

@@ -27,7 +27,7 @@ import {
   type SharedValue,
 } from 'react-native-reanimated';
 import { useCallback, useRef, useEffect } from 'react';
-import { Platform, type GestureResponderEvent } from 'react-native';
+import { type GestureResponderEvent } from 'react-native';
 
 // ============================================================================
 // PRESS ANIMATION CONFIGURATIONS

@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { Platform } from 'react-native';
-import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { renderHook, act } from '@testing-library/react-native';
 
 // Mock dependencies BEFORE imports
 jest.mock('expo-sqlite', () => ({

@@ -24,10 +24,9 @@ import {
   withRepeat,
   Easing,
   runOnJS,
-  ReduceMotion,
   type SharedValue,
 } from 'react-native-reanimated';
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { Dimensions } from 'react-native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -190,7 +189,7 @@ export function useMilestoneAnimation(onComplete?: () => void) {
   const shimmerTranslate = useSharedValue(-SCREEN_WIDTH);
 
   const trigger = useCallback(
-    (data: MilestoneData) => {
+    (_data: MilestoneData) => {
       // Reset values
       cardScale.value = 0;
       cardOpacity.value = 0;

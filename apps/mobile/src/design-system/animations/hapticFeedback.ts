@@ -659,7 +659,7 @@ export async function hapticEmergency(): Promise<void> {
  * <Swipeable onSwipe={() => haptics.swipe()} />
  * ```
  */
-export async function hapticSwipe(direction: 'left' | 'right' | 'up' | 'down'): Promise<void> {
+export async function hapticSwipe(_direction: 'left' | 'right' | 'up' | 'down'): Promise<void> {
   await hapticLight();
 }
 

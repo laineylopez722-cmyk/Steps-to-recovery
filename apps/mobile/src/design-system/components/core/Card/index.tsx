@@ -43,7 +43,6 @@ import {
   View,
   Pressable,
   type ViewProps,
-  type PressableProps,
   type StyleProp,
   type ViewStyle,
   type AccessibilityRole,

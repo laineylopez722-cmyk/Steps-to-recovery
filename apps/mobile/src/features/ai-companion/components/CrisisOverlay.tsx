@@ -5,8 +5,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Linking, Modal, Animated } from 'react-native';
-import { Heart, Phone, X } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, Linking, Modal } from 'react-native';
+import { Heart, Phone } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { Icon } from '@/components/ui/Icon';
 
@@ -23,7 +23,7 @@ export function CrisisOverlay({
   sponsorPhone,
   sponsorName,
   onDismiss,
-  severity,
+  severity: _severity,
 }: CrisisOverlayProps) {
   const [canDismiss, setCanDismiss] = useState(false);
 

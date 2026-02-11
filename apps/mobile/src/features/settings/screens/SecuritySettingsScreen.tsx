@@ -404,7 +404,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
                       styles.settingIcon,
                       {
                         backgroundColor: rotationSuggested
-                          ? ds.semantic.intent.warning?.muted ?? ds.semantic.intent.primary.muted
+                          ? ds.semantic.intent.alert.muted
                           : ds.semantic.intent.secondary.muted,
                       },
                     ]}
@@ -414,7 +414,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
                       size={20}
                       color={
                         rotationSuggested
-                          ? ds.semantic.intent.warning?.solid ?? ds.semantic.intent.primary.solid
+                          ? ds.semantic.intent.alert.solid
                           : ds.semantic.intent.secondary.solid
                       }
                     />
@@ -519,7 +519,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
                 <Text
                   style={[
                     styles.rotationProgressText,
-                    { color: ds.semantic.intent.destructive?.solid ?? '#E53E3E' },
+                    { color: ds.semantic.intent.alert.solid },
                   ]}
                 >
                   Rotation failed: {rotationProgress.error || 'Unknown error'}. Your data is safe
