@@ -9,6 +9,8 @@ import * as Sentry from '@sentry/react-native';
 import { useChatHistory } from './useChatHistory';
 import { getAIService, getRecoverySystemPrompt, type ChatMessage } from '../services/aiService';
 import { extractMemoriesFromMessage } from '../services/memoryExtractor';
+import { extractSemanticMemories } from '../services/semanticMemoryExtractor';
+import type { ExtractedSemanticMemory } from '../services/semanticMemoryExtractor';
 import {
   isOfflineMode,
   getOfflineResponse,
@@ -18,6 +20,8 @@ import {
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
 import { checkRateLimit, incrementMessageCount } from '../services/rateLimiter';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
+import { useDatabase } from '../../../contexts/DatabaseContext';
+import { encryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 import type { Message, Conversation, ConversationType, CrisisSignal } from '../types';
 
@@ -185,6 +189,12 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
   // Memory store for saving extracted facts
   const memoryStore = useMemoryStore(userId);
+
+  // Database access for semantic memory storage
+  const { db, isReady: dbReady } = useDatabase();
+
+  // Track message count for periodic semantic extraction
+  const messageCountRef = useRef(0);
 
   // Local state
   const [messages, setMessages] = useState<Message[]>([]);
@@ -478,6 +488,31 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           // Don't fail the chat if memory extraction fails
           logger.warn('Memory extraction failed', memErr);
         }
+
+        // Run semantic extraction every 5 messages
+        messageCountRef.current += 1;
+        if (messageCountRef.current % 5 === 0 && db && dbReady) {
+          try {
+            const existingMemories = await memoryStore.getAllMemories();
+            const recentMessages = [...messages, { role: 'user' as const, content }, { role: 'assistant' as const, content: fullResponse }]
+              .slice(-10)
+              .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }));
+
+            const semanticMemories = await extractSemanticMemories(
+              recentMessages,
+              existingMemories,
+              userId,
+              currentConversation.id,
+            );
+
+            if (semanticMemories.length > 0) {
+              await storeSemanticMemories(db, semanticMemories, userId, currentConversation.id);
+              logger.debug('Stored semantic memories', { count: semanticMemories.length });
+            }
+          } catch (semanticErr) {
+            logger.warn('Semantic memory extraction failed', semanticErr);
+          }
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to send message');
@@ -505,6 +540,8 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     onCrisisDetected,
     userId,
     memoryStore,
+    db,
+    dbReady,
   ]);
 
   /**
@@ -629,4 +666,38 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     conversations: chatHistory.conversations,
     archiveConversation: chatHistory.archiveConversation,
   };
+}
+
+/**
+ * Store extracted semantic memories into the ai_memories table (encrypted)
+ */
+async function storeSemanticMemories(
+  db: { runAsync: (sql: string, params: unknown[]) => Promise<void> },
+  memories: ExtractedSemanticMemory[],
+  userId: string,
+  conversationId: string,
+): Promise<void> {
+  const now = new Date().toISOString();
+  for (const mem of memories) {
+    const id = `ai_mem_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    const encryptedContent = await encryptContent(mem.content);
+    const encryptedContext = mem.context ? await encryptContent(mem.context) : null;
+
+    await db.runAsync(
+      `INSERT OR IGNORE INTO ai_memories
+        (id, user_id, type, encrypted_content, confidence, encrypted_context, source_conversation_id, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        id,
+        userId,
+        mem.type,
+        encryptedContent,
+        mem.confidence,
+        encryptedContext,
+        conversationId,
+        now,
+        now,
+      ],
+    );
+  }
 }

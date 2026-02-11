@@ -11,7 +11,7 @@ jest.mock('../../design-system/context/ThemeContext', () => ({
 
 // Mock React.useContext to return null for ThemeContext (uses FALLBACK_COLORS)
 const originalUseContext = React.useContext;
-jest.spyOn(React, 'useContext').mockImplementation((context) => {
+const useContextSpy = jest.spyOn(React, 'useContext').mockImplementation((context) => {
   if (context && (context as { Consumer?: unknown }).Consumer) {
     return null;
   }
@@ -59,6 +59,10 @@ describe('ErrorBoundary', () => {
 
   afterEach(() => {
     consoleErrorSpy.mockRestore();
+  });
+
+  afterAll(() => {
+    useContextSpy.mockRestore();
   });
 
   it('renders children when no error occurs', () => {

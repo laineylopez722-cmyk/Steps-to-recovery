@@ -37,6 +37,7 @@ import { CravingSurfStats } from '../components/CravingSurfStats';
 import { CommitmentCalendar } from '../components/CommitmentCalendar';
 import { RecoveryStrengthCard } from '../components/RecoveryStrengthCard';
 import { WeeklyReportCard } from '../components/WeeklyReportCard';
+import { WeatherMoodInsight } from '../components/WeatherMoodInsight';
 import { useWeeklyReport } from '../hooks/useWeeklyReport';
 
 interface ProgressDashboardScreenProps {
@@ -304,6 +305,9 @@ export function ProgressDashboardScreen({
             isGenerating={weeklyReport.isGenerating}
             onGenerate={weeklyReport.generate}
           />
+
+          {/* Weather-Mood Correlation */}
+          <WeatherMoodInsight />
 
           {/* Mood Dashboard Section */}
           <Animated.View entering={ScreenAnimations.item(0)}>

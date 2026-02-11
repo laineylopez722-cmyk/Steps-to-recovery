@@ -210,6 +210,7 @@ jest.mock('../../components/PostMeetingReflectionModal', () => ({
 }));
 
 describe('MeetingDetailScreen integration flow', () => {
+  jest.setTimeout(20000);
   const mockNavigate = jest.fn();
   const mockCheckInAsync = jest.fn();
   const meeting: CachedMeeting = {

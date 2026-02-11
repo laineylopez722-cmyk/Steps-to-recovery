@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 15;
+const CURRENT_SCHEMA_VERSION = 18;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -856,6 +856,99 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
     logger.info('Migration v15 completed');
   }
 
+  // Migration v16: AI memories table for semantic extraction
+  if (currentVersion < 16) {
+    logger.info('Running migration v16: AI memories table');
+
+    const v16Migrations = [
+      `CREATE TABLE IF NOT EXISTS ai_memories (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        type TEXT NOT NULL,
+        encrypted_content TEXT NOT NULL,
+        confidence REAL NOT NULL,
+        encrypted_context TEXT,
+        source_conversation_id TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_ai_memories_user ON ai_memories(user_id);`,
+      `CREATE INDEX IF NOT EXISTS idx_ai_memories_type ON ai_memories(user_id, type);`,
+    ];
+
+    for (const migration of v16Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v16 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 16);
+    logger.info('Migration v16 completed');
+  }
+
+  // Migration version 17: Add active_challenges table for streak & challenge system
+  if (currentVersion < 17) {
+    logger.info('Running migration v17: Adding active_challenges table');
+    const v17Migrations = [
+      `CREATE TABLE IF NOT EXISTS active_challenges (
+        id TEXT PRIMARY KEY,
+        template_id TEXT NOT NULL,
+        user_id TEXT NOT NULL,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        current_progress INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active' CHECK(status IN ('active','completed','failed')),
+        completed_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_active_challenges_user ON active_challenges(user_id);`,
+      `CREATE INDEX IF NOT EXISTS idx_active_challenges_status ON active_challenges(user_id, status);`,
+    ];
+
+    for (const migration of v17Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v17 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 17);
+    logger.info('Migration v17 completed');
+  }
+
+  // Migration version 18: Add weather_snapshots table for mood-weather correlation
+  if (currentVersion < 18) {
+    logger.info('Running migration v18: Adding weather_snapshots table');
+    const v18Migrations = [
+      `CREATE TABLE IF NOT EXISTS weather_snapshots (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        date TEXT NOT NULL,
+        temperature REAL,
+        condition TEXT,
+        humidity REAL,
+        location TEXT,
+        created_at TEXT NOT NULL
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_weather_user_date ON weather_snapshots(user_id, date);`,
+    ];
+
+    for (const migration of v18Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v18 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 18);
+    logger.info('Migration v18 completed');
+  }
+
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });
 }
 
@@ -878,6 +971,7 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 export async function clearDatabase(db: StorageAdapter): Promise<void> {
   const statements = [
     'DELETE FROM sync_queue',
+    'DELETE FROM active_challenges',
     'DELETE FROM craving_surf_sessions',
     'DELETE FROM safety_plans',
     'DELETE FROM favorite_meetings',

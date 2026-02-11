@@ -31,6 +31,13 @@ export {
 // AI-powered memory extraction
 export { extractMemoriesWithAIService } from './aiMemoryExtractor';
 
+// Semantic memory extraction (AI-enhanced)
+export {
+  extractSemanticMemories,
+  summarizeMemories,
+  type ExtractedSemanticMemory,
+} from './semanticMemoryExtractor';
+
 // Conversation summarization
 export { shouldSummarize, summarizeConversation } from './conversationSummarizer';
 

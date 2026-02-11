@@ -23,12 +23,19 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useNotifications } from '../../../contexts/NotificationContext';
 import { useNotificationPreferences } from '../../../hooks/useNotifications';
+import { useGeofencing, type GeofenceRadius } from '../../../hooks/useGeofencing';
 import {
   sendTestNotification,
   sendEncouragementNotification,
 } from '../../../services/notificationService';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
+
+const RADIUS_OPTIONS: { value: GeofenceRadius; label: string }[] = [
+  { value: 100, label: '100 m' },
+  { value: 250, label: '250 m' },
+  { value: 500, label: '500 m' },
+];
 
 // Toggle Row Component
 function ToggleRow({
@@ -178,6 +185,18 @@ export function NotificationSettingsScreen(): React.ReactElement {
     refreshScheduled,
   } = useNotificationPreferences();
 
+  const {
+    isEnabled: geofencingEnabled,
+    setEnabled: setGeofencingEnabled,
+    isSupported: geofencingSupported,
+    registeredCount: geofenceCount,
+    radius: geofenceRadius,
+    setRadius: setGeofenceRadius,
+    permissionStatus: geoPermStatus,
+    requestPermission: requestGeoPerm,
+    isLoading: geoLoading,
+  } = useGeofencing();
+
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
@@ -259,6 +278,43 @@ export function NotificationSettingsScreen(): React.ReactElement {
       }
     },
     [updatePreference],
+  );
+
+  const handleToggleGeofencing = useCallback(
+    async (enabled: boolean) => {
+      setIsUpdating(true);
+      try {
+        await setGeofencingEnabled(enabled);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+        if (enabled && geoPermStatus !== 'granted') {
+          Alert.alert(
+            'Background Location Required',
+            'Geofencing requires "Allow all the time" location access. ' +
+              'Please enable it in your device settings.',
+          );
+        }
+      } catch {
+        Alert.alert('Error', 'Failed to update geofencing setting.');
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [setGeofencingEnabled, geoPermStatus],
+  );
+
+  const handleSetGeofenceRadius = useCallback(
+    async (radius: GeofenceRadius) => {
+      setIsUpdating(true);
+      try {
+        await setGeofenceRadius(radius);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      } catch {
+        Alert.alert('Error', 'Failed to update geofence radius.');
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [setGeofenceRadius],
   );
 
   const handleSendTest = async () => {
@@ -413,6 +469,92 @@ export function NotificationSettingsScreen(): React.ReactElement {
                   disabled={isUpdating}
                 />
               </Animated.View>
+
+              {/* Meeting Reminders Section (Geofencing) */}
+              {geofencingSupported && (
+                <>
+                  <Text style={styles.sectionHeader}>Meeting Reminders</Text>
+
+                  <Animated.View entering={FadeInDown.delay(175).duration(300)} style={styles.card}>
+                    <ToggleRow
+                      label="Location-based reminders"
+                      subtitle="Get notified when you're near a favorited meeting"
+                      value={geofencingEnabled}
+                      onValueChange={handleToggleGeofencing}
+                      disabled={isUpdating || geoLoading}
+                    />
+
+                    {geofencingEnabled && (
+                      <>
+                        <View style={styles.divider} />
+
+                        <View style={styles.radiusRow}>
+                          <Text
+                            style={styles.radiusLabel}
+                            accessibilityRole="text"
+                          >
+                            Detection radius
+                          </Text>
+                          <View style={styles.radiusOptions}>
+                            {RADIUS_OPTIONS.map((opt) => (
+                              <Pressable
+                                key={opt.value}
+                                onPress={() => handleSetGeofenceRadius(opt.value)}
+                                style={[
+                                  styles.radiusChip,
+                                  geofenceRadius === opt.value && styles.radiusChipActive,
+                                ]}
+                                accessibilityRole="radio"
+                                accessibilityLabel={`${opt.label} radius`}
+                                accessibilityState={{ selected: geofenceRadius === opt.value }}
+                                accessibilityHint={`Set geofence detection radius to ${opt.label}`}
+                              >
+                                <Text
+                                  style={[
+                                    styles.radiusChipText,
+                                    geofenceRadius === opt.value && styles.radiusChipTextActive,
+                                  ]}
+                                >
+                                  {opt.label}
+                                </Text>
+                              </Pressable>
+                            ))}
+                          </View>
+                        </View>
+
+                        <View style={styles.divider} />
+
+                        <View style={styles.geofenceInfo}>
+                          <Feather
+                            name="info"
+                            size={14}
+                            color={ds.colors.textTertiary}
+                          />
+                          <Text style={styles.geofenceInfoText}>
+                            {geofenceCount > 0
+                              ? `Monitoring ${geofenceCount} meeting location${geofenceCount !== 1 ? 's' : ''}.`
+                              : 'Favorite meetings with locations to enable monitoring.'}{' '}
+                            Requires "Allow all the time" location access.
+                          </Text>
+                        </View>
+                      </>
+                    )}
+
+                    {geoPermStatus === 'foreground_only' && geofencingEnabled && (
+                      <>
+                        <View style={styles.divider} />
+                        <View style={styles.geofenceWarning}>
+                          <Feather name="alert-triangle" size={14} color={ds.colors.warning} />
+                          <Text style={styles.geofenceWarningText}>
+                            Background location not granted. Open device settings to allow "Always"
+                            location access for geofencing to work.
+                          </Text>
+                        </View>
+                      </>
+                    )}
+                  </Animated.View>
+                </>
+              )}
 
               {/* Actions Section */}
               <Text style={styles.sectionHeader}>Actions</Text>
@@ -696,5 +838,68 @@ const createStyles = (ds: DS) =>
       ...ds.typography.body,
       fontWeight: '600',
       color: ds.semantic.surface.app,
+    },
+
+    // Geofencing
+    radiusRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[3],
+    },
+    radiusLabel: {
+      ...ds.typography.body,
+      color: ds.colors.textPrimary,
+    },
+    radiusOptions: {
+      flexDirection: 'row',
+      gap: ds.space[2],
+    },
+    radiusChip: {
+      paddingHorizontal: ds.space[3],
+      paddingVertical: ds.space[2],
+      borderRadius: ds.radius.md,
+      backgroundColor: ds.colors.bgQuaternary,
+      minWidth: 48,
+      minHeight: 48,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    radiusChipActive: {
+      backgroundColor: ds.colors.accent,
+    },
+    radiusChipText: {
+      ...ds.typography.caption,
+      fontWeight: '500',
+      color: ds.colors.textSecondary,
+    },
+    radiusChipTextActive: {
+      color: ds.semantic.surface.app,
+      fontWeight: '600',
+    },
+    geofenceInfo: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[3],
+      gap: ds.space[2],
+    },
+    geofenceInfoText: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
+      flex: 1,
+    },
+    geofenceWarning: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[3],
+      gap: ds.space[2],
+    },
+    geofenceWarningText: {
+      ...ds.typography.caption,
+      color: ds.colors.warning,
+      flex: 1,
     },
   }) as const;

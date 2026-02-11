@@ -17,7 +17,12 @@
         "NSLocationWhenInUseUsageDescription": "We use your location to help you find nearby meetings and save locations for reminders.",
         "NSLocationAlwaysUsageDescription": "We use your location in the background to notify you when you're near saved meeting locations.",
         "NSFaceIDUsageDescription": "Use Face ID to securely access your private recovery data.",
-        "UIBackgroundModes": ["location", "fetch", "processing", "remote-notification"],
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "processing",
+          "remote-notification"
+        ],
         "ITSAppUsesNonExemptEncryption": false
       }
     },
@@ -53,7 +58,10 @@
       "output": "single",
       "build": {
         "babel": {
-          "include": ["sql.js", "idb"]
+          "include": [
+            "sql.js",
+            "idb"
+          ]
         }
       },
       "name": "Steps to Recovery",
@@ -65,7 +73,10 @@
       "orientation": "portrait",
       "startUrl": "/",
       "scope": "/",
-      "categories": ["health", "lifestyle"],
+      "categories": [
+        "health",
+        "lifestyle"
+      ],
       "icons": [
         {
           "src": "./assets/icon.png",
@@ -110,7 +121,8 @@
           "project": "mobile"
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "@sentry/react-native"
     ],
     "updates": {
       "enabled": true,

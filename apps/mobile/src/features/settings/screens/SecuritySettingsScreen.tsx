@@ -5,7 +5,7 @@
  * and background lock timeout.
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { ScrollView, View, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
@@ -20,6 +20,14 @@ import { useDs } from '../../../design-system/DsProvider';
 import { useBiometricLock } from '../../../hooks/useBiometricLock';
 import { useQuickEscape } from '../../../hooks/useQuickEscape';
 import { usePinEntry } from '../../../hooks/usePinEntry';
+import { useDatabase } from '../../../contexts/DatabaseContext';
+import { useAuth } from '../../../contexts/AuthContext';
+import {
+  rotateEncryptionKey,
+  shouldRotateKey,
+  getKeyMetadata,
+} from '../../../services/keyRotationService';
+import type { KeyRotationProgress } from '../../../services/keyRotationService';
 import { logger } from '../../../utils/logger';
 
 const TIMEOUT_OPTIONS = [
@@ -44,11 +52,69 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
   const { isEnabled: quickEscapeEnabled, setEnabled: setQuickEscapeEnabled } = useQuickEscape();
 
+  const { db, isReady: dbReady } = useDatabase();
+  const { user } = useAuth();
+
   const [showSetPin, setShowSetPin] = useState(false);
   const [showTimeoutPicker, setShowTimeoutPicker] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [pinStep, setPinStep] = useState<'enter' | 'confirm'>('enter');
   const [pinError, setPinError] = useState('');
+
+  // Key rotation state
+  const [keyAgeDays, setKeyAgeDays] = useState<number | null>(null);
+  const [keyCreatedAt, setKeyCreatedAt] = useState<string>('');
+  const [showRotateConfirm, setShowRotateConfirm] = useState(false);
+  const [rotationProgress, setRotationProgress] = useState<KeyRotationProgress | null>(null);
+  const [rotationSuggested, setRotationSuggested] = useState(false);
+
+  // Load key metadata on mount
+  useEffect(() => {
+    const loadKeyInfo = async (): Promise<void> => {
+      try {
+        const metadata = await getKeyMetadata();
+        if (metadata) {
+          setKeyAgeDays(metadata.ageDays);
+          setKeyCreatedAt(metadata.createdAt);
+        }
+        const needsRotation = await shouldRotateKey();
+        setRotationSuggested(needsRotation);
+      } catch {
+        // Non-critical
+      }
+    };
+    loadKeyInfo();
+  }, []);
+
+  const handleRotateKey = useCallback(async (): Promise<void> => {
+    if (!db || !dbReady || !user?.id) return;
+
+    setShowRotateConfirm(false);
+    setRotationProgress({
+      totalRecords: 0,
+      processedRecords: 0,
+      currentTable: '',
+      status: 'in_progress',
+    });
+
+    const success = await rotateEncryptionKey(db, user.id, (progress) => {
+      setRotationProgress(progress);
+    });
+
+    if (success) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+      logger.info('Encryption key rotated via settings');
+      // Refresh key metadata
+      const metadata = await getKeyMetadata();
+      if (metadata) {
+        setKeyAgeDays(metadata.ageDays);
+        setKeyCreatedAt(metadata.createdAt);
+      }
+      setRotationSuggested(false);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+    }
+  }, [db, dbReady, user]);
 
   const handleToggleLock = useCallback(
     async (value: boolean): Promise<void> => {
@@ -327,8 +393,144 @@ export function SecuritySettingsScreen(): React.ReactElement {
             </View>
           </Animated.View>
 
+          {/* Encryption Key */}
+          <Animated.View entering={MotionTransitions.cardEnter(4)}>
+            <Text style={styles.sectionHeader}>ENCRYPTION KEY</Text>
+            <View style={styles.cardGroup}>
+              <View style={styles.settingItem}>
+                <View style={styles.settingInfo}>
+                  <View
+                    style={[
+                      styles.settingIcon,
+                      {
+                        backgroundColor: rotationSuggested
+                          ? ds.semantic.intent.warning?.muted ?? ds.semantic.intent.primary.muted
+                          : ds.semantic.intent.secondary.muted,
+                      },
+                    ]}
+                  >
+                    <Feather
+                      name="key"
+                      size={20}
+                      color={
+                        rotationSuggested
+                          ? ds.semantic.intent.warning?.solid ?? ds.semantic.intent.primary.solid
+                          : ds.semantic.intent.secondary.solid
+                      }
+                    />
+                  </View>
+                  <View style={styles.settingText}>
+                    <Text style={styles.settingTitle}>Key Age</Text>
+                    <Text style={styles.settingSubtitle}>
+                      {keyAgeDays !== null
+                        ? keyCreatedAt === 'unknown'
+                          ? 'Created before tracking was enabled'
+                          : `Created ${keyAgeDays} day${keyAgeDays !== 1 ? 's' : ''} ago`
+                        : 'Loading...'}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+
+              <View style={styles.divider} />
+
+              <Pressable
+                onPress={() => setShowRotateConfirm(true)}
+                style={styles.settingItem}
+                disabled={rotationProgress?.status === 'in_progress'}
+                accessibilityLabel="Rotate encryption key"
+                accessibilityRole="button"
+                accessibilityHint="Generate a new encryption key and re-encrypt all data"
+                accessibilityState={{
+                  disabled: rotationProgress?.status === 'in_progress',
+                }}
+              >
+                <View style={styles.settingInfo}>
+                  <View
+                    style={[
+                      styles.settingIcon,
+                      { backgroundColor: ds.semantic.intent.secondary.muted },
+                    ]}
+                  >
+                    <Feather
+                      name="refresh-cw"
+                      size={20}
+                      color={ds.semantic.intent.secondary.solid}
+                    />
+                  </View>
+                  <View style={styles.settingText}>
+                    <Text style={styles.settingTitle}>Rotate Key</Text>
+                    <Text style={styles.settingSubtitle}>
+                      {rotationSuggested
+                        ? 'Recommended — key is over 90 days old'
+                        : 'Re-encrypt all data with a new key'}
+                    </Text>
+                  </View>
+                </View>
+                <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} />
+              </Pressable>
+            </View>
+
+            {/* Progress indicator during rotation */}
+            {rotationProgress?.status === 'in_progress' ? (
+              <View style={styles.rotationProgress}>
+                <Text style={styles.rotationProgressText}>
+                  Re-encrypting {rotationProgress.currentTable || 'data'}...{' '}
+                  {rotationProgress.totalRecords > 0
+                    ? `${rotationProgress.processedRecords}/${rotationProgress.totalRecords}`
+                    : ''}
+                </Text>
+                {rotationProgress.totalRecords > 0 ? (
+                  <View style={styles.progressBar}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        {
+                          width: `${Math.round(
+                            (rotationProgress.processedRecords / rotationProgress.totalRecords) * 100,
+                          )}%`,
+                          backgroundColor: ds.semantic.intent.primary.solid,
+                        },
+                      ]}
+                    />
+                  </View>
+                ) : null}
+                <Text style={styles.rotationWarning}>
+                  Don&apos;t close the app during rotation.
+                </Text>
+              </View>
+            ) : null}
+
+            {rotationProgress?.status === 'completed' ? (
+              <View style={styles.rotationProgress}>
+                <Text
+                  style={[
+                    styles.rotationProgressText,
+                    { color: ds.semantic.intent.primary.solid },
+                  ]}
+                >
+                  ✓ Key rotated successfully
+                </Text>
+              </View>
+            ) : null}
+
+            {rotationProgress?.status === 'failed' ? (
+              <View style={styles.rotationProgress}>
+                <Text
+                  style={[
+                    styles.rotationProgressText,
+                    { color: ds.semantic.intent.destructive?.solid ?? '#E53E3E' },
+                  ]}
+                >
+                  Rotation failed: {rotationProgress.error || 'Unknown error'}. Your data is safe
+                  — the old key was preserved.
+                </Text>
+              </View>
+            ) : null}
+          </Animated.View>
+
           {/* Privacy Info */}
-          <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.infoCard}>
+          <Animated.View entering={MotionTransitions.cardEnter(5)} style={styles.infoCard}>
             <View style={styles.infoIcon}>
               <Feather name="shield" size={20} color={ds.semantic.intent.secondary.solid} />
             </View>
@@ -357,6 +559,28 @@ export function SecuritySettingsScreen(): React.ReactElement {
           onPress: () => handleSelectTimeout(option.value),
           variant: option.value === settings.lockTimeout ? 'primary' : 'outline',
         }))}
+        dismissable
+      />
+
+      {/* Rotate Key Confirmation Modal */}
+      <Modal
+        visible={showRotateConfirm}
+        onClose={() => setShowRotateConfirm(false)}
+        title="Rotate Encryption Key?"
+        message="This will generate a new encryption key and re-encrypt all your data. This may take a few minutes depending on how much data you have. Don't close the app during rotation."
+        variant="center"
+        actions={[
+          {
+            title: 'Rotate Key',
+            onPress: handleRotateKey,
+            variant: 'primary',
+          },
+          {
+            title: 'Cancel',
+            onPress: () => setShowRotateConfirm(false),
+            variant: 'outline',
+          },
+        ]}
         dismissable
       />
 
@@ -640,5 +864,32 @@ const createStyles = (ds: DS) => ({
     color: ds.semantic.text.secondary,
     marginTop: ds.space[1],
     lineHeight: 18,
+  },
+
+  // Rotation progress
+  rotationProgress: {
+    paddingHorizontal: ds.space[4],
+    paddingVertical: ds.space[3],
+  },
+  rotationProgressText: {
+    ...ds.typography.caption,
+    color: ds.semantic.text.secondary,
+  },
+  rotationWarning: {
+    ...ds.typography.caption,
+    color: ds.semantic.text.tertiary,
+    marginTop: ds.space[1],
+    fontStyle: 'italic' as const,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: ds.colors.borderStrong,
+    borderRadius: 2,
+    marginTop: ds.space[2],
+    overflow: 'hidden' as const,
+  },
+  progressFill: {
+    height: '100%' as const,
+    borderRadius: 2,
   },
 });

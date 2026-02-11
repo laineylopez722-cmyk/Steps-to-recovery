@@ -521,13 +521,13 @@ export async function getEncryptionKey(): Promise<string> {
 // ✅ CORRECT: AES-256 encryption (production-ready)
 export async function encrypt(plaintext: string): Promise<string> {
   const key = await getEncryptionKey();
-  // Implementation using proper AES-256-GCM
+  // Implementation using proper AES-256-CBC with HMAC-SHA256
   // Returns base64-encoded ciphertext
 }
 
 export async function decrypt(ciphertext: string): Promise<string> {
   const key = await getEncryptionKey();
-  // Implementation using proper AES-256-GCM
+  // Implementation using proper AES-256-CBC with HMAC-SHA256
   // Returns original plaintext
 }
 ```

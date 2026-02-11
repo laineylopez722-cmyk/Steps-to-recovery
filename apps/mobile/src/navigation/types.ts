@@ -26,6 +26,7 @@ export type HomeStackParamList = {
   ProgressDashboard: undefined;
   MeetingStats: undefined;
   Achievements: undefined;
+  Challenges: undefined;
   DangerZone: undefined;
   SafeDialIntervention: { contactName: string; phoneNumber: string };
   BeforeYouUse: undefined;

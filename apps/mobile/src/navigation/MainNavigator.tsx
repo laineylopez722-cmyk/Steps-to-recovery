@@ -38,6 +38,7 @@ import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScr
 import { CravingSurfScreen } from '../features/craving-surf/screens/CravingSurfScreen';
 import { GratitudeScreen } from '../features/gratitude/screens/GratitudeScreen';
 import { SafetyPlanScreen } from '../features/safety-plan/screens/SafetyPlanScreen';
+import { ChallengesScreen } from '../features/challenges/screens/ChallengesScreen';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
@@ -150,6 +151,12 @@ function HomeStackNavigator(): React.ReactElement {
         options={{ title: 'Achievements', headerBackTitle: 'Back' }}
         component={AchievementsScreen}
       />
+      <HomeStack.Screen
+        name="Challenges"
+        options={{ title: 'Challenges', headerBackTitle: 'Back' }}
+      >
+        {() => <ChallengesScreen userId={userId} />}
+      </HomeStack.Screen>
       <HomeStack.Screen
         name="DangerZone"
         options={{ title: 'Trigger Protection', headerBackTitle: 'Back' }}

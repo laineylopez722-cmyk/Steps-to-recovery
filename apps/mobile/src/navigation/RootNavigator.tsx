@@ -7,6 +7,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AuthNavigator } from './AuthNavigator';
 import { MainNavigator } from './MainNavigator';
 import { OnboardingScreen } from '../features/auth/screens/OnboardingScreen';
+import { OnboardingSteps } from '../features/onboarding/components/OnboardingSteps';
 import { supabase } from '../lib/supabase';
 import { navigationRef } from './navigationRef';
 import type { RootStackParamList } from './types';
@@ -198,7 +199,7 @@ export function RootNavigator() {
           />
         ) : needsOnboarding ? (
           <Stack.Screen name="Onboarding">
-            {() => <OnboardingScreen onComplete={() => setNeedsOnboarding(false)} />}
+            {() => <OnboardingSteps onComplete={() => setNeedsOnboarding(false)} />}
           </Stack.Screen>
         ) : (
           <Stack.Screen name="MainApp" component={MainNavigator} />

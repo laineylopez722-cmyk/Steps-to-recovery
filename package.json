@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
-  "packageManager": "npm@10.9.2",
+  "packageManager": "npm@11.8.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -49,12 +49,5 @@
   "engines": {
     "node": ">=20.0.0"
   },
-  "dependencies": {
-    "@react-native/debugger-frontend": "^0.83.1",
-    "@sentry/nextjs": "^10.38.0",
-    "expo": "~54.0.33",
-    "expo-device": "~8.0.10",
-    "react": "19.1.0",
-    "react-native": "0.81.5"
-  }
+  "dependencies": {}
 }
