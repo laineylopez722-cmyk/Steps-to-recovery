@@ -8,6 +8,9 @@ import './src/global.css';
 import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
 initSentry();
 
+import { initGlobalErrorHandlers } from './src/utils/globalErrorHandler';
+initGlobalErrorHandlers();
+
 import React, { Suspense, useState, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
@@ -23,7 +26,50 @@ import { SyncProvider } from './src/contexts/SyncContext';
 import { NotificationProvider } from './src/contexts/NotificationContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { ErrorBoundary } from './src/components/ErrorBoundary';
+import { BiometricLockScreen } from './src/components/BiometricLockScreen';
+import { useBiometricLock } from './src/hooks/useBiometricLock';
+import { navigationRef } from './src/navigation/navigationRef';
 import { PortalHost } from '@rn-primitives/portal';
+
+/**
+ * Biometric Lock Overlay
+ * Shows lock screen when app is locked. Must be inside DsProvider for theming.
+ */
+function BiometricLockOverlay({ children }: { children: React.ReactNode }): React.ReactElement {
+  const {
+    isLocked,
+    authenticate,
+    validatePin,
+    emergencyUnlock,
+    biometricType,
+    hasPinSet,
+  } = useBiometricLock();
+
+  const handleEmergencyAccess = useCallback(() => {
+    emergencyUnlock();
+    if (navigationRef.isReady()) {
+      navigationRef.navigate('MainApp', {
+        screen: 'Home',
+        params: { screen: 'Emergency' },
+      });
+    }
+  }, [emergencyUnlock]);
+
+  return (
+    <>
+      {children}
+      {isLocked ? (
+        <BiometricLockScreen
+          onAuthenticate={authenticate}
+          onPinValidate={validatePin}
+          onEmergencyAccess={handleEmergencyAccess}
+          biometricType={biometricType}
+          hasPinSet={hasPinSet}
+        />
+      ) : null}
+    </>
+  );
+}
 
 /**
  * Loading fallback shown during Suspense boundaries
@@ -108,9 +154,11 @@ function App(): React.ReactElement {
                   <AuthProvider>
                     <SyncProvider>
                       <NotificationProvider>
-                        <Suspense fallback={<LoadingFallback />}>
-                          <RootNavigator />
-                        </Suspense>
+                        <BiometricLockOverlay>
+                          <Suspense fallback={<LoadingFallback />}>
+                            <RootNavigator />
+                          </Suspense>
+                        </BiometricLockOverlay>
                         <StatusBar
                           style="light"
                           backgroundColor="#000000"

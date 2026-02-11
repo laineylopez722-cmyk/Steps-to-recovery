@@ -3,7 +3,9 @@
  *
  * Handles scheduling of local notifications for:
  * - Daily check-in reminders (morning & evening)
+ * - Daily reading & gratitude reminders
  * - Recovery milestone celebrations
+ * - Encouragement notifications
  * - Custom user-scheduled reminders
  */
 
@@ -11,6 +13,7 @@ import * as Notifications from 'expo-notifications';
 import { SchedulableTriggerInputTypes } from 'expo-notifications';
 import { logger } from '../utils/logger';
 import type { NotificationPayload } from '../types/notifications';
+import { getRandomEncouragementMessage } from './encouragementMessages';
 
 /**
  * Notification identifiers for managing specific notifications
@@ -18,6 +21,9 @@ import type { NotificationPayload } from '../types/notifications';
 export const NOTIFICATION_IDS = {
   MORNING_CHECKIN: 'morning-checkin',
   EVENING_CHECKIN: 'evening-checkin',
+  DAILY_READING: 'daily-reading',
+  GRATITUDE_REMINDER: 'gratitude-reminder',
+  ENCOURAGEMENT: 'encouragement',
   MILESTONE_PREFIX: 'milestone-',
 } as const;
 
@@ -37,6 +43,30 @@ export const DEFAULT_REMINDERS = {
   morning: { hour: 9, minute: 0 }, // 9:00 AM
   evening: { hour: 21, minute: 0 }, // 9:00 PM
 } as const;
+
+/**
+ * Full notification preferences for all notification types
+ */
+export interface NotificationPreferences {
+  morningCheckIn: { enabled: boolean; hour: number; minute: number };
+  eveningCheckIn: { enabled: boolean; hour: number; minute: number };
+  dailyReading: { enabled: boolean; hour: number; minute: number };
+  gratitudeReminder: { enabled: boolean; hour: number; minute: number };
+  milestoneAlerts: { enabled: boolean };
+  encouragement: { enabled: boolean };
+}
+
+/**
+ * Default notification preferences
+ */
+export const DEFAULT_PREFERENCES: NotificationPreferences = {
+  morningCheckIn: { enabled: true, hour: 8, minute: 0 },
+  eveningCheckIn: { enabled: true, hour: 20, minute: 0 },
+  dailyReading: { enabled: true, hour: 7, minute: 30 },
+  gratitudeReminder: { enabled: true, hour: 21, minute: 0 },
+  milestoneAlerts: { enabled: true },
+  encouragement: { enabled: true },
+};
 
 /**
  * Schedule morning check-in reminder
@@ -391,5 +421,213 @@ export async function getScheduledNotifications(): Promise<Notifications.Notific
   } catch (error) {
     logger.error('Error getting scheduled notifications', { error });
     return [];
+  }
+}
+
+/**
+ * Schedule daily reading reminder
+ *
+ * @param config - Reminder configuration (time & enabled status)
+ * @returns Notification identifier or null if not scheduled
+ */
+export async function scheduleDailyReading(
+  config: DailyReminderConfig = { enabled: true, hour: 7, minute: 30 },
+): Promise<string | null> {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(NOTIFICATION_IDS.DAILY_READING);
+
+    if (!config.enabled) {
+      logger.info('Daily reading reminder disabled');
+      return null;
+    }
+
+    const identifier = await Notifications.scheduleNotificationAsync({
+      identifier: NOTIFICATION_IDS.DAILY_READING,
+      content: {
+        title: '📖 Daily Reading',
+        body: 'Start your day with some recovery wisdom. Your daily reading awaits.',
+        sound: true,
+        priority: Notifications.AndroidNotificationPriority.DEFAULT,
+        data: {
+          screen: 'Home',
+          type: 'daily-reading',
+        } as NotificationPayload,
+      },
+      trigger: {
+        type: SchedulableTriggerInputTypes.DAILY,
+        hour: config.hour,
+        minute: config.minute,
+      },
+    });
+
+    logger.info('Daily reading reminder scheduled', {
+      time: `${config.hour}:${String(config.minute).padStart(2, '0')}`,
+      identifier,
+    });
+
+    return identifier;
+  } catch (error) {
+    logger.error('Error scheduling daily reading reminder', { error });
+    return null;
+  }
+}
+
+/**
+ * Schedule gratitude reminder
+ *
+ * @param config - Reminder configuration (time & enabled status)
+ * @returns Notification identifier or null if not scheduled
+ */
+export async function scheduleGratitudeReminder(
+  config: DailyReminderConfig = { enabled: true, hour: 21, minute: 0 },
+): Promise<string | null> {
+  try {
+    await Notifications.cancelScheduledNotificationAsync(NOTIFICATION_IDS.GRATITUDE_REMINDER);
+
+    if (!config.enabled) {
+      logger.info('Gratitude reminder disabled');
+      return null;
+    }
+
+    const identifier = await Notifications.scheduleNotificationAsync({
+      identifier: NOTIFICATION_IDS.GRATITUDE_REMINDER,
+      content: {
+        title: '🙏 Gratitude Moment',
+        body: "What are you grateful for today? Take a moment to reflect on the good things.",
+        sound: true,
+        priority: Notifications.AndroidNotificationPriority.DEFAULT,
+        data: {
+          screen: 'Journal',
+          type: 'gratitude-reminder',
+        } as NotificationPayload,
+      },
+      trigger: {
+        type: SchedulableTriggerInputTypes.DAILY,
+        hour: config.hour,
+        minute: config.minute,
+      },
+    });
+
+    logger.info('Gratitude reminder scheduled', {
+      time: `${config.hour}:${String(config.minute).padStart(2, '0')}`,
+      identifier,
+    });
+
+    return identifier;
+  } catch (error) {
+    logger.error('Error scheduling gratitude reminder', { error });
+    return null;
+  }
+}
+
+/**
+ * Send an immediate encouragement notification with a random message
+ */
+export async function sendEncouragementNotification(): Promise<void> {
+  try {
+    const message = getRandomEncouragementMessage();
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: NOTIFICATION_IDS.ENCOURAGEMENT,
+      content: {
+        title: '💜 A Moment of Encouragement',
+        body: message,
+        sound: true,
+        priority: Notifications.AndroidNotificationPriority.DEFAULT,
+        data: {
+          screen: 'Home',
+          type: 'encouragement',
+        } as NotificationPayload,
+      },
+      trigger: null, // Send immediately
+    });
+
+    logger.info('Encouragement notification sent');
+  } catch (error) {
+    logger.error('Error sending encouragement notification', { error });
+  }
+}
+
+/**
+ * Cancel all scheduled notifications (daily reminders, milestones, etc.)
+ */
+export async function cancelAllScheduled(): Promise<void> {
+  try {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    logger.info('All scheduled notifications cancelled');
+  } catch (error) {
+    logger.error('Error cancelling all scheduled notifications', { error });
+  }
+}
+
+/**
+ * Reschedule all notifications based on user preferences.
+ * Cancels everything first, then re-schedules based on the provided preferences.
+ *
+ * @param preferences - Full notification preferences
+ */
+export async function rescheduleAll(preferences: NotificationPreferences): Promise<void> {
+  try {
+    // Cancel all existing scheduled notifications first
+    await cancelAllScheduled();
+
+    const promises: Promise<string | null>[] = [];
+
+    // Schedule morning check-in
+    if (preferences.morningCheckIn.enabled) {
+      promises.push(
+        scheduleMorningReminder({
+          enabled: true,
+          hour: preferences.morningCheckIn.hour,
+          minute: preferences.morningCheckIn.minute,
+        }),
+      );
+    }
+
+    // Schedule evening check-in
+    if (preferences.eveningCheckIn.enabled) {
+      promises.push(
+        scheduleEveningReminder({
+          enabled: true,
+          hour: preferences.eveningCheckIn.hour,
+          minute: preferences.eveningCheckIn.minute,
+        }),
+      );
+    }
+
+    // Schedule daily reading
+    if (preferences.dailyReading.enabled) {
+      promises.push(
+        scheduleDailyReading({
+          enabled: true,
+          hour: preferences.dailyReading.hour,
+          minute: preferences.dailyReading.minute,
+        }),
+      );
+    }
+
+    // Schedule gratitude reminder
+    if (preferences.gratitudeReminder.enabled) {
+      promises.push(
+        scheduleGratitudeReminder({
+          enabled: true,
+          hour: preferences.gratitudeReminder.hour,
+          minute: preferences.gratitudeReminder.minute,
+        }),
+      );
+    }
+
+    await Promise.all(promises);
+
+    logger.info('All notifications rescheduled', {
+      morningCheckIn: preferences.morningCheckIn.enabled,
+      eveningCheckIn: preferences.eveningCheckIn.enabled,
+      dailyReading: preferences.dailyReading.enabled,
+      gratitudeReminder: preferences.gratitudeReminder.enabled,
+      milestoneAlerts: preferences.milestoneAlerts.enabled,
+      encouragement: preferences.encouragement.enabled,
+    });
+  } catch (error) {
+    logger.error('Error rescheduling all notifications', { error });
   }
 }

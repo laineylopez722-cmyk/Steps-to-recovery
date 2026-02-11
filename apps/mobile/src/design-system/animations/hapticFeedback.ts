@@ -28,6 +28,7 @@ import {
   selectionAsync,
 } from 'expo-haptics';
 import { Platform } from 'react-native';
+import { logger } from '@/utils/logger';
 
 // ============================================================================
 // PLATFORM DETECTION
@@ -720,7 +721,7 @@ function delay(ms: number): Promise<void> {
 /** Test all haptic patterns (for debugging) */
 export async function hapticTestAll(): Promise<void> {
   if (!isHapticsAvailable) {
-    console.log('Haptics not available on this platform');
+    logger.debug('Haptics not available on this platform');
     return;
   }
 
@@ -737,7 +738,7 @@ export async function hapticTestAll(): Promise<void> {
   ];
 
   for (const pattern of patterns) {
-    console.log(`Testing: ${pattern.name}`);
+    logger.debug(`Testing: ${pattern.name}`);
     await pattern.fn();
     await delay(500);
   }

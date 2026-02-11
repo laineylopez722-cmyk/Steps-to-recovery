@@ -19,6 +19,8 @@
 import CryptoJS from 'crypto-js';
 import { Platform } from 'react-native';
 import { secureStorage } from '../adapters/secureStorage';
+import type { StorageAdapter } from '../adapters/storage';
+import { logger } from './logger';
 
 /**
  * Constant-time string comparison to prevent timing attacks
@@ -259,4 +261,158 @@ export async function deleteEncryptionKey(): Promise<void> {
 export async function hasEncryptionKey(): Promise<boolean> {
   const key = await getEncryptionKey();
   return key !== null && key.length > 0;
+}
+
+/** Decrypt content with a specific key (for key rotation) */
+async function decryptWithKey(encrypted: string, key: string): Promise<string> {
+  const parts = encrypted.split(':');
+  if (parts.length !== 2 && parts.length !== 3) throw new Error('Invalid format');
+  const [iv, ciphertext, mac] = parts;
+  if (!iv || !ciphertext) throw new Error('Invalid format');
+
+  if (mac) {
+    const keyWordArray = CryptoJS.enc.Hex.parse(key);
+    const macKey = CryptoJS.SHA256(keyWordArray);
+    const payload = `${iv}:${ciphertext}`;
+    const expectedMac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
+    if (!constantTimeEqual(expectedMac, mac)) {
+      throw new Error('Integrity check failed');
+    }
+  }
+
+  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+  const keyWordArray = CryptoJS.enc.Hex.parse(key);
+  const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+  if (!plaintext) throw new Error('Decryption failed');
+  return plaintext;
+}
+
+/** Encrypt content with a specific key (for key rotation) */
+async function encryptWithKey(content: string, key: string): Promise<string> {
+  const ivBytes = await getRandomBytes(16);
+  const iv = Array.from(ivBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+  const keyWordArray = CryptoJS.enc.Hex.parse(key);
+  const encrypted = CryptoJS.AES.encrypt(content, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  const payload = `${iv}:${encrypted.toString()}`;
+  const macKey = CryptoJS.SHA256(keyWordArray);
+  const mac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
+  return `${payload}:${mac}`;
+}
+
+/**
+ * Rotate the encryption key
+ *
+ * Generates a new key, re-encrypts all data, and atomically swaps keys.
+ * This is a HEAVY operation that decrypts and re-encrypts all entries.
+ *
+ * @param db - Database adapter for querying/updating encrypted records
+ * @param userId - Current user's ID
+ * @param onProgress - Optional progress callback (0-100)
+ * @returns Promise resolving when rotation is complete
+ * @throws Error if rotation fails (original key is preserved)
+ */
+export async function rotateEncryptionKey(
+  db: StorageAdapter,
+  userId: string,
+  onProgress?: (percent: number) => void,
+): Promise<void> {
+  const oldKey = await getEncryptionKey();
+  if (!oldKey) throw new Error('No existing encryption key found');
+
+  // Generate new key (but don't store it yet)
+  const randomBytes = await getRandomBytes(32);
+  const randomString = Array.from(randomBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  const salt = await generateUUID();
+  const newKey = CryptoJS.PBKDF2(randomString, salt, {
+    keySize: 256 / 32,
+    iterations: KEY_DERIVATION_ITERATIONS,
+  }).toString();
+
+  // All tables with encrypted columns
+  const tables = [
+    { table: 'journal_entries', columns: ['encrypted_body', 'encrypted_title', 'encrypted_mood', 'encrypted_craving', 'encrypted_tags'] },
+    { table: 'daily_checkins', columns: ['encrypted_mood', 'encrypted_craving', 'encrypted_intention', 'encrypted_reflection', 'encrypted_gratitude'] },
+    { table: 'step_work', columns: ['encrypted_answer'] },
+    { table: 'reading_reflections', columns: ['encrypted_reflection'] },
+    { table: 'personal_inventory', columns: ['encrypted_answers', 'encrypted_notes'] },
+    { table: 'gratitude_entries', columns: ['encrypted_item_1', 'encrypted_item_2', 'encrypted_item_3'] },
+    { table: 'craving_surf_sessions', columns: ['encrypted_initial_rating', 'encrypted_final_rating', 'encrypted_distraction_used'] },
+    { table: 'favorite_meetings', columns: ['encrypted_notes'] },
+  ];
+
+  // Count total items for progress
+  let totalItems = 0;
+  let processedItems = 0;
+
+  for (const { table } of tables) {
+    const result = await db.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM ${table} WHERE user_id = ?`,
+      [userId],
+    );
+    totalItems += result?.count ?? 0;
+  }
+
+  if (totalItems === 0) {
+    // No data to re-encrypt, just swap the key
+    await secureStorage.setItemAsync(ENCRYPTION_KEY_NAME, newKey);
+    logger.info('Encryption key rotated (no data to re-encrypt)');
+    onProgress?.(100);
+    return;
+  }
+
+  logger.info('Starting encryption key rotation', { totalItems });
+
+  // Re-encrypt all records: decrypt with old key, encrypt with new key
+  for (const { table, columns } of tables) {
+    const records = await db.getAllAsync<Record<string, string>>(
+      `SELECT id, ${columns.join(', ')} FROM ${table} WHERE user_id = ?`,
+      [userId],
+    );
+
+    for (const record of records) {
+      const updates: string[] = [];
+      const values: string[] = [];
+
+      for (const col of columns) {
+        const encrypted = record[col];
+        if (encrypted) {
+          const plaintext = await decryptWithKey(encrypted, oldKey);
+          const reEncrypted = await encryptWithKey(plaintext, newKey);
+          updates.push(`${col} = ?`);
+          values.push(reEncrypted);
+        }
+      }
+
+      if (updates.length > 0) {
+        values.push(record['id']);
+        await db.runAsync(
+          `UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`,
+          values,
+        );
+      }
+
+      processedItems++;
+      onProgress?.(Math.round((processedItems / totalItems) * 100));
+    }
+  }
+
+  // All data re-encrypted successfully, now swap the key
+  await secureStorage.setItemAsync(ENCRYPTION_KEY_NAME, newKey);
+
+  logger.info('Encryption key rotation complete', { totalItems: processedItems });
+  onProgress?.(100);
 }

@@ -74,6 +74,26 @@ const MAX_RETRY_COUNT = 3;
 /** Base delay for exponential backoff (in milliseconds) */
 const BASE_BACKOFF_MS = 1000;
 
+/** Valid table names for sync operations (whitelist to prevent SQL injection) */
+const VALID_SYNC_TABLES = [
+  'journal_entries',
+  'step_work',
+  'daily_checkins',
+  'favorite_meetings',
+  'reading_reflections',
+  'weekly_reports',
+  'sponsor_connections',
+  'sponsor_shared_entries',
+  'personal_inventory',
+  'craving_surf_sessions',
+] as const;
+
+type ValidSyncTable = (typeof VALID_SYNC_TABLES)[number];
+
+function isValidSyncTable(tableName: string): tableName is ValidSyncTable {
+  return (VALID_SYNC_TABLES as readonly string[]).includes(tableName);
+}
+
 /**
  * Wrap a promise with a timeout
  * Throws an error if the operation takes longer than the specified timeout
@@ -286,17 +306,9 @@ export async function syncJournalEntry(
     // Generate UUID for Supabase if not already synced
     const supabaseId = entry.supabase_id || generateUUID();
 
-    // Parse tags if they exist (local stores as encrypted JSON string)
-    let tags: string[] = [];
-    if (entry.encrypted_tags) {
-      try {
-        // Tags are encrypted as JSON string, we need to keep them encrypted
-        // but Supabase expects TEXT[] array, so we'll send as single encrypted item
-        tags = [entry.encrypted_tags];
-      } catch (_err) {
-        logger.warn('Failed to parse tags, using empty array');
-      }
-    }
+    // Tags: stored locally as a single encrypted blob. Supabase column is TEXT[].
+    // Send as single-element array preserving the encrypted payload.
+    const tags: string[] = entry.encrypted_tags ? [entry.encrypted_tags] : [];
 
     // Map local schema to Supabase schema
     const supabaseData = {
@@ -1176,6 +1188,10 @@ export async function addDeleteToSyncQueue(
   userId: string,
 ): Promise<void> {
   try {
+    if (!isValidSyncTable(tableName)) {
+      throw new Error(`Invalid table name for sync: ${tableName}`);
+    }
+
     // Fetch the supabase_id before deletion
     const record = await db.getFirstAsync<{ supabase_id: string | null }>(
       `SELECT supabase_id FROM ${tableName} WHERE id = ? AND user_id = ?`,

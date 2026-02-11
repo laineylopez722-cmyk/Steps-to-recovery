@@ -215,7 +215,7 @@ export function ProfileScreen(): React.ReactElement {
                 icon="shield"
                 title="Privacy & Security"
                 subtitle="Biometrics and encryption"
-                disabled
+                onPress={() => navigation.navigate('SecuritySettings')}
                 isLast
               />
             </CardGroup>

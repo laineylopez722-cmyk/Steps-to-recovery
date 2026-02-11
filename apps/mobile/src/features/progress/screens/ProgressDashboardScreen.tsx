@@ -9,7 +9,7 @@
  * - Premium milestone effects
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View, Text, Dimensions } from 'react-native';
 import type { ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,6 +21,16 @@ import { gradients, aestheticColors } from '../../../design-system/tokens/aesthe
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { useRecoveryAnalytics, type RecoveryInsight } from '../hooks/useRecoveryAnalytics';
+import { useMoodTrends, type TimeRange } from '../hooks/useMoodTrends';
+import { useCravingAnalysis } from '../hooks/useCravingAnalysis';
+import { TimeRangeSelector } from '../components/TimeRangeSelector';
+import { MoodChart } from '../components/MoodChart';
+import { CravingChart } from '../components/CravingChart';
+import { MoodSummaryCard } from '../components/MoodSummaryCard';
+import { CravingHeatmap } from '../components/CravingHeatmap';
+import { CravingInsightsCard } from '../components/CravingInsightsCard';
+import { CravingSurfStats } from '../components/CravingSurfStats';
+import { CommitmentCalendar } from '../components/CommitmentCalendar';
 
 interface ProgressDashboardScreenProps {
   userId: string;
@@ -145,6 +155,9 @@ export function ProgressDashboardScreen({
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const analytics = useRecoveryAnalytics(userId);
+  const [timeRange, setTimeRange] = useState<TimeRange>('30d');
+  const moodTrends = useMoodTrends(timeRange);
+  const cravingAnalysis = useCravingAnalysis(timeRange);
 
   // Loading state
   if (analytics.isLoading) {
@@ -180,23 +193,6 @@ export function ProgressDashboardScreen({
     );
   }
 
-  const moodValues = analytics.moodData.map((d) => d.mood);
-  const cravingValues = analytics.moodData.map((d) => d.craving);
-
-  const moodTrendIcon: keyof typeof MaterialCommunityIcons.glyphMap =
-    analytics.moodTrend === 'improving'
-      ? 'trending-up'
-      : analytics.moodTrend === 'declining'
-        ? 'trending-down'
-        : 'minus';
-
-  const cravingTrendIcon: keyof typeof MaterialCommunityIcons.glyphMap =
-    analytics.cravingTrend === 'improving'
-      ? 'trending-down'
-      : analytics.cravingTrend === 'worsening'
-        ? 'trending-up'
-        : 'minus';
-
   return (
     <View style={styles.container}>
       {/* Background */}
@@ -231,133 +227,79 @@ export function ProgressDashboardScreen({
             />
           </Animated.View>
 
-          {/* Mood Trend Card */}
+          {/* Commitment Calendar */}
+          <CommitmentCalendar userId={userId} />
+
+          {/* Mood Dashboard Section */}
           <Animated.View entering={ScreenAnimations.item(0)}>
-            <GlassCard intensity="card" style={styles.chartCard}>
-              <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                  <MaterialCommunityIcons
-                    name="emoticon-outline"
-                    size={20}
-                    color={aestheticColors.primary[500]}
-                  />
-                  <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Mood Trend</Text>
-                </View>
-                <View style={styles.trendBadge}>
-                  <MaterialCommunityIcons
-                    name={moodTrendIcon}
-                    size={16}
-                    color={
-                      analytics.moodTrend === 'improving'
-                        ? theme.colors.success
-                        : analytics.moodTrend === 'declining'
-                          ? theme.colors.danger
-                          : theme.colors.textSecondary
-                    }
-                  />
-                  <Text
-                    style={[
-                      styles.trendText,
-                      {
-                        color:
-                          analytics.moodTrend === 'improving'
-                            ? theme.colors.success
-                            : analytics.moodTrend === 'declining'
-                              ? theme.colors.danger
-                              : theme.colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    {analytics.moodTrend}
-                  </Text>
-                </View>
-              </View>
+            <View style={styles.sectionHeader}>
+              <MaterialCommunityIcons
+                name="chart-timeline-variant-shimmer"
+                size={20}
+                color={aestheticColors.primary[500]}
+              />
+              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                Mood Dashboard
+              </Text>
+            </View>
 
-              {moodValues.length > 0 ? (
-                <>
-                  <MiniBarChart data={moodValues} maxValue={5} color={aestheticColors.primary[500]} />
-                  <View style={styles.chartLegend}>
-                    <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
-                      Last {moodValues.length} days
-                    </Text>
-                    <Text style={[styles.averageText, { color: theme.colors.text }]}>
-                      Avg: {analytics.averageMood.toFixed(1)}/5
-                    </Text>
-                  </View>
-                </>
-              ) : (
-                <View style={styles.emptyChart}>
-                  <Text style={[styles.emptyChartText, { color: theme.colors.textSecondary }]}>
-                    Complete check-ins to see your mood trend
-                  </Text>
-                </View>
-              )}
-            </GlassCard>
+            <TimeRangeSelector selected={timeRange} onSelect={setTimeRange} />
+
+            {moodTrends.isLoading ? (
+              <>
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
+              </>
+            ) : moodTrends.data ? (
+              <>
+                <MoodSummaryCard data={moodTrends.data} />
+                <MoodChart
+                  data={moodTrends.data.daily}
+                  trend={moodTrends.data.trend}
+                  average={moodTrends.data.weeklyAverage}
+                />
+                <CravingChart
+                  data={moodTrends.data.daily}
+                  trend={moodTrends.data.cravingTrend}
+                  average={moodTrends.data.averageCraving}
+                />
+              </>
+            ) : null}
           </Animated.View>
 
-          {/* Craving Trend Card */}
-          <Animated.View entering={ScreenAnimations.item(1)}>
-            <GlassCard intensity="card" style={styles.chartCard}>
-              <View style={styles.cardHeader}>
-                <View style={styles.cardTitleRow}>
-                  <MaterialCommunityIcons
-                    name="lightning-bolt"
-                    size={20}
-                    color={aestheticColors.warning.DEFAULT}
-                  />
-                  <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Craving Levels</Text>
-                </View>
-                <View style={styles.trendBadge}>
-                  <MaterialCommunityIcons
-                    name={cravingTrendIcon}
-                    size={16}
-                    color={
-                      analytics.cravingTrend === 'improving'
-                        ? theme.colors.success
-                        : analytics.cravingTrend === 'worsening'
-                          ? theme.colors.danger
-                          : theme.colors.textSecondary
-                    }
-                  />
-                  <Text
-                    style={[
-                      styles.trendText,
-                      {
-                        color:
-                          analytics.cravingTrend === 'improving'
-                            ? theme.colors.success
-                            : analytics.cravingTrend === 'worsening'
-                              ? theme.colors.danger
-                              : theme.colors.textSecondary,
-                      },
-                    ]}
-                  >
-                    {analytics.cravingTrend}
-                  </Text>
-                </View>
+          {/* Craving Pattern Analysis */}
+          {!cravingAnalysis.isLoading && cravingAnalysis.pattern && (
+            <Animated.View entering={ScreenAnimations.item(1)}>
+              <View style={styles.sectionHeader}>
+                <MaterialCommunityIcons
+                  name="brain"
+                  size={20}
+                  color={aestheticColors.warning.DEFAULT}
+                />
+                <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                  Craving Patterns
+                </Text>
               </View>
 
-              {cravingValues.length > 0 ? (
-                <>
-                  <MiniBarChart data={cravingValues} maxValue={10} color={aestheticColors.warning.DEFAULT} />
-                  <View style={styles.chartLegend}>
-                    <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
-                      Last {cravingValues.length} days
-                    </Text>
-                    <Text style={[styles.averageText, { color: theme.colors.text }]}>
-                      Avg: {analytics.averageCraving.toFixed(1)}/10
-                    </Text>
-                  </View>
-                </>
-              ) : (
-                <View style={styles.emptyChart}>
-                  <Text style={[styles.emptyChartText, { color: theme.colors.textSecondary }]}>
-                    Log cravings in evening check-ins to track patterns
-                  </Text>
-                </View>
+              <CravingHeatmap
+                data={cravingAnalysis.heatmap}
+                peakHour={cravingAnalysis.pattern.peakHour}
+                peakDay={cravingAnalysis.pattern.peakDay}
+              />
+
+              {cravingAnalysis.pattern.insights.length > 0 && (
+                <CravingInsightsCard
+                  insights={cravingAnalysis.pattern.insights}
+                  trend={cravingAnalysis.pattern.trend}
+                />
               )}
-            </GlassCard>
-          </Animated.View>
+
+              {cravingAnalysis.surfSummary && (
+                <CravingSurfStats summary={cravingAnalysis.surfSummary} />
+              )}
+            </Animated.View>
+          )}
 
           {/* Recovery Insights */}
           <Animated.View entering={ScreenAnimations.item(2)} style={styles.insightsSection}>

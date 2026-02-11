@@ -73,6 +73,9 @@ export interface NotificationParams {
 export type NotificationType =
   | 'morning-checkin'
   | 'evening-checkin'
+  | 'daily-reading'
+  | 'gratitude-reminder'
+  | 'encouragement'
   | 'milestone'
   | 'journal-reminder'
   | 'step-reminder'

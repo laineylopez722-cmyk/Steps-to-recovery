@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 9;
+const CURRENT_SCHEMA_VERSION = 13;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -671,6 +671,129 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
     logger.info('Migration v9 completed');
   }
 
+  // Migration version 10: Add personal_inventory table (Tenth Step)
+  if (currentVersion < 10) {
+    logger.info('Running migration v10: Adding personal_inventory table');
+    const v10InventoryMigrations = [
+      `CREATE TABLE IF NOT EXISTS personal_inventory (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        check_date TEXT NOT NULL,
+        encrypted_answers TEXT NOT NULL,
+        encrypted_notes TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        synced INTEGER DEFAULT 0,
+        supabase_id TEXT
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_personal_inventory_user_date ON personal_inventory(user_id, check_date);`,
+    ];
+
+    for (const migration of v10InventoryMigrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v10 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 10);
+    logger.info('Migration v10 completed');
+  }
+
+  // Migration version 11: Add gratitude_entries table
+  if (currentVersion < 11) {
+    logger.info('Running migration v11: Adding gratitude_entries table');
+    const v11Migrations = [
+      `CREATE TABLE IF NOT EXISTS gratitude_entries (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        entry_date TEXT NOT NULL,
+        encrypted_item_1 TEXT NOT NULL,
+        encrypted_item_2 TEXT NOT NULL,
+        encrypted_item_3 TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        synced INTEGER DEFAULT 0,
+        supabase_id TEXT
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_gratitude_entries_user_date ON gratitude_entries(user_id, entry_date);`,
+    ];
+
+    for (const migration of v11Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v11 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 11);
+    logger.info('Migration v11 completed');
+  }
+
+  // Migration version 12: Add craving_surf_sessions table
+  if (currentVersion < 12) {
+    logger.info('Running migration v12: Adding craving_surf_sessions table');
+    const v12Migrations = [
+      `CREATE TABLE IF NOT EXISTS craving_surf_sessions (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        encrypted_initial_rating TEXT NOT NULL,
+        encrypted_final_rating TEXT,
+        encrypted_distraction_used TEXT,
+        started_at TEXT NOT NULL,
+        completed_at TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        sync_status TEXT DEFAULT 'pending',
+        supabase_id TEXT,
+        FOREIGN KEY (user_id) REFERENCES user_profile(id)
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_craving_surf_user ON craving_surf_sessions(user_id);`,
+      `CREATE INDEX IF NOT EXISTS idx_craving_surf_created ON craving_surf_sessions(created_at);`,
+    ];
+
+    for (const migration of v12Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v12 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 12);
+    logger.info('Migration v12 completed');
+  }
+
+  // Migration version 13: Add safety_plans table
+  if (currentVersion < 13) {
+    logger.info('Running migration v13: Adding safety_plans table');
+    const v13Migrations = [
+      `CREATE TABLE IF NOT EXISTS safety_plans (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL,
+        encrypted_plan TEXT NOT NULL,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        synced INTEGER DEFAULT 0,
+        supabase_id TEXT
+      );`,
+      `CREATE INDEX IF NOT EXISTS idx_safety_plans_user ON safety_plans(user_id);`,
+    ];
+
+    for (const migration of v13Migrations) {
+      try {
+        await db.execAsync(migration);
+      } catch (error) {
+        logger.warn('Migration v13 step failed (may be already applied)', error);
+      }
+    }
+
+    await recordMigration(db, 13);
+    logger.info('Migration v13 completed');
+  }
+
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });
 }
 
@@ -693,6 +816,8 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 export async function clearDatabase(db: StorageAdapter): Promise<void> {
   const statements = [
     'DELETE FROM sync_queue',
+    'DELETE FROM craving_surf_sessions',
+    'DELETE FROM safety_plans',
     'DELETE FROM favorite_meetings',
     'DELETE FROM meeting_search_cache',
     'DELETE FROM cached_meetings',
@@ -705,6 +830,8 @@ export async function clearDatabase(db: StorageAdapter): Promise<void> {
     'DELETE FROM sponsor_shared_entries',
     'DELETE FROM sponsor_connections',
     'DELETE FROM weekly_reports',
+    'DELETE FROM gratitude_entries',
+    'DELETE FROM personal_inventory',
     'DELETE FROM user_profile',
   ];
 

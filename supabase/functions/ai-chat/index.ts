@@ -20,9 +20,9 @@ const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY')!
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-// CORS headers
+// CORS headers — restrict to mobile app and Supabase dashboard
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': Deno.env.get('ALLOWED_ORIGIN') || '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
@@ -128,19 +128,21 @@ Deno.serve(async (req) => {
       )
     }
 
-    // 5. Increment usage (async, don't wait)
+    // 5. Increment usage (best-effort — log failures but don't block response)
     if (tier === 'free' && !hasOwnKey) {
       const today = new Date().toISOString().split('T')[0]
       
-      // Upsert usage record
-      supabase.rpc('increment_ai_usage', { 
-        p_user_id: user.id, 
-        p_date: today 
-      }).then(() => {
-        // Log success silently
-      }).catch((err) => {
+      try {
+        const { error: usageError } = await supabase.rpc('increment_ai_usage', { 
+          p_user_id: user.id, 
+          p_date: today 
+        })
+        if (usageError) {
+          console.error('Failed to increment usage:', usageError.message)
+        }
+      } catch (err) {
         console.error('Failed to increment usage:', err)
-      })
+      }
     }
 
     // 6. Stream response back

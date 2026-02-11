@@ -1,5 +1,7 @@
 # Copilot Instructions — Steps to Recovery
 
+> **Full project guide**: See [CLAUDE.md](../CLAUDE.md) for architecture, security, code conventions, and all standards.
+
 A privacy-first 12-step recovery companion mobile app built with React Native/Expo. **Core philosophy**: Encrypt-first, offline-first, security-first.
 
 ## Build & Test Commands
@@ -266,11 +268,4 @@ EXPO_PUBLIC_SENTRY_DSN=optional-sentry-dsn  # Optional
 6. ❌ **Never** use bare `console.*` (use logger)
 7. ❌ **Never** hardcode design values (use design tokens)
 
-## Reference Documentation
-
-- **Deep Architecture**: [CLAUDE.md](../CLAUDE.md) - Comprehensive agent guide
-- **AI Agent Rules**: [AGENTS.md](../AGENTS.md) - Quick reference
-- **Testing Details**: [TESTING.md](../TESTING.md) - Test strategy
-- **Deployment**: [DEPLOYMENT.md](../DEPLOYMENT.md) - Build & release
-- **Setup Guide**: [SETUP.md](../SETUP.md) - Installation
-- **Troubleshooting**: [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) - Common issues
+For detailed patterns, migration guides, deployment, and testing strategies, see **[CLAUDE.md](../CLAUDE.md)**.

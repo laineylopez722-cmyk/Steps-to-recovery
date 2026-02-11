@@ -13,6 +13,7 @@ export interface DailyReading {
   source: string;
   reflection_prompt: string;
   reflectionPrompt?: string;
+  external_url?: string;
 }
 
 export interface DailyReadingReflection {

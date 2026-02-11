@@ -3,83 +3,20 @@
  *
  * Provides error tracking with automatic sensitive data sanitization.
  * All user-generated content is redacted before being sent to Sentry.
+ * PII patterns (emails, phones, UUIDs) are stripped by sentrySanitizer.
  *
  * @module lib/sentry
  */
 
 import * as Sentry from '@sentry/react-native';
-import type { ErrorEvent, Breadcrumb, Exception } from '@sentry/react-native';
+import type { ErrorEvent, Breadcrumb } from '@sentry/react-native';
 import Constants from 'expo-constants';
-
-/**
- * Sensitive keys that should be redacted from error reports
- */
-const SENSITIVE_KEYS = [
-  'encrypted_body',
-  'encrypted_title',
-  'encrypted_content',
-  'encrypted_answer',
-  'encrypted_intention',
-  'encrypted_reflection',
-  'encrypted_mood',
-  'encrypted_craving',
-  'encrypted_notes',
-  'encrypted_tags',
-  'encrypted_gratitude',
-  'plaintext',
-  'password',
-  'token',
-  'key',
-  'secret',
-  'content',
-  'body',
-  'answer',
-  'reflection',
-  'intention',
-  'journal',
-  'entry',
-];
-
-/**
- * Check if a string might contain sensitive data
- */
-function mightContainSensitiveData(str: string): boolean {
-  const lowerStr = str.toLowerCase();
-  return SENSITIVE_KEYS.some((key) => lowerStr.includes(key));
-}
-
-/**
- * Sanitize data object by redacting sensitive fields
- */
-function sanitizeData(data: Record<string, unknown>): Record<string, unknown> {
-  const sanitized: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(data)) {
-    const lowerKey = key.toLowerCase();
-
-    // Check if key is sensitive
-    if (SENSITIVE_KEYS.some((sensitiveKey) => lowerKey.includes(sensitiveKey))) {
-      sanitized[key] = '[REDACTED]';
-      continue;
-    }
-
-    // Check if string value contains sensitive data
-    if (typeof value === 'string' && mightContainSensitiveData(value)) {
-      sanitized[key] = '[REDACTED]';
-      continue;
-    }
-
-    // Recursively sanitize nested objects
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      sanitized[key] = sanitizeData(value as Record<string, unknown>);
-      continue;
-    }
-
-    sanitized[key] = value;
-  }
-
-  return sanitized;
-}
+import {
+  sanitizeEvent,
+  sanitizeBreadcrumb,
+  sanitizeData,
+  containsSensitiveData,
+} from './sentrySanitizer';
 
 /**
  * Initialize Sentry with privacy-preserving configuration
@@ -88,6 +25,7 @@ export function initSentry(): void {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
   if (!dsn) {
+    // Use console.warn directly to avoid circular dependency with logger
     console.warn('Sentry DSN not configured, error tracking disabled');
     return;
   }
@@ -96,43 +34,22 @@ export function initSentry(): void {
     dsn,
     release: Constants.expoConfig?.version,
     environment: process.env.EXPO_PUBLIC_ENV || 'development',
-    // Disable automatic breadcrumbs for privacy
+    debug: __DEV__,
+    enabled: !__DEV__, // Only send events in production
     enableAutoSessionTracking: true,
-    // Configure beforeSend to sanitize all events
+
+    // Privacy: Strip ALL PII before sending
     beforeSend(event: ErrorEvent): ErrorEvent | null {
-      // Sanitize event data
-      if (event.extra) {
-        event.extra = sanitizeData(event.extra as Record<string, unknown>);
-      }
-
-      // Sanitize breadcrumb data
-      if (event.breadcrumbs) {
-        event.breadcrumbs = event.breadcrumbs.map((breadcrumb: Breadcrumb) => {
-          if (breadcrumb.data) {
-            breadcrumb.data = sanitizeData(breadcrumb.data as Record<string, unknown>);
-          }
-          // Check message for sensitive content
-          if (breadcrumb.message && mightContainSensitiveData(breadcrumb.message)) {
-            breadcrumb.message = '[REDACTED]';
-          }
-          return breadcrumb;
-        });
-      }
-
-      // Sanitize exception messages (but keep stack traces)
-      if (event.exception?.values) {
-        event.exception.values = event.exception.values.map((exception: Exception) => {
-          if (exception.value && mightContainSensitiveData(exception.value)) {
-            exception.value = '[REDACTED]';
-          }
-          return exception;
-        });
-      }
-
-      return event;
+      return sanitizeEvent(event) as ErrorEvent | null;
     },
+
+    // Privacy: Sanitize breadcrumbs as they are recorded
+    beforeBreadcrumb(breadcrumb: Breadcrumb): Breadcrumb | null {
+      return sanitizeBreadcrumb(breadcrumb);
+    },
+
     integrations: [Sentry.reactNativeTracingIntegration()],
-    tracesSampleRate: 0.1, // Sample 10% of transactions
+    tracesSampleRate: 0.2,
   });
 }
 
@@ -165,7 +82,7 @@ export function addBreadcrumb(
   data?: Record<string, unknown>,
 ): void {
   // Don't add breadcrumbs with sensitive messages
-  if (mightContainSensitiveData(message)) {
+  if (containsSensitiveData(message)) {
     return;
   }
 

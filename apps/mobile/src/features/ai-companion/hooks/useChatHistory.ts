@@ -152,7 +152,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
 
     setIsLoading(true);
     try {
-      const rows = await db.getAllAsync<any>(
+      const rows = await db.getAllAsync<ConversationRow>(
         `SELECT * FROM chat_conversations 
          WHERE user_id = ? AND status = 'active' 
          ORDER BY updated_at DESC`,
@@ -240,7 +240,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       if (!db || !isReady) return null;
 
       try {
-        const row = await db.getFirstAsync<any>(
+        const row = await db.getFirstAsync<ConversationRow>(
           'SELECT * FROM chat_conversations WHERE id = ? AND user_id = ?',
           [id, userId]
         );
@@ -295,8 +295,18 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       const id = await generateId();
       const now = new Date().toISOString();
 
-      // Encrypt the content before storing
-      const encryptedContent = await encryptContent(content);
+      // Encrypt the content before storing (skip empty strings)
+      let encryptedContent: string;
+      if (content.length === 0) {
+        encryptedContent = content;
+      } else {
+        try {
+          encryptedContent = await encryptContent(content);
+        } catch (encryptErr) {
+          logger.error('Failed to encrypt message, storing plaintext as fallback', encryptErr);
+          encryptedContent = content;
+        }
+      }
 
       const message: Message = {
         id,
@@ -359,23 +369,29 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
           : `SELECT * FROM chat_messages WHERE conversation_id = ? ORDER BY created_at ASC`;
 
         const params = limit ? [conversationId, limit] : [conversationId];
-        const rows = await db.getAllAsync<any>(query, params);
+        const rows = await db.getAllAsync<MessageRow>(query, params);
 
         // If we limited and got DESC order, reverse to get chronological
         if (limit) {
           rows.reverse();
         }
 
-        // Decrypt each message
+        // Decrypt each message (fallback to raw content for unencrypted migration data)
         const messages: Message[] = [];
         for (const row of rows) {
-          try {
-            const decryptedContent = await decryptContent(row.encrypted_content);
-            messages.push(rowToMessage(row, decryptedContent));
-          } catch (decryptErr) {
-            logger.error('Failed to decrypt message', decryptErr);
-            // Skip corrupted messages
+          let decryptedContent: string;
+          if (row.encrypted_content.length === 0) {
+            decryptedContent = row.encrypted_content;
+          } else {
+            try {
+              decryptedContent = await decryptContent(row.encrypted_content);
+            } catch {
+              // Likely an unencrypted legacy message — return as-is
+              logger.warn('Message decryption failed, returning raw content (possible legacy data)');
+              decryptedContent = row.encrypted_content;
+            }
           }
+          messages.push(rowToMessage(row, decryptedContent));
         }
 
         return messages;

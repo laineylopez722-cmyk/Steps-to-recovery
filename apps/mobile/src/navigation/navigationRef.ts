@@ -137,7 +137,15 @@ function navigateFromLegacyScreen(screen: string): void {
       navigateToTab('Home'); // Meetings accessed from home
       break;
     case 'reading':
+    case 'daily-reading':
       navigateToTab('Home'); // Daily reading on home
+      break;
+    case 'gratitude':
+    case 'gratitude-reminder':
+      navigateToTab('Journal'); // Gratitude through journal
+      break;
+    case 'encouragement':
+      navigateToTab('Home');
       break;
     default:
       navigateToTab('Home');

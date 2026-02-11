@@ -50,6 +50,9 @@ export {
   useSyncPendingMutations,
 } from './useOfflineMutation';
 
+// Biometric lock
+export { useBiometricLock } from './useBiometricLock';
+
 // App state hooks
 export {
   useAppState,

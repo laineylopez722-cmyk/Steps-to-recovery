@@ -20,7 +20,7 @@ export function StepLockedState({
     <View style={styles.lockedContainer}>
       <MaterialCommunityIcons name="lock" size={48} color={theme.colors.textSecondary} />
       <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>
-        Step {stepNumber} is coming soon
+        Step {stepNumber}
       </Text>
       <Text
         style={[
@@ -28,8 +28,7 @@ export function StepLockedState({
           { color: theme.colors.textSecondary, textAlign: 'center', marginTop: 12 },
         ]}
       >
-        We're building the full Step {stepNumber} experience next. For now, keep focusing on Step
-        1.
+        This step is not yet available. Please check back later.
       </Text>
       <View style={{ marginTop: theme.spacing.lg, width: '100%' }}>
         <Button

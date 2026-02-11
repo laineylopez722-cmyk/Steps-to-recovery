@@ -1,11 +1,13 @@
 import {
   useMutation,
   useQueryClient,
+  onlineManager,
   type UseMutationOptions,
   type QueryKey,
 } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { logger } from '../utils/logger';
+import { useToast } from '../design-system/components/ToastProvider';
 
 /**
  * Options for optimistic updates
@@ -77,6 +79,7 @@ export function useOfflineMutation<TData = unknown, TError = Error, TVariables =
   options: OfflineMutationOptions<TData, TError, TVariables>,
 ) {
   const queryClient = useQueryClient();
+  const { showToast } = useToast();
   const {
     optimisticUpdate,
     invalidateQueries,
@@ -129,7 +132,8 @@ export function useOfflineMutation<TData = unknown, TError = Error, TVariables =
 
       if (showErrorToast) {
         logger.error('Mutation failed', error);
-        // TODO: Show toast notification
+        const message = error instanceof Error ? error.message : 'Operation failed';
+        showToast(message, 'error', { duration: 4000 });
       }
     },
 
@@ -162,8 +166,12 @@ export function useOfflineMutation<TData = unknown, TError = Error, TVariables =
     (variables: TVariables) => {
       logger.info('Starting offline mutation', { mutationKey: mutationOptions.mutationKey });
       mutation.mutate(variables);
+
+      if (!onlineManager.isOnline()) {
+        showToast('Saved offline — will sync when connected', 'info', { duration: 3000 });
+      }
     },
-    [mutation, mutationOptions.mutationKey],
+    [mutation, mutationOptions.mutationKey, showToast],
   );
 
   const mutateAsync = useCallback(
@@ -171,9 +179,14 @@ export function useOfflineMutation<TData = unknown, TError = Error, TVariables =
       logger.info('Starting offline mutation (async)', {
         mutationKey: mutationOptions.mutationKey,
       });
+
+      if (!onlineManager.isOnline()) {
+        showToast('Saved offline — will sync when connected', 'info', { duration: 3000 });
+      }
+
       return mutation.mutateAsync(variables);
     },
-    [mutation, mutationOptions.mutationKey],
+    [mutation, mutationOptions.mutationKey, showToast],
   );
 
   return {

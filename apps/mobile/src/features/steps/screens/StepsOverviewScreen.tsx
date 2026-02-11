@@ -266,7 +266,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
             const answeredCount = detail?.answered ?? 0;
             const totalQuestions = detail?.total ?? stepTotalsFallback.get(step.number) ?? 0;
             const completed = stepsCompleted.includes(step.number);
-            const isLocked = step.number > 1;
+            const isLocked = false;
             const current = !isLocked && step.number === currentStep && !completed;
 
             return (
@@ -288,7 +288,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
           <Animated.View entering={MotionTransitions.fadeDelayed(360)} style={styles.infoCard}>
             <Feather name="info" size={18} color={ds.colors.info} />
             <Text style={styles.infoText}>
-              Step 1 is available now. Steps 2-12 unlock in a future update.
+              All 12 steps are available. Work at your own pace with your sponsor.
             </Text>
           </Animated.View>
 

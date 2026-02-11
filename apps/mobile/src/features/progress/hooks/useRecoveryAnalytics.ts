@@ -361,6 +361,27 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
       );
       const journalEntryCount = journalStats?.count || 0;
 
+      // Calculate total words written (decrypt and count)
+      let totalWordsWritten = 0;
+      try {
+        const journalEntries = await db.getAllAsync<{ encrypted_body: string }>(
+          'SELECT encrypted_body FROM journal_entries WHERE user_id = ?',
+          [userId],
+        );
+        for (const entry of journalEntries) {
+          if (entry.encrypted_body) {
+            try {
+              const decrypted = await decryptContent(entry.encrypted_body);
+              totalWordsWritten += decrypted.split(/\s+/).filter(Boolean).length;
+            } catch {
+              // Skip entries that fail to decrypt
+            }
+          }
+        }
+      } catch {
+        // If word count fails, use 0 (non-critical)
+      }
+
       // Calculate journal streak
       let journalStreak = 0;
       const today = new Date();
@@ -433,7 +454,7 @@ export function useRecoveryAnalytics(userId: string): RecoveryAnalytics {
         totalStepsCompleted,
         journalEntryCount,
         journalStreak,
-        totalWordsWritten: 0, // Would need to decrypt all entries to calculate
+        totalWordsWritten,
         checkInStreak,
         totalCheckIns,
         insights,

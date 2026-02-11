@@ -22,13 +22,10 @@ import DateTimePicker, { type DateTimePickerEvent } from '@react-native-communit
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useNotifications } from '../../../contexts/NotificationContext';
+import { useNotificationPreferences } from '../../../hooks/useNotifications';
 import {
-  cancelDailyReminders,
-  DEFAULT_REMINDERS,
-  getScheduledNotifications,
-  scheduleDailyReminders,
   sendTestNotification,
-  type DailyReminderConfig,
+  sendEncouragementNotification,
 } from '../../../services/notificationService';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
@@ -176,29 +173,20 @@ export function NotificationSettingsScreen(): React.ReactElement {
     setNotificationsEnabled 
   } = useNotifications();
 
-  const [morningEnabled, setMorningEnabled] = useState(true);
-  const [morningHour, setMorningHour] = useState<number>(DEFAULT_REMINDERS.morning.hour);
-  const [morningMinute, setMorningMinute] = useState<number>(DEFAULT_REMINDERS.morning.minute);
+  const {
+    preferences,
+    isLoading: prefsLoading,
+    scheduledNotifications,
+    updatePreference,
+    toggleAll,
+    refreshScheduled,
+  } = useNotificationPreferences();
 
-  const [eveningEnabled, setEveningEnabled] = useState(true);
-  const [eveningHour, setEveningHour] = useState<number>(DEFAULT_REMINDERS.evening.hour);
-  const [eveningMinute, setEveningMinute] = useState<number>(DEFAULT_REMINDERS.evening.minute);
-
-  const [scheduledCount, setScheduledCount] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
-    loadScheduledNotifications();
-  }, []);
-
-  const loadScheduledNotifications = async () => {
-    try {
-      const scheduled = await getScheduledNotifications();
-      setScheduledCount(scheduled.length);
-    } catch {
-      setScheduledCount(0);
-    }
-  };
+    refreshScheduled();
+  }, [refreshScheduled]);
 
   const handleToggleNotifications = useCallback(async (enabled: boolean) => {
     if (enabled && permissionStatus !== 'granted') {
@@ -210,42 +198,69 @@ export function NotificationSettingsScreen(): React.ReactElement {
     }
 
     setNotificationsEnabled(enabled);
-
-    if (enabled) {
-      await applySettings();
-    } else {
-      await cancelDailyReminders();
-      await loadScheduledNotifications();
-    }
-  }, [permissionStatus, requestPermissions, setNotificationsEnabled]);
-
-  const applySettings = async () => {
-    if (!notificationsEnabled) return;
-
     setIsUpdating(true);
-    try {
-      const morning: DailyReminderConfig = {
-        enabled: morningEnabled,
-        hour: morningHour,
-        minute: morningMinute,
-      };
-      const evening: DailyReminderConfig = {
-        enabled: eveningEnabled,
-        hour: eveningHour,
-        minute: eveningMinute,
-      };
 
-      await scheduleDailyReminders(morning, evening);
-      await loadScheduledNotifications();
-      
+    try {
+      await toggleAll(enabled);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
-      Alert.alert('Error', 'Failed to update reminders.');
     } finally {
       setIsUpdating(false);
     }
-  };
+  }, [permissionStatus, requestPermissions, setNotificationsEnabled, toggleAll]);
+
+  const handleTimeChange = useCallback(
+    async (
+      key: 'morningCheckIn' | 'eveningCheckIn' | 'dailyReading' | 'gratitudeReminder',
+      hour: number,
+      minute: number,
+    ) => {
+      setIsUpdating(true);
+      try {
+        await updatePreference(key, { ...preferences[key], hour, minute });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      } catch {
+        Alert.alert('Error', 'Failed to update reminder time.');
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [preferences, updatePreference],
+  );
+
+  const handleToggleReminder = useCallback(
+    async (
+      key: 'morningCheckIn' | 'eveningCheckIn' | 'dailyReading' | 'gratitudeReminder',
+      enabled: boolean,
+    ) => {
+      setIsUpdating(true);
+      try {
+        await updatePreference(key, { ...preferences[key], enabled });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      } catch {
+        Alert.alert('Error', 'Failed to update reminder.');
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [preferences, updatePreference],
+  );
+
+  const handleToggleSimple = useCallback(
+    async (key: 'milestoneAlerts' | 'encouragement', enabled: boolean) => {
+      setIsUpdating(true);
+      try {
+        await updatePreference(key, { enabled });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      } catch {
+        Alert.alert('Error', 'Failed to update setting.');
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    [updatePreference],
+  );
 
   const handleSendTest = async () => {
     if (permissionStatus !== 'granted') {
@@ -261,6 +276,20 @@ export function NotificationSettingsScreen(): React.ReactElement {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     } catch {
       Alert.alert('Error', 'Failed to send test notification.');
+    }
+  };
+
+  const handleSendEncouragement = async () => {
+    if (permissionStatus !== 'granted') {
+      Alert.alert('Notifications Disabled', 'Enable notifications first.');
+      return;
+    }
+
+    try {
+      await sendEncouragementNotification();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    } catch {
+      Alert.alert('Error', 'Failed to send encouragement.');
     }
   };
 
@@ -306,29 +335,26 @@ export function NotificationSettingsScreen(): React.ReactElement {
           <Animated.View entering={FadeInDown.duration(300)} style={styles.card}>
             <ToggleRow
               label="Enable Notifications"
-              subtitle="Daily reminders and milestones"
+              subtitle="Daily reminders, milestones, and encouragement"
               value={notificationsEnabled}
               onValueChange={handleToggleNotifications}
-              disabled={isUpdating}
+              disabled={isUpdating || prefsLoading}
             />
           </Animated.View>
 
           {/* Reminders Section */}
           {notificationsEnabled && permissionGranted && (
             <>
-              <Text style={styles.sectionHeader}>Reminders</Text>
+              <Text style={styles.sectionHeader}>Daily Reminders</Text>
               
               <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
                 <TimePickerRow
                   label="Morning check-in"
-                  enabled={morningEnabled}
-                  hour={morningHour}
-                  minute={morningMinute}
-                  onTimeChange={(h, m) => {
-                    setMorningHour(h);
-                    setMorningMinute(m);
-                  }}
-                  onToggle={setMorningEnabled}
+                  enabled={preferences.morningCheckIn.enabled}
+                  hour={preferences.morningCheckIn.hour}
+                  minute={preferences.morningCheckIn.minute}
+                  onTimeChange={(h, m) => handleTimeChange('morningCheckIn', h, m)}
+                  onToggle={(val) => handleToggleReminder('morningCheckIn', val)}
                   disabled={isUpdating}
                 />
                 
@@ -336,37 +362,79 @@ export function NotificationSettingsScreen(): React.ReactElement {
                 
                 <TimePickerRow
                   label="Evening reflection"
-                  enabled={eveningEnabled}
-                  hour={eveningHour}
-                  minute={eveningMinute}
-                  onTimeChange={(h, m) => {
-                    setEveningHour(h);
-                    setEveningMinute(m);
-                  }}
-                  onToggle={setEveningEnabled}
+                  enabled={preferences.eveningCheckIn.enabled}
+                  hour={preferences.eveningCheckIn.hour}
+                  minute={preferences.eveningCheckIn.minute}
+                  onTimeChange={(h, m) => handleTimeChange('eveningCheckIn', h, m)}
+                  onToggle={(val) => handleToggleReminder('eveningCheckIn', val)}
+                  disabled={isUpdating}
+                />
+
+                <View style={styles.divider} />
+
+                <TimePickerRow
+                  label="Daily reading"
+                  enabled={preferences.dailyReading.enabled}
+                  hour={preferences.dailyReading.hour}
+                  minute={preferences.dailyReading.minute}
+                  onTimeChange={(h, m) => handleTimeChange('dailyReading', h, m)}
+                  onToggle={(val) => handleToggleReminder('dailyReading', val)}
+                  disabled={isUpdating}
+                />
+
+                <View style={styles.divider} />
+
+                <TimePickerRow
+                  label="Gratitude reminder"
+                  enabled={preferences.gratitudeReminder.enabled}
+                  hour={preferences.gratitudeReminder.hour}
+                  minute={preferences.gratitudeReminder.minute}
+                  onTimeChange={(h, m) => handleTimeChange('gratitudeReminder', h, m)}
+                  onToggle={(val) => handleToggleReminder('gratitudeReminder', val)}
                   disabled={isUpdating}
                 />
               </Animated.View>
 
-              {/* Apply Button */}
-              <Animated.View entering={FadeInDown.delay(150).duration(300)}>
-                <Pressable
-                  onPress={applySettings}
+              {/* Celebrations & Encouragement Section */}
+              <Text style={styles.sectionHeader}>Celebrations & Encouragement</Text>
+
+              <Animated.View entering={FadeInDown.delay(150).duration(300)} style={styles.card}>
+                <ToggleRow
+                  label="Milestone celebrations"
+                  subtitle="Celebrate sobriety milestones (1, 7, 30, 90, 365 days)"
+                  value={preferences.milestoneAlerts.enabled}
+                  onValueChange={(val) => handleToggleSimple('milestoneAlerts', val)}
                   disabled={isUpdating}
-                  style={[styles.applyBtn, isUpdating && styles.applyBtnDisabled]}
+                />
+
+                <View style={styles.divider} />
+
+                <ToggleRow
+                  label="Encouragement messages"
+                  subtitle="Uplifting recovery-focused reminders"
+                  value={preferences.encouragement.enabled}
+                  onValueChange={(val) => handleToggleSimple('encouragement', val)}
+                  disabled={isUpdating}
+                />
+              </Animated.View>
+
+              {/* Actions Section */}
+              <Text style={styles.sectionHeader}>Actions</Text>
+
+              <Animated.View entering={FadeInDown.delay(200).duration(300)}>
+                <Pressable
+                  onPress={handleSendEncouragement}
+                  style={styles.applyBtn}
                   accessibilityRole="button"
-                  accessibilityLabel="Apply notification changes"
-                  accessibilityHint="Saves your notification preferences"
-                  accessibilityState={{ disabled: isUpdating }}
+                  accessibilityLabel="Send encouragement notification"
+                  accessibilityHint="Sends an encouraging message right now"
                 >
-                  <Text style={styles.applyBtnText}>
-                    {isUpdating ? 'Updating...' : 'Apply Changes'}
-                  </Text>
+                  <Text style={styles.applyBtnText}>💜 Send Encouragement Now</Text>
                 </Pressable>
               </Animated.View>
 
               {/* Test Button */}
-              <Animated.View entering={FadeInDown.delay(200).duration(300)}>
+              <Animated.View entering={FadeInDown.delay(250).duration(300)}>
                 <Pressable
                   onPress={handleSendTest}
                   style={styles.testBtn}
@@ -379,8 +447,8 @@ export function NotificationSettingsScreen(): React.ReactElement {
               </Animated.View>
 
               {/* Info Card */}
-              <Animated.View entering={FadeInDown.delay(250).duration(300)} style={styles.infoCard}>
-                <Text style={styles.infoTitle}>{scheduledCount} notifications scheduled</Text>
+              <Animated.View entering={FadeInDown.delay(300).duration(300)} style={styles.infoCard}>
+                <Text style={styles.infoTitle}>{scheduledNotifications.length} notifications scheduled</Text>
                 <Text style={styles.infoText}>
                   Includes daily reminders and milestone celebrations.
                 </Text>
@@ -393,7 +461,8 @@ export function NotificationSettingsScreen(): React.ReactElement {
             <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
               <Text style={styles.permissionTitle}>Allow Notifications</Text>
               <Text style={styles.permissionText}>
-                We'll send reminders for daily check-ins and celebrate your milestones.
+                We'll send reminders for daily check-ins, celebrate your milestones, and share
+                words of encouragement.
               </Text>
               <Pressable
                 onPress={requestPermissions}
@@ -567,9 +636,6 @@ const createStyles = (ds: DS) => ({
     paddingVertical: ds.space[4],
     alignItems: 'center',
     marginBottom: ds.space[3],
-  },
-  applyBtnDisabled: {
-    backgroundColor: ds.colors.bgTertiary,
   },
   applyBtnText: {
     ...ds.typography.body,

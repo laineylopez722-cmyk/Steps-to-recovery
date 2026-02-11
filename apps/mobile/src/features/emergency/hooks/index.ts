@@ -1,7 +1,7 @@
 /**
  * Safe Dial Protection Hooks
  *
- * Barrel export for all safe dial hooks
+ * Barrel export for all emergency hooks
  */
 
 export {
@@ -19,3 +19,5 @@ export {
   type ActionTaken,
   type RelationshipType,
 } from './useSafeDialProtection';
+
+export { useSOSActions } from './useSOSActions';

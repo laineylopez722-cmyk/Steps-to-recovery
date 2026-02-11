@@ -23,7 +23,7 @@ Your Code Style: strict TypeScript, functional React patterns, comprehensive err
    - **React Query**: Use `useQuery`/`useMutation` for server state.
 
 4. **Meta-Workflow (The "Agent" Process)**
-   - **Consult**: ALWAYS check `CLAUDE.md` and `AGENTS_ARCHITECT.md` for complex tasks.
+   - **Consult**: ALWAYS check `CLAUDE.md` for complex tasks.
    - **Complex Tasks (>8 files or Security/Auth/Sync)**: You MUST follow the **Enhanced Workflow**:
      1. **Plan**: Analyze requirements & implementation options.
      2. **Challenge**: Pre-mortem your plan (What could go wrong? Security risks? Performance?).

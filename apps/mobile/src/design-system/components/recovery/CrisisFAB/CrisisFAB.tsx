@@ -1,9 +1,13 @@
 /**
  * CrisisFAB Component
  * Emergency Floating Action Button - always accessible, life-saving feature
+ *
+ * When `showSOSOverlay` is true (default), tapping the FAB opens the
+ * SOSOverlay instead of firing `onPress`. Pass `showSOSOverlay={false}`
+ * to retain the legacy callback behaviour.
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -25,6 +29,7 @@ import Animated, {
 import * as Haptics from 'expo-haptics';
 import { Shield, Phone } from 'lucide-react-native';
 import { COLORS, ANIMATION, DIMENSIONS, TYPOGRAPHY, SPACING } from '../constants';
+import { SOSOverlay } from '../../../../features/emergency/components/SOSOverlay';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -34,6 +39,8 @@ export interface CrisisFABProps {
   pulseOnMount?: boolean;
   reducedMotion?: boolean;
   testID?: string;
+  /** When true, tapping the FAB opens the SOS overlay. Defaults to true. */
+  showSOSOverlay?: boolean;
 }
 
 export function CrisisFAB({
@@ -42,9 +49,11 @@ export function CrisisFAB({
   pulseOnMount = true,
   reducedMotion = false,
   testID,
+  showSOSOverlay = true,
 }: CrisisFABProps): React.ReactElement {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const [sosVisible, setSOSVisible] = useState(false);
 
   // Animation values
   const scale = useSharedValue(1);
@@ -105,8 +114,12 @@ export function CrisisFAB({
       'Opening safety kit. Emergency resources available.'
     );
 
-    onPress();
-  }, [onPress, reducedMotion, pressScale]);
+    if (showSOSOverlay) {
+      setSOSVisible(true);
+    } else {
+      onPress();
+    }
+  }, [onPress, reducedMotion, pressScale, showSOSOverlay]);
 
   // Accessibility label
   const accessibilityLabel = useMemo(() => {
@@ -190,6 +203,11 @@ export function CrisisFAB({
       >
         <Phone size={8} color={COLORS.white} />
       </View>
+
+      {/* SOS Overlay */}
+      {showSOSOverlay && (
+        <SOSOverlay visible={sosVisible} onClose={() => setSOSVisible(false)} />
+      )}
     </View>
   );
 }
@@ -263,4 +281,3 @@ export function CompactCrisisButton({
   );
 }
 
-export default CrisisFAB;

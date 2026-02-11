@@ -1212,7 +1212,7 @@ test: add coverage for step work hooks
 - **Project Context**: `.bmad/project-context.md` - Critical rules and patterns (MUST READ)
 - **Security Doc**: `SECURITY.md` - Security practices, key rotation, audit history
 - **Project Status**: `PROJECT_STATUS.md` - Current phase, completed tasks, next steps
-- **Architecture**: `_bmad-output/planning-artifacts/architecture.md` - Detailed technical architecture
+- **Architecture**: `docs/_bmad-output/planning-artifacts/architecture.md` - Detailed technical architecture
 
 ### Feature Implementation Guides (.claude/)
 
@@ -1227,9 +1227,9 @@ test: add coverage for step work hooks
 ### Supabase Integration
 
 - `.bmad/supabase-setup.md` - MCP authentication and tools reference
-- `apps/mobile/supabase-schema.sql` - Database schema with RLS policies
+- `supabase-schema.sql` - Base database schema with RLS policies
 
-### Planning Artifacts (\_bmad-output/planning-artifacts/)
+### Planning Artifacts (docs/\_bmad-output/planning-artifacts/)
 
 - `prd.md` - Product requirements document
 - `epics-and-stories.md` - User stories for Phase 2
@@ -1403,6 +1403,34 @@ eas secret:delete --name SECRET_NAME
 - [ ] EAS secrets configured (for production)
 
 See [BUILD_CHECKLIST.md](docs/BUILD_CHECKLIST.md) for detailed checklist.
+
+---
+
+## Sync Conflict Resolution
+
+**Strategy**: Last-write-wins (MVP). The most recent `updated_at` timestamp wins during upsert.
+
+**Sync Order**: Deletes are processed BEFORE inserts/updates to avoid foreign key conflicts.
+
+**Synced Tables** (8 total): `journal_entries`, `step_work`, `daily_checkins`, `favorite_meetings`, `reading_reflections`, `weekly_reports`, `sponsor_connections`, `sponsor_shared_entries`
+
+**Known Limitation**: No merge-level conflict resolution. If two devices edit the same record offline, the last sync wins and the other edit is lost. Future work: implement vector clocks or CRDT for critical data.
+
+---
+
+## Known Technical Debt
+
+| Item | Location | Priority |
+|------|----------|----------|
+| Toast notification for offline mutation | `useOfflineMutation.ts` | Medium |
+| FTS optimization for >1000 encrypted items | `useMemoryStore.ts` | Medium |
+| Remote config integration for runtime theme | `runtime-theme/` | Medium |
+| AI extraction refinement | `memoryExtractor.ts` | Medium |
+| Share entry feature | `JournalEditorScreen.tsx` | Low |
+| Delete entry feature | `JournalEditorScreen.tsx` | Low |
+| Refetch implementation | `DailyReadingCard.tsx` | Low |
+| Analytics event sending | `analytics.ts` | Low |
+| Migrate motion token names | `motion.ts` | Low |
 
 ---
 

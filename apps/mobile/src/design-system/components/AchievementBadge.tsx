@@ -83,7 +83,7 @@ function useUnlockAnimation(
   scale: SharedValue<number>;
   rotation: SharedValue<number>;
   glowOpacity: SharedValue<number>;
-  glowStyle: any;
+  glowStyle: ReturnType<typeof useAnimatedStyle>;
 } {
   const scale = useSharedValue(isUnlocked ? 1 : 0.95);
   const rotation = useSharedValue(0);

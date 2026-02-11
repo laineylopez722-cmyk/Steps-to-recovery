@@ -1,112 +1,166 @@
 /**
- * Notifications Hook
- * Manages notification state and provides convenience methods
+ * Notifications Preferences Hook
+ *
+ * Manages notification preferences stored in SecureStore and
+ * provides methods to update individual preferences and reschedule notifications.
+ *
+ * This hook is for notification *preferences/scheduling* management.
+ * For permission state and handlers, use the NotificationContext.
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import * as Notifications from 'expo-notifications';
+import { secureStorage } from '../adapters/secureStorage';
 import {
-  requestNotificationPermissions,
-  scheduleDailyCheckinReminder,
-  cancelDailyCheckinReminder,
-  scheduleMilestoneNotification,
+  DEFAULT_PREFERENCES,
   getScheduledNotifications,
-  clearBadge,
-  useSettingsStore,
-} from '@recovery/shared';
+  rescheduleAll,
+  cancelAllScheduled,
+  type NotificationPreferences,
+} from '../services/notificationService';
 import { logger } from '../utils/logger';
 
-export function useNotifications() {
-  const { settings } = useSettingsStore();
-  const [permissionStatus, setPermissionStatus] = useState<string | null>(null);
+const PREFERENCES_KEY = 'notification_preferences';
+
+/**
+ * Load notification preferences from SecureStore
+ */
+async function loadPreferences(): Promise<NotificationPreferences> {
+  try {
+    const stored = await secureStorage.getItemAsync(PREFERENCES_KEY);
+    if (stored) {
+      return { ...DEFAULT_PREFERENCES, ...JSON.parse(stored) } as NotificationPreferences;
+    }
+  } catch (error) {
+    logger.error('Failed to load notification preferences', { error });
+  }
+  return { ...DEFAULT_PREFERENCES };
+}
+
+/**
+ * Save notification preferences to SecureStore
+ */
+async function savePreferences(preferences: NotificationPreferences): Promise<void> {
+  try {
+    await secureStorage.setItemAsync(PREFERENCES_KEY, JSON.stringify(preferences));
+  } catch (error) {
+    logger.error('Failed to save notification preferences', { error });
+  }
+}
+
+export function useNotificationPreferences(): {
+  preferences: NotificationPreferences;
+  isLoading: boolean;
+  scheduledNotifications: Notifications.NotificationRequest[];
+  updatePreference: <K extends keyof NotificationPreferences>(
+    key: K,
+    value: NotificationPreferences[K],
+  ) => Promise<void>;
+  toggleAll: (enabled: boolean) => Promise<void>;
+  refreshScheduled: () => Promise<void>;
+} {
+  const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
+  const [isLoading, setIsLoading] = useState(true);
   const [scheduledNotifications, setScheduledNotifications] = useState<
     Notifications.NotificationRequest[]
   >([]);
+  const preferencesRef = useRef(preferences);
+  preferencesRef.current = preferences;
 
-  const checkPermissions = useCallback(async () => {
+  // Load preferences on mount
+  useEffect(() => {
+    let mounted = true;
+
+    async function init(): Promise<void> {
+      const loaded = await loadPreferences();
+      if (mounted) {
+        setPreferences(loaded);
+        setIsLoading(false);
+      }
+      // Also load scheduled notification count
+      const scheduled = await getScheduledNotifications();
+      if (mounted) {
+        setScheduledNotifications(scheduled);
+      }
+    }
+
+    init();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const refreshScheduled = useCallback(async (): Promise<void> => {
     try {
-      const { status } = await Notifications.getPermissionsAsync();
-      setPermissionStatus(status);
+      const scheduled = await getScheduledNotifications();
+      setScheduledNotifications(scheduled);
     } catch (error) {
-      logger.error('Failed to check notification permissions:', error);
-      setPermissionStatus('error');
+      logger.error('Failed to refresh scheduled notifications', { error });
     }
   }, []);
 
-  // Check permission status on mount
-  useEffect(() => {
-    checkPermissions();
-  }, [checkPermissions]);
+  /**
+   * Update a single preference key and reschedule all notifications
+   */
+  const updatePreference = useCallback(
+    async <K extends keyof NotificationPreferences>(
+      key: K,
+      value: NotificationPreferences[K],
+    ): Promise<void> => {
+      const updated: NotificationPreferences = {
+        ...preferencesRef.current,
+        [key]: value,
+      };
+      setPreferences(updated);
+      preferencesRef.current = updated;
 
-  const requestPermissions = useCallback(async (): Promise<boolean> => {
-    try {
-      const granted = await requestNotificationPermissions();
-      await checkPermissions();
-      return granted;
-    } catch (error) {
-      logger.error('Failed to request notification permissions:', error);
-      return false;
-    }
-  }, [checkPermissions]);
+      await savePreferences(updated);
+      await rescheduleAll(updated);
+      await refreshScheduled();
 
-  const scheduleCheckinReminder = useCallback(
-    async (time?: string) => {
-      try {
-        const checkInTime = time || settings?.checkInTime || '09:00';
-        await scheduleDailyCheckinReminder(checkInTime);
-        await refreshScheduledNotifications();
-      } catch (error) {
-        logger.error('Failed to schedule check-in reminder:', error);
-      }
+      logger.info('Notification preference updated', { key, value });
     },
-    [settings?.checkInTime],
+    [refreshScheduled],
   );
 
-  const cancelCheckinReminder = useCallback(async () => {
-    try {
-      await cancelDailyCheckinReminder();
-      await refreshScheduledNotifications();
-    } catch (error) {
-      logger.error('Failed to cancel check-in reminder:', error);
-    }
-  }, []);
+  /**
+   * Toggle all notifications on or off
+   */
+  const toggleAll = useCallback(
+    async (enabled: boolean): Promise<void> => {
+      const updated: NotificationPreferences = {
+        morningCheckIn: { ...preferencesRef.current.morningCheckIn, enabled },
+        eveningCheckIn: { ...preferencesRef.current.eveningCheckIn, enabled },
+        dailyReading: { ...preferencesRef.current.dailyReading, enabled },
+        gratitudeReminder: { ...preferencesRef.current.gratitudeReminder, enabled },
+        milestoneAlerts: { enabled },
+        encouragement: { enabled },
+      };
+      setPreferences(updated);
+      preferencesRef.current = updated;
 
-  const celebrateMilestone = useCallback(async (title: string, days: number) => {
-    try {
-      await scheduleMilestoneNotification(title, days);
-    } catch (error) {
-      logger.error('Failed to schedule milestone notification:', error);
-    }
-  }, []);
+      await savePreferences(updated);
 
-  const refreshScheduledNotifications = useCallback(async () => {
-    try {
-      const notifications = await getScheduledNotifications();
-      setScheduledNotifications(notifications);
-    } catch (error) {
-      logger.error('Failed to refresh scheduled notifications:', error);
-    }
-  }, []);
+      if (enabled) {
+        await rescheduleAll(updated);
+      } else {
+        await cancelAllScheduled();
+      }
 
-  const clearNotificationBadge = useCallback(async () => {
-    try {
-      await clearBadge();
-    } catch (error) {
-      logger.error('Failed to clear notification badge:', error);
-    }
-  }, []);
+      await refreshScheduled();
+
+      logger.info('All notifications toggled', { enabled });
+    },
+    [refreshScheduled],
+  );
 
   return {
-    permissionStatus,
+    preferences,
+    isLoading,
     scheduledNotifications,
-    hasPermission: permissionStatus === 'granted',
-    isEnabled: settings?.notificationsEnabled ?? true,
-    checkInTime: settings?.checkInTime || '09:00',
-    requestPermissions,
-    scheduleCheckinReminder,
-    cancelCheckinReminder,
-    celebrateMilestone,
-    refreshScheduledNotifications,
-    clearNotificationBadge,
+    updatePreference,
+    toggleAll,
+    refreshScheduled,
   };
 }

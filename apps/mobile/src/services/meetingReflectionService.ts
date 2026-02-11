@@ -7,6 +7,60 @@
 
 import { supabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
+import { encryptContent, decryptContent } from '../utils/encryption';
+
+// ========================================
+// Encryption Helpers
+// ========================================
+
+/**
+ * Safely decrypt a string value, returning as-is if not encrypted (migration support)
+ */
+async function safeDecrypt(value: string | null | undefined): Promise<string | undefined> {
+  if (!value) return undefined;
+  try {
+    return await decryptContent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Safely decrypt a mood value stored as encrypted string or legacy integer
+ */
+async function safeDecryptMood(value: unknown): Promise<number | undefined> {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'number') return value;
+  if (typeof value !== 'string') return undefined;
+  try {
+    const decrypted = await decryptContent(value);
+    const num = parseInt(decrypted, 10);
+    return isNaN(num) ? undefined : num;
+  } catch {
+    const num = parseInt(value, 10);
+    return isNaN(num) ? undefined : num;
+  }
+}
+
+/**
+ * Decrypt all sensitive fields in a raw reflection record
+ */
+async function decryptReflection(raw: Record<string, unknown>): Promise<MeetingReflection> {
+  return {
+    id: raw.id as string,
+    user_id: raw.user_id as string,
+    checkin_id: raw.checkin_id as string,
+    pre_intention: await safeDecrypt(raw.pre_intention as string | null),
+    pre_mood: await safeDecryptMood(raw.pre_mood),
+    pre_hope: await safeDecrypt(raw.pre_hope as string | null),
+    post_key_takeaway: await safeDecrypt(raw.post_key_takeaway as string | null),
+    post_mood: await safeDecryptMood(raw.post_mood),
+    post_gratitude: await safeDecrypt(raw.post_gratitude as string | null),
+    post_will_apply: await safeDecrypt(raw.post_will_apply as string | null),
+    created_at: raw.created_at as string,
+    updated_at: raw.updated_at as string,
+  };
+}
 
 // ========================================
 // Types
@@ -58,12 +112,19 @@ export async function savePreMeetingReflection(
   prompts: PreMeetingPrompts,
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Encrypt sensitive fields before storage
+    const encryptedIntention = prompts.intention
+      ? await encryptContent(prompts.intention)
+      : null;
+    const encryptedMood = await encryptContent(String(prompts.mood));
+    const encryptedHope = prompts.hope ? await encryptContent(prompts.hope) : null;
+
     const { error } = await supabase.from('meeting_reflections').insert({
       user_id: userId,
       checkin_id: checkinId,
-      pre_intention: prompts.intention,
-      pre_mood: prompts.mood,
-      pre_hope: prompts.hope,
+      pre_intention: encryptedIntention,
+      pre_mood: encryptedMood,
+      pre_hope: encryptedHope,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
@@ -96,13 +157,25 @@ export async function savePostMeetingReflection(
   try {
     const now = new Date().toISOString();
 
+    // Encrypt sensitive fields before storage
+    const encryptedKeyTakeaway = prompts.keyTakeaway
+      ? await encryptContent(prompts.keyTakeaway)
+      : null;
+    const encryptedMood = await encryptContent(String(prompts.mood));
+    const encryptedGratitude = prompts.gratitude
+      ? await encryptContent(prompts.gratitude)
+      : null;
+    const encryptedWillApply = prompts.willApply
+      ? await encryptContent(prompts.willApply)
+      : null;
+
     const { data: updatedRows, error: updateError } = await supabase
       .from('meeting_reflections')
       .update({
-        post_key_takeaway: prompts.keyTakeaway,
-        post_mood: prompts.mood,
-        post_gratitude: prompts.gratitude,
-        post_will_apply: prompts.willApply,
+        post_key_takeaway: encryptedKeyTakeaway,
+        post_mood: encryptedMood,
+        post_gratitude: encryptedGratitude,
+        post_will_apply: encryptedWillApply,
         updated_at: now,
       })
       .eq('checkin_id', checkinId)
@@ -118,10 +191,10 @@ export async function savePostMeetingReflection(
       const { error: insertError } = await supabase.from('meeting_reflections').insert({
         user_id: userId,
         checkin_id: checkinId,
-        post_key_takeaway: prompts.keyTakeaway,
-        post_mood: prompts.mood,
-        post_gratitude: prompts.gratitude,
-        post_will_apply: prompts.willApply,
+        post_key_takeaway: encryptedKeyTakeaway,
+        post_mood: encryptedMood,
+        post_gratitude: encryptedGratitude,
+        post_will_apply: encryptedWillApply,
         created_at: now,
         updated_at: now,
       });
@@ -166,7 +239,7 @@ export async function getReflectionForCheckin(
       return null;
     }
 
-    return data as MeetingReflection;
+    return data ? await decryptReflection(data as Record<string, unknown>) : null;
   } catch (error) {
     logger.warn('Meeting reflection: Query error', { error });
     return null;
@@ -189,7 +262,9 @@ export async function getAllReflections(userId: string): Promise<MeetingReflecti
       return [];
     }
 
-    return data as MeetingReflection[];
+    return Promise.all(
+      (data || []).map((item) => decryptReflection(item as Record<string, unknown>)),
+    );
   } catch (error) {
     logger.warn('Meeting reflection: Get all error', { error });
     return [];

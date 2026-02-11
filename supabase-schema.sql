@@ -1,8 +1,17 @@
 -- ============================================
 -- Steps to Recovery - Supabase Database Schema
 -- ============================================
--- Run this in Supabase SQL Editor to set up your database
+-- This is the COMPLETE base schema. Apply this first, then run migrations
+-- in supabase/migrations/ for additional tables.
+--
 -- Dashboard > SQL Editor > New Query > Paste and Run
+--
+-- Tables defined here: profiles, journal_entries, step_work, sponsorships
+-- Tables defined in migrations: daily_checkins, favorite_meetings,
+--   reading_reflections, weekly_reports, sponsor_connections,
+--   sponsor_shared_entries, risky_contacts, close_calls,
+--   sponsor_notifications, meeting_reflections, crisis_checkpoints,
+--   ai_usage, user_ai_settings
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

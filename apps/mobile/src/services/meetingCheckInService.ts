@@ -5,6 +5,19 @@
 
 import { supabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
+import { encryptContent, decryptContent } from '../utils/encryption';
+
+/**
+ * Safely decrypt a value, returning as-is if not encrypted (migration support)
+ */
+async function safeDecrypt(value: string | null | undefined): Promise<string | undefined> {
+  if (!value) return undefined;
+  try {
+    return await decryptContent(value);
+  } catch {
+    return value;
+  }
+}
 
 export interface MeetingCheckIn {
   id: string;
@@ -49,6 +62,12 @@ export async function checkInToMeeting(
   meetingData: Omit<MeetingCheckIn, 'id' | 'userId' | 'createdAt'>,
 ): Promise<{ checkIn: MeetingCheckIn; newAchievements: string[] } | null> {
   try {
+    // Encrypt notes before storage
+    let encryptedNotes: string | undefined = undefined;
+    if (meetingData.notes && meetingData.notes.trim()) {
+      encryptedNotes = await encryptContent(meetingData.notes.trim());
+    }
+
     // Insert check-in
     const { data: checkInData, error: checkInError } = await supabase
       .from('meeting_checkins')
@@ -60,7 +79,7 @@ export async function checkInToMeeting(
         check_in_type: meetingData.checkInType,
         latitude: meetingData.latitude,
         longitude: meetingData.longitude,
-        notes: meetingData.notes,
+        notes: encryptedNotes,
       })
       .select()
       .single();
@@ -90,7 +109,7 @@ export async function checkInToMeeting(
         checkInType: checkInData.check_in_type as 'geofence' | 'manual' | 'qr',
         latitude: checkInData.latitude,
         longitude: checkInData.longitude,
-        notes: checkInData.notes,
+        notes: await safeDecrypt(checkInData.notes),
         createdAt: checkInData.created_at,
       },
       newAchievements,
@@ -126,18 +145,23 @@ export async function getMeetingCheckIns(
       return [];
     }
 
-    return (data || []).map((item) => ({
-      id: item.id,
-      userId: item.user_id,
-      meetingId: item.meeting_id,
-      meetingName: item.meeting_name,
-      meetingAddress: item.meeting_address,
-      checkInType: item.check_in_type as 'geofence' | 'manual' | 'qr',
-      latitude: item.latitude,
-      longitude: item.longitude,
-      notes: item.notes,
-      createdAt: item.created_at,
-    }));
+    // Decrypt notes for each check-in
+    const checkIns = await Promise.all(
+      (data || []).map(async (item) => ({
+        id: item.id,
+        userId: item.user_id,
+        meetingId: item.meeting_id,
+        meetingName: item.meeting_name,
+        meetingAddress: item.meeting_address,
+        checkInType: item.check_in_type as 'geofence' | 'manual' | 'qr',
+        latitude: item.latitude,
+        longitude: item.longitude,
+        notes: await safeDecrypt(item.notes),
+        createdAt: item.created_at,
+      })),
+    );
+
+    return checkIns;
   } catch (error) {
     logger.warn('Error in getMeetingCheckIns:', error);
     return [];
@@ -363,6 +387,34 @@ export async function hasCheckedInToMeetingToday(
     return (data?.length || 0) > 0;
   } catch (error) {
     logger.warn('Error in hasCheckedInToMeetingToday:', error);
+    return false;
+  }
+}
+
+/**
+ * Delete a meeting check-in
+ */
+export async function deleteMeetingCheckIn(
+  userId: string,
+  checkInId: string,
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('meeting_checkins')
+      .delete()
+      .eq('id', checkInId)
+      .eq('user_id', userId);
+
+    if (error) {
+      logger.warn('Error deleting check-in:', error);
+      return false;
+    }
+
+    logger.info('Meeting check-in deleted', { checkInId });
+    return true;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    logger.warn('Error in deleteMeetingCheckIn:', { message });
     return false;
   }
 }

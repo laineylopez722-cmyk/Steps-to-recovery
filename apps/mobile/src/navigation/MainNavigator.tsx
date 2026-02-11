@@ -15,6 +15,7 @@ import { StepDetailScreen } from '../features/steps/screens/StepDetailScreen';
 import { StepReviewScreen } from '../features/steps/screens/StepReviewScreen';
 import { ProfileScreen } from '../features/profile/screens/ProfileScreen';
 import { NotificationSettingsScreen } from '../features/settings/screens/NotificationSettingsScreen';
+import { SecuritySettingsScreen } from '../features/settings/screens/SecuritySettingsScreen';
 import { SponsorScreen } from '../features/sponsor/screens/SponsorScreen';
 import { InviteSponsorScreen } from '../features/sponsor/screens/InviteSponsorScreen';
 import { SharedEntriesScreen } from '../features/sponsor/screens/SharedEntriesScreen';
@@ -32,7 +33,11 @@ import { DangerZoneScreen } from '../features/emergency/screens/DangerZoneScreen
 import { SafeDialInterventionScreen } from '../features/emergency/screens/SafeDialInterventionScreen';
 import { BeforeYouUseScreen } from '../features/crisis/screens/BeforeYouUseScreen';
 import { ChatScreen } from '../features/ai-companion/components/ChatScreen';
+import { PersonalInventoryScreen } from '../features/inventory/screens/PersonalInventoryScreen';
 import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScreen';
+import { CravingSurfScreen } from '../features/craving-surf/screens/CravingSurfScreen';
+import { GratitudeScreen } from '../features/gratitude/screens/GratitudeScreen';
+import { SafetyPlanScreen } from '../features/safety-plan/screens/SafetyPlanScreen';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
 import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
@@ -181,6 +186,29 @@ function HomeStackNavigator(): React.ReactElement {
       >
         {() => <ChatScreen userId={userId} />}
       </HomeStack.Screen>
+      <HomeStack.Screen
+        name="PersonalInventory"
+        options={{ title: 'Step 10 Inventory', headerBackTitle: 'Back' }}
+      >
+        {() => <PersonalInventoryScreen userId={userId} />}
+      </HomeStack.Screen>
+      <HomeStack.Screen
+        name="Gratitude"
+        options={{ title: 'Gratitude Journal', headerBackTitle: 'Back' }}
+      >
+        {() => <GratitudeScreen userId={userId} />}
+      </HomeStack.Screen>
+      <HomeStack.Screen
+        name="CravingSurf"
+        component={CravingSurfScreen}
+        options={{ title: 'Craving Surfing', headerBackTitle: 'Back' }}
+      />
+      <HomeStack.Screen
+        name="SafetyPlan"
+        options={{ title: 'Safety Plan', headerBackTitle: 'Back' }}
+      >
+        {() => <SafetyPlanScreen userId={userId} />}
+      </HomeStack.Screen>
     </HomeStack.Navigator>
   );
 }
@@ -296,6 +324,11 @@ function ProfileStackNavigator(): React.ReactElement {
         name="AISettings"
         component={AISettingsScreen}
         options={{ headerShown: false }}
+      />
+      <ProfileStack.Screen
+        name="SecuritySettings"
+        component={SecuritySettingsScreen}
+        options={{ title: 'Privacy & Security', headerBackTitle: 'Back' }}
       />
     </ProfileStack.Navigator>
   );

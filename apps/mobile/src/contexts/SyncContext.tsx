@@ -31,6 +31,7 @@ interface SyncContextType extends SyncState {
 const SyncContext = createContext<SyncContextType | undefined>(undefined);
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const MIN_SYNC_COOLDOWN_MS = 30 * 1000; // 30 seconds between manual syncs
 
 export function SyncProvider({ children }: { children: React.ReactNode }) {
   const { db, isReady } = useDatabase();
@@ -38,6 +39,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
   const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isOnlineRef = useRef<boolean>(false);
   const isSyncingRef = useRef<boolean>(false);
+  const lastSyncTimeRef = useRef<number>(0);
   const triggerSyncRef = useRef<() => Promise<void>>(async () => {});
   const userIdRef = useRef<string | null>(null);
   const pendingLogoutClearRef = useRef<boolean>(false);
@@ -121,6 +123,15 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Rate limit manual syncs (30 second cooldown)
+    const now = Date.now();
+    const timeSinceLastSync = now - lastSyncTimeRef.current;
+    if (timeSinceLastSync < MIN_SYNC_COOLDOWN_MS) {
+      const remainingSeconds = Math.ceil((MIN_SYNC_COOLDOWN_MS - timeSinceLastSync) / 1000);
+      logger.info(`Sync cooldown: ${remainingSeconds}s remaining`);
+      return;
+    }
+
     setState((prev) => ({ ...prev, isSyncing: true, error: null }));
     isSyncingRef.current = true;
 
@@ -140,6 +151,7 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
         error: result.errors.length > 0 ? new Error(result.errors.join(', ')) : null,
       }));
       isSyncingRef.current = false;
+      lastSyncTimeRef.current = Date.now();
 
       // Update pending count after sync
       await updatePendingCount();

@@ -1,0 +1,88 @@
+name: Bundle Analysis
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/shared/**'
+      - 'package.json'
+      - 'package-lock.json'
+
+env:
+  EXPO_NO_TELEMETRY: 1
+
+jobs:
+  bundle-check:
+    name: Check Bundle Size
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run bundle analysis
+        run: node scripts/analyze-bundle.js
+
+      - name: Check bundle report exists
+        run: |
+          if [ -f "docs/BUNDLE_ANALYSIS.md" ]; then
+            echo "## Bundle Analysis" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            # Extract key metrics from the report
+            head -50 docs/BUNDLE_ANALYSIS.md >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Bundle analysis report not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Comment on PR with bundle info
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## 📦 Bundle Analysis\n\n';
+
+            try {
+              const report = fs.readFileSync('docs/BUNDLE_ANALYSIS.md', 'utf8');
+              // Extract first 100 lines of the report
+              const lines = report.split('\n').slice(0, 100);
+              body += lines.join('\n');
+            } catch {
+              body += '⚠️ Bundle analysis report could not be read.';
+            }
+
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('📦 Bundle Analysis')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }

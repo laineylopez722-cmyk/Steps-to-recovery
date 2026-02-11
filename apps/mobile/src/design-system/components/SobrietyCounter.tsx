@@ -12,7 +12,7 @@
  */
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Share, Dimensions, AccessibilityInfo } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Share, Dimensions, AccessibilityInfo, type ViewStyle } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { useTheme } from '../hooks/useTheme';
@@ -51,7 +51,7 @@ export interface SobrietyCounterProps {
   /**
    * Additional styles for the container
    */
-  style?: any;
+  style?: ViewStyle;
   /**
    * Callback when share button is pressed
    * If not provided, uses default share behavior

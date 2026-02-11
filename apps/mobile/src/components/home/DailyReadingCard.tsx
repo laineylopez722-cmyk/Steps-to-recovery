@@ -107,7 +107,9 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
 
           {/* Preview */}
           <Text style={styles.preview} numberOfLines={3}>
-            {readingPreview}
+            {todayReading.external_url
+              ? "Tap to read today's meditation"
+              : readingPreview}
           </Text>
 
           {/* Divider */}

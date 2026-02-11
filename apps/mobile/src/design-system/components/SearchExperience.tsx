@@ -14,6 +14,10 @@ import { GlassCard } from './GlassCard';
 import { darkAccent, radius, spacing, typography } from '../tokens/modern';
 import { useHaptics } from '../../hooks/useHaptics';
 import { useThemedStyles, type DS } from '../hooks/useThemedStyles';
+import { logger } from '../../utils/logger';
+
+const SEARCH_HISTORY_KEY = 'search_history';
+const MAX_HISTORY = 10;
 
 interface SearchSuggestion {
   id: string;
@@ -49,10 +53,19 @@ export function SearchExperience({
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const { light } = useHaptics();
 
-  // Load recent searches on mount
+  // Load recent searches from storage on mount
   useEffect(() => {
-    // TODO: Load from storage
-    setRecentSearches(['gratitude', 'step 4', 'meeting notes']);
+    const loadSearchHistory = async (): Promise<void> => {
+      try {
+        const stored = await AsyncStorage.getItem(SEARCH_HISTORY_KEY);
+        if (stored) {
+          setRecentSearches(JSON.parse(stored) as string[]);
+        }
+      } catch (error: unknown) {
+        logger.error('Failed to load search history', error);
+      }
+    };
+    void loadSearchHistory();
   }, []);
 
   const handleClear = async () => {
@@ -66,11 +79,21 @@ export function SearchExperience({
     onSuggestionPress?.(suggestion);
   };
 
-  const saveSearch = useCallback((query: string) => {
+  const saveSearch = useCallback((query: string): void => {
     if (!query.trim()) return;
     setRecentSearches((prev) => {
-      const filtered = prev.filter((s) => s !== query);
-      return [query, ...filtered].slice(0, 5);
+      const updated = [query, ...prev.filter((s) => s !== query)].slice(0, MAX_HISTORY);
+      AsyncStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updated)).catch((error: unknown) => {
+        logger.error('Failed to save search history', error);
+      });
+      return updated;
+    });
+  }, []);
+
+  const handleClearHistory = useCallback((): void => {
+    setRecentSearches([]);
+    AsyncStorage.removeItem(SEARCH_HISTORY_KEY).catch((error: unknown) => {
+      logger.error('Failed to clear search history', error);
     });
   }, []);
 
@@ -126,7 +149,7 @@ export function SearchExperience({
           <GlassCard intensity="heavy" style={styles.suggestionsCard}>
             <View style={styles.suggestionsHeader}>
               <Text style={styles.suggestionsTitle}>Recent Searches</Text>
-              <Pressable onPress={() => setRecentSearches([])}>
+              <Pressable onPress={handleClearHistory}>
                 <Text style={styles.clearAll}>Clear All</Text>
               </Pressable>
             </View>

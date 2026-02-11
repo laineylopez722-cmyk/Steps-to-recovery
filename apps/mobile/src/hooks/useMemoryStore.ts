@@ -418,7 +418,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
 
     try {
       const fields: string[] = [];
-      const values: any[] = [];
+      const values: (string | number | null)[] = [];
 
       // Encrypt content if updated
       if (updates.content !== undefined) {

@@ -10,3 +10,4 @@ export type {
   RecoveryInsight,
   RecoveryAnalytics,
 } from './useRecoveryAnalytics';
+export { useCommitmentCalendar } from './useCommitmentCalendar';

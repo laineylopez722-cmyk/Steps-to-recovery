@@ -30,6 +30,10 @@ export type HomeStackParamList = {
   SafeDialIntervention: { contactName: string; phoneNumber: string };
   BeforeYouUse: undefined;
   CompanionChat: undefined;
+  PersonalInventory: undefined;
+  CravingSurf: undefined;
+  Gratitude: undefined;
+  SafetyPlan: undefined;
 };
 
 // Journal Stack
@@ -62,6 +66,7 @@ export type ProfileStackParamList = {
   ShareEntries: { entryId?: string } | undefined;
   NotificationSettings: undefined;
   AISettings: undefined;
+  SecuritySettings: undefined;
 };
 
 // Meetings Stack

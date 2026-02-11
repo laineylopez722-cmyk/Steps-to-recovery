@@ -226,8 +226,7 @@ Are 10+ files affected?
 Before dispatching to agents, gather:
 
 ### Always Include
-- `CLAUDE.md` - Project patterns and rules
-- `AGENTS.md` - Agent instructions
+- `CLAUDE.md` - Complete project guide (single source of truth)
 - Relevant feature directories from `apps/mobile/src/features/`
 
 ### Include If Relevant

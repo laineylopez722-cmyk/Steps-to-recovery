@@ -19,6 +19,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -26,6 +27,7 @@ import { useTheme, Card, Button, TextArea, Badge } from '../../../design-system'
 import { useReadingDatabase } from '../../../hooks/useReadingDatabase';
 import { hapticSuccess } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
+import { PLACEHOLDER_CONTENT } from '../../../data/dailyReadings';
 
 interface DailyReadingScreenProps {
   userId: string;
@@ -48,6 +50,17 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
   const [isSaving, setIsSaving] = useState(false);
   const [hasReflected, setHasReflected] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  const isPlaceholder = todayReading?.content === PLACEHOLDER_CONTENT;
+
+  const handleOpenReading = useCallback(async (): Promise<void> => {
+    const url = todayReading?.external_url || 'https://www.jftna.org/jft/';
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      logger.error('Failed to open reading URL', error);
+    }
+  }, [todayReading]);
 
   // Load today's reading on mount
   useEffect(() => {
@@ -184,9 +197,27 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
               </Text>
             </View>
 
-            <Text style={[styles.readingContent, { color: theme.colors.text }]}>
-              {todayReading.content}
-            </Text>
+            {!isPlaceholder && (
+              <Text style={[styles.readingContent, { color: theme.colors.text }]}>
+                {todayReading.content}
+              </Text>
+            )}
+
+            {todayReading.external_url && (
+              <View style={styles.externalLinkSection}>
+                <Button
+                  title="Read Today's Meditation"
+                  onPress={handleOpenReading}
+                  variant="primary"
+                  accessibilityLabel="Read today's meditation on the NA website"
+                  accessibilityRole="button"
+                  accessibilityHint="Opens the Just for Today daily meditation in your browser"
+                />
+                <Text style={[styles.attributionText, { color: theme.colors.textSecondary }]}>
+                  Source: Narcotics Anonymous World Services
+                </Text>
+              </View>
+            )}
 
             <View style={[styles.sourceContainer, { borderTopColor: theme.colors.border }]}>
               <Text style={[styles.sourceText, { color: theme.colors.textSecondary }]}>
@@ -356,6 +387,15 @@ const styles = StyleSheet.create({
   sourceText: {
     fontSize: 14,
     fontStyle: 'italic',
+  },
+  externalLinkSection: {
+    marginTop: 16,
+    alignItems: 'center',
+    gap: 8,
+  },
+  attributionText: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   promptCard: {
     marginBottom: 20,

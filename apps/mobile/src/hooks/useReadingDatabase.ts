@@ -13,6 +13,7 @@ import { addToSyncQueue } from '../services/syncService';
 import { logger } from '../utils/logger';
 import { generateId } from '../utils/id';
 import { generateFullYearReadings } from '../data/dailyReadings';
+import { NA_JFT_URL } from '../data/dailyReadings';
 import type { DailyReading, DailyReadingReflection } from '../types';
 
 // Helper function to get day of year (1-366)
@@ -106,6 +107,7 @@ export function useReadingDatabase() {
           content: reading.content,
           source: reading.source,
           reflection_prompt: reading.reflection_prompt,
+          external_url: NA_JFT_URL,
         };
 
         useReadingStore.setState({ todayReading: formattedReading });

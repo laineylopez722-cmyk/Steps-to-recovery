@@ -3,3 +3,4 @@
  */
 
 export { NotificationSettingsScreen } from './NotificationSettingsScreen';
+export { SecuritySettingsScreen } from './SecuritySettingsScreen';

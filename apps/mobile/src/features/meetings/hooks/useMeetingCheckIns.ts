@@ -53,6 +53,21 @@ export function useMeetingCheckIns() {
     },
   });
 
+  // Mutation: Delete a check-in
+  const deleteCheckInMutation = useMutation({
+    mutationFn: async (checkInId: string) => {
+      if (!userId) throw new Error('User not authenticated');
+      const result = await checkInService.deleteMeetingCheckIn(userId, checkInId);
+      if (!result) throw new Error('Failed to delete check-in');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meetingCheckIns', userId] });
+      queryClient.invalidateQueries({ queryKey: ['meetingStats', userId] });
+      queryClient.invalidateQueries({ queryKey: ['achievements', userId] });
+      queryClient.invalidateQueries({ queryKey: ['90in90Progress', userId] });
+    },
+  });
+
   return {
     checkIns,
     isLoading,
@@ -63,6 +78,9 @@ export function useMeetingCheckIns() {
     isCheckingIn: checkInMutation.isPending,
     checkInError: checkInMutation.error,
     lastCheckInResult: checkInMutation.data,
+    deleteCheckIn: deleteCheckInMutation.mutate,
+    deleteCheckInAsync: deleteCheckInMutation.mutateAsync,
+    isDeleting: deleteCheckInMutation.isPending,
     totalMeetings: stats?.totalMeetings || 0,
     currentStreak: stats?.currentStreak || 0,
     longestStreak: stats?.longestStreak || 0,

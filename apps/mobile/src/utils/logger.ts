@@ -221,6 +221,14 @@ export const logger = {
     if (isDevelopment) {
       console.warn(`[WARN] ${message}`, sanitized);
     }
+
+    // Add Sentry breadcrumb for warnings (sanitized by sentry beforeBreadcrumb)
+    try {
+      const { addBreadcrumb: sentryAddBreadcrumb } = require('../lib/sentry');
+      sentryAddBreadcrumb('logger', message, sanitized as Record<string, unknown> | undefined);
+    } catch {
+      // Sentry not configured, silently continue
+    }
   },
 
   /**
@@ -235,6 +243,14 @@ export const logger = {
     if (isDevelopment) {
       // eslint-disable-next-line no-console
       console.log(`[INFO] ${message}`, sanitized);
+    }
+
+    // Add Sentry breadcrumb for info (sanitized by sentry beforeBreadcrumb)
+    try {
+      const { addBreadcrumb: sentryAddBreadcrumb } = require('../lib/sentry');
+      sentryAddBreadcrumb('logger', message, sanitized as Record<string, unknown> | undefined);
+    } catch {
+      // Sentry not configured, silently continue
     }
   },
 
