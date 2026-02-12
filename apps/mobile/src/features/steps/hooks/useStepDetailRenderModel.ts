@@ -1,7 +1,10 @@
 import type { ComponentProps } from 'react';
 import type { Toast } from '../../../design-system';
 import type { StepDetailMainContentProps } from '../components/StepDetailMainContent';
-import { useStepDetailContentContext } from './useStepDetailContentContext';
+import { useStepScreenAnimation } from './useStepScreenAnimation';
+import { useStepDetailNavigationActions } from './useStepDetailNavigationActions';
+import { useStepGuidanceToggle } from './useStepGuidanceToggle';
+import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
 import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
 
@@ -58,17 +61,30 @@ export function useStepDetailRenderModel() {
     saveAnswer,
   });
 
-  const { handleBackToStepOne, handleBackToSteps, mainContentProps } = useStepDetailContentContext({
-    navigation,
-    stepNumber,
-    stepData,
+  // Inlined from useStepDetailContentContext
+  const { fadeAnim, slideAnim } = useStepScreenAnimation();
+
+  const { handleReviewAnswers, handleBackToStepOne, handleBackToSteps } =
+    useStepDetailNavigationActions({ navigation, stepNumber });
+
+  const { showGuidance, handleToggleGuidance } = useStepGuidanceToggle();
+
+  const mainContentProps = useStepDetailMainContentProps({
+    animation: { fadeAnim, slideAnim },
+    step: { stepNumber, stepData },
+    interactions: {
+      showGuidance,
+      onToggleGuidance: handleToggleGuidance,
+      onContinue: questionFlow.scrollToFirstUnanswered,
+      onReviewAnswers: handleReviewAnswers,
+    },
     questionFlow,
   });
 
   const contentState = isLocked ? 'locked' : isLoading ? 'loading' : 'ready';
   const hasStepData = Boolean(stepData);
 
-  // Build discriminated content payload (inlined from useStepDetailContentPayload + useStepDetailToastState)
+  // Build discriminated content payload
   let content: StepDetailScreenContentModel;
 
   if (contentState === 'loading') {
