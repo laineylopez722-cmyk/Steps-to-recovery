@@ -5,7 +5,7 @@ import { Toast } from '../../../design-system';
 import { StepDetailLoadingState } from './StepDetailLoadingState';
 import { StepLockedState } from './StepLockedState';
 import { StepDetailMainContent } from './StepDetailMainContent';
-import type { StepDetailScreenContentModel } from '../hooks/useStepDetailContentPayload';
+import type { StepDetailScreenContentModel } from '../hooks/useStepDetailRenderModel';
 
 interface StepDetailScreenContentProps {
   content: StepDetailScreenContentModel;
