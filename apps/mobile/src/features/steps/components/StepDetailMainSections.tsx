@@ -1,6 +1,6 @@
 import React from 'react';
 import { type FlatList, type ViewToken } from 'react-native';
-import { StepDetailQuestionsList } from './StepDetailQuestionsList';
+import { StepSingleQuestionView } from './StepSingleQuestionView';
 import type { StepListItem } from '../utils/stepListItems';
 
 export interface StepDetailMainSectionsProps {
@@ -34,31 +34,25 @@ export interface StepDetailMainSectionsProps {
 
 export function StepDetailMainSections(props: StepDetailMainSectionsProps): React.ReactElement {
   return (
-    <StepDetailQuestionsList
-      listRef={props.listRef}
-      listItems={props.listItems}
-      answeredQuestionNumbers={props.answeredQuestionNumbers}
-      savingQuestion={props.savingQuestion}
-      answers={props.answers}
-      totalQuestions={props.totalQuestions}
-      onAnswerChange={props.onAnswerChange}
-      onSaveAnswer={props.onSaveAnswer}
-      onJumpToQuestion={props.onJumpToQuestion}
-      onViewableItemsChanged={props.onViewableItemsChanged}
-      viewabilityConfig={props.viewabilityConfig}
+    <StepSingleQuestionView
       stepNumber={props.stepNumber}
       title={props.title}
       principle={props.principle}
       description={props.description}
+      totalQuestions={props.totalQuestions}
       answeredCount={props.answeredCount}
       progressPercent={props.progressPercent}
-      hasUnanswered={props.hasUnanswered}
-      firstUnansweredQuestion={props.firstUnansweredQuestion}
-      onContinue={props.onContinue}
+      currentVisibleQuestion={props.currentVisibleQuestion}
+      answeredQuestionNumbers={props.answeredQuestionNumbers}
+      answers={props.answers}
+      savingQuestion={props.savingQuestion}
+      onAnswerChange={props.onAnswerChange}
+      onSaveAnswer={props.onSaveAnswer}
+      onJumpToQuestion={props.onJumpToQuestion}
       onReviewAnswers={props.onReviewAnswers}
       showGuidance={props.showGuidance}
       onToggleGuidance={props.onToggleGuidance}
-      currentVisibleQuestion={props.currentVisibleQuestion}
+      listItems={props.listItems}
     />
   );
 }
