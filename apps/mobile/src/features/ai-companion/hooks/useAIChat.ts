@@ -16,6 +16,7 @@ import {
   getOfflineResponse,
   queuePendingMessage,
 } from '../services/offlineFallback';
+import { buildEnrichedContext } from '../services/recoveryContextEnricher';
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
 import { checkRateLimit, incrementMessageCount } from '../services/rateLimiter';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
@@ -385,6 +386,16 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         // Memories not available yet, that's okay
       }
 
+      // Get enriched context from journal, step work, and check-ins
+      let enrichedContext = '';
+      try {
+        if (db && dbReady) {
+          enrichedContext = await buildEnrichedContext(db, userId);
+        }
+      } catch {
+        // Enriched context is additive — don't fail the chat
+      }
+
       // Prepare messages for AI
       const systemPrompt = getRecoverySystemPrompt({
         sobrietyDays,
@@ -393,10 +404,13 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         sponsorName,
       });
 
-      // Add memory context and crisis context to system prompt
+      // Add memory context, enriched context, and crisis context to system prompt
       let contextualSystemPrompt = systemPrompt;
       if (memoryContext) {
         contextualSystemPrompt += `\n\nWhat I remember about them:\n${memoryContext}`;
+      }
+      if (enrichedContext) {
+        contextualSystemPrompt += `\n\nTheir recovery journey (from their own writings):\n${enrichedContext}`;
       }
       if (crisis) {
         if (crisis.severity === 'high') {
