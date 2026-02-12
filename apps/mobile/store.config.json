@@ -1,0 +1,48 @@
+{
+  "configVersion": 0,
+  "apple": {
+    "copyright": "2026 Steps to Recovery",
+    "categories": ["HEALTH_AND_FITNESS", "LIFESTYLE"],
+    "info": {
+      "en-US": {
+        "title": "Steps to Recovery",
+        "subtitle": "Private 12-Step Companion",
+        "description": "Take your recovery journey into your own hands with Steps to Recovery — the most private, secure companion app for 12-step programs.\n\nYOUR PRIVACY COMES FIRST\nEvery journal entry, check-in, and reflection is encrypted end-to-end on your device before it ever leaves your phone. Not even we can read your data.\n\nKEY FEATURES:\n• Encrypted Journaling — Write freely knowing your entries are secured with AES-256 encryption\n• Daily Check-Ins — Morning intentions and evening reflections to stay grounded\n• Clean Time Tracker — Track your sobriety milestones with precision\n• 12-Step Work — Guided questions for each step of your recovery\n• Meeting Finder — Find nearby meetings with location-based search\n• Sponsor Connection — Share selected entries securely with your sponsor\n• Crisis Toolkit — Breathing exercises, emergency contacts, and safety planning\n• Offline First — Works without internet, syncs when connected\n\nBUILT FOR RECOVERY\nDesigned with input from people in recovery. Every feature supports your journey without judgment. Quick access to crisis tools when you need them most.\n\nMILESTONE CELEBRATIONS\nCelebrate 1 day, 1 week, 30 days, 90 days, 6 months, 1 year, and beyond. Your progress matters.\n\nSECURITY YOU CAN TRUST\n• AES-256-CBC encryption for all sensitive data\n• Keys stored only on your device (Keychain/Keystore)\n• No analytics tracking of personal content\n• Open source and auditable\n\nDownload Steps to Recovery today. Your journey, your privacy, your pace.",
+        "keywords": ["recovery,sobriety,12-step,journal,sober,addiction,clean,AA,NA,sponsor,meetings,tracker,private,encrypted"],
+        "releaseNotes": "Initial release of Steps to Recovery:\n\n• Encrypted journaling with mood tracking\n• Daily morning and evening check-ins\n• Clean time tracker with milestone celebrations\n• 12-step guided work\n• Meeting finder\n• Sponsor connections\n• Crisis toolkit with breathing exercises\n• Full offline support",
+        "promoText": "Your private, encrypted companion for 12-step recovery. Start your journey today.",
+        "privacyPolicyUrl": "https://stepstorecovery.app/privacy",
+        "supportUrl": "https://stepstorecovery.app/support",
+        "marketingUrl": "https://stepstorecovery.app"
+      }
+    },
+    "advisory": {
+      "alcoholTobaccoOrDrugUseOrReferences": "INFREQUENT_OR_MILD",
+      "gamblingSimulated": "NONE",
+      "medicalOrTreatmentInformation": "INFREQUENT_OR_MILD",
+      "profanityOrCrudeHumor": "NONE",
+      "sexualContentGraphicAndNudity": "NONE",
+      "sexualContentOrNudity": "NONE",
+      "horrorOrFearThemes": "NONE",
+      "matureOrSuggestiveThemes": "INFREQUENT_OR_MILD",
+      "violenceCartoonOrFantasy": "NONE",
+      "violenceRealistic": "NONE",
+      "violenceRealisticProlongedGraphicOrSadistic": "NONE",
+      "contests": "NONE",
+      "gambling": false,
+      "unrestrictedWebAccess": false,
+      "seventeenPlus": false
+    },
+    "release": {
+      "automaticRelease": true,
+      "phasedRelease": true
+    },
+    "review": {
+      "firstName": "Steps to Recovery",
+      "lastName": "Support",
+      "email": "review@stepstorecovery.app",
+      "phone": "+1 555-000-0000",
+      "notes": "This app is a privacy-first recovery companion for 12-step programs.\n\nTo test:\n1. Create an account with any email\n2. Set a sobriety date during onboarding\n3. Try creating a journal entry (encrypted locally)\n4. Try the daily check-in flow\n5. Browse the meeting finder\n\nNote: All data is encrypted end-to-end. The app works fully offline."
+    }
+  }
+}

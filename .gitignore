@@ -66,6 +66,22 @@ apps/mobile/bugreport-*.zip
 .github\instructions\codacy.instructions.md
 nul
 
+# Stale output/debug files
+format-check.txt
+format_output.txt
+eslint-output.txt
+eslint-report.txt
+ts-check-output.txt
+tsc_output.log
+
 # Google Service Account Keys
 gen-lang-client-*.json
 *.serviceaccount.json
+google-service-account.json
+play-store-key.json
+*-service-account-key.json
+
+# Apple credentials
+AuthKey_*.p8
+*.mobileprovision
+*.p12

@@ -1,0 +1,13 @@
+name: PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  update:
+    name: Publish OTA Update for PR
+    type: update
+    params:
+      branch: 'pr-${{ github.event.pull_request.number }}'
+      message: 'PR #${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}'

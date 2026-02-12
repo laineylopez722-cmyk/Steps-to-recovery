@@ -1,0 +1,35 @@
+name: Internal Testing
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  submit_android:
+    name: Submit to Play Store Internal Track
+    type: submit
+    needs: [build_android]
+    params:
+      platform: android
+      profile: production
+
+  submit_ios:
+    name: Submit to TestFlight
+    type: submit
+    needs: [build_ios]
+    params:
+      platform: ios
+      profile: production
