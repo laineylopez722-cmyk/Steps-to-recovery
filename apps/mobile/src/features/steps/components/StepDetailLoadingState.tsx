@@ -10,7 +10,7 @@ export function StepDetailLoadingState(): React.ReactElement {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['bottom']}
     >
       <View style={styles.loadingSkeletonContainer}>

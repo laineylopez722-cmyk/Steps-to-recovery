@@ -408,7 +408,7 @@ export function StepReviewScreen(): React.ReactElement {
 
   if (!stepData) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.centered}>
           <MaterialCommunityIcons
             name="alert-circle-outline"
@@ -425,7 +425,7 @@ export function StepReviewScreen(): React.ReactElement {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.centered}>
           <Text variant="body" color="textSecondary">
             Loading your answers...
@@ -437,7 +437,7 @@ export function StepReviewScreen(): React.ReactElement {
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.centered}>
           <MaterialCommunityIcons name="alert-circle" size={32} color={theme.colors.danger} />
           <Text variant="body" style={{ marginTop: theme.spacing.sm }}>
@@ -450,7 +450,7 @@ export function StepReviewScreen(): React.ReactElement {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['bottom']}
     >
       <Toast
