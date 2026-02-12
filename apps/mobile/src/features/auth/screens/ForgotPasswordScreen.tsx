@@ -66,7 +66,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
   if (emailSent) {
     return (
       <SafeAreaView
-        style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+        style={[styles.safeArea, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['top', 'bottom']}
       >
         <ScrollView
@@ -123,7 +123,7 @@ export function ForgotPasswordScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+      style={[styles.safeArea, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['top', 'bottom']}
     >
       <KeyboardAvoidingView

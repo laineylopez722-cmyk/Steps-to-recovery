@@ -215,7 +215,7 @@ export function SponsorScreen(): React.ReactElement {
   if (isLoading) {
     return (
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['bottom']}
       >
         <View style={styles.centerContainer}>
@@ -236,7 +236,7 @@ export function SponsorScreen(): React.ReactElement {
   return (
     <>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['top', 'bottom']}
       >
         <ScrollView

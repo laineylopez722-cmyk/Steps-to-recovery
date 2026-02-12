@@ -116,7 +116,7 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
 
   if (isLoading || !isReady) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
@@ -129,7 +129,7 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
 
   if (!todayReading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons
             name="book-open-page-variant"
@@ -149,7 +149,7 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['bottom']}
     >
       <KeyboardAvoidingView

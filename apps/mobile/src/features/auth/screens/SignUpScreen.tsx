@@ -129,7 +129,7 @@ export function SignUpScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: theme.colors.background }]}
+      style={[styles.safeArea, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['top', 'bottom']}
     >
       <KeyboardAvoidingView

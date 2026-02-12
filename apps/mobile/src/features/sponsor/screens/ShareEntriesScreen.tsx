@@ -110,7 +110,7 @@ export function ShareEntriesScreen(): React.ReactElement {
   if (!mySponsor) {
     return (
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['bottom']}
       >
         <View style={styles.centerContainer}>
@@ -128,7 +128,7 @@ export function ShareEntriesScreen(): React.ReactElement {
   return (
     <>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['bottom']}
       >
         <FlatList

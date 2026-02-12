@@ -64,7 +64,7 @@ export function ConnectSponsorScreen(): React.ReactElement {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['bottom']}
     >
       <KeyboardAvoidingView

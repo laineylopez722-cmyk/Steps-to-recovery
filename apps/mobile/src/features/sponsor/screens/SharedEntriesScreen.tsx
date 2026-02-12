@@ -136,7 +136,7 @@ export function SharedEntriesScreen(): React.ReactElement {
   if (loading) {
     return (
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['bottom']}
       >
         <View style={styles.loadingContainer}>
@@ -154,7 +154,7 @@ export function SharedEntriesScreen(): React.ReactElement {
   if (error) {
     return (
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['bottom']}
       >
         <View style={styles.errorContainer}>
@@ -189,7 +189,7 @@ export function SharedEntriesScreen(): React.ReactElement {
   return (
     <>
       <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         edges={['bottom']}
       >
         <Card variant="flat" style={styles.header}>

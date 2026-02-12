@@ -86,7 +86,7 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
       contentContainerStyle={styles.content}
       refreshControl={
         <RefreshControl

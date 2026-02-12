@@ -226,7 +226,7 @@ export function ProgressDashboardScreen({
   // Loading state
   if (analytics.isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
         <ScrollView contentContainerStyle={styles.loadingContent}>
           <View style={styles.statsRow}>
@@ -242,7 +242,7 @@ export function ProgressDashboardScreen({
 
   if (analytics.error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
         <View style={styles.errorContainer}>
           <MaterialCommunityIcons name="alert-circle" size={48} color={theme.colors.danger} />

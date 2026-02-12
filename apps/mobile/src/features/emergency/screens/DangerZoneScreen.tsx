@@ -92,7 +92,7 @@ export function DangerZoneScreen({
 
   if (!user) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <View style={styles.centerContent}>
           <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
             Please log in to access this feature
@@ -104,7 +104,7 @@ export function DangerZoneScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
       edges={['bottom']}
     >
       <ScrollView

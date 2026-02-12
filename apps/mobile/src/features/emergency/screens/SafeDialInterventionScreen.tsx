@@ -363,7 +363,7 @@ export function SafeDialInterventionScreen({
   const renderAlternativesStep = (): React.ReactElement => (
     <Animated.View
       entering={FadeIn.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.background }]}
+      style={[styles.stepContainer, { backgroundColor: theme.colors.semantic.surface.app }]}
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
@@ -442,7 +442,7 @@ export function SafeDialInterventionScreen({
   const renderFinalStep = (): React.ReactElement => (
     <Animated.View
       entering={FadeIn.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.background }]}
+      style={[styles.stepContainer, { backgroundColor: theme.colors.semantic.surface.app }]}
     >
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
