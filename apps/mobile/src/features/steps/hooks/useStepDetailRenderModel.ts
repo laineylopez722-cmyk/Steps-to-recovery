@@ -1,11 +1,29 @@
 import { useStepDetailContentContext } from './useStepDetailContentContext';
 import { useStepDetailContentPayload } from './useStepDetailContentPayload';
 import { useStepDetailContentState } from './useStepDetailContentState';
-import { useStepDetailFlowContext } from './useStepDetailFlowContext';
+import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
+import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
 
 export function useStepDetailRenderModel() {
-  const { navigation, stepNumber, backgroundColor, stepData, isLocked, isLoading, questionFlow } =
-    useStepDetailFlowContext();
+  const {
+    navigation,
+    stepNumber,
+    initialQuestion,
+    backgroundColor,
+    stepData,
+    isLocked,
+    questions,
+    isLoading,
+    saveAnswer,
+  } = useStepDetailScreenSetup();
+
+  const questionFlow = useStepDetailQuestionFlow({
+    stepData,
+    questions,
+    stepNumber,
+    initialQuestion,
+    saveAnswer,
+  });
 
   const { handleBackToStepOne, handleBackToSteps, mainContentProps } = useStepDetailContentContext({
     navigation,
