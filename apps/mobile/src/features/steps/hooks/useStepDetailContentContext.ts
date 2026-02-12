@@ -1,5 +1,5 @@
 import { useStepScreenAnimation } from './useStepScreenAnimation';
-import { useStepDetailMainContentModel } from './useStepDetailMainContentModel';
+import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
 import { useStepDetailMainInteractionsModel } from './useStepDetailMainInteractionsModel';
 import { type useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepPrompt } from '@recovery/shared';
@@ -30,7 +30,7 @@ export function useStepDetailContentContext({
       questionFlow,
     });
 
-  const mainContentProps = useStepDetailMainContentModel({
+  const mainContentProps = useStepDetailMainContentProps({
     animation: {
       fadeAnim,
       slideAnim,
