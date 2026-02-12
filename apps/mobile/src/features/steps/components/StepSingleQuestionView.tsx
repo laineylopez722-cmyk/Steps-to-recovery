@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect, useMemo } from 'react';
 import {
   Animated,
   KeyboardAvoidingView,
@@ -7,11 +7,11 @@ import {
   ScrollView,
   View,
 } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, Text, TextArea, useTheme } from '../../../design-system';
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { Text, TextArea, useTheme } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
-import { StepGuidanceCard } from './StepGuidanceCard';
 import type { StepListItem } from '../utils/stepListItems';
 
 export interface StepSingleQuestionViewProps {
@@ -41,6 +41,22 @@ export interface StepSingleQuestionViewProps {
   listItems: StepListItem[];
 }
 
+// Map step numbers to key theme tags
+const STEP_THEMES: Record<number, string[]> = {
+  1: ['powerlessness', 'honesty', 'surrender', 'acceptance'],
+  2: ['hope', 'faith', 'open-mindedness', 'willingness'],
+  3: ['decision', 'trust', 'letting go', 'courage'],
+  4: ['self-examination', 'honesty', 'courage', 'thoroughness'],
+  5: ['admission', 'vulnerability', 'trust', 'integrity'],
+  6: ['willingness', 'readiness', 'awareness', 'humility'],
+  7: ['humility', 'surrender', 'asking', 'acceptance'],
+  8: ['accountability', 'willingness', 'forgiveness', 'listing'],
+  9: ['amends', 'responsibility', 'courage', 'healing'],
+  10: ['inventory', 'promptness', 'growth', 'awareness'],
+  11: ['prayer', 'meditation', 'connection', 'guidance'],
+  12: ['service', 'awakening', 'carrying the message', 'practice'],
+};
+
 export function StepSingleQuestionView({
   stepNumber,
   title,
@@ -56,17 +72,19 @@ export function StepSingleQuestionView({
   onSaveAnswer,
   onJumpToQuestion,
   onReviewAnswers,
-  showGuidance,
-  onToggleGuidance,
   listItems,
 }: StepSingleQuestionViewProps): React.ReactElement {
   const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const scrollRef = useRef<ScrollView>(null);
+  const navigation = useNavigation();
 
-  // Find current question data from listItems
-  const questionItems = listItems.filter((item): item is Extract<StepListItem, { type: 'question' }> => item.type === 'question');
+  // Find current question data
+  const questionItems = useMemo(
+    () => listItems.filter((item): item is Extract<StepListItem, { type: 'question' }> => item.type === 'question'),
+    [listItems],
+  );
   const currentQ = questionItems.find((q) => q.questionNumber === currentVisibleQuestion);
   const currentAnswer = answers[currentVisibleQuestion] || '';
   const isAnswered = answeredQuestionNumbers.has(currentVisibleQuestion);
@@ -75,12 +93,14 @@ export function StepSingleQuestionView({
   const hasPrev = currentVisibleQuestion > 1;
   const hasNext = currentVisibleQuestion < totalQuestions;
 
-  // Scroll to top when question changes
+  const themes = STEP_THEMES[stepNumber] ?? [];
+
+  // Scroll to top on question change
   useEffect(() => {
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   }, [currentVisibleQuestion]);
 
-  // Fade animation on question change
+  // Fade animation
   const fadeAnim = useRef(new Animated.Value(1)).current;
   useEffect(() => {
     fadeAnim.setValue(0);
@@ -99,6 +119,16 @@ export function StepSingleQuestionView({
     if (hasNext) onJumpToQuestion(currentVisibleQuestion + 1);
   }, [hasNext, currentVisibleQuestion, onJumpToQuestion]);
 
+  // Auto-save on question change (save current answer if dirty)
+  const prevQuestionRef = useRef(currentVisibleQuestion);
+  useEffect(() => {
+    const prev = prevQuestionRef.current;
+    if (prev !== currentVisibleQuestion && answers[prev]?.trim()) {
+      onSaveAnswer(prev);
+    }
+    prevQuestionRef.current = currentVisibleQuestion;
+  }, [currentVisibleQuestion, answers, onSaveAnswer]);
+
   const safeTotal = Math.max(1, totalQuestions);
 
   return (
@@ -107,103 +137,75 @@ export function StepSingleQuestionView({
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={100}
     >
-      {/* Sticky top bar: progress + navigation */}
-      <View style={styles.topBar}>
-        <View style={styles.topBarRow}>
-          <Text style={[theme.typography.caption, styles.stepLabel]}>
-            Step {stepNumber}
-          </Text>
-          <Text style={[theme.typography.caption, styles.progressLabel]}>
-            {answeredCount}/{safeTotal} answered
-          </Text>
-        </View>
-        <View style={styles.progressTrack}>
-          <View
-            style={[
-              styles.progressFill,
-              { width: `${Math.max(0, Math.min(progressPercent, 100))}%` },
-            ]}
-          />
-        </View>
-
-        {/* Question position dots — scrollable */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.dotRow}
-        >
-          {Array.from({ length: safeTotal }).map((_, i) => {
-            const qNum = i + 1;
-            const isCurrent = qNum === currentVisibleQuestion;
-            const qAnswered = answeredQuestionNumbers.has(qNum);
-            return (
-              <Pressable
-                key={qNum}
-                onPress={() => onJumpToQuestion(qNum)}
-                style={[
-                  styles.dot,
-                  isCurrent && styles.dotCurrent,
-                  !isCurrent && qAnswered && styles.dotAnswered,
-                ]}
-                accessibilityRole="button"
-                accessibilityLabel={`Go to question ${qNum}`}
-              />
-            );
-          })}
-        </ScrollView>
-      </View>
-
-      {/* Scrollable content area */}
       <ScrollView
         ref={scrollRef}
-        style={styles.scrollArea}
+        style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Animated.View style={{ opacity: fadeAnim }}>
-          {/* Question number + nav */}
-          <View style={styles.questionNav}>
-            <Pressable
-              onPress={goPrev}
-              disabled={!hasPrev}
-              style={[styles.navArrow, !hasPrev && styles.navArrowDisabled]}
-              accessibilityLabel="Previous question"
-              accessibilityRole="button"
-            >
-              <MaterialCommunityIcons
-                name="chevron-left"
-                size={24}
-                color={hasPrev ? ds.colors.textPrimary : ds.colors.textQuaternary}
-              />
-            </Pressable>
-
-            <View style={styles.questionCenter}>
-              <Text style={[theme.typography.caption, styles.questionLabel]}>
-                QUESTION
-              </Text>
-              <Text style={[theme.typography.h1, styles.questionNumber]}>
-                {currentVisibleQuestion}
-              </Text>
-              <Text style={[theme.typography.caption, styles.questionOf]}>
-                of {safeTotal}
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={goNext}
-              disabled={!hasNext}
-              style={[styles.navArrow, !hasNext && styles.navArrowDisabled]}
-              accessibilityLabel="Next question"
-              accessibilityRole="button"
-            >
-              <MaterialCommunityIcons
-                name="chevron-right"
-                size={24}
-                color={hasNext ? ds.colors.textPrimary : ds.colors.textQuaternary}
-              />
-            </Pressable>
+        {/* Step header */}
+        <View style={styles.stepHeader}>
+          <Pressable
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <Feather name="arrow-left" size={20} color={ds.colors.textSecondary} />
+          </Pressable>
+          <View style={styles.headerTextWrap}>
+            <Text style={[theme.typography.h2, styles.stepTitle]}>
+              Step {stepNumber}
+            </Text>
+            <Text style={[theme.typography.body, styles.stepDescription]} numberOfLines={3}>
+              {description}
+            </Text>
           </View>
+        </View>
+
+        {/* Key Themes */}
+        {themes.length > 0 && (
+          <View style={styles.themesCard}>
+            <Text style={[theme.typography.label, styles.themesLabel]}>Key Themes</Text>
+            <View style={styles.themeTags}>
+              {themes.map((t) => (
+                <View key={t} style={styles.themeTag}>
+                  <Text style={styles.themeTagText}>{t}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        {/* Progress bar */}
+        <View style={styles.progressSection}>
+          <View style={styles.progressRow}>
+            <Text style={[theme.typography.body, styles.progressLeft]}>
+              Question {currentVisibleQuestion} of {safeTotal}
+            </Text>
+            <Text style={[theme.typography.caption, styles.progressRight]}>
+              {answeredCount} answered • {progressPercent}% complete
+            </Text>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${Math.max(0, Math.min(progressPercent, 100))}%` },
+              ]}
+            />
+          </View>
+        </View>
+
+        {/* Question card */}
+        <Animated.View style={[styles.questionArea, { opacity: fadeAnim }]}>
+          {/* Section label */}
+          {currentQ?.sectionTitle && (
+            <Text style={[theme.typography.caption, styles.sectionLabel]}>
+              {currentQ.sectionTitle.toUpperCase()}
+            </Text>
+          )}
 
           {/* Prompt */}
           {currentQ && (
@@ -212,62 +214,52 @@ export function StepSingleQuestionView({
             </Text>
           )}
 
-          {/* Guidance (collapsible) */}
-          <StepGuidanceCard
-            showGuidance={showGuidance}
-            description={description}
-            onToggle={onToggleGuidance}
+          {/* Answer input */}
+          <TextArea
+            label=""
+            value={currentAnswer}
+            onChangeText={(text) => onAnswerChange(currentVisibleQuestion, text)}
+            placeholder="Write your answer..."
+            containerStyle={styles.textArea}
+            minHeight={160}
+            maxLength={2000}
+            showCharacterCount
+            editable={!isSaving}
+            accessibilityLabel={`Answer for question ${currentVisibleQuestion}`}
           />
 
-          {/* Answer area */}
-          <Card variant="elevated" style={styles.answerCard}>
-            <TextArea
-              label=""
-              value={currentAnswer}
-              onChangeText={(text) => onAnswerChange(currentVisibleQuestion, text)}
-              placeholder="Take your time. Write honestly."
-              containerStyle={styles.textArea}
-              minHeight={180}
-              maxLength={2000}
-              showCharacterCount
-              editable={!isSaving}
-              accessibilityLabel={`Answer for question ${currentVisibleQuestion}`}
-            />
-
-            <Button
-              title={isSaving ? 'Saving...' : isAnswered ? 'Update' : 'Save'}
-              onPress={() => onSaveAnswer(currentVisibleQuestion)}
-              disabled={!currentAnswer.trim() || isSaving}
-              loading={isSaving}
-              variant="primary"
-              fullWidth
-              accessibilityLabel={isSaving ? 'Saving' : isAnswered ? 'Update answer' : 'Save answer'}
-            />
-          </Card>
-
-          {/* Bottom actions */}
-          <View style={styles.bottomActions}>
-            {hasNext && (
-              <Button
-                title={isAnswered ? 'Next Question →' : 'Skip →'}
-                onPress={goNext}
-                variant="outline"
-                fullWidth
-                accessibilityLabel={isAnswered ? 'Go to next question' : 'Skip to next question'}
-              />
-            )}
-
-            {!hasNext && (
-              <Button
-                title="Review All Answers"
-                onPress={onReviewAnswers}
-                variant="secondary"
-                fullWidth
-                accessibilityLabel="Review all answers"
-              />
-            )}
-          </View>
+          <Text style={[theme.typography.caption, styles.autoSaveHint]}>
+            {isSaving ? 'Saving...' : isAnswered ? '✓ Saved' : 'Auto-saves when you move to next question'}
+          </Text>
         </Animated.View>
+
+        {/* Navigation */}
+        <View style={styles.navRow}>
+          <Pressable
+            onPress={goPrev}
+            disabled={!hasPrev}
+            style={[styles.navButton, !hasPrev && styles.navButtonDisabled]}
+            accessibilityLabel="Previous question"
+            accessibilityRole="button"
+          >
+            <Feather name="chevron-left" size={20} color={hasPrev ? ds.colors.textPrimary : ds.colors.textQuaternary} />
+            <Text style={[styles.navText, !hasPrev && styles.navTextDisabled]}>Prev</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={hasNext ? goNext : onReviewAnswers}
+            style={styles.navButtonPrimary}
+            accessibilityLabel={hasNext ? 'Next question' : 'Review all answers'}
+            accessibilityRole="button"
+          >
+            <Text style={styles.navTextPrimary}>
+              {hasNext ? 'Next' : 'Review'}
+            </Text>
+            <Feather name={hasNext ? 'chevron-right' : 'check-circle'} size={20} color={ds.semantic.text.onDark} />
+          </Pressable>
+        </View>
+
+        <View style={{ height: 32 }} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -278,128 +270,177 @@ const createStyles = (ds: DS) =>
     root: {
       flex: 1,
     },
-    // Top bar
-    topBar: {
-      paddingHorizontal: 16,
-      paddingTop: 4,
-      paddingBottom: 8,
-      borderBottomWidth: 1,
-      borderBottomColor: ds.colors.borderSubtle,
+    scroll: {
+      flex: 1,
     },
-    topBarRow: {
+    scrollContent: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[3],
+      paddingBottom: 40,
+    },
+
+    // Step header
+    stepHeader: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: ds.space[4],
+      gap: 12,
+    },
+    backButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 18,
+      backgroundColor: ds.colors.bgSecondary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginTop: 4,
+    },
+    headerTextWrap: {
+      flex: 1,
+    },
+    stepTitle: {
+      color: ds.colors.textPrimary,
+      fontWeight: '700',
+      marginBottom: 4,
+    },
+    stepDescription: {
+      color: ds.colors.textSecondary,
+      lineHeight: 22,
+    },
+
+    // Themes
+    themesCard: {
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.lg,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+      padding: 14,
+      marginBottom: ds.space[4],
+    },
+    themesLabel: {
+      color: ds.colors.textPrimary,
+      fontWeight: '700',
+      marginBottom: 10,
+    },
+    themeTags: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+    },
+    themeTag: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 999,
+      backgroundColor: ds.colors.accentMuted,
+      borderWidth: 1,
+      borderColor: ds.colors.accent,
+    },
+    themeTagText: {
+      ...ds.typography.caption,
+      color: ds.colors.accent,
+      fontWeight: '600',
+    },
+
+    // Progress
+    progressSection: {
+      marginBottom: ds.space[4],
+    },
+    progressRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 6,
+      marginBottom: 8,
     },
-    stepLabel: {
-      color: ds.colors.textTertiary,
-      fontWeight: '600',
-      textTransform: 'uppercase',
-      letterSpacing: 0.8,
-    },
-    progressLabel: {
-      color: ds.colors.accent,
+    progressLeft: {
+      color: ds.colors.textPrimary,
       fontWeight: '700',
     },
+    progressRight: {
+      color: ds.colors.textTertiary,
+    },
     progressTrack: {
-      height: 3,
+      height: 6,
       borderRadius: 999,
       backgroundColor: ds.colors.bgTertiary,
       overflow: 'hidden',
-      marginBottom: 8,
     },
     progressFill: {
       height: '100%',
       borderRadius: 999,
       backgroundColor: ds.colors.accent,
     },
-    dotRow: {
-      gap: 4,
-      alignItems: 'center',
+
+    // Question
+    questionArea: {
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.lg,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+      padding: 16,
+      marginBottom: ds.space[4],
     },
-    dot: {
-      width: 8,
-      height: 8,
-      borderRadius: 4,
-      backgroundColor: ds.colors.bgTertiary,
-    },
-    dotCurrent: {
-      width: 10,
-      height: 10,
-      borderRadius: 5,
-      backgroundColor: ds.colors.accent,
-    },
-    dotAnswered: {
-      backgroundColor: ds.colors.success,
-    },
-    // Scroll area
-    scrollArea: {
-      flex: 1,
-    },
-    scrollContent: {
-      paddingHorizontal: 16,
-      paddingTop: 16,
-      paddingBottom: 40,
-    },
-    // Question nav
-    questionNav: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 20,
-    },
-    navArrow: {
-      width: 44,
-      height: 44,
-      borderRadius: 22,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: ds.colors.bgSecondary,
-    },
-    navArrowDisabled: {
-      opacity: 0.3,
-    },
-    questionCenter: {
-      flex: 1,
-      alignItems: 'center',
-    },
-    questionLabel: {
-      color: ds.colors.textTertiary,
-      textTransform: 'uppercase',
-      letterSpacing: 1,
-      marginBottom: 2,
-    },
-    questionNumber: {
+    sectionLabel: {
       color: ds.colors.accent,
       fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+      marginBottom: 10,
     },
-    questionOf: {
-      color: ds.colors.textTertiary,
-      marginTop: 2,
-    },
-    // Prompt
     prompt: {
       color: ds.colors.textPrimary,
       fontWeight: '700',
       lineHeight: 28,
-      textAlign: 'center',
       marginBottom: 16,
-      paddingHorizontal: 8,
     },
-    // Answer
-    answerCard: {
-      marginTop: 8,
-      padding: 14,
+    textArea: {
+      marginBottom: 8,
+    },
+    autoSaveHint: {
+      color: ds.colors.textTertiary,
+      textAlign: 'center',
+    },
+
+    // Navigation
+    navRow: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    navButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      paddingVertical: 14,
+      borderRadius: ds.radius.lg,
+      backgroundColor: ds.colors.bgSecondary,
       borderWidth: 1,
       borderColor: ds.colors.borderSubtle,
     },
-    textArea: {
-      marginBottom: 12,
+    navButtonDisabled: {
+      opacity: 0.3,
     },
-    // Bottom
-    bottomActions: {
-      marginTop: 14,
-      gap: 10,
+    navText: {
+      ...ds.typography.body,
+      color: ds.colors.textPrimary,
+      fontWeight: '600',
+    },
+    navTextDisabled: {
+      color: ds.colors.textQuaternary,
+    },
+    navButtonPrimary: {
+      flex: 2,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+      paddingVertical: 14,
+      borderRadius: ds.radius.lg,
+      backgroundColor: ds.colors.accent,
+    },
+    navTextPrimary: {
+      ...ds.typography.body,
+      color: ds.semantic.text.onDark,
+      fontWeight: '700',
     },
   }) as const;
