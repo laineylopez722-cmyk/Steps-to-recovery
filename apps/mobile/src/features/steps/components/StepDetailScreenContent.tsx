@@ -5,11 +5,11 @@ import { Toast } from '../../../design-system';
 import { StepDetailLoadingState } from './StepDetailLoadingState';
 import { StepLockedState } from './StepLockedState';
 import { StepDetailMainContent } from './StepDetailMainContent';
+import type { StepDetailToastProps } from '../hooks/useStepDetailToastState';
 
 type StepDetailContentState = 'locked' | 'loading' | 'ready';
 
 type StepDetailMainContentProps = React.ComponentProps<typeof StepDetailMainContent>;
-type ToastVariant = React.ComponentProps<typeof Toast>['variant'];
 
 interface StepDetailScreenContentProps {
   state: StepDetailContentState;
@@ -17,10 +17,7 @@ interface StepDetailScreenContentProps {
   stepNumber: number;
   onBackToStepOne: () => void;
   onBackToSteps: () => void;
-  toastVisible: boolean;
-  toastMessage: string;
-  toastVariant: ToastVariant;
-  onDismissToast: () => void;
+  toastProps: StepDetailToastProps;
   mainContentProps: StepDetailMainContentProps;
 }
 
@@ -30,10 +27,7 @@ export function StepDetailScreenContent({
   stepNumber,
   onBackToStepOne,
   onBackToSteps,
-  toastVisible,
-  toastMessage,
-  toastVariant,
-  onDismissToast,
+  toastProps,
   mainContentProps,
 }: StepDetailScreenContentProps): React.ReactElement {
   if (state === 'loading') {
@@ -54,12 +48,7 @@ export function StepDetailScreenContent({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
-      <Toast
-        visible={toastVisible}
-        message={toastMessage}
-        variant={toastVariant}
-        onDismiss={onDismissToast}
-      />
+      <Toast {...toastProps} />
 
       <StepDetailMainContent {...mainContentProps} />
     </SafeAreaView>

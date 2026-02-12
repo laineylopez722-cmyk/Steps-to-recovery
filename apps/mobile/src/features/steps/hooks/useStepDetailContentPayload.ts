@@ -22,7 +22,7 @@ export function useStepDetailContentPayload({
   mainContentProps,
   questionFlow,
 }: Params) {
-  const { toastVisible, toastMessage, toastVariant, onDismissToast } = useStepDetailToastState({
+  const { toastProps } = useStepDetailToastState({
     questionFlow,
   });
 
@@ -32,10 +32,7 @@ export function useStepDetailContentPayload({
     stepNumber,
     onBackToStepOne,
     onBackToSteps,
-    toastVisible,
-    toastMessage,
-    toastVariant,
-    onDismissToast,
+    toastProps,
     mainContentProps,
   });
 }

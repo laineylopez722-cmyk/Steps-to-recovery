@@ -1,6 +1,5 @@
 import type { StepDetailMainContentProps } from '../components/StepDetailMainContent';
-
-type ToastVariant = 'success' | 'error' | 'info' | 'warning';
+import type { StepDetailToastProps } from './useStepDetailToastState';
 
 type Params = {
   contentState: 'locked' | 'loading' | 'ready';
@@ -8,10 +7,7 @@ type Params = {
   stepNumber: number;
   onBackToStepOne: () => void;
   onBackToSteps: () => void;
-  toastVisible: boolean;
-  toastMessage: string;
-  toastVariant: ToastVariant;
-  onDismissToast: () => void;
+  toastProps: StepDetailToastProps;
   mainContentProps: StepDetailMainContentProps;
 };
 
@@ -21,10 +17,7 @@ export function useStepDetailScreenContentProps({
   stepNumber,
   onBackToStepOne,
   onBackToSteps,
-  toastVisible,
-  toastMessage,
-  toastVariant,
-  onDismissToast,
+  toastProps,
   mainContentProps,
 }: Params) {
   return {
@@ -33,10 +26,7 @@ export function useStepDetailScreenContentProps({
     stepNumber,
     onBackToStepOne,
     onBackToSteps,
-    toastVisible,
-    toastMessage,
-    toastVariant,
-    onDismissToast,
+    toastProps,
     mainContentProps,
   };
 }
