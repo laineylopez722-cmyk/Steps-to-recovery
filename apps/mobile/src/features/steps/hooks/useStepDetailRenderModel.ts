@@ -1,6 +1,5 @@
 import { useStepDetailContentContext } from './useStepDetailContentContext';
 import { useStepDetailContentPayload } from './useStepDetailContentPayload';
-import { useStepDetailContentState } from './useStepDetailContentState';
 import { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import { useStepDetailScreenSetup } from './useStepDetailScreenSetup';
 
@@ -32,10 +31,7 @@ export function useStepDetailRenderModel() {
     questionFlow,
   });
 
-  const contentState = useStepDetailContentState({
-    isLocked,
-    isLoading,
-  });
+  const contentState = isLocked ? 'locked' : isLoading ? 'loading' : 'ready';
   const hasStepData = Boolean(stepData);
 
   const content = useStepDetailContentPayload({
