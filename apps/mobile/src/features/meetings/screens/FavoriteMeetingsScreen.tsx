@@ -3,7 +3,7 @@
  * Displays user's favorited meetings for quick offline access
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTheme } from '../../../design-system/hooks/useTheme';
@@ -33,6 +33,12 @@ export function FavoriteMeetingsScreen({
 
   const [meetings, setMeetings] = useState<MeetingWithDetails[]>([]);
   const [isLoadingMeetings, setIsLoadingMeetings] = useState<boolean>(true);
+
+  // Centralized screen background – uses semantic surface token (consistent with MeetingFinderScreen)
+  const screenBg = useMemo(
+    () => ({ backgroundColor: theme.colors.semantic.surface.app }),
+    [theme.colors.semantic.surface.app],
+  );
 
   // Load full meeting details for favorites
   useEffect(() => {
@@ -112,7 +118,7 @@ export function FavoriteMeetingsScreen({
   // Loading state
   if (isLoading && meetings.length === 0) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.centerContainer, screenBg]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -121,7 +127,7 @@ export function FavoriteMeetingsScreen({
   // Empty state
   if (meetings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.container, screenBg]}>
         <EmptyState
           icon="heart-outline"
           title="No Favorite Meetings"
@@ -135,7 +141,7 @@ export function FavoriteMeetingsScreen({
 
   // List of favorited meetings
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, screenBg]}>
       <FlatList
         data={meetings}
         keyExtractor={(item) => item.id}
