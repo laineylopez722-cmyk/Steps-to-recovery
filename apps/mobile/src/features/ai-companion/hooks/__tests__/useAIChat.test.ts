@@ -338,9 +338,9 @@ describe('useAIChat', () => {
 
       await act(async () => {
         await result.current.sendMessage('Hello');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
-
-      jest.advanceTimersByTime(100);
 
       expect(mockCreateConversation).toHaveBeenCalled();
     });
@@ -370,15 +370,13 @@ describe('useAIChat', () => {
 
       await act(async () => {
         await result.current.startNewConversation('general');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
-
-      jest.advanceTimersByTime(100);
 
       // Start sending message
       await act(async () => {
-        result.current.sendMessage('Hello');
-        // Let the state update propagate
-        await Promise.resolve();
+        await result.current.sendMessage('Hello');
       });
 
       // In React 19 batching, isLoading may flip quickly
@@ -487,9 +485,9 @@ describe('useAIChat', () => {
 
       await act(async () => {
         await result.current.startNewConversation('general');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
-
-      jest.advanceTimersByTime(100);
 
       await act(async () => {
         await result.current.sendMessage('What is step 4 about?');
@@ -596,12 +594,12 @@ describe('useAIChat', () => {
 
       await act(async () => {
         await result.current.startNewConversation('general');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
       });
 
-      jest.advanceTimersByTime(100);
-
-      act(() => {
-        result.current.sendMessage('Hello');
+      await act(async () => {
+        await result.current.sendMessage('Hello');
       });
 
       act(() => {
