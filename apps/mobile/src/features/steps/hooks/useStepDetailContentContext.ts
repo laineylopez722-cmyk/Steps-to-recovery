@@ -1,6 +1,7 @@
 import { useStepScreenAnimation } from './useStepScreenAnimation';
 import { useStepDetailMainContentProps } from './useStepDetailMainContentProps';
-import { useStepDetailInteractions } from './useStepDetailInteractions';
+import { useStepDetailNavigationActions } from './useStepDetailNavigationActions';
+import { useStepGuidanceToggle } from './useStepGuidanceToggle';
 import { type useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepPrompt } from '@recovery/shared';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,16 +24,10 @@ export function useStepDetailContentContext({
 }: Params) {
   const { fadeAnim, slideAnim } = useStepScreenAnimation();
 
-  const {
-    handleReviewAnswers,
-    handleBackToStepOne,
-    handleBackToSteps,
-    showGuidance,
-    handleToggleGuidance,
-  } = useStepDetailInteractions({
-    navigation,
-    stepNumber,
-  });
+  const { handleReviewAnswers, handleBackToStepOne, handleBackToSteps } =
+    useStepDetailNavigationActions({ navigation, stepNumber });
+
+  const { showGuidance, handleToggleGuidance } = useStepGuidanceToggle();
 
   const mainContentProps = useStepDetailMainContentProps({
     animation: {

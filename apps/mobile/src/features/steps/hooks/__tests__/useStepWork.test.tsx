@@ -185,7 +185,14 @@ describe('useStepWork', () => {
     mockDbInstance.runAsync.mockResolvedValue({ lastInsertRowId: 1, changes: 1 });
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Cancel pending queries and flush React Query timer-driven updates inside act()
+    queryClient.cancelQueries();
+    queryClient.clear();
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
     // Ensure database mock is restored
     mockDbInstance = mockDb;
     mockDbIsReady = true;
