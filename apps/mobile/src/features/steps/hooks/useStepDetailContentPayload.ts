@@ -1,4 +1,3 @@
-import { useStepDetailScreenContentProps } from './useStepDetailScreenContentProps';
 import { useStepDetailToastState } from './useStepDetailToastState';
 import type { useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepDetailMainContentProps } from '../components/StepDetailMainContent';
@@ -26,13 +25,13 @@ export function useStepDetailContentPayload({
     questionFlow,
   });
 
-  return useStepDetailScreenContentProps({
-    contentState,
+  return {
+    state: contentState,
     backgroundColor,
     stepNumber,
     onBackToStepOne,
     onBackToSteps,
     toastProps,
     mainContentProps,
-  });
+  };
 }
