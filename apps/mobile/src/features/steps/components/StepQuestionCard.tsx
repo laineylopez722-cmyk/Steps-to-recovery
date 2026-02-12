@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, Divider, Text, TextArea, useTheme } from '../../../design-system';
+import { Button, Card, Text, TextArea, useTheme } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -31,62 +31,39 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
   const ds = useDs();
 
   return (
-    <Card variant="elevated" style={[styles.questionCard, isAnswered && styles.questionCardAnswered]}>
-      <View style={styles.questionHeaderMeta}>
-        <View style={styles.questionMetaLeft}>
-          <Text style={[theme.typography.caption, styles.questionMetaText]}>
-            Question {questionNumber} of {totalQuestions}
-          </Text>
-        </View>
-
-        <View style={[styles.statePill, isAnswered && styles.statePillAnswered]}>
-          <MaterialCommunityIcons
-            name={isAnswered ? 'check-circle' : 'circle-outline'}
-            size={14}
-            color={isAnswered ? ds.colors.success : ds.colors.textTertiary}
-          />
-          <Text style={[styles.statePillText, isAnswered && styles.statePillTextAnswered]}>
-            {isAnswered ? 'Saved' : 'Draft'}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.questionHeader}>
+    <Card variant="elevated" style={[styles.card, isAnswered && styles.cardAnswered]}>
+      {/* Top row: number badge + status */}
+      <View style={styles.topRow}>
         <View
           style={[
-            styles.questionNumber,
-            isAnswered
-              ? { backgroundColor: ds.colors.success }
-              : {
-                  backgroundColor: ds.colors.bgSecondary,
-                  borderWidth: 2,
-                  borderColor: ds.colors.borderSubtle,
-                },
+            styles.numberBadge,
+            isAnswered && { backgroundColor: ds.colors.success },
           ]}
         >
           {isAnswered ? (
-            <MaterialCommunityIcons name="check" size={18} color={ds.semantic.text.onDark} />
+            <MaterialCommunityIcons name="check" size={14} color={ds.semantic.text.onDark} />
           ) : (
-            <Text
-              style={[theme.typography.bodySmall, { color: ds.colors.textTertiary, fontWeight: '700' }]}
-            >
-              {questionNumber}
-            </Text>
+            <Text style={styles.numberText}>{questionNumber}</Text>
           )}
         </View>
 
-        <Text style={[theme.typography.h3, styles.promptText]}>{prompt}</Text>
+        <View style={[styles.statusDot, isAnswered && styles.statusDotAnswered]} />
+        <Text style={[theme.typography.caption, styles.statusText]}>
+          {isAnswered ? 'Saved' : `${questionNumber}/${totalQuestions}`}
+        </Text>
       </View>
 
-      <Divider style={styles.questionDivider} />
+      {/* Prompt */}
+      <Text style={[theme.typography.body, styles.prompt]}>{prompt}</Text>
 
+      {/* Answer */}
       <TextArea
         label=""
         value={answer}
         onChangeText={onChangeAnswer}
-        placeholder="Write honestly. You can save now and come back later."
-        containerStyle={styles.answerTextArea}
-        minHeight={170}
+        placeholder="Write honestly — this is your private space."
+        containerStyle={styles.textArea}
+        minHeight={140}
         maxLength={2000}
         showCharacterCount
         editable={!isSaving}
@@ -95,7 +72,7 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
       />
 
       <Button
-        title={isSaving ? 'Saving...' : isAnswered ? 'Update Answer' : 'Save Answer'}
+        title={isSaving ? 'Saving...' : isAnswered ? 'Update' : 'Save'}
         onPress={onSave}
         disabled={!answer.trim() || isSaving}
         loading={isSaving}
@@ -115,78 +92,56 @@ StepQuestionCard.displayName = 'StepQuestionCard';
 
 const createStyles = (ds: DS) =>
   ({
-    questionCard: {
+    card: {
       marginHorizontal: 16,
-      marginBottom: 16,
-      padding: 16,
+      marginBottom: 14,
+      padding: 14,
       borderWidth: 1,
       borderColor: ds.colors.borderSubtle,
       backgroundColor: ds.semantic.surface.card,
     },
-    questionCardAnswered: {
+    cardAnswered: {
       borderColor: ds.colors.success,
     },
-    questionHeaderMeta: {
+    topRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
-      marginBottom: 12,
+      marginBottom: 10,
+      gap: 8,
     },
-    questionMetaLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-    questionMetaText: {
-      color: ds.colors.textTertiary,
-    },
-    statePill: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 999,
-      backgroundColor: ds.colors.bgSecondary,
-      borderWidth: 1,
-      borderColor: ds.colors.borderSubtle,
-    },
-    statePillAnswered: {
-      backgroundColor: ds.colors.successMuted,
-      borderColor: ds.colors.success,
-    },
-    statePillText: {
-      ...ds.typography.micro,
-      color: ds.colors.textTertiary,
-      fontWeight: '700',
-    },
-    statePillTextAnswered: {
-      color: ds.colors.success,
-    },
-    questionHeader: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      marginBottom: 14,
-    },
-    questionNumber: {
-      width: 34,
-      height: 34,
-      borderRadius: 17,
+    numberBadge: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: 12,
-      marginTop: 2,
+      backgroundColor: ds.colors.bgTertiary,
     },
-    promptText: {
-      color: ds.colors.textPrimary,
-      flex: 1,
-      lineHeight: 24,
+    numberText: {
+      ...ds.typography.caption,
+      color: ds.colors.textTertiary,
       fontWeight: '700',
     },
-    questionDivider: {
-      marginBottom: 14,
+    statusDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: ds.colors.textQuaternary,
+      marginLeft: 'auto',
     },
-    answerTextArea: {
-      marginBottom: 14,
+    statusDotAnswered: {
+      backgroundColor: ds.colors.success,
+    },
+    statusText: {
+      color: ds.colors.textTertiary,
+    },
+    prompt: {
+      color: ds.colors.textPrimary,
+      fontWeight: '600',
+      lineHeight: 22,
+      marginBottom: 12,
+    },
+    textArea: {
+      marginBottom: 12,
     },
   }) as const;

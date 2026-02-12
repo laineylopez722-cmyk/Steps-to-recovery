@@ -1,8 +1,5 @@
 import React from 'react';
 import { type FlatList, type ViewToken } from 'react-native';
-import { StepGuidanceCard } from './StepGuidanceCard';
-import { StepDetailHeaderCard } from './StepDetailHeaderCard';
-import { StepQuestionCounter } from './StepQuestionCounter';
 import { StepDetailQuestionsList } from './StepDetailQuestionsList';
 import type { StepListItem } from '../utils/stepListItems';
 
@@ -35,73 +32,33 @@ export interface StepDetailMainSectionsProps {
   };
 }
 
-export function StepDetailMainSections({
-  stepNumber,
-  title,
-  principle,
-  description,
-  totalQuestions,
-  answeredCount,
-  progressPercent,
-  hasUnanswered,
-  firstUnansweredQuestion,
-  onContinue,
-  onReviewAnswers,
-  showGuidance,
-  onToggleGuidance,
-  currentVisibleQuestion,
-  listRef,
-  listItems,
-  answeredQuestionNumbers,
-  savingQuestion,
-  answers,
-  onAnswerChange,
-  onSaveAnswer,
-  onJumpToQuestion,
-  onViewableItemsChanged,
-  viewabilityConfig,
-}: StepDetailMainSectionsProps): React.ReactElement {
+export function StepDetailMainSections(props: StepDetailMainSectionsProps): React.ReactElement {
   return (
-    <>
-      <StepDetailHeaderCard
-        stepNumber={stepNumber}
-        title={title}
-        principle={principle}
-        totalQuestions={totalQuestions}
-        answeredCount={answeredCount}
-        progressPercent={progressPercent}
-        showContinue={hasUnanswered && answeredCount > 0}
-        firstUnansweredQuestion={firstUnansweredQuestion}
-        onContinue={onContinue}
-        onReviewAnswers={onReviewAnswers}
-      />
-
-      <StepQuestionCounter
-        currentQuestion={currentVisibleQuestion}
-        totalQuestions={totalQuestions}
-        answeredQuestionNumbers={answeredQuestionNumbers}
-        onJumpToQuestion={onJumpToQuestion}
-      />
-
-      <StepGuidanceCard
-        showGuidance={showGuidance}
-        description={description}
-        onToggle={onToggleGuidance}
-      />
-
-      <StepDetailQuestionsList
-        listRef={listRef}
-        listItems={listItems}
-        answeredQuestionNumbers={answeredQuestionNumbers}
-        savingQuestion={savingQuestion}
-        answers={answers}
-        totalQuestions={totalQuestions}
-        onAnswerChange={onAnswerChange}
-        onSaveAnswer={onSaveAnswer}
-        onJumpToQuestion={onJumpToQuestion}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-      />
-    </>
+    <StepDetailQuestionsList
+      listRef={props.listRef}
+      listItems={props.listItems}
+      answeredQuestionNumbers={props.answeredQuestionNumbers}
+      savingQuestion={props.savingQuestion}
+      answers={props.answers}
+      totalQuestions={props.totalQuestions}
+      onAnswerChange={props.onAnswerChange}
+      onSaveAnswer={props.onSaveAnswer}
+      onJumpToQuestion={props.onJumpToQuestion}
+      onViewableItemsChanged={props.onViewableItemsChanged}
+      viewabilityConfig={props.viewabilityConfig}
+      stepNumber={props.stepNumber}
+      title={props.title}
+      principle={props.principle}
+      description={props.description}
+      answeredCount={props.answeredCount}
+      progressPercent={props.progressPercent}
+      hasUnanswered={props.hasUnanswered}
+      firstUnansweredQuestion={props.firstUnansweredQuestion}
+      onContinue={props.onContinue}
+      onReviewAnswers={props.onReviewAnswers}
+      showGuidance={props.showGuidance}
+      onToggleGuidance={props.onToggleGuidance}
+      currentVisibleQuestion={props.currentVisibleQuestion}
+    />
   );
 }
