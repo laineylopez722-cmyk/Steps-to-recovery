@@ -296,7 +296,7 @@ export function MeetingDetailScreen({
 
   if (isLoading) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -304,7 +304,7 @@ export function MeetingDetailScreen({
 
   if (!meeting) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}>
         <Text style={[theme.typography.body, { color: theme.colors.text }]}>Meeting not found</Text>
       </View>
     );
@@ -331,7 +331,7 @@ export function MeetingDetailScreen({
   return (
     <>
       <ScrollView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
         contentContainerStyle={styles.content}
       >
         {/* Meeting Name */}
