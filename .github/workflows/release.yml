@@ -25,6 +25,7 @@ on:
 
 env:
   EXPO_NO_TELEMETRY: 1
+  EAS_CLI_VERSION: 16.0.1
 
 permissions:
   contents: write
@@ -89,7 +90,7 @@ jobs:
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: ${{ env.EAS_CLI_VERSION }}
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
@@ -142,7 +143,7 @@ jobs:
       - name: Setup Expo
         uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: ${{ env.EAS_CLI_VERSION }}
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
