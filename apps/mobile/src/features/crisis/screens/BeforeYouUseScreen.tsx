@@ -86,21 +86,34 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
   // Stage 4: Contact + complete
   const [finalIntensity, setFinalIntensity] = useState(5);
 
-  // Timer effect
+  // Timer effect — runs a 1-second interval while timerActive is true.
+  // When the countdown reaches 0 we mark the wait complete and advance to grounding.
   useEffect(() => {
     if (!timerActive) return;
 
-    if (secondsRemaining <= 0) {
-      void handleTimerComplete();
-      return;
-    }
-
     const interval = setInterval(() => {
-      setSecondsRemaining((prev) => prev - 1);
+      setSecondsRemaining((prev) => {
+        if (prev <= 1) {
+          // Timer done — advance stage on next tick to avoid setState-during-render
+          clearInterval(interval);
+          setTimerActive(false);
+          setStage('grounding');
+
+          // Best-effort: log the wait completion (fire-and-forget)
+          if (checkpointId) {
+            void markWaitedTenMinutes(checkpointId, userId).catch(() => {
+              // Even if logging fails, the flow already advanced
+            });
+          }
+
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [timerActive, secondsRemaining, handleTimerComplete]);
+  }, [timerActive, checkpointId, userId]);
 
   // ========================================
   // Handlers
@@ -128,21 +141,6 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
       Alert.alert('Error', 'Could not start checkpoint. Please try again.');
     }
   };
-
-  async function handleTimerComplete(): Promise<void> {
-    try {
-      setTimerActive(false);
-
-      if (checkpointId) {
-        await markWaitedTenMinutes(checkpointId, userId);
-      }
-
-      setStage('grounding');
-    } catch {
-      // Even if logging fails, continue the flow
-      setStage('grounding');
-    }
-  }
 
   const handleSkipTimer = (): void => {
     Alert.alert(
