@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { Card, useTheme } from '../../../design-system';
+import { useDs } from '../../../design-system/DsProvider';
 import { hapticSelection, hapticWarning } from '../../../utils/haptics';
 import type { RiskyContact, RelationshipType } from '../hooks';
 
@@ -38,6 +39,7 @@ export function RiskyContactCard({
   onDelete,
 }: RiskyContactCardProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = (): void => {
@@ -105,10 +107,10 @@ export function RiskyContactCard({
               />
             </View>
             <View style={styles.headerText}>
-              <Text style={[theme.typography.h3, { color: theme.colors.text }]} numberOfLines={1}>
+              <Text style={[theme.typography.h3, { color: ds.semantic.text.primary }]} numberOfLines={1}>
                 {contact.name}
               </Text>
-              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+              <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
                 {RELATIONSHIP_LABELS[contact.relationshipType]}
               </Text>
             </View>
@@ -140,17 +142,17 @@ export function RiskyContactCard({
           </View>
         </View>
 
-        <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+        <View style={[styles.divider, { backgroundColor: ds.colors.borderDefault }]} />
 
         <View style={styles.details}>
           <View style={styles.detailRow}>
             <MaterialCommunityIcons
               name="phone"
               size={16}
-              color={theme.colors.textSecondary}
+              color={ds.semantic.text.secondary}
               style={styles.detailIcon}
             />
-            <Text style={[theme.typography.body, { color: theme.colors.text }]}>
+            <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
               {formatPhoneNumber(contact.phoneNumber)}
             </Text>
           </View>
@@ -159,18 +161,18 @@ export function RiskyContactCard({
             <MaterialCommunityIcons
               name="clock-outline"
               size={16}
-              color={theme.colors.textSecondary}
+              color={ds.semantic.text.secondary}
               style={styles.detailIcon}
             />
-            <Text style={[theme.typography.bodySmall, { color: theme.colors.textSecondary }]}>
+            <Text style={[theme.typography.bodySmall, { color: ds.semantic.text.secondary }]}>
               Added {daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo} days ago`}
             </Text>
           </View>
 
           {contact.notes && (
-            <View style={[styles.notesContainer, { backgroundColor: theme.colors.background }]}>
+            <View style={[styles.notesContainer, { backgroundColor: ds.semantic.surface.card }]}>
               <Text
-                style={[theme.typography.bodySmall, { color: theme.colors.textSecondary }]}
+                style={[theme.typography.bodySmall, { color: ds.semantic.text.secondary }]}
                 numberOfLines={2}
               >
                 {contact.notes}

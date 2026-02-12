@@ -91,7 +91,7 @@ export function MeetingFilters({
     selectedDay !== null || selectedTime !== null || selectedTypes.length > 0;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: ds.semantic.surface.card }]}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -99,7 +99,7 @@ export function MeetingFilters({
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[theme.typography.h2, { color: theme.colors.text }]}>Filter Meetings</Text>
+          <Text style={[theme.typography.h2, { color: ds.semantic.text.primary }]}>Filter Meetings</Text>
           {hasActiveFilters && (
             <Pressable
               onPress={handleClear}
@@ -116,7 +116,7 @@ export function MeetingFilters({
 
         {/* Day of Week */}
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+          <Text style={[theme.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Day of Week
           </Text>
           <View style={styles.chipContainer}>
@@ -129,7 +129,7 @@ export function MeetingFilters({
                   {
                     backgroundColor:
                       selectedDay === day.value ? theme.colors.primary : theme.colors.surface,
-                    borderColor: theme.colors.border,
+                    borderColor: ds.colors.borderDefault,
                   },
                   pressed && { opacity: 0.6 },
                 ]}
@@ -142,7 +142,7 @@ export function MeetingFilters({
                     theme.typography.body,
                     {
                       color:
-                        selectedDay === day.value ? ds.semantic.text.onDark : theme.colors.text,
+                        selectedDay === day.value ? ds.semantic.text.onDark : ds.semantic.text.primary,
                     },
                   ]}
                 >
@@ -155,7 +155,7 @@ export function MeetingFilters({
 
         {/* Time of Day */}
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+          <Text style={[theme.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Time of Day
           </Text>
           <View style={styles.chipContainer}>
@@ -168,7 +168,7 @@ export function MeetingFilters({
                   {
                     backgroundColor:
                       selectedTime === time.value ? theme.colors.primary : theme.colors.surface,
-                    borderColor: theme.colors.border,
+                    borderColor: ds.colors.borderDefault,
                   },
                   pressed && { opacity: 0.6 },
                 ]}
@@ -181,7 +181,7 @@ export function MeetingFilters({
                     theme.typography.body,
                     {
                       color:
-                        selectedTime === time.value ? ds.semantic.text.onDark : theme.colors.text,
+                        selectedTime === time.value ? ds.semantic.text.onDark : ds.semantic.text.primary,
                     },
                   ]}
                 >
@@ -194,7 +194,7 @@ export function MeetingFilters({
 
         {/* Meeting Types */}
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+          <Text style={[theme.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Meeting Type
           </Text>
           <View style={styles.chipContainer}>
@@ -208,7 +208,7 @@ export function MeetingFilters({
                     backgroundColor: selectedTypes.includes(type)
                       ? theme.colors.primary
                       : theme.colors.surface,
-                    borderColor: theme.colors.border,
+                    borderColor: ds.colors.borderDefault,
                   },
                   pressed && { opacity: 0.6 },
                 ]}
@@ -222,7 +222,7 @@ export function MeetingFilters({
                     {
                       color: selectedTypes.includes(type)
                         ? ds.semantic.text.onDark
-                        : theme.colors.text,
+                        : ds.semantic.text.primary,
                     },
                   ]}
                 >
@@ -239,8 +239,8 @@ export function MeetingFilters({
         style={[
           styles.footer,
           {
-            backgroundColor: theme.colors.background,
-            borderTopColor: theme.colors.border,
+            backgroundColor: ds.semantic.surface.card,
+            borderTopColor: ds.colors.borderDefault,
           },
         ]}
       >

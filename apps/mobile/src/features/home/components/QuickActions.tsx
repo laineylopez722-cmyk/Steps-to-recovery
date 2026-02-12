@@ -100,7 +100,7 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
         {QUICK_ACTIONS.map((action) => (
           <TouchableOpacity
             key={action.id}
-            style={[styles.actionButton, { backgroundColor: theme.colors.background }]}
+            style={[styles.actionButton, { backgroundColor: ds.semantic.surface.interactive }]}
             onPress={() => handleActionPress(action.screen)}
             accessibilityLabel={action.title}
             accessibilityRole="button"
@@ -116,7 +116,7 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
             <Text
               style={[
                 theme.typography.body,
-                { fontWeight: '600', color: theme.colors.text, textAlign: 'center' },
+                { fontWeight: '600', color: ds.semantic.text.primary, textAlign: 'center' },
               ]}
             >
               {action.title}

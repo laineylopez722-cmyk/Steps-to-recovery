@@ -191,10 +191,10 @@ export function AddRiskyContactModal({
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        style={[styles.container, { backgroundColor: ds.semantic.surface.card }]}
       >
         {/* Header */}
-        <View style={[styles.header, { borderBottomColor: theme.colors.border }]}>
+        <View style={[styles.header, { borderBottomColor: ds.colors.borderDefault }]}>
           <Pressable
             onPress={handleClose}
             style={styles.closeButton}
@@ -202,12 +202,12 @@ export function AddRiskyContactModal({
             accessibilityLabel="Close"
             disabled={isSubmitting}
           >
-            <MaterialCommunityIcons name="close" size={24} color={theme.colors.text} />
+            <MaterialCommunityIcons name="close" size={24} color={ds.semantic.text.primary} />
           </Pressable>
           <Text
             style={[
               theme.typography.h2,
-              { color: theme.colors.text, flex: 1, textAlign: 'center', marginRight: 40 },
+              { color: ds.semantic.text.primary, flex: 1, textAlign: 'center', marginRight: 40 },
             ]}
           >
             Add Protection
@@ -231,7 +231,7 @@ export function AddRiskyContactModal({
               style={{ marginBottom: 8 }}
             />
             <Text
-              style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}
+              style={[theme.typography.body, { color: ds.semantic.text.primary, textAlign: 'center' }]}
             >
               Add contacts you want protection from. When you try to call them, we'll help you make
               healthier choices.
@@ -241,7 +241,7 @@ export function AddRiskyContactModal({
           {/* Name Input */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               What should we call this contact? *
             </Text>
@@ -249,14 +249,14 @@ export function AddRiskyContactModal({
               value={name as string}
               onChangeText={setName as (text: string) => void}
               placeholder="e.g., My Dealer, Old Friend"
-              placeholderTextColor={theme.colors.textSecondary}
+              placeholderTextColor={ds.semantic.text.secondary}
               style={[
                 styles.input,
                 theme.typography.body,
                 {
                   backgroundColor: theme.colors.surface,
-                  color: theme.colors.text,
-                  borderColor: theme.colors.border,
+                  color: ds.semantic.text.primary,
+                  borderColor: ds.colors.borderDefault,
                 },
               ]}
               accessibilityLabel="Contact name"
@@ -268,7 +268,7 @@ export function AddRiskyContactModal({
           {/* Phone Number Input */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               Phone Number *
             </Text>
@@ -276,15 +276,15 @@ export function AddRiskyContactModal({
               value={phoneNumber as string}
               onChangeText={handlePhoneChange as (text: string) => void}
               placeholder="(555) 123-4567"
-              placeholderTextColor={theme.colors.textSecondary}
+              placeholderTextColor={ds.semantic.text.secondary}
               keyboardType="phone-pad"
               style={[
                 styles.input,
                 theme.typography.body,
                 {
                   backgroundColor: theme.colors.surface,
-                  color: theme.colors.text,
-                  borderColor: theme.colors.border,
+                  color: ds.semantic.text.primary,
+                  borderColor: ds.colors.borderDefault,
                 },
               ]}
               accessibilityLabel="Phone number"
@@ -296,7 +296,7 @@ export function AddRiskyContactModal({
           {/* Relationship Type Picker */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               Relationship Type *
             </Text>
@@ -315,7 +315,7 @@ export function AddRiskyContactModal({
                       borderColor:
                         relationshipType === option.value
                           ? theme.colors.primary
-                          : theme.colors.border,
+                          : ds.colors.borderDefault,
                       borderWidth: relationshipType === option.value ? 2 : 1,
                     },
                   ]}
@@ -330,7 +330,7 @@ export function AddRiskyContactModal({
                     color={
                       relationshipType === option.value
                         ? theme.colors.primary
-                        : theme.colors.textSecondary
+                        : ds.semantic.text.secondary
                     }
                   />
                   <Text
@@ -340,7 +340,7 @@ export function AddRiskyContactModal({
                         color:
                           relationshipType === option.value
                             ? theme.colors.primary
-                            : theme.colors.text,
+                            : ds.semantic.text.primary,
                         marginTop: 8,
                         textAlign: 'center',
                       },
@@ -352,7 +352,7 @@ export function AddRiskyContactModal({
                     style={[
                       theme.typography.caption,
                       {
-                        color: theme.colors.textSecondary,
+                        color: ds.semantic.text.secondary,
                         marginTop: 4,
                         textAlign: 'center',
                       },
@@ -368,7 +368,7 @@ export function AddRiskyContactModal({
           {/* Notes Input */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: theme.colors.text, marginBottom: 8 }]}
+              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               Why is this contact risky? (Optional)
             </Text>
@@ -376,7 +376,7 @@ export function AddRiskyContactModal({
               value={notes as string | undefined}
               onChangeText={setNotes as (text: string | undefined) => void}
               placeholder="e.g., Always calls when I'm vulnerable..."
-              placeholderTextColor={theme.colors.textSecondary}
+              placeholderTextColor={ds.semantic.text.secondary}
               multiline
               numberOfLines={4}
               style={[
@@ -385,8 +385,8 @@ export function AddRiskyContactModal({
                 theme.typography.body,
                 {
                   backgroundColor: theme.colors.surface,
-                  color: theme.colors.text,
-                  borderColor: theme.colors.border,
+                  color: ds.semantic.text.primary,
+                  borderColor: ds.colors.borderDefault,
                 },
               ]}
               accessibilityLabel="Notes"
@@ -400,7 +400,7 @@ export function AddRiskyContactModal({
         <View
           style={[
             styles.footer,
-            { borderTopColor: theme.colors.border, backgroundColor: theme.colors.background },
+            { borderTopColor: ds.colors.borderDefault, backgroundColor: ds.semantic.surface.card },
           ]}
         >
           <Button

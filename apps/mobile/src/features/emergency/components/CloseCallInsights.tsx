@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, type StyleProp, type ViewStyle } from 'react-na
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { Card, useTheme } from '../../../design-system';
+import { useDs } from '../../../design-system/DsProvider';
 import type { CloseCallStats } from '../hooks';
 
 interface CloseCallInsightsProps {
@@ -18,6 +19,7 @@ interface CloseCallInsightsProps {
 
 export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): ReactElement {
   const theme = useTheme();
+  const ds = useDs();
 
   const resistanceRate =
     stats.totalCloseCalls > 0 ? Math.round((stats.timesResisted / stats.totalCloseCalls) * 100) : 0;
@@ -32,7 +34,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
         <Text
           style={[
             theme.typography.h3,
-            { color: theme.colors.text, marginBottom: theme.spacing.md },
+            { color: ds.semantic.text.primary, marginBottom: theme.spacing.md },
           ]}
           accessibilityRole="header"
         >
@@ -48,10 +50,10 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             >
               <MaterialCommunityIcons name="alert-circle" size={28} color={theme.colors.warning} />
             </View>
-            <Text style={[theme.typography.h1, { color: theme.colors.text, marginTop: 8 }]}>
+            <Text style={[theme.typography.h1, { color: ds.semantic.text.primary, marginTop: 8 }]}>
               {stats.totalCloseCalls}
             </Text>
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+            <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
               Close Calls
             </Text>
           </View>
@@ -66,7 +68,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             <Text style={[theme.typography.h1, { color: theme.colors.success, marginTop: 8 }]}>
               {stats.timesResisted}
             </Text>
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+            <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
               Times Resisted
             </Text>
           </View>
@@ -78,13 +80,13 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             style={[
               styles.resistanceBar,
               {
-                backgroundColor: theme.colors.background,
+                backgroundColor: ds.semantic.surface.card,
                 marginTop: theme.spacing.md,
               },
             ]}
           >
             <View style={styles.resistanceBarHeader}>
-              <Text style={[theme.typography.labelLarge, { color: theme.colors.text }]}>
+              <Text style={[theme.typography.labelLarge, { color: ds.semantic.text.primary }]}>
                 Resistance Rate
               </Text>
               <Text
@@ -93,7 +95,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 {resistanceRate}%
               </Text>
             </View>
-            <View style={[styles.progressBarContainer, { backgroundColor: theme.colors.border }]}>
+            <View style={[styles.progressBarContainer, { backgroundColor: ds.colors.borderDefault }]}>
               <View
                 style={[
                   styles.progressBarFill,
@@ -108,7 +110,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
               style={[
                 theme.typography.caption,
                 {
-                  color: theme.colors.textSecondary,
+                  color: ds.semantic.text.secondary,
                   marginTop: 4,
                   textAlign: 'center',
                 },
@@ -129,11 +131,11 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 color={theme.colors.primary}
                 style={{ marginRight: 8 }}
               />
-              <Text style={[theme.typography.body, { color: theme.colors.text }]}>
+              <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
                 Last Close Call
               </Text>
             </View>
-            <Text style={[theme.typography.bodyBold, { color: theme.colors.textSecondary }]}>
+            <Text style={[theme.typography.bodyBold, { color: ds.semantic.text.secondary }]}>
               {lastCloseCallText}
             </Text>
           </View>
@@ -147,11 +149,11 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                   color={theme.colors.warning}
                   style={{ marginRight: 8 }}
                 />
-                <Text style={[theme.typography.body, { color: theme.colors.text }]}>
+                <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
                   Longest Streak
                 </Text>
               </View>
-              <Text style={[theme.typography.bodyBold, { color: theme.colors.textSecondary }]}>
+              <Text style={[theme.typography.bodyBold, { color: ds.semantic.text.secondary }]}>
                 {stats.longestStreakDays} {stats.longestStreakDays === 1 ? 'day' : 'days'}
               </Text>
             </View>
@@ -163,14 +165,14 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 <MaterialCommunityIcons
                   name="information"
                   size={20}
-                  color={theme.colors.textSecondary}
+                  color={ds.semantic.text.secondary}
                   style={{ marginRight: 8 }}
                 />
-                <Text style={[theme.typography.body, { color: theme.colors.text }]}>
+                <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
                   Times Proceeded
                 </Text>
               </View>
-              <Text style={[theme.typography.bodyBold, { color: theme.colors.textSecondary }]}>
+              <Text style={[theme.typography.bodyBold, { color: ds.semantic.text.secondary }]}>
                 {stats.timesProceeded}
               </Text>
             </View>
