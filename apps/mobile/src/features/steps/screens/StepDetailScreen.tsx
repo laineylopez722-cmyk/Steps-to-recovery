@@ -10,5 +10,5 @@ export function StepDetailScreen(): React.ReactElement {
     return <StepDetailErrorState />;
   }
 
-  return <StepDetailScreenContent {...content} />;
+  return <StepDetailScreenContent content={content} />;
 }

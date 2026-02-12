@@ -5,52 +5,34 @@ import { Toast } from '../../../design-system';
 import { StepDetailLoadingState } from './StepDetailLoadingState';
 import { StepLockedState } from './StepLockedState';
 import { StepDetailMainContent } from './StepDetailMainContent';
-import type { StepDetailToastProps } from '../hooks/useStepDetailToastState';
-
-type StepDetailContentState = 'locked' | 'loading' | 'ready';
-
-type StepDetailMainContentProps = React.ComponentProps<typeof StepDetailMainContent>;
+import type { StepDetailScreenContentModel } from '../hooks/useStepDetailContentPayload';
 
 interface StepDetailScreenContentProps {
-  state: StepDetailContentState;
-  backgroundColor: string;
-  stepNumber: number;
-  onBackToStepOne: () => void;
-  onBackToSteps: () => void;
-  toastProps: StepDetailToastProps;
-  mainContentProps: StepDetailMainContentProps;
+  content: StepDetailScreenContentModel;
 }
 
-export function StepDetailScreenContent({
-  state,
-  backgroundColor,
-  stepNumber,
-  onBackToStepOne,
-  onBackToSteps,
-  toastProps,
-  mainContentProps,
-}: StepDetailScreenContentProps): React.ReactElement {
-  if (state === 'loading') {
+export function StepDetailScreenContent({ content }: StepDetailScreenContentProps): React.ReactElement {
+  if (content.state === 'loading') {
     return <StepDetailLoadingState />;
   }
 
-  if (state === 'locked') {
+  if (content.state === 'locked') {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
+      <SafeAreaView style={[styles.container, { backgroundColor: content.backgroundColor }]} edges={['bottom']}>
         <StepLockedState
-          stepNumber={stepNumber}
-          onBackToStepOne={onBackToStepOne}
-          onBackToSteps={onBackToSteps}
+          stepNumber={content.stepNumber}
+          onBackToStepOne={content.onBackToStepOne}
+          onBackToSteps={content.onBackToSteps}
         />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom']}>
-      <Toast {...toastProps} />
+    <SafeAreaView style={[styles.container, { backgroundColor: content.backgroundColor }]} edges={['bottom']}>
+      <Toast {...content.toastProps} />
 
-      <StepDetailMainContent {...mainContentProps} />
+      <StepDetailMainContent {...content.mainContentProps} />
     </SafeAreaView>
   );
 }
