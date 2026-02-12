@@ -1,215 +1,130 @@
 # Steps to Recovery
 
-[![Tests](https://img.shields.io/badge/tests-200%2B%20passing-brightgreen)]()
-[![Coverage](https://img.shields.io/badge/coverage-75%25%2B-brightgreen)]()
-[![License](https://img.shields.io/badge/license-MIT-blue)]()
+Privacy-first 12-step recovery companion built with React Native + Expo.
 
-A privacy-first 12-Step Recovery Companion mobile application built with React Native and Expo.
+## Mission
 
-## 🎯 Mission
+Support people in recovery with practical daily tools, strong privacy defaults, and a calm, non-judgmental experience.
 
-To provide a secure, supportive digital companion for individuals in recovery, emphasizing privacy, offline-first functionality, and meaningful connections with sponsors.
+## Current Status
 
-## ✨ Core Features
+- ✅ Core mobile app shipped and actively iterating
+- ✅ AI Companion, journaling, step work, and check-ins are live
+- ✅ Crisis and safety features are implemented
+- 🚧 Beta polish and release hardening in progress
 
-### Privacy-First Design
+See `docs/STATUS_REPORT.md` for latest release readiness detail.
 
-- **End-to-end encryption** for all journal entries
-- **Offline-first** architecture with SQLite
-- **No third-party trackers** or analytics without consent
-- **Row-Level Security** on all cloud data
+## Feature Highlights
 
-### Recovery Tools
+### Privacy + Security
 
-- 📔 **Encrypted Personal Journal** - Daily reflections with mood tracking
-- 📝 **12-Step Work Tracker** - Guided forms for each step
-- 🤝 **Sponsor Connection** - Secure sharing with your sponsor
-- 📍 **Meeting Finder** - Location-based meeting discovery
-- 🔥 **Sobriety Tracker** - Track milestones and celebrate progress
-- 🔔 **Smart Notifications** - Just-in-time support and reminders
-- 🤖 **AI Companion** - Local-first AI support
+- Local-first architecture with encrypted on-device storage
+- Secure cloud sync with Supabase + Row Level Security
+- Sensitive user data encrypted before persistence/sync paths
+- No ad-tech or third-party tracking stack in core flows
 
-### User Experience
+### Recovery Toolkit
 
-- **Mobile-first** design for iOS and Android
-- **Calming, empathetic** UI with supportive messaging
-- **Gamification** for motivation (without pressure)
-- **Accessibility** support (screen readers, font scaling)
+- Encrypted personal journal
+- Guided 12-step work tracking
+- Daily check-ins and progress tracking
+- Sponsor support flows
+- Meeting tools and reflections
+- Sobriety streak and milestone tracking
+- Gratitude and inventory workflows
+- Daily readings
 
-## 🏗️ Tech Stack
+### Immediate Support
 
-- **Frontend**: React Native + Expo (TypeScript)
-- **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Offline Storage**: SQLite with encryption
-- **State Management**: React Query + Zustand
-- **Navigation**: React Navigation
-- **Monorepo**: Turborepo
+- AI Companion with recovery-focused context
+- Crisis detection + support surfaces
+- Safety plan and emergency support flows
+- Local/push reminders and nudges
 
-## 📁 Project Structure
+## Tech Stack
 
-```
+- **Mobile:** React Native 0.81 + Expo SDK 54
+- **Language:** TypeScript (strict)
+- **Backend:** Supabase (Auth, Postgres, RLS, Edge Functions)
+- **Local Data:** SQLite + secure storage
+- **State:** React Query + Zustand
+- **Styling/UI:** Uniwind + custom design system
+- **Monorepo:** npm workspaces + Turborepo
+
+## Project Structure
+
+```text
 apps/
-  mobile/           # Expo React Native app
+  mobile/               # Expo app
     src/
-      features/     # Feature-based modules
-      components/   # Shared UI components
-      contexts/     # React contexts
-      utils/        # Utilities (encryption, etc.)
-      design-system/# Design tokens & components
-    .maestro/       # E2E test flows
+      features/         # Domain features (ai-companion, crisis, journal, steps, etc.)
+      design-system/    # Shared design tokens/components
+      db/               # Local database + repositories
+      services/         # Sync, notifications, integrations
 packages/
-  shared/           # Shared types and utilities
+  shared/               # Shared types/utilities
+supabase/
+  functions/            # Edge functions (including ai-chat)
+  migrations/           # SQL migrations
+docs/                   # Product + engineering documentation
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-# Install dependencies
 npm install
-
-# Navigate to mobile app
 cd apps/mobile
-
-# Start development server
 npm start
 ```
 
-See [SETUP.md](./SETUP.md) for complete setup instructions.
-
-## 🧪 Testing
-
-### Unit Tests
+## Common Commands
 
 ```bash
-# Run all tests
-cd apps/mobile
-npm test
+# Type check
+npm run type-check --workspace=apps/mobile
 
-# Run with coverage
-npm run test:coverage
+# Test suite
+npm test --workspace=apps/mobile
 
-# Run encryption tests (critical)
-npm run test:encryption
+# Coverage
+npm run test:coverage --workspace=apps/mobile
+
+# E2E (Maestro)
+npm run e2e --workspace=apps/mobile
 ```
 
-**Current Coverage:**
-
-- Journal Hooks: 96% (37 tests)
-- Sync Service: 75% (28 tests)
-- Encryption: 94% (12 tests)
-- **Overall: 75%+**
-
-### E2E Tests
-
-```bash
-# Install Maestro
-curl -fsSL "https://get.maestro.mobile.dev" | bash
-
-# Run all E2E tests
-cd apps/mobile
-maestro test .maestro/flows/
-
-# Run specific flow
-maestro test .maestro/flows/onboarding.yaml
-```
-
-See [Maestro README](apps/mobile/.maestro/README.md) for details.
-
-## 📦 Building
-
-### Prerequisites
-
-- Expo account
-- EAS CLI: `npm install -g eas-cli`
-- Apple Developer account (for iOS)
-- Google Play Console account (for Android)
-
-### Environment Setup
-
-Create `apps/mobile/.env`:
-
-```bash
-EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-EXPO_PUBLIC_SENTRY_DSN=optional-sentry-dsn
-```
-
-### Development Build
+## Build
 
 ```bash
 cd apps/mobile
-eas build --profile development --platform ios
-eas build --profile development --platform android
-```
-
-### Production Build
-
-```bash
-cd apps/mobile
+eas build --profile preview --platform android
 eas build --profile production --platform all
-
-# Submit to stores
-eas submit --platform ios --latest
-eas submit --platform android --latest
 ```
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+See `SETUP.md` and `DEPLOYMENT.md` for full environment and release setup.
 
-## 📋 Development Roadmap
+## Documentation Index
 
-- ✅ **Phase 0**: Project scaffolding and setup
-- ✅ **Phase 1**: Core architecture & user authentication
-- ✅ **Phase 2**: Journaling & step work features
-- ✅ **Phase 3**: Sponsor connection & sharing
-- ✅ **Phase 4**: Notifications & AI companion
-- ⏳ **Phase 5**: Beta testing & polish
+- [Setup Guide](./SETUP.md)
+- [Testing Guide](./TESTING.md)
+- [Deployment Guide](./DEPLOYMENT.md)
+- [Status Report](./docs/STATUS_REPORT.md)
+- [AI Companion Architecture](./docs/AI-COMPANION-ARCHITECTURE.md)
+- [Risk Detection Feature](./docs/RISK-DETECTION-FEATURE.md)
+- [Privacy Policy](./docs/PRIVACY_POLICY.md)
+- [Terms of Service](./docs/TERMS_OF_SERVICE.md)
+- [Security Policy](./SECURITY.md)
 
-## 🔒 Privacy & Security
+## Support Resources
 
-This app is built with privacy as a fundamental principle:
+If you or someone you know is in immediate danger, call local emergency services first.
 
-- All sensitive data encrypted **before** leaving the device
-- Encryption keys stored in device secure storage (Keychain/Keystore)
-- Zero-knowledge architecture where possible
-- Supabase Row-Level Security enforced
-- No collection of personal data beyond what's necessary
-
-See [Privacy Policy](./docs/PRIVACY_POLICY.md) and [Security Policy](./SECURITY.md).
-
-## 📖 Documentation
-
-| Document                                                   | Description                     |
-| ---------------------------------------------------------- | ------------------------------- |
-| [Setup Guide](./SETUP.md)                                  | Complete setup and installation |
-| [Testing Guide](./TESTING.md)                              | Testing strategy and commands   |
-| [Deployment Guide](./DEPLOYMENT.md)                        | Build and release process       |
-| [Beta Release Checklist](./docs/BETA_RELEASE_CHECKLIST.md) | Pre-release verification        |
-| [Status Report](./docs/STATUS_REPORT.md)                   | Current project status          |
-| [Privacy Policy](./docs/PRIVACY_POLICY.md)                 | User privacy information        |
-| [Terms of Service](./docs/TERMS_OF_SERVICE.md)             | Legal terms                     |
-| [API & Data Model](./docs/API.md)                          | Technical documentation         |
-| [Troubleshooting](./TROUBLESHOOTING.md)                    | Common issues and fixes         |
-
-## 🤝 Contributing
-
-This is currently a solo-developed MVP. Contributions, suggestions, and feedback are welcome once the initial release is complete.
-
-- See [CONTRIBUTING.md](./CONTRIBUTING.md)
-- See [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
-
-## 📄 License
-
-MIT. See [LICENSE](./LICENSE).
-
-## 🆘 Support Resources
-
-If you or someone you know is struggling with addiction:
-
-- **SAMHSA National Helpline**: 1-800-662-4357
-- **Crisis Text Line**: Text HOME to 741741
-- **Alcoholics Anonymous**: https://www.aa.org
-- **Narcotics Anonymous**: https://www.na.org
+- SAMHSA National Helpline (US): 1-800-662-4357
+- Crisis Text Line (US/CA/UK/IE): Text HOME to 741741 (US/CA), 85258 (UK), 50808 (IE)
+- Alcoholics Anonymous: https://www.aa.org
+- Narcotics Anonymous: https://www.na.org
 
 ---
 
-**Note**: This app is a tool to support recovery, not a replacement for professional treatment, therapy, or human connection. Always seek professional help when needed.
+This app supports recovery. It is not a replacement for professional medical care, therapy, or emergency services.
