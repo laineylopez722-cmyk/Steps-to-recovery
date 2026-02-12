@@ -1,13 +1,9 @@
 import { useCurrentUserId } from './useCurrentUserId';
 import { useScreenBackgroundColor } from './useScreenBackgroundColor';
-import { useStepDetailData } from './useStepDetailData';
+import { useStepDetailMeta } from './useStepDetailMeta';
 import { useStepDetailNavigation } from './useStepDetailNavigation';
 import { useStepDetailRouteParams } from './useStepDetailRouteParams';
-
-type StepDetailDataParams = {
-  userId: string;
-  stepNumber: number;
-};
+import { useSaveStepAnswer, useStepWork } from './useStepWork';
 
 export function useStepDetailScreenSetup() {
   const navigation = useStepDetailNavigation();
@@ -15,13 +11,10 @@ export function useStepDetailScreenSetup() {
   const userId = useCurrentUserId();
   const backgroundColor = useScreenBackgroundColor();
 
-  const stepDetailDataParams: StepDetailDataParams = {
-    userId,
-    stepNumber,
-  };
-
-  const { stepData, isLocked, questions, isLoading, saveAnswer } =
-    useStepDetailData(stepDetailDataParams);
+  // Inlined from useStepDetailData
+  const { stepData, isLocked } = useStepDetailMeta(stepNumber);
+  const { questions, isLoading } = useStepWork(userId, stepNumber);
+  const { saveAnswer } = useSaveStepAnswer(userId);
 
   return {
     navigation,
