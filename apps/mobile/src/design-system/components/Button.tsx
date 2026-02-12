@@ -114,9 +114,10 @@ export function Button({
 
   const colors = getColors();
 
-  const handlePress = async (): Promise<void> => {
+  const handlePress = (): void => {
     if (!isDisabled) {
-      await hapticImpact('light');
+      // Fire-and-forget — never block onPress on haptic feedback
+      hapticImpact('light').catch(() => {});
     }
     onPress();
   };

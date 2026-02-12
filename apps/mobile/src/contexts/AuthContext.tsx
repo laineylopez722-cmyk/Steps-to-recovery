@@ -18,6 +18,7 @@ interface AuthState {
 interface AuthContextType extends AuthState {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
+  signInAnonymously: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   clearError: () => void;
@@ -178,6 +179,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const signInAnonymously = useCallback(async () => {
+    setState((prev) => ({ ...prev, loading: true, error: null }));
+    try {
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (error) throw error;
+
+      const session = data?.session;
+      if (session?.access_token && session?.user?.id) {
+        try {
+          await secureStorage.initializeWithSession(session.user.id, session.access_token);
+        } catch (storageError) {
+          logger.warn('Secure storage init failed during anonymous sign-in', storageError);
+        }
+
+        setSentryUser(session.user.id);
+        setState((prev) => ({
+          ...prev,
+          session: session,
+          user: session.user,
+          initialized: true,
+          error: null,
+        }));
+      }
+    } catch (error) {
+      setState((prev) => ({ ...prev, error: error as AuthError }));
+      throw error;
+    } finally {
+      setState((prev) => ({ ...prev, loading: false }));
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
@@ -212,11 +244,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...state,
       signIn,
       signUp,
+      signInAnonymously,
       signOut,
       resetPassword,
       clearError,
     }),
-    [state, signIn, signUp, signOut, resetPassword, clearError],
+    [state, signIn, signUp, signInAnonymously, signOut, resetPassword, clearError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

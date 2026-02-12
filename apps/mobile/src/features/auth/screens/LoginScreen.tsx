@@ -26,11 +26,12 @@ export function LoginScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [formError, setFormError] = useState<string | null>(null);
 
   const passwordRef = useRef<TextInput>(null);
-  const { signIn } = useAuth();
+  const { signIn, signInAnonymously } = useAuth();
 
   const validateForm = (): boolean => {
     const newErrors: { email?: string; password?: string } = {};
@@ -84,6 +85,22 @@ export function LoginScreen({ navigation }: Props) {
       setFormError(message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    setGuestLoading(true);
+    setFormError(null);
+    try {
+      await signInAnonymously();
+    } catch (error: unknown) {
+      let message = 'Could not continue as guest. Please try again.';
+      if (error && typeof error === 'object' && 'message' in error) {
+        message = String(error.message);
+      }
+      setFormError(message);
+    } finally {
+      setGuestLoading(false);
     }
   };
 
@@ -180,6 +197,15 @@ export function LoginScreen({ navigation }: Props) {
               onPress={handleLogin}
               loading={loading}
               testID="login-submit-button"
+            />
+
+            <Button
+              title={guestLoading ? 'Setting up...' : 'Continue Without Account'}
+              onPress={handleGuestLogin}
+              variant="outline"
+              loading={guestLoading}
+              disabled={loading}
+              testID="login-guest-button"
             />
 
             <TouchableOpacity
