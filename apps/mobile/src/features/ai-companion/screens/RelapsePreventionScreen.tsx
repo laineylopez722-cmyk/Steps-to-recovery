@@ -265,8 +265,8 @@ const createStyles = (ds: DS) =>
       paddingVertical: ds.space[2],
     },
     backBtn: {
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
@@ -336,8 +336,8 @@ const createStyles = (ds: DS) =>
       marginRight: ds.space[2],
     },
     addBtn: {
-      width: 40,
-      height: 40,
+      width: 48,
+      height: 48,
       borderRadius: ds.radius.full,
       backgroundColor: ds.colors.accent,
       justifyContent: 'center' as const,

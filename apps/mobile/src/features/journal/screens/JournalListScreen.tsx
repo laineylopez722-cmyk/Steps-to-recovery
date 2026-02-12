@@ -365,8 +365,8 @@ const createStyles = (ds: DS) =>
       paddingBottom: ds.space[2],
     },
     backBtn: {
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -389,8 +389,8 @@ const createStyles = (ds: DS) =>
       borderColor: ds.colors.borderSubtle,
     },
     actionBtn: {
-      width: 36,
-      height: 28,
+      minWidth: 48,
+      minHeight: 48,
       justifyContent: 'center',
       alignItems: 'center',
     },

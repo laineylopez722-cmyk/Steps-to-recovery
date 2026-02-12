@@ -72,6 +72,10 @@ jest.mock('../../../../utils/logger', () => ({
   },
 }));
 
+jest.mock('../../../../services/syncService', () => ({
+  addToSyncQueue: jest.fn(),
+}));
+
 // Import hook after mocking
 import { useAIChat } from '../useAIChat';
 import { logger as mockLogger } from '../../../../utils/logger';

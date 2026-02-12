@@ -70,6 +70,8 @@ export type ProfileStackParamList = {
   AISettings: undefined;
   SecuritySettings: undefined;
   WidgetSettings: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
 };
 
 // Meetings Stack

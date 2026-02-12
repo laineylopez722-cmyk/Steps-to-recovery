@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { AppState, Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
-import { processSyncQueue } from '../services/syncService';
+import { processSyncQueue, pullFromCloud } from '../services/syncService';
 import { useAuth } from './AuthContext';
 import { useDatabase } from './DatabaseContext';
 import { clearDatabase } from '../utils/database';
@@ -136,19 +136,27 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
     isSyncingRef.current = true;
 
     try {
-      logger.info('Starting sync process');
+      // Phase 1: Push local changes to cloud
+      logger.info('Starting sync process (push)');
       const result = await processSyncQueue(db, user.id);
 
+      // Phase 2: Pull remote changes to device
+      logger.info('Starting sync process (pull)');
+      const pullResult = await pullFromCloud(db, user.id);
+
       logger.info('Sync complete', {
-        synced: result.synced,
-        failed: result.failed,
+        pushed: result.synced,
+        pushFailed: result.failed,
+        pulled: pullResult.pulled,
+        pullErrors: pullResult.errors.length,
       });
 
+      const allErrors = [...result.errors, ...pullResult.errors];
       setState((prev) => ({
         ...prev,
         isSyncing: false,
         lastSyncTime: new Date(),
-        error: result.errors.length > 0 ? new Error(result.errors.join(', ')) : null,
+        error: allErrors.length > 0 ? new Error(allErrors.join(', ')) : null,
       }));
       isSyncingRef.current = false;
       lastSyncTimeRef.current = Date.now();

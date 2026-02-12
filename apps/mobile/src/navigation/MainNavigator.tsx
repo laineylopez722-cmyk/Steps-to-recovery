@@ -17,6 +17,8 @@ import { ProfileScreen } from '../features/profile/screens/ProfileScreen';
 import { NotificationSettingsScreen } from '../features/settings/screens/NotificationSettingsScreen';
 import { SecuritySettingsScreen } from '../features/settings/screens/SecuritySettingsScreen';
 import { WidgetSettingsScreen } from '../features/settings/screens/WidgetSettingsScreen';
+import { PrivacyPolicyScreen } from '../features/settings/screens/PrivacyPolicyScreen';
+import { TermsOfServiceScreen } from '../features/settings/screens/TermsOfServiceScreen';
 import { SponsorScreen } from '../features/sponsor/screens/SponsorScreen';
 import { InviteSponsorScreen } from '../features/sponsor/screens/InviteSponsorScreen';
 import { SharedEntriesScreen } from '../features/sponsor/screens/SharedEntriesScreen';
@@ -338,6 +340,16 @@ function ProfileStackNavigator(): React.ReactElement {
         name="WidgetSettings"
         component={WidgetSettingsScreen}
         options={{ title: 'Home Screen Widget', headerBackTitle: 'Back' }}
+      />
+      <ProfileStack.Screen
+        name="PrivacyPolicy"
+        component={PrivacyPolicyScreen}
+        options={{ title: 'Privacy Policy', headerBackTitle: 'Back' }}
+      />
+      <ProfileStack.Screen
+        name="TermsOfService"
+        component={TermsOfServiceScreen}
+        options={{ title: 'Terms of Service', headerBackTitle: 'Back' }}
       />
     </ProfileStack.Navigator>
   );

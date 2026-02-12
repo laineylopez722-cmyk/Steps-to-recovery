@@ -22,6 +22,8 @@ import { useMemoryStore } from '../../../hooks/useMemoryStore';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
+import { addToSyncQueue } from '../../../services/syncService';
+import type { StorageAdapter } from '../../../adapters/storage';
 import type { Message, Conversation, ConversationType, CrisisSignal } from '../types';
 
 export interface UseAIChatOptions {
@@ -678,7 +680,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
  * Store extracted semantic memories into the ai_memories table (encrypted)
  */
 async function storeSemanticMemories(
-  db: { runAsync: (sql: string, params: unknown[]) => Promise<void> },
+  db: StorageAdapter,
   memories: ExtractedSemanticMemory[],
   userId: string,
   conversationId: string,
@@ -705,5 +707,6 @@ async function storeSemanticMemories(
         now,
       ],
     );
+    await addToSyncQueue(db, 'ai_memories', id, 'insert');
   }
 }

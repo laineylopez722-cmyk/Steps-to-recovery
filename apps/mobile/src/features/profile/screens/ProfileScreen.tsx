@@ -219,6 +219,24 @@ export function ProfileScreen(): React.ReactElement {
               />
             </CardGroup>
 
+            {/* Legal Section */}
+            <SectionHeader title="Legal" delay={250} />
+            <CardGroup delay={300}>
+              <ListItem
+                icon="file-text"
+                title="Privacy Policy"
+                subtitle="How we protect your data"
+                onPress={() => navigation.navigate('PrivacyPolicy')}
+              />
+              <ListItem
+                icon="book-open"
+                title="Terms of Service"
+                subtitle="Usage terms and conditions"
+                onPress={() => navigation.navigate('TermsOfService')}
+                isLast
+              />
+            </CardGroup>
+
             {/* Privacy Banner */}
             <Animated.View entering={MotionTransitions.cardEnter(5)} style={styles.privacyBanner}>
               <View style={styles.privacyIcon}>

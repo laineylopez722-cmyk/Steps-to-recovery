@@ -1,9 +1,10 @@
 /**
- * Craving Chart - View-based sparkline chart for craving data (0-10 scale)
+ * Craving Chart - Hybrid bar + SVG line chart for craving data (0-10 scale)
  * Color inverse: 0=green (no craving) to 10=red (intense)
+ * Includes smooth trend line with gradient area fill.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
@@ -12,6 +13,7 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
+import { SvgLineChart, type DataPoint } from '../../../components/charts/SvgLineChart';
 import type { MoodDataPoint } from '../hooks/useMoodTrends';
 
 interface CravingChartProps {
@@ -21,12 +23,20 @@ interface CravingChartProps {
 }
 
 function getCravingColor(craving: number): string {
-  // 0 = green, 5 = yellow, 10 = red
   if (craving <= 2) return ds.palette.sageGreen;
   if (craving <= 4) return ds.colors.success;
   if (craving <= 6) return ds.palette.amberLight;
   if (craving <= 8) return ds.palette.orange;
   return ds.colors.error;
+}
+
+function computeCravingRollingAvg(data: MoodDataPoint[], window: number): number[] {
+  if (data.length === 0) return [];
+  return data.map((_, i) => {
+    const start = Math.max(0, i - window + 1);
+    const slice = data.slice(start, i + 1);
+    return slice.reduce((sum, p) => sum + p.craving, 0) / slice.length;
+  });
 }
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -49,8 +59,23 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
   const trendLabel =
     trend === 'decreasing' ? 'improving' : trend === 'increasing' ? 'worsening' : 'stable';
 
-  const chartHeight = 80;
+  const chartHeight = 100;
+  const barChartHeight = 80;
+  const chartWidth = screenWidth - 80;
   const barWidth = Math.max(4, (screenWidth - 120) / Math.max(data.length, 1) - 2);
+
+  const lineData = useMemo((): DataPoint[] => {
+    return data.map((p) => ({
+      label: p.date.slice(5),
+      value: p.craving,
+    }));
+  }, [data]);
+
+  const rollingAvg = useMemo(() => computeCravingRollingAvg(data, 3), [data]);
+
+  // For cravings, lower is better - use inverse color logic
+  const trendLineColor =
+    trend === 'decreasing' ? ds.colors.success : trend === 'increasing' ? ds.colors.error : ds.palette.amberLight;
 
   const accessibilityDescription =
     data.length > 0
@@ -83,12 +108,34 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
       {/* Chart */}
       {data.length > 0 ? (
         <>
+          {/* SVG Line Chart overlay */}
+          {data.length >= 3 && (
+            <View style={styles.lineChartContainer}>
+              <SvgLineChart
+                data={lineData}
+                width={chartWidth}
+                height={chartHeight}
+                maxValue={10}
+                minValue={0}
+                lineColor={trendLineColor}
+                gradientFrom={trendLineColor}
+                showDots={data.length <= 30}
+                dotRadius={data.length <= 14 ? 3 : 2}
+                rollingAverage={rollingAvg}
+                rollingAverageColor={ds.palette.amberLight}
+                labelColor={theme.colors.textSecondary}
+              />
+            </View>
+          )}
+
+          {/* Bar chart (collapsed when line chart is shown) */}
           <View
-            style={[styles.chartContainer, { height: chartHeight }]}
+            style={[styles.chartContainer, { height: data.length < 3 ? barChartHeight : 40 }]}
             accessibilityLabel={`Bar chart with ${data.length} days of craving data`}
           >
             {data.map((point, index) => {
-              const barHeight = (point.craving / 10) * chartHeight;
+              const maxBarH = data.length < 3 ? barChartHeight : 40;
+              const barHeight = (point.craving / 10) * maxBarH;
               const color = getCravingColor(point.craving);
               return (
                 <Animated.View
@@ -100,11 +147,8 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
                       width: barWidth,
                       height: Math.max(2, barHeight),
                       backgroundColor: color,
-                      opacity: 0.3 + (point.craving / 10) * 0.7,
-                      shadowColor: color,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: (point.craving / 10) * 0.4,
-                      shadowRadius: 3,
+                      opacity: data.length < 3 ? 0.3 + (point.craving / 10) * 0.7 : 0.25,
+                      borderRadius: 3,
                     },
                   ]}
                 />
@@ -168,6 +212,10 @@ const createStyles = (ds: DS) => ({
     alignItems: 'flex-end' as const,
     justifyContent: 'space-evenly' as const,
     paddingHorizontal: 8,
+  },
+  lineChartContainer: {
+    alignItems: 'center' as const,
+    marginBottom: 8,
   },
   bar: {
     borderRadius: 2,

@@ -272,8 +272,8 @@ const createStyles = (ds: DS) =>
       paddingVertical: ds.space[2],
     },
     backBtn: {
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
@@ -282,7 +282,7 @@ const createStyles = (ds: DS) =>
       fontWeight: '600' as const,
       color: ds.colors.textPrimary,
     },
-    headerSpacer: { width: 44 },
+    headerSpacer: { width: 48 },
 
     progressTrack: {
       height: 4,

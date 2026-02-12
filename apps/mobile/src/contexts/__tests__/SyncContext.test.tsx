@@ -15,6 +15,7 @@ import { AppState } from 'react-native';
 
 // Must mock modules before importing the component
 const mockProcessSyncQueue = jest.fn();
+const mockPullFromCloud = jest.fn();
 const mockClearDatabase = jest.fn();
 
 // Mock NetInfo
@@ -36,6 +37,7 @@ jest.mock('@react-native-community/netinfo', () => ({
 
 jest.mock('../../services/syncService', () => ({
   processSyncQueue: (...args: unknown[]) => mockProcessSyncQueue(...args),
+  pullFromCloud: (...args: unknown[]) => mockPullFromCloud(...args),
 }));
 
 jest.mock('../../utils/database', () => ({
@@ -101,6 +103,10 @@ describe('SyncContext', () => {
     mockProcessSyncQueue.mockResolvedValue({
       synced: 0,
       failed: 0,
+      errors: [],
+    });
+    mockPullFromCloud.mockResolvedValue({
+      pulled: 0,
       errors: [],
     });
     mockClearDatabase.mockResolvedValue(undefined);

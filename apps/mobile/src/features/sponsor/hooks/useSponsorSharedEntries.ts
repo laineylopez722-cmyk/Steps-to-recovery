@@ -3,6 +3,7 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 import { generateId } from '../../../utils/id';
+import { addToSyncQueue } from '../../../services/syncService';
 import {
   createEntrySharePayload,
   createCommentSharePayload,
@@ -129,12 +130,14 @@ export function useSponsorSharedEntries(userId: string) {
           createdAt: now,
         });
 
+        const shareId = generateId('share');
         await db.runAsync(
           `INSERT INTO sponsor_shared_entries (
             id, user_id, connection_id, direction, journal_entry_id, payload, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [generateId('share'), userId, connectionId, 'outgoing', entry.id, payload, now, now],
+          [shareId, userId, connectionId, 'outgoing', entry.id, payload, now, now],
         );
+        await addToSyncQueue(db, 'sponsor_shared_entries', shareId, 'insert');
 
         payloads.push(payload);
       }
@@ -175,12 +178,14 @@ export function useSponsorSharedEntries(userId: string) {
         createdAt: now,
       });
 
+      const commentId = generateId('comment');
       await db.runAsync(
         `INSERT INTO sponsor_shared_entries (
           id, user_id, connection_id, direction, journal_entry_id, payload, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [generateId('comment'), userId, connectionId, 'comment', entryId, payload, now, now],
+        [commentId, userId, connectionId, 'comment', entryId, payload, now, now],
       );
+      await addToSyncQueue(db, 'sponsor_shared_entries', commentId, 'insert');
 
       return payload;
     },
@@ -237,12 +242,13 @@ export function useSponsorSharedEntries(userId: string) {
 
         const now = new Date().toISOString();
         const direction = entryPayload ? 'incoming' : 'comment';
+        const importId = generateId(direction === 'incoming' ? 'incoming' : 'comment');
         await db.runAsync(
           `INSERT INTO sponsor_shared_entries (
             id, user_id, connection_id, direction, journal_entry_id, payload, created_at, updated_at
           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
-            generateId(direction === 'incoming' ? 'incoming' : 'comment'),
+            importId,
             userId,
             connection.id,
             direction,
@@ -252,6 +258,7 @@ export function useSponsorSharedEntries(userId: string) {
             now,
           ],
         );
+        await addToSyncQueue(db, 'sponsor_shared_entries', importId, 'insert');
 
         if (entryPayload) {
           entries += 1;

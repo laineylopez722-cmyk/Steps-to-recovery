@@ -16,6 +16,7 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useSponsorConnections } from '../hooks/useSponsorConnections';
 import { generateId } from '../../../utils/id';
 import { logger } from '../../../utils/logger';
+import { addToSyncQueue } from '../../../services/syncService';
 import { parseCommentSharePayload } from '@recovery/shared';
 import { Text } from 'react-native';
 
@@ -171,13 +172,14 @@ export function SponsorScreen(): React.ReactElement {
       }
 
       const now = new Date().toISOString();
+      const shareId = generateId('share');
       await db.runAsync(
         `INSERT INTO sponsor_shared_entries (
           id, user_id, connection_id, direction, journal_entry_id,
           payload, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          generateId('share'),
+          shareId,
           userId,
           connection.id,
           'comment',
@@ -187,6 +189,7 @@ export function SponsorScreen(): React.ReactElement {
           now,
         ],
       );
+      await addToSyncQueue(db, 'sponsor_shared_entries', shareId, 'insert');
 
       setCommentPayloadInput('');
       setCommentImportVisible(false);

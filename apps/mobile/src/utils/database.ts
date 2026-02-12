@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 18;
+const CURRENT_SCHEMA_VERSION = 19;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -947,6 +947,47 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 
     await recordMigration(db, 18);
     logger.info('Migration v18 completed');
+  }
+
+  // Migration version 19: Add sync columns to achievements and ai_memories
+  if (currentVersion < 19) {
+    logger.info('Running migration v19: Adding sync columns to achievements and ai_memories');
+
+    const v19Migrations: Array<{ table: string; column: string; sql: string }> = [
+      {
+        table: 'achievements',
+        column: 'sync_status',
+        sql: `ALTER TABLE achievements ADD COLUMN sync_status TEXT DEFAULT 'pending'`,
+      },
+      {
+        table: 'achievements',
+        column: 'supabase_id',
+        sql: `ALTER TABLE achievements ADD COLUMN supabase_id TEXT`,
+      },
+      {
+        table: 'ai_memories',
+        column: 'sync_status',
+        sql: `ALTER TABLE ai_memories ADD COLUMN sync_status TEXT DEFAULT 'pending'`,
+      },
+      {
+        table: 'ai_memories',
+        column: 'supabase_id',
+        sql: `ALTER TABLE ai_memories ADD COLUMN supabase_id TEXT`,
+      },
+    ];
+
+    for (const migration of v19Migrations) {
+      try {
+        if (!(await columnExists(db, migration.table, migration.column))) {
+          await db.execAsync(migration.sql);
+        }
+      } catch (error) {
+        logger.warn(`Migration v19: Failed to add ${migration.table}.${migration.column}`, error);
+      }
+    }
+
+    await recordMigration(db, 19);
+    logger.info('Migration v19 completed');
   }
 
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });

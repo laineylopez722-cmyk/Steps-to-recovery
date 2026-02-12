@@ -459,9 +459,9 @@ const createStyles = (_ds: DS) =>
       marginBottom: 16,
     },
     addButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 48,
+      height: 48,
+      borderRadius: 24,
       justifyContent: 'center',
       alignItems: 'center',
     },

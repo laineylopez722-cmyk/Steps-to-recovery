@@ -38,6 +38,7 @@ import { useDs } from '../../../design-system/DsProvider';
 import type { HomeStackParamList } from '../../../navigation/types';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { UpcomingMilestones } from '../components/UpcomingMilestones';
+import { useAppReview } from '../../../hooks/useAppReview';
 
 interface HomeScreenProps {
   userId: string;
@@ -278,6 +279,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     refetch: refetchCheckins,
   } = useTodayCheckIns(userId);
   const { newMilestone, checkForNewMilestones } = useMilestones(userId);
+  const { checkMilestoneReview } = useAppReview();
 
   const [refreshing, setRefreshing] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
@@ -306,7 +308,11 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
   const handleCloseMilestone = useCallback((): void => {
     setShowMilestone(false);
-  }, []);
+    // Prompt for app review after celebrating a milestone
+    if (days > 0) {
+      checkMilestoneReview(days).catch(() => {});
+    }
+  }, [days, checkMilestoneReview]);
 
   const hapticLight = () => {
     impactAsync(ImpactFeedbackStyle.Light).catch(() => {});

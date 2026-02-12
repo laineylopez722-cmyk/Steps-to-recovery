@@ -382,8 +382,8 @@ const createStyles = (ds: DS) =>
       paddingBottom: ds.space[3],
     },
     backBtn: {
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
@@ -404,8 +404,8 @@ const createStyles = (ds: DS) =>
       gap: ds.space[1],
     },
     actionBtn: {
-      width: 36,
-      height: 28,
+      minWidth: 48,
+      minHeight: 48,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },

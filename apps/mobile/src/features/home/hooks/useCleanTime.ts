@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { logger } from '../../../utils/logger';
+import { addToSyncQueue } from '../../../services/syncService';
 import { scheduleAllMilestones } from '../../../services/notificationService';
 import { generateId } from '../../../utils/id';
 import type { UserProfile, MilestoneDefinition as Milestone } from '@recovery/shared';
@@ -237,6 +238,7 @@ export function useMilestones(userId: string): {
           'INSERT INTO achievements (id, user_id, achievement_key, achievement_type, earned_at, is_viewed) VALUES (?, ?, ?, ?, ?, ?)',
           [id, userId, milestone.key, 'milestone', now, 0],
         );
+        await addToSyncQueue(db, 'achievements', id, 'insert');
 
         logger.info('Milestone earned', { key: milestone.key, days: milestone.days });
 

@@ -27,6 +27,14 @@ import { logger } from '../utils/logger';
 import { decryptContent } from '../utils/encryption';
 
 /**
+ * Pull sync result for tracking cloud→device sync
+ */
+export interface PullSyncResult {
+  pulled: number;
+  errors: string[];
+}
+
+/**
  * Mutex to prevent concurrent sync operations
  *
  * Ensures only one sync runs at a time to avoid race conditions
@@ -266,6 +274,37 @@ interface LocalSponsorSharedEntry {
   direction: 'outgoing' | 'incoming' | 'comment';
   journal_entry_id: string | null;
   payload: string;
+  created_at: string;
+  updated_at: string;
+  sync_status: string;
+  supabase_id: string | null;
+}
+
+/**
+ * Achievement from local SQLite
+ */
+interface LocalAchievement {
+  id: string;
+  user_id: string;
+  achievement_key: string;
+  achievement_type: string;
+  earned_at: string;
+  is_viewed: number;
+  sync_status: string;
+  supabase_id: string | null;
+}
+
+/**
+ * AI memory from local SQLite
+ */
+interface LocalAIMemory {
+  id: string;
+  user_id: string;
+  type: string;
+  encrypted_content: string;
+  confidence: number;
+  encrypted_context: string | null;
+  source_conversation_id: string | null;
   created_at: string;
   updated_at: string;
   sync_status: string;
@@ -882,6 +921,128 @@ export async function syncSponsorSharedEntry(
 }
 
 /**
+ * Sync a single achievement to Supabase
+ */
+export async function syncAchievement(
+  db: StorageAdapter,
+  achievementId: string,
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const achievement = await db.getFirstAsync<LocalAchievement>(
+      'SELECT * FROM achievements WHERE id = ? AND user_id = ?',
+      [achievementId, userId],
+    );
+
+    if (!achievement) {
+      return { success: false, error: 'Achievement not found' };
+    }
+
+    const supabaseId = achievement.supabase_id || generateUUID();
+
+    const supabaseData = {
+      id: supabaseId,
+      user_id: userId,
+      achievement_key: achievement.achievement_key,
+      achievement_type: achievement.achievement_type,
+      earned_at: achievement.earned_at,
+      is_viewed: achievement.is_viewed === 1,
+    };
+
+    const response = await withTimeout(
+      Promise.resolve(
+        supabase.from('achievements').upsert(supabaseData, {
+          onConflict: 'id',
+        }),
+      ),
+      NETWORK_TIMEOUT_MS,
+      'Achievement upsert',
+    );
+    const supabaseError = (response as { error: { message: string } | null }).error;
+
+    if (supabaseError) {
+      logger.error('Supabase upsert failed for achievement', supabaseError);
+      return { success: false, error: supabaseError.message };
+    }
+
+    await db.runAsync(
+      `UPDATE achievements SET supabase_id = ?, sync_status = 'synced' WHERE id = ?`,
+      [supabaseId, achievementId],
+    );
+
+    logger.info('Achievement synced successfully', { achievementId, supabaseId });
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Failed to sync achievement', { achievementId, error });
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
+ * Sync a single AI memory to Supabase
+ * Data is already encrypted locally, so it's sent as-is.
+ */
+export async function syncAIMemory(
+  db: StorageAdapter,
+  memoryId: string,
+  userId: string,
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const memory = await db.getFirstAsync<LocalAIMemory>(
+      'SELECT * FROM ai_memories WHERE id = ? AND user_id = ?',
+      [memoryId, userId],
+    );
+
+    if (!memory) {
+      return { success: false, error: 'AI memory not found' };
+    }
+
+    const supabaseId = memory.supabase_id || generateUUID();
+
+    const supabaseData = {
+      id: supabaseId,
+      user_id: userId,
+      type: memory.type,
+      encrypted_content: memory.encrypted_content,
+      confidence: memory.confidence,
+      encrypted_context: memory.encrypted_context,
+      source_conversation_id: memory.source_conversation_id,
+      created_at: memory.created_at,
+      updated_at: memory.updated_at,
+    };
+
+    const response = await withTimeout(
+      Promise.resolve(
+        supabase.from('ai_memories').upsert(supabaseData, {
+          onConflict: 'id',
+        }),
+      ),
+      NETWORK_TIMEOUT_MS,
+      'AI memory upsert',
+    );
+    const supabaseError = (response as { error: { message: string } | null }).error;
+
+    if (supabaseError) {
+      logger.error('Supabase upsert failed for AI memory', supabaseError);
+      return { success: false, error: supabaseError.message };
+    }
+
+    await db.runAsync(
+      `UPDATE ai_memories SET supabase_id = ?, sync_status = 'synced', updated_at = ? WHERE id = ?`,
+      [supabaseId, new Date().toISOString(), memoryId],
+    );
+
+    logger.info('AI memory synced successfully', { memoryId, supabaseId });
+    return { success: true };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error('Failed to sync AI memory', { memoryId, error });
+    return { success: false, error: errorMessage };
+  }
+}
+
+/**
  * Delete a record from Supabase
  */
 async function deleteFromSupabase(
@@ -953,6 +1114,10 @@ async function processSyncItem(
       return syncSponsorConnection(db, item.record_id, userId);
     case 'sponsor_shared_entries':
       return syncSponsorSharedEntry(db, item.record_id, userId);
+    case 'achievements':
+      return syncAchievement(db, item.record_id, userId);
+    case 'ai_memories':
+      return syncAIMemory(db, item.record_id, userId);
     default:
       return {
         success: false,
@@ -1215,5 +1380,504 @@ export async function addDeleteToSyncQueue(
   } catch (error) {
     logger.error('Failed to queue delete operation', { tableName, recordId, error });
     throw error;
+  }
+}
+
+// ─── Pull Sync (Cloud → Device) ─────────────────────────────────────────────
+
+/** SecureStore key for tracking last pull timestamp */
+const LAST_PULL_KEY_PREFIX = 'last_pull_';
+
+/** Tables that support pull sync, mapped to their local schema */
+const PULL_SYNC_TABLES = [
+  'journal_entries',
+  'step_work',
+  'daily_checkins',
+  'favorite_meetings',
+  'reading_reflections',
+  'weekly_reports',
+  'achievements',
+  'ai_memories',
+] as const;
+
+type PullSyncTable = (typeof PULL_SYNC_TABLES)[number];
+
+/**
+ * Pull changes from Supabase for a single table.
+ * Fetches records updated after the last pull timestamp and upserts locally.
+ * Uses last-write-wins conflict resolution based on updated_at.
+ */
+async function pullTable(
+  db: StorageAdapter,
+  tableName: PullSyncTable,
+  userId: string,
+  lastPullAt: string | null,
+): Promise<{ pulled: number; error?: string }> {
+  try {
+    let query = supabase
+      .from(tableName)
+      .select('*')
+      .eq('user_id', userId)
+      .order('updated_at', { ascending: true })
+      .limit(200);
+
+    if (lastPullAt) {
+      query = query.gt('updated_at', lastPullAt);
+    }
+
+    const { data, error } = await withTimeout(
+      Promise.resolve(query),
+      NETWORK_TIMEOUT_MS,
+      `Pull ${tableName}`,
+    );
+
+    if (error) {
+      return { pulled: 0, error: error.message };
+    }
+
+    if (!data || data.length === 0) {
+      return { pulled: 0 };
+    }
+
+    let pulled = 0;
+
+    for (const record of data) {
+      try {
+        const upserted = await upsertLocalRecord(db, tableName, record, userId);
+        if (upserted) pulled++;
+      } catch (err) {
+        logger.error('Failed to upsert pulled record', {
+          tableName,
+          recordId: record.id,
+          error: err,
+        });
+      }
+    }
+
+    return { pulled };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Unknown error';
+    return { pulled: 0, error: msg };
+  }
+}
+
+/**
+ * Upsert a remote record into the local database.
+ * Skips if local record has a newer updated_at (last-write-wins).
+ * Returns true if the record was inserted or updated.
+ */
+async function upsertLocalRecord(
+  db: StorageAdapter,
+  tableName: PullSyncTable,
+  remote: Record<string, unknown>,
+  userId: string,
+): Promise<boolean> {
+  const remoteId = remote.id as string;
+  const remoteUpdatedAt = (remote.updated_at as string) || (remote.created_at as string);
+
+  // Check if we already have this record (by supabase_id)
+  const existing = await db.getFirstAsync<{
+    id: string;
+    updated_at: string;
+    sync_status: string;
+  }>(
+    `SELECT id, updated_at, sync_status FROM ${tableName} WHERE supabase_id = ? AND user_id = ?`,
+    [remoteId, userId],
+  );
+
+  if (existing) {
+    // Last-write-wins: skip if local is newer or same
+    if (existing.updated_at >= remoteUpdatedAt) {
+      return false;
+    }
+    // Update existing local record
+    await updateLocalFromRemote(db, tableName, existing.id, remote);
+    return true;
+  }
+
+  // Insert new local record from remote
+  await insertLocalFromRemote(db, tableName, remote, userId);
+  return true;
+}
+
+/**
+ * Update an existing local record with remote data.
+ */
+async function updateLocalFromRemote(
+  db: StorageAdapter,
+  tableName: PullSyncTable,
+  localId: string,
+  remote: Record<string, unknown>,
+): Promise<void> {
+  switch (tableName) {
+    case 'journal_entries':
+      await db.runAsync(
+        `UPDATE journal_entries
+         SET encrypted_title = ?, encrypted_body = ?, encrypted_mood = ?,
+             encrypted_craving = ?, encrypted_tags = ?,
+             updated_at = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.title as string) || null,
+          (remote.body as string) || '',
+          (remote.mood as string) || null,
+          (remote.craving_level as string) || null,
+          (remote.tags as string) || null,
+          (remote.updated_at as string) || new Date().toISOString(),
+          localId,
+        ],
+      );
+      break;
+
+    case 'step_work':
+      await db.runAsync(
+        `UPDATE step_work
+         SET encrypted_answer = ?, is_complete = ?, completed_at = ?,
+             updated_at = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.answer as string) || null,
+          remote.is_complete ? 1 : 0,
+          (remote.completed_at as string) || null,
+          (remote.updated_at as string) || new Date().toISOString(),
+          localId,
+        ],
+      );
+      break;
+
+    case 'daily_checkins':
+      await db.runAsync(
+        `UPDATE daily_checkins
+         SET encrypted_intention = ?, encrypted_reflection = ?,
+             encrypted_mood = ?, encrypted_craving = ?, encrypted_gratitude = ?,
+             updated_at = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.intention as string) || null,
+          (remote.notes as string) || null,
+          (remote.mood as string) || null,
+          (remote.challenges_faced as string) || null,
+          (remote.gratitude as string) || null,
+          (remote.updated_at as string) || new Date().toISOString(),
+          localId,
+        ],
+      );
+      break;
+
+    case 'favorite_meetings':
+      await db.runAsync(
+        `UPDATE favorite_meetings
+         SET encrypted_notes = ?, notification_enabled = ?,
+             sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.notes as string) || null,
+          remote.notification_enabled ? 1 : 0,
+          localId,
+        ],
+      );
+      break;
+
+    case 'reading_reflections':
+      await db.runAsync(
+        `UPDATE reading_reflections
+         SET encrypted_reflection = ?, word_count = ?,
+             updated_at = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.reflection as string) || '',
+          (remote.word_count as number) || 0,
+          (remote.updated_at as string) || new Date().toISOString(),
+          localId,
+        ],
+      );
+      break;
+
+    case 'weekly_reports':
+      await db.runAsync(
+        `UPDATE weekly_reports
+         SET report_json = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [(remote.report_json as string) || '{}', localId],
+      );
+      break;
+
+    case 'achievements':
+      await db.runAsync(
+        `UPDATE achievements
+         SET achievement_key = ?, achievement_type = ?, earned_at = ?,
+             is_viewed = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.achievement_key as string) || '',
+          (remote.achievement_type as string) || '',
+          (remote.earned_at as string) || new Date().toISOString(),
+          remote.is_viewed ? 1 : 0,
+          localId,
+        ],
+      );
+      break;
+
+    case 'ai_memories':
+      await db.runAsync(
+        `UPDATE ai_memories
+         SET type = ?, encrypted_content = ?, confidence = ?,
+             encrypted_context = ?, source_conversation_id = ?,
+             updated_at = ?, sync_status = 'synced'
+         WHERE id = ?`,
+        [
+          (remote.type as string) || '',
+          (remote.encrypted_content as string) || '',
+          (remote.confidence as number) || 0.5,
+          (remote.encrypted_context as string) || null,
+          (remote.source_conversation_id as string) || null,
+          (remote.updated_at as string) || new Date().toISOString(),
+          localId,
+        ],
+      );
+      break;
+  }
+}
+
+/**
+ * Insert a new local record from remote data.
+ */
+async function insertLocalFromRemote(
+  db: StorageAdapter,
+  tableName: PullSyncTable,
+  remote: Record<string, unknown>,
+  userId: string,
+): Promise<void> {
+  const localId = `pull_${generateUUID()}`;
+  const remoteId = remote.id as string;
+  const now = new Date().toISOString();
+
+  switch (tableName) {
+    case 'journal_entries':
+      await db.runAsync(
+        `INSERT INTO journal_entries
+         (id, user_id, encrypted_title, encrypted_body, encrypted_mood,
+          encrypted_craving, encrypted_tags, created_at, updated_at,
+          sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.title as string) || null,
+          (remote.body as string) || '',
+          (remote.mood as string) || null,
+          (remote.craving_level as string) || null,
+          (remote.tags as string) || null,
+          (remote.created_at as string) || now,
+          (remote.updated_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'step_work':
+      await db.runAsync(
+        `INSERT INTO step_work
+         (id, user_id, step_number, question_number, encrypted_answer,
+          is_complete, completed_at, created_at, updated_at,
+          sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.step_number as number) || 1,
+          (remote.question_number as number) || 1,
+          (remote.answer as string) || null,
+          remote.is_complete ? 1 : 0,
+          (remote.completed_at as string) || null,
+          (remote.created_at as string) || now,
+          (remote.updated_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'daily_checkins':
+      await db.runAsync(
+        `INSERT INTO daily_checkins
+         (id, user_id, check_in_type, check_in_date,
+          encrypted_intention, encrypted_reflection, encrypted_mood,
+          encrypted_craving, encrypted_gratitude,
+          created_at, updated_at, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.checkin_type as string) || 'morning',
+          (remote.checkin_date as string) || now.split('T')[0],
+          (remote.intention as string) || null,
+          (remote.notes as string) || null,
+          (remote.mood as string) || null,
+          (remote.challenges_faced as string) || null,
+          (remote.gratitude as string) || null,
+          (remote.created_at as string) || now,
+          (remote.updated_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'favorite_meetings':
+      await db.runAsync(
+        `INSERT INTO favorite_meetings
+         (id, user_id, meeting_id, encrypted_notes, notification_enabled,
+          created_at, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.meeting_id as string) || '',
+          (remote.notes as string) || null,
+          remote.notification_enabled ? 1 : 0,
+          (remote.created_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'reading_reflections':
+      await db.runAsync(
+        `INSERT INTO reading_reflections
+         (id, user_id, reading_id, reading_date, encrypted_reflection,
+          word_count, created_at, updated_at, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.reading_id as string) || '',
+          (remote.reading_date as string) || now.split('T')[0],
+          (remote.reflection as string) || '',
+          (remote.word_count as number) || 0,
+          (remote.created_at as string) || now,
+          (remote.updated_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'weekly_reports':
+      await db.runAsync(
+        `INSERT INTO weekly_reports
+         (id, user_id, week_start, week_end, report_json,
+          created_at, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.week_start as string) || '',
+          (remote.week_end as string) || '',
+          (remote.report_json as string) || '{}',
+          (remote.created_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'achievements':
+      await db.runAsync(
+        `INSERT INTO achievements
+         (id, user_id, achievement_key, achievement_type, earned_at,
+          is_viewed, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.achievement_key as string) || '',
+          (remote.achievement_type as string) || '',
+          (remote.earned_at as string) || now,
+          remote.is_viewed ? 1 : 0,
+          remoteId,
+        ],
+      );
+      break;
+
+    case 'ai_memories':
+      await db.runAsync(
+        `INSERT INTO ai_memories
+         (id, user_id, type, encrypted_content, confidence,
+          encrypted_context, source_conversation_id,
+          created_at, updated_at, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
+        [
+          localId, userId,
+          (remote.type as string) || '',
+          (remote.encrypted_content as string) || '',
+          (remote.confidence as number) || 0.5,
+          (remote.encrypted_context as string) || null,
+          (remote.source_conversation_id as string) || null,
+          (remote.created_at as string) || now,
+          (remote.updated_at as string) || now,
+          remoteId,
+        ],
+      );
+      break;
+  }
+}
+
+/**
+ * Pull all changes from Supabase to local device.
+ *
+ * Iterates over all syncable tables and pulls records updated since
+ * the last pull timestamp. Uses last-write-wins conflict resolution.
+ *
+ * @param db - Storage adapter instance
+ * @param userId - Authenticated user ID
+ * @returns Pull sync result with count of pulled records
+ */
+export async function pullFromCloud(
+  db: StorageAdapter,
+  userId: string,
+): Promise<PullSyncResult> {
+  const result: PullSyncResult = { pulled: 0, errors: [] };
+
+  if (syncMutex.isLocked()) {
+    result.errors.push('Sync in progress, skipping pull');
+    return result;
+  }
+
+  await syncMutex.acquire();
+
+  try {
+    for (const tableName of PULL_SYNC_TABLES) {
+      // Get last pull timestamp for this table
+      const lastPullRow = await db.getFirstAsync<{ value: string }>(
+        `SELECT value FROM sync_metadata WHERE key = ?`,
+        [`${LAST_PULL_KEY_PREFIX}${tableName}`],
+      );
+      const lastPullAt = lastPullRow?.value || null;
+
+      const tableResult = await pullTable(db, tableName, userId, lastPullAt);
+
+      if (tableResult.error) {
+        result.errors.push(`${tableName}: ${tableResult.error}`);
+        logger.error('Pull failed for table', { tableName, error: tableResult.error });
+      } else {
+        result.pulled += tableResult.pulled;
+
+        // Update last pull timestamp
+        const now = new Date().toISOString();
+        await db.runAsync(
+          `INSERT OR REPLACE INTO sync_metadata (key, value) VALUES (?, ?)`,
+          [`${LAST_PULL_KEY_PREFIX}${tableName}`, now],
+        );
+      }
+
+      logger.info('Pull table result', {
+        tableName,
+        pulled: tableResult.pulled,
+        error: tableResult.error || null,
+      });
+    }
+
+    logger.info('Pull sync complete', {
+      totalPulled: result.pulled,
+      errors: result.errors.length,
+    });
+
+    return result;
+  } catch (error) {
+    logger.error('Pull sync failed', error);
+    result.errors.push(error instanceof Error ? error.message : 'Unknown pull error');
+    return result;
+  } finally {
+    syncMutex.release();
   }
 }

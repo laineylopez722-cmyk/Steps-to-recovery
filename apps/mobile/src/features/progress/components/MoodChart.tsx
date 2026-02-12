@@ -1,9 +1,9 @@
 /**
- * Mood Chart - View-based sparkline chart for mood data (1-5 scale)
- * Color coded: 1=red, 2=orange, 3=yellow, 4=green, 5=bright green
+ * Mood Chart - Hybrid bar + SVG line chart for mood data (1-5 scale)
+ * Color coded bars with smooth trend line and gradient area fill.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
@@ -12,6 +12,7 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
+import { SvgLineChart, type DataPoint } from '../../../components/charts/SvgLineChart';
 import type { MoodDataPoint } from '../hooks/useMoodTrends';
 
 interface MoodChartProps {
@@ -33,6 +34,15 @@ function getMoodColor(mood: number): string {
   return MOOD_COLORS[rounded] ?? MOOD_COLORS[3];
 }
 
+function computeRollingAverage(data: MoodDataPoint[], window: number): number[] {
+  if (data.length === 0) return [];
+  return data.map((_, i) => {
+    const start = Math.max(0, i - window + 1);
+    const slice = data.slice(start, i + 1);
+    return slice.reduce((sum, p) => sum + p.mood, 0) / slice.length;
+  });
+}
+
 const { width: screenWidth } = Dimensions.get('window');
 
 export function MoodChart({ data, trend, average }: MoodChartProps): React.ReactElement {
@@ -49,8 +59,22 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
         ? theme.colors.danger
         : theme.colors.textSecondary;
 
-  const chartHeight = 80;
+  const chartHeight = 100;
+  const barChartHeight = 80;
+  const chartWidth = screenWidth - 80;
   const barWidth = Math.max(4, (screenWidth - 120) / Math.max(data.length, 1) - 2);
+
+  const lineData = useMemo((): DataPoint[] => {
+    return data.map((p) => ({
+      label: p.date.slice(5), // MM-DD
+      value: p.mood,
+    }));
+  }, [data]);
+
+  const rollingAvg = useMemo(() => computeRollingAverage(data, 3), [data]);
+
+  const trendLineColor =
+    trend === 'improving' ? ds.colors.success : trend === 'declining' ? ds.colors.error : ds.palette.sageGreen;
 
   const accessibilityDescription =
     data.length > 0
@@ -83,12 +107,34 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
       {/* Chart */}
       {data.length > 0 ? (
         <>
+          {/* SVG Line Chart overlay */}
+          {data.length >= 3 && (
+            <View style={styles.lineChartContainer}>
+              <SvgLineChart
+                data={lineData}
+                width={chartWidth}
+                height={chartHeight}
+                maxValue={5}
+                minValue={1}
+                lineColor={trendLineColor}
+                gradientFrom={trendLineColor}
+                showDots={data.length <= 30}
+                dotRadius={data.length <= 14 ? 3 : 2}
+                rollingAverage={rollingAvg}
+                rollingAverageColor={ds.palette.sageGreen}
+                labelColor={theme.colors.textSecondary}
+              />
+            </View>
+          )}
+
+          {/* Bar chart (collapsed when line chart is shown) */}
           <View
-            style={[styles.chartContainer, { height: chartHeight }]}
+            style={[styles.chartContainer, { height: data.length < 3 ? barChartHeight : 40 }]}
             accessibilityLabel={`Bar chart with ${data.length} days of mood data`}
           >
             {data.map((point, index) => {
-              const barHeight = (point.mood / 5) * chartHeight;
+              const maxBarH = data.length < 3 ? barChartHeight : 40;
+              const barHeight = (point.mood / 5) * maxBarH;
               const color = getMoodColor(point.mood);
               return (
                 <Animated.View
@@ -100,11 +146,8 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
                       width: barWidth,
                       height: Math.max(2, barHeight),
                       backgroundColor: color,
-                      opacity: 0.4 + (point.mood / 5) * 0.6,
-                      shadowColor: color,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowOpacity: (point.mood / 5) * 0.4,
-                      shadowRadius: 3,
+                      opacity: data.length < 3 ? 0.4 + (point.mood / 5) * 0.6 : 0.25,
+                      borderRadius: 3,
                     },
                   ]}
                 />
@@ -168,6 +211,10 @@ const createStyles = (ds: DS) => ({
     alignItems: 'flex-end' as const,
     justifyContent: 'space-evenly' as const,
     paddingHorizontal: 8,
+  },
+  lineChartContainer: {
+    alignItems: 'center' as const,
+    marginBottom: 8,
   },
   bar: {
     borderRadius: 2,

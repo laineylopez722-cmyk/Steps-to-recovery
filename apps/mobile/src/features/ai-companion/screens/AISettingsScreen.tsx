@@ -481,8 +481,8 @@ const createStyles = (ds: DS) =>
       borderBottomColor: ds.colors.borderSubtle,
     },
     backBtn: {
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -492,7 +492,7 @@ const createStyles = (ds: DS) =>
       color: ds.colors.textPrimary,
     },
     headerSpacer: {
-      width: 44,
+      width: 48,
     },
 
     // Status Card
@@ -739,9 +739,9 @@ const createStyles = (ds: DS) =>
       marginTop: ds.space[6],
     },
     privacyIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 48,
+      height: 48,
+      borderRadius: 24,
       backgroundColor: ds.colors.successMuted,
       justifyContent: 'center',
       alignItems: 'center',

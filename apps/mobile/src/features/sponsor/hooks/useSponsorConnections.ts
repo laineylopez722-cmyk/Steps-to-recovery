@@ -3,6 +3,7 @@ import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 import { generateId } from '../../../utils/id';
+import { addToSyncQueue, addDeleteToSyncQueue } from '../../../services/syncService';
 import {
   createConfirmPayload,
   createInvitePayload,
@@ -93,6 +94,7 @@ export function useSponsorConnections(userId: string) {
           now,
         ],
       );
+      await addToSyncQueue(db, 'sponsor_connections', id, 'insert');
 
       const payload = createInvitePayload({
         version: 1,
@@ -148,6 +150,7 @@ export function useSponsorConnections(userId: string) {
           connection.id,
         ],
       );
+      await addToSyncQueue(db, 'sponsor_connections', connection.id, 'update');
 
       await loadConnections();
     },
@@ -192,6 +195,7 @@ export function useSponsorConnections(userId: string) {
           now,
         ],
       );
+      await addToSyncQueue(db, 'sponsor_connections', id, 'insert');
 
       const confirmPayload: SponsorConfirmPayload = {
         version: 1,
@@ -210,14 +214,16 @@ export function useSponsorConnections(userId: string) {
   const removeConnection = useCallback(
     async (connectionId: string): Promise<void> => {
       if (!db || !userId) return;
-      await db.runAsync(`DELETE FROM sponsor_connections WHERE id = ? AND user_id = ?`, [
-        connectionId,
-        userId,
-      ]);
+      await addDeleteToSyncQueue(db, 'sponsor_shared_entries', connectionId, userId);
       await db.runAsync(
         `DELETE FROM sponsor_shared_entries WHERE connection_id = ? AND user_id = ?`,
         [connectionId, userId],
       );
+      await addDeleteToSyncQueue(db, 'sponsor_connections', connectionId, userId);
+      await db.runAsync(`DELETE FROM sponsor_connections WHERE id = ? AND user_id = ?`, [
+        connectionId,
+        userId,
+      ]);
       await loadConnections();
     },
     [db, userId, loadConnections],

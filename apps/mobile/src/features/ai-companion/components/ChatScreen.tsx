@@ -251,8 +251,8 @@ const createStyles = (ds: DS) =>
       borderBottomColor: ds.colors.borderSubtle,
     },
     headerButton: {
-      width: 44,
-      height: 44,
+      width: 48,
+      height: 48,
       borderRadius: ds.radius.full,
       justifyContent: 'center',
       alignItems: 'center',
