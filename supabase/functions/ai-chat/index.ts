@@ -171,7 +171,7 @@ const validateChatRequest = (data: unknown): ChatRequest => {
   }
 
   // Validate optional parameters
-  const model = request.model ? String(request.model) : DEFAULT_MODEL;
+  const model = request.model !== undefined ? String(request.model) : undefined;
   const stream = request.stream === true;
   const temperature = request.temperature !== undefined
     ? Number(request.temperature)
@@ -455,7 +455,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // 5. Forward to OpenAI
     const openaiPayload = {
-      model: chatRequest.model,
+      model: chatRequest.model || DEFAULT_MODEL,
       messages: chatRequest.messages,
       stream: chatRequest.stream,
       ...(chatRequest.temperature !== undefined &&
