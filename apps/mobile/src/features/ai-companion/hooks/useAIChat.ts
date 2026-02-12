@@ -422,7 +422,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       let fullResponse = '';
 
       try {
-        for await (const chunk of service.chat(aiMessages)) {
+        for await (const chunk of service.chat(aiMessages, { signal: abortControllerRef.current.signal })) {
           // Check if aborted
           if (abortControllerRef.current?.signal.aborted) {
             break;

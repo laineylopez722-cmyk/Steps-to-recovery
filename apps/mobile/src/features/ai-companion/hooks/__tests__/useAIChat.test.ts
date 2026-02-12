@@ -97,7 +97,7 @@ describe('useAIChat', () => {
 
     mockGetAIService.mockResolvedValue(mockChatService);
     mockChatService.isConfigured.mockResolvedValue(true);
-    mockChatService.chat.mockImplementation((_messages: unknown[]) => {
+    mockChatService.chat.mockImplementation((_messages: unknown[], _options?: unknown) => {
       return mockStreamGenerator(['Hello, ', 'how ', 'can ', 'I ', 'help?']);
     });
     mockGetRecoverySystemPrompt.mockReturnValue('Mock system prompt');
@@ -321,7 +321,10 @@ describe('useAIChat', () => {
       });
 
       expect(mockAddMessage).toHaveBeenCalledWith('conv-123', 'user', 'Hello AI');
-      expect(mockChatService.chat).toHaveBeenCalled();
+      expect(mockChatService.chat).toHaveBeenCalledWith(
+        expect.any(Array),
+        expect.objectContaining({ signal: expect.any(Object) }),
+      );
       expect(result.current.messages).toHaveLength(2); // User + AI
     });
 
@@ -607,6 +610,49 @@ describe('useAIChat', () => {
 
       expect(result.current.isStreaming).toBe(false);
       expect(result.current.streamingContent).toBe('');
+    });
+
+    it('should abort request and avoid saving partial assistant response', async () => {
+      mockChatService.chat.mockImplementation(
+        async function* (_messages: unknown[], options?: { signal?: AbortSignal }) {
+          yield 'partial';
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          if (options?.signal?.aborted) {
+            const abortError = new Error('Aborted');
+            abortError.name = 'AbortError';
+            throw abortError;
+          }
+          yield 'more';
+        },
+      );
+
+      const { result } = renderHook(() =>
+        useAIChat({
+          userId: testUserId,
+          onCrisisDetected: mockOnCrisisDetected,
+        }),
+      );
+
+      await act(async () => {
+        await result.current.startNewConversation('general');
+      });
+
+      await act(async () => {
+        await result.current.sendMessage('Hello');
+        jest.advanceTimersByTime(100);
+        await Promise.resolve();
+      });
+
+      act(() => {
+        result.current.cancelStream();
+      });
+
+      await waitFor(() => {
+        expect(result.current.isStreaming).toBe(false);
+      });
+
+      const assistantSaves = mockAddMessage.mock.calls.filter(([, role]) => role === 'assistant');
+      expect(assistantSaves).toHaveLength(0);
     });
   });
 

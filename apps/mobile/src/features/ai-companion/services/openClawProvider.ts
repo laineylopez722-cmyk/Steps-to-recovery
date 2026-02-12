@@ -115,7 +115,7 @@ class OpenClawProvider {
    */
   async chat(
     messages: ChatMessage[],
-    options: ChatOptions & { onChunk?: (chunk: string) => void } = {},
+    options: ChatOptions & { onChunk?: (chunk: string) => void; signal?: AbortSignal } = {},
   ): Promise<string> {
     if (!this.config) {
       await this.loadConfig();
@@ -137,6 +137,7 @@ class OpenClawProvider {
           max_tokens: options.maxTokens || 1024,
           temperature: options.temperature ?? 0.7,
         }),
+        signal: options.signal,
       });
 
       if (!response.ok) {

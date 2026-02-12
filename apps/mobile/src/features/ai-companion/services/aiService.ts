@@ -11,9 +11,8 @@ import * as Sentry from '@sentry/react-native';
 const API_KEY_STORAGE_KEY = 'ai_companion_api_key';
 const PROVIDER_STORAGE_KEY = 'ai_companion_provider';
 
-// Set to true once the Edge Function is deployed
-const PROXY_ENABLED = false;
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const AI_PROXY_ENABLED = (process.env.EXPO_PUBLIC_AI_PROXY_ENABLED || '').toLowerCase() === 'true';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -25,6 +24,7 @@ export interface ChatOptions {
   maxTokens?: number;
   temperature?: number;
   stream?: boolean;
+  signal?: AbortSignal;
 }
 
 export type AIProvider = 'openai' | 'anthropic' | 'openrouter' | 'openclaw';
@@ -194,7 +194,10 @@ export class AIServiceInstance {
     }
 
     // Check if proxy mode is enabled and user is authenticated
-    if (PROXY_ENABLED) {
+    if (AI_PROXY_ENABLED) {
+      if (!SUPABASE_URL) {
+        return false;
+      }
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -208,7 +211,7 @@ export class AIServiceInstance {
    * Check if using proxy mode (no API key, using Edge Function)
    */
   async isUsingProxy(): Promise<boolean> {
-    return PROXY_ENABLED && !this.apiKey;
+    return AI_PROXY_ENABLED && !this.apiKey;
   }
 
   /**
@@ -259,6 +262,12 @@ export class AIServiceInstance {
     messages: ChatMessage[],
     options: ChatOptions = {},
   ): AsyncGenerator<string, void, unknown> {
+    if (!SUPABASE_URL) {
+      throw new Error(
+        'AI proxy is enabled, but EXPO_PUBLIC_SUPABASE_URL is not configured. Set the Supabase URL or disable EXPO_PUBLIC_AI_PROXY_ENABLED.',
+      );
+    }
+
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -277,6 +286,7 @@ export class AIServiceInstance {
         stream: options.stream ?? true,
         model: options.model,
       }),
+      signal: options.signal,
     });
 
     if (!response.ok) {
@@ -340,7 +350,7 @@ export class AIServiceInstance {
 
     try {
       // Use proxy if no API key and proxy is enabled
-      if (!this.apiKey && PROXY_ENABLED) {
+      if (!this.apiKey && AI_PROXY_ENABLED) {
         yield* this.chatViaProxy(messages, options);
         span?.end();
         return;
@@ -353,6 +363,7 @@ export class AIServiceInstance {
         let result = '';
         await clawProvider.chat(messages, {
           ...options,
+          signal: options.signal,
           onChunk: (chunk: string) => {
             result += chunk;
           },
@@ -394,6 +405,7 @@ export class AIServiceInstance {
           method: 'POST',
           headers,
           body: JSON.stringify(requestBody),
+          signal: options.signal,
         });
 
         if (!response.ok) {
