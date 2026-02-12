@@ -31,7 +31,26 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
   const ds = useDs();
 
   return (
-    <Card variant="elevated" style={styles.questionCard}>
+    <Card variant="elevated" style={[styles.questionCard, isAnswered && styles.questionCardAnswered]}>
+      <View style={styles.questionHeaderMeta}>
+        <View style={styles.questionMetaLeft}>
+          <Text style={[theme.typography.caption, styles.questionMetaText]}>
+            Question {questionNumber} of {totalQuestions}
+          </Text>
+        </View>
+
+        <View style={[styles.statePill, isAnswered && styles.statePillAnswered]}>
+          <MaterialCommunityIcons
+            name={isAnswered ? 'check-circle' : 'circle-outline'}
+            size={14}
+            color={isAnswered ? ds.colors.success : ds.colors.textTertiary}
+          />
+          <Text style={[styles.statePillText, isAnswered && styles.statePillTextAnswered]}>
+            {isAnswered ? 'Saved' : 'Draft'}
+          </Text>
+        </View>
+      </View>
+
       <View style={styles.questionHeader}>
         <View
           style={[
@@ -46,20 +65,17 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
           ]}
         >
           {isAnswered ? (
-            <MaterialCommunityIcons name="check" size={20} color={ds.semantic.text.onDark} />
+            <MaterialCommunityIcons name="check" size={18} color={ds.semantic.text.onDark} />
           ) : (
             <Text
-              style={[theme.typography.body, { color: ds.colors.textTertiary, fontWeight: '600' }]}
+              style={[theme.typography.bodySmall, { color: ds.colors.textTertiary, fontWeight: '700' }]}
             >
               {questionNumber}
             </Text>
           )}
         </View>
-        <Text
-          style={[theme.typography.h3, { color: ds.colors.textPrimary, flex: 1, lineHeight: 24 }]}
-        >
-          {prompt}
-        </Text>
+
+        <Text style={[theme.typography.h3, styles.promptText]}>{prompt}</Text>
       </View>
 
       <Divider style={styles.questionDivider} />
@@ -68,9 +84,9 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
         label=""
         value={answer}
         onChangeText={onChangeAnswer}
-        placeholder="Take your time to reflect and write your answer here. Remember, this is a private space for your personal growth."
+        placeholder="Write honestly. You can save now and come back later."
         containerStyle={styles.answerTextArea}
-        minHeight={150}
+        minHeight={170}
         maxLength={2000}
         showCharacterCount
         editable={!isSaving}
@@ -102,28 +118,75 @@ const createStyles = (ds: DS) =>
     questionCard: {
       marginHorizontal: 16,
       marginBottom: 16,
-      padding: 20,
+      padding: 16,
       borderWidth: 1,
       borderColor: ds.colors.borderSubtle,
+      backgroundColor: ds.semantic.surface.card,
+    },
+    questionCardAnswered: {
+      borderColor: ds.colors.success,
+    },
+    questionHeaderMeta: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    questionMetaLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    questionMetaText: {
+      color: ds.colors.textTertiary,
+    },
+    statePill: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 999,
+      backgroundColor: ds.colors.bgSecondary,
+      borderWidth: 1,
+      borderColor: ds.colors.borderSubtle,
+    },
+    statePillAnswered: {
+      backgroundColor: ds.colors.successMuted,
+      borderColor: ds.colors.success,
+    },
+    statePillText: {
+      ...ds.typography.micro,
+      color: ds.colors.textTertiary,
+      fontWeight: '700',
+    },
+    statePillTextAnswered: {
+      color: ds.colors.success,
     },
     questionHeader: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      marginBottom: 16,
+      marginBottom: 14,
     },
     questionNumber: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
+      width: 34,
+      height: 34,
+      borderRadius: 17,
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: 16,
+      marginRight: 12,
       marginTop: 2,
     },
+    promptText: {
+      color: ds.colors.textPrimary,
+      flex: 1,
+      lineHeight: 24,
+      fontWeight: '700',
+    },
     questionDivider: {
-      marginBottom: 16,
+      marginBottom: 14,
     },
     answerTextArea: {
-      marginBottom: 16,
+      marginBottom: 14,
     },
   }) as const;

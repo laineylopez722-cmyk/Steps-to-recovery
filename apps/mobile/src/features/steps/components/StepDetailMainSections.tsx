@@ -21,9 +21,9 @@ export interface StepDetailMainSectionsProps {
   showGuidance: boolean;
   onToggleGuidance: () => void;
   currentVisibleQuestion: number;
+  answeredQuestionNumbers: Set<number>;
   listRef: React.RefObject<FlatList<StepListItem> | null>;
   listItems: StepListItem[];
-  answeredQuestionNumbers: Set<number>;
   savingQuestion: number | null;
   answers: Record<number, string>;
   onAnswerChange: (questionNumber: number, text: string) => void;
@@ -76,15 +76,17 @@ export function StepDetailMainSections({
         onReviewAnswers={onReviewAnswers}
       />
 
+      <StepQuestionCounter
+        currentQuestion={currentVisibleQuestion}
+        totalQuestions={totalQuestions}
+        answeredQuestionNumbers={answeredQuestionNumbers}
+        onJumpToQuestion={onJumpToQuestion}
+      />
+
       <StepGuidanceCard
         showGuidance={showGuidance}
         description={description}
         onToggle={onToggleGuidance}
-      />
-
-      <StepQuestionCounter
-        currentQuestion={currentVisibleQuestion}
-        totalQuestions={totalQuestions}
       />
 
       <StepDetailQuestionsList

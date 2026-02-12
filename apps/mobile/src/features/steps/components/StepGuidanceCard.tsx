@@ -29,26 +29,29 @@ export const StepGuidanceCard = React.memo(function StepGuidanceCard({
         accessibilityLabel={showGuidance ? 'Hide step guidance' : 'Show step guidance'}
       >
         <View style={styles.descriptionHeader}>
-          <MaterialCommunityIcons name="lightbulb-outline" size={20} color={ds.colors.accent} />
-          <Text style={[theme.typography.label, { color: ds.colors.accent, marginLeft: 8 }]}>
-            STEP GUIDANCE
-          </Text>
+          <View style={styles.iconWrap}>
+            <MaterialCommunityIcons name="lightbulb-on-outline" size={18} color={ds.colors.accent} />
+          </View>
+
+          <View style={styles.headerTextWrap}>
+            <Text style={[theme.typography.label, styles.label]}>Guidance</Text>
+            <Text style={[theme.typography.caption, styles.subLabel]}>
+              Read this before you answer
+            </Text>
+          </View>
         </View>
+
         <MaterialCommunityIcons
           name={showGuidance ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color={theme.colors.textSecondary}
+          color={ds.colors.textSecondary}
         />
       </Pressable>
+
       {showGuidance && (
-        <Text
-          style={[
-            theme.typography.body,
-            { color: theme.colors.text, lineHeight: 24, fontStyle: 'italic' },
-          ]}
-        >
-          "{description}"
-        </Text>
+        <View style={styles.guidanceContent}>
+          <Text style={[theme.typography.body, styles.guidanceText]}>{description}</Text>
+        </View>
       )}
     </Card>
   );
@@ -61,15 +64,48 @@ const createStyles = (ds: DS) =>
       marginHorizontal: 16,
       marginBottom: 8,
       borderColor: ds.colors.borderSubtle,
+      backgroundColor: ds.semantic.surface.card,
     },
     descriptionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
+      flex: 1,
+    },
+    iconWrap: {
+      width: 30,
+      height: 30,
+      borderRadius: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: ds.colors.accentMuted,
+      marginRight: 10,
+    },
+    headerTextWrap: {
+      flex: 1,
     },
     guidanceToggle: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 10,
+    },
+    label: {
+      color: ds.colors.accent,
+      fontWeight: '700',
+      textTransform: 'uppercase',
+      letterSpacing: 0.6,
+    },
+    subLabel: {
+      color: ds.colors.textTertiary,
+      marginTop: 2,
+    },
+    guidanceContent: {
+      marginTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: ds.colors.borderSubtle,
+      paddingTop: 12,
+    },
+    guidanceText: {
+      color: ds.colors.textSecondary,
+      lineHeight: 24,
     },
   }) as const;
