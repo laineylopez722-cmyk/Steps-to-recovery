@@ -1,31 +1,21 @@
 /**
  * Steps Overview Screen
  *
- * Apple-inspired step progress display.
- * Clean cards, clear hierarchy.
+ * Clean overview: hero card for current step + simple step list.
+ * Matches H's prototype design.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ScrollView, View, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  withSequence,
-  Easing,
-} from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import type { StepsStackParamList } from '../../../navigation/types';
 import { Modal } from '../../../design-system';
 import { useStepProgress } from '../hooks/useStepWork';
 import { STEP_PROMPTS } from '@recovery/shared';
-import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
-import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -42,246 +32,42 @@ interface Step {
 }
 
 const STEPS: Step[] = [
-  {
-    number: 1,
-    title: 'Admit powerlessness',
-    description:
-      'We admitted we were powerless over our addiction - that our lives had become unmanageable.',
-  },
-  {
-    number: 2,
-    title: 'Believe in a higher power',
-    description: 'Came to believe that a Power greater than ourselves could restore us to sanity.',
-  },
-  {
-    number: 3,
-    title: 'Decide to turn will over',
-    description:
-      'Made a decision to turn our will and our lives over to the care of God as we understood Him.',
-  },
-  {
-    number: 4,
-    title: 'Make a moral inventory',
-    description: 'Made a searching and fearless moral inventory of ourselves.',
-  },
-  {
-    number: 5,
-    title: 'Admit wrongs',
-    description:
-      'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.',
-  },
-  {
-    number: 6,
-    title: 'Be ready for change',
-    description: 'Were entirely ready to have God remove all these defects of character.',
-  },
-  {
-    number: 7,
-    title: 'Ask for removal',
-    description: 'Humbly asked Him to remove our shortcomings.',
-  },
-  {
-    number: 8,
-    title: 'Make a list',
-    description:
-      'Made a list of all persons we had harmed, and became willing to make amends to them all.',
-  },
-  {
-    number: 9,
-    title: 'Make amends',
-    description:
-      'Made direct amends to such people wherever possible, except when to do so would injure them or others.',
-  },
-  {
-    number: 10,
-    title: 'Continue inventory',
-    description:
-      'Continued to take personal inventory and when we were wrong promptly admitted it.',
-  },
-  {
-    number: 11,
-    title: 'Seek conscious contact',
-    description:
-      'Sought through prayer and meditation to improve our conscious contact with God as we understood Him.',
-  },
-  {
-    number: 12,
-    title: 'Carry the message',
-    description:
-      'Having had a spiritual awakening as the result of these steps, we tried to carry this message to addicts.',
-  },
+  { number: 1, title: 'We admitted we were powerless', description: 'We admitted we were powerless over our addiction — that our lives had become unmanageable.' },
+  { number: 2, title: 'Came to believe in a Power greater', description: 'Came to believe that a Power greater than ourselves could restore us to sanity.' },
+  { number: 3, title: 'Made a decision to turn our will', description: 'Made a decision to turn our will and our lives over to the care of God as we understood Him.' },
+  { number: 4, title: 'Made a searching and fearless inventory', description: 'Made a searching and fearless moral inventory of ourselves.' },
+  { number: 5, title: 'Admitted to God, to ourselves, and to another', description: 'Admitted to God, to ourselves, and to another human being the exact nature of our wrongs.' },
+  { number: 6, title: 'Were entirely ready for change', description: 'Were entirely ready to have God remove all these defects of character.' },
+  { number: 7, title: 'Humbly asked Him to remove our shortcomings', description: 'Humbly asked Him to remove our shortcomings.' },
+  { number: 8, title: 'Made a list of all persons we had harmed', description: 'Made a list of all persons we had harmed, and became willing to make amends to them all.' },
+  { number: 9, title: 'Made direct amends', description: 'Made direct amends to such people wherever possible, except when to do so would injure them or others.' },
+  { number: 10, title: 'Continued to take personal inventory', description: 'Continued to take personal inventory and when we were wrong promptly admitted it.' },
+  { number: 11, title: 'Sought through prayer and meditation', description: 'Sought through prayer and meditation to improve our conscious contact with God as we understood Him.' },
+  { number: 12, title: 'Carry this message to others', description: 'Having had a spiritual awakening as the result of these steps, we tried to carry this message to addicts.' },
 ];
-
-// Pulse for current step
-function PulseRing() {
-  const styles = useThemedStyles(createStyles);
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(0.6);
-
-  useEffect(() => {
-    scale.value = withRepeat(
-      withSequence(
-        withTiming(1.4, { duration: 1200, easing: Easing.out(Easing.ease) }),
-        withTiming(1, { duration: 1200, easing: Easing.in(Easing.ease) }),
-      ),
-      -1,
-    );
-    opacity.value = withRepeat(
-      withSequence(withTiming(0, { duration: 1200 }), withTiming(0.5, { duration: 1200 })),
-      -1,
-    );
-  }, []);
-
-  const style = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
-
-  return <Animated.View style={[styles.pulseRing, style]} />;
-}
-
-// Step Card
-function StepCard({
-  step,
-  isCompleted,
-  isCurrent,
-  isLocked,
-  answeredCount,
-  totalQuestions,
-  onPress,
-  delay,
-}: {
-  step: Step;
-  isCompleted: boolean;
-  isCurrent: boolean;
-  isLocked: boolean;
-  answeredCount: number;
-  totalQuestions: number;
-  onPress: () => void;
-  delay: number;
-}) {
-  const { onPressIn, onPressOut, animatedStyle } = useMotionPress({
-    scaleTo: motionScale.pressCard,
-  });
-  const styles = useThemedStyles(createStyles);
-  const ds = useDs();
-
-  return (
-    <Animated.View
-      entering={MotionTransitions.cardEnter(Math.max(0, Math.round((delay - 100) / 50)))}
-    >
-      <Pressable
-        onPress={onPress}
-        onPressIn={onPressIn}
-        onPressOut={onPressOut}
-        accessibilityRole="button"
-        accessibilityLabel={`Step ${step.number}: ${step.title}`}
-        accessibilityHint={
-          isLocked
-            ? 'Locked - coming in a future update'
-            : isCompleted
-              ? `Completed - ${answeredCount} of ${totalQuestions} questions answered`
-              : isCurrent
-                ? `Current step - ${answeredCount} of ${totalQuestions} questions answered`
-                : `View step ${step.number}`
-        }
-        accessibilityState={{ disabled: false }}
-      >
-        <Animated.View
-          style={[
-            styles.stepCard,
-            isCurrent && styles.stepCardCurrent,
-            isCompleted && styles.stepCardCompleted,
-            isLocked && styles.stepCardLocked,
-            animatedStyle,
-          ]}
-        >
-          {/* Number Badge */}
-          <View style={styles.badgeWrap}>
-            {isCurrent && !isCompleted && <PulseRing />}
-            <View
-              style={[
-                styles.badge,
-                isCompleted && styles.badgeCompleted,
-                isCurrent && !isCompleted && styles.badgeCurrent,
-                isLocked && styles.badgeLocked,
-              ]}
-            >
-              {isLocked ? (
-                <Feather name="lock" size={18} color={ds.colors.textQuaternary} />
-              ) : isCompleted ? (
-                <Feather name="check" size={22} color={ds.semantic.text.onDark} />
-              ) : (
-                <Text style={[styles.badgeText, isCurrent && styles.badgeTextCurrent]}>
-                  {step.number}
-                </Text>
-              )}
-            </View>
-          </View>
-
-          {/* Content */}
-          <View style={styles.stepContent}>
-            <View style={styles.stepHeader}>
-              <Text style={styles.stepTitle} numberOfLines={2}>
-                Step {step.number}
-              </Text>
-              <Feather
-                name={isLocked ? 'lock' : 'chevron-right'}
-                size={18}
-                color={ds.colors.textQuaternary}
-              />
-            </View>
-
-            <Text style={styles.stepName} numberOfLines={1}>
-              {step.title}
-            </Text>
-
-            {/* Status */}
-            <View style={styles.statusRow}>
-              {isCurrent && !isCompleted && (
-                <View style={styles.statusBadgeCurrent}>
-                  <Text style={styles.statusBadgeTextCurrent}>Current</Text>
-                </View>
-              )}
-              {isCompleted && (
-                <View style={styles.statusBadgeComplete}>
-                  <Text style={styles.statusBadgeTextComplete}>Complete</Text>
-                </View>
-              )}
-              {isLocked && (
-                <View style={styles.statusBadgeLocked}>
-                  <Text style={styles.statusBadgeTextLocked}>Coming soon</Text>
-                </View>
-              )}
-            </View>
-
-            {/* Progress */}
-            {!isLocked && totalQuestions > 0 && (
-              <Text style={styles.progressText}>
-                {answeredCount} / {totalQuestions} questions
-              </Text>
-            )}
-          </View>
-        </Animated.View>
-      </Pressable>
-    </Animated.View>
-  );
-}
 
 export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React.ReactElement {
   const navigation = useNavigation<NavigationProp>();
-  const { stepsCompleted, currentStep, overallProgress, stepDetails } = useStepProgress(userId);
+  const { stepsCompleted, currentStep, stepDetails } = useStepProgress(userId);
   const [lockedStep, setLockedStep] = useState<Step | null>(null);
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
   const stepDetailMap = useMemo(() => {
-    return new Map(stepDetails.map((detail) => [detail.stepNumber, detail]));
+    return new Map(stepDetails.map((d) => [d.stepNumber, d]));
   }, [stepDetails]);
 
   const stepTotalsFallback = useMemo(() => {
-    return new Map(STEP_PROMPTS.map((step) => [step.step, step.prompts.length]));
+    return new Map(STEP_PROMPTS.map((s) => [s.step, s.prompts.length]));
   }, []);
+
+  // Current working step info
+  const currentStepData = STEPS.find((s) => s.number === currentStep) ?? STEPS[0];
+  const currentDetail = stepDetailMap.get(currentStepData.number);
+  const currentAnswered = currentDetail?.answered ?? 0;
+  const currentTotal = currentDetail?.total ?? stepTotalsFallback.get(currentStepData.number) ?? 0;
+  const currentPercent = currentTotal > 0 ? Math.round((currentAnswered / currentTotal) * 100) : 0;
+  const isCurrentCompleted = stepsCompleted.includes(currentStepData.number);
 
   const handleStepPress = (step: Step, isLocked: boolean) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
@@ -295,40 +81,64 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safe} edges={['top']}>
-        {/* Header */}
-        <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
-          <Text style={styles.headerEyebrow}>Step work</Text>
-          <Text style={styles.headerTitle}>The 12 Steps</Text>
-          <Text style={styles.headerSubtitle}>
-            Your recovery journey, one honest action at a time.
-          </Text>
-
-          {/* Progress */}
-          <View style={styles.progressCard}>
-            <View style={styles.progressCircle}>
-              <Text style={styles.progressPercent}>{Math.round(overallProgress)}%</Text>
-            </View>
-            <View style={styles.progressStats}>
-              <View style={styles.stat}>
-                <Text style={styles.statNumber}>{stepsCompleted.length}</Text>
-                <Text style={styles.statLabel}>Complete</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.stat}>
-                <Text style={styles.statNumber}>{12 - stepsCompleted.length}</Text>
-                <Text style={styles.statLabel}>Remaining</Text>
-              </View>
-            </View>
-          </View>
-        </Animated.View>
-
-        {/* Steps List */}
         <ScrollView
           style={styles.scroll}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {STEPS.map((step, index) => {
+          {/* Page header */}
+          <View style={styles.pageHeader}>
+            <Feather name="book-open" size={20} color={ds.colors.accent} />
+            <Text style={styles.pageTitle}>Step Work</Text>
+          </View>
+          <Text style={styles.pageSubtitle}>
+            Work through the 12 steps at your own pace with your sponsor.
+          </Text>
+
+          {/* Hero: Currently Working On */}
+          <Pressable
+            style={styles.heroCard}
+            onPress={() => handleStepPress(currentStepData, false)}
+            accessibilityRole="button"
+            accessibilityLabel={`Continue working on Step ${currentStepData.number}`}
+          >
+            <View style={styles.heroTop}>
+              <Text style={styles.heroEyebrow}>CURRENTLY WORKING ON</Text>
+              <View style={[styles.heroBadge, isCurrentCompleted && styles.heroBadgeComplete]}>
+                <Text style={[styles.heroBadgeText, isCurrentCompleted && styles.heroBadgeTextComplete]}>
+                  {isCurrentCompleted ? 'Complete' : 'In Progress'}
+                </Text>
+              </View>
+            </View>
+
+            <Text style={styles.heroStepTitle}>Step {currentStepData.number}</Text>
+            <Text style={styles.heroDescription} numberOfLines={2}>
+              {currentStepData.title}
+            </Text>
+
+            {/* Progress bar */}
+            {currentTotal > 0 && (
+              <View style={styles.heroProgressWrap}>
+                <View style={styles.heroProgressTrack}>
+                  <View style={[styles.heroProgressFill, { width: `${currentPercent}%` }]} />
+                </View>
+                <Text style={styles.heroProgressText}>{currentPercent}%</Text>
+              </View>
+            )}
+
+            <View style={styles.heroCTA}>
+              <Text style={styles.heroCTAText}>
+                {isCurrentCompleted ? 'Review Step' : 'Continue Working'}
+              </Text>
+              <Feather name="arrow-right" size={18} color={ds.semantic.text.onDark} />
+            </View>
+          </Pressable>
+
+          {/* Section label */}
+          <Text style={styles.sectionLabel}>All Steps</Text>
+
+          {/* Step rows */}
+          {STEPS.map((step) => {
             const detail = stepDetailMap.get(step.number);
             const answeredCount = detail?.answered ?? 0;
             const totalQuestions = detail?.total ?? stepTotalsFallback.get(step.number) ?? 0;
@@ -340,32 +150,81 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                 : 0
               : 100;
             const isLocked = step.number > 1 && prevPercent < 50;
-            const current = !isLocked && step.number === currentStep && !completed;
+            const isCurrent = !isLocked && step.number === currentStep && !completed;
 
             return (
-              <StepCard
+              <Pressable
                 key={step.number}
-                step={step}
-                isCompleted={completed}
-                isCurrent={current}
-                isLocked={isLocked}
-                answeredCount={answeredCount}
-                totalQuestions={totalQuestions}
+                style={[styles.stepRow, isCurrent && styles.stepRowCurrent]}
                 onPress={() => handleStepPress(step, isLocked)}
-                delay={100 + index * 50}
-              />
+                accessibilityRole="button"
+                accessibilityLabel={`Step ${step.number}: ${step.title}`}
+                accessibilityHint={isLocked ? 'Locked' : isCurrent ? 'Current step' : completed ? 'Completed' : 'Tap to open'}
+              >
+                {/* Badge */}
+                <View style={[
+                  styles.rowBadge,
+                  isCurrent && styles.rowBadgeCurrent,
+                  completed && styles.rowBadgeCompleted,
+                  isLocked && styles.rowBadgeLocked,
+                ]}>
+                  {isLocked ? (
+                    <Feather name="lock" size={16} color={ds.colors.textQuaternary} />
+                  ) : completed ? (
+                    <Feather name="check" size={18} color={ds.semantic.text.onDark} />
+                  ) : (
+                    <Text style={[
+                      styles.rowBadgeText,
+                      isCurrent && styles.rowBadgeTextCurrent,
+                    ]}>
+                      {step.number}
+                    </Text>
+                  )}
+                </View>
+
+                {/* Text */}
+                <View style={styles.rowContent}>
+                  <View style={styles.rowTitleRow}>
+                    <Text style={[styles.rowTitle, isLocked && styles.rowTitleLocked]} numberOfLines={1}>
+                      Step {step.number}
+                    </Text>
+                    {isCurrent && (
+                      <View style={styles.currentPill}>
+                        <Text style={styles.currentPillText}>Current</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={[styles.rowSubtitle, isLocked && styles.rowSubtitleLocked]} numberOfLines={1}>
+                    {step.title}
+                  </Text>
+
+                  {/* Mini progress for non-locked, non-zero */}
+                  {!isLocked && totalQuestions > 0 && answeredCount > 0 && (
+                    <View style={styles.rowProgressWrap}>
+                      <View style={styles.rowProgressTrack}>
+                        <View
+                          style={[
+                            styles.rowProgressFill,
+                            {
+                              width: `${Math.round((answeredCount / totalQuestions) * 100)}%`,
+                              backgroundColor: completed ? ds.colors.success : ds.colors.accent,
+                            },
+                          ]}
+                        />
+                      </View>
+                    </View>
+                  )}
+                </View>
+
+                {/* Chevron */}
+                {!isLocked && (
+                  <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} />
+                )}
+              </Pressable>
             );
           })}
 
-          {/* Info */}
-          <Animated.View entering={MotionTransitions.fadeDelayed(360)} style={styles.infoCard}>
-            <Feather name="info" size={18} color={ds.colors.info} />
-            <Text style={styles.infoText}>
-              Steps unlock progressively. Complete 50% of a step to unlock the next one.
-            </Text>
-          </Animated.View>
-
-          <View style={{ height: ds.space[12] }} />
+          <View style={{ height: 32 }} />
         </ScrollView>
       </SafeAreaView>
 
@@ -374,7 +233,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
         visible={!!lockedStep}
         onClose={() => setLockedStep(null)}
         title={lockedStep ? `Step ${lockedStep.number}` : undefined}
-        message={lockedStep ? `${lockedStep.description}\n\nComing in a future update.` : undefined}
+        message={lockedStep ? `${lockedStep.description}\n\nComplete 50% of the previous step to unlock this one.` : undefined}
         actions={[
           {
             title: 'Start Step 1',
@@ -399,88 +258,11 @@ const createStyles = (ds: DS) =>
   ({
     container: {
       flex: 1,
-      backgroundColor: ds.colors.bgPrimary,
+      backgroundColor: ds.semantic.surface.app,
     },
     safe: {
       flex: 1,
     },
-
-    // Header
-    header: {
-      paddingHorizontal: ds.semantic.layout.screenPadding,
-      paddingTop: ds.space[5],
-      paddingBottom: ds.space[6],
-      backgroundColor: ds.semantic.surface.canvas,
-    },
-    headerEyebrow: {
-      ...ds.typography.caption,
-      color: ds.colors.textTertiary,
-      textTransform: 'uppercase',
-      letterSpacing: 1.2,
-      marginBottom: ds.space[1],
-    },
-    headerTitle: {
-      fontSize: 34,
-      fontWeight: '700',
-      color: ds.colors.textPrimary,
-      letterSpacing: -0.5,
-    },
-    headerSubtitle: {
-      ...ds.typography.body,
-      color: ds.colors.textTertiary,
-      marginTop: ds.space[1],
-    },
-
-    // Progress
-    progressCard: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: ds.semantic.surface.card,
-      borderRadius: ds.radius.xl,
-      padding: ds.semantic.layout.cardPadding,
-      marginTop: ds.space[5],
-      borderWidth: 1,
-      borderColor: ds.colors.borderSubtle,
-    },
-    progressCircle: {
-      width: 72,
-      height: 72,
-      borderRadius: 36,
-      backgroundColor: ds.colors.successMuted,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    progressPercent: {
-      fontSize: 22,
-      fontWeight: '700',
-      color: ds.colors.success,
-    },
-    progressStats: {
-      flex: 1,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginLeft: ds.space[4],
-    },
-    stat: {
-      alignItems: 'center',
-    },
-    statNumber: {
-      fontSize: 28,
-      fontWeight: '700',
-      color: ds.colors.textPrimary,
-    },
-    statLabel: {
-      ...ds.typography.caption,
-      color: ds.colors.textTertiary,
-      marginTop: 2,
-    },
-    statDivider: {
-      width: 1,
-      height: 40,
-      backgroundColor: ds.colors.divider,
-    },
-
-    // Scroll
     scroll: {
       flex: 1,
     },
@@ -489,147 +271,215 @@ const createStyles = (ds: DS) =>
       paddingTop: ds.space[4],
     },
 
-    // Step Card
-    stepCard: {
+    // Page header
+    pageHeader: {
       flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      marginBottom: 4,
+    },
+    pageTitle: {
+      fontSize: 28,
+      fontWeight: '700',
+      color: ds.colors.textPrimary,
+      letterSpacing: -0.3,
+    },
+    pageSubtitle: {
+      ...ds.typography.body,
+      color: ds.colors.textTertiary,
+      marginBottom: ds.space[5],
+      lineHeight: 22,
+    },
+
+    // Hero card
+    heroCard: {
+      backgroundColor: ds.semantic.surface.card,
+      borderRadius: ds.radius.xl,
+      borderWidth: 1,
+      borderColor: ds.colors.accent,
+      padding: ds.space[4],
+      marginBottom: ds.space[6],
+    },
+    heroTop: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    heroEyebrow: {
+      ...ds.typography.micro,
+      color: ds.colors.textTertiary,
+      textTransform: 'uppercase',
+      letterSpacing: 1,
+    },
+    heroBadge: {
+      paddingHorizontal: 10,
+      paddingVertical: 4,
+      borderRadius: 999,
+      backgroundColor: ds.colors.accentMuted,
+    },
+    heroBadgeComplete: {
+      backgroundColor: ds.colors.successMuted,
+    },
+    heroBadgeText: {
+      ...ds.typography.micro,
+      color: ds.colors.accent,
+      fontWeight: '700',
+    },
+    heroBadgeTextComplete: {
+      color: ds.colors.success,
+    },
+    heroStepTitle: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: ds.colors.textPrimary,
+      marginBottom: 4,
+    },
+    heroDescription: {
+      ...ds.typography.body,
+      color: ds.colors.textSecondary,
+      marginBottom: 14,
+      lineHeight: 22,
+    },
+    heroProgressWrap: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+      marginBottom: 14,
+    },
+    heroProgressTrack: {
+      flex: 1,
+      height: 6,
+      borderRadius: 999,
+      backgroundColor: ds.colors.bgTertiary,
+      overflow: 'hidden',
+    },
+    heroProgressFill: {
+      height: '100%',
+      borderRadius: 999,
+      backgroundColor: ds.colors.accent,
+    },
+    heroProgressText: {
+      ...ds.typography.caption,
+      color: ds.colors.accent,
+      fontWeight: '700',
+      minWidth: 36,
+      textAlign: 'right',
+    },
+    heroCTA: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 8,
+      backgroundColor: ds.colors.accent,
+      borderRadius: ds.radius.lg,
+      paddingVertical: 14,
+    },
+    heroCTAText: {
+      ...ds.typography.body,
+      color: ds.semantic.text.onDark,
+      fontWeight: '700',
+    },
+
+    // Section label
+    sectionLabel: {
+      ...ds.typography.h3,
+      color: ds.colors.textPrimary,
+      fontWeight: '700',
+      marginBottom: ds.space[3],
+    },
+
+    // Step row
+    stepRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
       backgroundColor: ds.semantic.surface.card,
       borderRadius: ds.radius.lg,
-      padding: ds.semantic.layout.cardPadding,
-      marginBottom: ds.space[3],
+      padding: 14,
+      marginBottom: 10,
       borderWidth: 1,
       borderColor: ds.colors.borderSubtle,
     },
-    stepCardCurrent: {
-      borderWidth: 2,
+    stepRowCurrent: {
       borderColor: ds.colors.accent,
-    },
-    stepCardCompleted: {
-      backgroundColor: ds.colors.successMuted,
-    },
-    stepCardLocked: {
-      opacity: 0.7,
     },
 
     // Badge
-    badgeWrap: {
-      width: 48,
-      height: 48,
+    rowBadge: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: ds.colors.bgTertiary,
       justifyContent: 'center',
       alignItems: 'center',
+      marginRight: 12,
     },
-    pulseRing: {
-      position: 'absolute',
-      width: 48,
-      height: 48,
-      borderRadius: 24,
+    rowBadgeCurrent: {
       backgroundColor: ds.colors.accent,
     },
-    badge: {
-      width: 48,
-      height: 48,
-      borderRadius: 24,
-      backgroundColor: ds.colors.bgQuaternary,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    badgeCompleted: {
+    rowBadgeCompleted: {
       backgroundColor: ds.colors.success,
     },
-    badgeCurrent: {
-      backgroundColor: ds.colors.accent,
-    },
-    badgeLocked: {
+    rowBadgeLocked: {
       backgroundColor: ds.colors.bgQuaternary,
     },
-    badgeText: {
-      fontSize: 20,
-      fontWeight: '600',
+    rowBadgeText: {
+      fontSize: 16,
+      fontWeight: '700',
       color: ds.colors.textTertiary,
     },
-    badgeTextCurrent: {
-      color: ds.semantic.surface.app,
+    rowBadgeTextCurrent: {
+      color: ds.semantic.text.onDark,
     },
 
-    // Content
-    stepContent: {
+    // Row content
+    rowContent: {
       flex: 1,
-      marginLeft: ds.space[4],
+      marginRight: 8,
     },
-    stepHeader: {
+    rowTitleRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      gap: 8,
     },
-    stepTitle: {
-      ...ds.typography.caption,
-      color: ds.colors.textTertiary,
-      textTransform: 'uppercase',
-      letterSpacing: 0.5,
-    },
-    stepName: {
+    rowTitle: {
       ...ds.typography.body,
-      fontWeight: '600',
+      fontWeight: '700',
       color: ds.colors.textPrimary,
-      marginTop: ds.space[1],
     },
-
-    // Status
-    statusRow: {
-      flexDirection: 'row',
-      gap: ds.space[2],
-      marginTop: ds.space[2],
-    },
-    statusBadgeCurrent: {
-      backgroundColor: ds.colors.accentMuted,
-      paddingHorizontal: ds.space[2],
-      paddingVertical: 2,
-      borderRadius: ds.radius.xs,
-    },
-    statusBadgeTextCurrent: {
-      ...ds.typography.micro,
-      color: ds.colors.accent,
-    },
-    statusBadgeComplete: {
-      backgroundColor: ds.colors.successMuted,
-      paddingHorizontal: ds.space[2],
-      paddingVertical: 2,
-      borderRadius: ds.radius.xs,
-    },
-    statusBadgeTextComplete: {
-      ...ds.typography.micro,
-      color: ds.colors.success,
-    },
-    statusBadgeLocked: {
-      backgroundColor: ds.colors.bgQuaternary,
-      paddingHorizontal: ds.space[2],
-      paddingVertical: 2,
-      borderRadius: ds.radius.xs,
-    },
-    statusBadgeTextLocked: {
-      ...ds.typography.micro,
+    rowTitleLocked: {
       color: ds.colors.textQuaternary,
     },
-
-    progressText: {
+    currentPill: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 999,
+      backgroundColor: ds.colors.accentMuted,
+    },
+    currentPillText: {
+      ...ds.typography.micro,
+      color: ds.colors.accent,
+      fontWeight: '700',
+    },
+    rowSubtitle: {
       ...ds.typography.caption,
       color: ds.colors.textTertiary,
-      marginTop: ds.space[2],
+      marginTop: 2,
     },
-
-    // Info
-    infoCard: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-      backgroundColor: ds.colors.infoMuted,
-      borderRadius: ds.radius.lg,
-      padding: ds.space[4],
-      marginTop: ds.space[4],
-      gap: ds.space[3],
+    rowSubtitleLocked: {
+      color: ds.colors.textQuaternary,
     },
-    infoText: {
-      flex: 1,
-      ...ds.typography.caption,
-      color: ds.colors.textSecondary,
-      lineHeight: 18,
+    rowProgressWrap: {
+      marginTop: 8,
+    },
+    rowProgressTrack: {
+      height: 3,
+      borderRadius: 999,
+      backgroundColor: ds.colors.bgTertiary,
+      overflow: 'hidden',
+    },
+    rowProgressFill: {
+      height: '100%',
+      borderRadius: 999,
     },
   }) as const;
