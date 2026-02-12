@@ -511,7 +511,7 @@ const createStyles = (ds: DS) =>
       backgroundColor: ds.colors.bgTertiary,
       borderRadius: 12,
       paddingHorizontal: ds.space[3],
-      height: 44,
+      height: ds.semantic.layout.touchTarget,
       gap: ds.space[2],
     },
     searchBarFocused: {
@@ -523,7 +523,7 @@ const createStyles = (ds: DS) =>
       flex: 1,
       ...ds.typography.body,
       color: ds.colors.textPrimary,
-      height: 44,
+      height: ds.semantic.layout.touchTarget,
     },
     micBtn: {
       width: 28,
@@ -532,7 +532,7 @@ const createStyles = (ds: DS) =>
       alignItems: 'center',
     },
     newNoteBtn: {
-      height: 44,
+      height: ds.semantic.layout.touchTarget,
       borderRadius: 12,
       backgroundColor: ds.colors.accentMuted,
       justifyContent: 'center',

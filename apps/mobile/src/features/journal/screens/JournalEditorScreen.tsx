@@ -468,8 +468,8 @@ const createStyles = (ds: DS) =>
       color: ds.colors.textTertiary,
     },
     newNoteBtn: {
-      width: 44,
-      height: 44,
+      width: ds.semantic.layout.touchTarget,
+      height: ds.semantic.layout.touchTarget,
       borderRadius: 12,
       backgroundColor: ds.colors.accentMuted,
       justifyContent: 'center' as const,
