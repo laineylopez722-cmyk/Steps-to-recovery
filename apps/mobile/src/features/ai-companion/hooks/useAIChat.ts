@@ -691,6 +691,23 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     if (!currentConversation) return;
 
     try {
+      // Check if offline first — show a static welcome instead of blank screen
+      const offline = await isOfflineMode();
+      if (offline) {
+        const offlineWelcome = userName
+          ? `Hey${userName ? ` ${userName}` : ''}. I'm here whenever you need to talk. Even without internet, I can still help — just say what's on your mind.`
+          : `Hey. I'm here whenever you need to talk. Even without internet, I can still help — just say what's on your mind.`;
+        const welcomeMsg = await chatHistory.addMessage(
+          currentConversation.id,
+          'assistant',
+          offlineWelcome,
+          { offline: true, offlineSource: 'prewritten' },
+        );
+        setMessages([welcomeMsg]);
+        setIsOfflineResponse(true);
+        return;
+      }
+
       const service = await getAIService();
       if (!(await service.isConfigured())) return;
 
@@ -703,22 +720,56 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           ? `The user just opened the chat for the first time. They have ${sobrietyDays} days sober. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy or use recovery clichés. Just be real and curious about how they're doing. Don't mention the day count unless it's a milestone.`
           : `The user just opened the chat for the first time. Send a warm, brief welcome (1-2 sentences max). Don't be cheesy. Just be real - you're here to listen.`;
 
-      const systemPrompt = getRecoverySystemPrompt({
-        sobrietyDays,
-        currentStep,
-        userName,
-        sponsorName,
-      });
+      const isOpenClaw = service.getProvider() === 'openclaw';
 
-      const aiMessages: ChatMessage[] = [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: welcomePrompt },
-      ];
+      let aiMessages: ChatMessage[];
+      if (isOpenClaw) {
+        // OpenClaw: SOUL.md handles personality; just send the welcome instruction
+        const contextParts: string[] = [];
+        if (userName) contextParts.push(`Their name is ${userName}.`);
+        if (sobrietyDays !== undefined) contextParts.push(`They have ${sobrietyDays} days of sobriety.`);
+        if (currentStep) contextParts.push(`Currently working on Step ${currentStep}.`);
+        aiMessages = [
+          ...(contextParts.length > 0 ? [{ role: 'system' as const, content: `About this user:\n${contextParts.join('\n')}` }] : []),
+          { role: 'user' as const, content: welcomePrompt },
+        ];
+      } else {
+        const systemPrompt = getRecoverySystemPrompt({
+          sobrietyDays,
+          currentStep,
+          userName,
+          sponsorName,
+        });
+        aiMessages = [
+          { role: 'system' as const, content: systemPrompt },
+          { role: 'user' as const, content: welcomePrompt },
+        ];
+      }
 
       let fullContent = '';
-      for await (const chunk of service.chat(aiMessages, { userId })) {
-        fullContent += chunk;
-        setStreamingContent(fullContent);
+      try {
+        for await (const chunk of service.chat(aiMessages, { userId })) {
+          fullContent += chunk;
+          setStreamingContent(fullContent);
+        }
+      } catch (streamErr) {
+        // Network error → show static welcome instead of blank screen
+        if (isNetworkOrServerError(streamErr)) {
+          logger.warn('Welcome stream failed, using offline welcome', streamErr);
+          const fallbackWelcome = userName
+            ? `Hey ${userName}. I'm here whenever you need to talk — just say what's on your mind.`
+            : `Hey. I'm here whenever you need to talk — just say what's on your mind.`;
+          const fallbackMsg = await chatHistory.addMessage(
+            currentConversation.id,
+            'assistant',
+            fallbackWelcome,
+            { offline: true, offlineSource: 'prewritten' },
+          );
+          setMessages([fallbackMsg]);
+          setIsOfflineResponse(true);
+          return;
+        }
+        throw streamErr;
       }
 
       // Save the welcome message
@@ -737,7 +788,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       setIsStreaming(false);
       setStreamingContent('');
     }
-  }, [currentConversation, sobrietyDays, currentStep, userName, sponsorName, chatHistory]);
+  }, [currentConversation, sobrietyDays, currentStep, userName, sponsorName, chatHistory, userId]);
 
   return {
     // State
