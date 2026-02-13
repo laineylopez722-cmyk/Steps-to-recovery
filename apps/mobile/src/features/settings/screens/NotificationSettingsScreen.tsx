@@ -29,6 +29,7 @@ import {
   sendEncouragementNotification,
 } from '../../../services/notificationService';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { useDs } from '../../../design-system/DsProvider';
 
 const RADIUS_OPTIONS: { value: GeofenceRadius; label: string }[] = [
@@ -98,6 +99,7 @@ function TimePickerRow({
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const [showPicker, setShowPicker] = useState(false);
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
 
   const formatTime = (h: number, m: number): string => {
     const period = h >= 12 ? 'PM' : 'AM';
@@ -124,6 +126,9 @@ function TimePickerRow({
           {enabled && (
             <Pressable
               onPress={() => setShowPicker(!showPicker)}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              style={animatedStyle}
               accessibilityRole="button"
               accessibilityLabel={`Change ${label} time`}
               accessibilityHint={`Current time is ${formatTime(hour, minute)}`}
@@ -156,7 +161,9 @@ function TimePickerRow({
           {Platform.OS === 'ios' && (
             <Pressable
               onPress={() => setShowPicker(false)}
-              style={styles.doneBtn}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              style={[styles.doneBtn, animatedStyle]}
               accessibilityRole="button"
               accessibilityLabel="Done selecting time"
             >
@@ -173,6 +180,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
   const navigation = useNavigation();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
   const { permissionStatus, requestPermissions, notificationsEnabled, setNotificationsEnabled } =
     useNotifications();
 
@@ -354,7 +362,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
         <View style={styles.header}>
           <Pressable
             onPress={() => navigation.goBack()}
-            style={styles.backBtn}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            style={[styles.backBtn, animatedStyle]}
             accessibilityRole="button"
             accessibilityLabel="Go back"
             accessibilityHint="Returns to previous screen"
@@ -497,9 +507,12 @@ export function NotificationSettingsScreen(): React.ReactElement {
                               <Pressable
                                 key={opt.value}
                                 onPress={() => handleSetGeofenceRadius(opt.value)}
+                                onPressIn={onPressIn}
+                                onPressOut={onPressOut}
                                 style={[
                                   styles.radiusChip,
                                   geofenceRadius === opt.value && styles.radiusChipActive,
+                                  animatedStyle,
                                 ]}
                                 accessibilityRole="radio"
                                 accessibilityLabel={`${opt.label} radius`}
@@ -555,7 +568,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
               <Animated.View entering={FadeInDown.delay(200).duration(300)}>
                 <Pressable
                   onPress={handleSendEncouragement}
-                  style={styles.applyBtn}
+                  onPressIn={onPressIn}
+                  onPressOut={onPressOut}
+                  style={[styles.applyBtn, animatedStyle]}
                   accessibilityRole="button"
                   accessibilityLabel="Send encouragement notification"
                   accessibilityHint="Sends an encouraging message right now"
@@ -568,7 +583,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
               <Animated.View entering={FadeInDown.delay(250).duration(300)}>
                 <Pressable
                   onPress={handleSendTest}
-                  style={styles.testBtn}
+                  onPressIn={onPressIn}
+                  onPressOut={onPressOut}
+                  style={[styles.testBtn, animatedStyle]}
                   accessibilityRole="button"
                   accessibilityLabel="Send test notification"
                   accessibilityHint="Sends a sample notification to preview how reminders will look"
@@ -599,7 +616,9 @@ export function NotificationSettingsScreen(): React.ReactElement {
               </Text>
               <Pressable
                 onPress={requestPermissions}
-                style={styles.permissionBtn}
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                style={[styles.permissionBtn, animatedStyle]}
                 accessibilityRole="button"
                 accessibilityLabel="Grant notification permission"
                 accessibilityHint="Opens system settings to allow notifications"
@@ -754,8 +773,8 @@ const createStyles = (ds: DS) =>
 
     // Section Header
     sectionHeader: {
-      ...ds.typography.caption,
-      color: ds.colors.textTertiary,
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
       textTransform: 'uppercase',
       letterSpacing: 1,
       marginTop: ds.space[4],

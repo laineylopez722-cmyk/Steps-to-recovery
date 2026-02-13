@@ -21,6 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
+import { useMotionPress } from '../design-system/hooks/useMotionPress';
 import { useDs } from '../design-system/DsProvider';
 import { darkAccent, gradients, spacing, typography } from '../design-system/tokens/modern';
 import { Text } from '../design-system/components/Text';
@@ -47,6 +48,7 @@ export function BiometricLockScreen({
   const ds = useDs();
   const [showPinEntry, setShowPinEntry] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
 
   const pulse = useSharedValue(1);
   const fadeIn = useSharedValue(0);
@@ -160,7 +162,9 @@ export function BiometricLockScreen({
                       return (
                         <Pressable
                           key="delete"
-                          style={styles.numPadButton}
+                          style={[styles.numPadButton, animatedStyle]}
+                          onPressIn={onPressIn}
+                          onPressOut={onPressOut}
                           onPress={handleBackspace}
                           accessibilityLabel="Delete last digit"
                           accessibilityRole="button"
@@ -176,10 +180,9 @@ export function BiometricLockScreen({
                     return (
                       <Pressable
                         key={digit}
-                        style={({ pressed }) => [
-                          styles.numPadButton,
-                          pressed && styles.numPadButtonPressed,
-                        ]}
+                        style={[styles.numPadButton, animatedStyle]}
+                        onPressIn={onPressIn}
+                        onPressOut={onPressOut}
                         onPress={() => handleDigit(digit)}
                         disabled={isValidating}
                         accessibilityLabel={`Digit ${digit}`}
@@ -199,7 +202,9 @@ export function BiometricLockScreen({
                 clearPin();
                 setShowPinEntry(false);
               }}
-              style={styles.switchMethod}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              style={[styles.switchMethod, animatedStyle]}
               accessibilityLabel={`Use ${biometricType} instead`}
               accessibilityRole="button"
             >
@@ -210,7 +215,9 @@ export function BiometricLockScreen({
           {/* Emergency access */}
           <Pressable
             onPress={handleEmergency}
-            style={styles.emergencyButton}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            style={[styles.emergencyButton, animatedStyle]}
             accessibilityLabel="Emergency access to crisis resources"
             accessibilityRole="button"
             accessibilityHint="Bypasses lock to access emergency helplines and safety plan"
@@ -247,7 +254,9 @@ export function BiometricLockScreen({
           {/* Biometric Button */}
           <Pressable
             onPress={handleBiometricAuth}
-            style={({ pressed }) => [styles.authButton, pressed && styles.authButtonPressed]}
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            style={[styles.authButton, animatedStyle]}
             disabled={isAuthenticating}
             accessibilityLabel={`Unlock app with ${biometricType}`}
             accessibilityRole="button"
@@ -270,7 +279,9 @@ export function BiometricLockScreen({
           {hasPinSet ? (
             <Pressable
               onPress={() => setShowPinEntry(true)}
-              style={styles.pinFallback}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              style={[styles.pinFallback, animatedStyle]}
               accessibilityLabel="Enter PIN instead"
               accessibilityRole="button"
               accessibilityHint="Switch to PIN entry to unlock the app"
@@ -283,7 +294,9 @@ export function BiometricLockScreen({
         {/* Emergency access - always visible */}
         <Pressable
           onPress={handleEmergency}
-          style={styles.emergencyButton}
+          onPressIn={onPressIn}
+          onPressOut={onPressOut}
+          style={[styles.emergencyButton, animatedStyle]}
           accessibilityLabel="Emergency access to crisis resources"
           accessibilityRole="button"
           accessibilityHint="Bypasses lock to access emergency helplines and safety plan"

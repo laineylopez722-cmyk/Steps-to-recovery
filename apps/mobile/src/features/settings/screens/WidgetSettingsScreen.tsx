@@ -19,6 +19,7 @@ import * as Haptics from 'expo-haptics';
 import { Toggle } from '../../../design-system/components/Toggle';
 import { Text } from '../../../design-system/components/Text';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { useWidgetSync } from '../../../hooks/useWidgetSync';
@@ -55,6 +56,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
   const [prefs, setPrefs] = useState<WidgetPreferences>(DEFAULT_PREFS);
   const [previewData, setPreviewData] = useState<WidgetBridgePayload | null>(null);
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
 
   // Load latest preview data
   useEffect(() => {
@@ -218,11 +220,13 @@ export function WidgetSettingsScreen(): React.ReactElement {
                 </View>
                 <Pressable
                   onPress={handleManualSync}
+                  onPressIn={onPressIn}
+                  onPressOut={onPressOut}
                   disabled={isSyncing}
                   accessibilityRole="button"
                   accessibilityLabel="Sync widget data now"
                   accessibilityState={{ disabled: isSyncing }}
-                  style={({ pressed }) => [styles.syncButton, pressed && styles.syncButtonPressed]}
+                  style={[styles.syncButton, animatedStyle]}
                 >
                   <Text style={[styles.syncButtonText, isSyncing && styles.disabledText]}>
                     {isSyncing ? 'Syncing…' : 'Sync Now'}
@@ -457,8 +461,8 @@ const createStyles = (ds: DS) => ({
 
   // Section Header
   sectionHeader: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
+    ...ds.semantic.typography.sectionLabel,
+    color: ds.semantic.text.secondary,
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
     marginTop: ds.space[6],

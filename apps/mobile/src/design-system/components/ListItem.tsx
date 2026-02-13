@@ -6,7 +6,7 @@
 import { View, Text, StyleSheet, type ViewStyle, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
-import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 type MaterialIconName = ComponentProps<typeof MaterialIcons>['name'];
 
@@ -39,14 +39,14 @@ export function ListItem({
   accessibilityLabel,
   accessibilityHint,
 }: ListItemProps): ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   const content = (
     <View
       style={[
         styles.container,
         {
-          backgroundColor: theme.colors.surface,
+          backgroundColor: ds.semantic.surface.card,
         },
         containerStyle,
       ]}
@@ -55,7 +55,7 @@ export function ListItem({
       {leftElement || icon ? (
         <View style={styles.leftContainer}>
           {leftElement || (
-            <MaterialIcons name={icon} size={24} color={iconColor || theme.colors.primary} />
+            <MaterialIcons name={icon} size={24} color={iconColor || ds.semantic.intent.primary.solid} />
           )}
         </View>
       ) : null}
@@ -64,8 +64,8 @@ export function ListItem({
       <View style={styles.contentContainer}>
         <Text
           style={[
-            theme.typography.body,
-            { color: disabled ? theme.colors.textSecondary : theme.colors.text },
+            ds.semantic.typography.body,
+            { color: disabled ? ds.semantic.text.secondary : ds.semantic.text.primary },
           ]}
           numberOfLines={1}
         >
@@ -73,7 +73,7 @@ export function ListItem({
         </Text>
         {value && (
           <Text
-            style={[theme.typography.caption, { color: theme.colors.textSecondary }, styles.value]}
+            style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }, styles.value]}
             numberOfLines={1}
           >
             {value}
@@ -85,7 +85,7 @@ export function ListItem({
       {rightElement || showChevron ? (
         <View style={styles.rightContainer}>
           {rightElement || (
-            <MaterialIcons name="chevron-right" size={24} color={theme.colors.textSecondary} />
+            <MaterialIcons name="chevron-right" size={24} color={ds.semantic.text.secondary} />
           )}
         </View>
       ) : null}

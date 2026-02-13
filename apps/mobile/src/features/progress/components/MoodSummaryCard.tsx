@@ -5,7 +5,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, GlassCard } from '../../../design-system';
+import { GlassCard } from '../../../design-system';
+import { useDs } from '../../../design-system/DsProvider';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import type { MoodTrendData } from '../hooks/useMoodTrends';
@@ -29,7 +30,7 @@ function formatDiff(
 }
 
 export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   const moodDiff = formatDiff(data.weekAvgMood, data.lastWeekAvgMood);
@@ -46,10 +47,10 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
 
   const overallTrendColor =
     data.trend === 'improving'
-      ? theme.colors.success
+      ? ds.semantic.intent.success.solid
       : data.trend === 'declining'
-        ? theme.colors.danger
-        : theme.colors.textSecondary;
+        ? ds.semantic.intent.alert.solid
+        : ds.semantic.text.secondary;
 
   const summaryLabel = `Recovery summary: ${data.goodDayStreak} good day streak, mood ${data.trend}, average mood ${data.weekAvgMood.toFixed(1)} this week`;
 
@@ -64,7 +65,7 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <MaterialCommunityIcons name="chart-arc" size={20} color={aestheticColors.gold.DEFAULT} />
-          <Text style={[styles.title, { color: theme.colors.text }]}>Weekly Summary</Text>
+          <Text style={styles.title}>WEEKLY SUMMARY</Text>
         </View>
         <View style={styles.trendBadge}>
           <MaterialCommunityIcons name={overallTrendIcon} size={18} color={overallTrendColor} />
@@ -82,7 +83,7 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
           </Text>
         </View>
         <Text
-          style={[styles.streakLabel, { color: theme.colors.textSecondary }]}
+          style={styles.streakLabel}
           accessibilityLabel={`${data.goodDayStreak} consecutive good days with mood 3 or above`}
         >
           good day streak (mood ≥ 3)
@@ -93,50 +94,50 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
       <View style={styles.statsGrid}>
         {/* Mood this week */}
         <View style={styles.statItem}>
-          <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-            Mood (this week)
-          </Text>
+          <Text style={styles.statLabel}>Mood (this week)</Text>
           <View style={styles.statValueRow}>
-            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-              {data.weekAvgMood.toFixed(1)}
-            </Text>
+            <Text style={styles.statValue}>{data.weekAvgMood.toFixed(1)}</Text>
             {!moodDiff.isNeutral && (
               <Text
                 style={[
                   styles.diffText,
-                  { color: moodDiff.isPositive ? theme.colors.success : theme.colors.danger },
+                  {
+                    color: moodDiff.isPositive
+                      ? ds.semantic.intent.success.solid
+                      : ds.semantic.intent.alert.solid,
+                  },
                 ]}
               >
                 {moodDiff.text}
               </Text>
             )}
           </View>
-          <Text style={[styles.comparisonText, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.comparisonText}>
             vs {data.lastWeekAvgMood.toFixed(1)} last week
           </Text>
         </View>
 
         {/* Craving this week */}
         <View style={styles.statItem}>
-          <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-            Craving (this week)
-          </Text>
+          <Text style={styles.statLabel}>Craving (this week)</Text>
           <View style={styles.statValueRow}>
-            <Text style={[styles.statValue, { color: theme.colors.text }]}>
-              {data.weekAvgCraving.toFixed(1)}
-            </Text>
+            <Text style={styles.statValue}>{data.weekAvgCraving.toFixed(1)}</Text>
             {!cravingDiff.isNeutral && (
               <Text
                 style={[
                   styles.diffText,
-                  { color: cravingIsPositive ? theme.colors.success : theme.colors.danger },
+                  {
+                    color: cravingIsPositive
+                      ? ds.semantic.intent.success.solid
+                      : ds.semantic.intent.alert.solid,
+                  },
                 ]}
               >
                 {cravingDiff.text}
               </Text>
             )}
           </View>
-          <Text style={[styles.comparisonText, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.comparisonText}>
             vs {data.lastWeekAvgCraving.toFixed(1)} last week
           </Text>
         </View>
@@ -147,23 +148,25 @@ export function MoodSummaryCard({ data }: MoodSummaryCardProps): React.ReactElem
 
 const createStyles = (ds: DS) => ({
   card: {
-    marginBottom: 16,
-    padding: 20,
+    marginBottom: ds.semantic.layout.sectionGap,
+    padding: ds.semantic.layout.cardPadding,
+    borderRadius: ds.radius.lg,
   },
   header: {
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
     alignItems: 'center' as const,
-    marginBottom: 16,
+    marginBottom: ds.space[4],
   },
   titleRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 8,
+    gap: ds.space[2],
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600' as const,
+    ...ds.semantic.typography.sectionLabel,
+    color: ds.semantic.text.secondary,
+    letterSpacing: 1,
   },
   trendBadge: {
     flexDirection: 'row' as const,
@@ -172,54 +175,56 @@ const createStyles = (ds: DS) => ({
   streakRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 12,
-    marginBottom: 16,
-    paddingBottom: 16,
+    gap: ds.space[3],
+    marginBottom: ds.space[4],
+    paddingBottom: ds.space[4],
     borderBottomWidth: 1,
-    borderBottomColor: ds.colors.borderSubtle,
+    borderBottomColor: ds.semantic.surface.overlay,
   },
   streakBadge: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
+    gap: ds.space[2],
+    paddingHorizontal: ds.space[3],
+    paddingVertical: ds.space[2],
+    borderRadius: ds.radius.full,
   },
   streakValue: {
-    fontSize: 18,
-    fontWeight: '700' as const,
+    ...ds.typography.h3,
   },
   streakLabel: {
-    fontSize: 13,
+    ...ds.semantic.typography.bodySmall,
+    color: ds.semantic.text.secondary,
     flex: 1,
   },
   statsGrid: {
     flexDirection: 'row' as const,
-    gap: 16,
+    gap: ds.space[4],
   },
   statItem: {
     flex: 1,
   },
   statLabel: {
-    fontSize: 12,
-    marginBottom: 4,
+    ...ds.semantic.typography.bodySmall,
+    color: ds.semantic.text.secondary,
+    marginBottom: ds.space[1],
   },
   statValueRow: {
     flexDirection: 'row' as const,
     alignItems: 'baseline' as const,
-    gap: 6,
+    gap: ds.space[2],
   },
   statValue: {
-    fontSize: 24,
-    fontWeight: '700' as const,
+    ...ds.typography.h2,
+    color: ds.semantic.text.primary,
   },
   diffText: {
-    fontSize: 13,
+    ...ds.semantic.typography.bodySmall,
     fontWeight: '600' as const,
   },
   comparisonText: {
-    fontSize: 11,
+    ...ds.semantic.typography.meta,
+    color: ds.semantic.text.secondary,
     marginTop: 2,
   },
 });

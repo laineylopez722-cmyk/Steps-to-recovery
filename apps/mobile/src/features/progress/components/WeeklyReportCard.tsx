@@ -6,11 +6,11 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
-import { GlassCard } from '../../../design-system';
-import { useTheme } from '../../../design-system/hooks/useTheme';
+import { GlassCard, SkeletonCard } from '../../../design-system';
+import { useDs } from '../../../design-system/DsProvider';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
@@ -40,12 +40,14 @@ function TrendArrow({
   direction: TrendDirection;
   invertColor?: boolean;
 }): React.ReactElement | null {
-  const theme = useTheme();
+  const ds = useDs();
 
   if (direction === 'flat') return null;
 
   const isPositive = invertColor ? direction === 'down' : direction === 'up';
-  const color = isPositive ? theme.colors.success : theme.colors.danger;
+  const color = isPositive
+    ? ds.semantic.intent.success.solid
+    : ds.semantic.intent.alert.solid;
   const icon = direction === 'up' ? 'arrow-up' : 'arrow-down';
 
   return (
@@ -71,7 +73,6 @@ function StatItem({
   trend: TrendDirection;
   invertColor?: boolean;
 }): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
   return (
@@ -83,10 +84,10 @@ function StatItem({
       <MaterialCommunityIcons name={icon} size={18} color={aestheticColors.primary[500]} />
       <View style={styles.statContent}>
         <View style={styles.statValueRow}>
-          <Text style={[styles.statValue, { color: theme.colors.text }]}>{value}</Text>
+          <Text style={styles.statValue}>{value}</Text>
           <TrendArrow direction={trend} invertColor={invertColor} />
         </View>
-        <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>{label}</Text>
+        <Text style={styles.statLabel}>{label}</Text>
       </View>
     </View>
   );
@@ -99,13 +100,13 @@ export function WeeklyReportCard({
   isGenerating,
   onGenerate,
 }: WeeklyReportCardProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   if (isLoading) {
     return (
       <GlassCard intensity="subtle" style={styles.card}>
-        <ActivityIndicator color={aestheticColors.primary[500]} />
+        <SkeletonCard />
       </GlassCard>
     );
   }
@@ -115,15 +116,17 @@ export function WeeklyReportCard({
       <Animated.View entering={ScreenAnimations.entrance}>
         <GlassCard intensity="subtle" style={styles.card}>
           <View style={styles.emptyState}>
-            <MaterialCommunityIcons name="chart-bar" size={32} color={theme.colors.textSecondary} />
-            <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
-              No weekly report yet
-            </Text>
-            <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
+            <MaterialCommunityIcons
+              name="chart-bar"
+              size={32}
+              color={ds.semantic.text.secondary}
+            />
+            <Text style={styles.emptyTitle}>No weekly report yet</Text>
+            <Text style={styles.emptySubtitle}>
               Generate your first weekly recovery summary
             </Text>
             <Pressable
-              style={[styles.generateButton, { backgroundColor: aestheticColors.primary[500] }]}
+              style={styles.generateButton}
               onPress={onGenerate}
               disabled={isGenerating}
               accessibilityLabel="Generate weekly report"
@@ -131,7 +134,7 @@ export function WeeklyReportCard({
               accessibilityState={{ disabled: isGenerating }}
             >
               {isGenerating ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <SkeletonCard lines={1} />
               ) : (
                 <Text style={styles.generateButtonText}>Generate Report</Text>
               )}
@@ -163,9 +166,9 @@ export function WeeklyReportCard({
               size={20}
               color={aestheticColors.primary[500]}
             />
-            <Text style={[styles.title, { color: theme.colors.text }]}>Weekly Summary</Text>
+            <Text style={styles.title}>WEEKLY SUMMARY</Text>
           </View>
-          <Text style={[styles.dateRange, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.dateRange}>
             {report.weekStarting} — {report.weekEnding}
           </Text>
         </View>
@@ -201,8 +204,8 @@ export function WeeklyReportCard({
 
         {/* Step Work */}
         <View style={styles.stepWorkRow}>
-          <MaterialCommunityIcons name="stairs" size={16} color={theme.colors.textSecondary} />
-          <Text style={[styles.stepWorkText, { color: theme.colors.textSecondary }]}>
+          <MaterialCommunityIcons name="stairs" size={16} color={ds.semantic.text.secondary} />
+          <Text style={styles.stepWorkText}>
             Step {report.stepWorkSummary.currentStep} • {report.stepWorkSummary.entriesThisWeek}{' '}
             entries this week
           </Text>
@@ -214,7 +217,7 @@ export function WeeklyReportCard({
             {report.highlights.map((h, i) => (
               <Text
                 key={i}
-                style={[styles.highlightText, { color: theme.colors.text }]}
+                style={styles.highlightText}
                 accessibilityLabel={h}
                 accessibilityRole="text"
               >
@@ -230,7 +233,7 @@ export function WeeklyReportCard({
         >
           <MaterialCommunityIcons name="heart" size={16} color={aestheticColors.primary[500]} />
           <Text
-            style={[styles.encouragementText, { color: theme.colors.text }]}
+            style={styles.encouragementText}
             accessibilityLabel={`Encouragement: ${report.encouragement}`}
             accessibilityRole="text"
           >
@@ -248,7 +251,7 @@ export function WeeklyReportCard({
           accessibilityState={{ disabled: isGenerating }}
         >
           {isGenerating ? (
-            <ActivityIndicator color={aestheticColors.primary[500]} size="small" />
+            <SkeletonCard lines={1} />
           ) : (
             <>
               <MaterialCommunityIcons
@@ -256,9 +259,7 @@ export function WeeklyReportCard({
                 size={14}
                 color={aestheticColors.primary[500]}
               />
-              <Text style={[styles.regenerateText, { color: aestheticColors.primary[500] }]}>
-                Refresh
-              </Text>
+              <Text style={styles.regenerateText}>Refresh</Text>
             </>
           )}
         </Pressable>
@@ -270,39 +271,42 @@ export function WeeklyReportCard({
 const createStyles = (ds: DS) =>
   StyleSheet.create({
     card: {
-      padding: 20,
-      marginBottom: 20,
+      padding: ds.semantic.layout.cardPadding,
+      marginBottom: ds.semantic.layout.sectionGap,
+      borderRadius: ds.radius.lg,
     },
     header: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 16,
+      marginBottom: ds.space[4],
     },
     headerLeft: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: ds.space[2],
     },
     title: {
-      fontSize: 18,
-      fontWeight: '600',
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
+      letterSpacing: 1,
     },
     dateRange: {
-      fontSize: 12,
+      ...ds.semantic.typography.meta,
+      color: ds.semantic.text.secondary,
     },
     statsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: 12,
-      marginBottom: 16,
+      gap: ds.space[3],
+      marginBottom: ds.space[4],
     },
     statItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
+      gap: ds.space[2],
       width: '46%',
-      minHeight: 48,
+      minHeight: ds.semantic.layout.touchTarget,
     },
     statContent: {
       flex: 1,
@@ -310,88 +314,95 @@ const createStyles = (ds: DS) =>
     statValueRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 4,
+      gap: ds.space[1],
     },
     statValue: {
-      fontSize: 16,
-      fontWeight: '700',
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
     },
     statLabel: {
-      fontSize: 11,
+      ...ds.semantic.typography.meta,
+      color: ds.semantic.text.secondary,
       marginTop: 2,
     },
     stepWorkRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
-      marginBottom: 12,
-      paddingTop: 12,
+      gap: ds.space[2],
+      marginBottom: ds.space[3],
+      paddingTop: ds.space[3],
       borderTopWidth: StyleSheet.hairlineWidth,
-      borderTopColor: ds.colors.borderSubtle,
+      borderTopColor: ds.semantic.surface.overlay,
     },
     stepWorkText: {
-      fontSize: 13,
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.secondary,
     },
     highlights: {
-      gap: 4,
-      marginBottom: 12,
+      gap: ds.space[1],
+      marginBottom: ds.space[3],
     },
     highlightText: {
-      fontSize: 13,
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.primary,
       lineHeight: 20,
     },
     encouragement: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      gap: 8,
-      padding: 12,
-      borderRadius: 12,
-      marginBottom: 12,
+      gap: ds.space[2],
+      padding: ds.space[3],
+      borderRadius: ds.radius.md,
+      marginBottom: ds.space[3],
     },
     encouragementText: {
-      fontSize: 13,
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.primary,
       lineHeight: 20,
       flex: 1,
       fontStyle: 'italic',
     },
     emptyState: {
       alignItems: 'center',
-      gap: 8,
-      paddingVertical: 16,
+      gap: ds.space[2],
+      paddingVertical: ds.space[4],
     },
     emptyTitle: {
-      fontSize: 16,
-      fontWeight: '600',
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
     },
     emptySubtitle: {
-      fontSize: 13,
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.secondary,
       textAlign: 'center',
     },
     generateButton: {
-      paddingHorizontal: 24,
-      paddingVertical: 12,
-      borderRadius: 12,
-      marginTop: 8,
-      minHeight: 48,
-      minWidth: 48,
+      backgroundColor: ds.semantic.intent.primary.solid,
+      paddingHorizontal: ds.space[5],
+      paddingVertical: ds.space[3],
+      borderRadius: ds.radius.md,
+      marginTop: ds.space[2],
+      minHeight: ds.semantic.layout.touchTarget,
+      minWidth: ds.semantic.layout.touchTarget,
       justifyContent: 'center',
       alignItems: 'center',
     },
     generateButtonText: {
-      color: '#FFFFFF',
-      fontSize: 15,
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.inverse,
       fontWeight: '600',
     },
     regenerateButton: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: 4,
-      paddingVertical: 8,
-      minHeight: 48,
+      gap: ds.space[1],
+      paddingVertical: ds.space[2],
+      minHeight: ds.semantic.layout.touchTarget,
     },
     regenerateText: {
-      fontSize: 13,
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.intent.primary.solid,
       fontWeight: '500',
     },
   });

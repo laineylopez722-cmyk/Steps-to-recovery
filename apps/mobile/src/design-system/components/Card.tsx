@@ -12,6 +12,7 @@ import {
   type AccessibilityRole,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 import { useFadeAndScaleIn, usePressAnimation } from '../hooks/useAnimation';
 import { hapticImpact } from '../../utils/haptics';
 
@@ -43,6 +44,7 @@ export function Card({
   accessibilityHint,
 }: CardProps) {
   const theme = useTheme();
+  const ds = useDs();
   const { fadeAnim, scaleAnim } = useFadeAndScaleIn(0);
   const { scaleAnim: pressScale, animatePress } = usePressAnimation(theme.animations.scales.press);
 
@@ -62,14 +64,14 @@ export function Card({
     if (variant === 'outlined' || variant === 'outline') {
       return {
         borderWidth: 1,
-        borderColor: theme.isDark ? theme.colors.border : theme.colors.borderLight,
+        borderColor: theme.isDark ? ds.semantic.surface.overlay : 'rgba(0,0,0,0.08)',
       };
     }
     return {};
   };
 
   const cardStyle: ViewStyle = {
-    backgroundColor: theme.colors.surface,
+    backgroundColor: ds.semantic.surface.card,
     borderRadius: theme.radius.card,
     padding: theme.spacing.cardPadding,
     ...getShadow(),

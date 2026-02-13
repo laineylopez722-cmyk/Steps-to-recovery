@@ -7,7 +7,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,13 +14,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
-import { useTheme } from '../../../design-system/hooks/useTheme';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { Input, Button, Card, Modal, TextArea, Toast } from '../../../design-system/components';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSponsorConnections } from '../hooks';
 
 export function ConnectSponsorScreen(): React.ReactElement {
-  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const { connectAsSponsor } = useSponsorConnections(userId);
@@ -63,10 +63,7 @@ export function ConnectSponsorScreen(): React.ReactElement {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-      edges={['bottom']}
-    >
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -76,48 +73,48 @@ export function ConnectSponsorScreen(): React.ReactElement {
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
-            <Text
-              style={[theme.typography.largeTitle, { color: theme.colors.text, marginBottom: 8 }]}
-            >
-              Connect as Sponsor
-            </Text>
-            <Text
-              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 22 }]}
-            >
+          <Animated.View entering={FadeInDown.duration(300)} style={styles.header}>
+            <Text style={styles.screenTitle}>Connect as Sponsor</Text>
+            <Text style={styles.headerSubtitle}>
               Paste the invite payload from your sponsee. You will receive a confirmation payload to
               send back.
             </Text>
-          </View>
+          </Animated.View>
 
-          <Input
-            label="Your name (optional)"
-            value={sponsorName}
-            onChangeText={setSponsorName}
-            placeholder="Name shown to your sponsee"
-            autoCapitalize="words"
-            accessibilityLabel="Your name"
-          />
+          <Animated.View entering={FadeInDown.delay(100).duration(300)}>
+            <Input
+              label="Your name (optional)"
+              value={sponsorName}
+              onChangeText={setSponsorName}
+              placeholder="Name shown to your sponsee"
+              autoCapitalize="words"
+              accessibilityLabel="Your name"
+            />
+          </Animated.View>
 
-          <TextArea
-            label="Invite payload"
-            value={invitePayload}
-            onChangeText={setInvitePayload}
-            placeholder="Paste RCINVITE payload here"
-            minHeight={160}
-            accessibilityLabel="Invite payload input"
-          />
+          <Animated.View entering={FadeInDown.delay(150).duration(300)}>
+            <TextArea
+              label="Invite payload"
+              value={invitePayload}
+              onChangeText={setInvitePayload}
+              placeholder="Paste RCINVITE payload here"
+              minHeight={160}
+              accessibilityLabel="Invite payload input"
+            />
+          </Animated.View>
 
-          <Button
-            title="Create Confirmation"
-            onPress={handleConnect}
-            variant="primary"
-            size="large"
-            disabled={loading || !invitePayload.trim()}
-            loading={loading}
-            style={{ marginTop: 16 }}
-            accessibilityLabel="Create confirmation payload"
-          />
+          <Animated.View entering={FadeInDown.delay(200).duration(300)}>
+            <Button
+              title="Create Confirmation"
+              onPress={handleConnect}
+              variant="primary"
+              size="large"
+              disabled={loading || !invitePayload.trim()}
+              loading={loading}
+              style={styles.submitButton}
+              accessibilityLabel="Create confirmation payload"
+            />
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -143,9 +140,7 @@ export function ConnectSponsorScreen(): React.ReactElement {
         ]}
       >
         <Card variant="outlined" style={styles.payloadCard}>
-          <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-            Confirmation payload
-          </Text>
+          <Text style={styles.payloadLabel}>Confirmation payload</Text>
           <TextArea
             label=""
             value={confirmationPayload}
@@ -182,22 +177,42 @@ export function ConnectSponsorScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  payloadCard: {
-    marginTop: 12,
-    padding: 12,
-  },
-});
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.semantic.surface.app,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    contentContainer: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingTop: ds.space[5],
+      paddingBottom: ds.space[10],
+    },
+    header: {
+      marginBottom: ds.semantic.layout.sectionGap,
+    },
+    screenTitle: {
+      ...ds.semantic.typography.screenTitle,
+      color: ds.semantic.text.primary,
+      marginBottom: ds.space[2],
+    },
+    headerSubtitle: {
+      ...ds.semantic.typography.body,
+      color: ds.semantic.text.secondary,
+      lineHeight: 22,
+    },
+    submitButton: {
+      marginTop: ds.space[4],
+    },
+    payloadCard: {
+      marginTop: ds.space[3],
+      padding: ds.space[3],
+    },
+    payloadLabel: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
+    },
+  }) as const;

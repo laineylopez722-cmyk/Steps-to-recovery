@@ -8,7 +8,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, GlassCard } from '../../../design-system';
+import { GlassCard } from '../../../design-system';
+import { useDs } from '../../../design-system/DsProvider';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import type { CravingSurfSummary } from '../types';
@@ -18,17 +19,19 @@ interface CravingSurfStatsProps {
 }
 
 export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   const reductionColor =
-    summary.averageReduction > 0 ? theme.colors.success : theme.colors.textSecondary;
+    summary.averageReduction > 0
+      ? ds.semantic.intent.success.solid
+      : ds.semantic.text.secondary;
   const successColor =
     summary.successRate >= 70
-      ? theme.colors.success
+      ? ds.semantic.intent.success.solid
       : summary.successRate >= 40
-        ? theme.colors.warning
-        : theme.colors.textSecondary;
+        ? ds.semantic.intent.warning.solid
+        : ds.semantic.text.secondary;
 
   const accessibilityDescription =
     summary.totalSessions > 0
@@ -46,7 +49,7 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <MaterialCommunityIcons name="waves" size={20} color={aestheticColors.primary[500]} />
-          <Text style={[styles.title, { color: theme.colors.text }]}>Craving Surf Sessions</Text>
+          <Text style={styles.title}>CRAVING SURF SESSIONS</Text>
         </View>
       </View>
 
@@ -65,14 +68,12 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
                 />
               </View>
               <Text
-                style={[styles.statValue, { color: theme.colors.text }]}
+                style={styles.statValue}
                 accessibilityLabel={`${summary.totalSessions} total sessions`}
               >
                 {summary.totalSessions}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-                Sessions
-              </Text>
+              <Text style={styles.statLabel}>Sessions</Text>
             </View>
 
             <View style={styles.statItem}>
@@ -80,15 +81,13 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
                 <MaterialCommunityIcons name="arrow-down" size={18} color={reductionColor} />
               </View>
               <Text
-                style={[styles.statValue, { color: theme.colors.text }]}
+                style={styles.statValue}
                 accessibilityLabel={`Average reduction of ${summary.averageReduction.toFixed(1)} points`}
               >
                 {summary.averageReduction > 0 ? '-' : ''}
                 {summary.averageReduction.toFixed(1)}
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-                Avg Reduction
-              </Text>
+              <Text style={styles.statLabel}>Avg Reduction</Text>
             </View>
 
             <View style={styles.statItem}>
@@ -100,14 +99,12 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
                 />
               </View>
               <Text
-                style={[styles.statValue, { color: theme.colors.text }]}
+                style={styles.statValue}
                 accessibilityLabel={`${summary.successRate}% success rate`}
               >
                 {summary.successRate}%
               </Text>
-              <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-                Success Rate
-              </Text>
+              <Text style={styles.statLabel}>Success Rate</Text>
             </View>
           </View>
 
@@ -115,11 +112,9 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
           {summary.mostEffectiveTechnique && (
             <View style={[styles.techniqueRow]}>
               <MaterialCommunityIcons name="star" size={16} color={aestheticColors.gold.DEFAULT} />
-              <Text style={[styles.techniqueLabel, { color: theme.colors.textSecondary }]}>
-                Most Effective:
-              </Text>
+              <Text style={styles.techniqueLabel}>Most Effective:</Text>
               <Text
-                style={[styles.techniqueValue, { color: theme.colors.text }]}
+                style={styles.techniqueValue}
                 accessibilityLabel={`Most effective technique: ${summary.mostEffectiveTechnique}`}
               >
                 {summary.mostEffectiveTechnique}
@@ -129,7 +124,7 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
         </>
       ) : (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.emptyText}>
             Use the Craving Surf tool when cravings arise to track your progress here
           </Text>
         </View>
@@ -140,28 +135,30 @@ export function CravingSurfStats({ summary }: CravingSurfStatsProps): React.Reac
 
 const createStyles = (ds: DS) => ({
   card: {
-    marginBottom: 16,
-    padding: 20,
+    marginBottom: ds.semantic.layout.sectionGap,
+    padding: ds.semantic.layout.cardPadding,
+    borderRadius: ds.radius.lg,
   },
   header: {
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
     alignItems: 'center' as const,
-    marginBottom: 16,
+    marginBottom: ds.space[4],
   },
   titleRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 8,
+    gap: ds.space[2],
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600' as const,
+    ...ds.semantic.typography.sectionLabel,
+    color: ds.semantic.text.secondary,
+    letterSpacing: 1,
   },
   statsGrid: {
     flexDirection: 'row' as const,
     justifyContent: 'space-between' as const,
-    gap: 12,
+    gap: ds.space[3],
   },
   statItem: {
     flex: 1,
@@ -173,41 +170,45 @@ const createStyles = (ds: DS) => ({
     borderRadius: 18,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
-    marginBottom: 8,
+    marginBottom: ds.space[2],
   },
   statValue: {
-    fontSize: 20,
-    fontWeight: '700' as const,
+    ...ds.typography.h3,
+    color: ds.semantic.text.primary,
   },
   statLabel: {
-    fontSize: 11,
-    marginTop: 4,
+    ...ds.semantic.typography.meta,
+    color: ds.semantic.text.secondary,
+    marginTop: ds.space[1],
     textAlign: 'center' as const,
   },
   techniqueRow: {
     flexDirection: 'row' as const,
     alignItems: 'center' as const,
-    gap: 8,
-    marginTop: 16,
-    paddingTop: 16,
+    gap: ds.space[2],
+    marginTop: ds.space[4],
+    paddingTop: ds.space[4],
     borderTopWidth: 1,
-    borderTopColor: ds.colors.borderSubtle,
+    borderTopColor: ds.semantic.surface.overlay,
   },
   techniqueLabel: {
-    fontSize: 13,
+    ...ds.semantic.typography.bodySmall,
+    color: ds.semantic.text.secondary,
   },
   techniqueValue: {
-    fontSize: 13,
+    ...ds.semantic.typography.bodySmall,
+    color: ds.semantic.text.primary,
     fontWeight: '600' as const,
     flex: 1,
   },
   emptyState: {
-    height: 60,
+    minHeight: 60,
     justifyContent: 'center' as const,
     alignItems: 'center' as const,
   },
   emptyText: {
-    fontSize: 14,
+    ...ds.semantic.typography.bodySmall,
+    color: ds.semantic.text.secondary,
     textAlign: 'center' as const,
   },
 });

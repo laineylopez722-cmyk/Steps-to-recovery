@@ -15,6 +15,7 @@ import { Toggle } from '../../../design-system/components/Toggle';
 import { Text } from '../../../design-system/components/Text';
 import { Modal } from '../../../design-system';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
+import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { useBiometricLock } from '../../../hooks/useBiometricLock';
@@ -67,6 +68,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
   const [showRotateConfirm, setShowRotateConfirm] = useState(false);
   const [rotationProgress, setRotationProgress] = useState<KeyRotationProgress | null>(null);
   const [rotationSuggested, setRotationSuggested] = useState(false);
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
 
   // Load key metadata on mount
   useEffect(() => {
@@ -283,7 +285,9 @@ export function SecuritySettingsScreen(): React.ReactElement {
                 {/* Timeout */}
                 <Pressable
                   onPress={() => setShowTimeoutPicker(true)}
-                  style={styles.settingItem}
+                  onPressIn={onPressIn}
+                  onPressOut={onPressOut}
+                  style={[styles.settingItem, animatedStyle]}
                   disabled={!settings.lockOnBackground}
                   accessibilityLabel={`Lock timeout: ${getTimeoutLabel()}`}
                   accessibilityRole="button"
@@ -331,7 +335,9 @@ export function SecuritySettingsScreen(): React.ReactElement {
                     setPinError('');
                     setShowSetPin(true);
                   }}
-                  style={styles.settingItem}
+                  onPressIn={onPressIn}
+                  onPressOut={onPressOut}
+                  style={[styles.settingItem, animatedStyle]}
                   accessibilityLabel={hasPinSet ? 'Change PIN' : 'Set up PIN'}
                   accessibilityRole="button"
                   accessibilityHint="Set a backup PIN to unlock when biometrics fail"
@@ -432,7 +438,9 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
               <Pressable
                 onPress={() => setShowRotateConfirm(true)}
-                style={styles.settingItem}
+                onPressIn={onPressIn}
+                onPressOut={onPressOut}
+                style={[styles.settingItem, animatedStyle]}
                 disabled={rotationProgress?.status === 'in_progress'}
                 accessibilityLabel="Rotate encryption key"
                 accessibilityRole="button"
@@ -620,6 +628,7 @@ function PinSetupInput({
 }): React.ReactElement {
   const styles = useThemedStyles(createPinStyles);
   const ds = useDs();
+  const { onPressIn, onPressOut, animatedStyle } = useMotionPress();
 
   const { pin, handleDigit, handleBackspace, clear } = usePinEntry({
     onSuccess: () => {},
@@ -656,7 +665,9 @@ function PinSetupInput({
                 return (
                   <Pressable
                     key="del"
-                    style={styles.miniBtn}
+                    style={[styles.miniBtn, animatedStyle]}
+                    onPressIn={onPressIn}
+                    onPressOut={onPressOut}
                     onPress={handleBackspace}
                     accessibilityLabel="Delete"
                     accessibilityRole="button"
@@ -668,7 +679,9 @@ function PinSetupInput({
               return (
                 <Pressable
                   key={d}
-                  style={({ pressed }) => [styles.miniBtn, pressed && styles.miniBtnPressed]}
+                  style={[styles.miniBtn, animatedStyle]}
+                  onPressIn={onPressIn}
+                  onPressOut={onPressOut}
                   onPress={() => handleDigit(d)}
                   accessibilityLabel={`Digit ${d}`}
                   accessibilityRole="button"
@@ -764,8 +777,8 @@ const createStyles = (ds: DS) => ({
 
   // Section Header
   sectionHeader: {
-    ...ds.typography.caption,
-    color: ds.semantic.text.tertiary,
+    ...ds.semantic.typography.sectionLabel,
+    color: ds.semantic.text.secondary,
     textTransform: 'uppercase' as const,
     letterSpacing: 1,
     marginTop: ds.space[6],

@@ -120,6 +120,11 @@ export function ProfileScreen(): React.ReactElement {
   const ds = useDs();
   const [_signingOut, setSigningOut] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const {
+    onPressIn: onSignOutPressIn,
+    onPressOut: onSignOutPressOut,
+    animatedStyle: signOutAnimatedStyle,
+  } = useMotionPress();
 
   const handleSignOut = useCallback(async () => {
     setSigningOut(true);
@@ -257,15 +262,16 @@ export function ProfileScreen(): React.ReactElement {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
                   setShowSignOutModal(true);
                 }}
-                style={({ pressed }) => [
-                  styles.signOutButton,
-                  pressed && styles.signOutButtonPressed,
-                ]}
+                onPressIn={onSignOutPressIn}
+                onPressOut={onSignOutPressOut}
+                style={styles.signOutButton}
                 accessibilityRole="button"
                 accessibilityLabel="Sign out"
                 accessibilityHint="Opens confirmation dialog to sign out of your account"
               >
-                <Text style={styles.signOutText}>Sign Out</Text>
+                <Animated.View style={signOutAnimatedStyle}>
+                  <Text style={styles.signOutText}>Sign Out</Text>
+                </Animated.View>
               </Pressable>
             </Animated.View>
 
@@ -366,8 +372,8 @@ const createStyles = (ds: DS) =>
 
     // Section Header
     sectionHeader: {
-      ...ds.typography.caption,
-      color: ds.semantic.text.tertiary,
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
       textTransform: 'uppercase',
       letterSpacing: 1,
       marginTop: ds.space[6],

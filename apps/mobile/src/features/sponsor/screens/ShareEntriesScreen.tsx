@@ -9,8 +9,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, Card, Button, TextArea, Modal } from '../../../design-system';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { Card, Button, TextArea, Modal } from '../../../design-system';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useJournalEntries } from '../../journal/hooks/useJournalEntries';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';
@@ -20,7 +21,6 @@ import type { ProfileStackParamList } from '../../../navigation/types';
 type ShareRoute = RouteProp<ProfileStackParamList, 'ShareEntries'>;
 
 export function ShareEntriesScreen(): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
@@ -75,51 +75,45 @@ export function ShareEntriesScreen(): React.ReactElement {
     await Share.share({ message: shareBundle });
   };
 
-  const renderItem = ({ item }: { item: JournalEntryDecrypted }): React.ReactElement => {
+  const renderItem = ({ item, index }: { item: JournalEntryDecrypted; index: number }): React.ReactElement => {
     const isSelected = selectedIds.has(item.id);
     return (
-      <Card
-        variant="interactive"
-        style={[styles.entryCard, isSelected && { borderColor: theme.colors.primary }]}
-      >
-        <Button
-          title={isSelected ? 'Selected' : 'Select'}
-          onPress={() => toggleSelection(item.id)}
-          variant={isSelected ? 'primary' : 'outline'}
-          size="small"
-          accessibilityLabel={isSelected ? 'Deselect entry' : 'Select entry'}
-        />
-        <View style={styles.entryContent}>
-          <Text style={[theme.typography.title3, { color: theme.colors.text }]}>
-            {item.title || 'Untitled Entry'}
-          </Text>
-          <Text
-            numberOfLines={2}
-            style={[theme.typography.bodySmall, { color: theme.colors.textSecondary }]}
-          >
-            {item.body}
-          </Text>
-          <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-            {new Date(item.created_at).toLocaleDateString()}
-          </Text>
-        </View>
-      </Card>
+      <Animated.View entering={FadeInDown.delay(index * 30).duration(300)}>
+        <Card
+          variant="interactive"
+          style={[styles.entryCard, isSelected && styles.entryCardSelected]}
+        >
+          <Button
+            title={isSelected ? 'Selected' : 'Select'}
+            onPress={() => toggleSelection(item.id)}
+            variant={isSelected ? 'primary' : 'outline'}
+            size="small"
+            accessibilityLabel={isSelected ? 'Deselect entry' : 'Select entry'}
+          />
+          <View style={styles.entryContent}>
+            <Text style={styles.entryTitle}>{item.title || 'Untitled Entry'}</Text>
+            <Text numberOfLines={2} style={styles.entryBody}>
+              {item.body}
+            </Text>
+            <Text style={styles.entryDate}>
+              {new Date(item.created_at).toLocaleDateString()}
+            </Text>
+          </View>
+        </Card>
+      </Animated.View>
     );
   };
 
   if (!mySponsor) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.centerContainer}>
-          <MaterialCommunityIcons name="account-alert" size={48} color={theme.colors.muted} />
-          <Text
-            style={[theme.typography.body, { color: theme.colors.textSecondary, marginTop: 12 }]}
-          >
-            Connect a sponsor to share entries.
-          </Text>
+          <MaterialCommunityIcons
+            name="account-alert"
+            size={48}
+            color={styles.mutedIcon.color}
+          />
+          <Text style={styles.emptyText}>Connect a sponsor to share entries.</Text>
         </View>
       </SafeAreaView>
     );
@@ -127,10 +121,7 @@ export function ShareEntriesScreen(): React.ReactElement {
 
   return (
     <>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <FlatList
           data={entries}
           renderItem={renderItem}
@@ -138,13 +129,10 @@ export function ShareEntriesScreen(): React.ReactElement {
           contentContainerStyle={styles.listContent}
           refreshing={isLoading}
           ListEmptyComponent={
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              No journal entries available yet.
-            </Text>
+            <Text style={styles.emptyText}>No journal entries available yet.</Text>
           }
           accessibilityRole="list"
           accessibilityLabel="Journal entries list for sharing"
-          // Performance optimizations
           initialNumToRender={10}
           maxToRenderPerBatch={5}
           windowSize={5}
@@ -153,9 +141,7 @@ export function ShareEntriesScreen(): React.ReactElement {
         />
 
         <View style={styles.footer}>
-          <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-            Selected: {selectedEntries.length}
-          </Text>
+          <Text style={styles.footerCount}>Selected: {selectedEntries.length}</Text>
           <Button
             title="Share Selected"
             onPress={handleShare}
@@ -204,35 +190,63 @@ const createStyles = (ds: DS) =>
   ({
     container: {
       flex: 1,
+      backgroundColor: ds.semantic.surface.app,
     },
     listContent: {
-      padding: 16,
+      padding: ds.semantic.layout.screenPadding,
       paddingBottom: 120,
-      gap: 12,
+      gap: ds.space[3],
     },
     entryCard: {
-      padding: 12,
-      gap: 8,
+      padding: ds.space[3],
+      gap: ds.space[2],
+    },
+    entryCardSelected: {
+      borderColor: ds.semantic.intent.primary.solid,
     },
     entryContent: {
-      marginTop: 8,
-      gap: 6,
+      marginTop: ds.space[2],
+      gap: ds.space[2],
+    },
+    entryTitle: {
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
+    },
+    entryBody: {
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.secondary,
+    },
+    entryDate: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
     },
     footer: {
-      position: 'absolute',
+      position: 'absolute' as const,
       bottom: 0,
       left: 0,
       right: 0,
-      padding: 16,
+      padding: ds.space[4],
       borderTopWidth: 1,
-      borderTopColor: ds.colors.borderSubtle,
+      borderTopColor: ds.semantic.surface.overlay,
       backgroundColor: ds.semantic.surface.card,
-      gap: 8,
+      gap: ds.space[2],
+    },
+    footerCount: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
     },
     centerContainer: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 24,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+    },
+    emptyText: {
+      ...ds.semantic.typography.body,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[3],
+    },
+    mutedIcon: {
+      color: ds.semantic.text.muted,
     },
   }) as const;

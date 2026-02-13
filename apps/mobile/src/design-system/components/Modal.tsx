@@ -15,6 +15,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 import { Button } from './Button';
 import Animated, {
   type AnimatedProps,
@@ -59,6 +60,7 @@ export function Modal({
   testID,
 }: ModalProps): ReactElement {
   const theme = useTheme();
+  const ds = useDs();
   const slideAnim = useSharedValue(SCREEN_HEIGHT);
   const fadeAnim = useSharedValue(0);
 
@@ -103,7 +105,7 @@ export function Modal({
           style={[
             styles.backdrop,
             {
-              backgroundColor: theme.colors.overlay,
+              backgroundColor: ds.semantic.surface.overlayModal,
               opacity: fadeAnim.value,
             },
           ]}
@@ -116,7 +118,7 @@ export function Modal({
               {title && (
                 <View style={styles.header}>
                   <Text
-                    style={[theme.typography.h3, { color: theme.colors.text, textAlign: 'center' }]}
+                    style={[ds.typography.h3, { color: ds.semantic.text.primary, textAlign: 'center' }]}
                     accessibilityRole="header"
                   >
                     {title}
@@ -129,9 +131,9 @@ export function Modal({
                 <View style={styles.messageContainer}>
                   <Text
                     style={[
-                      theme.typography.body,
+                      ds.semantic.typography.body,
                       {
-                        color: theme.colors.textSecondary,
+                        color: ds.semantic.text.secondary,
                         textAlign: 'center',
                         lineHeight: 22,
                       },

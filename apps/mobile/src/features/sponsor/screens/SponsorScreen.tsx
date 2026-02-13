@@ -4,13 +4,14 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator, Share, ScrollView } from 'react-native';
+import { View, StyleSheet, Share, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../../../navigation/types';
-import { Card, Button, Modal, Input, Toast } from '../../../design-system';
+import { Card, Button, Modal, Input, Toast, SkeletonCard } from '../../../design-system';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useSponsorConnections } from '../hooks/useSponsorConnections';
@@ -216,9 +217,10 @@ export function SponsorScreen(): React.ReactElement {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
-        <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={styles.iconPrimary.color} />
-          <Text style={styles.loadingText}>Loading connections...</Text>
+        <View style={styles.loadingContainer}>
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={2} />
+          <SkeletonCard lines={3} />
         </View>
       </SafeAreaView>
     );
@@ -232,13 +234,14 @@ export function SponsorScreen(): React.ReactElement {
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.header}>
+          <Animated.View entering={FadeInDown.duration(300)} style={styles.header}>
             <Text style={styles.screenTitle} accessibilityRole="header">
               Sponsor Connections
             </Text>
             <Text style={styles.headerSubtitle}>{sponsorSummary}</Text>
-          </View>
+          </Animated.View>
 
+          <Animated.View entering={FadeInDown.delay(100).duration(300)}>
           <Card variant="elevated" style={styles.sectionCard}>
             <View style={styles.cardHeader}>
               <MaterialCommunityIcons name="account-heart" size={24} color={styles.iconPrimary.color} />
@@ -274,7 +277,9 @@ export function SponsorScreen(): React.ReactElement {
               style={styles.smallTopMargin}
             />
           </Card>
+          </Animated.View>
 
+          <Animated.View entering={FadeInDown.delay(200).duration(300)}>
           <Card variant="elevated" style={styles.sectionCard}>
             <View style={styles.cardHeader}>
               <MaterialCommunityIcons name="account-tie" size={24} color={styles.iconSecondary.color} />
@@ -292,6 +297,7 @@ export function SponsorScreen(): React.ReactElement {
               style={styles.mediumTopMargin}
             />
           </Card>
+          </Animated.View>
 
           {mySponsor && (
             <Card variant="interactive" style={styles.sectionCard}>
@@ -537,6 +543,11 @@ const createStyles = (ds: DS) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+    },
+    loadingContainer: {
+      flex: 1,
+      padding: ds.semantic.layout.screenPadding,
+      gap: ds.space[3],
     },
     loadingText: {
       ...ds.typography.body,

@@ -4,11 +4,14 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator, Share } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
-import { useTheme, Card, Button, EmptyState, TextArea, Modal } from '../../../design-system';
+import { Share } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { Card, Button, EmptyState, TextArea, Modal, SkeletonCard } from '../../../design-system';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';
 import type { SharedEntryView } from '../hooks/useSponsorSharedEntries';
@@ -18,7 +21,7 @@ type RouteParams = RouteProp<ProfileStackParamList, 'SharedEntries'>;
 
 export function SharedEntriesScreen(): React.ReactElement {
   const route = useRoute<RouteParams>();
-  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const { connectionId } = route.params;
@@ -96,56 +99,47 @@ export function SharedEntriesScreen(): React.ReactElement {
     await Share.share({ message: commentPayload });
   };
 
-  const renderItem = ({ item }: { item: SharedEntryView }): React.ReactElement => (
-    <Card variant="elevated" style={styles.entryCard}>
-      <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
-        {item.title || 'Untitled Entry'}
-      </Text>
-      <Text
-        style={[theme.typography.body, { color: theme.colors.textSecondary, marginTop: 8 }]}
-        numberOfLines={4}
-      >
-        {item.body}
-      </Text>
-      <View style={styles.entryMeta}>
-        <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
-          Shared {new Date(item.sharedAt).toLocaleDateString()}
+  const renderItem = ({ item, index }: { item: SharedEntryView; index: number }): React.ReactElement => (
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+      <Card variant="elevated" style={styles.entryCard}>
+        <Text style={styles.entryTitle}>{item.title || 'Untitled Entry'}</Text>
+        <Text style={styles.entryBody} numberOfLines={4}>
+          {item.body}
         </Text>
-        <View style={styles.tagRow}>
-          {item.tags.slice(0, 2).map((tag) => (
-            <Text key={tag} style={[theme.typography.caption, { color: theme.colors.primary }]}>
-              #{tag}
-            </Text>
-          ))}
+        <View style={styles.entryMeta}>
+          <Text style={styles.metaText}>
+            Shared {new Date(item.sharedAt).toLocaleDateString()}
+          </Text>
+          <View style={styles.tagRow}>
+            {item.tags.slice(0, 2).map((tag) => (
+              <Text key={tag} style={styles.tagText}>
+                #{tag}
+              </Text>
+            ))}
+          </View>
         </View>
-      </View>
-      <Button
-        title="Leave Comment"
-        onPress={() => {
-          setCommentEntry(item);
-          setCommentText('');
-        }}
-        variant="outline"
-        size="small"
-        style={{ marginTop: theme.spacing.sm }}
-        accessibilityLabel="Leave a comment for this entry"
-      />
-    </Card>
+        <Button
+          title="Leave Comment"
+          onPress={() => {
+            setCommentEntry(item);
+            setCommentText('');
+          }}
+          variant="outline"
+          size="small"
+          style={styles.commentButton}
+          accessibilityLabel="Leave a comment for this entry"
+        />
+      </Card>
+    </Animated.View>
   );
 
   if (loading) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text
-            style={[theme.typography.body, { color: theme.colors.textSecondary, marginTop: 12 }]}
-          >
-            Loading shared entries...
-          </Text>
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={2} />
         </View>
       </SafeAreaView>
     );
@@ -153,31 +147,17 @@ export function SharedEntriesScreen(): React.ReactElement {
 
   if (error) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.errorContainer}>
           <Card variant="elevated" style={styles.errorCard}>
-            <Text
-              style={[
-                theme.typography.title2,
-                { color: theme.colors.danger, marginBottom: 8, textAlign: 'center' },
-              ]}
-            >
-              Error
-            </Text>
-            <Text
-              style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}
-            >
-              {error}
-            </Text>
+            <Text style={styles.errorTitle}>Error</Text>
+            <Text style={styles.errorBody}>{error}</Text>
             <Button
               title="Retry"
               onPress={fetchSharedEntries}
               variant="primary"
               size="small"
-              style={{ marginTop: 12 }}
+              style={styles.retryButton}
               accessibilityLabel="Retry loading shared entries"
             />
           </Card>
@@ -188,21 +168,18 @@ export function SharedEntriesScreen(): React.ReactElement {
 
   return (
     <>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <Card variant="flat" style={styles.header}>
-          <Text style={[theme.typography.title1, { color: theme.colors.text, marginBottom: 4 }]}>
+          <Text style={styles.screenTitle}>
             {connection?.display_name || 'Shared Entries'}
           </Text>
-          <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.headerCaption}>
             Entries shared by your sponsee. Add supportive comments below.
           </Text>
         </Card>
 
         <Card variant="outlined" style={styles.importCard}>
-          <Text style={[theme.typography.bodySmall, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.importHint}>
             Paste entry payloads your sponsee shared with you.
           </Text>
           <TextArea
@@ -220,18 +197,9 @@ export function SharedEntriesScreen(): React.ReactElement {
             size="small"
             disabled={!importText.trim()}
             accessibilityLabel="Import shared entries"
-            style={{ marginTop: theme.spacing.sm }}
+            style={styles.importButton}
           />
-          {importSummary && (
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary, marginTop: 6 },
-              ]}
-            >
-              {importSummary}
-            </Text>
-          )}
+          {importSummary && <Text style={styles.importSummary}>{importSummary}</Text>}
         </Card>
 
         <FlatList
@@ -254,7 +222,6 @@ export function SharedEntriesScreen(): React.ReactElement {
           showsVerticalScrollIndicator={false}
           accessibilityRole="list"
           accessibilityLabel="Shared journal entries list"
-          // Performance optimizations
           initialNumToRender={10}
           maxToRenderPerBatch={5}
           windowSize={5}
@@ -269,16 +236,8 @@ export function SharedEntriesScreen(): React.ReactElement {
         message="Write a brief, supportive note. Share the payload with your sponsee after generating it."
         variant="center"
         actions={[
-          {
-            title: 'Cancel',
-            onPress: () => setCommentEntry(null),
-            variant: 'outline',
-          },
-          {
-            title: 'Create Payload',
-            onPress: handleCreateCommentPayload,
-            variant: 'primary',
-          },
+          { title: 'Cancel', onPress: () => setCommentEntry(null), variant: 'outline' },
+          { title: 'Create Payload', onPress: handleCreateCommentPayload, variant: 'primary' },
         ]}
       >
         <TextArea
@@ -298,16 +257,8 @@ export function SharedEntriesScreen(): React.ReactElement {
         message="Share this payload with your sponsee so they can import your comment."
         variant="center"
         actions={[
-          {
-            title: 'Copy',
-            onPress: handleCopyPayload,
-            variant: 'outline',
-          },
-          {
-            title: 'Share',
-            onPress: handleSharePayload,
-            variant: 'primary',
-          },
+          { title: 'Copy', onPress: handleCopyPayload, variant: 'outline' },
+          { title: 'Share', onPress: handleSharePayload, variant: 'primary' },
         ]}
       >
         <TextArea
@@ -322,53 +273,109 @@ export function SharedEntriesScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  importCard: {
-    marginHorizontal: 20,
-    marginBottom: 12,
-    padding: 16,
-  },
-  listContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 32,
-  },
-  listContentEmpty: {
-    flexGrow: 1,
-  },
-  entryCard: {
-    padding: 16,
-    marginBottom: 12,
-  },
-  entryMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-  },
-  tagRow: {
-    flexDirection: 'row',
-    gap: 6,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  errorCard: {
-    padding: 24,
-    width: '100%',
-  },
-});
+const createStyles = (ds: DS) =>
+  ({
+    container: {
+      flex: 1,
+      backgroundColor: ds.semantic.surface.app,
+    },
+    header: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingVertical: ds.space[4],
+    },
+    screenTitle: {
+      ...ds.typography.h2,
+      color: ds.semantic.text.primary,
+      marginBottom: ds.space[1],
+    },
+    headerCaption: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
+    },
+    importCard: {
+      marginHorizontal: ds.semantic.layout.screenPadding,
+      marginBottom: ds.space[3],
+      padding: ds.semantic.layout.cardPadding,
+    },
+    importHint: {
+      ...ds.semantic.typography.bodySmall,
+      color: ds.semantic.text.secondary,
+    },
+    importButton: {
+      marginTop: ds.space[3],
+    },
+    importSummary: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[2],
+    },
+    listContent: {
+      paddingHorizontal: ds.semantic.layout.screenPadding,
+      paddingBottom: ds.space[8],
+    },
+    listContentEmpty: {
+      flexGrow: 1,
+    },
+    entryCard: {
+      padding: ds.semantic.layout.cardPadding,
+      marginBottom: ds.space[3],
+    },
+    entryTitle: {
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
+    },
+    entryBody: {
+      ...ds.semantic.typography.body,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[2],
+    },
+    entryMeta: {
+      flexDirection: 'row' as const,
+      justifyContent: 'space-between' as const,
+      marginTop: ds.space[3],
+    },
+    metaText: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.text.secondary,
+    },
+    tagRow: {
+      flexDirection: 'row' as const,
+      gap: ds.space[2],
+    },
+    tagText: {
+      ...ds.semantic.typography.sectionLabel,
+      color: ds.semantic.intent.primary.solid,
+    },
+    commentButton: {
+      marginTop: ds.space[3],
+    },
+    loadingContainer: {
+      flex: 1,
+      padding: ds.semantic.layout.screenPadding,
+      gap: ds.space[3],
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: ds.space[8],
+    },
+    errorCard: {
+      padding: ds.semantic.layout.sectionGap,
+      width: '100%' as const,
+    },
+    errorTitle: {
+      ...ds.typography.h3,
+      color: ds.semantic.intent.alert.solid,
+      marginBottom: ds.space[2],
+      textAlign: 'center' as const,
+    },
+    errorBody: {
+      ...ds.semantic.typography.body,
+      color: ds.semantic.text.primary,
+      textAlign: 'center' as const,
+    },
+    retryButton: {
+      marginTop: ds.space[3],
+    },
+  }) as const;
