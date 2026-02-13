@@ -8,9 +8,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import type { TextStyle, ViewStyle } from 'react-native';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../hooks/useTheme';
 import { aestheticColors } from '../tokens/aesthetic';
 import { Button } from './Button';
+import { useDs } from '../DsProvider';
 
 export interface EmptyStateProps {
   /** Visual icon name from MaterialCommunityIcons */
@@ -47,7 +47,7 @@ export function EmptyState({
   variant: _variant = 'default',
   style,
 }: EmptyStateProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   const iconColors: Record<string, string> = {
     book: aestheticColors.primary[400],
@@ -63,12 +63,12 @@ export function EmptyState({
     note: aestheticColors.primary[400],
     notebook: aestheticColors.primary[400],
     phone: aestheticColors.warning.DEFAULT,
-    search: theme.colors.textSecondary,
-    'search-off': theme.colors.textSecondary,
+    search: ds.semantic.text.secondary,
+    'search-off': ds.semantic.text.secondary,
     shield: aestheticColors.success.DEFAULT,
     star: aestheticColors.gold.DEFAULT,
     users: aestheticColors.accent[400],
-    default: theme.colors.primary,
+    default: ds.semantic.intent.primary.solid,
   };
 
   const iconColor = iconColors[icon] || iconColors.default;
@@ -87,10 +87,10 @@ export function EmptyState({
       </View>
 
       {/* Title */}
-      <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
+      <Text style={[styles.title, { color: ds.semantic.text.primary }]}>{title}</Text>
 
       {/* Description */}
-      <Text style={[styles.description, { color: theme.colors.textSecondary }]}>{description}</Text>
+      <Text style={[styles.description, { color: ds.semantic.text.secondary }]}>{description}</Text>
 
       {/* Action Button */}
       {actionLabel && onAction && (
@@ -148,3 +148,4 @@ const styles = StyleSheet.create({
     minWidth: 160,
   },
 });
+

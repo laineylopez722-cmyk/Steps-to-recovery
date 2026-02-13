@@ -1,7 +1,7 @@
 import React, { Component, type ReactNode, type ErrorInfo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { ThemeContext } from '../design-system/context/ThemeContext';
+import { useDs } from '../design-system/DsProvider';
 import { logger } from '../utils/logger';
 import { captureException } from '../lib/sentry';
 import { ds } from '../design-system/tokens/ds';
@@ -54,17 +54,6 @@ interface FallbackColors {
   emergency: string;
   emergencyMuted: string;
 }
-
-const FALLBACK_COLORS: FallbackColors = {
-  background: ds.colors.bgPrimary,
-  danger: ds.semantic.intent.alert.solid,
-  primary: ds.colors.info,
-  text: ds.semantic.text.onDark,
-  textSecondary: ds.colors.textTertiary,
-  accent: ds.colors.accent,
-  emergency: ds.semantic.emergency.calm,
-  emergencyMuted: ds.semantic.emergency.calmMuted,
-};
 
 // ============================================================================
 // Error Classification
@@ -231,24 +220,19 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 // ============================================================================
 
 function ErrorFallback({ error, errorInfo, onReset }: ErrorFallbackProps): React.ReactElement {
-  const theme = React.useContext(ThemeContext);
+  const dsTokens = useDs();
   const [showDetails, setShowDetails] = React.useState(false);
 
-  // Extract a flat color map regardless of whether the theme is available.
-  // ThemeContext.colors is a ColorPalette with nested semantic keys;
-  // FALLBACK_COLORS is our flat fallback used when themes have not mounted.
-  const colors: FallbackColors = theme
-    ? {
-        background: theme.colors.background,
-        danger: theme.colors.danger,
-        primary: theme.colors.primary,
-        text: theme.colors.text,
-        textSecondary: theme.colors.textSecondary,
-        accent: theme.colors.primary,
-        emergency: theme.colors.semantic.emergency.calm,
-        emergencyMuted: theme.colors.semantic.emergency.calmMuted,
-      }
-    : FALLBACK_COLORS;
+  const colors: FallbackColors = {
+    background: dsTokens.semantic.surface.app,
+    danger: dsTokens.semantic.intent.alert.solid,
+    primary: dsTokens.semantic.intent.primary.solid,
+    text: dsTokens.semantic.text.primary,
+    textSecondary: dsTokens.semantic.text.secondary,
+    accent: dsTokens.semantic.intent.primary.solid,
+    emergency: dsTokens.semantic.emergency.calm,
+    emergencyMuted: dsTokens.semantic.emergency.calmMuted,
+  };
 
   const isDev = __DEV__;
   const { title, description, icon } = getErrorMessage(error);
@@ -507,3 +491,5 @@ export function useErrorBoundary(): { resetKey: number; reset: () => void } {
 
   return { resetKey, reset };
 }
+
+

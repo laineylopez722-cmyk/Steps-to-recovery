@@ -14,6 +14,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 export interface TextAreaProps extends Omit<
   TextInputProps,
@@ -48,6 +49,7 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
   ref: Ref<TextInput>,
 ) {
   const theme = useTheme();
+  const ds = useDs();
   const [isFocused, setIsFocused] = useState(false);
 
   // Character count display
@@ -56,23 +58,23 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
 
   // Determine border color based on state
   const getBorderColor = (): string => {
-    if (error) return theme.colors.danger;
-    if (isFocused) return theme.colors.primary;
-    return theme.colors.border;
+    if (error) return ds.semantic.intent.alert.solid;
+    if (isFocused) return ds.semantic.intent.primary.solid;
+    return ds.semantic.surface.overlay;
   };
 
   return (
     <View style={[styles.container, containerStyle]}>
       {/* Label */}
       <View style={styles.labelContainer}>
-        <Text style={[theme.typography.label, { color: theme.colors.text }]}>
+        <Text style={[theme.typography.label, { color: ds.semantic.text.primary }]}>
           {label}
-          {required && <Text style={{ color: theme.colors.danger }}> *</Text>}
+          {required && <Text style={{ color: ds.semantic.intent.alert.solid }}> *</Text>}
         </Text>
 
         {/* Character Count */}
         {displayCharacterCount && (
-          <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+          <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
             {characterCount}
             {maxLength ? `/${maxLength}` : ''}
           </Text>
@@ -84,7 +86,7 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
         style={[
           styles.textAreaContainer,
           {
-            backgroundColor: theme.colors.surface,
+            backgroundColor: ds.semantic.surface.card,
             borderColor: getBorderColor(),
             borderRadius: theme.radius.input,
             minHeight,
@@ -101,19 +103,19 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
           multiline
           textAlignVertical="top"
           maxLength={maxLength}
-          style={[styles.textArea, theme.typography.body, { color: theme.colors.text }]}
-          placeholderTextColor={theme.colors.textSecondary}
+          style={[styles.textArea, theme.typography.body, { color: ds.semantic.text.primary }]}
+          placeholderTextColor={ds.semantic.text.secondary}
           {...textInputProps}
         />
       </View>
 
       {/* Error or Hint Text */}
       {error ? (
-        <Text style={[theme.typography.caption, styles.errorText, { color: theme.colors.danger }]}>
+        <Text style={[theme.typography.caption, styles.errorText, { color: ds.semantic.intent.alert.solid }]}>
           {error}
         </Text>
       ) : hint ? (
-        <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+        <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
           {hint}
         </Text>
       ) : null}
@@ -146,3 +148,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+

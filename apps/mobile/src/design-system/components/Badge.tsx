@@ -13,6 +13,7 @@ import {
   type AccessibilityRole,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 export interface BadgeProps {
   children: string | React.ReactNode;
@@ -45,6 +46,7 @@ export function Badge({
   accessibilityHint,
 }: BadgeProps) {
   const theme = useTheme();
+  const ds = useDs();
 
   // Determine background and text colors based on variant or category
   const getColors = () => {
@@ -53,29 +55,29 @@ export function Badge({
       const categoryColor = theme.categoryColors[category];
       return {
         background: categoryColor,
-        text: '#FFFFFF', // White text for all category colors
+        text: ds.semantic.text.onPrimary,
       };
     }
 
     // Standard variant colors
     switch (variant) {
       case 'primary':
-        return { background: theme.colors.primary, text: '#FFFFFF' };
+        return { background: ds.semantic.intent.primary.solid, text: ds.semantic.text.onPrimary };
       case 'secondary':
-        return { background: theme.colors.secondary, text: '#FFFFFF' };
+        return { background: ds.semantic.intent.secondary.solid, text: ds.semantic.text.onSecondary };
       case 'success':
-        return { background: theme.colors.success, text: '#FFFFFF' };
+        return { background: ds.semantic.intent.success.solid, text: ds.semantic.text.onSecondary };
       case 'warning':
-        return { background: theme.colors.warning, text: '#FFFFFF' };
+        return { background: ds.semantic.intent.warning.solid, text: ds.semantic.text.onPrimary };
       case 'danger':
-        return { background: theme.colors.danger, text: '#FFFFFF' };
+        return { background: ds.semantic.intent.alert.solid, text: ds.semantic.text.onAlert };
       case 'muted':
         return {
-          background: theme.isDark ? 'rgba(142,142,147,0.3)' : 'rgba(142,142,147,0.2)',
-          text: theme.colors.textSecondary,
+          background: ds.semantic.surface.overlay,
+          text: ds.semantic.text.secondary,
         };
       default:
-        return { background: theme.colors.primary, text: '#FFFFFF' };
+        return { background: ds.semantic.intent.primary.solid, text: ds.semantic.text.onPrimary };
     }
   };
 
@@ -136,3 +138,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+

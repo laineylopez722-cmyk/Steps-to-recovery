@@ -19,6 +19,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import { usePressAnimation } from '../hooks/useAnimation';
 import { hapticImpact } from '../../utils/haptics';
+import { useDs } from '../DsProvider';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger';
 type ButtonSize = 'small' | 'medium' | 'large';
@@ -73,6 +74,7 @@ export function Button({
   testID,
 }: ButtonProps) {
   const theme = useTheme();
+  const ds = useDs();
   const { scaleAnim, animatePress } = usePressAnimation(theme.animations.scales.press);
   const isDisabled = disabled || loading;
 
@@ -81,33 +83,33 @@ export function Button({
     switch (variant) {
       case 'primary':
         return {
-          background: theme.colors.primary,
-          text: '#FFFFFF',
-          indicator: '#FFFFFF',
+          background: ds.semantic.intent.primary.solid,
+          text: ds.semantic.text.onPrimary,
+          indicator: ds.semantic.text.onPrimary,
         };
       case 'secondary':
         return {
-          background: theme.colors.secondary,
-          text: '#FFFFFF',
-          indicator: '#FFFFFF',
+          background: ds.semantic.intent.secondary.solid,
+          text: ds.semantic.text.onSecondary,
+          indicator: ds.semantic.text.onSecondary,
         };
       case 'danger':
         return {
-          background: theme.colors.danger,
-          text: '#FFFFFF',
-          indicator: '#FFFFFF',
+          background: ds.semantic.intent.alert.solid,
+          text: ds.semantic.text.onAlert,
+          indicator: ds.semantic.text.onAlert,
         };
       case 'outline':
         return {
           background: 'transparent',
-          text: theme.colors.primary,
-          indicator: theme.colors.primary,
+          text: ds.semantic.intent.primary.solid,
+          indicator: ds.semantic.intent.primary.solid,
         };
       default:
         return {
-          background: theme.colors.primary,
-          text: '#FFFFFF',
-          indicator: '#FFFFFF',
+          background: ds.semantic.intent.primary.solid,
+          text: ds.semantic.text.onPrimary,
+          indicator: ds.semantic.text.onPrimary,
         };
     }
   };
@@ -149,7 +151,7 @@ export function Button({
           },
           variant === 'outline' && {
             borderWidth: 2,
-            borderColor: theme.colors.primary,
+            borderColor: ds.semantic.intent.primary.solid,
           },
           sizeStyles[size],
           style,
@@ -208,3 +210,4 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
 });
+

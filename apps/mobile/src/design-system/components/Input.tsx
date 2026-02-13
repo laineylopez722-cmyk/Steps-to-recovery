@@ -16,6 +16,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useTheme } from '../hooks/useTheme';
 import type { ReactNode } from 'react';
+import { useDs } from '../DsProvider';
 
 export interface InputProps extends Omit<TextInputProps, 'value' | 'onChangeText'> {
   label: string;
@@ -46,14 +47,15 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
   ref: Ref<TextInput>,
 ) {
   const theme = useTheme();
+  const ds = useDs();
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   // Determine border color based on state
   const getBorderColor = () => {
-    if (error) return theme.colors.danger;
-    if (isFocused) return theme.colors.primary;
-    return theme.colors.border;
+    if (error) return ds.semantic.intent.alert.solid;
+    if (isFocused) return ds.semantic.intent.primary.solid;
+    return ds.semantic.surface.overlay;
   };
 
   // If secureTextEntry is provided, show password toggle
@@ -65,12 +67,12 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       {/* Label */}
       <View style={styles.labelContainer}>
         {required ? (
-          <Text style={[theme.typography.label, { color: theme.colors.text }]}>
+          <Text style={[theme.typography.label, { color: ds.semantic.text.primary }]}>
             {label}
-            <Text style={{ color: theme.colors.danger }}> *</Text>
+            <Text style={{ color: ds.semantic.intent.alert.solid }}> *</Text>
           </Text>
         ) : (
-          <Text style={[theme.typography.label, { color: theme.colors.text }]}>{label}</Text>
+          <Text style={[theme.typography.label, { color: ds.semantic.text.primary }]}>{label}</Text>
         )}
       </View>
 
@@ -79,7 +81,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
         style={[
           styles.inputContainer,
           {
-            backgroundColor: theme.colors.surface,
+            backgroundColor: ds.semantic.surface.card,
             borderColor: getBorderColor(),
             borderRadius: theme.radius.input,
           },
@@ -102,11 +104,11 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           style={[
             styles.input,
             theme.typography.body,
-            { color: theme.colors.text },
+            { color: ds.semantic.text.primary },
             leftIcon ? styles.inputWithLeftIcon : undefined,
             rightIcon || hasPasswordToggle ? styles.inputWithRightIcon : undefined,
           ].filter(Boolean)}
-          placeholderTextColor={theme.colors.textSecondary}
+          placeholderTextColor={ds.semantic.text.secondary}
           {...textInputProps}
         />
         {hasPasswordToggle ? (
@@ -120,7 +122,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
             <MaterialIcons
               name={isPasswordVisible ? 'visibility' : 'visibility-off'}
               size={20}
-              color={theme.colors.textSecondary}
+              color={ds.semantic.text.secondary}
             />
           </TouchableOpacity>
         ) : rightIcon ? (
@@ -134,14 +136,14 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       {error ? (
         <Text
           key="helper-text"
-          style={[theme.typography.caption, styles.errorText, { color: theme.colors.danger }]}
+          style={[theme.typography.caption, styles.errorText, { color: ds.semantic.intent.alert.solid }]}
         >
           {error}
         </Text>
       ) : hint ? (
         <Text
           key="helper-text"
-          style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
+          style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}
         >
           {hint}
         </Text>
@@ -191,3 +193,4 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
 });
+
