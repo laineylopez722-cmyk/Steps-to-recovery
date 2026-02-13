@@ -10,7 +10,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ProfileStackParamList } from '../../../navigation/types';
-import { useTheme, Card, Button, Modal, Input, Toast } from '../../../design-system';
+import { Card, Button, Modal, Input, Toast } from '../../../design-system';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { useSponsorConnections } from '../hooks/useSponsorConnections';
@@ -19,12 +19,13 @@ import { logger } from '../../../utils/logger';
 import { addToSyncQueue } from '../../../services/syncService';
 import { parseCommentSharePayload } from '@recovery/shared';
 import { Text } from 'react-native';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList>;
 
 export function SponsorScreen(): React.ReactElement {
   const navigation = useNavigation<NavigationProp>();
-  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const { db } = useDatabase();
@@ -214,20 +215,10 @@ export function SponsorScreen(): React.ReactElement {
 
   if (isLoading) {
     return (
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.centerContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text
-            style={[
-              theme.typography.body,
-              { color: theme.colors.textSecondary, marginTop: theme.spacing.md },
-            ]}
-          >
-            Loading connections...
-          </Text>
+          <ActivityIndicator size="large" color={styles.iconPrimary.color} />
+          <Text style={styles.loadingText}>Loading connections...</Text>
         </View>
       </SafeAreaView>
     );
@@ -235,72 +226,43 @@ export function SponsorScreen(): React.ReactElement {
 
   return (
     <>
-      <SafeAreaView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-        edges={['top', 'bottom']}
-      >
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <ScrollView
           style={styles.content}
-          contentContainerStyle={{
-            paddingHorizontal: theme.spacing.md,
-            paddingTop: 16,
-            paddingBottom: theme.spacing.xl,
-          }}
+          contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
-          <View style={[styles.header, { marginBottom: theme.spacing.lg }]}>
-            <Text
-              style={[theme.typography.h1, { color: theme.colors.text }]}
-              accessibilityRole="header"
-            >
+          <View style={styles.header}>
+            <Text style={styles.screenTitle} accessibilityRole="header">
               Sponsor Connections
             </Text>
-            <Text
-              style={[
-                theme.typography.body,
-                { color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
-              ]}
-            >
-              {sponsorSummary}
-            </Text>
+            <Text style={styles.headerSubtitle}>{sponsorSummary}</Text>
           </View>
 
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.lg }}>
+          <Card variant="elevated" style={styles.sectionCard}>
             <View style={styles.cardHeader}>
-              <MaterialCommunityIcons name="account-heart" size={24} color={theme.colors.primary} />
-              <Text
-                style={[
-                  theme.typography.h3,
-                  { color: theme.colors.text, marginLeft: theme.spacing.sm },
-                ]}
-              >
-                I need a sponsor
-              </Text>
+              <MaterialCommunityIcons name="account-heart" size={24} color={styles.iconPrimary.color} />
+              <Text style={styles.cardTitle}>I need a sponsor</Text>
             </View>
-            <Text
-              style={[
-                theme.typography.bodySmall,
-                { color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
-              ]}
-            >
+            <Text style={styles.cardDescription}>
               Create an invite and share it with your sponsor. When they send back a confirmation,
               paste it here to finalize the connection.
             </Text>
 
-            <View style={[styles.buttonRow, { marginTop: theme.spacing.md }]}>
+            <View style={styles.buttonRow}>
               <Button
                 title="Create Invite"
                 onPress={() => setInviteModalVisible(true)}
                 variant="primary"
                 size="small"
-                style={{ flex: 1, marginRight: theme.spacing.xs }}
+                style={styles.buttonRowButtonLeft}
               />
               <Button
                 title="Confirm Sponsor"
                 onPress={() => setConfirmModalVisible(true)}
                 variant="outline"
                 size="small"
-                style={{ flex: 1, marginLeft: theme.spacing.xs }}
+                style={styles.buttonRowButtonRight}
               />
             </View>
 
@@ -309,28 +271,16 @@ export function SponsorScreen(): React.ReactElement {
               onPress={() => setCommentImportVisible(true)}
               variant="outline"
               size="small"
-              style={{ marginTop: theme.spacing.sm }}
+              style={styles.smallTopMargin}
             />
           </Card>
 
-          <Card variant="elevated" style={{ marginBottom: theme.spacing.lg }}>
+          <Card variant="elevated" style={styles.sectionCard}>
             <View style={styles.cardHeader}>
-              <MaterialCommunityIcons name="account-tie" size={24} color={theme.colors.secondary} />
-              <Text
-                style={[
-                  theme.typography.h3,
-                  { color: theme.colors.text, marginLeft: theme.spacing.sm },
-                ]}
-              >
-                I am a sponsor
-              </Text>
+              <MaterialCommunityIcons name="account-tie" size={24} color={styles.iconSecondary.color} />
+              <Text style={styles.cardTitle}>I am a sponsor</Text>
             </View>
-            <Text
-              style={[
-                theme.typography.bodySmall,
-                { color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
-              ]}
-            >
+            <Text style={styles.cardDescription}>
               Paste an invite from your sponsee to connect. You will receive a confirmation payload
               to send back.
             </Text>
@@ -339,84 +289,53 @@ export function SponsorScreen(): React.ReactElement {
               onPress={() => setConnectModalVisible(true)}
               variant="secondary"
               size="small"
-              style={{ marginTop: theme.spacing.md }}
+              style={styles.mediumTopMargin}
             />
           </Card>
 
           {mySponsor && (
-            <Card variant="interactive" style={{ marginBottom: theme.spacing.lg }}>
+            <Card variant="interactive" style={styles.sectionCard}>
               <View style={styles.cardHeader}>
                 <MaterialCommunityIcons
                   name="account-supervisor"
                   size={24}
-                  color={theme.colors.success}
+                  color={styles.iconSuccess.color}
                 />
-                <Text
-                  style={[
-                    theme.typography.h3,
-                    { color: theme.colors.text, marginLeft: theme.spacing.sm },
-                  ]}
-                >
-                  My Sponsor
-                </Text>
+                <Text style={styles.cardTitle}>My Sponsor</Text>
               </View>
-              <Text
-                style={[
-                  theme.typography.bodySmall,
-                  { color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
-                ]}
-              >
-                {mySponsor.display_name || 'Sponsor connected'}
-              </Text>
+              <Text style={styles.cardDescription}>{mySponsor.display_name || 'Sponsor connected'}</Text>
               <Button
                 title="Remove Sponsor"
                 onPress={() => handleRemove(mySponsor.id)}
                 variant="outline"
                 size="small"
-                textStyle={{ color: theme.colors.danger }}
-                style={{ marginTop: theme.spacing.md }}
+                textStyle={styles.dangerText}
+                style={styles.mediumTopMargin}
               />
               <Button
                 title="Message Sponsor"
                 onPress={() => navigation.navigate('SponsorChat', { connectionId: mySponsor.id })}
                 variant="primary"
                 size="small"
-                style={{ marginTop: theme.spacing.sm }}
+                style={styles.smallTopMargin}
               />
             </Card>
           )}
 
           {mySponsees.length > 0 && (
-            <View style={{ marginBottom: theme.spacing.xl }}>
-              <Text
-                style={[
-                  theme.typography.h3,
-                  { color: theme.colors.text, marginBottom: theme.spacing.sm },
-                ]}
-                accessibilityRole="header"
-              >
+            <View style={styles.sponseesSection}>
+              <Text style={styles.sponseesTitle} accessibilityRole="header">
                 My Sponsees ({mySponsees.length})
               </Text>
               {mySponsees.map((sponsee) => (
-                <Card
-                  key={sponsee.id}
-                  variant="interactive"
-                  style={{ marginBottom: theme.spacing.sm }}
-                >
+                <Card key={sponsee.id} variant="interactive" style={styles.sponseeCard}>
                   <View style={styles.cardHeader}>
                     <MaterialCommunityIcons
                       name="account-check"
                       size={24}
-                      color={theme.colors.success}
+                      color={styles.iconSuccess.color}
                     />
-                    <Text
-                      style={[
-                        theme.typography.h3,
-                        { color: theme.colors.text, marginLeft: theme.spacing.sm },
-                      ]}
-                    >
-                      {sponsee.display_name || 'Sponsee'}
-                    </Text>
+                    <Text style={styles.cardTitle}>{sponsee.display_name || 'Sponsee'}</Text>
                   </View>
                   <Button
                     title="View Shared Entries →"
@@ -427,7 +346,7 @@ export function SponsorScreen(): React.ReactElement {
                     }
                     variant="outline"
                     size="small"
-                    style={{ marginTop: theme.spacing.md }}
+                    style={styles.mediumTopMargin}
                   />
                   <Button
                     title="Message Sponsee"
@@ -438,15 +357,15 @@ export function SponsorScreen(): React.ReactElement {
                     }
                     variant="primary"
                     size="small"
-                    style={{ marginTop: theme.spacing.sm }}
+                    style={styles.smallTopMargin}
                   />
                   <Button
                     title="Remove Sponsee"
                     onPress={() => handleRemove(sponsee.id)}
                     variant="outline"
                     size="small"
-                    textStyle={{ color: theme.colors.danger }}
-                    style={{ marginTop: theme.spacing.sm }}
+                    textStyle={styles.dangerText}
+                    style={styles.smallTopMargin}
                   />
                 </Card>
               ))}
@@ -476,31 +395,20 @@ export function SponsorScreen(): React.ReactElement {
           placeholder="How your sponsor knows you"
         />
         {invitePayload ? (
-          <Card variant="outlined" style={{ marginBottom: theme.spacing.md }}>
-            <Text style={[theme.typography.label, { color: theme.colors.textSecondary }]}>
-              Invite Code: {inviteCode}
-            </Text>
-            <Text
-              style={[
-                theme.typography.caption,
-                { color: theme.colors.textSecondary, marginTop: 8 },
-              ]}
-            >
-              Share this payload with your sponsor:
-            </Text>
-            <Text style={[theme.typography.bodySmall, { color: theme.colors.text, marginTop: 8 }]}>
-              {invitePayload}
-            </Text>
+          <Card variant="outlined" style={styles.modalCard}>
+            <Text style={styles.inviteCodeText}>Invite Code: {inviteCode}</Text>
+            <Text style={styles.modalCaption}>Share this payload with your sponsor:</Text>
+            <Text style={styles.modalPayloadText}>{invitePayload}</Text>
             <Button
               title="Share Invite"
               onPress={() => sharePayload(invitePayload, 'Sponsor invite payload')}
               variant="primary"
               size="small"
-              style={{ marginTop: theme.spacing.sm }}
+              style={styles.smallTopMargin}
             />
           </Card>
         ) : (
-          <Text style={[theme.typography.bodySmall, { color: theme.colors.textSecondary }]}>
+          <Text style={styles.cardDescription}>
             Generate an invite and share the payload with your sponsor.
           </Text>
         )}
@@ -554,12 +462,8 @@ export function SponsorScreen(): React.ReactElement {
         title="Send Confirmation"
         variant="center"
       >
-        <Text style={[theme.typography.bodySmall, { color: theme.colors.textSecondary }]}>
-          Share this confirmation payload back with your sponsee.
-        </Text>
-        <Text style={[theme.typography.bodySmall, { color: theme.colors.text, marginTop: 12 }]}>
-          {confirmPayload}
-        </Text>
+        <Text style={styles.cardDescription}>Share this confirmation payload back with your sponsee.</Text>
+        <Text style={styles.confirmPayloadText}>{confirmPayload}</Text>
         <View style={styles.modalActions}>
           <Button
             title="Share Confirmation"
@@ -623,30 +527,124 @@ export function SponsorScreen(): React.ReactElement {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  content: {
-    flex: 1,
-  },
-  header: {
-    // spacing inline
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  modalActions: {
-    marginTop: 12,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: ds.semantic.surface.app,
+    },
+    centerContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      ...ds.typography.body,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[3],
+    },
+    content: {
+      flex: 1,
+    },
+    contentContainer: {
+      paddingHorizontal: ds.space[3],
+      paddingTop: ds.space[4],
+      paddingBottom: ds.space[6],
+    },
+    header: {
+      marginBottom: ds.space[4],
+    },
+    screenTitle: {
+      ...ds.semantic.typography.screenTitle,
+      color: ds.semantic.text.primary,
+    },
+    headerSubtitle: {
+      ...ds.typography.body,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[1],
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    cardTitle: {
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
+      marginLeft: ds.space[2],
+    },
+    cardDescription: {
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[1],
+    },
+    sectionCard: {
+      marginBottom: ds.space[4],
+    },
+    buttonRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: ds.space[3],
+    },
+    buttonRowButtonLeft: {
+      flex: 1,
+      marginRight: ds.space[1],
+    },
+    buttonRowButtonRight: {
+      flex: 1,
+      marginLeft: ds.space[1],
+    },
+    smallTopMargin: {
+      marginTop: ds.space[2],
+    },
+    mediumTopMargin: {
+      marginTop: ds.space[3],
+    },
+    sponseesSection: {
+      marginBottom: ds.space[6],
+    },
+    sponseesTitle: {
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
+      marginBottom: ds.space[2],
+    },
+    sponseeCard: {
+      marginBottom: ds.space[2],
+    },
+    dangerText: {
+      color: ds.semantic.intent.alert.solid,
+    },
+    modalCard: {
+      marginBottom: ds.space[3],
+    },
+    inviteCodeText: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+    },
+    modalCaption: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[2],
+    },
+    modalPayloadText: {
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.primary,
+      marginTop: ds.space[2],
+    },
+    modalActions: {
+      marginTop: ds.space[3],
+    },
+    confirmPayloadText: {
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.primary,
+      marginTop: ds.space[3],
+    },
+    iconPrimary: {
+      color: ds.semantic.intent.primary.solid,
+    },
+    iconSecondary: {
+      color: ds.semantic.intent.secondary.solid,
+    },
+    iconSuccess: {
+      color: ds.semantic.intent.success.solid,
+    },
+  });

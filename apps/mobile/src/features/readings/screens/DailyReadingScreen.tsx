@@ -23,18 +23,19 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, Card, Button, TextArea, Badge } from '../../../design-system';
+import { Card, Button, TextArea, Badge } from '../../../design-system';
 import { useReadingDatabase } from '../../../hooks/useReadingDatabase';
 import { hapticSuccess } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 import { PLACEHOLDER_CONTENT } from '../../../data/dailyReadings';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 
 interface DailyReadingScreenProps {
   userId: string;
 }
 
 export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.ReactElement {
-  const theme = useTheme();
+  const styles = useThemedStyles(createStyles);
   const {
     todayReading,
     todayReflection,
@@ -62,14 +63,12 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
     }
   }, [todayReading]);
 
-  // Load today's reading on mount
   useEffect(() => {
     if (isReady) {
       loadTodayReading();
     }
   }, [isReady, loadTodayReading]);
 
-  // Load existing reflection if available
   useEffect(() => {
     async function loadExistingReflection(): Promise<void> {
       if (todayReflection) {
@@ -95,7 +94,6 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
       setHasReflected(true);
       setShowSuccess(true);
 
-      // Hide success message after 3 seconds
       setTimeout(() => setShowSuccess(false), 3000);
 
       logger.info('Reflection saved successfully', { userId });
@@ -106,7 +104,6 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
     }
   }, [reflectionText, userId, saveReflection, isSaving]);
 
-  // Format today's date
   const todayFormatted = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -116,12 +113,10 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
 
   if (isLoading || !isReady) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
-            Loading today&apos;s reading...
-          </Text>
+          <ActivityIndicator size="large" color={styles.primaryColor.color} />
+          <Text style={styles.loadingText}>Loading today&apos;s reading...</Text>
         </View>
       </SafeAreaView>
     );
@@ -129,29 +124,22 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
 
   if (!todayReading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.emptyContainer}>
           <MaterialCommunityIcons
             name="book-open-page-variant"
             size={64}
-            color={theme.colors.textSecondary}
+            color={styles.textSecondary.color}
           />
-          <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
-            No Reading Available
-          </Text>
-          <Text style={[styles.emptySubtitle, { color: theme.colors.textSecondary }]}>
-            Please check back later for today&apos;s reading.
-          </Text>
+          <Text style={styles.emptyTitle}>No Reading Available</Text>
+          <Text style={styles.emptySubtitle}>Please check back later for today&apos;s reading.</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
-      edges={['bottom']}
-    >
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -164,44 +152,31 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
           accessibilityRole="scrollbar"
           accessibilityLabel="Daily reading content"
         >
-          {/* Header with Date and Streak */}
           <View style={styles.header}>
-            <Text style={[styles.dateText, { color: theme.colors.textSecondary }]}>
-              {todayFormatted}
-            </Text>
+            <Text style={styles.dateText}>{todayFormatted}</Text>
             {readingStreak > 0 && (
               <Badge variant="success">
                 <View style={styles.streakBadge}>
-                  <MaterialCommunityIcons name="fire" size={14} color={theme.colors.success} />
-                  <Text style={[styles.streakText, { color: theme.colors.success }]}>
-                    {readingStreak} day streak
-                  </Text>
+                  <MaterialCommunityIcons name="fire" size={14} color={styles.successColor.color} />
+                  <Text style={styles.streakText}>{readingStreak} day streak</Text>
                 </View>
               </Badge>
             )}
           </View>
 
-          {/* Reading Card */}
           <Card variant="elevated" style={styles.readingCard}>
             <View style={styles.readingHeader}>
               <MaterialCommunityIcons
                 name="book-open-variant"
                 size={24}
-                color={theme.colors.primary}
+                color={styles.primaryColor.color}
               />
-              <Text
-                style={[styles.readingTitle, { color: theme.colors.text }]}
-                accessibilityRole="header"
-              >
+              <Text style={styles.readingTitle} accessibilityRole="header">
                 {todayReading.title}
               </Text>
             </View>
 
-            {!isPlaceholder && (
-              <Text style={[styles.readingContent, { color: theme.colors.text }]}>
-                {todayReading.content}
-              </Text>
-            )}
+            {!isPlaceholder && <Text style={styles.readingContent}>{todayReading.content}</Text>}
 
             {todayReading.external_url && (
               <View style={styles.externalLinkSection}>
@@ -213,37 +188,27 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
                   accessibilityRole="button"
                   accessibilityHint="Opens the Just for Today daily meditation in your browser"
                 />
-                <Text style={[styles.attributionText, { color: theme.colors.textSecondary }]}>
-                  Source: Narcotics Anonymous World Services
-                </Text>
+                <Text style={styles.attributionText}>Source: Narcotics Anonymous World Services</Text>
               </View>
             )}
 
-            <View style={[styles.sourceContainer, { borderTopColor: theme.colors.border }]}>
-              <Text style={[styles.sourceText, { color: theme.colors.textSecondary }]}>
-                — {todayReading.source}
-              </Text>
+            <View style={styles.sourceContainer}>
+              <Text style={styles.sourceText}>— {todayReading.source}</Text>
             </View>
           </Card>
 
-          {/* Reflection Prompt Card */}
           <Card variant="outlined" style={styles.promptCard}>
             <View style={styles.promptHeader}>
               <MaterialCommunityIcons
                 name="thought-bubble"
                 size={20}
-                color={theme.colors.secondary}
+                color={styles.secondaryColor.color}
               />
-              <Text style={[styles.promptLabel, { color: theme.colors.secondary }]}>
-                Today&apos;s Reflection
-              </Text>
+              <Text style={styles.promptLabel}>Today&apos;s Reflection</Text>
             </View>
-            <Text style={[styles.promptText, { color: theme.colors.text }]}>
-              {todayReading.reflection_prompt}
-            </Text>
+            <Text style={styles.promptText}>{todayReading.reflection_prompt}</Text>
           </Card>
 
-          {/* Reflection Input */}
           <View style={styles.reflectionSection}>
             <TextArea
               label="Your Reflection"
@@ -258,21 +223,17 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
               accessibilityHint="Write your thoughts about today's reading"
             />
 
-            {/* Success Message */}
             {showSuccess && (
-              <View style={[styles.successMessage, { backgroundColor: theme.colors.successLight }]}>
+              <View style={styles.successMessage}>
                 <MaterialCommunityIcons
                   name="check-circle"
                   size={20}
-                  color={theme.colors.success}
+                  color={styles.successColor.color}
                 />
-                <Text style={[styles.successText, { color: theme.colors.success }]}>
-                  Reflection saved successfully!
-                </Text>
+                <Text style={styles.successText}>Reflection saved successfully!</Text>
               </View>
             )}
 
-            {/* Save Button */}
             <Button
               title={hasReflected ? 'Update Reflection' : 'Save Reflection'}
               onPress={handleSaveReflection}
@@ -284,14 +245,9 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
             />
           </View>
 
-          {/* Privacy Notice */}
           <View style={styles.privacyNotice}>
-            <MaterialCommunityIcons
-              name="shield-lock"
-              size={16}
-              color={theme.colors.textSecondary}
-            />
-            <Text style={[styles.privacyText, { color: theme.colors.textSecondary }]}>
+            <MaterialCommunityIcons name="shield-lock" size={16} color={styles.textSecondary.color} />
+            <Text style={styles.privacyText}>
               Your reflections are encrypted and stored securely on your device.
             </Text>
           </View>
@@ -301,145 +257,162 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  keyboardView: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  dateText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  streakBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  streakText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  readingCard: {
-    marginBottom: 16,
-  },
-  readingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 12,
-  },
-  readingTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    flex: 1,
-  },
-  readingContent: {
-    fontSize: 16,
-    lineHeight: 26,
-    letterSpacing: 0.2,
-  },
-  sourceContainer: {
-    marginTop: 20,
-    paddingTop: 16,
-    borderTopWidth: 1,
-  },
-  sourceText: {
-    fontSize: 14,
-    fontStyle: 'italic',
-  },
-  externalLinkSection: {
-    marginTop: 16,
-    alignItems: 'center',
-    gap: 8,
-  },
-  attributionText: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  promptCard: {
-    marginBottom: 20,
-  },
-  promptHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  promptLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  promptText: {
-    fontSize: 17,
-    fontWeight: '500',
-    lineHeight: 24,
-  },
-  reflectionSection: {
-    marginBottom: 16,
-  },
-  successMessage: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  successText: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  privacyNotice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingTop: 8,
-  },
-  privacyText: {
-    fontSize: 12,
-    flex: 1,
-  },
-});
+const createStyles = (ds: DS) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: ds.semantic.surface.app,
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollView: {
+      flex: 1,
+    },
+    contentContainer: {
+      padding: ds.space[5],
+      paddingBottom: ds.space[10],
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[3],
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: ds.space[10],
+    },
+    emptyTitle: {
+      ...ds.typography.h3,
+      color: ds.semantic.text.primary,
+      marginTop: ds.space[4],
+      textAlign: 'center',
+    },
+    emptySubtitle: {
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[2],
+      textAlign: 'center',
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: ds.space[4],
+    },
+    dateText: {
+      ...ds.typography.bodySm,
+      fontWeight: ds.fontWeight.medium,
+      color: ds.semantic.text.secondary,
+    },
+    streakBadge: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: ds.space[1],
+    },
+    streakText: {
+      ...ds.typography.caption,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.semantic.intent.success.solid,
+    },
+    readingCard: {
+      marginBottom: ds.space[4],
+    },
+    readingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: ds.space[4],
+      gap: ds.space[3],
+    },
+    readingTitle: {
+      ...ds.typography.h2,
+      color: ds.semantic.text.primary,
+      flex: 1,
+    },
+    readingContent: {
+      ...ds.typography.body,
+      color: ds.semantic.text.primary,
+      letterSpacing: 0.2,
+    },
+    sourceContainer: {
+      marginTop: ds.space[5],
+      paddingTop: ds.space[4],
+      borderTopWidth: 1,
+      borderTopColor: ds.semantic.surface.overlay,
+    },
+    sourceText: {
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.secondary,
+      fontStyle: 'italic',
+    },
+    externalLinkSection: {
+      marginTop: ds.space[4],
+      alignItems: 'center',
+      gap: ds.space[2],
+    },
+    attributionText: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+      textAlign: 'center',
+    },
+    promptCard: {
+      marginBottom: ds.space[5],
+    },
+    promptHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: ds.space[2],
+      marginBottom: ds.space[2],
+    },
+    promptLabel: {
+      ...ds.typography.caption,
+      color: ds.semantic.intent.secondary.solid,
+      fontWeight: ds.fontWeight.semibold,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    promptText: {
+      ...ds.typography.body,
+      color: ds.semantic.text.primary,
+      fontWeight: ds.fontWeight.medium,
+    },
+    reflectionSection: {
+      marginBottom: ds.space[4],
+    },
+    successMessage: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: ds.space[2],
+      padding: ds.space[3],
+      borderRadius: ds.radius.sm,
+      marginBottom: ds.space[4],
+      backgroundColor: ds.semantic.intent.success.muted,
+    },
+    successText: {
+      ...ds.typography.caption,
+      color: ds.semantic.intent.success.solid,
+      fontWeight: ds.fontWeight.medium,
+    },
+    privacyNotice: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: ds.space[2],
+      paddingTop: ds.space[2],
+    },
+    privacyText: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+      flex: 1,
+    },
+    primaryColor: { color: ds.semantic.intent.primary.solid },
+    secondaryColor: { color: ds.semantic.intent.secondary.solid },
+    successColor: { color: ds.semantic.intent.success.solid },
+    textSecondary: { color: ds.semantic.text.secondary },
+  });

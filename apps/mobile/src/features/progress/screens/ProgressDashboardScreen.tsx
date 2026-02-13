@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated from 'react-native-reanimated';
-import { useTheme, GlassCard, SkeletonCard } from '../../../design-system';
+import { GlassCard, SkeletonCard } from '../../../design-system';
 import { gradients, aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
@@ -46,7 +46,6 @@ interface ProgressDashboardScreenProps {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Mini bar chart with animation
 function _MiniBarChart({
   data,
   maxValue,
@@ -90,7 +89,6 @@ function _MiniBarChart({
 }
 
 function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
   const iconMap: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
@@ -100,9 +98,9 @@ function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElem
   };
 
   const colorMap: Record<string, string> = {
-    positive: theme.colors.success,
-    warning: theme.colors.warning,
-    neutral: theme.colors.primary,
+    positive: styles.successColor.color,
+    warning: styles.warningColor.color,
+    neutral: styles.primaryColor.color,
   };
 
   return (
@@ -113,11 +111,9 @@ function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElem
           size={20}
           color={colorMap[insight.type]}
         />
-        <Text style={[styles.insightTitle, { color: theme.colors.text }]}>{insight.title}</Text>
+        <Text style={styles.insightTitle}>{insight.title}</Text>
       </View>
-      <Text style={[styles.insightDescription, { color: theme.colors.textSecondary }]}>
-        {insight.description}
-      </Text>
+      <Text style={styles.insightDescription}>{insight.description}</Text>
     </GlassCard>
   );
 }
@@ -137,7 +133,6 @@ function StatCard({
   color: string;
   glow?: boolean;
 }): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
   return (
@@ -153,46 +148,43 @@ function StatCard({
       <View style={[styles.statIconContainer, { backgroundColor: color + '20' }]}>
         <MaterialCommunityIcons name={icon} size={24} color={color} />
       </View>
-      <Text style={[styles.statValue, { color: theme.colors.text }]}>{value}</Text>
-      <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>{label}</Text>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
       {subtext && <Text style={[styles.statSubtext, { color }]}>{subtext}</Text>}
     </GlassCard>
   );
 }
 
 function StepProgressCard({ step }: { step: StepProgress }): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const percent =
     step.totalQuestions > 0 ? Math.round((step.answeredQuestions / step.totalQuestions) * 100) : 0;
 
   const barColor = step.isComplete
-    ? theme.colors.success
+    ? styles.successColor.color
     : percent > 0
       ? aestheticColors.primary[500]
-      : theme.colors.textSecondary;
+      : styles.textSecondary.color;
 
   return (
     <View style={styles.stepRow}>
       <View style={styles.stepLabelContainer}>
         {step.isComplete ? (
-          <MaterialCommunityIcons name="check-circle" size={18} color={theme.colors.success} />
+          <MaterialCommunityIcons name="check-circle" size={18} color={styles.successColor.color} />
         ) : (
-          <Text style={[styles.stepNumber, { color: theme.colors.textSecondary }]}>
-            {step.stepNumber}
-          </Text>
+          <Text style={styles.stepNumber}>{step.stepNumber}</Text>
         )}
         <Text
           style={[
             styles.stepLabel,
-            { color: step.isComplete ? theme.colors.success : theme.colors.text },
+            { color: step.isComplete ? styles.successColor.color : styles.textPrimary.color },
           ]}
         >
           Step {step.stepNumber}
         </Text>
       </View>
       <View style={styles.stepBarContainer}>
-        <View style={[styles.stepBarBackground, { backgroundColor: theme.colors.border }]}>
+        <View style={styles.stepBarBackground}>
           <Animated.View
             entering={ScreenAnimations.fadeDelayed(step.stepNumber * 40)}
             style={[
@@ -215,7 +207,6 @@ function StepProgressCard({ step }: { step: StepProgress }): React.ReactElement 
 export function ProgressDashboardScreen({
   userId,
 }: ProgressDashboardScreenProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const analytics = useRecoveryAnalytics(userId);
   const [timeRange, setTimeRange] = useState<TimeRange>('30d');
@@ -223,10 +214,9 @@ export function ProgressDashboardScreen({
   const cravingAnalysis = useCravingAnalysis(timeRange);
   const weeklyReport = useWeeklyReport();
 
-  // Loading state
   if (analytics.isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={styles.container}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
         <ScrollView contentContainerStyle={styles.loadingContent}>
           <View style={styles.statsRow}>
@@ -242,16 +232,12 @@ export function ProgressDashboardScreen({
 
   if (analytics.error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={styles.container}>
         <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
         <View style={styles.errorContainer}>
-          <MaterialCommunityIcons name="alert-circle" size={48} color={theme.colors.danger} />
-          <Text style={[styles.errorText, { color: theme.colors.text }]}>
-            Unable to load analytics
-          </Text>
-          <Text style={[styles.errorSubtext, { color: theme.colors.textSecondary }]}>
-            {analytics.error}
-          </Text>
+          <MaterialCommunityIcons name="alert-circle" size={48} color={styles.alertColor.color} />
+          <Text style={styles.errorText}>Unable to load analytics</Text>
+          <Text style={styles.errorSubtext}>{analytics.error}</Text>
         </View>
       </SafeAreaView>
     );
@@ -259,10 +245,7 @@ export function ProgressDashboardScreen({
 
   return (
     <View style={styles.container}>
-      {/* Background */}
       <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
-
-      {/* Glow Orbs */}
       <View style={styles.glowOrbTop} pointerEvents="none" />
       <View style={styles.glowOrbBottom} pointerEvents="none" />
 
@@ -272,7 +255,6 @@ export function ProgressDashboardScreen({
           contentContainerStyle={styles.contentContainer}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header Stats Row */}
           <Animated.View entering={ScreenAnimations.entrance} style={styles.statsRow}>
             <StatCard
               icon="fire"
@@ -291,13 +273,8 @@ export function ProgressDashboardScreen({
             />
           </Animated.View>
 
-          {/* Recovery Strength Score */}
           <RecoveryStrengthCard userId={userId} />
-
-          {/* Commitment Calendar */}
           <CommitmentCalendar userId={userId} />
-
-          {/* Weekly Recovery Report */}
           <WeeklyReportCard
             report={weeklyReport.currentReport}
             previousReport={weeklyReport.pastReports[1] ?? null}
@@ -305,11 +282,8 @@ export function ProgressDashboardScreen({
             isGenerating={weeklyReport.isGenerating}
             onGenerate={weeklyReport.generate}
           />
-
-          {/* Weather-Mood Correlation */}
           <WeatherMoodInsight />
 
-          {/* Mood Dashboard Section */}
           <Animated.View entering={ScreenAnimations.item(0)}>
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons
@@ -317,9 +291,7 @@ export function ProgressDashboardScreen({
                 size={20}
                 color={aestheticColors.primary[500]}
               />
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                Mood Dashboard
-              </Text>
+              <Text style={styles.sectionTitle}>Mood Dashboard</Text>
             </View>
 
             <TimeRangeSelector selected={timeRange} onSelect={setTimeRange} />
@@ -347,7 +319,6 @@ export function ProgressDashboardScreen({
             ) : null}
           </Animated.View>
 
-          {/* Craving Pattern Analysis */}
           {!cravingAnalysis.isLoading && cravingAnalysis.pattern && (
             <Animated.View entering={ScreenAnimations.item(1)}>
               <View style={styles.sectionHeader}>
@@ -356,9 +327,7 @@ export function ProgressDashboardScreen({
                   size={20}
                   color={aestheticColors.warning.DEFAULT}
                 />
-                <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                  Craving Patterns
-                </Text>
+                <Text style={styles.sectionTitle}>Craving Patterns</Text>
               </View>
 
               <CravingHeatmap
@@ -380,7 +349,6 @@ export function ProgressDashboardScreen({
             </Animated.View>
           )}
 
-          {/* Step Work Progress */}
           <Animated.View entering={ScreenAnimations.item(2)} style={styles.insightsSection}>
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons
@@ -388,12 +356,8 @@ export function ProgressDashboardScreen({
                 size={20}
                 color={aestheticColors.primary[500]}
               />
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                Step Work Progress
-              </Text>
-              <Text style={[styles.stepSummary, { color: theme.colors.textSecondary }]}>
-                {analytics.totalStepsCompleted}/12 complete
-              </Text>
+              <Text style={styles.sectionTitle}>Step Work Progress</Text>
+              <Text style={styles.stepSummary}>{analytics.totalStepsCompleted}/12 complete</Text>
             </View>
 
             <GlassCard intensity="subtle" style={styles.stepProgressCard}>
@@ -403,7 +367,6 @@ export function ProgressDashboardScreen({
             </GlassCard>
           </Animated.View>
 
-          {/* Recovery Insights */}
           <Animated.View entering={ScreenAnimations.item(3)} style={styles.insightsSection}>
             <View style={styles.sectionHeader}>
               <MaterialCommunityIcons
@@ -411,9 +374,7 @@ export function ProgressDashboardScreen({
                 size={20}
                 color={aestheticColors.gold.DEFAULT}
               />
-              <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                Recovery Insights
-              </Text>
+              <Text style={styles.sectionTitle}>Recovery Insights</Text>
             </View>
 
             {analytics.insights.map((insight, index) => (
@@ -421,14 +382,9 @@ export function ProgressDashboardScreen({
             ))}
           </Animated.View>
 
-          {/* Privacy Notice */}
           <Animated.View entering={ScreenAnimations.fadeDelayed(400)} style={styles.privacyNotice}>
-            <MaterialCommunityIcons
-              name="shield-lock"
-              size={14}
-              color={theme.colors.textSecondary}
-            />
-            <Text style={[styles.privacyText, { color: theme.colors.textSecondary }]}>
+            <MaterialCommunityIcons name="shield-lock" size={14} color={styles.textSecondary.color} />
+            <Text style={styles.privacyText}>
               All analytics are calculated on your device. Your data never leaves your phone
               unencrypted.
             </Text>
@@ -443,6 +399,7 @@ const createStyles = (ds: DS) =>
   ({
     container: {
       flex: 1,
+      backgroundColor: ds.semantic.surface.app,
     },
     safeArea: {
       flex: 1,
@@ -451,12 +408,12 @@ const createStyles = (ds: DS) =>
       flex: 1,
     },
     contentContainer: {
-      padding: 20,
-      paddingBottom: 40,
+      padding: ds.space[5],
+      paddingBottom: ds.space[10],
     },
     loadingContent: {
-      padding: 20,
-      gap: 16,
+      padding: ds.space[5],
+      gap: ds.space[4],
     },
     glowOrbTop: {
       position: 'absolute',
@@ -482,28 +439,30 @@ const createStyles = (ds: DS) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 40,
+      padding: ds.space[10],
     },
     errorText: {
-      fontSize: 18,
-      fontWeight: '600',
-      marginTop: 16,
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.semantic.text.primary,
+      marginTop: ds.space[4],
     },
     errorSubtext: {
-      fontSize: 14,
-      marginTop: 8,
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[2],
       textAlign: 'center',
     },
     statsRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 20,
-      gap: 12,
+      marginBottom: ds.space[5],
+      gap: ds.space[3],
     },
     statCard: {
       flex: 1,
       alignItems: 'center',
-      padding: 20,
+      padding: ds.space[5],
     },
     statIconContainer: {
       width: 48,
@@ -511,148 +470,100 @@ const createStyles = (ds: DS) =>
       borderRadius: 24,
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: 12,
+      marginBottom: ds.space[3],
     },
     statValue: {
-      fontSize: 32,
-      fontWeight: '700',
+      ...ds.typography.h1,
+      color: ds.semantic.text.primary,
     },
     statLabel: {
-      fontSize: 12,
-      marginTop: 4,
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+      marginTop: ds.space[1],
     },
     statSubtext: {
-      fontSize: 11,
-      marginTop: 2,
-    },
-    chartCard: {
-      marginBottom: 20,
-      padding: 20,
-    },
-    cardHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 16,
-    },
-    cardTitleRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-    cardTitle: {
-      fontSize: 16,
-      fontWeight: '600',
-    },
-    trendBadge: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-    },
-    trendText: {
-      fontSize: 12,
-      fontWeight: '500',
-      textTransform: 'capitalize',
+      ...ds.typography.micro,
+      marginTop: ds.space[0],
     },
     chartContainer: {
       flexDirection: 'row',
       alignItems: 'flex-end',
       justifyContent: 'space-evenly',
-      paddingHorizontal: 8,
+      paddingHorizontal: ds.space[2],
     },
     bar: {
       borderRadius: 2,
       marginHorizontal: 1,
     },
-    chartLegend: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: 12,
-      paddingTop: 12,
-      borderTopWidth: 1,
-      borderTopColor: ds.colors.borderSubtle,
-    },
-    legendText: {
-      fontSize: 12,
-    },
-    averageText: {
-      fontSize: 14,
-      fontWeight: '600',
-    },
-    emptyChart: {
-      height: 60,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    emptyChartText: {
-      fontSize: 14,
-      textAlign: 'center',
-    },
     insightsSection: {
-      marginBottom: 20,
+      marginBottom: ds.space[5],
     },
     sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
-      marginBottom: 12,
+      gap: ds.space[2],
+      marginBottom: ds.space[3],
     },
     sectionTitle: {
-      fontSize: 18,
-      fontWeight: '600',
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.semantic.text.primary,
     },
     insightCard: {
-      marginBottom: 12,
-      padding: 16,
+      marginBottom: ds.space[3],
+      padding: ds.space[4],
     },
     insightHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 8,
-      marginBottom: 8,
+      gap: ds.space[2],
+      marginBottom: ds.space[2],
     },
     insightTitle: {
-      fontSize: 15,
-      fontWeight: '600',
+      ...ds.typography.bodySm,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.semantic.text.primary,
     },
     insightDescription: {
-      fontSize: 14,
-      lineHeight: 20,
+      ...ds.typography.bodySm,
+      color: ds.semantic.text.secondary,
     },
     privacyNotice: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
-      paddingHorizontal: 8,
+      gap: ds.space[1],
+      paddingHorizontal: ds.space[2],
     },
     privacyText: {
-      fontSize: 11,
+      ...ds.typography.micro,
+      color: ds.semantic.text.secondary,
       flex: 1,
     },
     stepProgressCard: {
-      padding: 16,
-      gap: 10,
+      padding: ds.space[4],
+      gap: ds.space[2],
     },
     stepRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 10,
+      gap: ds.space[2],
     },
     stepLabelContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: 6,
+      gap: ds.space[1],
       width: 68,
     },
     stepNumber: {
-      fontSize: 13,
-      fontWeight: '600',
+      ...ds.typography.caption,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.semantic.text.secondary,
       width: 18,
       textAlign: 'center',
     },
     stepLabel: {
-      fontSize: 13,
-      fontWeight: '500',
+      ...ds.typography.caption,
+      fontWeight: ds.fontWeight.medium,
     },
     stepBarContainer: {
       flex: 1,
@@ -661,19 +572,27 @@ const createStyles = (ds: DS) =>
       height: 6,
       borderRadius: 3,
       overflow: 'hidden',
+      backgroundColor: ds.semantic.surface.overlay,
     },
     stepBarFill: {
       height: '100%',
       borderRadius: 3,
     },
     stepPercent: {
-      fontSize: 11,
-      fontWeight: '600',
+      ...ds.typography.micro,
+      fontWeight: ds.fontWeight.semibold,
       width: 64,
       textAlign: 'right',
     },
     stepSummary: {
-      fontSize: 12,
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
       marginLeft: 'auto',
     },
+    textPrimary: { color: ds.semantic.text.primary },
+    textSecondary: { color: ds.semantic.text.secondary },
+    primaryColor: { color: ds.semantic.intent.primary.solid },
+    successColor: { color: ds.semantic.intent.success.solid },
+    warningColor: { color: ds.semantic.intent.warning.solid },
+    alertColor: { color: ds.semantic.intent.alert.solid },
   }) as const;

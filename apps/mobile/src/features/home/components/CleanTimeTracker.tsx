@@ -10,31 +10,28 @@ import Animated, {
   FadeInUp,
 } from 'react-native-reanimated';
 import { Card, ProgressBar, Badge, CircularProgress } from '../../../design-system/components';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
+import { useDs } from '../../../design-system/DsProvider';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useCleanTime } from '../hooks/useCleanTime';
 
 export function CleanTimeTracker(): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
   const { user } = useAuth();
   const userId = user?.id ?? '';
   const { days, hours, minutes, seconds, nextMilestone, isLoading } = useCleanTime(userId);
   const [displayDays, setDisplayDays] = useState(0);
 
-  // Animation values
   const cardScale = useSharedValue(0.95);
   const cardOpacity = useSharedValue(0);
   const statsOpacity = useSharedValue(0);
 
-  // Entrance animation
   useEffect(() => {
     cardOpacity.value = withTiming(1, { duration: 300 });
     cardScale.value = withSpring(1, { damping: 15, stiffness: 150 });
     statsOpacity.value = withDelay(300, withTiming(1, { duration: 400 }));
 
-    // Animate day counter
     if (days > 0) {
       const duration = Math.min(1500, days * 50);
       const startTime = Date.now();
@@ -69,13 +66,12 @@ export function CleanTimeTracker(): React.ReactElement {
         accessibilityLabel="Loading clean time"
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
         </View>
       </Card>
     );
   }
 
-  // Calculate progress for milestone
   const progress = nextMilestone ? (days / nextMilestone.days) * 100 : 100;
   const daysUntilNext = nextMilestone ? nextMilestone.days - days : 0;
   const isStreakIntact = days > 0;
@@ -88,56 +84,44 @@ export function CleanTimeTracker(): React.ReactElement {
         accessibilityRole="none"
         accessibilityLabel={`Clean time: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}
       >
-        {/* Header with title and streak badge */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={[styles.iconText, { color: theme.colors.success }]}>⚡</Text>
-            <Text style={[theme.typography.title2, styles.title, { color: theme.colors.text }]}>
-              Clean Time Streak
-            </Text>
+            <Text style={[styles.iconText, { color: ds.semantic.intent.success.solid }]}>⚡</Text>
+            <Text style={styles.title}>Clean Time Streak</Text>
           </View>
           {isStreakIntact && (
             <Animated.View entering={FadeIn.delay(500)}>
-              <Badge
-                variant="success"
-                size="medium"
-                accessibilityLabel="Streak intact"
-                accessibilityRole="text"
-              >
+              <Badge variant="success" size="medium" accessibilityLabel="Streak intact" accessibilityRole="text">
                 STREAK INTACT
               </Badge>
             </Animated.View>
           )}
         </View>
 
-        {/* Circular progress tracker with animated count */}
         <View style={styles.circularContainer}>
           <CircularProgress
             progress={Math.min(progress, 100)}
             size={180}
             strokeWidth={12}
-            progressColor={theme.colors.success}
-            trackColor={theme.colors.surfaceVariant}
+            progressColor={ds.semantic.intent.success.solid}
+            trackColor={ds.semantic.surface.overlay}
             animated
             duration={1200}
             centerContent={
               <View style={styles.centerContent}>
-                <Text style={[styles.daysNumber, { color: theme.colors.success }]}>
+                <Text style={[styles.daysNumber, { color: ds.semantic.intent.success.solid }]}>
                   {displayDays}
                 </Text>
-                <Text style={[styles.daysLabel, { color: theme.colors.textSecondary }]}>
-                  DAYS CLEAN
-                </Text>
+                <Text style={styles.daysLabel}>DAYS CLEAN</Text>
               </View>
             }
           />
         </View>
 
-        {/* Motivational text */}
         {days > 0 && (
           <Animated.Text
             entering={FadeInUp.delay(600).springify()}
-            style={[styles.motivationalText, { color: theme.colors.textSecondary }]}
+            style={styles.motivationalText}
           >
             {days < 7
               ? 'Great start! Keep going!'
@@ -149,55 +133,38 @@ export function CleanTimeTracker(): React.ReactElement {
           </Animated.Text>
         )}
 
-        {/* Stats row */}
         <Animated.View style={[styles.statsRow, statsAnimatedStyle]}>
           <View style={styles.statItem}>
-            <View style={styles.statIcon}>
-              <Text style={{ fontSize: 20 }}>🔄</Text>
-            </View>
-            <Text style={[styles.statNumber, { color: theme.colors.text }]}>0</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>RELAPSES</Text>
+            <View style={styles.statIcon}><Text style={{ fontSize: 20 }}>🔄</Text></View>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>RELAPSES</Text>
           </View>
 
-          <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
+          <View style={styles.statDivider} />
 
           <View style={styles.statItem}>
-            <View style={styles.statIcon}>
-              <Text style={{ fontSize: 20 }}>🤝</Text>
-            </View>
-            <Text style={[styles.statNumber, { color: theme.colors.text }]}>0</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-              SPONSOR EST
-            </Text>
+            <View style={styles.statIcon}><Text style={{ fontSize: 20 }}>🤝</Text></View>
+            <Text style={styles.statNumber}>0</Text>
+            <Text style={styles.statLabel}>SPONSOR EST</Text>
           </View>
 
-          <View style={[styles.statDivider, { backgroundColor: theme.colors.border }]} />
+          <View style={styles.statDivider} />
 
           <View style={styles.statItem}>
-            <View style={styles.statIcon}>
-              <Text style={{ fontSize: 20 }}>📅</Text>
-            </View>
-            <Text style={[styles.statNumber, { color: theme.colors.text }]}>{days}</Text>
-            <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>
-              DAY STREAK
-            </Text>
+            <View style={styles.statIcon}><Text style={{ fontSize: 20 }}>📅</Text></View>
+            <Text style={styles.statNumber}>{days}</Text>
+            <Text style={styles.statLabel}>DAY STREAK</Text>
           </View>
         </Animated.View>
 
-        {/* Milestone progress */}
         {nextMilestone && (
-          <Animated.View
-            entering={FadeInUp.delay(400).springify()}
-            style={styles.milestoneContainer}
-          >
+          <Animated.View entering={FadeInUp.delay(400).springify()} style={styles.milestoneContainer}>
             <View style={styles.milestoneHeader}>
               <View style={styles.milestoneLeft}>
                 <Text style={styles.milestoneEmoji}>{nextMilestone.icon}</Text>
                 <View style={styles.milestoneTextContainer}>
-                  <Text style={[styles.milestoneTitle, { color: theme.colors.text }]}>
-                    Next Milestone
-                  </Text>
-                  <Text style={[styles.milestoneSubtitle, { color: theme.colors.textSecondary }]}>
+                  <Text style={styles.milestoneTitle}>Next Milestone</Text>
+                  <Text style={styles.milestoneSubtitle}>
                     {nextMilestone.title} • {daysUntilNext} days to go
                   </Text>
                 </View>
@@ -206,27 +173,26 @@ export function CleanTimeTracker(): React.ReactElement {
             <ProgressBar
               progress={progress / 100}
               style={styles.progressBar}
-              color={theme.colors.success}
-              backgroundColor={theme.colors.surfaceVariant}
+              color={ds.semantic.intent.success.solid}
+              backgroundColor={ds.semantic.surface.overlay}
               accessibilityLabel={`Progress to ${nextMilestone.title}: ${Math.round(progress)}%`}
               accessibilityRole="progressbar"
             />
           </Animated.View>
         )}
 
-        {/* Time breakdown */}
         <Animated.View entering={FadeInUp.delay(500).springify()} style={styles.timeBreakdown}>
           <View style={styles.timeItem}>
-            <Text style={[styles.timeNumber, { color: theme.colors.text }]}>{hours}</Text>
-            <Text style={[styles.timeLabel, { color: theme.colors.textSecondary }]}>Hours</Text>
+            <Text style={styles.timeNumber}>{hours}</Text>
+            <Text style={styles.timeLabel}>Hours</Text>
           </View>
           <View style={styles.timeItem}>
-            <Text style={[styles.timeNumber, { color: theme.colors.text }]}>{minutes}</Text>
-            <Text style={[styles.timeLabel, { color: theme.colors.textSecondary }]}>Minutes</Text>
+            <Text style={styles.timeNumber}>{minutes}</Text>
+            <Text style={styles.timeLabel}>Minutes</Text>
           </View>
           <View style={styles.timeItem}>
-            <Text style={[styles.timeNumber, { color: theme.colors.text }]}>{seconds}</Text>
-            <Text style={[styles.timeLabel, { color: theme.colors.textSecondary }]}>Seconds</Text>
+            <Text style={styles.timeNumber}>{seconds}</Text>
+            <Text style={styles.timeLabel}>Seconds</Text>
           </View>
         </Animated.View>
       </Card>
@@ -237,24 +203,24 @@ export function CleanTimeTracker(): React.ReactElement {
 const createStyles = (ds: DS) =>
   ({
     card: {
-      margin: 16,
-      marginTop: 8,
-      padding: 20,
+      marginHorizontal: ds.space[4],
+      marginTop: ds.space[2],
+      padding: ds.space[5],
     },
     loadingContainer: {
-      padding: 40,
+      padding: ds.space[10],
       alignItems: 'center' as const,
     },
     header: {
       flexDirection: 'row' as const,
       justifyContent: 'space-between' as const,
       alignItems: 'center' as const,
-      marginBottom: 20,
+      marginBottom: ds.space[5],
     },
     headerLeft: {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
-      gap: 8,
+      gap: ds.space[2],
     },
     iconText: {
       fontSize: 20,
@@ -262,11 +228,12 @@ const createStyles = (ds: DS) =>
     title: {
       fontWeight: '700' as const,
       fontSize: 18,
+      color: ds.semantic.text.primary,
     },
     circularContainer: {
       alignItems: 'center' as const,
       justifyContent: 'center' as const,
-      marginVertical: 16,
+      marginVertical: ds.space[4],
     },
     centerContent: {
       alignItems: 'center' as const,
@@ -281,46 +248,51 @@ const createStyles = (ds: DS) =>
       fontSize: 12,
       fontWeight: '600' as const,
       letterSpacing: 1,
-      marginTop: 4,
+      marginTop: ds.space[1],
+      color: ds.semantic.text.secondary,
     },
     motivationalText: {
       textAlign: 'center' as const,
       fontSize: 14,
       fontStyle: 'italic' as const,
-      marginTop: 12,
-      marginBottom: 20,
+      marginTop: ds.space[3],
+      marginBottom: ds.space[5],
+      color: ds.semantic.text.tertiary,
     },
     statsRow: {
       flexDirection: 'row' as const,
       justifyContent: 'space-around' as const,
       alignItems: 'center' as const,
-      paddingVertical: 16,
-      paddingHorizontal: 8,
+      paddingVertical: ds.space[4],
+      paddingHorizontal: ds.space[2],
     },
     statItem: {
       flex: 1,
       alignItems: 'center' as const,
     },
     statIcon: {
-      marginBottom: 8,
+      marginBottom: ds.space[2],
     },
     statNumber: {
       fontSize: 24,
       fontWeight: '700' as const,
-      marginBottom: 4,
+      marginBottom: ds.space[1],
+      color: ds.semantic.text.primary,
     },
     statLabel: {
       fontSize: 10,
       fontWeight: '600' as const,
       letterSpacing: 0.5,
+      color: ds.semantic.text.secondary,
     },
     statDivider: {
       width: 1,
       height: 48,
+      backgroundColor: ds.semantic.surface.overlay,
     },
     milestoneContainer: {
-      marginTop: 16,
-      paddingTop: 16,
+      marginTop: ds.space[4],
+      paddingTop: ds.space[4],
       borderTopWidth: 1,
       borderTopColor: ds.colors.borderSubtle,
     },
@@ -328,7 +300,7 @@ const createStyles = (ds: DS) =>
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
       justifyContent: 'space-between' as const,
-      marginBottom: 12,
+      marginBottom: ds.space[3],
     },
     milestoneLeft: {
       flexDirection: 'row' as const,
@@ -337,7 +309,7 @@ const createStyles = (ds: DS) =>
     },
     milestoneEmoji: {
       fontSize: 28,
-      marginRight: 12,
+      marginRight: ds.space[3],
     },
     milestoneTextContainer: {
       flex: 1,
@@ -346,9 +318,11 @@ const createStyles = (ds: DS) =>
       fontSize: 14,
       fontWeight: '600' as const,
       marginBottom: 2,
+      color: ds.semantic.text.primary,
     },
     milestoneSubtitle: {
       fontSize: 12,
+      color: ds.semantic.text.secondary,
     },
     progressBar: {
       height: 8,
@@ -357,8 +331,8 @@ const createStyles = (ds: DS) =>
     timeBreakdown: {
       flexDirection: 'row' as const,
       justifyContent: 'space-around' as const,
-      marginTop: 20,
-      paddingTop: 16,
+      marginTop: ds.space[5],
+      paddingTop: ds.space[4],
       borderTopWidth: 1,
       borderTopColor: ds.colors.borderSubtle,
     },
@@ -368,9 +342,11 @@ const createStyles = (ds: DS) =>
     timeNumber: {
       fontSize: 20,
       fontWeight: '600' as const,
-      marginBottom: 4,
+      marginBottom: ds.space[1],
+      color: ds.semantic.text.primary,
     },
     timeLabel: {
       fontSize: 11,
+      color: ds.semantic.text.secondary,
     },
   }) as const;

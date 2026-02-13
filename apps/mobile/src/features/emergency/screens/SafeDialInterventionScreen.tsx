@@ -16,7 +16,7 @@ import { View, Text, TextInput, Alert, BackHandler, Linking } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut, SlideInDown } from 'react-native-reanimated';
-import { useTheme, Button } from '../../../design-system';
+import { Button } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { hapticWarning, hapticSuccess, hapticImpact } from '../../../utils/haptics';
@@ -51,7 +51,6 @@ export function SafeDialInterventionScreen({
   onDismiss,
   onProceed,
 }: SafeDialInterventionScreenProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { user } = useAuth();
@@ -66,110 +65,63 @@ export function SafeDialInterventionScreen({
   const whyTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ========================================
-  // Step 1: Stop Hand (5 seconds)
-  // ========================================
   useEffect(() => {
     if (step === 'stop') {
       hapticWarning();
-      stopTimerRef.current = setTimeout(() => {
-        setStep('why');
-      }, STOP_DURATION_MS);
-
-      return () => {
-        if (stopTimerRef.current) clearTimeout(stopTimerRef.current);
-      };
+      stopTimerRef.current = setTimeout(() => setStep('why'), STOP_DURATION_MS);
+      return () => { if (stopTimerRef.current) clearTimeout(stopTimerRef.current); };
     }
     return undefined;
   }, [step]);
 
-  // ========================================
-  // Step 2: Why You Got Sober (10 seconds)
-  // ========================================
   useEffect(() => {
     if (step === 'why') {
-      whyTimerRef.current = setTimeout(() => {
-        setStep('alternatives');
-      }, WHY_DURATION_MS);
-
-      return () => {
-        if (whyTimerRef.current) clearTimeout(whyTimerRef.current);
-      };
+      whyTimerRef.current = setTimeout(() => setStep('alternatives'), WHY_DURATION_MS);
+      return () => { if (whyTimerRef.current) clearTimeout(whyTimerRef.current); };
     }
     return undefined;
   }, [step]);
 
-  // ========================================
-  // Step 4: Final Countdown
-  // ========================================
   useEffect(() => {
     if (step === 'final') {
       countdownIntervalRef.current = setInterval(() => {
         setCountdown((prev) => {
-          if (prev <= 1) {
-            handleProceed();
-            return 0;
-          }
+          if (prev <= 1) { handleProceed(); return 0; }
           if (prev % 10 === 0) hapticImpact();
           return prev - 1;
         });
       }, 1000);
-
-      return () => {
-        if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
-      };
+      return () => { if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current); };
     }
     return undefined;
   }, [step]);
 
-  // ========================================
-  // Prevent Back Button Exit
-  // ========================================
   useEffect(() => {
     const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (step !== 'alternatives') {
-        return true; // Prevent back during forced steps
-      }
+      if (step !== 'alternatives') return true;
       handleDismiss('dismissed');
       return true;
     });
-
     return () => backHandler.remove();
   }, [step]);
 
-  // ========================================
-  // Action Handlers
-  // ========================================
   const handleLogAction = async (actionTaken: ActionTaken, notes?: string): Promise<void> => {
     if (!user?.id) return;
-
     try {
-      await logCall({
-        contactName: riskyContact.name,
-        actionTaken,
-        riskyContactId: riskyContact.id,
-        notes,
-      });
+      await logCall({ contactName: riskyContact.name, actionTaken, riskyContactId: riskyContact.id, notes });
     } catch (error) {
       logger.error('Failed to log close call:', error);
     }
   };
 
   const handleCallSponsor = async (): Promise<void> => {
-    if (!sponsorPhone) {
-      Alert.alert('No Sponsor Set', 'Please set up your sponsor in Settings first.');
-      return;
-    }
-
+    if (!sponsorPhone) { Alert.alert('No Sponsor Set', 'Please set up your sponsor in Settings first.'); return; }
     try {
       hapticSuccess();
       setIsProcessing(true);
       await handleLogAction('called_sponsor', `Called sponsor instead of ${riskyContact.name}`);
       await Linking.openURL(`tel:${sponsorPhone}`);
-
-      setTimeout(() => {
-        setStep('complete');
-      }, 500);
+      setTimeout(() => setStep('complete'), 500);
     } catch (_error) {
       Alert.alert('Error', 'Failed to call sponsor. Please try again.');
     } finally {
@@ -178,22 +130,13 @@ export function SafeDialInterventionScreen({
   };
 
   const handleTextSponsor = async (): Promise<void> => {
-    if (!sponsorPhone) {
-      Alert.alert('No Sponsor Set', 'Please set up your sponsor in Settings first.');
-      return;
-    }
-
+    if (!sponsorPhone) { Alert.alert('No Sponsor Set', 'Please set up your sponsor in Settings first.'); return; }
     try {
       hapticSuccess();
       setIsProcessing(true);
       await handleLogAction('texted_sponsor', `Texted sponsor instead of ${riskyContact.name}`);
-      await Linking.openURL(
-        `sms:${sponsorPhone}&body=I need help. I almost called ${riskyContact.name}.`,
-      );
-
-      setTimeout(() => {
-        setStep('complete');
-      }, 500);
+      await Linking.openURL(`sms:${sponsorPhone}&body=I need help. I almost called ${riskyContact.name}.`);
+      setTimeout(() => setStep('complete'), 500);
     } catch (_error) {
       Alert.alert('Error', 'Failed to text sponsor. Please try again.');
     } finally {
@@ -204,46 +147,26 @@ export function SafeDialInterventionScreen({
   const handleWait20Minutes = async (): Promise<void> => {
     hapticSuccess();
     await handleLogAction('waited', 'Chose to wait 20 minutes');
-
-    Alert.alert(
-      'Good Choice',
-      "You decided to wait. Cravings usually pass in 15-20 minutes. We'll check in with you.",
-      [
-        {
-          text: 'OK',
-          onPress: () => setStep('complete'),
-        },
-      ],
-    );
+    Alert.alert('Good Choice', "You decided to wait. Cravings usually pass in 15-20 minutes.", [
+      { text: 'OK', onPress: () => setStep('complete') },
+    ]);
   };
 
   const handlePlayGame = async (): Promise<void> => {
     hapticSuccess();
     await handleLogAction('played_game', 'Chose distraction game');
-
-    Alert.alert(
-      'Coming Soon',
-      'Calming games will be available in the next update. For now, try the breathing exercise.',
-      [
-        {
-          text: 'OK',
-          onPress: () => setStep('complete'),
-        },
-      ],
-    );
+    Alert.alert('Coming Soon', 'Calming games will be available in the next update. For now, try the breathing exercise.', [
+      { text: 'OK', onPress: () => setStep('complete') },
+    ]);
   };
 
-  const handleInsistProceed = (): void => {
-    hapticWarning();
-    setStep('final');
-  };
+  const handleInsistProceed = (): void => { hapticWarning(); setStep('final'); };
 
   const handleProceed = async (): Promise<void> => {
     if (step === 'final' && confirmText !== 'YES I AM RELAPSING') {
       Alert.alert('Confirmation Required', 'Please type the confirmation phrase exactly as shown.');
       return;
     }
-
     try {
       setIsProcessing(true);
       await handleLogAction('proceeded', `User chose to proceed with call to ${riskyContact.name}`);
@@ -264,55 +187,21 @@ export function SafeDialInterventionScreen({
     }
   };
 
-  // ========================================
-  // Step Renderers
-  // ========================================
+  // ========== STEP RENDERERS ==========
+
   const renderStopStep = (): React.ReactElement => (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      exiting={FadeOut.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.danger }]}
-    >
+    <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)} style={[styles.stepContainer, { backgroundColor: ds.semantic.intent.alert.solid }]}>
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <MaterialCommunityIcons
-            name="hand-back-right"
-            size={120}
-            color={ds.semantic.text.onDark}
-          />
-
-          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: 32 }]}>
-            STOP
+          <MaterialCommunityIcons name="hand-back-right" size={120} color={ds.semantic.text.onDark} />
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: ds.space[8] }]}>STOP</Text>
+          <Text style={[styles.mediumText, { color: ds.semantic.text.onDark, marginTop: ds.space[6], textAlign: 'center' }]}>Are you sure about this?</Text>
+          <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: ds.space[4], textAlign: 'center' }]}>
+            You've been clean for {cleanDays} {cleanDays === 1 ? 'day' : 'days'}.{'\n'}Don't throw it away.
           </Text>
-
-          <Text
-            style={[
-              styles.mediumText,
-              { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' },
-            ]}
-          >
-            Are you sure about this?
-          </Text>
-
-          <Text
-            style={[
-              styles.bodyText,
-              { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' },
-            ]}
-          >
-            You've been clean for {cleanDays} {cleanDays === 1 ? 'day' : 'days'}.{'\n'}
-            Don't throw it away.
-          </Text>
-
           <View style={styles.progressDots}>
             {[0, 1, 2, 3].map((i) => (
-              <View
-                key={i}
-                style={[
-                  styles.progressDot,
-                  { backgroundColor: i === 0 ? ds.semantic.text.onDark : ds.colors.bgTertiary },
-                ]}
-              />
+              <View key={i} style={[styles.progressDot, { backgroundColor: i === 0 ? ds.semantic.text.onDark : ds.semantic.surface.overlay }]} />
             ))}
           </View>
         </Animated.View>
@@ -321,38 +210,17 @@ export function SafeDialInterventionScreen({
   );
 
   const renderWhyStep = (): React.ReactElement => (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      exiting={FadeOut.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.primary }]}
-    >
+    <Animated.View entering={FadeIn.duration(300)} exiting={FadeOut.duration(300)} style={[styles.stepContainer, { backgroundColor: ds.semantic.intent.primary.solid }]}>
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <Animated.View entering={SlideInDown.duration(500)} style={styles.stepInner}>
-          <Text style={[styles.bigText, { color: ds.semantic.text.onDark }]}>
-            Remember Why You Started
-          </Text>
-
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark }]}>Remember Why You Started</Text>
           <View style={styles.whyContent}>
             <MaterialCommunityIcons name="heart" size={80} color={ds.semantic.text.onDark} />
-            <Text
-              style={[
-                styles.bodyText,
-                { color: ds.semantic.text.onDark, marginTop: 24, textAlign: 'center' },
-              ]}
-            >
-              {whyText}
-            </Text>
+            <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: ds.space[6], textAlign: 'center' }]}>{whyText}</Text>
           </View>
-
           <View style={styles.progressDots}>
             {[0, 1, 2, 3].map((i) => (
-              <View
-                key={i}
-                style={[
-                  styles.progressDot,
-                  { backgroundColor: i === 1 ? ds.semantic.text.onDark : ds.colors.bgTertiary },
-                ]}
-              />
+              <View key={i} style={[styles.progressDot, { backgroundColor: i === 1 ? ds.semantic.text.onDark : ds.semantic.surface.overlay }]} />
             ))}
           </View>
         </Animated.View>
@@ -361,77 +229,20 @@ export function SafeDialInterventionScreen({
   );
 
   const renderAlternativesStep = (): React.ReactElement => (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.semantic.surface.app }]}
-    >
+    <Animated.View entering={FadeIn.duration(300)} style={[styles.stepContainer, { backgroundColor: ds.semantic.surface.app }]}>
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
-          <Text style={[styles.bigText, { color: theme.colors.text, marginBottom: 16 }]}>
-            What do you REALLY need right now?
-          </Text>
-
+          <Text style={[styles.bigText, { color: ds.semantic.text.primary, marginBottom: ds.space[4] }]}>What do you REALLY need right now?</Text>
           <View style={styles.alternativesContainer}>
-            <Button
-              title={`📞 Call ${sponsorName}`}
-              onPress={handleCallSponsor}
-              variant="primary"
-              size="large"
-              fullWidth
-              disabled={isProcessing || !sponsorPhone}
-              style={styles.alternativeButton}
-            />
-
-            <Button
-              title="💬 Text Sponsor 'I need help'"
-              onPress={handleTextSponsor}
-              variant="secondary"
-              size="large"
-              fullWidth
-              disabled={isProcessing || !sponsorPhone}
-              style={styles.alternativeButton}
-            />
-
-            <Button
-              title="⏱️ Just Wait 20 Minutes"
-              onPress={handleWait20Minutes}
-              variant="outline"
-              size="large"
-              fullWidth
-              disabled={isProcessing}
-              style={styles.alternativeButton}
-            />
-
-            <Button
-              title="🎮 Play Calming Game"
-              onPress={handlePlayGame}
-              variant="outline"
-              size="large"
-              fullWidth
-              disabled={isProcessing}
-              style={styles.alternativeButton}
-            />
+            <Button title={`📞 Call ${sponsorName}`} onPress={handleCallSponsor} variant="primary" size="large" fullWidth disabled={isProcessing || !sponsorPhone} style={styles.alternativeButton} />
+            <Button title="💬 Text Sponsor 'I need help'" onPress={handleTextSponsor} variant="secondary" size="large" fullWidth disabled={isProcessing || !sponsorPhone} style={styles.alternativeButton} />
+            <Button title="⏱️ Just Wait 20 Minutes" onPress={handleWait20Minutes} variant="outline" size="large" fullWidth disabled={isProcessing} style={styles.alternativeButton} />
+            <Button title="🎮 Play Calming Game" onPress={handlePlayGame} variant="outline" size="large" fullWidth disabled={isProcessing} style={styles.alternativeButton} />
           </View>
-
-          <Text
-            style={[
-              styles.smallLink,
-              { color: theme.colors.textSecondary, marginTop: 32, textAlign: 'center' },
-            ]}
-            onPress={handleInsistProceed}
-          >
-            I still want to make this call
-          </Text>
-
+          <Text style={[styles.smallLink, { color: ds.semantic.text.tertiary, marginTop: ds.space[8], textAlign: 'center' }]} onPress={handleInsistProceed}>I still want to make this call</Text>
           <View style={styles.progressDots}>
             {[0, 1, 2, 3].map((i) => (
-              <View
-                key={i}
-                style={[
-                  styles.progressDot,
-                  { backgroundColor: i === 2 ? theme.colors.primary : theme.colors.border },
-                ]}
-              />
+              <View key={i} style={[styles.progressDot, { backgroundColor: i === 2 ? ds.semantic.intent.primary.solid : ds.semantic.surface.overlay }]} />
             ))}
           </View>
         </View>
@@ -440,77 +251,31 @@ export function SafeDialInterventionScreen({
   );
 
   const renderFinalStep = (): React.ReactElement => (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.semantic.surface.app }]}
-    >
+    <Animated.View entering={FadeIn.duration(300)} style={[styles.stepContainer, { backgroundColor: ds.semantic.surface.app }]}>
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
-          <MaterialCommunityIcons name="alert-octagon" size={80} color={theme.colors.danger} />
-
-          <Text
-            style={[
-              styles.bigText,
-              { color: theme.colors.danger, marginTop: 24, textAlign: 'center' },
-            ]}
-          >
-            Last Chance to Choose Recovery
+          <MaterialCommunityIcons name="alert-octagon" size={80} color={ds.semantic.intent.alert.solid} />
+          <Text style={[styles.bigText, { color: ds.semantic.intent.alert.solid, marginTop: ds.space[6], textAlign: 'center' }]}>Last Chance to Choose Recovery</Text>
+          <Text style={[styles.bodyText, { color: ds.semantic.text.primary, marginTop: ds.space[4], textAlign: 'center' }]}>
+            This call could end your sobriety.{'\n'}Type "YES I AM RELAPSING" to proceed:
           </Text>
-
-          <Text
-            style={[
-              styles.bodyText,
-              { color: theme.colors.text, marginTop: 16, textAlign: 'center' },
-            ]}
-          >
-            This call could end your sobriety.{'\n'}
-            Type "YES I AM RELAPSING" to proceed:
-          </Text>
-
           <TextInput
             value={confirmText}
             onChangeText={setConfirmText}
             placeholder="YES I AM RELAPSING"
-            placeholderTextColor={theme.colors.textSecondary}
-            style={[
-              styles.confirmInput,
-              theme.typography.body,
-              {
-                backgroundColor: theme.colors.surface,
-                color: theme.colors.text,
-                borderColor: theme.colors.border,
-              },
-            ]}
+            placeholderTextColor={ds.semantic.text.muted}
+            style={styles.confirmInput}
             autoCapitalize="characters"
             autoCorrect={false}
             editable={!isProcessing}
           />
-
           <View style={styles.countdownContainer}>
-            <Text style={[styles.countdownText, { color: theme.colors.danger }]}>
-              Call will proceed in: {countdown}s
-            </Text>
+            <Text style={[styles.countdownText, { color: ds.semantic.intent.alert.solid }]}>Call will proceed in: {countdown}s</Text>
           </View>
-
-          <Button
-            title="Cancel - I Changed My Mind"
-            onPress={() => handleDismiss('dismissed')}
-            variant="primary"
-            size="large"
-            fullWidth
-            disabled={isProcessing}
-            style={{ marginTop: 24 }}
-          />
-
+          <Button title="Cancel - I Changed My Mind" onPress={() => handleDismiss('dismissed')} variant="primary" size="large" fullWidth disabled={isProcessing} style={{ marginTop: ds.space[6] }} />
           <View style={styles.progressDots}>
             {[0, 1, 2, 3].map((i) => (
-              <View
-                key={i}
-                style={[
-                  styles.progressDot,
-                  { backgroundColor: i === 3 ? theme.colors.primary : theme.colors.border },
-                ]}
-              />
+              <View key={i} style={[styles.progressDot, { backgroundColor: i === 3 ? ds.semantic.intent.primary.solid : ds.semantic.surface.overlay }]} />
             ))}
           </View>
         </View>
@@ -519,85 +284,55 @@ export function SafeDialInterventionScreen({
   );
 
   const renderCompleteStep = (): React.ReactElement => (
-    <Animated.View
-      entering={FadeIn.duration(300)}
-      style={[styles.stepContainer, { backgroundColor: theme.colors.success }]}
-    >
+    <Animated.View entering={FadeIn.duration(300)} style={[styles.stepContainer, { backgroundColor: ds.semantic.intent.success.solid }]}>
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
         <View style={styles.stepInner}>
           <MaterialCommunityIcons name="check-circle" size={120} color={ds.semantic.text.onDark} />
-
-          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: 32 }]}>
-            You Made the Right Choice 💙
+          <Text style={[styles.bigText, { color: ds.semantic.text.onDark, marginTop: ds.space[8] }]}>You Made the Right Choice 💙</Text>
+          <Text style={[styles.bodyText, { color: ds.semantic.text.onDark, marginTop: ds.space[4], textAlign: 'center' }]}>
+            You just resisted a close call.{'\n'}That takes real strength.
           </Text>
-
-          <Text
-            style={[
-              styles.bodyText,
-              { color: ds.semantic.text.onDark, marginTop: 16, textAlign: 'center' },
-            ]}
-          >
-            You just resisted a close call.{'\n'}
-            That takes real strength.
-          </Text>
-
-          <Button
-            title="Close"
-            onPress={() => handleDismiss('dismissed')}
-            variant="outline"
-            size="large"
-            fullWidth
-            style={{ marginTop: 48, borderColor: ds.semantic.text.onDark }}
-          />
+          <Button title="Close" onPress={() => handleDismiss('dismissed')} variant="outline" size="large" fullWidth style={{ marginTop: ds.space[12], borderColor: ds.semantic.text.onDark }} />
         </View>
       </SafeAreaView>
     </Animated.View>
   );
 
-  // ========================================
-  // Main Render
-  // ========================================
   switch (step) {
-    case 'stop':
-      return renderStopStep();
-    case 'why':
-      return renderWhyStep();
-    case 'alternatives':
-      return renderAlternativesStep();
-    case 'final':
-      return renderFinalStep();
-    case 'complete':
-      return renderCompleteStep();
-    default:
-      return renderAlternativesStep();
+    case 'stop': return renderStopStep();
+    case 'why': return renderWhyStep();
+    case 'alternatives': return renderAlternativesStep();
+    case 'final': return renderFinalStep();
+    case 'complete': return renderCompleteStep();
+    default: return renderAlternativesStep();
   }
 }
 
-const createStyles = (_ds: DS) =>
+const createStyles = (ds: DS) =>
   ({
     stepContainer: {
       flex: 1,
     },
     stepContent: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
     },
     stepInner: {
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 32,
-      width: '100%',
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: ds.space[8],
+      width: '100%' as const,
     },
     bigText: {
       fontSize: 32,
-      fontWeight: 'bold',
-      textAlign: 'center',
+      fontWeight: 'bold' as const,
+      textAlign: 'center' as const,
     },
     mediumText: {
       fontSize: 24,
-      fontWeight: '600',
+      fontWeight: '600' as const,
     },
     bodyText: {
       fontSize: 18,
@@ -605,40 +340,43 @@ const createStyles = (_ds: DS) =>
     },
     smallLink: {
       fontSize: 14,
-      textDecorationLine: 'underline',
+      textDecorationLine: 'underline' as const,
     },
     whyContent: {
-      alignItems: 'center',
-      marginTop: 48,
+      alignItems: 'center' as const,
+      marginTop: ds.space[12],
     },
     alternativesContainer: {
-      width: '100%',
-      marginTop: 32,
+      width: '100%' as const,
+      marginTop: ds.space[8],
     },
     alternativeButton: {
-      marginBottom: 16,
+      marginBottom: ds.space[4],
     },
     confirmInput: {
-      width: '100%',
+      width: '100%' as const,
       borderWidth: 2,
-      borderRadius: 8,
-      padding: 16,
-      marginTop: 24,
-      textAlign: 'center',
+      borderRadius: ds.radius.lg,
+      padding: ds.space[4],
+      marginTop: ds.space[6],
+      textAlign: 'center' as const,
       fontSize: 18,
+      backgroundColor: ds.semantic.surface.elevated,
+      color: ds.semantic.text.primary,
+      borderColor: ds.semantic.surface.overlay,
     },
     countdownContainer: {
-      marginTop: 24,
+      marginTop: ds.space[6],
     },
     countdownText: {
       fontSize: 20,
-      fontWeight: 'bold',
+      fontWeight: 'bold' as const,
     },
     progressDots: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      gap: 12,
-      marginTop: 48,
+      flexDirection: 'row' as const,
+      justifyContent: 'center' as const,
+      gap: ds.space[3],
+      marginTop: ds.space[12],
     },
     progressDot: {
       width: 12,
