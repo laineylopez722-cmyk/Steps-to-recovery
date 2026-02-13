@@ -102,22 +102,47 @@ class OpenClawProvider {
     const { url, token } = await this.resolveConfig();
     if (!url || !token) throw new Error('OpenClaw not configured');
 
-    const response = await fetch(`${url}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        model: 'openclaw:companion',
-        messages,
-        stream: true,
-        user: options.userId || undefined,
-        max_tokens: options.maxTokens || 1024,
-        temperature: options.temperature ?? 0.7,
-      }),
-      signal: options.signal,
-    });
+    // Combine user abort signal with a 20s connection timeout.
+    // Timeout only covers the initial fetch — once streaming starts, it's cleared.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(new Error('Connection timed out')),
+      20_000,
+    );
+
+    // Forward external abort (user cancellation)
+    const onExternalAbort = (): void => controller.abort(options.signal?.reason);
+    if (options.signal) {
+      options.signal.addEventListener('abort', onExternalAbort, { once: true });
+    }
+
+    let response: Response;
+    try {
+      response = await fetch(`${url}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          model: 'openclaw:companion',
+          messages,
+          stream: true,
+          user: options.userId || undefined,
+          max_tokens: options.maxTokens || 1024,
+          temperature: options.temperature ?? 0.7,
+        }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      clearTimeout(timeoutId);
+      options.signal?.removeEventListener('abort', onExternalAbort);
+      throw err;
+    }
+
+    // Connected — clear the connection timeout (streaming can take longer)
+    clearTimeout(timeoutId);
+    options.signal?.removeEventListener('abort', onExternalAbort);
 
     if (!response.ok) {
       const errorBody = await response.text().catch(() => '');
