@@ -98,9 +98,11 @@ function useDarkHeaderOptions() {
       fontWeight: '600' as const,
       fontSize: 17,
     },
-    headerShadowVisible: true,
+    headerShadowVisible: false,
     headerBackTitleVisible: false,
     headerLargeTitle: false,
+    animation: 'fade_from_bottom' as const,
+    animationDuration: 200,
   };
 }
 
@@ -358,16 +360,14 @@ function ProfileStackNavigator(): React.ReactElement {
 const createStyles = (ds: DS) =>
   ({
     tabIconWrap: {
-      width: 38,
-      height: 30,
-      borderRadius: ds.radius.md,
+      width: 56,
+      height: 32,
+      borderRadius: ds.radius.full,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
     tabIconWrapFocused: {
-      backgroundColor: ds.semantic.intent.primary.subtle,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: ds.semantic.intent.primary.muted,
+      backgroundColor: ds.semantic.intent.primary.muted,
     },
   }) as const;
 
@@ -376,16 +376,24 @@ function TabIcon({
   color,
   size,
   name,
+  noOutline,
 }: {
   focused: boolean;
   color: string;
   size: number;
   name: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
+  noOutline?: boolean;
 }) {
   const styles = useThemedStyles(createStyles);
+  const ds = useDs();
+  const iconName = focused || noOutline ? name : (`${name}-outline` as typeof name);
   return (
     <View style={[styles.tabIconWrap, focused && styles.tabIconWrapFocused]}>
-      <MaterialCommunityIcons name={name} size={size} color={color} />
+      <MaterialCommunityIcons
+        name={iconName}
+        size={focused ? size + 1 : size}
+        color={focused ? ds.semantic.intent.primary.solid : color}
+      />
     </View>
   );
 }
@@ -417,17 +425,19 @@ export function MainNavigator(): React.ReactElement {
           tabBarInactiveTintColor: themeColors.textMuted,
           tabBarShowLabel: true,
           tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: '500' as const,
-            marginTop: -2,
+            fontSize: 10,
+            fontWeight: '600' as const,
+            marginTop: 2,
+            letterSpacing: 0.2,
           },
           tabBarStyle: {
             backgroundColor: themeColors.surface,
             borderTopColor: themeColors.border,
             borderTopWidth: StyleSheet.hairlineWidth,
-            paddingTop: ds.space[2],
+            paddingTop: ds.space[1],
             paddingBottom: ds.space[3],
-            height: 76,
+            height: 72,
+            elevation: 8,
           },
           tabBarHideOnKeyboard: true,
         }}
@@ -459,7 +469,7 @@ export function MainNavigator(): React.ReactElement {
           component={StepsStackNavigator}
           options={{
             tabBarIcon: ({ focused, color, size }) => (
-              <TabIcon focused={focused} color={color} size={size} name="stairs" />
+              <TabIcon focused={focused} color={color} size={size} name="stairs" noOutline />
             ),
             tabBarAccessibilityLabel: 'Steps',
             tabBarLabel: 'Steps',
