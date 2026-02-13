@@ -17,10 +17,10 @@ import { memo, useMemo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { Card } from '../../design-system/components';
-import { useTheme } from '../../design-system/hooks/useTheme';
 import type { Achievement } from '../../types';
 import { logger } from '../../utils/logger';
 import type { ReactElement } from 'react';
+import { useDs } from '../../design-system';
 
 /**
  * Props for the AchievementCard component
@@ -63,7 +63,7 @@ export const AchievementCard = memo(function AchievementCard({
 }: AchievementCardProps): ReactElement {
   // className kept for API compatibility, not currently used in render
   void _className;
-  const theme = useTheme();
+  const ds = useDs();
 
   // Validate achievement data
   if (!achievement || typeof achievement !== 'object') {
@@ -118,14 +118,14 @@ export const AchievementCard = memo(function AchievementCard({
 
     if (isUnlocked) {
       styles.borderLeftWidth = 4;
-      styles.borderLeftColor = theme.colors.secondary;
+      styles.borderLeftColor = ds.semantic.intent.secondary.solid;
     }
     if (isLocked) {
       styles.opacity = 0.6;
     }
 
     return Object.keys(styles).length > 0 ? styles : undefined;
-  }, [isUnlocked, isLocked, theme.colors.secondary]);
+  }, [isUnlocked, isLocked, ds.semantic.intent.secondary.solid]);
 
   return (
     <Card

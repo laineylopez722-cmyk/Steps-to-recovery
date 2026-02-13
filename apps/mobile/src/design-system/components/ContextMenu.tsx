@@ -26,6 +26,7 @@ import Animated, {
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../hooks/useTheme';
 import { hapticImpact, hapticSelection } from '../../utils/haptics';
+import { useDs } from '../DsProvider';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const LONG_PRESS_DURATION = 500;
@@ -100,6 +101,7 @@ export function ContextMenu({
   testID,
 }: ContextMenuProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
   const [isVisible, setIsVisible] = useState(false);
   const [triggerLayout, setTriggerLayout] = useState<LayoutRectangle | null>(null);
   const triggerRef = useRef<View>(null);
@@ -254,7 +256,7 @@ export function ContextMenu({
           style={[
             styles.menu,
             {
-              backgroundColor: theme.colors.surface,
+              backgroundColor: ds.semantic.surface.card,
               borderRadius: theme.radius.lg,
               ...(theme.isDark ? theme.shadows.lgDark : theme.shadows.lg),
               ...menuPosition,
@@ -269,7 +271,7 @@ export function ContextMenu({
                 styles.menuItem,
                 index < items.length - 1 && {
                   borderBottomWidth: StyleSheet.hairlineWidth,
-                  borderBottomColor: theme.colors.border,
+                  borderBottomColor: ds.semantic.surface.overlay,
                 },
                 item.disabled && styles.menuItemDisabled,
               ]}
@@ -283,13 +285,13 @@ export function ContextMenu({
               <Text
                 style={[
                   styles.menuItemLabel,
-                  theme.typography.body,
+                  ds.semantic.typography.body,
                   {
                     color: item.destructive
-                      ? theme.colors.danger
+                      ? ds.semantic.intent.alert.solid
                       : item.disabled
-                        ? theme.colors.textTertiary
-                        : theme.colors.text,
+                        ? ds.semantic.text.tertiary
+                        : ds.semantic.text.primary,
                   },
                 ]}
               >

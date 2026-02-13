@@ -2,16 +2,16 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Text, useTheme } from '../../../design-system';
+import { Text, useDs } from '../../../design-system';
 
 export function StepDetailErrorState(): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
       <View style={styles.errorContainer}>
-        <MaterialIcons name="error-outline" size={48} color={theme.colors.danger} />
-        <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>
+        <MaterialIcons name="error-outline" size={48} color={ds.semantic.intent.alert.solid} />
+        <Text style={[ds.typography.h2, { color: ds.semantic.text.primary, marginTop: 16 }]}>
           Step not found
         </Text>
       </View>

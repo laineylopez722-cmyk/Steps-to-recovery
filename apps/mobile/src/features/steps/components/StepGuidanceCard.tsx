@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Card, Text, useTheme } from '../../../design-system';
+import { Card, Text } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -16,7 +16,6 @@ export const StepGuidanceCard = React.memo(function StepGuidanceCard({
   description,
   onToggle,
 }: StepGuidanceCardProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -34,8 +33,8 @@ export const StepGuidanceCard = React.memo(function StepGuidanceCard({
           </View>
 
           <View style={styles.headerTextWrap}>
-            <Text style={[theme.typography.label, styles.label]}>Guidance</Text>
-            <Text style={[theme.typography.caption, styles.subLabel]}>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.label]}>Guidance</Text>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.subLabel]}>
               Read this before you answer
             </Text>
           </View>
@@ -50,7 +49,7 @@ export const StepGuidanceCard = React.memo(function StepGuidanceCard({
 
       {showGuidance && (
         <View style={styles.guidanceContent}>
-          <Text style={[theme.typography.body, styles.guidanceText]}>{description}</Text>
+          <Text style={[ds.semantic.typography.body, styles.guidanceText]}>{description}</Text>
         </View>
       )}
     </Card>

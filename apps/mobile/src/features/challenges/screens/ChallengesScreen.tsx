@@ -10,19 +10,19 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Alert, RefreshControl } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { ActiveChallenges } from '../components/ActiveChallenges';
 import { TemplateChallengeCard, CompletedChallengeCard } from '../components/ChallengeCard';
 import { useChallenges, useStartChallenge, useAbandonChallenge } from '../hooks/useChallenges';
 import { logger } from '../../../utils/logger';
 import type { ChallengeTemplate } from '../types';
+import { useDs } from '../../../design-system';
 
 export interface ChallengesScreenProps {
   userId: string;
 }
 
 export function ChallengesScreen({ userId }: ChallengesScreenProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const { activeChallenges, completedChallenges, availableTemplates, isLoading, refetch } =
     useChallenges(userId);
 
@@ -86,13 +86,13 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
+      style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}
       contentContainerStyle={styles.content}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={theme.colors.primary}
+          tintColor={ds.semantic.intent.primary.solid}
           accessibilityLabel="Pull to refresh challenges"
         />
       }
@@ -102,9 +102,9 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
       {/* ---- Active Challenges ---- */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="fire" size={20} color={theme.colors.warning} />
+          <MaterialCommunityIcons name="fire" size={20} color={ds.semantic.intent.warning.solid} />
           <Text
-            style={[styles.sectionTitle, { color: theme.colors.text }]}
+            style={[styles.sectionTitle, { color: ds.semantic.text.primary }]}
             accessibilityRole="header"
           >
             Active Challenges
@@ -116,9 +116,9 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
       {/* ---- Available Challenges ---- */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <MaterialCommunityIcons name="trophy-outline" size={20} color={theme.colors.primary} />
+          <MaterialCommunityIcons name="trophy-outline" size={20} color={ds.semantic.intent.primary.solid} />
           <Text
-            style={[styles.sectionTitle, { color: theme.colors.text }]}
+            style={[styles.sectionTitle, { color: ds.semantic.text.primary }]}
             accessibilityRole="header"
           >
             Available Challenges
@@ -126,7 +126,7 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
         </View>
         {availableTemplates.length === 0 ? (
           <Text
-            style={[styles.emptyNote, { color: theme.colors.textSecondary }]}
+            style={[styles.emptyNote, { color: ds.semantic.text.secondary }]}
             accessibilityLabel="All challenges are active"
             accessibilityRole="text"
           >
@@ -148,9 +148,9 @@ export function ChallengesScreen({ userId }: ChallengesScreenProps): React.React
       {completedChallenges.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="medal" size={20} color={theme.colors.success} />
+            <MaterialCommunityIcons name="medal" size={20} color={ds.semantic.intent.success.solid} />
             <Text
-              style={[styles.sectionTitle, { color: theme.colors.text }]}
+              style={[styles.sectionTitle, { color: ds.semantic.text.primary }]}
               accessibilityRole="header"
             >
               Completed

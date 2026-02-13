@@ -66,7 +66,7 @@ export function FloatingActionButton({
     });
   }
 
-  const backgroundColor = variant === 'danger' ? theme.colors.danger : theme.colors.primary;
+  const backgroundColor = variant === 'danger' ? ds.semantic.intent.alert.solid : ds.semantic.intent.primary.solid;
   const hasLabel = !!label;
 
   const handlePress = async (): Promise<void> => {
@@ -100,7 +100,7 @@ export function FloatingActionButton({
       >
         <View style={styles.iconContainer}>{icon}</View>
         {label && (
-          <Text style={[styles.label, theme.typography.label, { color: ds.semantic.text.onDark }]}>
+          <Text style={[styles.label, ds.semantic.typography.sectionLabel, { color: ds.semantic.text.onDark }]}>
             {label}
           </Text>
         )}

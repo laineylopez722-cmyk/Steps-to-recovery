@@ -45,11 +45,11 @@ import Animated, {
   withSpring,
   Easing,
 } from 'react-native-reanimated';
-import { useTheme } from '../../../hooks/useTheme';
 import { hapticLight, hapticMedium } from '../../../../utils/haptics';
 import { cn } from '../../../../lib/utils';
 import { buttonVariants, buttonTextVariants, type ButtonVariantProps } from './variants';
 import { Text } from '../../Text';
+import { useDs } from '../../../DsProvider';
 
 // ============================================================================
 // TYPES
@@ -156,7 +156,7 @@ export const Button = forwardRef<View, ButtonProps>(
     },
     ref,
   ): ReactElement => {
-    const theme = useTheme();
+    const ds = useDs();
     const scale = useSharedValue(1);
     const opacity = useSharedValue(1);
 
@@ -257,12 +257,12 @@ export const Button = forwardRef<View, ButtonProps>(
       switch (variant) {
         case 'filled':
         case 'tonal':
-          return theme.colors.semantic.text.onPrimary;
+          return ds.semantic.text.onPrimary;
         case 'outlined':
         case 'text':
         case 'elevated':
         default:
-          return theme.colors.primary;
+          return ds.semantic.intent.primary.solid;
       }
     };
 

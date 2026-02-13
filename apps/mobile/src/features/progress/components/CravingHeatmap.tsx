@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, GlassCard } from '../../../design-system';
+import { GlassCard } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
@@ -62,7 +62,6 @@ export function CravingHeatmap({
   peakHour,
   peakDay,
 }: CravingHeatmapProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
   const getCellData = (day: number, hour: number): CravingHeatmapData | undefined =>
@@ -85,10 +84,10 @@ export function CravingHeatmap({
       <View style={styles.header}>
         <View style={styles.titleRow}>
           <MaterialCommunityIcons name="grid" size={20} color={aestheticColors.warning.DEFAULT} />
-          <Text style={[styles.title, { color: theme.colors.text }]}>Craving Heatmap</Text>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]}>Craving Heatmap</Text>
         </View>
         {hasAnyData && (
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.subtitle, { color: ds.semantic.text.secondary }]}>
             Peak: {peakDay} {formatHourForA11y(peakHour)}
           </Text>
         )}
@@ -105,7 +104,7 @@ export function CravingHeatmap({
                 return (
                   <View key={hour} style={[styles.cell, styles.hourLabelCell]}>
                     {labelEntry && (
-                      <Text style={[styles.hourLabel, { color: theme.colors.textSecondary }]}>
+                      <Text style={[styles.hourLabel, { color: ds.semantic.text.secondary }]}>
                         {labelEntry.label}
                       </Text>
                     )}
@@ -118,7 +117,7 @@ export function CravingHeatmap({
             {DAY_LABELS.map((dayLabel, dayIndex) => (
               <View key={dayLabel} style={styles.row}>
                 <View style={styles.dayLabelContainer}>
-                  <Text style={[styles.dayLabel, { color: theme.colors.textSecondary }]}>
+                  <Text style={[styles.dayLabel, { color: ds.semantic.text.secondary }]}>
                     {dayLabel}
                   </Text>
                 </View>
@@ -149,7 +148,7 @@ export function CravingHeatmap({
 
             {/* Legend */}
             <View style={styles.legend}>
-              <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>Low</Text>
+              <Text style={[styles.legendText, { color: ds.semantic.text.secondary }]}>Low</Text>
               <View style={styles.legendScale}>
                 {[0, 2, 4, 6, 8, 10].map((v) => (
                   <View
@@ -164,13 +163,13 @@ export function CravingHeatmap({
                   />
                 ))}
               </View>
-              <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>High</Text>
+              <Text style={[styles.legendText, { color: ds.semantic.text.secondary }]}>High</Text>
             </View>
           </View>
         </ScrollView>
       ) : (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.emptyText, { color: ds.semantic.text.secondary }]}>
             Log cravings in check-ins to see your patterns here
           </Text>
         </View>

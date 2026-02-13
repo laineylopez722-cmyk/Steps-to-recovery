@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
-import { useTheme, GlassCard } from '../../../design-system';
+import { GlassCard } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
@@ -46,7 +46,6 @@ function computeRollingAverage(data: MoodDataPoint[], window: number): number[] 
 const { width: screenWidth } = Dimensions.get('window');
 
 export function MoodChart({ data, trend, average }: MoodChartProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
   const trendIcon: keyof typeof MaterialCommunityIcons.glyphMap =
@@ -54,10 +53,10 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
 
   const trendColor =
     trend === 'improving'
-      ? theme.colors.success
+      ? ds.semantic.intent.success.solid
       : trend === 'declining'
-        ? theme.colors.danger
-        : theme.colors.textSecondary;
+        ? ds.semantic.intent.alert.solid
+        : ds.semantic.text.secondary;
 
   const chartHeight = 100;
   const barChartHeight = 80;
@@ -96,7 +95,7 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
             size={20}
             color={aestheticColors.primary[500]}
           />
-          <Text style={[styles.title, { color: theme.colors.text }]}>Mood Trend</Text>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]}>Mood Trend</Text>
         </View>
         <View style={styles.trendBadge}>
           <MaterialCommunityIcons name={trendIcon} size={16} color={trendColor} />
@@ -122,7 +121,7 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
                 dotRadius={data.length <= 14 ? 3 : 2}
                 rollingAverage={rollingAvg}
                 rollingAverageColor={ds.palette.sageGreen}
-                labelColor={theme.colors.textSecondary}
+                labelColor={ds.semantic.text.secondary}
               />
             </View>
           )}
@@ -157,17 +156,17 @@ export function MoodChart({ data, trend, average }: MoodChartProps): React.React
 
           {/* Legend */}
           <View style={styles.legend}>
-            <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.legendText, { color: ds.semantic.text.secondary }]}>
               Last {data.length} days
             </Text>
-            <Text style={[styles.averageText, { color: theme.colors.text }]}>
+            <Text style={[styles.averageText, { color: ds.semantic.text.primary }]}>
               Avg: {average.toFixed(1)}/5
             </Text>
           </View>
         </>
       ) : (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.emptyText, { color: ds.semantic.text.secondary }]}>
             Complete check-ins to see your mood trend
           </Text>
         </View>

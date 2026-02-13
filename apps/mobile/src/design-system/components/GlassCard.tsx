@@ -139,8 +139,8 @@ export function GlassCard({
     backgroundColor: useGradient
       ? 'transparent'
       : elevated
-        ? theme.colors.surfaceElevated
-        : theme.colors.surface,
+        ? ds.semantic.surface.elevated
+        : ds.semantic.surface.card,
     borderRadius: 12,
     // Subtle shadow for elevation (iOS style)
     shadowColor: ds.colors.shadow,
@@ -153,7 +153,7 @@ export function GlassCard({
   // Optional glow effect for accent
   const glowStyle: ViewStyle = glow
     ? {
-        shadowColor: glowColor || theme.colors.primary,
+        shadowColor: glowColor || ds.semantic.intent.primary.solid,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.2,
         shadowRadius: 16,

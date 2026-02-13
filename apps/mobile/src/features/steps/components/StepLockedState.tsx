@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Text, useTheme } from '../../../design-system';
+import { Button, Text, useTheme, useDs } from '../../../design-system';
 
 interface StepLockedStateProps {
   stepNumber: number;
@@ -15,17 +15,18 @@ export function StepLockedState({
   onBackToSteps,
 }: StepLockedStateProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
 
   return (
     <View style={styles.lockedContainer}>
-      <MaterialCommunityIcons name="lock" size={48} color={theme.colors.textSecondary} />
-      <Text style={[theme.typography.h2, { color: theme.colors.text, marginTop: 16 }]}>
+      <MaterialCommunityIcons name="lock" size={48} color={ds.semantic.text.secondary} />
+      <Text style={[ds.typography.h2, { color: ds.semantic.text.primary, marginTop: 16 }]}>
         Step {stepNumber}
       </Text>
       <Text
         style={[
-          theme.typography.body,
-          { color: theme.colors.textSecondary, textAlign: 'center', marginTop: 12 },
+          ds.semantic.typography.body,
+          { color: ds.semantic.text.secondary, textAlign: 'center', marginTop: 12 },
         ]}
       >
         This step is not yet available. Please check back later.

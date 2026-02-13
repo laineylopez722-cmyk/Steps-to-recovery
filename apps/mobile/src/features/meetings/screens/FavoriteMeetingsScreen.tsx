@@ -6,7 +6,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { EmptyState } from '../../../design-system/components/EmptyState';
 import { MeetingCard } from '../components/MeetingCard';
 import { useDatabase } from '../../../contexts/DatabaseContext';
@@ -17,6 +16,7 @@ import type { MeetingWithDetails } from '../types/meeting';
 import { calculateDistance } from '../types/meeting';
 import { logger } from '../../../utils/logger';
 import type { MeetingsStackParamList } from '../../../navigation/types';
+import { useDs } from '../../../design-system';
 
 type FavoriteMeetingsScreenProps = NativeStackScreenProps<
   MeetingsStackParamList,
@@ -26,7 +26,7 @@ type FavoriteMeetingsScreenProps = NativeStackScreenProps<
 export function FavoriteMeetingsScreen({
   navigation,
 }: FavoriteMeetingsScreenProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const { db } = useDatabase();
   const { favoriteMeetings, isLoading: isFavoritesLoading } = useFavoriteMeetings();
   const { location, requestLocation } = useUserLocation();
@@ -36,8 +36,8 @@ export function FavoriteMeetingsScreen({
 
   // Centralized screen background – uses semantic surface token (consistent with MeetingFinderScreen)
   const screenBg = useMemo(
-    () => ({ backgroundColor: theme.colors.semantic.surface.app }),
-    [theme.colors.semantic.surface.app],
+    () => ({ backgroundColor: ds.semantic.surface.app }),
+    [ds.semantic.surface.app],
   );
 
   // Load full meeting details for favorites
@@ -119,7 +119,7 @@ export function FavoriteMeetingsScreen({
   if (isLoading && meetings.length === 0) {
     return (
       <View style={[styles.centerContainer, screenBg]}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
       </View>
     );
   }

@@ -19,8 +19,8 @@ import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated';
 import Svg, { Circle, Path } from 'react-native-svg';
-import { useTheme } from '../hooks/useTheme';
 import { hapticSuccess } from '../../utils/haptics';
+import { useDs } from '../DsProvider';
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -88,10 +88,10 @@ export function AnimatedCheckmark({
   hapticFeedback = true,
   style,
 }: AnimatedCheckmarkProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   // Use theme success color if not provided
-  const checkColor = color || theme.colors.success;
+  const checkColor = color || ds.semantic.intent.success.solid;
   const bgColor = backgroundColor || `${checkColor}20`;
 
   // Animation values

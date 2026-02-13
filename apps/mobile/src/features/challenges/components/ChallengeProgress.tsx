@@ -6,16 +6,16 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { ProgressBar } from '../../../design-system/components/ProgressBar';
 import type { Challenge } from '../types';
+import { useDs } from '../../../design-system';
 
 export interface ChallengeProgressProps {
   challenge: Challenge;
 }
 
 export function ChallengeProgress({ challenge }: ChallengeProgressProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const progress = challenge.target > 0 ? challenge.currentProgress / challenge.target : 0;
   const pct = Math.round(progress * 100);
 
@@ -26,10 +26,10 @@ export function ChallengeProgress({ challenge }: ChallengeProgressProps): React.
       accessibilityRole="text"
     >
       <View style={styles.labelRow}>
-        <Text style={[styles.progressText, { color: theme.colors.textSecondary }]}>
+        <Text style={[styles.progressText, { color: ds.semantic.text.secondary }]}>
           {challenge.currentProgress} / {challenge.target}
         </Text>
-        <Text style={[styles.daysText, { color: theme.colors.textSecondary }]}>
+        <Text style={[styles.daysText, { color: ds.semantic.text.secondary }]}>
           {challenge.status === 'active'
             ? `${challenge.daysRemaining}d left`
             : challenge.status === 'completed'
@@ -42,10 +42,10 @@ export function ChallengeProgress({ challenge }: ChallengeProgressProps): React.
         height={8}
         color={
           challenge.status === 'completed'
-            ? theme.colors.success
+            ? ds.semantic.intent.success.solid
             : challenge.status === 'failed'
-              ? theme.colors.danger
-              : theme.colors.primary
+              ? ds.semantic.intent.alert.solid
+              : ds.semantic.intent.primary.solid
         }
         accessibilityLabel={`${pct}% complete`}
       />

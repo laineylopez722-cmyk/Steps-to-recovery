@@ -5,8 +5,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useIsOnline } from '../../../providers/QueryProvider';
 import * as useOfflineMutation from '../../../hooks/useOfflineMutation';
 import { useSync } from '../../../contexts/SyncContext';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { logger } from '../../../utils/logger';
+import { useDs } from '../../../design-system';
 
 /**
  * SyncStatusIndicator - Enhanced with React Query offline support
@@ -19,7 +19,7 @@ import { logger } from '../../../utils/logger';
  * Gradually migrating to React Query for all sync operations
  */
 export function SyncStatusIndicator() {
-  const theme = useTheme();
+  const ds = useDs();
 
   // Legacy sync context (phasing out)
   const {
@@ -63,7 +63,7 @@ export function SyncStatusIndicator() {
     if (!isOnline) {
       return {
         icon: 'cloud-off-outline' as const,
-        color: theme.colors.muted,
+        color: ds.semantic.text.muted,
         label: 'Offline',
         subtext:
           totalPending > 0
@@ -75,7 +75,7 @@ export function SyncStatusIndicator() {
     if (isSyncing) {
       return {
         icon: 'cloud-sync' as const,
-        color: theme.colors.primary,
+        color: ds.semantic.intent.primary.solid,
         label: 'Syncing...',
         subtext:
           totalPending > 0
@@ -87,7 +87,7 @@ export function SyncStatusIndicator() {
     if (hasError) {
       return {
         icon: 'cloud-alert' as const,
-        color: theme.colors.danger,
+        color: ds.semantic.intent.alert.solid,
         label: 'Sync Error',
         subtext: 'Tap to retry',
       };
@@ -96,7 +96,7 @@ export function SyncStatusIndicator() {
     if (totalPending > 0) {
       return {
         icon: 'cloud-upload-outline' as const,
-        color: theme.colors.warning,
+        color: ds.semantic.intent.warning.solid,
         label: `${totalPending} Pending`,
         subtext: 'Tap to sync now',
       };
@@ -104,7 +104,7 @@ export function SyncStatusIndicator() {
 
     return {
       icon: 'cloud-check' as const,
-      color: theme.colors.success,
+      color: ds.semantic.intent.success.solid,
       label: 'Synced',
       subtext: lastSyncTime ? formatSyncTime(lastSyncTime) : 'All caught up',
     };
@@ -139,7 +139,7 @@ export function SyncStatusIndicator() {
   return (
     <TouchableOpacity
       testID={getTestID()}
-      style={[styles.container, { backgroundColor: theme.colors.surface }]}
+      style={[styles.container, { backgroundColor: ds.semantic.surface.card }]}
       onPress={handlePress}
       disabled={isSyncing || !isOnline}
       activeOpacity={0.7}
@@ -162,11 +162,11 @@ export function SyncStatusIndicator() {
           />
         )}
         <View key="text-container" style={styles.textContainer}>
-          <Text style={[theme.typography.subheadline, { color: status.color, fontWeight: '600' }]}>
+          <Text style={[ds.semantic.typography.bodySmall, { color: status.color, fontWeight: '600' }]}>
             {status.label}
           </Text>
           <Text
-            style={[theme.typography.caption1, { color: theme.colors.textSecondary, marginTop: 2 }]}
+            style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary, marginTop: 2 }]}
           >
             {status.subtext}
           </Text>

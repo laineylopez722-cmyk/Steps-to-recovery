@@ -67,14 +67,14 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
     <View style={[styles.container, containerStyle]}>
       {/* Label */}
       <View style={styles.labelContainer}>
-        <Text style={[theme.typography.label, { color: ds.semantic.text.primary }]}>
+        <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.primary }]}>
           {label}
           {required && <Text style={{ color: ds.semantic.intent.alert.solid }}> *</Text>}
         </Text>
 
         {/* Character Count */}
         {displayCharacterCount && (
-          <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
+          <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
             {characterCount}
             {maxLength ? `/${maxLength}` : ''}
           </Text>
@@ -103,7 +103,7 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
           multiline
           textAlignVertical="top"
           maxLength={maxLength}
-          style={[styles.textArea, theme.typography.body, { color: ds.semantic.text.primary }]}
+          style={[styles.textArea, ds.semantic.typography.body, { color: ds.semantic.text.primary }]}
           placeholderTextColor={ds.semantic.text.secondary}
           {...textInputProps}
         />
@@ -111,11 +111,11 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(function TextArea(
 
       {/* Error or Hint Text */}
       {error ? (
-        <Text style={[theme.typography.caption, styles.errorText, { color: ds.semantic.intent.alert.solid }]}>
+        <Text style={[ds.semantic.typography.sectionLabel, styles.errorText, { color: ds.semantic.intent.alert.solid }]}>
           {error}
         </Text>
       ) : hint ? (
-        <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
+        <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
           {hint}
         </Text>
       ) : null}

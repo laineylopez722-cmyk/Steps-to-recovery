@@ -17,7 +17,7 @@
  *
  * // Access theme colors
  * const theme = useTheme('light');
- * const bgColor = theme.colors.surface;
+ * const bgColor = ds.semantic.surface.card;
  *
  * // Access motion tokens
  * const duration = tokens.motion.durations.normal;
@@ -176,6 +176,7 @@ export type Tokens = typeof tokens;
 
 import { useState, useCallback, useMemo } from 'react';
 import { getTheme, toggleTheme as toggleThemeFn, isDarkTheme as checkIsDark } from './themes';
+import { useDs } from '../DsProvider';
 
 export interface UseThemeReturn {
   /** Current theme object */
@@ -218,6 +219,7 @@ export function useTheme(initialTheme: ThemeName = 'light'): UseThemeReturn {
   const [themeName, setThemeName] = useState<ThemeName>(initialTheme);
 
   const theme = useMemo(() => getTheme(themeName), [themeName]);
+  const ds = useDs();
 
   const isDark = useMemo(() => checkIsDark(themeName), [themeName]);
 

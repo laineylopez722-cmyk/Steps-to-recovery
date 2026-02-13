@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { Text, TextArea, useTheme } from '../../../design-system';
+import { Text, TextArea } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import type { StepListItem } from '../utils/stepListItems';
@@ -101,7 +101,6 @@ export function StepSingleQuestionView({
   onReviewAnswers,
   listItems,
 }: StepSingleQuestionViewProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const scrollRef = useRef<ScrollView>(null);
@@ -182,17 +181,17 @@ export function StepSingleQuestionView({
         showsVerticalScrollIndicator={false}
       >
         {/* Step description (no back button — nav bar handles that) */}
-        <Text style={[theme.typography.body, styles.stepDescription]} numberOfLines={3}>
+        <Text style={[ds.semantic.typography.body, styles.stepDescription]} numberOfLines={3}>
           {description}
         </Text>
 
         {/* Progress bar */}
         <View style={styles.progressSection}>
           <View style={styles.progressRow}>
-            <Text style={[theme.typography.body, styles.progressLeft]}>
+            <Text style={[ds.semantic.typography.body, styles.progressLeft]}>
               Question {currentQ} of {safeTotal}
             </Text>
-            <Text style={[theme.typography.caption, styles.progressRight]}>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.progressRight]}>
               {answeredCount} answered • {progressPercent}%
             </Text>
           </View>
@@ -210,14 +209,14 @@ export function StepSingleQuestionView({
         <Animated.View style={[styles.questionArea, { opacity: fadeAnim }]}>
           {/* Section label */}
           {question?.sectionTitle && (
-            <Text style={[theme.typography.caption, styles.sectionLabel]}>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.sectionLabel]}>
               {question.sectionTitle.toUpperCase()}
             </Text>
           )}
 
           {/* Prompt */}
           {question && (
-            <Text style={[theme.typography.h3, styles.prompt]}>
+            <Text style={[ds.typography.h3, styles.prompt]}>
               {question.prompt}
             </Text>
           )}
@@ -226,7 +225,7 @@ export function StepSingleQuestionView({
           {hint && (
             <View style={styles.hintRow}>
               <Feather name="info" size={14} color={ds.colors.textTertiary} />
-              <Text style={[theme.typography.caption, styles.hintText]}>{hint}</Text>
+              <Text style={[ds.semantic.typography.sectionLabel, styles.hintText]}>{hint}</Text>
             </View>
           )}
 
@@ -244,7 +243,7 @@ export function StepSingleQuestionView({
             accessibilityLabel={`Answer for question ${currentQ}`}
           />
 
-          <Text style={[theme.typography.caption, styles.autoSaveHint]}>
+          <Text style={[ds.semantic.typography.sectionLabel, styles.autoSaveHint]}>
             {isSaving ? 'Saving...' : isAnswered ? '✓ Saved' : 'Auto-saves when you move to next question'}
           </Text>
         </Animated.View>

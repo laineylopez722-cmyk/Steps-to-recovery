@@ -1,6 +1,6 @@
-import { useTheme } from '../../../design-system';
+import { useDs } from '../../../design-system';
 
 export function useScreenBackgroundColor() {
-  const theme = useTheme();
-  return theme.colors.background;
+  const ds = useDs();
+  return ds.semantic.surface.app;
 }

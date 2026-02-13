@@ -9,7 +9,7 @@ import { View, Text } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import Animated from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, GlassCard, SkeletonCard } from '../../../design-system';
+import { GlassCard, SkeletonCard, useDs } from '../../../design-system';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
@@ -29,7 +29,7 @@ function scoreColor(score: number): string {
 export function RecoveryStrengthCard({
   userId,
 }: RecoveryStrengthCardProps): React.ReactElement | null {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
   const { data, isLoading, error } = useRecoveryStrength(userId);
 
@@ -60,7 +60,7 @@ export function RecoveryStrengthCard({
           size={20}
           color={aestheticColors.primary[500]}
         />
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Recovery Strength</Text>
+        <Text style={[styles.sectionTitle, { color: ds.semantic.text.primary }]}>Recovery Strength</Text>
       </View>
 
       <GlassCard
@@ -82,7 +82,7 @@ export function RecoveryStrengthCard({
                 cx={size / 2}
                 cy={size / 2}
                 r={radius}
-                stroke={theme.colors.border}
+                stroke={ds.semantic.surface.overlay}
                 strokeWidth={stroke}
                 fill="none"
               />
@@ -100,7 +100,7 @@ export function RecoveryStrengthCard({
               />
             </Svg>
             <View style={styles.gaugeCenter}>
-              <Text style={[styles.scoreText, { color: theme.colors.text }]}>{data.score}</Text>
+              <Text style={[styles.scoreText, { color: ds.semantic.text.primary }]}>{data.score}</Text>
             </View>
           </View>
 
@@ -108,7 +108,7 @@ export function RecoveryStrengthCard({
           <View style={styles.gradeContainer}>
             <Text style={styles.emoji}>{data.emoji}</Text>
             <Text style={[styles.gradeText, { color }]}>{data.grade}</Text>
-            <Text style={[styles.scaleLabel, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.scaleLabel, { color: ds.semantic.text.secondary }]}>
               out of 100
             </Text>
           </View>
@@ -125,7 +125,7 @@ export function RecoveryStrengthCard({
                 accessibilityRole="text"
               >
                 <MaterialCommunityIcons name="chevron-right" size={16} color={color} />
-                <Text style={[styles.insightText, { color: theme.colors.textSecondary }]}>
+                <Text style={[styles.insightText, { color: ds.semantic.text.secondary }]}>
                   {insight}
                 </Text>
               </View>

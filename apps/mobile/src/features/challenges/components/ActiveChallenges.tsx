@@ -7,9 +7,9 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { ActiveChallengeCard } from './ChallengeCard';
 import type { Challenge } from '../types';
+import { useDs } from '../../../design-system';
 
 export interface ActiveChallengesProps {
   challenges: Challenge[];
@@ -20,13 +20,13 @@ export function ActiveChallenges({
   challenges,
   onAbandon,
 }: ActiveChallengesProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   if (challenges.length === 0) {
     return (
       <View style={styles.empty}>
         <Text
-          style={[styles.emptyText, { color: theme.colors.textSecondary }]}
+          style={[styles.emptyText, { color: ds.semantic.text.secondary }]}
           accessibilityLabel="No active challenges. Start one below."
           accessibilityRole="text"
         >

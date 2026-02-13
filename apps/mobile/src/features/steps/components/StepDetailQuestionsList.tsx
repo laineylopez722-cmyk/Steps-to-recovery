@@ -10,7 +10,7 @@ import {
   type ViewToken,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, Text, useTheme } from '../../../design-system';
+import { Button, Card, Text } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { StepSectionHeader } from './StepSectionHeader';
@@ -76,7 +76,6 @@ export function StepDetailQuestionsList({
   onToggleGuidance,
   currentVisibleQuestion,
 }: StepDetailQuestionsListProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -135,13 +134,13 @@ export function StepDetailQuestionsList({
           <Text style={styles.stepBadgeText}>{stepNumber}</Text>
         </View>
         <View style={styles.headerContent}>
-          <Text style={[theme.typography.h3, styles.stepTitle]} numberOfLines={1}>
+          <Text style={[ds.typography.h3, styles.stepTitle]} numberOfLines={1}>
             {title}
           </Text>
           <View style={styles.metaRow}>
-            <Text style={[theme.typography.caption, styles.metaText]}>{principle}</Text>
-            <Text style={[theme.typography.caption, styles.metaText]}> • </Text>
-            <Text style={[theme.typography.caption, styles.metaAccent]}>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.metaText]}>{principle}</Text>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.metaText]}> • </Text>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.metaAccent]}>
               {answeredCount}/{safeTotal} done ({progressPercent}%)
             </Text>
           </View>
@@ -174,7 +173,7 @@ export function StepDetailQuestionsList({
           accessibilityRole="button"
         >
           <MaterialCommunityIcons name="play-circle-outline" size={16} color={ds.colors.accent} />
-          <Text style={[theme.typography.caption, styles.resumeText]}>
+          <Text style={[ds.semantic.typography.sectionLabel, styles.resumeText]}>
             Resume at Q{firstUnansweredQuestion}
           </Text>
         </Pressable>

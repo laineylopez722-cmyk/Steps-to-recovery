@@ -8,9 +8,8 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Modal } from '../../../design-system';
+import { Modal, useDs } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
-import { useTheme } from '../../../design-system';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import type { DayActivity } from '../types';
 
@@ -27,7 +26,7 @@ interface ActivityRowProps {
 }
 
 function ActivityRow({ label, completed, icon }: ActivityRowProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   return (
@@ -39,12 +38,12 @@ function ActivityRow({ label, completed, icon }: ActivityRowProps): React.ReactE
       <MaterialCommunityIcons
         name={icon}
         size={20}
-        color={completed ? aestheticColors.success.DEFAULT : theme.colors.textTertiary}
+        color={completed ? aestheticColors.success.DEFAULT : ds.semantic.text.tertiary}
       />
       <Text
         style={[
           styles.activityLabel,
-          { color: completed ? theme.colors.text : theme.colors.textTertiary },
+          { color: completed ? ds.semantic.text.primary : ds.semantic.text.tertiary },
         ]}
       >
         {label}
@@ -52,7 +51,7 @@ function ActivityRow({ label, completed, icon }: ActivityRowProps): React.ReactE
       <MaterialCommunityIcons
         name={completed ? 'check-circle' : 'circle-outline'}
         size={22}
-        color={completed ? aestheticColors.success.DEFAULT : theme.colors.textTertiary}
+        color={completed ? aestheticColors.success.DEFAULT : ds.semantic.text.tertiary}
       />
     </View>
   );
@@ -77,13 +76,13 @@ function formatDisplayDate(dateStr: string): string {
 }
 
 export function DayDetailModal({ visible, onClose, day }: DayDetailModalProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   if (!day) {
     return (
       <Modal visible={visible} onClose={onClose} title="Day Details" variant="bottom">
-        <Text style={[styles.noData, { color: theme.colors.textSecondary }]}>
+        <Text style={[styles.noData, { color: ds.semantic.text.secondary }]}>
           No data available
         </Text>
       </Modal>
@@ -101,10 +100,10 @@ export function DayDetailModal({ visible, onClose, day }: DayDetailModalProps): 
       <View style={styles.content}>
         {/* Activity count summary */}
         <View style={styles.summaryRow}>
-          <Text style={[styles.summaryCount, { color: theme.colors.text }]}>
+          <Text style={[styles.summaryCount, { color: ds.semantic.text.primary }]}>
             {day.activityCount}
           </Text>
-          <Text style={[styles.summaryLabel, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.summaryLabel, { color: ds.semantic.text.secondary }]}>
             of 5 activities
           </Text>
         </View>
@@ -136,7 +135,7 @@ export function DayDetailModal({ visible, onClose, day }: DayDetailModalProps): 
 
         {/* Encouraging message */}
         <View style={styles.messageContainer}>
-          <Text style={[styles.message, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.message, { color: ds.semantic.text.secondary }]}>
             {getEncouragingMessage(day.activityCount)}
           </Text>
         </View>

@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, StyleSheet, type ViewStyle } from 'react-native';
-import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 export interface DividerProps {
   style?: ViewStyle;
@@ -20,14 +20,14 @@ export function Divider({
   marginHorizontal = 0,
   color,
 }: DividerProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   return (
     <View
       style={[
         styles.divider,
         {
-          backgroundColor: color || theme.colors.border,
+          backgroundColor: color || ds.semantic.surface.overlay,
           marginVertical,
           marginHorizontal,
         },

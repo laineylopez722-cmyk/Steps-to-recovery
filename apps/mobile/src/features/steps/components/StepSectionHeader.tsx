@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Text, useTheme } from '../../../design-system';
+import { Text } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -18,7 +18,6 @@ export function StepSectionHeader({
   sectionStart,
   onJumpToQuestion,
 }: StepSectionHeaderProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -36,10 +35,10 @@ export function StepSectionHeader({
         accessible={false}
       />
       <View style={styles.sectionHeaderContent}>
-        <Text style={[theme.typography.h3, { color: ds.colors.textPrimary, fontWeight: '600' }]}>
+        <Text style={[ds.typography.h3, { color: ds.colors.textPrimary, fontWeight: '600' }]}>
           {title}
         </Text>
-        <Text style={[theme.typography.caption, { color: ds.colors.textTertiary }]}>
+        <Text style={[ds.semantic.typography.sectionLabel, { color: ds.colors.textTertiary }]}>
           {questionRange} • tap to jump
         </Text>
       </View>

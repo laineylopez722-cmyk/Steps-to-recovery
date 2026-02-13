@@ -14,7 +14,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import Svg, { Circle, G } from 'react-native-svg';
-import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
@@ -113,11 +113,11 @@ export function CircularProgress({
   style,
   testID,
 }: CircularProgressProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   // Colors
-  const activeColor = progressColor || theme.colors.primary;
-  const inactiveColor = trackColor || theme.colors.border;
+  const activeColor = progressColor || ds.semantic.intent.primary.solid;
+  const inactiveColor = trackColor || ds.semantic.surface.overlay;
 
   // Calculate dimensions
   const center = size / 2;
@@ -188,15 +188,15 @@ export function CircularProgress({
 
       return (
         <View style={styles.centerContent}>
-          <Text style={[styles.value, theme.typography.h2, { color: theme.colors.text }]}>
+          <Text style={[styles.value, ds.typography.h2, { color: ds.semantic.text.primary }]}>
             {typeof valueToShow === 'number' && animateNumber ? displayNumber : valueToShow}
           </Text>
           {label && (
             <Text
               style={[
                 styles.label,
-                theme.typography.caption,
-                { color: theme.colors.textSecondary },
+                ds.semantic.typography.sectionLabel,
+                { color: ds.semantic.text.secondary },
               ]}
             >
               {label}

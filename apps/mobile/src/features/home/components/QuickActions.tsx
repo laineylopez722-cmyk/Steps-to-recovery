@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
 import { Card } from '../../../design-system/components';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { categoryColors } from '../../../design-system/tokens/colors';
@@ -62,18 +61,17 @@ const QUICK_ACTIONS_BASE: Omit<QuickAction, 'color'>[] = [
 
 export function QuickActions({ userId }: QuickActionsProps): React.ReactElement {
   const navigation = useNavigation();
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
   // Map colors to theme
   const actionColors = [
-    theme.colors.warning, // Daily Reading - orange (spiritual)
-    theme.colors.success, // My Progress - green (growth)
-    theme.colors.primary, // Journal - blue
+    ds.semantic.intent.warning.solid, // Daily Reading - orange (spiritual)
+    ds.semantic.intent.success.solid, // My Progress - green (growth)
+    ds.semantic.intent.primary.solid, // Journal - blue
     categoryColors['self-care'], // Step Work - purple
-    theme.colors.danger, // Emergency - red
-    theme.colors.secondary, // Meetings - teal
+    ds.semantic.intent.alert.solid, // Emergency - red
+    ds.semantic.intent.secondary.solid, // Meetings - teal
   ];
 
   const QUICK_ACTIONS: QuickAction[] = QUICK_ACTIONS_BASE.map((action, index) => ({
@@ -94,7 +92,7 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
       accessibilityRole="menu"
       accessibilityLabel="Quick actions menu"
     >
-      <Text style={[theme.typography.title2, styles.title]}>Quick Actions</Text>
+      <Text style={[ds.typography.h3, styles.title]}>Quick Actions</Text>
 
       <View style={styles.actionsGrid}>
         {QUICK_ACTIONS.map((action) => (
@@ -115,7 +113,7 @@ export function QuickActions({ userId }: QuickActionsProps): React.ReactElement 
             </View>
             <Text
               style={[
-                theme.typography.body,
+                ds.semantic.typography.body,
                 { fontWeight: '600', color: ds.semantic.text.primary, textAlign: 'center' },
               ]}
             >

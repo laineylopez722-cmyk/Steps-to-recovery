@@ -6,7 +6,7 @@
 import { useEffect } from 'react';
 import { View, StyleSheet, type ViewStyle, type AccessibilityRole } from 'react-native';
 import Animated, { useSharedValue, withSpring } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 export interface ProgressBarProps {
   /**
@@ -20,12 +20,12 @@ export interface ProgressBarProps {
   height?: number;
   /**
    * Color of the filled portion
-   * If not provided, uses theme.colors.primary
+   * If not provided, uses ds.semantic.intent.primary.solid
    */
   color?: string;
   /**
    * Color of the unfilled portion
-   * If not provided, uses theme.colors.border
+   * If not provided, uses ds.semantic.surface.overlay
    */
   backgroundColor?: string;
   /**
@@ -62,7 +62,7 @@ export function ProgressBar({
   accessibilityRole,
   accessibilityHint,
 }: ProgressBarProps) {
-  const theme = useTheme();
+  const ds = useDs();
   const progressWidth = useSharedValue(0);
   // Clamp progress between 0 and 1
   const clampedProgress = Math.max(0, Math.min(1, progress));
@@ -78,8 +78,8 @@ export function ProgressBar({
     }
   }, [clampedProgress, animated, progressWidth]);
 
-  const fillColor = color || theme.colors.primary;
-  const bgColor = backgroundColor || theme.colors.border;
+  const fillColor = color || ds.semantic.intent.primary.solid;
+  const bgColor = backgroundColor || ds.semantic.surface.overlay;
 
   return (
     <View

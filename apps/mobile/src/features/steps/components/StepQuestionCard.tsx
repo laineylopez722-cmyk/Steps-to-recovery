@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, Text, TextArea, useTheme } from '../../../design-system';
+import { Button, Card, Text, TextArea } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -26,7 +26,6 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
   onChangeAnswer,
   onSave,
 }: StepQuestionCardProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -48,13 +47,13 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
         </View>
 
         <View style={[styles.statusDot, isAnswered && styles.statusDotAnswered]} />
-        <Text style={[theme.typography.caption, styles.statusText]}>
+        <Text style={[ds.semantic.typography.sectionLabel, styles.statusText]}>
           {isAnswered ? 'Saved' : `${questionNumber}/${totalQuestions}`}
         </Text>
       </View>
 
       {/* Prompt */}
-      <Text style={[theme.typography.body, styles.prompt]}>{prompt}</Text>
+      <Text style={[ds.semantic.typography.body, styles.prompt]}>{prompt}</Text>
 
       {/* Answer */}
       <TextArea

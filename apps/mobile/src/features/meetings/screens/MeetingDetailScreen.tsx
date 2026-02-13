@@ -15,7 +15,6 @@ import {
   Share,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { Button } from '../../../design-system/components/Button';
@@ -44,7 +43,6 @@ export function MeetingDetailScreen({
   route,
   navigation,
 }: MeetingDetailScreenProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { db } = useDatabase();
@@ -296,16 +294,16 @@ export function MeetingDetailScreen({
 
   if (isLoading) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+      <View style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}>
+        <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
       </View>
     );
   }
 
   if (!meeting) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}>
-        <Text style={[theme.typography.body, { color: theme.colors.text }]}>Meeting not found</Text>
+      <View style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}>
+        <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.primary }]}>Meeting not found</Text>
       </View>
     );
   }
@@ -331,12 +329,12 @@ export function MeetingDetailScreen({
   return (
     <>
       <ScrollView
-        style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
+        style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}
         contentContainerStyle={styles.content}
       >
         {/* Meeting Name */}
         <View style={styles.header}>
-          <Text style={[theme.typography.h1, { color: theme.colors.text, flex: 1 }]}>
+          <Text style={[ds.semantic.typography.screenTitle, { color: ds.semantic.text.primary, flex: 1 }]}>
             {meetingName}
           </Text>
           <Pressable
@@ -352,8 +350,8 @@ export function MeetingDetailScreen({
             style={({ pressed }) => [
               styles.favoriteIconButton,
               {
-                backgroundColor: isFavorited ? theme.colors.danger : theme.colors.surface,
-                borderColor: theme.colors.border,
+                backgroundColor: isFavorited ? ds.semantic.intent.alert.solid : ds.semantic.surface.card,
+                borderColor: ds.semantic.surface.overlay,
                 opacity: pressed ? 0.8 : 1,
               },
             ]}
@@ -361,7 +359,7 @@ export function MeetingDetailScreen({
             <MaterialIcons
               name={isFavorited ? 'favorite' : 'favorite-border'}
               size={22}
-              color={isFavorited ? ds.semantic.text.onDark : theme.colors.text}
+              color={isFavorited ? ds.semantic.text.onDark : ds.semantic.text.primary}
             />
           </Pressable>
         </View>
@@ -419,12 +417,12 @@ export function MeetingDetailScreen({
         {/* Time and Day */}
         <Card style={styles.section}>
           <View style={styles.infoRow}>
-            <MaterialIcons name="schedule" size={24} color={theme.colors.primary} />
+            <MaterialIcons name="schedule" size={24} color={ds.semantic.intent.primary.solid} />
             <View style={styles.infoText}>
-              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+              <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
                 When
               </Text>
-              <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
+              <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]}>
                 {dayText} at {timeText}
               </Text>
             </View>
@@ -434,18 +432,18 @@ export function MeetingDetailScreen({
         {/* Location */}
         <Card style={styles.section}>
           <View style={styles.infoRow}>
-            <MaterialIcons name="place" size={24} color={theme.colors.primary} />
+            <MaterialIcons name="place" size={24} color={ds.semantic.intent.primary.solid} />
             <View style={styles.infoText}>
-              <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+              <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
                 Where
               </Text>
-              <Text style={[theme.typography.h3, { color: theme.colors.text }]}>
+              <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]}>
                 {meetingLocation}
               </Text>
-              <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+              <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.secondary }]}>
                 {meetingAddress}
               </Text>
-              <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+              <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.secondary }]}>
                 {meetingCityStateLine}
               </Text>
             </View>
@@ -455,7 +453,7 @@ export function MeetingDetailScreen({
         {/* Meeting Types */}
         {meetingTypes.length > 0 && (
           <Card style={styles.section}>
-            <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+            <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
               Meeting Type
             </Text>
             <View style={styles.typesContainer}>
@@ -471,10 +469,10 @@ export function MeetingDetailScreen({
         {/* Notes */}
         {meeting.notes && (
           <Card style={styles.section}>
-            <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 8 }]}>
+            <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}>
               Meeting Notes
             </Text>
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+            <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.secondary }]}>
               {meeting.notes}
             </Text>
           </Card>
@@ -482,7 +480,7 @@ export function MeetingDetailScreen({
 
         {/* Personal Notes */}
         <Card style={styles.section}>
-          <Text style={[theme.typography.h3, { color: theme.colors.text, marginBottom: 12 }]}>
+          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Personal Notes
           </Text>
           <TextArea

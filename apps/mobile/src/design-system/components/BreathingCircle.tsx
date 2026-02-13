@@ -14,8 +14,8 @@ import Animated, {
   Easing,
   cancelAnimation,
 } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
 import { hapticTick } from '../../utils/haptics';
+import { useDs } from '../DsProvider';
 
 const BREATH_DURATION = 4000; // 4 seconds per phase
 
@@ -73,8 +73,8 @@ export function BreathingCircle({
   onComplete,
   testID,
 }: BreathingCircleProps): React.ReactElement {
-  const theme = useTheme();
-  const activeColor = color || theme.colors.primary;
+  const ds = useDs();
+  const activeColor = color || ds.semantic.intent.primary.solid;
 
   const [phase, setPhase] = useState<BreathPhase>('idle');
   const [currentCycle, setCurrentCycle] = useState(0);
@@ -218,7 +218,7 @@ export function BreathingCircle({
         <Text
           style={[
             styles.phaseLabel,
-            { color: phase === 'idle' ? theme.colors.textSecondary : '#FFFFFF' },
+            { color: phase === 'idle' ? ds.semantic.text.secondary : '#FFFFFF' },
           ]}
         >
           {PHASE_LABELS[phase]}
@@ -227,7 +227,7 @@ export function BreathingCircle({
           <Text
             style={[
               styles.cycleLabel,
-              { color: phase === 'idle' ? theme.colors.textTertiary : 'rgba(255,255,255,0.7)' },
+              { color: phase === 'idle' ? ds.semantic.text.tertiary : 'rgba(255,255,255,0.7)' },
             ]}
           >
             Cycle {currentCycle + 1}/{cycles}

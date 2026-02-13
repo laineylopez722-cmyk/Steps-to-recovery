@@ -33,7 +33,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
       <Card variant="elevated" style={styles.card}>
         <Text
           style={[
-            theme.typography.h3,
+            ds.typography.h3,
             { color: ds.semantic.text.primary, marginBottom: theme.spacing.md },
           ]}
           accessibilityRole="header"
@@ -46,14 +46,14 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
           {/* Total Close Calls */}
           <View style={styles.statBox}>
             <View
-              style={[styles.statIconContainer, { backgroundColor: theme.colors.warning + '20' }]}
+              style={[styles.statIconContainer, { backgroundColor: ds.semantic.intent.warning.solid + '20' }]}
             >
-              <MaterialCommunityIcons name="alert-circle" size={28} color={theme.colors.warning} />
+              <MaterialCommunityIcons name="alert-circle" size={28} color={ds.semantic.intent.warning.solid} />
             </View>
-            <Text style={[theme.typography.h1, { color: ds.semantic.text.primary, marginTop: 8 }]}>
+            <Text style={[ds.semantic.typography.screenTitle, { color: ds.semantic.text.primary, marginTop: 8 }]}>
               {stats.totalCloseCalls}
             </Text>
-            <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
+            <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
               Close Calls
             </Text>
           </View>
@@ -61,14 +61,14 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
           {/* Times Resisted */}
           <View style={styles.statBox}>
             <View
-              style={[styles.statIconContainer, { backgroundColor: theme.colors.success + '20' }]}
+              style={[styles.statIconContainer, { backgroundColor: ds.semantic.intent.success.solid + '20' }]}
             >
-              <MaterialCommunityIcons name="shield-check" size={28} color={theme.colors.success} />
+              <MaterialCommunityIcons name="shield-check" size={28} color={ds.semantic.intent.success.solid} />
             </View>
-            <Text style={[theme.typography.h1, { color: theme.colors.success, marginTop: 8 }]}>
+            <Text style={[ds.semantic.typography.screenTitle, { color: ds.semantic.intent.success.solid, marginTop: 8 }]}>
               {stats.timesResisted}
             </Text>
-            <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
+            <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
               Times Resisted
             </Text>
           </View>
@@ -86,11 +86,11 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             ]}
           >
             <View style={styles.resistanceBarHeader}>
-              <Text style={[theme.typography.labelLarge, { color: ds.semantic.text.primary }]}>
+              <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]}>
                 Resistance Rate
               </Text>
               <Text
-                style={[theme.typography.h2, { color: theme.colors.success, fontWeight: 'bold' }]}
+                style={[ds.typography.h2, { color: ds.semantic.intent.success.solid, fontWeight: 'bold' }]}
               >
                 {resistanceRate}%
               </Text>
@@ -100,7 +100,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 style={[
                   styles.progressBarFill,
                   {
-                    backgroundColor: theme.colors.success,
+                    backgroundColor: ds.semantic.intent.success.solid,
                     width: `${resistanceRate}%`,
                   },
                 ]}
@@ -108,7 +108,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             </View>
             <Text
               style={[
-                theme.typography.caption,
+                ds.semantic.typography.sectionLabel,
                 {
                   color: ds.semantic.text.secondary,
                   marginTop: 4,
@@ -128,14 +128,14 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
               <MaterialCommunityIcons
                 name="calendar-clock"
                 size={20}
-                color={theme.colors.primary}
+                color={ds.semantic.intent.primary.solid}
                 style={{ marginRight: 8 }}
               />
-              <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
+              <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.primary }]}>
                 Last Close Call
               </Text>
             </View>
-            <Text style={[theme.typography.bodyBold, { color: ds.semantic.text.secondary }]}>
+            <Text style={[{ ...ds.semantic.typography.body, fontWeight: '700' as const }, { color: ds.semantic.text.secondary }]}>
               {lastCloseCallText}
             </Text>
           </View>
@@ -146,14 +146,14 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                 <MaterialCommunityIcons
                   name="trophy"
                   size={20}
-                  color={theme.colors.warning}
+                  color={ds.semantic.intent.warning.solid}
                   style={{ marginRight: 8 }}
                 />
-                <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
+                <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.primary }]}>
                   Longest Streak
                 </Text>
               </View>
-              <Text style={[theme.typography.bodyBold, { color: ds.semantic.text.secondary }]}>
+              <Text style={[{ ...ds.semantic.typography.body, fontWeight: '700' as const }, { color: ds.semantic.text.secondary }]}>
                 {stats.longestStreakDays} {stats.longestStreakDays === 1 ? 'day' : 'days'}
               </Text>
             </View>
@@ -168,11 +168,11 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
                   color={ds.semantic.text.secondary}
                   style={{ marginRight: 8 }}
                 />
-                <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
+                <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.primary }]}>
                   Times Proceeded
                 </Text>
               </View>
-              <Text style={[theme.typography.bodyBold, { color: ds.semantic.text.secondary }]}>
+              <Text style={[{ ...ds.semantic.typography.body, fontWeight: '700' as const }, { color: ds.semantic.text.secondary }]}>
                 {stats.timesProceeded}
               </Text>
             </View>
@@ -185,7 +185,7 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             style={[
               styles.encouragementBox,
               {
-                backgroundColor: theme.colors.success + '15',
+                backgroundColor: ds.semantic.intent.success.solid + '15',
                 marginTop: theme.spacing.md,
               },
             ]}
@@ -193,14 +193,14 @@ export function CloseCallInsights({ stats, style }: CloseCallInsightsProps): Rea
             <MaterialCommunityIcons
               name="heart"
               size={20}
-              color={theme.colors.success}
+              color={ds.semantic.intent.success.solid}
               style={{ marginRight: 8 }}
             />
             <Text
               style={[
-                theme.typography.bodySmall,
+                ds.semantic.typography.bodySmall,
                 {
-                  color: theme.colors.success,
+                  color: ds.semantic.intent.success.solid,
                   flex: 1,
                   fontWeight: '500',
                 },

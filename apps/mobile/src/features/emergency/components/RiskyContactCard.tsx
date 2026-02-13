@@ -8,7 +8,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { Card, useTheme } from '../../../design-system';
+import { Card } from '../../../design-system';
 import { useDs } from '../../../design-system/DsProvider';
 import { hapticSelection, hapticWarning } from '../../../utils/haptics';
 import type { RiskyContact, RelationshipType } from '../hooks';
@@ -38,7 +38,6 @@ export function RiskyContactCard({
   onEdit,
   onDelete,
 }: RiskyContactCardProps): React.ReactElement {
-  const theme = useTheme();
   const ds = useDs();
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -99,18 +98,18 @@ export function RiskyContactCard({
       <Card variant="elevated" style={styles.card}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <View style={[styles.iconContainer, { backgroundColor: theme.colors.danger + '20' }]}>
+            <View style={[styles.iconContainer, { backgroundColor: ds.semantic.intent.alert.solid + '20' }]}>
               <MaterialCommunityIcons
                 name={RELATIONSHIP_ICONS[contact.relationshipType]}
                 size={24}
-                color={theme.colors.danger}
+                color={ds.semantic.intent.alert.solid}
               />
             </View>
             <View style={styles.headerText}>
-              <Text style={[theme.typography.h3, { color: ds.semantic.text.primary }]} numberOfLines={1}>
+              <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]} numberOfLines={1}>
                 {contact.name}
               </Text>
-              <Text style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}>
+              <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
                 {RELATIONSHIP_LABELS[contact.relationshipType]}
               </Text>
             </View>
@@ -125,7 +124,7 @@ export function RiskyContactCard({
                 accessibilityLabel={`Edit ${contact.name}`}
                 disabled={isDeleting}
               >
-                <MaterialCommunityIcons name="pencil" size={20} color={theme.colors.primary} />
+                <MaterialCommunityIcons name="pencil" size={20} color={ds.semantic.intent.primary.solid} />
               </Pressable>
             )}
             {onDelete && (
@@ -136,7 +135,7 @@ export function RiskyContactCard({
                 accessibilityLabel={`Delete ${contact.name}`}
                 disabled={isDeleting}
               >
-                <MaterialCommunityIcons name="delete" size={20} color={theme.colors.danger} />
+                <MaterialCommunityIcons name="delete" size={20} color={ds.semantic.intent.alert.solid} />
               </Pressable>
             )}
           </View>
@@ -152,7 +151,7 @@ export function RiskyContactCard({
               color={ds.semantic.text.secondary}
               style={styles.detailIcon}
             />
-            <Text style={[theme.typography.body, { color: ds.semantic.text.primary }]}>
+            <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.primary }]}>
               {formatPhoneNumber(contact.phoneNumber)}
             </Text>
           </View>
@@ -164,7 +163,7 @@ export function RiskyContactCard({
               color={ds.semantic.text.secondary}
               style={styles.detailIcon}
             />
-            <Text style={[theme.typography.bodySmall, { color: ds.semantic.text.secondary }]}>
+            <Text style={[ds.semantic.typography.bodySmall, { color: ds.semantic.text.secondary }]}>
               Added {daysAgo === 0 ? 'today' : daysAgo === 1 ? 'yesterday' : `${daysAgo} days ago`}
             </Text>
           </View>
@@ -172,7 +171,7 @@ export function RiskyContactCard({
           {contact.notes && (
             <View style={[styles.notesContainer, { backgroundColor: ds.semantic.surface.card }]}>
               <Text
-                style={[theme.typography.bodySmall, { color: ds.semantic.text.secondary }]}
+                style={[ds.semantic.typography.bodySmall, { color: ds.semantic.text.secondary }]}
                 numberOfLines={2}
               >
                 {contact.notes}

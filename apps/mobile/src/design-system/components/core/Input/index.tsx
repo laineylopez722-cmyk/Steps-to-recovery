@@ -66,8 +66,9 @@ import Animated, {
   Extrapolation,
   Easing,
 } from 'react-native-reanimated';
-import { useTheme } from '../../../hooks/useTheme';
 import { cn } from '../../../../lib/utils';
+import { useDs } from '../../../DsProvider';
+import { useTheme } from '../../../hooks/useTheme';
 
 // ============================================================================
 // TYPES
@@ -182,7 +183,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     },
     forwardedRef,
   ): ReactElement => {
-    const theme = useTheme();
+    const ds = useDs();
     const [isFocused, setIsFocused] = useState(false);
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const inputRef = useRef<TextInput>(null);
@@ -343,7 +344,7 @@ export const Input = forwardRef<TextInput, InputProps>(
               editable={!disabled}
               secureTextEntry={effectiveSecureTextEntry}
               placeholder={shouldFloat ? placeholder : undefined}
-              placeholderTextColor={theme.colors.textTertiary}
+              placeholderTextColor={ds.semantic.text.tertiary}
               className={cn(
                 'text-base text-onSurface h-full pt-4',
                 Platform.select({

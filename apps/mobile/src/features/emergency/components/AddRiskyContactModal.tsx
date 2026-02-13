@@ -17,7 +17,7 @@ import {
   Alert,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, useTheme } from '../../../design-system';
+import { Button, Card } from '../../../design-system';
 import { hapticSelection, hapticSuccess, hapticWarning } from '../../../utils/haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
@@ -71,7 +71,6 @@ export function AddRiskyContactModal({
   onClose,
   onAdd,
 }: AddRiskyContactModalProps): ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const [name, setName] = useState('');
@@ -206,7 +205,7 @@ export function AddRiskyContactModal({
           </Pressable>
           <Text
             style={[
-              theme.typography.h2,
+              ds.typography.h2,
               { color: ds.semantic.text.primary, flex: 1, textAlign: 'center', marginRight: 40 },
             ]}
           >
@@ -222,16 +221,16 @@ export function AddRiskyContactModal({
           {/* Introduction */}
           <Card
             variant="outlined"
-            style={[styles.introCard, { backgroundColor: theme.colors.primary + '15' }]}
+            style={[styles.introCard, { backgroundColor: ds.semantic.intent.primary.solid + '15' }]}
           >
             <MaterialCommunityIcons
               name="shield-check"
               size={32}
-              color={theme.colors.primary}
+              color={ds.semantic.intent.primary.solid}
               style={{ marginBottom: 8 }}
             />
             <Text
-              style={[theme.typography.body, { color: ds.semantic.text.primary, textAlign: 'center' }]}
+              style={[ds.semantic.typography.body, { color: ds.semantic.text.primary, textAlign: 'center' }]}
             >
               Add contacts you want protection from. When you try to call them, we'll help you make
               healthier choices.
@@ -241,7 +240,7 @@ export function AddRiskyContactModal({
           {/* Name Input */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
+              style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               What should we call this contact? *
             </Text>
@@ -252,9 +251,9 @@ export function AddRiskyContactModal({
               placeholderTextColor={ds.semantic.text.secondary}
               style={[
                 styles.input,
-                theme.typography.body,
+                ds.semantic.typography.body,
                 {
-                  backgroundColor: theme.colors.surface,
+                  backgroundColor: ds.semantic.surface.card,
                   color: ds.semantic.text.primary,
                   borderColor: ds.colors.borderDefault,
                 },
@@ -268,7 +267,7 @@ export function AddRiskyContactModal({
           {/* Phone Number Input */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
+              style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               Phone Number *
             </Text>
@@ -280,9 +279,9 @@ export function AddRiskyContactModal({
               keyboardType="phone-pad"
               style={[
                 styles.input,
-                theme.typography.body,
+                ds.semantic.typography.body,
                 {
-                  backgroundColor: theme.colors.surface,
+                  backgroundColor: ds.semantic.surface.card,
                   color: ds.semantic.text.primary,
                   borderColor: ds.colors.borderDefault,
                 },
@@ -296,7 +295,7 @@ export function AddRiskyContactModal({
           {/* Relationship Type Picker */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
+              style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               Relationship Type *
             </Text>
@@ -311,10 +310,10 @@ export function AddRiskyContactModal({
                   style={[
                     styles.relationshipOption,
                     {
-                      backgroundColor: theme.colors.surface,
+                      backgroundColor: ds.semantic.surface.card,
                       borderColor:
                         relationshipType === option.value
-                          ? theme.colors.primary
+                          ? ds.semantic.intent.primary.solid
                           : ds.colors.borderDefault,
                       borderWidth: relationshipType === option.value ? 2 : 1,
                     },
@@ -329,17 +328,17 @@ export function AddRiskyContactModal({
                     size={32}
                     color={
                       relationshipType === option.value
-                        ? theme.colors.primary
+                        ? ds.semantic.intent.primary.solid
                         : ds.semantic.text.secondary
                     }
                   />
                   <Text
                     style={[
-                      theme.typography.labelLarge,
+                      ds.typography.h3,
                       {
                         color:
                           relationshipType === option.value
-                            ? theme.colors.primary
+                            ? ds.semantic.intent.primary.solid
                             : ds.semantic.text.primary,
                         marginTop: 8,
                         textAlign: 'center',
@@ -350,7 +349,7 @@ export function AddRiskyContactModal({
                   </Text>
                   <Text
                     style={[
-                      theme.typography.caption,
+                      ds.semantic.typography.sectionLabel,
                       {
                         color: ds.semantic.text.secondary,
                         marginTop: 4,
@@ -368,7 +367,7 @@ export function AddRiskyContactModal({
           {/* Notes Input */}
           <View style={styles.inputGroup}>
             <Text
-              style={[theme.typography.labelLarge, { color: ds.semantic.text.primary, marginBottom: 8 }]}
+              style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}
             >
               Why is this contact risky? (Optional)
             </Text>
@@ -382,9 +381,9 @@ export function AddRiskyContactModal({
               style={[
                 styles.input,
                 styles.textArea,
-                theme.typography.body,
+                ds.semantic.typography.body,
                 {
-                  backgroundColor: theme.colors.surface,
+                  backgroundColor: ds.semantic.surface.card,
                   color: ds.semantic.text.primary,
                   borderColor: ds.colors.borderDefault,
                 },

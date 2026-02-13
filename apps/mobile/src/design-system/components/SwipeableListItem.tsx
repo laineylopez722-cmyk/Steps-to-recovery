@@ -16,7 +16,6 @@ import Animated, {
   interpolate,
   Extrapolation,
 } from 'react-native-reanimated';
-import { useTheme } from '../hooks/useTheme';
 import { hapticThreshold, hapticImpact } from '../../utils/haptics';
 import { useDs } from '../DsProvider';
 
@@ -91,7 +90,6 @@ export function SwipeableListItem({
   style,
   testID,
 }: SwipeableListItemProps): React.ReactElement {
-  const theme = useTheme();
   const ds = useDs();
 
   // Shared value for tracking swipe position
@@ -257,7 +255,7 @@ export function SwipeableListItem({
       {/* Main Content */}
       <GestureDetector gesture={panGesture}>
         <Animated.View
-          style={[styles.content, { backgroundColor: theme.colors.surface }, contentAnimatedStyle]}
+          style={[styles.content, { backgroundColor: ds.semantic.surface.card }, contentAnimatedStyle]}
         >
           {children}
         </Animated.View>

@@ -11,11 +11,10 @@ import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
-import { GlassCard } from '../../../design-system';
+import { GlassCard, useDs } from '../../../design-system';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
-import { useTheme } from '../../../design-system';
 import { useWeatherMood } from '../../../hooks/useWeatherMood';
 import { CONDITION_ICONS } from '../../../services/weatherService';
 import type { MoodWeatherCorrelation, WeatherCondition } from '../../../services/weatherService';
@@ -78,17 +77,14 @@ function getTrendIcon(trend: string): keyof typeof MaterialCommunityIcons.glyphM
   }
 }
 
-function getTrendColor(
-  trend: string,
-  theme: { colors: { success: string; danger: string; textSecondary: string } },
-): string {
+function getTrendColor(trend: string, ds: DS): string {
   switch (trend) {
     case 'positive':
-      return theme.colors.success;
+      return ds.semantic.intent.success.solid;
     case 'negative':
-      return theme.colors.danger;
+      return ds.semantic.intent.alert.solid;
     default:
-      return theme.colors.textSecondary;
+      return ds.semantic.text.secondary;
   }
 }
 
@@ -97,7 +93,7 @@ function getTrendColor(
 // ============================================================================
 
 export function WeatherMoodInsight(): React.ReactElement | null {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
   const { currentWeather, correlations, dataPointCount, isLoading } = useWeatherMood();
 
@@ -117,7 +113,7 @@ export function WeatherMoodInsight(): React.ReactElement | null {
           color={aestheticColors.primary[500]}
         />
         <Text
-          style={[styles.sectionTitle, { color: theme.colors.text }]}
+          style={[styles.sectionTitle, { color: ds.semantic.text.primary }]}
           accessibilityRole="header"
         >
           Weather & Mood
@@ -135,10 +131,10 @@ export function WeatherMoodInsight(): React.ReactElement | null {
               {CONDITION_ICONS[currentWeather.condition as WeatherCondition] ?? '🌤️'}
             </Text>
             <View style={styles.weatherInfo}>
-              <Text style={[styles.weatherTemp, { color: theme.colors.text }]}>
+              <Text style={[styles.weatherTemp, { color: ds.semantic.text.primary }]}>
                 {currentWeather.temperature}°F
               </Text>
-              <Text style={[styles.weatherDesc, { color: theme.colors.textSecondary }]}>
+              <Text style={[styles.weatherDesc, { color: ds.semantic.text.secondary }]}>
                 {currentWeather.description}
               </Text>
             </View>
@@ -149,7 +145,7 @@ export function WeatherMoodInsight(): React.ReactElement | null {
         {correlations.length > 0 && insightText && (
           <View style={styles.insightContainer}>
             <Text
-              style={[styles.insightText, { color: theme.colors.textSecondary }]}
+              style={[styles.insightText, { color: ds.semantic.text.secondary }]}
               accessibilityLabel={`Weather mood insight: ${insightText}`}
             >
               {insightText}
@@ -175,18 +171,18 @@ export function WeatherMoodInsight(): React.ReactElement | null {
                       styles.correlationBar,
                       {
                         width: `${(correlation.avgMood / 5) * 100}%`,
-                        backgroundColor: getTrendColor(correlation.trend, theme),
+                        backgroundColor: getTrendColor(correlation.trend, ds),
                       },
                     ]}
                   />
                 </View>
-                <Text style={[styles.correlationValue, { color: theme.colors.text }]}>
+                <Text style={[styles.correlationValue, { color: ds.semantic.text.primary }]}>
                   {correlation.avgMood.toFixed(1)}
                 </Text>
                 <MaterialCommunityIcons
                   name={getTrendIcon(correlation.trend)}
                   size={16}
-                  color={getTrendColor(correlation.trend, theme)}
+                  color={getTrendColor(correlation.trend, ds)}
                 />
               </View>
             ))}
@@ -195,7 +191,7 @@ export function WeatherMoodInsight(): React.ReactElement | null {
 
         {/* Data point count */}
         <Text
-          style={[styles.dataPointText, { color: theme.colors.textSecondary }]}
+          style={[styles.dataPointText, { color: ds.semantic.text.secondary }]}
           accessibilityLabel={`Based on ${dataPointCount} data points`}
         >
           Based on {dataPointCount} days of data
@@ -293,3 +289,4 @@ const createStyles = (ds: DS) =>
       marginTop: 8,
     },
   }) as const;
+

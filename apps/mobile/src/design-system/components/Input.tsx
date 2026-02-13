@@ -67,12 +67,12 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       {/* Label */}
       <View style={styles.labelContainer}>
         {required ? (
-          <Text style={[theme.typography.label, { color: ds.semantic.text.primary }]}>
+          <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.primary }]}>
             {label}
             <Text style={{ color: ds.semantic.intent.alert.solid }}> *</Text>
           </Text>
         ) : (
-          <Text style={[theme.typography.label, { color: ds.semantic.text.primary }]}>{label}</Text>
+          <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.primary }]}>{label}</Text>
         )}
       </View>
 
@@ -103,7 +103,7 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
           secureTextEntry={effectiveSecureTextEntry}
           style={[
             styles.input,
-            theme.typography.body,
+            ds.semantic.typography.body,
             { color: ds.semantic.text.primary },
             leftIcon ? styles.inputWithLeftIcon : undefined,
             rightIcon || hasPasswordToggle ? styles.inputWithRightIcon : undefined,
@@ -136,14 +136,14 @@ export const Input = forwardRef<TextInput, InputProps>(function Input(
       {error ? (
         <Text
           key="helper-text"
-          style={[theme.typography.caption, styles.errorText, { color: ds.semantic.intent.alert.solid }]}
+          style={[ds.semantic.typography.sectionLabel, styles.errorText, { color: ds.semantic.intent.alert.solid }]}
         >
           {error}
         </Text>
       ) : hint ? (
         <Text
           key="helper-text"
-          style={[theme.typography.caption, { color: ds.semantic.text.secondary }]}
+          style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}
         >
           {hint}
         </Text>

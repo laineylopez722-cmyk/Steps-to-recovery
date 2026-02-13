@@ -19,7 +19,6 @@ import { View, Text, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
 import { GlassCard } from '../../../design-system';
-import { useTheme } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
@@ -83,7 +82,6 @@ function getShapeIndicator(level: ActivityLevel): number {
 export function CommitmentCalendar({
   userId: _userId,
 }: CommitmentCalendarProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const today = formatDate(new Date());
 
@@ -155,7 +153,7 @@ export function CommitmentCalendar({
           size={20}
           color={aestheticColors.primary[500]}
         />
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>Commitment Calendar</Text>
+        <Text style={[styles.sectionTitle, { color: ds.semantic.text.primary }]}>Commitment Calendar</Text>
       </View>
 
       <GlassCard intensity="card" style={styles.card}>
@@ -168,11 +166,11 @@ export function CommitmentCalendar({
             accessibilityRole="button"
             hitSlop={8}
           >
-            <MaterialCommunityIcons name="chevron-left" size={28} color={theme.colors.text} />
+            <MaterialCommunityIcons name="chevron-left" size={28} color={ds.semantic.text.primary} />
           </Pressable>
 
           <Text
-            style={[styles.monthTitle, { color: theme.colors.text }]}
+            style={[styles.monthTitle, { color: ds.semantic.text.primary }]}
             accessibilityRole="header"
           >
             {MONTH_NAMES[viewMonth]} {viewYear}
@@ -190,7 +188,7 @@ export function CommitmentCalendar({
             <MaterialCommunityIcons
               name="chevron-right"
               size={28}
-              color={isCurrentMonth ? theme.colors.textTertiary : theme.colors.text}
+              color={isCurrentMonth ? ds.semantic.text.tertiary : ds.semantic.text.primary}
             />
           </Pressable>
         </View>
@@ -199,7 +197,7 @@ export function CommitmentCalendar({
         <View style={styles.weekdayRow} accessibilityRole="none">
           {WEEKDAY_LABELS.map((label) => (
             <View key={label} style={styles.weekdayCell}>
-              <Text style={[styles.weekdayText, { color: theme.colors.textTertiary }]}>
+              <Text style={[styles.weekdayText, { color: ds.semantic.text.tertiary }]}>
                 {label}
               </Text>
             </View>
@@ -209,7 +207,7 @@ export function CommitmentCalendar({
         {/* Calendar grid */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={[styles.loadingText, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.loadingText, { color: ds.semantic.text.secondary }]}>
               Loading…
             </Text>
           </View>
@@ -254,10 +252,10 @@ export function CommitmentCalendar({
                           styles.dayNumber,
                           {
                             color: isFuture
-                              ? theme.colors.textTertiary
+                              ? ds.semantic.text.tertiary
                               : level === 'excellent'
                                 ? aestheticColors.dark.background
-                                : theme.colors.text,
+                                : ds.semantic.text.primary,
                           },
                         ]}
                       >
@@ -287,7 +285,7 @@ export function CommitmentCalendar({
 
         {/* Legend */}
         <View style={styles.legend} accessibilityLabel="Calendar legend">
-          <Text style={[styles.legendLabel, { color: theme.colors.textTertiary }]}>Less</Text>
+          <Text style={[styles.legendLabel, { color: ds.semantic.text.tertiary }]}>Less</Text>
           {(['none', 'low', 'medium', 'high', 'excellent'] as ActivityLevel[]).map((level) => (
             <View
               key={level}
@@ -301,7 +299,7 @@ export function CommitmentCalendar({
               accessibilityLabel={`${level} activity`}
             />
           ))}
-          <Text style={[styles.legendLabel, { color: theme.colors.textTertiary }]}>More</Text>
+          <Text style={[styles.legendLabel, { color: ds.semantic.text.tertiary }]}>More</Text>
         </View>
       </GlassCard>
 

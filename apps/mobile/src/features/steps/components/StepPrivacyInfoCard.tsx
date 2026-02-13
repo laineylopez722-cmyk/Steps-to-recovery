@@ -1,12 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Card, Text, useTheme } from '../../../design-system';
+import { Card, Text } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
 export function StepPrivacyInfoCard(): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -16,8 +15,8 @@ export function StepPrivacyInfoCard(): React.ReactElement {
         <MaterialCommunityIcons name="lock" size={24} color={ds.colors.accent} accessible={false} />
         <Text
           style={[
-            theme.typography.caption,
-            { color: theme.colors.textSecondary, marginLeft: 12, flex: 1, lineHeight: 18 },
+            ds.semantic.typography.sectionLabel,
+            { color: ds.semantic.text.secondary, marginLeft: 12, flex: 1, lineHeight: 18 },
           ]}
         >
           Your answers are encrypted and stored securely on your device. Only you can read them.

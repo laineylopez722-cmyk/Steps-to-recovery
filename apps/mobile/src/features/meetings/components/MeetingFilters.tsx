@@ -5,7 +5,6 @@
 
 import { useState } from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Button } from '../../../design-system/components/Button';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
@@ -58,7 +57,6 @@ export function MeetingFilters({
   onApplyFilters,
   onClearFilters,
 }: MeetingFiltersProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
 
@@ -99,7 +97,7 @@ export function MeetingFilters({
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[theme.typography.h2, { color: ds.semantic.text.primary }]}>Filter Meetings</Text>
+          <Text style={[ds.typography.h2, { color: ds.semantic.text.primary }]}>Filter Meetings</Text>
           {hasActiveFilters && (
             <Pressable
               onPress={handleClear}
@@ -107,7 +105,7 @@ export function MeetingFilters({
               accessibilityLabel="Clear all filters"
               accessibilityHint="Removes all active filters"
             >
-              <Text style={[theme.typography.body, { color: theme.colors.primary }]}>
+              <Text style={[ds.semantic.typography.body, { color: ds.semantic.intent.primary.solid }]}>
                 Clear All
               </Text>
             </Pressable>
@@ -116,7 +114,7 @@ export function MeetingFilters({
 
         {/* Day of Week */}
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Day of Week
           </Text>
           <View style={styles.chipContainer}>
@@ -128,7 +126,7 @@ export function MeetingFilters({
                   styles.chip,
                   {
                     backgroundColor:
-                      selectedDay === day.value ? theme.colors.primary : theme.colors.surface,
+                      selectedDay === day.value ? ds.semantic.intent.primary.solid : ds.semantic.surface.card,
                     borderColor: ds.colors.borderDefault,
                   },
                   pressed && { opacity: 0.6 },
@@ -139,7 +137,7 @@ export function MeetingFilters({
               >
                 <Text
                   style={[
-                    theme.typography.body,
+                    ds.semantic.typography.body,
                     {
                       color:
                         selectedDay === day.value ? ds.semantic.text.onDark : ds.semantic.text.primary,
@@ -155,7 +153,7 @@ export function MeetingFilters({
 
         {/* Time of Day */}
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Time of Day
           </Text>
           <View style={styles.chipContainer}>
@@ -167,7 +165,7 @@ export function MeetingFilters({
                   styles.chip,
                   {
                     backgroundColor:
-                      selectedTime === time.value ? theme.colors.primary : theme.colors.surface,
+                      selectedTime === time.value ? ds.semantic.intent.primary.solid : ds.semantic.surface.card,
                     borderColor: ds.colors.borderDefault,
                   },
                   pressed && { opacity: 0.6 },
@@ -178,7 +176,7 @@ export function MeetingFilters({
               >
                 <Text
                   style={[
-                    theme.typography.body,
+                    ds.semantic.typography.body,
                     {
                       color:
                         selectedTime === time.value ? ds.semantic.text.onDark : ds.semantic.text.primary,
@@ -194,7 +192,7 @@ export function MeetingFilters({
 
         {/* Meeting Types */}
         <View style={styles.section}>
-          <Text style={[theme.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
             Meeting Type
           </Text>
           <View style={styles.chipContainer}>
@@ -206,8 +204,8 @@ export function MeetingFilters({
                   styles.chip,
                   {
                     backgroundColor: selectedTypes.includes(type)
-                      ? theme.colors.primary
-                      : theme.colors.surface,
+                      ? ds.semantic.intent.primary.solid
+                      : ds.semantic.surface.card,
                     borderColor: ds.colors.borderDefault,
                   },
                   pressed && { opacity: 0.6 },
@@ -218,7 +216,7 @@ export function MeetingFilters({
               >
                 <Text
                   style={[
-                    theme.typography.body,
+                    ds.semantic.typography.body,
                     {
                       color: selectedTypes.includes(type)
                         ? ds.semantic.text.onDark

@@ -8,12 +8,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { Card } from '../../../design-system/components/Card';
 import { Badge } from '../../../design-system/components/Badge';
 import { Button } from '../../../design-system/components/Button';
 import { ChallengeProgress } from './ChallengeProgress';
 import type { Challenge, ChallengeTemplate, ChallengeDifficulty } from '../types';
+import { useDs } from '../../../design-system';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -46,7 +46,7 @@ export function ActiveChallengeCard({
   challenge,
   onAbandon,
 }: ActiveChallengeCardProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const iconName = (TYPE_ICON[challenge.type] ??
     'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
 
@@ -58,9 +58,9 @@ export function ActiveChallengeCard({
       accessibilityRole="summary"
     >
       <View style={styles.headerRow}>
-        <MaterialCommunityIcons name={iconName} size={24} color={theme.colors.primary} />
+        <MaterialCommunityIcons name={iconName} size={24} color={ds.semantic.intent.primary.solid} />
         <View style={styles.headerText}>
-          <Text style={[styles.title, { color: theme.colors.text }]} numberOfLines={1}>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]} numberOfLines={1}>
             {challenge.title}
           </Text>
           <Badge variant={DIFFICULTY_VARIANT[challenge.difficulty]} size="small">
@@ -69,7 +69,7 @@ export function ActiveChallengeCard({
         </View>
       </View>
 
-      <Text style={[styles.description, { color: theme.colors.textSecondary }]} numberOfLines={2}>
+      <Text style={[styles.description, { color: ds.semantic.text.secondary }]} numberOfLines={2}>
         {challenge.description}
       </Text>
 
@@ -105,7 +105,7 @@ export function TemplateChallengeCard({
   onStart,
   disabled,
 }: TemplateChallengeCardProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const iconName = (TYPE_ICON[template.type] ??
     'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
 
@@ -117,9 +117,9 @@ export function TemplateChallengeCard({
       accessibilityRole="summary"
     >
       <View style={styles.headerRow}>
-        <MaterialCommunityIcons name={iconName} size={24} color={theme.colors.primary} />
+        <MaterialCommunityIcons name={iconName} size={24} color={ds.semantic.intent.primary.solid} />
         <View style={styles.headerText}>
-          <Text style={[styles.title, { color: theme.colors.text }]} numberOfLines={1}>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]} numberOfLines={1}>
             {template.title}
           </Text>
           <Badge variant={DIFFICULTY_VARIANT[template.difficulty]} size="small">
@@ -128,12 +128,12 @@ export function TemplateChallengeCard({
         </View>
       </View>
 
-      <Text style={[styles.description, { color: theme.colors.textSecondary }]} numberOfLines={2}>
+      <Text style={[styles.description, { color: ds.semantic.text.secondary }]} numberOfLines={2}>
         {template.description}
       </Text>
 
       <View style={styles.metaRow}>
-        <Text style={[styles.meta, { color: theme.colors.textSecondary }]}>
+        <Text style={[styles.meta, { color: ds.semantic.text.secondary }]}>
           {template.target} {template.type === 'step' ? 'questions' : 'days'} · {template.duration}{' '}
           day{template.duration > 1 ? 's' : ''}
         </Text>
@@ -165,7 +165,7 @@ export interface CompletedChallengeCardProps {
 export function CompletedChallengeCard({
   challenge,
 }: CompletedChallengeCardProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const iconName = (TYPE_ICON[challenge.type] ??
     'star-outline') as keyof typeof MaterialCommunityIcons.glyphMap;
 
@@ -177,9 +177,9 @@ export function CompletedChallengeCard({
       accessibilityRole="summary"
     >
       <View style={styles.headerRow}>
-        <MaterialCommunityIcons name={iconName} size={24} color={theme.colors.success} />
+        <MaterialCommunityIcons name={iconName} size={24} color={ds.semantic.intent.success.solid} />
         <View style={styles.headerText}>
-          <Text style={[styles.title, { color: theme.colors.text }]} numberOfLines={1}>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]} numberOfLines={1}>
             {challenge.title}
           </Text>
           <Badge variant="success" size="small">

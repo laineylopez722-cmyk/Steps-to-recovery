@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { useTheme } from '../../../design-system';
+import { useDs } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import type { TimeRange } from '../hooks/useMoodTrends';
@@ -24,7 +24,7 @@ export function TimeRangeSelector({
   selected,
   onSelect,
 }: TimeRangeSelectorProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   return (
@@ -54,7 +54,7 @@ export function TimeRangeSelector({
               style={[
                 styles.segmentText,
                 {
-                  color: isSelected ? aestheticColors.primary[500] : theme.colors.textSecondary,
+                  color: isSelected ? aestheticColors.primary[500] : ds.semantic.text.secondary,
                   fontWeight: isSelected ? '600' : '400',
                 },
               ]}

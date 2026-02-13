@@ -56,9 +56,9 @@ export const MeetingCard = React.memo(function MeetingCard({
       style={({ pressed }) => [
         styles.container,
         {
-          backgroundColor: theme.colors.surface,
+          backgroundColor: ds.semantic.surface.card,
           borderRadius: theme.radius.card,
-          borderColor: theme.colors.border,
+          borderColor: ds.semantic.surface.overlay,
         },
         pressed && { opacity: 0.6 },
       ]}
@@ -70,7 +70,7 @@ export const MeetingCard = React.memo(function MeetingCard({
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text
-            style={[theme.typography.h3, { color: theme.colors.text }, styles.title]}
+            style={[ds.typography.h3, { color: ds.semantic.text.primary }, styles.title]}
             numberOfLines={1}
           >
             {meetingName}
@@ -79,7 +79,7 @@ export const MeetingCard = React.memo(function MeetingCard({
             <MaterialIcons
               name="favorite"
               size={18}
-              color={theme.colors.danger}
+              color={ds.semantic.intent.alert.solid}
               style={styles.favoriteIcon}
             />
           )}
@@ -96,10 +96,10 @@ export const MeetingCard = React.memo(function MeetingCard({
         <MaterialIcons
           name="schedule"
           size={16}
-          color={theme.colors.textSecondary}
+          color={ds.semantic.text.secondary}
           style={styles.icon}
         />
-        <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+        <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.secondary }]}>
           {dayText} • {timeText}
         </Text>
       </View>
@@ -109,18 +109,18 @@ export const MeetingCard = React.memo(function MeetingCard({
         <MaterialIcons
           name="place"
           size={16}
-          color={theme.colors.textSecondary}
+          color={ds.semantic.text.secondary}
           style={styles.icon}
         />
         <View style={styles.locationText}>
           <Text
-            style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
+            style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}
             numberOfLines={1}
           >
             {locationName}
           </Text>
           <Text
-            style={[theme.typography.caption, { color: theme.colors.textSecondary }]}
+            style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}
             numberOfLines={1}
           >
             {addressLine}
@@ -137,7 +137,7 @@ export const MeetingCard = React.memo(function MeetingCard({
             </Badge>
           ))}
           {meetingTypes.length > 3 && (
-            <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+            <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
               +{meetingTypes.length - 3} more
             </Text>
           )}

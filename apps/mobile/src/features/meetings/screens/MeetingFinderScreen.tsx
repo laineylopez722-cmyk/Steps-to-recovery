@@ -8,7 +8,6 @@ import Animated from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { MotionTransitions, motionScale } from '../../../design-system/tokens/motion';
 import { useMotionPress } from '../../../design-system/hooks/useMotionPress';
@@ -18,11 +17,12 @@ import { MeetingFilters } from '../components/MeetingFilters';
 import { useNearbyMeetings } from '../hooks/useNearbyMeetings';
 import type { MeetingWithDetails } from '../types/meeting';
 import type { MeetingsStackParamList } from '../../../navigation/types';
+import { useDs } from '../../../design-system';
 
 type MeetingFinderScreenProps = NativeStackScreenProps<MeetingsStackParamList, 'MeetingFinder'>;
 
 export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
   const [showFilters, setShowFilters] = useState<boolean>(false);
   const {
@@ -99,7 +99,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
 
   if (showFilters) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <View style={styles.filterHeader}>
           <Pressable
             onPress={() => setShowFilters(false)}
@@ -112,13 +112,13 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
             style={({ pressed }) => [
               styles.iconButton,
               {
-                backgroundColor: theme.colors.semantic.surface.card,
+                backgroundColor: ds.semantic.surface.card,
                 opacity: pressed ? 0.6 : 1,
               },
             ]}
           >
             <Animated.View style={closeAnimatedStyle}>
-              <MaterialIcons name="close" size={24} color={theme.colors.semantic.text.primary} />
+              <MaterialIcons name="close" size={24} color={ds.semantic.text.primary} />
             </Animated.View>
           </Pressable>
         </View>
@@ -134,16 +134,16 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   if (isLoading && meetings.length === 0) {
     return (
       <View
-        style={[styles.centerContainer, { backgroundColor: theme.colors.semantic.surface.app }]}
+        style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}
       >
-        <ActivityIndicator size="large" color={theme.colors.semantic.intent.primary.solid} />
+        <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
       </View>
     );
   }
 
   if (error && meetings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <EmptyState
           icon="alert-circle-outline"
           title="Unable to find meetings"
@@ -157,7 +157,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
 
   if (locationError && meetings.length === 0) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <EmptyState
           icon="map-marker-off-outline"
           title="Location Access Needed"
@@ -176,13 +176,13 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
       currentFilters.meeting_types.length > 0;
 
     return (
-      <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <Animated.View entering={MotionTransitions.fade()} style={styles.emptyHeader}>
           <View>
-            <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>
+            <Text style={[styles.screenTitle, { color: ds.semantic.text.primary }]}>
               Meeting finder
             </Text>
-            <Text style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}>
+            <Text style={[styles.screenSubtitle, { color: ds.semantic.text.secondary }]}>
               Find nearby support right now
             </Text>
           </View>
@@ -198,8 +198,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
               style={({ pressed }) => [
                 styles.filterButton,
                 {
-                  backgroundColor: theme.colors.semantic.surface.card,
-                  borderColor: theme.colors.border,
+                  backgroundColor: ds.semantic.surface.card,
+                  borderColor: ds.semantic.surface.overlay,
                   opacity: pressed ? 0.6 : 1,
                 },
               ]}
@@ -208,7 +208,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                 <MaterialIcons
                   name="favorite"
                   size={20}
-                  color={theme.colors.semantic.intent.primary.solid}
+                  color={ds.semantic.intent.primary.solid}
                 />
               </Animated.View>
             </Pressable>
@@ -223,8 +223,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
               style={({ pressed }) => [
                 styles.filterButton,
                 {
-                  backgroundColor: theme.colors.semantic.surface.card,
-                  borderColor: theme.colors.border,
+                  backgroundColor: ds.semantic.surface.card,
+                  borderColor: ds.semantic.surface.overlay,
                   opacity: pressed ? 0.6 : 1,
                 },
               ]}
@@ -233,7 +233,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                 <MaterialIcons
                   name="filter-list"
                   size={20}
-                  color={theme.colors.semantic.intent.primary.solid}
+                  color={ds.semantic.intent.primary.solid}
                 />
               </Animated.View>
             </Pressable>
@@ -255,7 +255,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+    <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
       <FlashList
         data={meetings}
         keyExtractor={(item) => item.id}
@@ -267,17 +267,17 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            tintColor={theme.colors.semantic.intent.primary.solid}
+            tintColor={ds.semantic.intent.primary.solid}
           />
         }
         ListHeaderComponent={
           <Animated.View entering={MotionTransitions.fade()} style={styles.listHeader}>
             <View>
-              <Text style={[styles.screenTitle, { color: theme.colors.semantic.text.primary }]}>
+              <Text style={[styles.screenTitle, { color: ds.semantic.text.primary }]}>
                 Meeting finder
               </Text>
               <Text
-                style={[styles.screenSubtitle, { color: theme.colors.semantic.text.secondary }]}
+                style={[styles.screenSubtitle, { color: ds.semantic.text.secondary }]}
               >
                 {meetings.length} meetings nearby
               </Text>
@@ -294,8 +294,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                 style={({ pressed }) => [
                   styles.filterButton,
                   {
-                    backgroundColor: theme.colors.semantic.surface.card,
-                    borderColor: theme.colors.border,
+                    backgroundColor: ds.semantic.surface.card,
+                    borderColor: ds.semantic.surface.overlay,
                     opacity: pressed ? 0.6 : 1,
                   },
                 ]}
@@ -304,7 +304,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                   <MaterialIcons
                     name="favorite"
                     size={20}
-                    color={theme.colors.semantic.intent.primary.solid}
+                    color={ds.semantic.intent.primary.solid}
                   />
                 </Animated.View>
               </Pressable>
@@ -319,8 +319,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                 style={({ pressed }) => [
                   styles.filterButton,
                   {
-                    backgroundColor: theme.colors.semantic.surface.card,
-                    borderColor: theme.colors.border,
+                    backgroundColor: ds.semantic.surface.card,
+                    borderColor: ds.semantic.surface.overlay,
                     opacity: pressed ? 0.6 : 1,
                   },
                 ]}
@@ -329,7 +329,7 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                   <MaterialIcons
                     name="filter-list"
                     size={20}
-                    color={theme.colors.semantic.intent.primary.solid}
+                    color={ds.semantic.intent.primary.solid}
                   />
                 </Animated.View>
               </Pressable>

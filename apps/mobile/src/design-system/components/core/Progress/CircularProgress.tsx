@@ -38,8 +38,8 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import Svg, { Circle, G } from 'react-native-svg';
-import { useTheme } from '../../../hooks/useTheme';
 import { cn } from '../../../../lib/utils';
+import { useDs } from '../../../DsProvider';
 
 // ============================================================================
 // TYPES
@@ -68,12 +68,12 @@ export interface CircularProgressProps extends Omit<ViewProps, 'style'> {
   strokeWidth?: number;
   /**
    * Color of the progress arc
-   * @default theme.colors.primary
+   * @default ds.semantic.intent.primary.solid
    */
   color?: string;
   /**
    * Color of the track (background circle)
-   * @default theme.colors.surfaceVariant
+   * @default ds.semantic.surface.interactive
    */
   trackColor?: string;
   /**
@@ -147,7 +147,7 @@ export function CircularProgress({
   testID,
   ...viewProps
 }: CircularProgressProps): ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
 
   // Clamp value between 0-100
   const clampedValue = useMemo(() => {
@@ -156,8 +156,8 @@ export function CircularProgress({
   }, [value]);
 
   // Colors
-  const progressColor = color || theme.colors.primary;
-  const backgroundColor = trackColor || theme.colors.surfaceVariant;
+  const progressColor = color || ds.semantic.intent.primary.solid;
+  const backgroundColor = trackColor || ds.semantic.surface.interactive;
 
   // Calculate dimensions
   const center = size / 2;

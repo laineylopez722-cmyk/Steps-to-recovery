@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import { View, Switch, Text, StyleSheet, type ViewStyle, Platform } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
 import { hapticSelection } from '../../utils/haptics';
+import { useDs } from '../DsProvider';
 
 export interface ToggleProps {
   /**
@@ -28,7 +29,7 @@ export interface ToggleProps {
   disabled?: boolean;
   /**
    * Custom track color when toggle is on
-   * If not provided, uses theme.colors.primary
+   * If not provided, uses ds.semantic.intent.primary.solid
    */
   trackColor?: string;
   /**
@@ -58,8 +59,9 @@ export function Toggle({
   accessibilityHint,
 }: ToggleProps) {
   const theme = useTheme();
+  const ds = useDs();
 
-  const activeTrackColor = trackColor || theme.colors.primary;
+  const activeTrackColor = trackColor || ds.semantic.intent.primary.solid;
   const inactiveTrackColor = theme.isDark ? 'rgba(142,142,147,0.3)' : 'rgba(142,142,147,0.2)';
 
   const thumbColor = Platform.OS === 'ios' ? '#FFFFFF' : value ? activeTrackColor : '#FFFFFF';
@@ -77,10 +79,10 @@ export function Toggle({
       {label && (
         <Text
           style={[
-            theme.typography.body,
+            ds.semantic.typography.body,
             {
               flex: 1,
-              color: disabled ? theme.colors.textSecondary : theme.colors.text,
+              color: disabled ? ds.semantic.text.secondary : ds.semantic.text.primary,
             },
           ]}
         >

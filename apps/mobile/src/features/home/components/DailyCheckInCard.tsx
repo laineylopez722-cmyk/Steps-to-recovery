@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Card, Button, Badge } from '../../../design-system/components';
-import { useTheme } from '../../../design-system/hooks/useTheme';
 import { useDs } from '../../../design-system/DsProvider';
 import { useNavigation } from '@react-navigation/native';
 import type { DailyCheckInDecrypted } from '@recovery/shared';
@@ -20,7 +19,6 @@ export function DailyCheckInCard({
   userId,
 }: DailyCheckInCardProps): React.ReactElement {
   const navigation = useNavigation();
-  const theme = useTheme();
   const ds = useDs();
 
   const handleMorningCheckIn = (): void => {
@@ -46,7 +44,7 @@ export function DailyCheckInCard({
         accessibilityLabel="Loading daily check-ins"
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={theme.colors.primary} />
+          <ActivityIndicator size="small" color={ds.semantic.intent.primary.solid} />
         </View>
       </Card>
     );
@@ -59,14 +57,14 @@ export function DailyCheckInCard({
       accessibilityRole="none"
       accessibilityLabel="Daily check-in card"
     >
-      <Text style={[theme.typography.title2, styles.title]}>Daily Check-In</Text>
+      <Text style={[ds.typography.h3, styles.title]}>Daily Check-In</Text>
 
       <View style={styles.checkInRow}>
         <View style={styles.checkInItem}>
           <View style={styles.checkInHeader}>
             <Text style={styles.checkInEmoji}>🌅</Text>
             <Text
-              style={[theme.typography.headline, { fontWeight: '600', color: ds.semantic.text.primary }]}
+              style={[ds.typography.h3, { fontWeight: '600', color: ds.semantic.text.primary }]}
             >
               Morning
             </Text>
@@ -99,7 +97,7 @@ export function DailyCheckInCard({
           <View style={styles.checkInHeader}>
             <Text style={styles.checkInEmoji}>🌙</Text>
             <Text
-              style={[theme.typography.headline, { fontWeight: '600', color: ds.semantic.text.primary }]}
+              style={[ds.typography.h3, { fontWeight: '600', color: ds.semantic.text.primary }]}
             >
               Evening
             </Text>
@@ -133,13 +131,13 @@ export function DailyCheckInCard({
         <View style={[styles.intentionPreview, { backgroundColor: ds.semantic.surface.card }]}>
           <Text
             style={[
-              theme.typography.caption1,
+              ds.semantic.typography.sectionLabel,
               { color: ds.semantic.text.secondary, marginBottom: 4 },
             ]}
           >
             Today's Intention:
           </Text>
-          <Text style={[theme.typography.body, { fontStyle: 'italic', color: ds.semantic.text.primary }]}>
+          <Text style={[ds.semantic.typography.body, { fontStyle: 'italic', color: ds.semantic.text.primary }]}>
             "{morningCheckIn.intention}"
           </Text>
         </View>

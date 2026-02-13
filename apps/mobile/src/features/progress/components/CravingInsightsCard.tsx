@@ -8,7 +8,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTheme, GlassCard } from '../../../design-system';
+import { GlassCard, useDs } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 
@@ -48,10 +48,7 @@ function getInsightIcon(insight: string): keyof typeof MaterialCommunityIcons.gl
   return 'lightbulb-outline';
 }
 
-function getInsightColor(
-  insight: string,
-  theme: { colors: { success: string; danger: string; warning: string; primary: string } },
-): string {
+function getInsightColor(insight: string, ds: DS): string {
   const lower = insight.toLowerCase();
   if (
     lower.includes('decreased') ||
@@ -61,19 +58,19 @@ function getInsightColor(
     lower.includes('rare') ||
     lower.includes('low')
   ) {
-    return theme.colors.success;
+    return ds.semantic.intent.success.solid;
   }
   if (lower.includes('increased') || lower.includes('reaching out')) {
-    return theme.colors.warning;
+    return ds.semantic.intent.warning.solid;
   }
-  return theme.colors.primary;
+  return ds.semantic.intent.primary.solid;
 }
 
 export function CravingInsightsCard({
   insights,
   trend,
 }: CravingInsightsCardProps): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   const headerText =
@@ -85,10 +82,10 @@ export function CravingInsightsCard({
 
   const headerColor =
     trend === 'decreasing'
-      ? theme.colors.success
+      ? ds.semantic.intent.success.solid
       : trend === 'increasing'
-        ? theme.colors.warning
-        : theme.colors.primary;
+        ? ds.semantic.intent.warning.solid
+        : ds.semantic.intent.primary.solid;
 
   return (
     <GlassCard
@@ -105,7 +102,7 @@ export function CravingInsightsCard({
             size={20}
             color={aestheticColors.gold.DEFAULT}
           />
-          <Text style={[styles.title, { color: theme.colors.text }]}>Pattern Insights</Text>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]}>Pattern Insights</Text>
         </View>
         <Text style={[styles.headerBadge, { color: headerColor }]}>{headerText}</Text>
       </View>
@@ -113,7 +110,7 @@ export function CravingInsightsCard({
       {/* Insights List */}
       {insights.map((insight, index) => {
         const icon = getInsightIcon(insight);
-        const color = getInsightColor(insight, theme);
+        const color = getInsightColor(insight, ds);
 
         return (
           <View
@@ -125,7 +122,7 @@ export function CravingInsightsCard({
             <View style={[styles.iconContainer, { backgroundColor: color + '15' }]}>
               <MaterialCommunityIcons name={icon} size={16} color={color} />
             </View>
-            <Text style={[styles.insightText, { color: theme.colors.text }]}>{insight}</Text>
+            <Text style={[styles.insightText, { color: ds.semantic.text.primary }]}>{insight}</Text>
           </View>
         );
       })}

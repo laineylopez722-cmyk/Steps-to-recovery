@@ -1,16 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, Skeleton, useTheme } from '../../../design-system';
+import { Card, Skeleton, useDs } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 
 export function StepDetailLoadingState(): React.ReactElement {
-  const theme = useTheme();
+  const ds = useDs();
   const styles = useThemedStyles(createStyles);
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
+      style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}
       edges={['bottom']}
     >
       <View style={styles.loadingSkeletonContainer}>

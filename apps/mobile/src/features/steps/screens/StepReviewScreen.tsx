@@ -354,13 +354,13 @@ export function StepReviewScreen(): React.ReactElement {
               {hasAnswer ? (
                 <MaterialCommunityIcons name="check" size={18} color={ds.semantic.text.onDark} />
               ) : (
-                <Text variant="labelLarge" style={{ color: theme.colors.textSecondary }}>
+                <Text variant="labelLarge" style={{ color: ds.semantic.text.secondary }}>
                   {item.questionNumber}
                 </Text>
               )}
             </View>
             <View style={styles.questionHeaderContent}>
-              <Text variant="h3" style={{ color: theme.colors.text }}>
+              <Text variant="h3" style={{ color: ds.semantic.text.primary }}>
                 {item.prompt}
               </Text>
               {item.sectionTitle && (
@@ -377,13 +377,13 @@ export function StepReviewScreen(): React.ReactElement {
 
           <Divider style={styles.divider} />
 
-          <Text variant="label" style={{ color: theme.colors.textSecondary }}>
+          <Text variant="label" style={{ color: ds.semantic.text.secondary }}>
             Your answer
           </Text>
           <Text
             variant="body"
             style={{
-              color: hasAnswer ? theme.colors.text : theme.colors.textSecondary,
+              color: hasAnswer ? ds.semantic.text.primary : ds.semantic.text.secondary,
               fontStyle: hasAnswer ? 'normal' : 'italic',
               marginTop: theme.spacing.xs,
               marginBottom: theme.spacing.md,
@@ -408,14 +408,14 @@ export function StepReviewScreen(): React.ReactElement {
 
   if (!stepData) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <View style={styles.centered}>
           <MaterialCommunityIcons
             name="alert-circle-outline"
             size={48}
-            color={theme.colors.danger}
+            color={ds.semantic.intent.alert.solid}
           />
-          <Text variant="h2" style={{ marginTop: theme.spacing.md, color: theme.colors.text }}>
+          <Text variant="h2" style={{ marginTop: theme.spacing.md, color: ds.semantic.text.primary }}>
             Step not found
           </Text>
         </View>
@@ -425,7 +425,7 @@ export function StepReviewScreen(): React.ReactElement {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <View style={styles.centered}>
           <Text variant="body" color="textSecondary">
             Loading your answers...
@@ -437,9 +437,9 @@ export function StepReviewScreen(): React.ReactElement {
 
   if (error) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <View style={styles.centered}>
-          <MaterialCommunityIcons name="alert-circle" size={32} color={theme.colors.danger} />
+          <MaterialCommunityIcons name="alert-circle" size={32} color={ds.semantic.intent.alert.solid} />
           <Text variant="body" style={{ marginTop: theme.spacing.sm }}>
             We couldn't load your answers. Please try again.
           </Text>
@@ -450,7 +450,7 @@ export function StepReviewScreen(): React.ReactElement {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
+      style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}
       edges={['bottom']}
     >
       <Toast
@@ -471,7 +471,7 @@ export function StepReviewScreen(): React.ReactElement {
         contentContainerStyle={[styles.content, { paddingBottom: theme.spacing.xl }]}
         ListHeaderComponent={() => (
           <View style={styles.header}>
-            <Text variant="title2" style={{ color: theme.colors.text }}>
+            <Text variant="title2" style={{ color: ds.semantic.text.primary }}>
               Step {stepNumber} Review
             </Text>
             <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>

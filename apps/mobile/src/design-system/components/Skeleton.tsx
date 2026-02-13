@@ -18,6 +18,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { useTheme } from '../hooks/useTheme';
+import { useDs } from '../DsProvider';
 
 export interface SkeletonProps {
   width?: DimensionValue;
@@ -36,6 +37,7 @@ export function Skeleton({
   style,
 }: SkeletonProps): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
   const shimmerAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function Skeleton({
           width,
           height,
           borderRadius,
-          backgroundColor: theme.colors.surface,
+          backgroundColor: ds.semantic.surface.card,
         },
         style,
       ]}
@@ -93,14 +95,15 @@ export function Skeleton({
  */
 export function SkeletonCard({ lines = 3 }: { lines?: number }): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
 
   return (
     <View
       style={[
         styles.card,
         {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
+          backgroundColor: ds.semantic.surface.card,
+          borderColor: ds.semantic.surface.overlay,
         },
       ]}
     >
@@ -174,6 +177,7 @@ export const SkeletonJournalList = SkeletonList;
  */
 export function SkeletonHome(): React.ReactElement {
   const theme = useTheme();
+  const ds = useDs();
 
   return (
     <View style={styles.container}>
@@ -186,8 +190,8 @@ export function SkeletonHome(): React.ReactElement {
         style={[
           styles.tracker,
           {
-            backgroundColor: theme.colors.surface,
-            borderColor: theme.colors.border,
+            backgroundColor: ds.semantic.surface.card,
+            borderColor: ds.semantic.surface.overlay,
           },
         ]}
       >

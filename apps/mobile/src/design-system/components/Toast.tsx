@@ -7,7 +7,6 @@ import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, type ViewStyle, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import type { ComponentProps } from 'react';
-import { useTheme } from '../hooks/useTheme';
 import { useDs } from '../DsProvider';
 
 export type ToastVariant = 'success' | 'error' | 'info' | 'warning';
@@ -32,7 +31,6 @@ export function Toast({
   onDismiss,
   containerStyle,
 }: ToastProps): React.ReactElement {
-  const theme = useTheme();
   const ds = useDs();
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-20)).current;
@@ -94,13 +92,13 @@ export function Toast({
     switch (variant) {
       case 'success':
         return {
-          backgroundColor: theme.colors.success,
+          backgroundColor: ds.semantic.intent.success.solid,
           icon: 'check-circle',
           iconColor: ds.semantic.text.onDark,
         };
       case 'error':
         return {
-          backgroundColor: theme.colors.danger,
+          backgroundColor: ds.semantic.intent.alert.solid,
           icon: 'error',
           iconColor: ds.semantic.text.onDark,
         };
@@ -113,7 +111,7 @@ export function Toast({
       case 'info':
       default:
         return {
-          backgroundColor: theme.colors.primary,
+          backgroundColor: ds.semantic.intent.primary.solid,
           icon: 'info',
           iconColor: '#ffffff',
         };
@@ -141,7 +139,7 @@ export function Toast({
       accessible={true}
     >
       <MaterialIcons name={config.icon} size={20} color={config.iconColor} />
-      <Text style={[styles.message, theme.typography.body, { color: ds.semantic.text.onDark }]}>
+      <Text style={[styles.message, ds.semantic.typography.body, { color: ds.semantic.text.onDark }]}>
         {message}
       </Text>
     </Animated.View>

@@ -8,7 +8,7 @@ import React, { useMemo } from 'react';
 import { View, Text, Dimensions } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
-import { useTheme, GlassCard } from '../../../design-system';
+import { GlassCard } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { ds } from '../../../design-system/tokens/ds';
@@ -42,7 +42,6 @@ function computeCravingRollingAvg(data: MoodDataPoint[], window: number): number
 const { width: screenWidth } = Dimensions.get('window');
 
 export function CravingChart({ data, trend, average }: CravingChartProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
 
   const trendIcon: keyof typeof MaterialCommunityIcons.glyphMap =
@@ -51,10 +50,10 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
   // For cravings, decreasing is good (success color), increasing is bad (danger)
   const trendColor =
     trend === 'decreasing'
-      ? theme.colors.success
+      ? ds.semantic.intent.success.solid
       : trend === 'increasing'
-        ? theme.colors.danger
-        : theme.colors.textSecondary;
+        ? ds.semantic.intent.alert.solid
+        : ds.semantic.text.secondary;
 
   const trendLabel =
     trend === 'decreasing' ? 'improving' : trend === 'increasing' ? 'worsening' : 'stable';
@@ -97,7 +96,7 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
             size={20}
             color={aestheticColors.warning.DEFAULT}
           />
-          <Text style={[styles.title, { color: theme.colors.text }]}>Craving Levels</Text>
+          <Text style={[styles.title, { color: ds.semantic.text.primary }]}>Craving Levels</Text>
         </View>
         <View style={styles.trendBadge}>
           <MaterialCommunityIcons name={trendIcon} size={16} color={trendColor} />
@@ -123,7 +122,7 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
                 dotRadius={data.length <= 14 ? 3 : 2}
                 rollingAverage={rollingAvg}
                 rollingAverageColor={ds.palette.amberLight}
-                labelColor={theme.colors.textSecondary}
+                labelColor={ds.semantic.text.secondary}
               />
             </View>
           )}
@@ -158,17 +157,17 @@ export function CravingChart({ data, trend, average }: CravingChartProps): React
 
           {/* Legend */}
           <View style={styles.legend}>
-            <Text style={[styles.legendText, { color: theme.colors.textSecondary }]}>
+            <Text style={[styles.legendText, { color: ds.semantic.text.secondary }]}>
               Last {data.length} days
             </Text>
-            <Text style={[styles.averageText, { color: theme.colors.text }]}>
+            <Text style={[styles.averageText, { color: ds.semantic.text.primary }]}>
               Avg: {average.toFixed(1)}/10
             </Text>
           </View>
         </>
       ) : (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptyText, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.emptyText, { color: ds.semantic.text.secondary }]}>
             Log cravings in evening check-ins to track patterns
           </Text>
         </View>
