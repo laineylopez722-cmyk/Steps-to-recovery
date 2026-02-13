@@ -15,6 +15,7 @@ import {
   isOfflineMode,
   getOfflineResponse,
   queuePendingMessage,
+  cacheResponse,
 } from '../services/offlineFallback';
 import { buildEnrichedContext } from '../services/recoveryContextEnricher';
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
@@ -84,6 +85,30 @@ const CRISIS_PATTERNS = {
   ],
   low: [/\bcraving\b/i, /\btriggered\b/i, /\btempted\b/i, /\bstrongly urge\b/i, /\bcan't cope\b/i],
 };
+
+/**
+ * Detect if an error is a network/server failure (vs. user error or logic bug).
+ * Used to trigger offline fallback instead of showing raw error messages.
+ */
+function isNetworkOrServerError(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const msg = err.message.toLowerCase();
+  return (
+    err.name === 'TypeError' || // fetch() throws TypeError for network failures
+    msg.includes('network request failed') ||
+    msg.includes('failed to fetch') ||
+    msg.includes('load failed') ||
+    msg.includes('timed out') ||
+    msg.includes('timeout') ||
+    msg.includes('connection refused') ||
+    msg.includes('openclaw error 5') || // 5xx server errors
+    msg.includes('openclaw error 502') ||
+    msg.includes('openclaw error 503') ||
+    msg.includes('econnrefused') ||
+    msg.includes('enotfound') ||
+    msg.includes('enetunreach')
+  );
+}
 
 /**
  * Detect crisis signals in user message
@@ -450,6 +475,25 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           // User cancelled - don't save partial response
           return;
         }
+
+        // Network/server error → gracefully fall back to offline responses
+        // This handles: gateway unreachable, server down, DNS failure, timeout
+        // Critical for rehab environments with restricted/spotty connectivity
+        if (isNetworkOrServerError(streamErr)) {
+          logger.warn('AI request failed, falling back to offline response', streamErr);
+          setIsOfflineResponse(true);
+          const offlineResult = await getOfflineResponse(content);
+          const offlineMsg = await chatHistory.addMessage(
+            currentConversation.id,
+            'assistant',
+            offlineResult.content,
+            { offline: true, offlineSource: offlineResult.source },
+          );
+          setMessages((prev) => [...prev, offlineMsg]);
+          await queuePendingMessage(content, currentConversation.id);
+          return;
+        }
+
         throw streamErr;
       }
 
@@ -462,6 +506,9 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           { crisisDetected: crisis?.detected },
         );
         setMessages((prev) => [...prev, aiMessage]);
+
+        // Cache this response for offline use (fire-and-forget)
+        cacheResponse(content, fullResponse).catch(() => {});
 
         // Track cost and rate limit
         try {
