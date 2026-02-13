@@ -1,8 +1,7 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '../contexts/AuthContext';
 import { HomeScreen } from '../features/home/screens/HomeScreen';
 import { JournalListScreen } from '../features/journal/screens/JournalListScreen';
@@ -43,9 +42,8 @@ import { GratitudeScreen } from '../features/gratitude/screens/GratitudeScreen';
 import { SafetyPlanScreen } from '../features/safety-plan/screens/SafetyPlanScreen';
 import { ChallengesScreen } from '../features/challenges/screens/ChallengesScreen';
 import { StatusBar } from 'expo-status-bar';
-import * as Haptics from 'expo-haptics';
-import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
 import { useDs, useDsIsDark } from '../design-system/DsProvider';
+import { CustomTabBar } from './CustomTabBar';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -357,146 +355,43 @@ function ProfileStackNavigator(): React.ReactElement {
   );
 }
 
-const createStyles = (ds: DS) =>
-  ({
-    tabIconWrap: {
-      width: 56,
-      height: 32,
-      borderRadius: ds.radius.full,
-      justifyContent: 'center' as const,
-      alignItems: 'center' as const,
-    },
-    tabIconWrapFocused: {
-      backgroundColor: ds.semantic.intent.primary.muted,
-    },
-  }) as const;
-
-function TabIcon({
-  focused,
-  color,
-  size,
-  name,
-  noOutline,
-}: {
-  focused: boolean;
-  color: string;
-  size: number;
-  name: React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-  noOutline?: boolean;
-}) {
-  const styles = useThemedStyles(createStyles);
-  const ds = useDs();
-  const iconName = focused || noOutline ? name : (`${name}-outline` as typeof name);
-  return (
-    <View style={[styles.tabIconWrap, focused && styles.tabIconWrapFocused]}>
-      <MaterialCommunityIcons
-        name={iconName}
-        size={focused ? size + 1 : size}
-        color={focused ? ds.semantic.intent.primary.solid : color}
-      />
-    </View>
-  );
-}
-
 export function MainNavigator(): React.ReactElement {
-  const ds = useDs();
   const isDark = useDsIsDark();
-  const themeColors = {
-    background: ds.semantic.surface.app,
-    surface: ds.semantic.surface.elevated,
-    accent: ds.colors.accent,
-    text: ds.semantic.text.primary,
-    textMuted: ds.semantic.text.muted,
-    border: ds.semantic.intent.primary.muted,
-  };
 
   return (
     <>
       <StatusBar style={isDark ? 'light' : 'dark'} />
       <Tab.Navigator
-        screenListeners={{
-          tabPress: () => {
-            Haptics.selectionAsync();
-          },
-        }}
+        tabBar={(props) => <CustomTabBar {...props} />}
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: themeColors.accent,
-          tabBarInactiveTintColor: themeColors.textMuted,
-          tabBarShowLabel: true,
-          tabBarLabelStyle: {
-            fontSize: 10,
-            fontWeight: '600' as const,
-            marginTop: 2,
-            letterSpacing: 0.2,
-          },
-          tabBarStyle: {
-            backgroundColor: themeColors.surface,
-            borderTopColor: themeColors.border,
-            borderTopWidth: StyleSheet.hairlineWidth,
-            paddingTop: ds.space[1],
-            paddingBottom: ds.space[3],
-            height: 72,
-            elevation: 8,
-          },
           tabBarHideOnKeyboard: true,
         }}
       >
         <Tab.Screen
           name="Home"
           component={HomeStackNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <TabIcon focused={focused} color={color} size={size} name="home" />
-            ),
-            tabBarAccessibilityLabel: 'Home',
-            tabBarLabel: 'Home',
-          }}
+          options={{ tabBarAccessibilityLabel: 'Home' }}
         />
         <Tab.Screen
           name="Journal"
           component={JournalStackNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <TabIcon focused={focused} color={color} size={size} name="book-open-variant" />
-            ),
-            tabBarAccessibilityLabel: 'Journal',
-            tabBarLabel: 'Journal',
-          }}
+          options={{ tabBarAccessibilityLabel: 'Journal' }}
         />
         <Tab.Screen
           name="Steps"
           component={StepsStackNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <TabIcon focused={focused} color={color} size={size} name="stairs" noOutline />
-            ),
-            tabBarAccessibilityLabel: 'Steps',
-            tabBarLabel: 'Steps',
-          }}
+          options={{ tabBarAccessibilityLabel: 'Steps' }}
         />
         <Tab.Screen
           name="Meetings"
           component={MeetingsStackNavigator}
-          options={{
-            tabBarIcon: ({ focused, color, size }) => (
-              <TabIcon focused={focused} color={color} size={size} name="map-marker-multiple" />
-            ),
-            tabBarAccessibilityLabel: 'Meetings',
-            tabBarLabel: 'Meetings',
-          }}
+          options={{ tabBarAccessibilityLabel: 'Meetings' }}
         />
         <Tab.Screen
           name="Profile"
           component={ProfileStackNavigator}
-          options={{
-            headerShown: false,
-            tabBarIcon: ({ focused, color, size }) => (
-              <TabIcon focused={focused} color={color} size={size} name="account" />
-            ),
-            tabBarAccessibilityLabel: 'Profile',
-            tabBarLabel: 'Profile',
-          }}
+          options={{ tabBarAccessibilityLabel: 'Profile' }}
         />
       </Tab.Navigator>
     </>
