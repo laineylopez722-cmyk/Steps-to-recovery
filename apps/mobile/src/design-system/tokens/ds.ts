@@ -231,6 +231,18 @@ export const semantic = {
       subtle: 'rgba(255, 69, 58, 0.08)',
       onSolid: palette.white,
     },
+    success: {
+      solid: colors.success,
+      muted: colors.successMuted,
+      subtle: 'rgba(48, 209, 88, 0.08)',
+      onSolid: palette.white,
+    },
+    warning: {
+      solid: colors.warning,
+      muted: colors.warningMuted,
+      subtle: 'rgba(255, 159, 10, 0.08)',
+      onSolid: palette.black,
+    },
   },
   surface: {
     app: colors.bgPrimary,
@@ -495,6 +507,18 @@ export const semanticLight = {
       muted: colorsLight.errorMuted,
       subtle: 'rgba(196, 92, 92, 0.08)',
       onSolid: paletteLight.white,
+    },
+    success: {
+      solid: colorsLight.success,
+      muted: colorsLight.successMuted,
+      subtle: 'rgba(52, 199, 89, 0.08)',
+      onSolid: paletteLight.white,
+    },
+    warning: {
+      solid: colorsLight.warning,
+      muted: colorsLight.warningMuted,
+      subtle: 'rgba(255, 149, 0, 0.08)',
+      onSolid: '#000000',
     },
   },
   surface: {

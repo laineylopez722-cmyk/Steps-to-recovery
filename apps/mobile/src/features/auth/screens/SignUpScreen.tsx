@@ -3,13 +3,15 @@ import {
   View,
   Text,
   KeyboardAvoidingView,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   type TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import { Feather } from '@expo/vector-icons';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTheme, Input, Button } from '../../../design-system';
+import { Input, Button } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { validateEmail, validatePassword } from '../../../utils/validation';
@@ -25,7 +27,6 @@ interface FormErrors {
 }
 
 export function SignUpScreen({ navigation }: Props) {
-  const theme = useTheme();
   const keyboardConfig = useKeyboardConfig();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
@@ -40,9 +41,8 @@ export function SignUpScreen({ navigation }: Props) {
   const confirmPasswordRef = useRef<TextInput>(null);
   const { signUp } = useAuth();
 
-  // Password strength calculation
   const passwordStrength = useMemo(() => {
-    if (!password) return { level: 0, label: '', color: theme.colors.muted };
+    if (!password) return { level: 0, label: '', color: ds.semantic.text.muted };
 
     let score = 0;
     const checks = [
@@ -50,16 +50,16 @@ export function SignUpScreen({ navigation }: Props) {
       /[A-Z]/.test(password),
       /[a-z]/.test(password),
       /[0-9]/.test(password),
-      /[^A-Za-z0-9]/.test(password), // Special characters
+      /[^A-Za-z0-9]/.test(password),
     ];
 
     score = checks.filter(Boolean).length;
 
-    if (score <= 2) return { level: score, label: 'Weak', color: theme.colors.danger };
-    if (score <= 3) return { level: score, label: 'Fair', color: theme.colors.warning };
-    if (score <= 4) return { level: score, label: 'Good', color: theme.colors.primary };
-    return { level: score, label: 'Strong', color: theme.colors.success };
-  }, [password, theme.colors]);
+    if (score <= 2) return { level: score, label: 'Weak', color: ds.semantic.intent.alert.solid };
+    if (score <= 3) return { level: score, label: 'Fair', color: ds.semantic.intent.warning.solid };
+    if (score <= 4) return { level: score, label: 'Good', color: ds.semantic.intent.primary.solid };
+    return { level: score, label: 'Strong', color: ds.semantic.intent.success.solid };
+  }, [password, ds]);
 
   const clearError = (field: keyof FormErrors) => {
     if (errors[field]) {
@@ -102,20 +102,18 @@ export function SignUpScreen({ navigation }: Props) {
 
     try {
       await signUp(email.trim().toLowerCase(), password);
-      // After successful signup, user will be navigated to onboarding
     } catch (error: unknown) {
       let message = 'Please try again';
 
       if (error instanceof Error) {
-        // Handle specific Supabase auth errors
         if (error.message.includes('already registered')) {
-          message = 'An account with this email already exists. Try logging in instead.';
+          message = 'An account with this email already exists. Try logging in.';
         } else if (error.message.includes('Invalid email')) {
           message = 'Please enter a valid email address.';
         } else if (error.message.includes('Password should be at least')) {
           message = 'Password is too weak. Please choose a stronger password.';
         } else if (error.message.includes('network') || error.message.includes('fetch')) {
-          message = 'Network error. Please check your connection and try again.';
+          message = 'Network error. Please check your connection.';
         } else {
           message = error.message;
         }
@@ -128,10 +126,7 @@ export function SignUpScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: theme.colors.semantic.surface.app }]}
-      edges={['top', 'bottom']}
-    >
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
         behavior={keyboardConfig.behavior}
         style={styles.container}
@@ -142,31 +137,23 @@ export function SignUpScreen({ navigation }: Props) {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={[styles.header, { marginBottom: theme.spacing.xl }]}>
-            <Text
-              style={[
-                theme.typography.h1,
-                { color: theme.colors.text, marginBottom: theme.spacing.sm },
-              ]}
-              testID="signup-header-title"
-            >
+          <Animated.View entering={FadeIn.duration(400)} style={styles.header}>
+            <View style={styles.logoWrap}>
+              <Feather name="user-plus" size={28} color={ds.semantic.intent.primary.solid} />
+            </View>
+            <Text style={styles.title} testID="signup-header-title">
               Create Account
             </Text>
-            <Text
-              style={[theme.typography.body, { color: theme.colors.textSecondary, lineHeight: 24 }]}
-            >
+            <Text style={styles.subtitle}>
               A private, secure space for your recovery
             </Text>
-          </View>
+          </Animated.View>
 
-          <View style={styles.form}>
+          <Animated.View entering={FadeInUp.delay(150).duration(350)} style={styles.form}>
             <Input
               label="Email"
               value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                clearError('email');
-              }}
+              onChangeText={(text) => { setEmail(text); clearError('email'); }}
               placeholder="your.email@example.com"
               autoCapitalize="none"
               keyboardType="email-address"
@@ -177,17 +164,13 @@ export function SignUpScreen({ navigation }: Props) {
               required
               testID="signup-email-input"
               accessibilityLabel="Email address"
-              accessibilityHint="Enter your email address for account creation"
             />
 
             <Input
               ref={passwordRef}
               label="Password"
               value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                clearError('password');
-              }}
+              onChangeText={(text) => { setPassword(text); clearError('password'); }}
               placeholder="Create a strong password"
               secureTextEntry
               autoComplete="new-password"
@@ -198,18 +181,12 @@ export function SignUpScreen({ navigation }: Props) {
               required
               testID="signup-password-input"
               accessibilityLabel="Password"
-              accessibilityHint="Create a strong password with at least 8 characters, including uppercase, lowercase, and numbers"
             />
 
             {password.length > 0 && (
               <View style={styles.passwordStrength}>
-                <Text
-                  style={[
-                    theme.typography.caption,
-                    { color: passwordStrength.color, fontWeight: '600' },
-                  ]}
-                >
-                  Password Strength: {passwordStrength.label}
+                <Text style={[styles.strengthLabel, { color: passwordStrength.color }]}>
+                  {passwordStrength.label}
                 </Text>
                 <View style={styles.strengthBar}>
                   {[1, 2, 3, 4, 5].map((level) => (
@@ -221,7 +198,7 @@ export function SignUpScreen({ navigation }: Props) {
                           backgroundColor:
                             level <= passwordStrength.level
                               ? passwordStrength.color
-                              : theme.colors.muted,
+                              : ds.semantic.surface.overlay,
                         },
                       ]}
                     />
@@ -234,10 +211,7 @@ export function SignUpScreen({ navigation }: Props) {
               ref={confirmPasswordRef}
               label="Confirm Password"
               value={confirmPassword}
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                clearError('confirmPassword');
-              }}
+              onChangeText={(text) => { setConfirmPassword(text); clearError('confirmPassword'); }}
               placeholder="Re-enter your password"
               secureTextEntry
               autoComplete="new-password"
@@ -247,134 +221,104 @@ export function SignUpScreen({ navigation }: Props) {
               required
               testID="signup-confirm-password-input"
               accessibilityLabel="Confirm password"
-              accessibilityHint="Re-enter your password to confirm it matches"
             />
 
-            <View
-              style={[
-                styles.privacyNotice,
-                {
-                  backgroundColor: theme.colors.surface,
-                  padding: theme.spacing.md,
-                  borderRadius: theme.radius.md,
-                  marginVertical: theme.spacing.sm,
-                  borderWidth: 1,
-                  borderColor: theme.colors.border,
-                },
-              ]}
-              accessibilityRole="text"
-              accessibilityLabel="Privacy and security notice"
-            >
-              <Text style={[styles.privacyIcon, { marginRight: theme.spacing.sm }]}>🔒</Text>
-              <Text
-                style={[
-                  theme.typography.caption,
-                  { flex: 1, color: theme.colors.textSecondary, lineHeight: 20 },
-                ]}
-              >
-                Your data is encrypted and never shared without your permission. We're committed to
-                your privacy and security.
+            <View style={styles.privacyNotice} accessibilityRole="text">
+              <Feather name="lock" size={16} color={ds.semantic.intent.primary.solid} />
+              <Text style={styles.privacyText}>
+                Your data is encrypted and never shared. We're committed to your privacy.
               </Text>
             </View>
 
             {formError && (
-              <View
-                style={[
-                  styles.errorContainer,
-                  {
-                    backgroundColor: theme.colors.dangerLight || ds.semantic.intent.alert.subtle,
-                    borderColor: theme.colors.danger,
-                  },
-                ]}
-                accessibilityRole="alert"
-                accessibilityLabel="Error message"
-                accessibilityLiveRegion="assertive"
-              >
-                <Text
-                  style={[
-                    theme.typography.bodySmall,
-                    { color: theme.colors.danger, textAlign: 'center' },
-                  ]}
-                >
-                  {formError}
-                </Text>
+              <View style={styles.errorContainer} accessibilityRole="alert" accessibilityLiveRegion="assertive">
+                <Feather name="alert-circle" size={16} color={ds.semantic.intent.alert.solid} />
+                <Text style={styles.errorText}>{formError}</Text>
               </View>
             )}
 
-            <Button
-              title="Create Account"
-              onPress={handleSignUp}
-              loading={loading}
-              testID="signup-submit-button"
-              accessibilityLabel="Create account"
-              accessibilityHint={
-                loading
-                  ? 'Creating your account, please wait'
-                  : 'Submit the form to create your account'
-              }
-              accessibilityState={{ disabled: loading }}
-            />
-          </View>
+            <View style={styles.buttonGroup}>
+              <Button
+                title="Create Account"
+                onPress={handleSignUp}
+                loading={loading}
+                testID="signup-submit-button"
+                accessibilityLabel="Create account"
+              />
+            </View>
+          </Animated.View>
 
-          <View
-            style={[
-              styles.footer,
-              { marginTop: theme.spacing.xl, paddingVertical: theme.spacing.md },
-            ]}
-          >
-            <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
-              Already have an account?{' '}
-            </Text>
-            <TouchableOpacity
+          <Animated.View entering={FadeIn.delay(300).duration(300)} style={styles.footer}>
+            <Text style={styles.footerText}>Already have an account? </Text>
+            <Pressable
               onPress={() => navigation.navigate('Login')}
               accessibilityRole="link"
               accessibilityLabel="Navigate to login"
             >
-              <Text
-                style={[theme.typography.body, { color: theme.colors.primary, fontWeight: '600' }]}
-              >
-                Log In
-              </Text>
-            </TouchableOpacity>
-          </View>
+              <Text style={styles.footerLink}>Log In</Text>
+            </Pressable>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-const createStyles = (_ds: DS) =>
+const createStyles = (ds: DS) =>
   ({
     safeArea: {
       flex: 1,
+      backgroundColor: ds.semantic.surface.app,
     },
     container: {
       flex: 1,
     },
     scrollContent: {
       flexGrow: 1,
-      padding: 20,
+      paddingHorizontal: ds.semantic.layout.screenPadding,
     },
+
+    // Header
     header: {
-      marginTop: 32,
+      alignItems: 'center' as const,
+      marginTop: ds.space[10],
+      marginBottom: ds.space[8],
     },
+    logoWrap: {
+      width: 64,
+      height: 64,
+      borderRadius: ds.radius.xl,
+      backgroundColor: ds.semantic.intent.primary.muted,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+      marginBottom: ds.space[4],
+    },
+    title: {
+      ...ds.semantic.typography.screenTitle,
+      color: ds.semantic.text.primary,
+      textAlign: 'center' as const,
+    },
+    subtitle: {
+      ...ds.typography.body,
+      color: ds.semantic.text.tertiary,
+      textAlign: 'center' as const,
+      marginTop: ds.space[2],
+    },
+
+    // Form
     form: {
-      gap: 8,
-    },
-    privacyNotice: {
-      flexDirection: 'row',
-      alignItems: 'flex-start',
-    },
-    privacyIcon: {
-      fontSize: 20,
+      gap: ds.space[3],
     },
     passwordStrength: {
-      marginTop: 8,
-      marginBottom: 4,
+      marginTop: ds.space[1],
+    },
+    strengthLabel: {
+      ...ds.typography.caption,
+      fontWeight: '600' as const,
+      marginBottom: ds.space[1],
     },
     strengthBar: {
-      flexDirection: 'row',
-      marginTop: 4,
+      flexDirection: 'row' as const,
       gap: 2,
     },
     strengthSegment: {
@@ -382,14 +326,55 @@ const createStyles = (_ds: DS) =>
       height: 4,
       borderRadius: 2,
     },
-    errorContainer: {
-      padding: 12,
-      borderRadius: 8,
+    privacyNotice: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: ds.space[3],
+      padding: ds.space[3],
+      borderRadius: ds.radius.lg,
+      backgroundColor: ds.semantic.surface.elevated,
       borderWidth: 1,
-      marginVertical: 8,
+      borderColor: ds.semantic.surface.overlay,
     },
+    privacyText: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+      flex: 1,
+      lineHeight: 20,
+    },
+    errorContainer: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      gap: ds.space[2],
+      padding: ds.space[3],
+      borderRadius: ds.radius.lg,
+      backgroundColor: ds.semantic.intent.alert.subtle,
+      borderWidth: 1,
+      borderColor: ds.semantic.intent.alert.muted,
+    },
+    errorText: {
+      ...ds.typography.caption,
+      color: ds.semantic.intent.alert.solid,
+      flex: 1,
+    },
+    buttonGroup: {
+      marginTop: ds.space[2],
+    },
+
+    // Footer
     footer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
+      flexDirection: 'row' as const,
+      justifyContent: 'center' as const,
+      marginTop: ds.space[8],
+      paddingVertical: ds.space[4],
+    },
+    footerText: {
+      ...ds.typography.body,
+      color: ds.semantic.text.tertiary,
+    },
+    footerLink: {
+      ...ds.typography.body,
+      color: ds.semantic.intent.primary.solid,
+      fontWeight: '600' as const,
     },
   }) as const;
