@@ -22,7 +22,7 @@
       "package": "com.recovery.stepstorecovery",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0f172a"
+        "backgroundColor": "#0A0A0A"
       },
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
@@ -56,8 +56,8 @@
       "name": "Steps to Recovery",
       "shortName": "Recovery",
       "description": "A private, offline-first recovery companion app for 12-step programs",
-      "themeColor": "#0f172a",
-      "backgroundColor": "#0f172a",
+      "themeColor": "#0A0A0A",
+      "backgroundColor": "#0A0A0A",
       "display": "standalone",
       "orientation": "portrait",
       "startUrl": "/",
@@ -80,7 +80,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#0f172a",
+          "backgroundColor": "#0A0A0A",
           "image": "./assets/splash-icon.png",
           "imageWidth": 200
         }
@@ -88,7 +88,7 @@
       [
         "expo-notifications",
         {
-          "color": "#8b5cf6",
+          "color": "#F59E0B",
           "defaultChannel": "default"
         }
       ],
