@@ -74,7 +74,8 @@ export async function syncChannelsToOpenClaw(config: MultiChannelConfig): Promis
     }
 
     // Send channel configuration as a system message
-    await provider.chat(
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const _chunk of provider.chat(
       [
         {
           role: 'system',
@@ -87,7 +88,9 @@ export async function syncChannelsToOpenClaw(config: MultiChannelConfig): Promis
         { role: 'user', content: 'Channels updated.' },
       ],
       { maxTokens: 10 },
-    );
+    )) {
+      // Consume response — we don't need the content
+    }
 
     logger.info('Channel config synced to OpenClaw');
     return true;

@@ -1,193 +1,171 @@
 /**
  * OpenClaw Provider
- * WebSocket + HTTP provider for self-hosted OpenClaw instances.
- * Optional — falls back to direct API if unavailable.
+ *
+ * Uses OpenClaw's OpenAI-compatible /v1/chat/completions endpoint.
+ * Each user gets an isolated persistent session via the `user` field.
+ *
+ * Configuration priority:
+ *   1. Environment variables (EXPO_PUBLIC_OPENCLAW_URL, EXPO_PUBLIC_OPENCLAW_TOKEN)
+ *   2. Secure storage (manual setup via settings)
  */
 
 import { secureStorage } from '../../../adapters/secureStorage';
 import { logger } from '../../../utils/logger';
-import type { ChatMessage, ChatOptions } from './aiService';
+import type { ChatMessage } from './aiService';
 
 const OPENCLAW_URL_KEY = 'openclaw_gateway_url';
 const OPENCLAW_TOKEN_KEY = 'openclaw_auth_token';
 
-interface OpenClawConfig {
-  gatewayUrl: string;
-  authToken: string;
+// Environment-based config (takes precedence — zero user setup)
+const ENV_URL = process.env.EXPO_PUBLIC_OPENCLAW_URL || '';
+const ENV_TOKEN = process.env.EXPO_PUBLIC_OPENCLAW_TOKEN || '';
+
+export interface OpenClawChatOptions {
+  userId?: string;
+  signal?: AbortSignal;
+  maxTokens?: number;
+  temperature?: number;
 }
 
 class OpenClawProvider {
-  private config: OpenClawConfig | null = null;
-  private ws: WebSocket | null = null;
-  private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
+  private gatewayUrl = '';
+  private authToken = '';
+  private configLoaded = false;
 
-  async loadConfig(): Promise<OpenClawConfig | null> {
-    try {
-      const url = await secureStorage.getItemAsync(OPENCLAW_URL_KEY);
-      const token = await secureStorage.getItemAsync(OPENCLAW_TOKEN_KEY);
-      if (url && token) {
-        this.config = { gatewayUrl: url, authToken: token };
-        return this.config;
-      }
-    } catch (error) {
-      logger.error('Failed to load OpenClaw config', error);
+  /**
+   * Resolve config: env vars take precedence, then secure storage.
+   */
+  private async resolveConfig(): Promise<{ url: string; token: string }> {
+    if (ENV_URL && ENV_TOKEN) {
+      this.gatewayUrl = ENV_URL;
+      this.authToken = ENV_TOKEN;
+      return { url: ENV_URL, token: ENV_TOKEN };
     }
-    return null;
+
+    if (!this.configLoaded) {
+      try {
+        const url = await secureStorage.getItemAsync(OPENCLAW_URL_KEY);
+        const token = await secureStorage.getItemAsync(OPENCLAW_TOKEN_KEY);
+        if (url && token) {
+          this.gatewayUrl = url;
+          this.authToken = token;
+        }
+        this.configLoaded = true;
+      } catch (error) {
+        logger.error('Failed to load OpenClaw config', error);
+      }
+    }
+
+    return { url: this.gatewayUrl, token: this.authToken };
   }
 
+  /**
+   * Check if OpenClaw is configured (env vars or secure storage).
+   */
+  async isConfigured(): Promise<boolean> {
+    const { url, token } = await this.resolveConfig();
+    return !!(url && token);
+  }
+
+  /**
+   * Save config to secure storage (for settings UI).
+   */
   async saveConfig(url: string, token: string): Promise<void> {
     await secureStorage.setItemAsync(OPENCLAW_URL_KEY, url);
     await secureStorage.setItemAsync(OPENCLAW_TOKEN_KEY, token);
-    this.config = { gatewayUrl: url, authToken: token };
+    this.gatewayUrl = url;
+    this.authToken = token;
+    this.configLoaded = true;
   }
 
+  /**
+   * Clear saved config.
+   */
   async clearConfig(): Promise<void> {
     await secureStorage.deleteItemAsync(OPENCLAW_URL_KEY);
     await secureStorage.deleteItemAsync(OPENCLAW_TOKEN_KEY);
-    this.config = null;
-    this.disconnect();
-  }
-
-  async isConfigured(): Promise<boolean> {
-    if (this.config) return true;
-    const loaded = await this.loadConfig();
-    return loaded !== null;
+    this.gatewayUrl = '';
+    this.authToken = '';
+    this.configLoaded = false;
   }
 
   /**
-   * Connect via WebSocket for real-time streaming.
+   * Stream chat via OpenClaw's OpenAI-compatible /v1/chat/completions endpoint.
+   *
+   * The `user` field gives each app user an isolated persistent session —
+   * OpenClaw remembers their conversation history automatically.
    */
-  private connect(): Promise<WebSocket> {
-    return new Promise((resolve, reject) => {
-      if (!this.config) {
-        reject(new Error('OpenClaw not configured'));
-        return;
-      }
-
-      if (this.ws?.readyState === WebSocket.OPEN) {
-        resolve(this.ws);
-        return;
-      }
-
-      const wsUrl = this.config.gatewayUrl.replace(/^http/, 'ws');
-      const ws = new WebSocket(`${wsUrl}/ws`);
-
-      ws.onopen = () => {
-        this.reconnectAttempts = 0;
-        // Authenticate
-        ws.send(
-          JSON.stringify({
-            type: 'auth',
-            token: this.config!.authToken,
-          }),
-        );
-        this.ws = ws;
-        logger.info('OpenClaw WebSocket connected');
-        resolve(ws);
-      };
-
-      ws.onerror = (event) => {
-        logger.error('OpenClaw WebSocket error', event);
-        reject(new Error('WebSocket connection failed'));
-      };
-
-      ws.onclose = () => {
-        this.ws = null;
-        if (this.reconnectAttempts < this.maxReconnectAttempts) {
-          this.reconnectAttempts++;
-          const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-          setTimeout(() => this.connect().catch(() => {}), delay);
-        }
-      };
-    });
-  }
-
-  disconnect(): void {
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-  }
-
-  /**
-   * Chat via HTTP fallback (more reliable than WebSocket for mobile).
-   */
-  async chat(
+  async *chat(
     messages: ChatMessage[],
-    options: ChatOptions & { onChunk?: (chunk: string) => void; signal?: AbortSignal } = {},
-  ): Promise<string> {
-    if (!this.config) {
-      await this.loadConfig();
-      if (!this.config) throw new Error('OpenClaw not configured');
+    options: OpenClawChatOptions = {},
+  ): AsyncGenerator<string, void, unknown> {
+    const { url, token } = await this.resolveConfig();
+    if (!url || !token) throw new Error('OpenClaw not configured');
+
+    const response = await fetch(`${url}/v1/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        model: 'openclaw:companion',
+        messages,
+        stream: true,
+        user: options.userId || undefined,
+        max_tokens: options.maxTokens || 1024,
+        temperature: options.temperature ?? 0.7,
+      }),
+      signal: options.signal,
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      let errorMessage = `OpenClaw error ${response.status}`;
+      try {
+        const parsed = JSON.parse(errorBody);
+        errorMessage = parsed.error?.message || parsed.message || errorMessage;
+      } catch {
+        if (errorBody) errorMessage += `: ${errorBody}`;
+      }
+      throw new Error(errorMessage);
     }
 
-    const url = `${this.config.gatewayUrl}/api/agent`;
+    const reader = response.body?.getReader();
+    if (!reader) {
+      // Non-streaming fallback
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content || '';
+      if (content) yield content;
+      return;
+    }
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.config.authToken}`,
-        },
-        body: JSON.stringify({
-          messages,
-          stream: true,
-          max_tokens: options.maxTokens || 1024,
-          temperature: options.temperature ?? 0.7,
-        }),
-        signal: options.signal,
-      });
+    const decoder = new TextDecoder();
+    let buffer = '';
 
-      if (!response.ok) {
-        throw new Error(`OpenClaw API error: ${response.status}`);
-      }
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
 
-      const reader = response.body?.getReader();
-      if (!reader) {
-        // Non-streaming fallback
-        const data = await response.json();
-        return data.content || data.message || '';
-      }
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
 
-      const decoder = new TextDecoder();
-      let buffer = '';
-      let fullResponse = '';
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed || !trimmed.startsWith('data: ')) continue;
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
+        const data = trimmed.slice(6);
+        if (data === '[DONE]') continue;
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed || !trimmed.startsWith('data: ')) continue;
-
-          const data = trimmed.slice(6);
-          if (data === '[DONE]') continue;
-
-          try {
-            const parsed = JSON.parse(data);
-            const content =
-              parsed.choices?.[0]?.delta?.content || parsed.delta?.text || parsed.content || '';
-            if (content) {
-              fullResponse += content;
-              options.onChunk?.(content);
-            }
-          } catch {
-            // Skip malformed chunks
-          }
+        try {
+          const parsed = JSON.parse(data);
+          const content = parsed.choices?.[0]?.delta?.content;
+          if (content) yield content;
+        } catch {
+          // Skip malformed SSE chunks
         }
       }
-
-      return fullResponse;
-    } catch (error) {
-      logger.error('OpenClaw chat failed', error);
-      throw error;
     }
   }
 
@@ -197,12 +175,22 @@ class OpenClawProvider {
   async testConnection(): Promise<{ ok: boolean; latencyMs: number; error?: string }> {
     const start = Date.now();
     try {
-      if (!this.config) await this.loadConfig();
-      if (!this.config) return { ok: false, latencyMs: 0, error: 'Not configured' };
+      const { url, token } = await this.resolveConfig();
+      if (!url || !token) return { ok: false, latencyMs: 0, error: 'Not configured' };
 
-      const response = await fetch(`${this.config.gatewayUrl}/api/health`, {
-        headers: { Authorization: `Bearer ${this.config.authToken}` },
-        signal: AbortSignal.timeout(10000),
+      const response = await fetch(`${url}/v1/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          model: 'openclaw:companion',
+          messages: [{ role: 'user', content: 'ping' }],
+          stream: false,
+          max_tokens: 5,
+        }),
+        signal: AbortSignal.timeout(15000),
       });
 
       return {

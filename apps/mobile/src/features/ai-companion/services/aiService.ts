@@ -25,6 +25,8 @@ export interface ChatOptions {
   temperature?: number;
   stream?: boolean;
   signal?: AbortSignal;
+  /** User ID for per-user session isolation (OpenClaw provider) */
+  userId?: string;
 }
 
 export type AIProvider = 'openai' | 'anthropic' | 'openrouter' | 'openclaw';
@@ -139,6 +141,12 @@ function detectProvider(apiKey: string): AIProvider {
  * Create AI service instance
  */
 export async function createAIService(): Promise<AIServiceInstance> {
+  // Auto-detect OpenClaw from environment (zero user setup)
+  const openclawUrl = process.env.EXPO_PUBLIC_OPENCLAW_URL;
+  if (openclawUrl) {
+    return new AIServiceInstance(null, 'openclaw');
+  }
+
   const apiKey = await secureStorage.getItemAsync(API_KEY_STORAGE_KEY);
   const storedProvider = await secureStorage.getItemAsync(PROVIDER_STORAGE_KEY);
 
@@ -356,19 +364,16 @@ export class AIServiceInstance {
         return;
       }
 
-      // OpenClaw provider — delegate to dedicated provider
+      // OpenClaw provider — delegate to streaming async generator
       if (this.provider === 'openclaw') {
         const { getOpenClawProvider } = await import('./openClawProvider');
         const clawProvider = getOpenClawProvider();
-        let result = '';
-        await clawProvider.chat(messages, {
-          ...options,
+        yield* clawProvider.chat(messages, {
+          userId: options.userId,
           signal: options.signal,
-          onChunk: (chunk: string) => {
-            result += chunk;
-          },
+          maxTokens: options.maxTokens,
+          temperature: options.temperature,
         });
-        yield result;
         span?.end();
         return;
       }
