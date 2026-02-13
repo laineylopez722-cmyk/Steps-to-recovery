@@ -639,7 +639,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       ];
 
       let fullContent = '';
-      for await (const chunk of service.chat(aiMessages)) {
+      for await (const chunk of service.chat(aiMessages, { userId })) {
         fullContent += chunk;
         setStreamingContent(fullContent);
       }
