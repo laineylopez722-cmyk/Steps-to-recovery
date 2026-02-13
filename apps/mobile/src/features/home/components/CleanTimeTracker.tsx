@@ -59,12 +59,7 @@ export function CleanTimeTracker(): React.ReactElement {
 
   if (isLoading) {
     return (
-      <Card
-        variant="elevated"
-        style={styles.card}
-        accessibilityRole="progressbar"
-        accessibilityLabel="Loading clean time"
-      >
+      <Card variant="elevated" style={styles.card} accessibilityRole="progressbar" accessibilityLabel="Loading clean time">
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
         </View>
@@ -78,12 +73,7 @@ export function CleanTimeTracker(): React.ReactElement {
 
   return (
     <Animated.View style={cardAnimatedStyle}>
-      <Card
-        variant="elevated"
-        style={styles.card}
-        accessibilityRole="none"
-        accessibilityLabel={`Clean time: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}
-      >
+      <Card variant="elevated" style={styles.card} accessibilityRole="none" accessibilityLabel={`Clean time: ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={[styles.iconText, { color: ds.semantic.intent.success.solid }]}>⚡</Text>
@@ -91,9 +81,7 @@ export function CleanTimeTracker(): React.ReactElement {
           </View>
           {isStreakIntact && (
             <Animated.View entering={FadeIn.delay(500)}>
-              <Badge variant="success" size="medium" accessibilityLabel="Streak intact" accessibilityRole="text">
-                STREAK INTACT
-              </Badge>
+              <Badge variant="success" size="medium" accessibilityLabel="Streak intact" accessibilityRole="text">STREAK INTACT</Badge>
             </Animated.View>
           )}
         </View>
@@ -109,9 +97,7 @@ export function CleanTimeTracker(): React.ReactElement {
             duration={1200}
             centerContent={
               <View style={styles.centerContent}>
-                <Text style={[styles.daysNumber, { color: ds.semantic.intent.success.solid }]}>
-                  {displayDays}
-                </Text>
+                <Text style={[styles.daysNumber, { color: ds.semantic.intent.success.solid }]}>{displayDays}</Text>
                 <Text style={styles.daysLabel}>DAYS CLEAN</Text>
               </View>
             }
@@ -119,17 +105,8 @@ export function CleanTimeTracker(): React.ReactElement {
         </View>
 
         {days > 0 && (
-          <Animated.Text
-            entering={FadeInUp.delay(600).springify()}
-            style={styles.motivationalText}
-          >
-            {days < 7
-              ? 'Great start! Keep going!'
-              : days < 30
-                ? 'Another week stronger. Keep going!'
-                : days < 90
-                  ? "Amazing progress! You're doing it!"
-                  : "Incredible! You're an inspiration!"}
+          <Animated.Text entering={FadeInUp.delay(600).springify()} style={styles.motivationalText}>
+            {days < 7 ? 'Great start! Keep going!' : days < 30 ? 'Another week stronger. Keep going!' : days < 90 ? "Amazing progress! You're doing it!" : "Incredible! You're an inspiration!"}
           </Animated.Text>
         )}
 
@@ -139,17 +116,13 @@ export function CleanTimeTracker(): React.ReactElement {
             <Text style={styles.statNumber}>0</Text>
             <Text style={styles.statLabel}>RELAPSES</Text>
           </View>
-
           <View style={styles.statDivider} />
-
           <View style={styles.statItem}>
             <View style={styles.statIcon}><Text style={{ fontSize: 20 }}>🤝</Text></View>
             <Text style={styles.statNumber}>0</Text>
             <Text style={styles.statLabel}>SPONSOR EST</Text>
           </View>
-
           <View style={styles.statDivider} />
-
           <View style={styles.statItem}>
             <View style={styles.statIcon}><Text style={{ fontSize: 20 }}>📅</Text></View>
             <Text style={styles.statNumber}>{days}</Text>
@@ -164,20 +137,11 @@ export function CleanTimeTracker(): React.ReactElement {
                 <Text style={styles.milestoneEmoji}>{nextMilestone.icon}</Text>
                 <View style={styles.milestoneTextContainer}>
                   <Text style={styles.milestoneTitle}>Next Milestone</Text>
-                  <Text style={styles.milestoneSubtitle}>
-                    {nextMilestone.title} • {daysUntilNext} days to go
-                  </Text>
+                  <Text style={styles.milestoneSubtitle}>{nextMilestone.title} • {daysUntilNext} days to go</Text>
                 </View>
               </View>
             </View>
-            <ProgressBar
-              progress={progress / 100}
-              style={styles.progressBar}
-              color={ds.semantic.intent.success.solid}
-              backgroundColor={ds.semantic.surface.overlay}
-              accessibilityLabel={`Progress to ${nextMilestone.title}: ${Math.round(progress)}%`}
-              accessibilityRole="progressbar"
-            />
+            <ProgressBar progress={progress / 100} style={styles.progressBar} color={ds.semantic.intent.success.solid} backgroundColor={ds.semantic.surface.overlay} accessibilityLabel={`Progress to ${nextMilestone.title}: ${Math.round(progress)}%`} accessibilityRole="progressbar" />
           </Animated.View>
         )}
 
@@ -202,151 +166,33 @@ export function CleanTimeTracker(): React.ReactElement {
 
 const createStyles = (ds: DS) =>
   ({
-    card: {
-      marginHorizontal: ds.space[4],
-      marginTop: ds.space[2],
-      padding: ds.space[5],
-    },
-    loadingContainer: {
-      padding: ds.space[10],
-      alignItems: 'center' as const,
-    },
-    header: {
-      flexDirection: 'row' as const,
-      justifyContent: 'space-between' as const,
-      alignItems: 'center' as const,
-      marginBottom: ds.space[5],
-    },
-    headerLeft: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      gap: ds.space[2],
-    },
-    iconText: {
-      fontSize: 20,
-    },
-    title: {
-      fontWeight: '700' as const,
-      fontSize: 18,
-      color: ds.semantic.text.primary,
-    },
-    circularContainer: {
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
-      marginVertical: ds.space[4],
-    },
-    centerContent: {
-      alignItems: 'center' as const,
-      justifyContent: 'center' as const,
-    },
-    daysNumber: {
-      fontSize: 56,
-      fontWeight: '700' as const,
-      lineHeight: 64,
-    },
-    daysLabel: {
-      fontSize: 12,
-      fontWeight: '600' as const,
-      letterSpacing: 1,
-      marginTop: ds.space[1],
-      color: ds.semantic.text.secondary,
-    },
-    motivationalText: {
-      textAlign: 'center' as const,
-      fontSize: 14,
-      fontStyle: 'italic' as const,
-      marginTop: ds.space[3],
-      marginBottom: ds.space[5],
-      color: ds.semantic.text.tertiary,
-    },
-    statsRow: {
-      flexDirection: 'row' as const,
-      justifyContent: 'space-around' as const,
-      alignItems: 'center' as const,
-      paddingVertical: ds.space[4],
-      paddingHorizontal: ds.space[2],
-    },
-    statItem: {
-      flex: 1,
-      alignItems: 'center' as const,
-    },
-    statIcon: {
-      marginBottom: ds.space[2],
-    },
-    statNumber: {
-      fontSize: 24,
-      fontWeight: '700' as const,
-      marginBottom: ds.space[1],
-      color: ds.semantic.text.primary,
-    },
-    statLabel: {
-      fontSize: 10,
-      fontWeight: '600' as const,
-      letterSpacing: 0.5,
-      color: ds.semantic.text.secondary,
-    },
-    statDivider: {
-      width: 1,
-      height: 48,
-      backgroundColor: ds.semantic.surface.overlay,
-    },
-    milestoneContainer: {
-      marginTop: ds.space[4],
-      paddingTop: ds.space[4],
-      borderTopWidth: 1,
-      borderTopColor: ds.colors.borderSubtle,
-    },
-    milestoneHeader: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      justifyContent: 'space-between' as const,
-      marginBottom: ds.space[3],
-    },
-    milestoneLeft: {
-      flexDirection: 'row' as const,
-      alignItems: 'center' as const,
-      flex: 1,
-    },
-    milestoneEmoji: {
-      fontSize: 28,
-      marginRight: ds.space[3],
-    },
-    milestoneTextContainer: {
-      flex: 1,
-    },
-    milestoneTitle: {
-      fontSize: 14,
-      fontWeight: '600' as const,
-      marginBottom: 2,
-      color: ds.semantic.text.primary,
-    },
-    milestoneSubtitle: {
-      fontSize: 12,
-      color: ds.semantic.text.secondary,
-    },
-    progressBar: {
-      height: 8,
-      borderRadius: 4,
-    },
-    timeBreakdown: {
-      flexDirection: 'row' as const,
-      justifyContent: 'space-around' as const,
-      marginTop: ds.space[5],
-      paddingTop: ds.space[4],
-      borderTopWidth: 1,
-      borderTopColor: ds.colors.borderSubtle,
-    },
-    timeItem: {
-      alignItems: 'center' as const,
-    },
-    timeNumber: {
-      fontSize: 20,
-      fontWeight: '600' as const,
-      marginBottom: ds.space[1],
-      color: ds.semantic.text.primary,
-    },
-    timeLabel: {
-      fontSize: 11,
-      color: ds.semantic.text.secondary,
-    },
+    card: { marginHorizontal: ds.space[4], marginTop: ds.space[2], padding: ds.space[5] },
+    loadingContainer: { padding: ds.space[10], alignItems: 'center' as const },
+    header: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const, marginBottom: ds.space[5] },
+    headerLeft: { flexDirection: 'row' as const, alignItems: 'center' as const, gap: ds.space[2] },
+    iconText: { fontSize: 20 },
+    title: { fontWeight: '700' as const, fontSize: 18, color: ds.semantic.text.primary },
+    circularContainer: { alignItems: 'center' as const, justifyContent: 'center' as const, marginVertical: ds.space[4] },
+    centerContent: { alignItems: 'center' as const, justifyContent: 'center' as const },
+    daysNumber: { fontSize: 56, fontWeight: '700' as const, lineHeight: 64 },
+    daysLabel: { fontSize: 12, fontWeight: '600' as const, letterSpacing: 1, marginTop: ds.space[1], color: ds.semantic.text.secondary },
+    motivationalText: { textAlign: 'center' as const, fontSize: 14, fontStyle: 'italic' as const, marginTop: ds.space[3], marginBottom: ds.space[5], color: ds.semantic.text.tertiary },
+    statsRow: { flexDirection: 'row' as const, justifyContent: 'space-around' as const, alignItems: 'center' as const, paddingVertical: ds.space[4], paddingHorizontal: ds.space[2] },
+    statItem: { flex: 1, alignItems: 'center' as const },
+    statIcon: { marginBottom: ds.space[2] },
+    statNumber: { fontSize: 24, fontWeight: '700' as const, marginBottom: ds.space[1], color: ds.semantic.text.primary },
+    statLabel: { fontSize: 10, fontWeight: '600' as const, letterSpacing: 0.5, color: ds.semantic.text.secondary },
+    statDivider: { width: 1, height: 48, backgroundColor: ds.semantic.surface.overlay },
+    milestoneContainer: { marginTop: ds.space[4], paddingTop: ds.space[4], borderTopWidth: 1, borderTopColor: ds.colors.borderSubtle },
+    milestoneHeader: { flexDirection: 'row' as const, alignItems: 'center' as const, justifyContent: 'space-between' as const, marginBottom: ds.space[3] },
+    milestoneLeft: { flexDirection: 'row' as const, alignItems: 'center' as const, flex: 1 },
+    milestoneEmoji: { fontSize: 28, marginRight: ds.space[3] },
+    milestoneTextContainer: { flex: 1 },
+    milestoneTitle: { fontSize: 14, fontWeight: '600' as const, marginBottom: 2, color: ds.semantic.text.primary },
+    milestoneSubtitle: { fontSize: 12, color: ds.semantic.text.secondary },
+    progressBar: { height: 8, borderRadius: 4 },
+    timeBreakdown: { flexDirection: 'row' as const, justifyContent: 'space-around' as const, marginTop: ds.space[5], paddingTop: ds.space[4], borderTopWidth: 1, borderTopColor: ds.colors.borderSubtle },
+    timeItem: { alignItems: 'center' as const },
+    timeNumber: { fontSize: 20, fontWeight: '600' as const, marginBottom: ds.space[1], color: ds.semantic.text.primary },
+    timeLabel: { fontSize: 11, color: ds.semantic.text.secondary },
   }) as const;
