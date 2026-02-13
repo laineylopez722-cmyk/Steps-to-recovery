@@ -144,30 +144,39 @@ export function useCravingSurf(): UseCravingSurfReturn {
 
   const submitFinalRating = useCallback(
     async (finalRating: number): Promise<void> => {
-      if (!session || !db) {
-        logger.warn('Cannot submit final rating: missing session or db');
-        return;
-      }
-
+      // ALWAYS advance the UI first — crisis flows must never block on persistence.
       const completedAt = new Date().toISOString();
-      const completedSession: CravingSurfSession = {
-        ...session,
-        finalRating,
-        phase: 'complete',
-        completedAt,
-      };
+      const initialRating = session?.initialRating ?? 0;
+      const completedSession: CravingSurfSession = session
+        ? { ...session, finalRating, phase: 'complete', completedAt }
+        : {
+            id: generateId('crave'),
+            userId,
+            initialRating: 0,
+            finalRating,
+            phase: 'complete',
+            startedAt: completedAt,
+            completedAt,
+            distractionUsed: null,
+          };
 
       setSession(completedSession);
       setPhase('complete');
 
       const reduction =
-        session.initialRating > 0
-          ? Math.round(((session.initialRating - finalRating) / session.initialRating) * 100)
+        initialRating > 0
+          ? Math.round(((initialRating - finalRating) / initialRating) * 100)
           : 0;
       setReductionPercent(reduction);
 
+      // Best-effort persistence — never block the user.
+      if (!db) {
+        logger.warn('Cannot persist craving surf session: db unavailable');
+        return;
+      }
+
       try {
-        const encryptedInitial = await encryptContent(String(session.initialRating));
+        const encryptedInitial = await encryptContent(String(initialRating));
         const encryptedFinal = await encryptContent(String(finalRating));
         const encryptedDistraction = completedSession.distractionUsed
           ? await encryptContent(completedSession.distractionUsed)
