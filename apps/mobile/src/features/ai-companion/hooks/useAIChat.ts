@@ -421,36 +421,66 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         // Enriched context is additive — don't fail the chat
       }
 
-      // Prepare messages for AI
-      const systemPrompt = getRecoverySystemPrompt({
-        sobrietyDays,
-        currentStep,
-        userName,
-        sponsorName,
-      });
+      // Build system prompt based on provider.
+      // OpenClaw: personality lives in SOUL.md server-side — only send user context.
+      // Direct API providers: send full personality + context.
+      const isOpenClaw = service.getProvider() === 'openclaw';
 
-      // Add memory context, enriched context, and crisis context to system prompt
-      let contextualSystemPrompt = systemPrompt;
-      if (memoryContext) {
-        contextualSystemPrompt += `\n\nWhat I remember about them:\n${memoryContext}`;
-      }
-      if (enrichedContext) {
-        contextualSystemPrompt += `\n\nTheir recovery journey (from their own writings):\n${enrichedContext}`;
-      }
-      if (crisis) {
-        if (crisis.severity === 'high') {
-          contextualSystemPrompt +=
-            '\n\nIMPORTANT: The user may be in crisis. Respond with compassion, acknowledge their pain, and strongly encourage them to call a crisis hotline (988 Suicide & Crisis Lifeline) or emergency services immediately.';
-        } else if (crisis.severity === 'medium') {
-          contextualSystemPrompt +=
-            '\n\nNote: The user may be struggling. Encourage them to reach out to their sponsor, attend a meeting, or call a support line.';
+      let contextualSystemPrompt: string;
+
+      if (isOpenClaw) {
+        // User-specific context only (SOUL.md handles personality)
+        const contextParts: string[] = [];
+        if (userName) contextParts.push(`Their name is ${userName}.`);
+        if (sobrietyDays !== undefined) contextParts.push(`They have ${sobrietyDays} days of sobriety.`);
+        if (currentStep) contextParts.push(`Currently working on Step ${currentStep}.`);
+        if (sponsorName) contextParts.push(`Their sponsor is ${sponsorName}.`);
+        if (memoryContext) contextParts.push(`\nWhat I remember about them:\n${memoryContext}`);
+        if (enrichedContext) contextParts.push(`\nTheir recovery journey (from their own writings):\n${enrichedContext}`);
+        if (crisis) {
+          if (crisis.severity === 'high') {
+            contextParts.push(
+              '\n⚠️ CRISIS DETECTED: The user may be in immediate danger. Acknowledge their pain, stay present, and surface crisis resources (988 Lifeline) immediately.',
+            );
+          } else if (crisis.severity === 'medium') {
+            contextParts.push(
+              '\nNote: The user may be struggling. Encourage reaching out to their sponsor, attending a meeting, or calling a support line.',
+            );
+          }
+        }
+        contextualSystemPrompt = contextParts.length > 0
+          ? `About this user:\n${contextParts.join('\n')}`
+          : '';
+      } else {
+        // Full prompt with personality (for direct API providers)
+        contextualSystemPrompt = getRecoverySystemPrompt({
+          sobrietyDays,
+          currentStep,
+          userName,
+          sponsorName,
+        });
+        if (memoryContext) {
+          contextualSystemPrompt += `\n\nWhat I remember about them:\n${memoryContext}`;
+        }
+        if (enrichedContext) {
+          contextualSystemPrompt += `\n\nTheir recovery journey (from their own writings):\n${enrichedContext}`;
+        }
+        if (crisis) {
+          if (crisis.severity === 'high') {
+            contextualSystemPrompt +=
+              '\n\nIMPORTANT: The user may be in crisis. Respond with compassion, acknowledge their pain, and strongly encourage them to call a crisis hotline (988 Suicide & Crisis Lifeline) or emergency services immediately.';
+          } else if (crisis.severity === 'medium') {
+            contextualSystemPrompt +=
+              '\n\nNote: The user may be struggling. Encourage them to reach out to their sponsor, attend a meeting, or call a support line.';
+          }
         }
       }
 
       const aiMessages: ChatMessage[] = [
-        { role: 'system', content: contextualSystemPrompt },
+        // Only include system message if there's actual context to send
+        ...(contextualSystemPrompt ? [{ role: 'system' as const, content: contextualSystemPrompt }] : []),
         ...messages.map((m) => ({ role: m.role, content: m.content })),
-        { role: 'user', content },
+        { role: 'user' as const, content },
       ];
 
       // Start streaming
