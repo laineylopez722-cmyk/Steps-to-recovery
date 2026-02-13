@@ -102,8 +102,8 @@ function PremiumProgressHero({
 }) {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
-  const size = 214;
-  const stroke = 14;
+  const size = 160;
+  const stroke = 12;
   const radius = (size - stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const yearProgress = Math.min(days / 365, 1);
@@ -448,15 +448,6 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             completedToday={completedToday}
           />
 
-          <TodayWidget
-            userId={userId}
-            onCheckIn={handleMorning}
-            onJournal={handleJournal}
-            onMeeting={handleMeetings}
-          />
-
-          <UpcomingMilestones userId={userId} />
-
           <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle}>Daily intention</Text>
@@ -499,7 +490,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
                 <Text style={styles.companionTitle}>Talk to your companion</Text>
                 <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
               </View>
-              <Feather name="arrow-right" size={20} color={ds.semantic.text.muted} />
+              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" />
             </View>
           </ActionCard>
 
@@ -535,6 +526,15 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
               />
             </View>
           </Animated.View>
+
+          <TodayWidget
+            userId={userId}
+            onCheckIn={handleMorning}
+            onJournal={handleJournal}
+            onMeeting={handleMeetings}
+          />
+
+          <UpcomingMilestones userId={userId} />
 
           <View style={{ height: ds.space[20] }} />
         </ScrollView>
@@ -595,9 +595,9 @@ const createStyles = (ds: DS) =>
       marginTop: ds.space[4],
     },
     skeletonRing: {
-      width: 214,
-      height: 214,
-      borderRadius: 107,
+      width: 160,
+      height: 160,
+      borderRadius: 80,
       backgroundColor: ds.semantic.surface.elevated,
       alignSelf: 'center',
       marginVertical: ds.space[4],
@@ -650,6 +650,7 @@ const createStyles = (ds: DS) =>
       height: 260,
       borderRadius: ds.radius.full,
       backgroundColor: ds.semantic.intent.secondary.subtle,
+      opacity: 0.3,
     },
     bgLayerMid: {
       position: 'absolute',
@@ -659,15 +660,17 @@ const createStyles = (ds: DS) =>
       height: 300,
       borderRadius: ds.radius.full,
       backgroundColor: ds.semantic.intent.primary.subtle,
+      opacity: 0.3,
     },
     bgLayerBottom: {
       position: 'absolute',
-      bottom: -180,
-      right: -140,
+      bottom: -260,
+      right: -180,
       width: 360,
       height: 360,
       borderRadius: ds.radius.full,
       backgroundColor: ds.semantic.surface.interactive,
+      opacity: 0.15,
     },
 
     header: {
@@ -749,7 +752,7 @@ const createStyles = (ds: DS) =>
       alignItems: 'center',
     },
     dayCount: {
-      fontSize: 52,
+      fontSize: 40,
       fontWeight: '700',
       color: ds.semantic.text.primary,
       letterSpacing: -1,
@@ -829,7 +832,7 @@ const createStyles = (ds: DS) =>
     },
     intentionPillText: {
       ...ds.typography.caption,
-      color: ds.semantic.text.secondary,
+      color: ds.semantic.text.primary,
       fontWeight: '600',
     },
 
@@ -890,7 +893,7 @@ const createStyles = (ds: DS) =>
       width: 48,
       height: 48,
       borderRadius: ds.radius.lg,
-      backgroundColor: ds.semantic.surface.overlay,
+      backgroundColor: 'rgba(0,0,0,0.15)',
       justifyContent: 'center',
       alignItems: 'center',
     },
@@ -905,7 +908,7 @@ const createStyles = (ds: DS) =>
     },
     companionSubtitle: {
       ...ds.typography.caption,
-      color: ds.semantic.text.muted,
+      color: 'rgba(0,0,0,0.6)',
       marginTop: 2,
     },
   }) as const;
