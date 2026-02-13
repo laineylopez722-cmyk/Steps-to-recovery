@@ -120,26 +120,28 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
   // ========================================
 
   const handleStart = async (): Promise<void> => {
+    // ALWAYS advance the flow — crisis screens must never block on network.
+    // Generate a local fallback ID so the rest of the flow works offline.
+    const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+    // Best-effort: try to persist to Supabase, but proceed regardless.
     try {
       const result = await startCrisisCheckpoint(userId, cravingIntensity);
-
       if (result.success && result.checkpointId) {
         setCheckpointId(result.checkpointId);
-
         if (triggerText.trim()) {
-          await updateTriggerDescription(result.checkpointId, userId, triggerText.trim());
+          void updateTriggerDescription(result.checkpointId, userId, triggerText.trim()).catch(() => {});
         }
-
-        setSecondsRemaining(600);
-        setStage('pause');
-        setTimerActive(true);
-        return;
+      } else {
+        setCheckpointId(localId);
       }
-
-      Alert.alert('Error', 'Could not start checkpoint. Please try again.');
     } catch {
-      Alert.alert('Error', 'Could not start checkpoint. Please try again.');
+      setCheckpointId(localId);
     }
+
+    setSecondsRemaining(600);
+    setStage('pause');
+    setTimerActive(true);
   };
 
   const handleSkipTimer = (): void => {
@@ -177,8 +179,6 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
   };
 
   const handleContactSponsor = async (type: ContactType): Promise<void> => {
-    if (!checkpointId) return;
-
     if (!sponsorPhone) {
       Alert.alert('No sponsor phone number', 'Add a sponsor phone number in settings.');
       return;
@@ -189,38 +189,33 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
         const ok = await makePhoneCall(sponsorPhone);
         if (!ok) return;
       } else {
-        // If sendSMS returns boolean, treat false as failure. If it returns void, this still works.
         const maybeOk = await sendSMS(sponsorPhone, "Hey, I'm having a hard time. Can you talk?");
         if (maybeOk.success === false) return;
       }
 
-      await markSponsorContact(checkpointId, userId, type);
+      // Best-effort logging — never block the user
+      if (checkpointId && !checkpointId.startsWith('local-')) {
+        void markSponsorContact(checkpointId, userId, type).catch(() => {});
+      }
     } catch {
       Alert.alert('Could not contact sponsor', 'Please try again.');
     }
   };
 
   const handleComplete = async (outcome: Outcome): Promise<void> => {
-    if (!checkpointId) {
-      // If somehow we got here without an id, just exit safely.
-      navigation.goBack();
-      return;
+    // Best-effort: log completion, but ALWAYS let the user out.
+    if (checkpointId && !checkpointId.startsWith('local-')) {
+      void completeCrisisCheckpoint(checkpointId, userId, outcome, finalIntensity).catch(() => {});
     }
 
-    try {
-      await completeCrisisCheckpoint(checkpointId, userId, outcome, finalIntensity);
-    } catch {
-      // Still allow user to proceed; logging failure shouldn't trap them.
-    } finally {
-      setStage('complete');
-      Alert.alert(
-        'Checkpoint saved',
-        outcome === 'resisted'
-          ? 'Good work. Keep going.'
-          : 'Logged. Reach out for support if you can.',
-        [{ text: 'OK', onPress: () => navigation.goBack() }],
-      );
-    }
+    setStage('complete');
+    Alert.alert(
+      'Checkpoint saved',
+      outcome === 'resisted'
+        ? 'Good work. Keep going.'
+        : 'Logged. Reach out for support if you can.',
+      [{ text: 'OK', onPress: () => navigation.goBack() }],
+    );
   };
 
   // ========================================
