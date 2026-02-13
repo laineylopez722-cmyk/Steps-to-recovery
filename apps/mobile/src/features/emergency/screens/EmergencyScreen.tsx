@@ -13,9 +13,8 @@ import type { ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeIn, FadeInDown, FadeInUp, Layout } from 'react-native-reanimated';
-import { ScreenAnimations } from '../../../design-system/tokens/screen-animations';
-import { useTheme, Button, BreathingCircle, GlassCard } from '../../../design-system';
+import Animated, { FadeIn, FadeInUp, Layout } from 'react-native-reanimated';
+import { Button, BreathingCircle, GlassCard } from '../../../design-system';
 import { aestheticColors } from '../../../design-system/tokens/aesthetic';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
@@ -59,7 +58,6 @@ const GENTLE_DURATION = 400;
 const getStaggerDelay = (index: number): number => Math.min(index * 100, 500);
 
 export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const navigation = useNavigation();
@@ -104,8 +102,8 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
         >
           {/* Header Section - Gentle fade in */}
           <Animated.View
-            entering={ScreenAnimations.entrance}
-            style={[styles.header, { paddingHorizontal: theme.spacing.lg }]}
+            entering={FadeIn.duration(400)}
+            style={[styles.header, { paddingHorizontal: ds.space[4] }]}
           >
             <Animated.View
               entering={FadeIn.duration(400).delay(200)}
@@ -118,23 +116,23 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
               />
             </Animated.View>
             <Animated.Text
-              entering={FadeInDown.duration(400).delay(300)}
+              entering={FadeInUp.duration(400).delay(300)}
               style={[
-                theme.typography.h1,
-                { color: theme.colors.text, textAlign: 'center', marginTop: theme.spacing.md },
+                ds.semantic.typography.screenTitle,
+                { color: ds.semantic.text.primary, textAlign: 'center', marginTop: ds.space[3] },
               ]}
               accessibilityRole="header"
             >
               Emergency Support
             </Animated.Text>
             <Animated.Text
-              entering={FadeInDown.duration(400).delay(400)}
+              entering={FadeInUp.duration(400).delay(400)}
               style={[
-                theme.typography.body,
+                ds.typography.body,
                 {
-                  color: theme.colors.textSecondary,
+                  color: ds.semantic.text.secondary,
                   textAlign: 'center',
-                  marginTop: theme.spacing.xs,
+                  marginTop: ds.space[1],
                 },
               ]}
             >
@@ -143,17 +141,17 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
           </Animated.View>
 
           <Animated.View
-            entering={FadeInDown.duration(400).delay(480)}
+            entering={FadeInUp.duration(400).delay(480)}
             style={[
               styles.section,
-              { paddingHorizontal: theme.spacing.md, marginTop: theme.spacing.sm },
+              { paddingHorizontal: ds.space[3], marginTop: ds.space[2] },
             ]}
           >
             <GlassCard intensity="modal" style={styles.quickCtaCard}>
               <Text
                 style={[
-                  theme.typography.labelLarge,
-                  { color: theme.colors.text, marginBottom: theme.spacing.sm },
+                  ds.typography.bodySm,
+                  { color: ds.semantic.text.primary, marginBottom: ds.space[2] },
                 ]}
               >
                 Immediate help
@@ -178,9 +176,9 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 variant="outline"
                 size="large"
                 fullWidth
-                style={{ marginTop: theme.spacing.sm }}
+                style={{ marginTop: ds.space[2] }}
                 icon={
-                  <MaterialCommunityIcons name="pause-circle" size={20} color={theme.colors.text} />
+                  <MaterialCommunityIcons name="pause-circle" size={20} color={ds.semantic.text.primary} />
                 }
                 accessibilityLabel="Start Before You Use"
               />
@@ -189,13 +187,13 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
           {/* Crisis Hotlines Section */}
           <Animated.View
-            entering={FadeInDown.duration(400).delay(500)}
-            style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
+            entering={FadeInUp.duration(400).delay(500)}
+            style={[styles.section, { paddingHorizontal: ds.space[3] }]}
           >
             <Text
               style={[
-                theme.typography.h2,
-                { color: theme.colors.text, marginBottom: theme.spacing.md },
+                ds.typography.h3,
+                { color: ds.semantic.text.primary, marginBottom: ds.space[3] },
               ]}
               accessibilityRole="header"
             >
@@ -205,10 +203,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             {CRISIS_HOTLINES.map((hotline, index) => (
               <Animated.View
                 key={index}
-                entering={FadeInDown.duration(400).delay(getStaggerDelay(index + 4))}
+                entering={FadeInUp.duration(400).delay(getStaggerDelay(index + 4))}
                 layout={Layout.springify()}
               >
-                <GlassCard intensity="card" style={{ marginBottom: theme.spacing.md }}>
+                <GlassCard intensity="card" style={{ marginBottom: ds.space[3] }}>
                   <View style={styles.hotlineCard}>
                     <View style={styles.hotlineIcon}>
                       <MaterialCommunityIcons
@@ -220,16 +218,16 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     <View style={styles.hotlineContent}>
                       <Text
                         style={[
-                          theme.typography.h3,
-                          { color: theme.colors.text, marginBottom: theme.spacing.xs },
+                          ds.typography.h3,
+                          { color: ds.semantic.text.primary, marginBottom: ds.space[1] },
                         ]}
                       >
                         {hotline.name}
                       </Text>
                       <Text
                         style={[
-                          theme.typography.bodySmall,
-                          { color: theme.colors.textSecondary, marginBottom: theme.spacing.md },
+                          ds.typography.bodySm,
+                          { color: ds.semantic.text.secondary, marginBottom: ds.space[3] },
                         ]}
                       >
                         {hotline.description}
@@ -259,13 +257,13 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
           {/* Before You Use - Crisis Checkpoint */}
           <Animated.View
-            entering={FadeInDown.duration(400).delay(600)}
-            style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
+            entering={FadeInUp.duration(400).delay(600)}
+            style={[styles.section, { paddingHorizontal: ds.space[3] }]}
           >
             <GlassCard
               intensity="modal"
               style={{
-                marginBottom: theme.spacing.md,
+                marginBottom: ds.space[3],
                 backgroundColor: ds.semantic.emergency.calmSubtle,
                 borderColor: ds.semantic.emergency.calm,
                 borderWidth: 2,
@@ -282,16 +280,16 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 <View style={styles.crisisCheckpointContent}>
                   <Text
                     style={[
-                      theme.typography.h2,
-                      { color: ds.semantic.emergency.calm, marginBottom: theme.spacing.xs },
+                      ds.typography.h3,
+                      { color: ds.semantic.emergency.calm, marginBottom: ds.space[1] },
                     ]}
                   >
                     Before You Use
                   </Text>
                   <Text
                     style={[
-                      theme.typography.body,
-                      { color: theme.colors.text, marginBottom: theme.spacing.md },
+                      ds.typography.body,
+                      { color: ds.semantic.text.primary, marginBottom: ds.space[3] },
                     ]}
                   >
                     Feeling a craving? Pause here first. We'll walk through this moment together.
@@ -322,27 +320,27 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
           {/* Box Breathing Section with Interactive Animation */}
           <Animated.View
-            entering={FadeInDown.duration(400).delay(700)}
-            style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
+            entering={FadeInUp.duration(400).delay(700)}
+            style={[styles.section, { paddingHorizontal: ds.space[3] }]}
           >
             <Text
               style={[
-                theme.typography.h2,
-                { color: theme.colors.text, marginBottom: theme.spacing.md },
+                ds.typography.h3,
+                { color: ds.semantic.text.primary, marginBottom: ds.space[3] },
               ]}
               accessibilityRole="header"
             >
               Calming Exercise
             </Text>
 
-            <GlassCard intensity="card" style={{ marginBottom: theme.spacing.md }}>
+            <GlassCard intensity="card" style={{ marginBottom: ds.space[3] }}>
               <View style={styles.breathingSection}>
                 <Text
                   style={[
-                    theme.typography.h3,
+                    ds.typography.h3,
                     {
-                      color: theme.colors.text,
-                      marginBottom: theme.spacing.xs,
+                      color: ds.semantic.text.primary,
+                      marginBottom: ds.space[1],
                       textAlign: 'center',
                     },
                   ]}
@@ -351,10 +349,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                 </Text>
                 <Text
                   style={[
-                    theme.typography.bodySmall,
+                    ds.typography.bodySm,
                     {
-                      color: theme.colors.textSecondary,
-                      marginBottom: theme.spacing.lg,
+                      color: ds.semantic.text.secondary,
+                      marginBottom: ds.space[4],
                       textAlign: 'center',
                     },
                   ]}
@@ -368,7 +366,7 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     size={200}
                     cycles={4}
                     phaseDuration={4000}
-                    color={theme.colors.secondary}
+                    color={ds.semantic.intent.secondary.solid}
                     autoStart={false}
                     onComplete={handleBreathingComplete}
                     testID="emergency-breathing-circle"
@@ -377,10 +375,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
                 <Text
                   style={[
-                    theme.typography.caption,
+                    ds.typography.caption,
                     {
-                      color: theme.colors.textSecondary,
-                      marginTop: theme.spacing.md,
+                      color: ds.semantic.text.secondary,
+                      marginTop: ds.space[3],
                       textAlign: 'center',
                       fontStyle: 'italic',
                     },
@@ -394,13 +392,13 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
           {/* Grounding Techniques Section */}
           <Animated.View
-            entering={FadeInDown.duration(GENTLE_DURATION).delay(900)}
-            style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
+            entering={FadeInUp.duration(GENTLE_DURATION).delay(900)}
+            style={[styles.section, { paddingHorizontal: ds.space[3] }]}
           >
             <Text
               style={[
-                theme.typography.h2,
-                { color: theme.colors.text, marginBottom: theme.spacing.md },
+                ds.typography.h3,
+                { color: ds.semantic.text.primary, marginBottom: ds.space[3] },
               ]}
               accessibilityRole="header"
             >
@@ -408,29 +406,29 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             </Text>
 
             {/* 5-4-3-2-1 Grounding */}
-            <Animated.View entering={FadeInDown.duration(GENTLE_DURATION).delay(950)}>
-              <GlassCard intensity="card" style={{ marginBottom: theme.spacing.md }}>
+            <Animated.View entering={FadeInUp.duration(GENTLE_DURATION).delay(950)}>
+              <GlassCard intensity="card" style={{ marginBottom: ds.space[3] }}>
                 <Text
                   style={[
-                    theme.typography.h3,
-                    { color: theme.colors.text, marginBottom: theme.spacing.sm },
+                    ds.typography.h3,
+                    { color: ds.semantic.text.primary, marginBottom: ds.space[2] },
                   ]}
                 >
                   5-4-3-2-1 Grounding
                 </Text>
                 <Text
                   style={[
-                    theme.typography.bodySmall,
-                    { color: theme.colors.textSecondary, marginBottom: theme.spacing.sm },
+                    ds.typography.bodySm,
+                    { color: ds.semantic.text.secondary, marginBottom: ds.space[2] },
                   ]}
                 >
                   Use your senses to anchor yourself in the present moment:
                 </Text>
                 {[
-                  { count: '5', sense: 'things you can see', color: theme.colors.primary },
-                  { count: '4', sense: 'things you can touch', color: theme.colors.secondary },
-                  { count: '3', sense: 'things you can hear', color: theme.colors.success },
-                  { count: '2', sense: 'things you can smell', color: theme.colors.warning },
+                  { count: '5', sense: 'things you can see', color: ds.semantic.intent.primary.solid },
+                  { count: '4', sense: 'things you can touch', color: ds.semantic.intent.secondary.solid },
+                  { count: '3', sense: 'things you can hear', color: ds.semantic.intent.success.solid },
+                  { count: '2', sense: 'things you can smell', color: ds.semantic.intent.warning.solid },
                   { count: '1', sense: 'thing you can taste', color: ds.semantic.emergency.calm },
                 ].map((step, index) => (
                   <Animated.View
@@ -439,11 +437,11 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     style={styles.techniqueStep}
                   >
                     <View style={[styles.groundingBadge, { backgroundColor: step.color + '20' }]}>
-                      <Text style={[theme.typography.labelLarge, { color: step.color }]}>
+                      <Text style={[ds.typography.bodySm, { color: step.color }]}>
                         {step.count}
                       </Text>
                     </View>
-                    <Text style={[theme.typography.body, { color: theme.colors.text, flex: 1 }]}>
+                    <Text style={[ds.typography.body, { color: ds.semantic.text.primary, flex: 1 }]}>
                       {step.sense}
                     </Text>
                   </Animated.View>
@@ -454,24 +452,24 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
 
           {/* Immediate Actions Section */}
           <Animated.View
-            entering={FadeInDown.duration(GENTLE_DURATION).delay(1100)}
-            style={[styles.section, { paddingHorizontal: theme.spacing.md }]}
+            entering={FadeInUp.duration(GENTLE_DURATION).delay(1100)}
+            style={[styles.section, { paddingHorizontal: ds.space[3] }]}
           >
             <Text
               style={[
-                theme.typography.h2,
-                { color: theme.colors.text, marginBottom: theme.spacing.md },
+                ds.typography.h3,
+                { color: ds.semantic.text.primary, marginBottom: ds.space[3] },
               ]}
               accessibilityRole="header"
             >
               Immediate Actions
             </Text>
 
-            <GlassCard intensity="card" style={{ marginBottom: theme.spacing.xl }}>
+            <GlassCard intensity="card" style={{ marginBottom: ds.space[6] }}>
               <Text
                 style={[
-                  theme.typography.bodySmall,
-                  { color: theme.colors.textSecondary, marginBottom: theme.spacing.sm },
+                  ds.typography.bodySm,
+                  { color: ds.semantic.text.secondary, marginBottom: ds.space[2] },
                 ]}
               >
                 When you're feeling overwhelmed:
@@ -492,10 +490,10 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                   <MaterialCommunityIcons
                     name="check-circle"
                     size={20}
-                    color={theme.colors.success}
-                    style={{ marginRight: theme.spacing.sm }}
+                    color={ds.semantic.intent.success.solid}
+                    style={{ marginRight: ds.space[2] }}
                   />
-                  <Text style={[theme.typography.body, { color: theme.colors.text, flex: 1 }]}>
+                  <Text style={[ds.typography.body, { color: ds.semantic.text.primary, flex: 1 }]}>
                     {action}
                   </Text>
                 </Animated.View>
@@ -509,26 +507,26 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             style={[
               styles.reminderCard,
               {
-                backgroundColor: theme.colors.success + '15',
-                marginHorizontal: theme.spacing.md,
-                marginBottom: theme.spacing.xl,
-                padding: theme.spacing.lg,
-                borderRadius: theme.radius.card,
+                backgroundColor: ds.semantic.intent.success.solid + '15',
+                marginHorizontal: ds.space[3],
+                marginBottom: ds.space[6],
+                padding: ds.space[4],
+                borderRadius: ds.radius.lg,
               },
             ]}
           >
             <MaterialCommunityIcons
               name="head-heart"
               size={32}
-              color={theme.colors.success}
-              style={{ marginBottom: theme.spacing.sm }}
+              color={ds.semantic.intent.success.solid}
+              style={{ marginBottom: ds.space[2] }}
             />
             <Text
               style={[
-                theme.typography.title3,
+                ds.typography.h3,
                 {
-                  color: theme.colors.success,
-                  marginBottom: theme.spacing.xs,
+                  color: ds.semantic.intent.success.solid,
+                  marginBottom: ds.space[1],
                   textAlign: 'center',
                 },
               ]}
@@ -537,8 +535,8 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
             </Text>
             <Text
               style={[
-                theme.typography.body,
-                { color: theme.colors.text, textAlign: 'center', lineHeight: 22 },
+                ds.typography.body,
+                { color: ds.semantic.text.primary, textAlign: 'center', lineHeight: 22 },
               ]}
             >
               Every moment you choose recovery is a victory. This crisis will pass, and you have the

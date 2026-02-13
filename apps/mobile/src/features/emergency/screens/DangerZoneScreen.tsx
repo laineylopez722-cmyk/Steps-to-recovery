@@ -9,8 +9,8 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, ScrollView, RefreshControl, Pressable, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import { useTheme, Button, Card } from '../../../design-system';
+import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
+import { Button, Card } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { hapticSelection } from '../../../utils/haptics';
@@ -26,7 +26,6 @@ interface DangerZoneScreenProps {
 export function DangerZoneScreen({
   onNavigateToIntervention: _onNavigateToIntervention,
 }: DangerZoneScreenProps): React.ReactElement {
-  const theme = useTheme();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { user } = useAuth();
@@ -92,9 +91,9 @@ export function DangerZoneScreen({
 
   if (!user) {
     return (
-      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}>
+      <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <View style={styles.centerContent}>
-          <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+          <Text style={[ds.typography.body, { color: ds.semantic.text.secondary }]}>
             Please log in to access this feature
           </Text>
         </View>
@@ -104,7 +103,7 @@ export function DangerZoneScreen({
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: theme.colors.semantic.surface.app }]}
+      style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}
       edges={['bottom']}
     >
       <ScrollView
@@ -114,22 +113,22 @@ export function DangerZoneScreen({
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor={theme.colors.primary}
+            tintColor={ds.semantic.intent.primary.solid}
           />
         }
       >
         {/* Header Section */}
         <Animated.View
           entering={FadeIn.duration(400)}
-          style={[styles.header, { paddingHorizontal: theme.spacing.lg }]}
+          style={[styles.header, { paddingHorizontal: ds.space[4] }]}
         >
-          <View style={[styles.iconContainer, { backgroundColor: theme.colors.danger + '20' }]}>
-            <MaterialCommunityIcons name="shield-alert" size={48} color={theme.colors.danger} />
+          <View style={[styles.iconContainer, { backgroundColor: ds.semantic.intent.alert.solid + '20' }]}>
+            <MaterialCommunityIcons name="shield-alert" size={48} color={ds.semantic.intent.alert.solid} />
           </View>
           <Text
             style={[
-              theme.typography.h1,
-              { color: theme.colors.text, textAlign: 'center', marginTop: theme.spacing.md },
+              ds.semantic.typography.screenTitle,
+              { color: ds.semantic.text.primary, textAlign: 'center', marginTop: ds.space[3] },
             ]}
             accessibilityRole="header"
           >
@@ -137,11 +136,11 @@ export function DangerZoneScreen({
           </Text>
           <Text
             style={[
-              theme.typography.body,
+              ds.typography.body,
               {
-                color: theme.colors.textSecondary,
+                color: ds.semantic.text.secondary,
                 textAlign: 'center',
-                marginTop: theme.spacing.xs,
+                marginTop: ds.space[1],
               },
             ]}
           >
@@ -152,8 +151,8 @@ export function DangerZoneScreen({
         {/* Stats Section */}
         {stats && (
           <Animated.View
-            entering={FadeInDown.duration(400).delay(200)}
-            style={{ paddingHorizontal: theme.spacing.md, marginTop: theme.spacing.lg }}
+            entering={FadeInUp.duration(400).delay(200)}
+            style={{ paddingHorizontal: ds.space[3], marginTop: ds.space[4] }}
           >
             <CloseCallInsights stats={stats} />
           </Animated.View>
@@ -161,8 +160,8 @@ export function DangerZoneScreen({
 
         {/* Summary Card */}
         <Animated.View
-          entering={FadeInDown.duration(400).delay(300)}
-          style={{ paddingHorizontal: theme.spacing.md, marginTop: theme.spacing.lg }}
+          entering={FadeInUp.duration(400).delay(300)}
+          style={{ paddingHorizontal: ds.space[3], marginTop: ds.space[4] }}
         >
           <Card variant="outlined" style={styles.summaryCard}>
             <View style={styles.summaryRow}>
@@ -170,13 +169,13 @@ export function DangerZoneScreen({
                 <MaterialCommunityIcons
                   name="shield"
                   size={24}
-                  color={theme.colors.danger}
+                  color={ds.semantic.intent.alert.solid}
                   style={{ marginBottom: 4 }}
                 />
-                <Text style={[theme.typography.h2, { color: theme.colors.text }]}>
+                <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]}>
                   {contacts.length}
                 </Text>
-                <Text style={[theme.typography.caption, { color: theme.colors.textSecondary }]}>
+                <Text style={[ds.typography.caption, { color: ds.semantic.text.secondary }]}>
                   Protected Contacts
                 </Text>
               </View>
@@ -187,24 +186,24 @@ export function DangerZoneScreen({
         {/* How It Works Section */}
         {contacts.length === 0 && (
           <Animated.View
-            entering={FadeInDown.duration(400).delay(400)}
-            style={{ paddingHorizontal: theme.spacing.md, marginTop: theme.spacing.lg }}
+            entering={FadeInUp.duration(400).delay(400)}
+            style={{ paddingHorizontal: ds.space[3], marginTop: ds.space[4] }}
           >
             <Card
               variant="outlined"
-              style={[styles.howItWorksCard, { backgroundColor: theme.colors.primary + '10' }]}
+              style={[styles.howItWorksCard, { backgroundColor: ds.semantic.intent.primary.solid + '10' }]}
             >
               <MaterialCommunityIcons
                 name="information"
                 size={32}
-                color={theme.colors.primary}
+                color={ds.semantic.intent.primary.solid}
                 style={{ marginBottom: 12 }}
               />
               <Text
                 style={[
-                  theme.typography.h3,
+                  ds.typography.h3,
                   {
-                    color: theme.colors.text,
+                    color: ds.semantic.text.primary,
                     marginBottom: 8,
                     textAlign: 'center',
                   },
@@ -214,9 +213,9 @@ export function DangerZoneScreen({
               </Text>
               <Text
                 style={[
-                  theme.typography.body,
+                  ds.typography.body,
                   {
-                    color: theme.colors.textSecondary,
+                    color: ds.semantic.text.secondary,
                     textAlign: 'center',
                     marginBottom: 16,
                   },
@@ -231,17 +230,17 @@ export function DangerZoneScreen({
                 'Help you make healthier choices',
               ].map((step, index) => (
                 <View key={index} style={styles.howItWorksStep}>
-                  <View style={[styles.stepNumber, { backgroundColor: theme.colors.primary }]}>
+                  <View style={[styles.stepNumber, { backgroundColor: ds.semantic.intent.primary.solid }]}>
                     <Text
                       style={[
-                        theme.typography.labelSmall,
+                        ds.typography.caption,
                         { color: ds.semantic.text.onDark, fontWeight: 'bold' },
                       ]}
                     >
                       {index + 1}
                     </Text>
                   </View>
-                  <Text style={[theme.typography.body, { color: theme.colors.text, flex: 1 }]}>
+                  <Text style={[ds.typography.body, { color: ds.semantic.text.primary, flex: 1 }]}>
                     {step}
                   </Text>
                 </View>
@@ -252,12 +251,12 @@ export function DangerZoneScreen({
 
         {/* Contacts List Section */}
         <Animated.View
-          entering={FadeInDown.duration(400).delay(500)}
-          style={{ paddingHorizontal: theme.spacing.md, marginTop: theme.spacing.lg }}
+          entering={FadeInUp.duration(400).delay(500)}
+          style={{ paddingHorizontal: ds.space[3], marginTop: ds.space[4] }}
         >
           <View style={styles.sectionHeader}>
             <Text
-              style={[theme.typography.h2, { color: theme.colors.text }]}
+              style={[ds.typography.h3, { color: ds.semantic.text.primary }]}
               accessibilityRole="header"
             >
               Protected Contacts
@@ -267,7 +266,7 @@ export function DangerZoneScreen({
                 hapticSelection();
                 setShowAddModal(true);
               }}
-              style={[styles.addButton, { backgroundColor: theme.colors.primary }]}
+              style={[styles.addButton, { backgroundColor: ds.semantic.intent.primary.solid }]}
               accessibilityRole="button"
               accessibilityLabel="Add risky contact"
             >
@@ -280,11 +279,11 @@ export function DangerZoneScreen({
               <MaterialCommunityIcons
                 name="alert-circle"
                 size={32}
-                color={theme.colors.danger}
+                color={ds.semantic.intent.alert.solid}
                 style={{ marginBottom: 8 }}
               />
               <Text
-                style={[theme.typography.body, { color: theme.colors.text, textAlign: 'center' }]}
+                style={[ds.typography.body, { color: ds.semantic.text.primary, textAlign: 'center' }]}
               >
                 Failed to load contacts
               </Text>
@@ -298,7 +297,7 @@ export function DangerZoneScreen({
             </Card>
           ) : loading ? (
             <Card variant="outlined" style={styles.loadingCard}>
-              <Text style={[theme.typography.body, { color: theme.colors.textSecondary }]}>
+              <Text style={[ds.typography.body, { color: ds.semantic.text.secondary }]}>
                 Loading contacts...
               </Text>
             </Card>
@@ -307,21 +306,21 @@ export function DangerZoneScreen({
               <MaterialCommunityIcons
                 name="shield-check"
                 size={64}
-                color={theme.colors.success}
+                color={ds.semantic.intent.success.solid}
                 style={{ marginBottom: 12 }}
               />
               <Text
                 style={[
-                  theme.typography.h3,
-                  { color: theme.colors.text, marginBottom: 8, textAlign: 'center' },
+                  ds.typography.h3,
+                  { color: ds.semantic.text.primary, marginBottom: 8, textAlign: 'center' },
                 ]}
               >
                 No risky contacts yet
               </Text>
               <Text
                 style={[
-                  theme.typography.body,
-                  { color: theme.colors.textSecondary, textAlign: 'center', marginBottom: 16 },
+                  ds.typography.body,
+                  { color: ds.semantic.text.secondary, textAlign: 'center', marginBottom: 16 },
                 ]}
               >
                 Add contacts you want protection from
@@ -355,27 +354,27 @@ export function DangerZoneScreen({
 
         {/* Privacy Notice */}
         <Animated.View
-          entering={FadeInDown.duration(400).delay(600)}
+          entering={FadeInUp.duration(400).delay(600)}
           style={{
-            paddingHorizontal: theme.spacing.md,
-            marginTop: theme.spacing.xl,
-            marginBottom: theme.spacing.xl,
+            paddingHorizontal: ds.space[3],
+            marginTop: ds.space[6],
+            marginBottom: ds.space[6],
           }}
         >
           <Card
             variant="outlined"
-            style={[styles.privacyCard, { backgroundColor: theme.colors.success + '10' }]}
+            style={[styles.privacyCard, { backgroundColor: ds.semantic.intent.success.solid + '10' }]}
           >
             <MaterialCommunityIcons
               name="lock"
               size={20}
-              color={theme.colors.success}
+              color={ds.semantic.intent.success.solid}
               style={{ marginRight: 8 }}
             />
             <Text
-              style={[theme.typography.bodySmall, { color: theme.colors.textSecondary, flex: 1 }]}
+              style={[ds.typography.bodySm, { color: ds.semantic.text.secondary, flex: 1 }]}
             >
-              <Text style={{ fontWeight: '600', color: theme.colors.text }}>
+              <Text style={{ fontWeight: '600', color: ds.semantic.text.primary }}>
                 Your privacy is protected.
               </Text>{' '}
               All contact data is encrypted and never shared. You can disable this feature anytime
