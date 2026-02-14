@@ -1,6 +1,11 @@
 // CRITICAL: Import polyfills FIRST before any other code
 import './polyfills';
 
+// Reactotron - Development debugging (dev only)
+if (__DEV__) {
+  require('./src/lib/reactotron');
+}
+
 // Uniwind - Import global CSS with design system tokens
 import './src/global.css';
 
