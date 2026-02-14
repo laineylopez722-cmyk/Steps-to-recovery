@@ -44,6 +44,7 @@ import { ChallengesScreen } from '../features/challenges/screens/ChallengesScree
 import { StatusBar } from 'expo-status-bar';
 import { useDs, useDsIsDark } from '../design-system/DsProvider';
 import { CustomTabBar } from './CustomTabBar';
+import { ScreenErrorBoundary } from '../components/ScreenErrorBoundary';
 import type {
   MainTabParamList,
   HomeStackParamList,
@@ -110,6 +111,7 @@ function HomeStackNavigator(): React.ReactElement {
   const darkHeaderOptions = useDarkHeaderOptions();
 
   return (
+    <ScreenErrorBoundary screenName="HomeStack">
     <HomeStack.Navigator screenOptions={darkHeaderOptions}>
       <HomeStack.Screen name="HomeMain" options={{ headerShown: false }}>
         {() => <HomeScreen userId={userId} />}
@@ -219,6 +221,7 @@ function HomeStackNavigator(): React.ReactElement {
         {() => <SafetyPlanScreen userId={userId} />}
       </HomeStack.Screen>
     </HomeStack.Navigator>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -228,6 +231,7 @@ function JournalStackNavigator(): React.ReactElement {
   const darkHeaderOptions = useDarkHeaderOptions();
 
   return (
+    <ScreenErrorBoundary screenName="JournalStack">
     <JournalStack.Navigator screenOptions={darkHeaderOptions}>
       <JournalStack.Screen name="JournalList" options={{ headerShown: false }}>
         {() => <JournalListScreen userId={userId} />}
@@ -236,6 +240,7 @@ function JournalStackNavigator(): React.ReactElement {
         {() => <JournalEditorScreen userId={userId} />}
       </JournalStack.Screen>
     </JournalStack.Navigator>
+    </ScreenErrorBoundary>
   );
 }
 
@@ -245,6 +250,7 @@ function StepsStackNavigator(): React.ReactElement {
   const darkHeaderOptions = useDarkHeaderOptions();
 
   return (
+    <ScreenErrorBoundary screenName="StepsStack">
     <StepsStack.Navigator screenOptions={darkHeaderOptions}>
       <StepsStack.Screen name="StepsOverview" options={{ headerShown: false }}>
         {() => <StepsOverviewScreen userId={userId} />}
@@ -266,6 +272,7 @@ function StepsStackNavigator(): React.ReactElement {
         })}
       />
     </StepsStack.Navigator>
+    </ScreenErrorBoundary>
   );
 }
 

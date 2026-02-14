@@ -113,46 +113,46 @@ function buildStepWorkHtml(params: {
           body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color: ${ds.colors.text};
-            padding: 24px;
+            padding: ${ds.space[6]}px; /* space.6 */
             line-height: 1.6;
           }
           h1 {
-            font-size: 24px;
-            margin: 0 0 4px 0;
+            font-size: ${ds.fontSize.h2}px; /* fontSize.h2 */
+            margin: 0 0 ${ds.space[1]}px 0; /* space.1 */
           }
           h2 {
             font-size: 18px;
-            margin: 24px 0 12px 0;
+            margin: ${ds.space[6]}px 0 ${ds.space[3]}px 0; /* space.6, space.3 */
             color: ${ds.colors.textSecondary};
           }
           .meta {
             font-size: 12px;
             color: ${ds.colors.textTertiary};
-            margin-bottom: 16px;
+            margin-bottom: ${ds.space[4]}px; /* space.4 */
           }
           .summary {
             background: ${ds.colors.bgSecondary};
             border: 1px solid ${ds.colors.borderSubtle};
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin: 16px 0 24px 0;
+            border-radius: ${ds.radius.sm}px; /* radius.sm (closest to 12) */
+            padding: ${ds.space[3]}px ${ds.space[4]}px; /* space.3, space.4 */
+            margin: ${ds.space[4]}px 0 ${ds.space[6]}px 0; /* space.4, space.6 */
           }
           .question {
             border: 1px solid ${ds.colors.borderSubtle};
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+            border-radius: ${ds.radius.sm}px; /* radius.sm */
+            padding: ${ds.space[4]}px; /* space.4 */
+            margin-bottom: ${ds.space[4]}px; /* space.4 */
           }
           .question-title {
-            font-size: 13px;
+            font-size: ${ds.fontSize.caption}px; /* fontSize.caption */
             text-transform: uppercase;
             letter-spacing: 0.04em;
             color: ${ds.colors.textTertiary};
-            margin-bottom: 6px;
+            margin-bottom: 6px; /* 1.5 × 4px base */
           }
           .prompt {
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: ${ds.space[2]}px; /* space.2 */
           }
           .answer {
             font-size: 14px;
@@ -163,8 +163,8 @@ function buildStepWorkHtml(params: {
             font-style: italic;
           }
           .footer {
-            margin-top: 32px;
-            font-size: 11px;
+            margin-top: ${ds.space[8]}px; /* space.8 */
+            font-size: ${ds.fontSize.micro}px; /* fontSize.micro */
             color: ${ds.colors.textTertiary};
           }
         </style>
@@ -528,7 +528,7 @@ export function StepReviewScreen(): React.ReactElement {
   );
 }
 
-const createStyles = (_ds: DS) =>
+const createStyles = (dsRef: DS) =>
   ({
     container: {
       flex: 1,
@@ -537,38 +537,38 @@ const createStyles = (_ds: DS) =>
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      padding: 24,
+      padding: dsRef.space[6],
     },
     content: {
-      paddingTop: 12,
-      paddingHorizontal: 16,
-      gap: 16,
+      paddingTop: dsRef.space[3],
+      paddingHorizontal: dsRef.space[4],
+      gap: dsRef.space[4],
     },
     header: {
-      paddingBottom: 16,
+      paddingBottom: dsRef.space[4],
     },
     summaryRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 12,
+      marginBottom: dsRef.space[3],
     },
     progressBar: {
-      height: 8,
+      height: dsRef.space[2],
     },
     sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: 12,
-      borderRadius: 10,
-      marginTop: 8,
+      padding: dsRef.space[3],
+      borderRadius: dsRef.radius.sm,
+      marginTop: dsRef.space[2],
       borderWidth: 1,
     },
     sectionHeaderContent: {
-      marginLeft: 12,
+      marginLeft: dsRef.space[3],
     },
     questionCard: {
-      marginTop: 8,
+      marginTop: dsRef.space[2],
     },
     questionHeader: {
       flexDirection: 'row',
@@ -580,13 +580,13 @@ const createStyles = (_ds: DS) =>
       borderRadius: 18,
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: 12,
+      marginRight: dsRef.space[3],
       marginTop: 2,
     },
     questionHeaderContent: {
       flex: 1,
     },
     divider: {
-      marginVertical: 12,
+      marginVertical: dsRef.space[3],
     },
   }) as const;
