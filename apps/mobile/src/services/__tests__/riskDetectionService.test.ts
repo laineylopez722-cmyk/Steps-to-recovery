@@ -1,12 +1,11 @@
-// Mock AsyncStorage BEFORE imports - source uses dynamic import()
-// which babel transpiles to require() in test env
-const mockAsyncStorage = {
+// Mock MMKV storage BEFORE imports - source uses mmkvStorage
+const mockMmkvStorage = {
   setItem: jest.fn(),
   getItem: jest.fn(),
 };
-jest.mock('@react-native-async-storage/async-storage', () => ({
+jest.mock('../../lib/mmkv', () => ({
   __esModule: true,
-  default: mockAsyncStorage,
+  mmkvStorage: mockMmkvStorage,
 }));
 
 jest.mock('../../lib/supabase');
@@ -185,14 +184,16 @@ describe('riskDetectionService', () => {
   // ========================================
 
   describe('dismissPattern', () => {
-    it('should store dismissal timestamp in AsyncStorage', async () => {
-      mockAsyncStorage.setItem.mockResolvedValue(undefined);
+    it('should store dismissal timestamp in MMKV', async () => {
+      mockMmkvStorage.setItem.mockImplementation((key: string, value: string) => {
+        // Sync implementation - just store
+      });
 
       await dismissPattern('user-1', 'journal_inactive');
 
-      // If dynamic import resolves correctly, setItem should be called
+      // If mmkvStorage resolves correctly, setItem should be called
       // If it fails, the error is caught and logged
-      const setItemCalled = mockAsyncStorage.setItem.mock.calls.length > 0;
+      const setItemCalled = mockMmkvStorage.setItem.mock.calls.length > 0;
       const errorLogged = (logger.error as jest.Mock).mock.calls.some(
         (call: unknown[]) => call[0] === 'Risk detection: Dismiss failed',
       );
@@ -200,7 +201,7 @@ describe('riskDetectionService', () => {
       expect(setItemCalled || errorLogged).toBe(true);
 
       if (setItemCalled) {
-        expect(mockAsyncStorage.setItem).toHaveBeenCalledWith(
+        expect(mockMmkvStorage.setItem).toHaveBeenCalledWith(
           'risk_dismissed_user-1_journal_inactive',
           expect.stringMatching(/^\d+$/),
         );
@@ -211,8 +212,8 @@ describe('riskDetectionService', () => {
       }
     });
 
-    it('should handle AsyncStorage errors gracefully', async () => {
-      mockAsyncStorage.setItem.mockImplementation(async () => {
+    it('should handle MMKV errors gracefully', async () => {
+      mockMmkvStorage.setItem.mockImplementation(() => {
         throw new Error('Storage full');
       });
 
@@ -230,12 +231,12 @@ describe('riskDetectionService', () => {
   describe('wasRecentlyDismissed', () => {
     it('should return true if dismissed less than 24 hours ago', async () => {
       const oneHourAgo = (Date.now() - 1 * 60 * 60 * 1000).toString();
-      mockAsyncStorage.getItem.mockResolvedValue(oneHourAgo);
+      mockMmkvStorage.getItem.mockImplementation((key: string) => oneHourAgo);
 
       const result = await wasRecentlyDismissed('user-1', 'journal_inactive');
 
-      // If dynamic import works, result is true. If not, error is caught and returns false.
-      const getItemCalled = mockAsyncStorage.getItem.mock.calls.length > 0;
+      // If mmkvStorage works, result is true. If not, error is caught and returns false.
+      const getItemCalled = mockMmkvStorage.getItem.mock.calls.length > 0;
       if (getItemCalled) {
         expect(result).toBe(true);
       } else {
@@ -245,7 +246,7 @@ describe('riskDetectionService', () => {
 
     it('should return false if dismissed more than 24 hours ago', async () => {
       const twoDaysAgo = (Date.now() - 48 * 60 * 60 * 1000).toString();
-      mockAsyncStorage.getItem.mockResolvedValue(twoDaysAgo);
+      mockMmkvStorage.getItem.mockImplementation((key: string) => twoDaysAgo);
 
       const result = await wasRecentlyDismissed('user-1', 'journal_inactive');
 
@@ -253,7 +254,7 @@ describe('riskDetectionService', () => {
     });
 
     it('should return false if never dismissed', async () => {
-      mockAsyncStorage.getItem.mockResolvedValue(null);
+      mockMmkvStorage.getItem.mockImplementation((key: string) => null);
 
       const result = await wasRecentlyDismissed('user-1', 'checkin_gap');
 
@@ -261,7 +262,7 @@ describe('riskDetectionService', () => {
     });
 
     it('should return false on error', async () => {
-      mockAsyncStorage.getItem.mockImplementation(async () => {
+      mockMmkvStorage.getItem.mockImplementation(() => {
         throw new Error('Read error');
       });
 

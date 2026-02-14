@@ -6,7 +6,7 @@
  *
  * **Security**:
  * - Mobile: Uses SecureStore (Keychain/Keystore) for token storage
- * - Web: Falls back to AsyncStorage (SecureStore not available) ⚠️ LESS SECURE
+ * - Web: Falls back to MMKV/localStorage (SecureStore not available) ⚠️ LESS SECURE
  * - Tokens are never stored in plain text
  *
  * **Environment Variables Required**:
@@ -14,7 +14,7 @@
  * - `EXPO_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
  *
  * **Platform Notes**:
- * - Web platform uses AsyncStorage for auth tokens (not encrypted)
+ * - Web platform uses MMKV/localStorage for auth tokens (not encrypted)
  * - Consider using Supabase Auth UI or custom auth for web if security is critical
  *
  * @module lib/supabase
@@ -24,7 +24,7 @@ import 'react-native-url-polyfill/auto';
 import { createClient } from '@supabase/supabase-js';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from './mmkv';
 import { logger } from '../utils/logger';
 
 const CURRENT_PLATFORM = Platform.OS;
@@ -34,10 +34,10 @@ const IS_TEST_ENV = process.env.NODE_ENV === 'test' || Boolean(process.env.JEST_
 /**
  * Custom storage adapter for Supabase auth tokens
  *
- * Uses SecureStore on mobile (encrypted storage) and AsyncStorage on web.
+ * Uses SecureStore on mobile (encrypted storage) and MMKV/localStorage on web.
  * This ensures tokens are stored securely on all platforms.
  *
- * **Security Warning**: Web platform uses AsyncStorage (not encrypted).
+ * **Security Warning**: Web platform uses MMKV/localStorage (not encrypted).
  * Consider additional security measures for web deployment.
  *
  * @internal
@@ -58,15 +58,15 @@ const ExpoSecureStoreAdapter = IS_WEB
   ? {
       getItem: async (key: string) => {
         logStorage('getItem', key);
-        return AsyncStorage.getItem(key);
+        return mmkvStorage.getItem(key);
       },
       setItem: async (key: string, value: string) => {
         logStorage('setItem', key, { valueLength: value.length });
-        await AsyncStorage.setItem(key, value);
+        mmkvStorage.setItem(key, value);
       },
       removeItem: async (key: string) => {
         logStorage('removeItem', key);
-        await AsyncStorage.removeItem(key);
+        mmkvStorage.removeItem(key);
       },
     }
   : {
@@ -89,7 +89,7 @@ if (__DEV__) {
     platform: CURRENT_PLATFORM,
     usingSecureStore: !IS_WEB,
     webSecurityNote: IS_WEB
-      ? 'Using AsyncStorage (not encrypted)'
+      ? 'Using MMKV/localStorage (not encrypted)'
       : 'Using SecureStore (encrypted)',
   });
 }
@@ -303,11 +303,11 @@ export async function clearSupabaseAuthStorage(): Promise<{ success: boolean; er
     // Clear storage adapter
     if (IS_WEB) {
       // Clear only Supabase auth keys (sb-* or supabase*) to avoid removing other app data
-      const keys = await AsyncStorage.getAllKeys();
+      const keys = mmkvStorage.getAllKeys();
       const authKeys = keys.filter(
         (key) => key.startsWith('sb-') || key.toLowerCase().includes('supabase'),
       );
-      await AsyncStorage.multiRemove(authKeys);
+      mmkvStorage.multiRemove(authKeys);
     } else {
       // For native, rely on the signOut above and SecureStore cleanup
       // Note: SecureStore doesn't have a clear all method, individual keys are managed by Supabase
@@ -328,6 +328,6 @@ if (__DEV__) {
     platform: CURRENT_PLATFORM,
     urlConfigured: !!supabaseUrl,
     keyConfigured: !!supabaseAnonKey,
-    storageType: IS_WEB ? 'AsyncStorage' : 'SecureStore',
+    storageType: IS_WEB ? 'MMKV' : 'SecureStore',
   });
 }

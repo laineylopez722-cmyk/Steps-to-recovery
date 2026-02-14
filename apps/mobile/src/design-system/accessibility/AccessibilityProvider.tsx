@@ -8,7 +8,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { AccessibilityInfo, type AccessibilityChangeEventName } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from '../../lib/mmkv';
 import type { AccessibilitySettings } from './types';
 import { DEFAULT_TEXT_SCALE } from './constants';
 
@@ -66,7 +66,7 @@ export function AccessibilityProvider({
   useEffect(() => {
     const loadSettings = async (): Promise<void> => {
       try {
-        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        const saved = mmkvStorage.getItem(STORAGE_KEY);
         if (saved) {
           const parsed = JSON.parse(saved) as Partial<AccessibilitySettings>;
           setSettings((prev) => ({ ...prev, ...parsed }));
@@ -84,7 +84,7 @@ export function AccessibilityProvider({
   // Persist settings when they change
   const persistSettings = useCallback(async (newSettings: AccessibilitySettings): Promise<void> => {
     try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
+      mmkvStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
     } catch (error) {
       console.error('Failed to save accessibility settings:', error);
     }

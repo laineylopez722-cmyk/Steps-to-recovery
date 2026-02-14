@@ -3,7 +3,7 @@
  * Estimates token usage and cost before sending messages.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from '../../../lib/mmkv';
 import { logger } from '../../../utils/logger';
 
 const DAILY_COST_KEY = 'ai_daily_cost';
@@ -98,19 +98,19 @@ function getTodayKey(): string {
 }
 
 /**
- * Add cost to today's daily total (persisted in AsyncStorage).
+ * Add cost to today's daily total (persisted in MMKV).
  */
 export async function addToDailyCost(cost: number): Promise<void> {
   try {
     const today = getTodayKey();
-    const storedDate = await AsyncStorage.getItem(DAILY_COST_DATE_KEY);
+    const storedDate = mmkvStorage.getItem(DAILY_COST_DATE_KEY);
 
     if (storedDate !== today) {
       // Save previous day to history before resetting
       if (storedDate) {
         await saveCostToHistory(storedDate, await getDailyCost());
       }
-      await AsyncStorage.multiSet([
+      mmkvStorage.multiSet([
         [DAILY_COST_KEY, String(cost)],
         [DAILY_COST_DATE_KEY, today],
       ]);
@@ -118,7 +118,7 @@ export async function addToDailyCost(cost: number): Promise<void> {
     }
 
     const current = await getDailyCost();
-    await AsyncStorage.setItem(DAILY_COST_KEY, String(current + cost));
+    mmkvStorage.setItem(DAILY_COST_KEY, String(current + cost));
   } catch (err: unknown) {
     logger.warn('Failed to update daily cost', err);
   }
@@ -129,14 +129,14 @@ export async function addToDailyCost(cost: number): Promise<void> {
  */
 export async function getDailyCost(): Promise<number> {
   try {
-    const storedDate = await AsyncStorage.getItem(DAILY_COST_DATE_KEY);
+    const storedDate = mmkvStorage.getItem(DAILY_COST_DATE_KEY);
     const today = getTodayKey();
 
     if (storedDate !== today) {
       return 0;
     }
 
-    const costStr = await AsyncStorage.getItem(DAILY_COST_KEY);
+    const costStr = mmkvStorage.getItem(DAILY_COST_KEY);
     return costStr ? parseFloat(costStr) : 0;
   } catch (err: unknown) {
     logger.warn('Failed to load daily cost', err);
@@ -158,7 +158,7 @@ async function saveCostToHistory(date: string, cost: number): Promise<void> {
     history.push({ date, cost });
     // Keep only last 7 days
     const trimmed = history.slice(-7);
-    await AsyncStorage.setItem(COST_HISTORY_KEY, JSON.stringify(trimmed));
+    mmkvStorage.setItem(COST_HISTORY_KEY, JSON.stringify(trimmed));
   } catch (err: unknown) {
     logger.warn('Failed to save cost history', err);
   }
@@ -169,7 +169,7 @@ async function saveCostToHistory(date: string, cost: number): Promise<void> {
  */
 export async function getCostHistory(): Promise<DailyCostEntry[]> {
   try {
-    const stored = await AsyncStorage.getItem(COST_HISTORY_KEY);
+    const stored = mmkvStorage.getItem(COST_HISTORY_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as DailyCostEntry[];
       return Array.isArray(parsed) ? parsed : [];

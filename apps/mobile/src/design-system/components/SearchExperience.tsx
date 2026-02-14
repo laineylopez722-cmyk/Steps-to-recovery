@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, type ReactElement } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
 import type { StyleProp, TextStyle } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from '../../lib/mmkv';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -57,7 +57,7 @@ export function SearchExperience({
   useEffect(() => {
     const loadSearchHistory = async (): Promise<void> => {
       try {
-        const stored = await AsyncStorage.getItem(SEARCH_HISTORY_KEY);
+        const stored = mmkvStorage.getItem(SEARCH_HISTORY_KEY);
         if (stored) {
           setRecentSearches(JSON.parse(stored) as string[]);
         }
@@ -83,18 +83,22 @@ export function SearchExperience({
     if (!query.trim()) return;
     setRecentSearches((prev) => {
       const updated = [query, ...prev.filter((s) => s !== query)].slice(0, MAX_HISTORY);
-      AsyncStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updated)).catch((error: unknown) => {
+      try {
+        mmkvStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(updated));
+      } catch (error: unknown) {
         logger.error('Failed to save search history', error);
-      });
+      }
       return updated;
     });
   }, []);
 
   const handleClearHistory = useCallback((): void => {
     setRecentSearches([]);
-    AsyncStorage.removeItem(SEARCH_HISTORY_KEY).catch((error: unknown) => {
+    try {
+      mmkvStorage.removeItem(SEARCH_HISTORY_KEY);
+    } catch (error: unknown) {
       logger.error('Failed to clear search history', error);
-    });
+    }
   }, []);
 
   const handleSubmit = () => {

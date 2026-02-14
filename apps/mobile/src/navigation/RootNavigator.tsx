@@ -9,6 +9,7 @@ import { MainNavigator } from './MainNavigator';
 import { OnboardingSteps } from '../features/onboarding/components/OnboardingSteps';
 import { supabase } from '../lib/supabase';
 import { navigationRef } from './navigationRef';
+import { mmkvStorage } from '../lib/mmkv';
 import type { RootStackParamList } from './types';
 import { logger } from '../utils/logger';
 
@@ -107,8 +108,7 @@ export function RootNavigator() {
 
     try {
       // First check local storage (fallback for when Supabase table doesn't exist)
-      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-      const localComplete = await AsyncStorage.getItem(`onboarding_complete_${user.id}`);
+      const localComplete = mmkvStorage.getItem(`onboarding_complete_${user.id}`);
 
       if (localComplete === 'true') {
         logger.info('Onboarding already completed (from local storage)');
