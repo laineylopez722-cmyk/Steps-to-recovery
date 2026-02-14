@@ -9,12 +9,18 @@
  * @module services/keyRotationService
  */
 
-import CryptoJS from 'crypto-js';
 import { Platform } from 'react-native';
 import { secureStorage } from '../adapters/secureStorage';
 import type { StorageAdapter } from '../adapters/storage';
 import { logger } from '../utils/logger';
 import { addToSyncQueue } from './syncService';
+import {
+  aesDecryptCBC,
+  aesEncryptCBC,
+  hmacSHA256,
+  pbkdf2,
+  sha256Bytes,
+} from '../utils/webCrypto';
 
 /** SecureStore key names */
 const ENCRYPTION_KEY_NAME = 'journal_encryption_key';
@@ -129,33 +135,41 @@ function constantTimeEqual(a: string, b: string): boolean {
 }
 
 /**
+ * Helper to convert hex string to Uint8Array
+ */
+function hexToBuffer(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  }
+  return bytes;
+}
+
+/**
  * Decrypt content with a specific key
  */
-function decryptWithKey(encrypted: string, key: string): string {
+async function decryptWithKey(encrypted: string, key: string): Promise<string> {
   const parts = encrypted.split(':');
   if (parts.length !== 2 && parts.length !== 3) throw new Error('Invalid format');
   const [iv, ciphertext, mac] = parts;
   if (!iv || !ciphertext) throw new Error('Invalid format');
 
+  // Verify MAC if present
   if (mac) {
-    const keyWordArray = CryptoJS.enc.Hex.parse(key);
-    const macKey = CryptoJS.SHA256(keyWordArray);
+    const keyBytes = hexToBuffer(key);
+    const macKeyHex = await sha256Bytes(keyBytes);
     const payload = `${iv}:${ciphertext}`;
-    const expectedMac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
+    const expectedMac = await hmacSHA256(payload, macKeyHex);
+
     if (!constantTimeEqual(expectedMac, mac)) {
       throw new Error('Integrity check failed');
     }
   }
 
-  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
-  const keyWordArray = CryptoJS.enc.Hex.parse(key);
-  const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, {
-    iv: ivWordArray,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
-  });
-  const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
+  // Decrypt
+  const plaintext = await aesDecryptCBC(ciphertext, key, iv);
   if (!plaintext) throw new Error('Decryption failed');
+
   return plaintext;
 }
 
@@ -163,20 +177,25 @@ function decryptWithKey(encrypted: string, key: string): string {
  * Encrypt content with a specific key
  */
 async function encryptWithKey(content: string, key: string): Promise<string> {
+  // Generate random IV
   const ivBytes = await getRandomBytes(16);
   const iv = Array.from(ivBytes)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
-  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
-  const keyWordArray = CryptoJS.enc.Hex.parse(key);
-  const encrypted = CryptoJS.AES.encrypt(content, keyWordArray, {
-    iv: ivWordArray,
-    mode: CryptoJS.mode.CBC,
-    padding: CryptoJS.pad.Pkcs7,
-  });
-  const payload = `${iv}:${encrypted.toString()}`;
-  const macKey = CryptoJS.SHA256(keyWordArray);
-  const mac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
+
+  // Encrypt using AES-256-CBC
+  const ciphertext = await aesEncryptCBC(content, key, iv);
+
+  // Create payload for MAC
+  const payload = `${iv}:${ciphertext}`;
+
+  // Derive MAC key from encryption key using SHA-256
+  const keyBytes = hexToBuffer(key);
+  const macKeyHex = await sha256Bytes(keyBytes);
+
+  // Compute HMAC over payload
+  const mac = await hmacSHA256(payload, macKeyHex);
+
   return `${payload}:${mac}`;
 }
 
@@ -189,10 +208,7 @@ async function generateNewKey(): Promise<string> {
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
   const salt = await generateUUID();
-  return CryptoJS.PBKDF2(randomString, salt, {
-    keySize: 256 / 32,
-    iterations: KEY_DERIVATION_ITERATIONS,
-  }).toString();
+  return pbkdf2(randomString, salt, KEY_DERIVATION_ITERATIONS, 256);
 }
 
 /**
@@ -328,7 +344,7 @@ export async function rotateEncryptionKey(
           const encrypted = record[col];
           if (encrypted) {
             try {
-              const plaintext = decryptWithKey(encrypted, oldKey);
+              const plaintext = await decryptWithKey(encrypted, oldKey);
               const reEncrypted = await encryptWithKey(plaintext, newKey);
               updates.push(`${col} = ?`);
               values.push(reEncrypted);
