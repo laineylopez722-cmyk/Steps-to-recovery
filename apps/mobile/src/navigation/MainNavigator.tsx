@@ -153,7 +153,7 @@ function HomeStackNavigator(): React.ReactElement {
       />
       <HomeStack.Screen
         name="Achievements"
-        options={{ title: 'Achievements', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
         component={AchievementsScreen}
       />
       <HomeStack.Screen
@@ -199,20 +199,20 @@ function HomeStackNavigator(): React.ReactElement {
       </HomeStack.Screen>
       <HomeStack.Screen
         name="PersonalInventory"
-        options={{ title: 'Step 10 Inventory', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       >
         {() => <PersonalInventoryScreen userId={userId} />}
       </HomeStack.Screen>
       <HomeStack.Screen
         name="Gratitude"
-        options={{ title: 'Gratitude Journal', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       >
         {() => <GratitudeScreen userId={userId} />}
       </HomeStack.Screen>
       <HomeStack.Screen
         name="CravingSurf"
         component={CravingSurfScreen}
-        options={{ title: 'Craving Surfing', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       />
       <HomeStack.Screen
         name="SafetyPlan"
@@ -319,7 +319,7 @@ function ProfileStackNavigator(): React.ReactElement {
       <ProfileStack.Screen
         name="NotificationSettings"
         component={NotificationSettingsScreen}
-        options={{ title: 'Notifications', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       />
       <ProfileStack.Screen
         name="InviteSponsor"

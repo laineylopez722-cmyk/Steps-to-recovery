@@ -24,18 +24,20 @@ import {
 export function initSentry(): void {
   const dsn = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
-  if (!dsn) {
-    // Use console.warn directly to avoid circular dependency with logger
-    console.warn('Sentry DSN not configured, error tracking disabled');
+  if (!dsn || __DEV__) {
+    // Skip Sentry entirely in dev — avoids "Transport disabled" console errors
+    if (__DEV__ && dsn) {
+      console.log('Sentry: skipped in dev mode');
+    }
     return;
   }
 
   Sentry.init({
     dsn,
     release: Constants.expoConfig?.version,
-    environment: process.env.EXPO_PUBLIC_ENV || 'development',
-    debug: __DEV__,
-    enabled: !__DEV__, // Only send events in production
+    environment: process.env.EXPO_PUBLIC_ENV || 'production',
+    debug: false,
+    enabled: true,
     enableAutoSessionTracking: true,
 
     // Privacy: Strip ALL PII before sending
@@ -50,7 +52,7 @@ export function initSentry(): void {
 
     integrations: [Sentry.reactNativeTracingIntegration()],
     tracesSampleRate: 0.2,
-    sendDefaultPii: true, // Required for AI monitoring (captures inputs/outputs)
+    sendDefaultPii: false, // Privacy-first: never send PII automatically
   });
 }
 

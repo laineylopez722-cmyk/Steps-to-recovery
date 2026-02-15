@@ -453,7 +453,7 @@ export function useStreak(userId: string): {
         const dates = result.map((r) => r.check_in_date);
         let current_streak = 0;
         let longest_streak = 0;
-        let temp_streak = 0;
+        let streak = 0;
 
         const today = new Date().toISOString().split('T')[0];
         let expectedDate = new Date(today);
@@ -462,20 +462,36 @@ export function useStreak(userId: string): {
           const expectedStr = expectedDate.toISOString().split('T')[0];
 
           if (dateStr === expectedStr) {
-            temp_streak++;
-            if ((temp_streak === 1 && dateStr === today) || dates.indexOf(dateStr) === 0) {
-              current_streak = temp_streak;
-            }
+            streak++;
             expectedDate.setDate(expectedDate.getDate() - 1);
           } else {
-            longest_streak = Math.max(longest_streak, temp_streak);
-            temp_streak = 1;
+            // Gap found — finalize the current run
+            longest_streak = Math.max(longest_streak, streak);
+            streak = 1;
             expectedDate = new Date(dateStr);
             expectedDate.setDate(expectedDate.getDate() - 1);
           }
         }
 
-        longest_streak = Math.max(longest_streak, temp_streak, current_streak);
+        longest_streak = Math.max(longest_streak, streak);
+
+        // Current streak = the first contiguous run only if it starts from today
+        // (dates are sorted DESC, so if dates[0] === today the first run is live)
+        if (dates.length > 0 && dates[0] === today) {
+          // Re-count from the front (the first contiguous run ending at today)
+          let liveStreak = 1;
+          const exp = new Date(today);
+          exp.setDate(exp.getDate() - 1);
+          for (let i = 1; i < dates.length; i++) {
+            if (dates[i] === exp.toISOString().split('T')[0]) {
+              liveStreak++;
+              exp.setDate(exp.getDate() - 1);
+            } else {
+              break;
+            }
+          }
+          current_streak = liveStreak;
+        }
 
         return {
           current_streak,

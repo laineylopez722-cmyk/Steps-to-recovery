@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Modal,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -69,7 +70,9 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
           }
         })
         .catch(() => {});
-    } catch {}
+    } catch {
+      Alert.alert('Couldn\u2019t save', 'Your intention wasn\u2019t saved. Please try again.');
+    }
   };
 
   const handleDone = () => {
