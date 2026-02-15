@@ -17,6 +17,7 @@ import {
   queuePendingMessage,
   cacheResponse,
 } from '../services/offlineFallback';
+import { filterAIResponse } from '../services/contentSafetyFilter';
 import { buildEnrichedContext } from '../services/recoveryContextEnricher';
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
 import { checkRateLimit, incrementMessageCount } from '../services/rateLimiter';
@@ -63,6 +64,13 @@ export interface UseAIChatReturn {
   conversations: Conversation[];
   archiveConversation: (id: string) => Promise<void>;
 }
+
+/**
+ * Maximum number of previous messages to include as context.
+ * Prevents token limit blowout on long conversations.
+ * 50 messages ≈ 25 exchanges — enough for continuity without hitting limits.
+ */
+const MAX_HISTORY_MESSAGES = 50;
 
 /**
  * Crisis detection keywords and phrases
@@ -479,7 +487,8 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       const aiMessages: ChatMessage[] = [
         // Only include system message if there's actual context to send
         ...(contextualSystemPrompt ? [{ role: 'system' as const, content: contextualSystemPrompt }] : []),
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
+        // Sliding window: only send recent history to avoid token limit blowout
+        ...messages.slice(-MAX_HISTORY_MESSAGES).map((m) => ({ role: m.role, content: m.content })),
         { role: 'user' as const, content },
       ];
 
@@ -529,20 +538,39 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
       // Save AI response
       if (fullResponse) {
+        // Run content safety filter before saving/displaying
+        const safetyResult = filterAIResponse(fullResponse);
+        const safeContent = safetyResult.filteredContent;
+
+        if (safetyResult.blocked) {
+          logger.warn('AI response blocked by safety filter', {
+            reason: safetyResult.blockReason,
+            conversationId: currentConversation.id,
+          });
+          Sentry.addBreadcrumb({
+            category: 'ai.safety',
+            message: `Response blocked: ${safetyResult.blockReason}`,
+            level: 'warning',
+          });
+        }
+        if (safetyResult.warnings.length > 0) {
+          logger.warn('AI response safety warnings', { warnings: safetyResult.warnings });
+        }
+
         const aiMessage = await chatHistory.addMessage(
           currentConversation.id,
           'assistant',
-          fullResponse,
+          safeContent,
           { crisisDetected: crisis?.detected },
         );
         setMessages((prev) => [...prev, aiMessage]);
 
         // Cache this response for offline use (fire-and-forget)
-        cacheResponse(content, fullResponse).catch(() => {});
+        cacheResponse(content, safeContent).catch(() => {});
 
         // Track cost and rate limit
         try {
-          const costEst = estimateCost(content + fullResponse);
+          const costEst = estimateCost(content + safeContent);
           addToSessionCost(costEst.estimatedCostUSD);
           await addToDailyCost(costEst.estimatedCostUSD);
           await incrementMessageCount();
@@ -589,7 +617,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
             const recentMessages = [
               ...messages,
               { role: 'user' as const, content },
-              { role: 'assistant' as const, content: fullResponse },
+              { role: 'assistant' as const, content: safeContent },
             ]
               .slice(-10)
               .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }));
