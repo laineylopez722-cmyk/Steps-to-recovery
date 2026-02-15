@@ -56,6 +56,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [isSaved, setIsSaved] = useState(true);
+  const [saveError, setSaveError] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
 
   const bodyRef = useRef<TextInput>(null);
@@ -134,6 +135,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
       }
 
       setIsSaved(true);
+      setSaveError(false);
       originalTitle.current = title;
       originalBody.current = body;
 
@@ -150,6 +152,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
         });
     } catch (err) {
       logger.error('Auto-save failed', err);
+      setSaveError(true);
     }
   };
 
@@ -181,6 +184,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
             navigation.goBack();
           } catch (err) {
             logger.error('Failed to delete journal entry', err);
+            Alert.alert('Delete failed', 'Could not delete this entry. Please try again.');
           }
         },
       },
@@ -330,11 +334,17 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
 
             {/* Saving indicator */}
             <View style={styles.saveStatus}>
-              {!isSaved && (
+              {saveError ? (
+                <Pressable onPress={handleAutoSave} accessibilityLabel="Save failed, tap to retry" accessibilityRole="button">
+                  <Animated.Text entering={FadeIn} style={styles.saveErrorText}>
+                    Save failed · Tap to retry
+                  </Animated.Text>
+                </Pressable>
+              ) : !isSaved ? (
                 <Animated.Text entering={FadeIn} style={styles.savingText}>
                   Saving...
                 </Animated.Text>
-              )}
+              ) : null}
             </View>
 
             {/* New note button */}
@@ -466,6 +476,10 @@ const createStyles = (ds: DS) =>
     savingText: {
       ...ds.typography.caption,
       color: ds.colors.textTertiary,
+    },
+    saveErrorText: {
+      ...ds.typography.caption,
+      color: ds.colors.error,
     },
     newNoteBtn: {
       width: ds.semantic.layout.touchTarget,
