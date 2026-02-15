@@ -18,9 +18,11 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { useNavigation as useTypedNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { HomeStackParamList } from '../../../navigation/types';
 import { useCreateCheckIn, useTodayCheckIns } from '../hooks/useCheckIns';
 import { AnimatedCheckmark } from '../../../design-system/components';
 import { hapticSuccess, hapticSelection, hapticWarning } from '../../../utils/haptics';
@@ -34,7 +36,7 @@ interface Props {
 }
 
 export function EveningPulseScreen({ userId }: Props): React.ReactElement {
-  const navigation = useNavigation();
+  const navigation = useTypedNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
@@ -46,6 +48,7 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   const [mood, setMood] = useState(3);
   const [craving, setCraving] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showCravingSupport, setShowCravingSupport] = useState(false);
 
   const handleMood = useCallback(
     (val: number) => {
@@ -80,7 +83,13 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
         craving,
       });
       hapticSuccess();
-      setShowSuccess(true);
+
+      // High craving → show gentle support nudge instead of generic success
+      if (craving >= 7) {
+        setShowCravingSupport(true);
+      } else {
+        setShowSuccess(true);
+      }
 
       // Extract memories for AI companion (async)
       const content = [reflection.trim(), gratitude.trim()].filter(Boolean).join(' ');
@@ -99,6 +108,21 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
   const handleDone = () => {
     setShowSuccess(false);
     navigation.goBack();
+  };
+
+  const handleSupportDismiss = () => {
+    setShowCravingSupport(false);
+    navigation.goBack();
+  };
+
+  const handleCravingSurf = () => {
+    setShowCravingSupport(false);
+    navigation.replace('CravingSurf');
+  };
+
+  const handleEmergency = () => {
+    setShowCravingSupport(false);
+    navigation.replace('Emergency');
   };
 
   const getCravingColor = (v: number) => {
@@ -286,6 +310,50 @@ export function EveningPulseScreen({ userId }: Props): React.ReactElement {
             />
             <Text style={styles.modalTitle}>Day complete</Text>
             <Text style={styles.modalSub}>Rest well</Text>
+          </View>
+        </View>
+      </Modal>
+
+      {/* High Craving Support Modal */}
+      <Modal visible={showCravingSupport} transparent animationType="fade">
+        <View style={styles.modalBg}>
+          <View style={styles.supportCard}>
+            <View style={styles.supportIconRow}>
+              <Feather name="heart" size={28} color={ds.colors.accent} />
+            </View>
+            <Text style={styles.supportTitle}>Saved</Text>
+            <Text style={styles.supportSub}>
+              Your craving is high right now.{'\n'}Support is here if you need it.
+            </Text>
+
+            <Pressable
+              onPress={handleCravingSurf}
+              style={styles.supportBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Try craving surf exercise"
+            >
+              <Feather name="wind" size={18} color={ds.colors.bgPrimary} />
+              <Text style={styles.supportBtnText}>Craving Surf</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleEmergency}
+              style={styles.supportBtnSecondary}
+              accessibilityRole="button"
+              accessibilityLabel="Get emergency support"
+            >
+              <Feather name="phone" size={18} color={ds.colors.accent} />
+              <Text style={styles.supportBtnSecondaryText}>Emergency Support</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleSupportDismiss}
+              style={styles.supportDismiss}
+              accessibilityRole="button"
+              accessibilityLabel="Dismiss and go back"
+            >
+              <Text style={styles.supportDismissText}>I'm okay</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -484,5 +552,74 @@ const createStyles = (ds: DS) =>
       ...ds.typography.body,
       color: ds.colors.textSecondary,
       marginTop: ds.space[2],
+    },
+
+    // Support Modal (high craving)
+    supportCard: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.xl,
+      paddingVertical: ds.space[8],
+      paddingHorizontal: ds.space[6],
+      alignItems: 'center' as const,
+      minWidth: 280,
+      maxWidth: 320,
+    },
+    supportIconRow: {
+      marginBottom: ds.space[3],
+    },
+    supportTitle: {
+      ...ds.typography.h2,
+      color: ds.colors.textPrimary,
+    },
+    supportSub: {
+      ...ds.typography.bodySm,
+      color: ds.colors.textSecondary,
+      textAlign: 'center' as const,
+      marginTop: ds.space[2],
+      marginBottom: ds.space[6],
+      lineHeight: 20,
+    },
+    supportBtn: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      gap: ds.space[2],
+      backgroundColor: ds.colors.accent,
+      borderRadius: ds.radius.md,
+      paddingVertical: ds.space[3],
+      paddingHorizontal: ds.space[5],
+      width: '100%' as unknown as number,
+      marginBottom: ds.space[3],
+    },
+    supportBtnText: {
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.bgPrimary,
+    },
+    supportBtnSecondary: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      gap: ds.space[2],
+      backgroundColor: 'transparent',
+      borderRadius: ds.radius.md,
+      borderWidth: 1,
+      borderColor: ds.colors.accent,
+      paddingVertical: ds.space[3],
+      paddingHorizontal: ds.space[5],
+      width: '100%' as unknown as number,
+      marginBottom: ds.space[4],
+    },
+    supportBtnSecondaryText: {
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.accent,
+    },
+    supportDismiss: {
+      paddingVertical: ds.space[2],
+    },
+    supportDismissText: {
+      ...ds.typography.bodySm,
+      color: ds.colors.textTertiary,
     },
   }) as const;

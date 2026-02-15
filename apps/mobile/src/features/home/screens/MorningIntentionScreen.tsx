@@ -28,13 +28,15 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { useDs } from '../../../design-system/DsProvider';
 import { extractMemories } from '../../journal/utils/memoryExtraction';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { HomeStackParamList } from '../../../navigation/types';
 
 interface Props {
   userId: string;
 }
 
 export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const { createCheckIn, isPending } = useCreateCheckIn(userId);
@@ -43,6 +45,7 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   const [text, setText] = useState('');
   const [mood, setMood] = useState(3);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showLowMoodSupport, setShowLowMoodSupport] = useState(false);
 
   const handleMood = useCallback(
     (val: number) => {
@@ -60,7 +63,13 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
     try {
       await createCheckIn({ type: 'morning', intention: text.trim(), mood });
       hapticSuccess();
-      setShowSuccess(true);
+
+      // Low mood (1 = Struggling) → offer gentle support
+      if (mood <= 1) {
+        setShowLowMoodSupport(true);
+      } else {
+        setShowSuccess(true);
+      }
 
       // Extract memories for AI companion (async)
       extractMemories(text.trim(), userId)
@@ -78,6 +87,21 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
   const handleDone = () => {
     setShowSuccess(false);
     navigation.goBack();
+  };
+
+  const handleSupportDismiss = () => {
+    setShowLowMoodSupport(false);
+    navigation.goBack();
+  };
+
+  const handleCompanionChat = () => {
+    setShowLowMoodSupport(false);
+    navigation.replace('CompanionChat');
+  };
+
+  const handleEmergency = () => {
+    setShowLowMoodSupport(false);
+    navigation.replace('Emergency');
   };
 
   const moods = [
@@ -205,6 +229,50 @@ export function MorningIntentionScreen({ userId }: Props): React.ReactElement {
             />
             <Text style={styles.modalTitle}>Saved</Text>
             <Text style={styles.modalSub}>Have a good day</Text>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Low Mood Support Modal */}
+      <Modal visible={showLowMoodSupport} transparent animationType="fade">
+        <View style={styles.modalBg}>
+          <View style={styles.supportCard}>
+            <View style={styles.supportIconRow}>
+              <Feather name="heart" size={28} color={ds.colors.accent} />
+            </View>
+            <Text style={styles.supportTitle}>Saved</Text>
+            <Text style={styles.supportSub}>
+              Tough mornings are part of recovery.{'\n'}You don't have to face it alone.
+            </Text>
+
+            <Pressable
+              onPress={handleCompanionChat}
+              style={styles.supportBtn}
+              accessibilityRole="button"
+              accessibilityLabel="Talk to your companion"
+            >
+              <Feather name="message-circle" size={18} color={ds.colors.bgPrimary} />
+              <Text style={styles.supportBtnText}>Talk to Companion</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleEmergency}
+              style={styles.supportBtnSecondary}
+              accessibilityRole="button"
+              accessibilityLabel="Get emergency support"
+            >
+              <Feather name="phone" size={18} color={ds.colors.accent} />
+              <Text style={styles.supportBtnSecondaryText}>Emergency Support</Text>
+            </Pressable>
+
+            <Pressable
+              onPress={handleSupportDismiss}
+              style={styles.supportDismiss}
+              accessibilityRole="button"
+              accessibilityLabel="Dismiss and continue"
+            >
+              <Text style={styles.supportDismissText}>I've got this</Text>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -353,5 +421,74 @@ const createStyles = (ds: DS) =>
       ...ds.typography.body,
       color: ds.colors.textSecondary,
       marginTop: ds.space[2],
+    },
+
+    // Support Modal (low mood)
+    supportCard: {
+      backgroundColor: ds.colors.bgTertiary,
+      borderRadius: ds.radius.xl,
+      paddingVertical: ds.space[8],
+      paddingHorizontal: ds.space[6],
+      alignItems: 'center' as const,
+      minWidth: 280,
+      maxWidth: 320,
+    },
+    supportIconRow: {
+      marginBottom: ds.space[3],
+    },
+    supportTitle: {
+      ...ds.typography.h2,
+      color: ds.colors.textPrimary,
+    },
+    supportSub: {
+      ...ds.typography.bodySm,
+      color: ds.colors.textSecondary,
+      textAlign: 'center' as const,
+      marginTop: ds.space[2],
+      marginBottom: ds.space[6],
+      lineHeight: 20,
+    },
+    supportBtn: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      gap: ds.space[2],
+      backgroundColor: ds.colors.accent,
+      borderRadius: ds.radius.md,
+      paddingVertical: ds.space[3],
+      paddingHorizontal: ds.space[5],
+      width: '100%' as unknown as number,
+      marginBottom: ds.space[3],
+    },
+    supportBtnText: {
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.bgPrimary,
+    },
+    supportBtnSecondary: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      gap: ds.space[2],
+      backgroundColor: 'transparent',
+      borderRadius: ds.radius.md,
+      borderWidth: 1,
+      borderColor: ds.colors.accent,
+      paddingVertical: ds.space[3],
+      paddingHorizontal: ds.space[5],
+      width: '100%' as unknown as number,
+      marginBottom: ds.space[4],
+    },
+    supportBtnSecondaryText: {
+      ...ds.typography.body,
+      fontWeight: ds.fontWeight.semibold,
+      color: ds.colors.accent,
+    },
+    supportDismiss: {
+      paddingVertical: ds.space[2],
+    },
+    supportDismissText: {
+      ...ds.typography.bodySm,
+      color: ds.colors.textTertiary,
     },
   }) as const;
