@@ -1,10 +1,12 @@
 /**
  * AI-Powered Crisis Detection
  * Combines AI sentiment analysis with keyword detection for robust crisis detection.
+ * Uses canonical keywords from prompts/crisis.ts as the single source of truth.
  */
 
 import { logger } from '../../../utils/logger';
 import { getAIService, type ChatMessage } from './aiService';
+import { CRISIS_KEYWORDS } from '../prompts/crisis';
 
 export interface CrisisAssessment {
   isCrisis: boolean;
@@ -14,44 +16,16 @@ export interface CrisisAssessment {
   suggestedAction: 'none' | 'monitor' | 'intervene' | 'emergency';
 }
 
-// High-urgency keywords for immediate fallback detection
-const HIGH_KEYWORDS = [
-  'suicide',
-  'suicidal',
-  'kill myself',
-  'end my life',
-  'want to die',
-  'overdose',
-  'relapsed',
-];
-const MEDIUM_KEYWORDS = [
-  'using again',
-  "can't do this",
-  'giving up',
-  'no point',
-  'hurting myself',
-  'self-harm',
-  'drinking',
-  'cutting',
-];
-const LOW_KEYWORDS = [
-  'struggling',
-  'tempted',
-  'craving',
-  'triggered',
-  'hopeless',
-  'alone',
-  'desperate',
-];
-
 /**
  * Detect crisis using keyword matching (fast, no API needed).
+ * Uses CRISIS_KEYWORDS from prompts/crisis.ts — single source of truth.
  */
 function keywordDetect(message: string): CrisisAssessment {
   const lower = message.toLowerCase();
   const signals: string[] = [];
 
-  for (const kw of HIGH_KEYWORDS) {
+  // Check high severity
+  for (const kw of CRISIS_KEYWORDS.high) {
     if (lower.includes(kw)) signals.push(kw);
   }
   if (signals.length > 0) {
@@ -64,28 +38,32 @@ function keywordDetect(message: string): CrisisAssessment {
     };
   }
 
-  for (const kw of MEDIUM_KEYWORDS) {
-    if (lower.includes(kw)) signals.push(kw);
+  // Check medium severity
+  const mediumSignals: string[] = [];
+  for (const kw of CRISIS_KEYWORDS.medium) {
+    if (lower.includes(kw)) mediumSignals.push(kw);
   }
-  if (signals.length > 0) {
+  if (mediumSignals.length > 0) {
     return {
       isCrisis: true,
       severity: 'medium',
       confidence: 0.7,
-      signals,
+      signals: mediumSignals,
       suggestedAction: 'intervene',
     };
   }
 
-  for (const kw of LOW_KEYWORDS) {
-    if (lower.includes(kw)) signals.push(kw);
+  // Check low severity
+  const lowSignals: string[] = [];
+  for (const kw of CRISIS_KEYWORDS.low) {
+    if (lower.includes(kw)) lowSignals.push(kw);
   }
-  if (signals.length > 0) {
+  if (lowSignals.length > 0) {
     return {
       isCrisis: true,
       severity: 'low',
       confidence: 0.5,
-      signals,
+      signals: lowSignals,
       suggestedAction: 'monitor',
     };
   }

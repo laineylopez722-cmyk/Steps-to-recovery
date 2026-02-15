@@ -18,6 +18,7 @@ import {
   cacheResponse,
 } from '../services/offlineFallback';
 import { filterAIResponse } from '../services/contentSafetyFilter';
+import { detectCrisis as detectCrisisRaw, toCrisisSignal } from '../prompts/crisis';
 import { buildEnrichedContext } from '../services/recoveryContextEnricher';
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
 import { checkRateLimit, incrementMessageCount } from '../services/rateLimiter';
@@ -73,28 +74,6 @@ export interface UseAIChatReturn {
 const MAX_HISTORY_MESSAGES = 50;
 
 /**
- * Crisis detection keywords and phrases
- */
-const CRISIS_PATTERNS = {
-  high: [
-    /\bsuicid(e|al)\b/i,
-    /\bkill (myself|me)\b/i,
-    /\bend (it|my life)\b/i,
-    /\bwant to die\b/i,
-    /\bbetter off dead\b/i,
-  ],
-  medium: [
-    /\brelaps(e|ed|ing)\b/i,
-    /\busing again\b/i,
-    /\bcan't do this\b/i,
-    /\bgive up\b/i,
-    /\bhurt myself\b/i,
-    /\bself.?harm\b/i,
-  ],
-  low: [/\bcraving\b/i, /\btriggered\b/i, /\btempted\b/i, /\bstrongly urge\b/i, /\bcan't cope\b/i],
-};
-
-/**
  * Detect if an error is a network/server failure (vs. user error or logic bug).
  * Used to trigger offline fallback instead of showing raw error messages.
  */
@@ -119,60 +98,13 @@ function isNetworkOrServerError(err: unknown): boolean {
 }
 
 /**
- * Detect crisis signals in user message
+ * Detect crisis signals in user message.
+ * Delegates to the canonical crisis module (prompts/crisis.ts)
+ * which has the most comprehensive keyword coverage.
  */
 function detectCrisis(content: string): CrisisSignal | null {
-  const keywords: string[] = [];
-
-  // Check high severity first
-  for (const pattern of CRISIS_PATTERNS.high) {
-    const match = content.match(pattern);
-    if (match) {
-      keywords.push(match[0]);
-    }
-  }
-  if (keywords.length > 0) {
-    return {
-      detected: true,
-      severity: 'high',
-      keywords,
-      suggestedAction: 'emergency',
-    };
-  }
-
-  // Check medium severity
-  for (const pattern of CRISIS_PATTERNS.medium) {
-    const match = content.match(pattern);
-    if (match) {
-      keywords.push(match[0]);
-    }
-  }
-  if (keywords.length > 0) {
-    return {
-      detected: true,
-      severity: 'medium',
-      keywords,
-      suggestedAction: 'intervene',
-    };
-  }
-
-  // Check low severity
-  for (const pattern of CRISIS_PATTERNS.low) {
-    const match = content.match(pattern);
-    if (match) {
-      keywords.push(match[0]);
-    }
-  }
-  if (keywords.length > 0) {
-    return {
-      detected: true,
-      severity: 'low',
-      keywords,
-      suggestedAction: 'monitor',
-    };
-  }
-
-  return null;
+  const result = detectCrisisRaw(content);
+  return result.detected ? toCrisisSignal(result) : null;
 }
 
 /**
