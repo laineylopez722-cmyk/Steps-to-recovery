@@ -148,7 +148,7 @@ function HomeStackNavigator(): React.ReactElement {
       </HomeStack.Screen>
       <HomeStack.Screen
         name="MeetingStats"
-        options={{ title: 'Meeting Stats', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
         component={MeetingStatsScreen}
       />
       <HomeStack.Screen
