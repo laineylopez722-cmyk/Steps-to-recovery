@@ -7,7 +7,7 @@
  * Animations: Gentle, slow entrances to avoid jarring the user
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Linking, Text } from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
 import type { ViewStyle } from 'react-native';
@@ -63,21 +63,11 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const navigation = useNavigation();
-  const [_showBreathingExercise, setShowBreathingExercise] = useState(false);
 
   const handleCall = useCallback((number: string): void => {
     hapticSelection();
     const phoneNumber = number.replace(/[^0-9]/g, '');
     Linking.openURL(`tel:${phoneNumber}`);
-  }, []);
-
-  const handleBreathingComplete = useCallback(() => {
-    // Optional: track completion for analytics
-  }, []);
-
-  const _toggleBreathingExercise = useCallback(() => {
-    hapticSelection();
-    setShowBreathingExercise((prev) => !prev);
   }, []);
 
   return (
@@ -370,7 +360,6 @@ export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): Reac
                     phaseDuration={4000}
                     color={ds.semantic.intent.secondary.solid}
                     autoStart={false}
-                    onComplete={handleBreathingComplete}
                     testID="emergency-breathing-circle"
                   />
                 </View>
