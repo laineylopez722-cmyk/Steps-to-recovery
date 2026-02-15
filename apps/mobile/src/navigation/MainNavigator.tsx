@@ -279,6 +279,7 @@ function StepsStackNavigator(): React.ReactElement {
 function MeetingsStackNavigator(): React.ReactElement {
   const darkHeaderOptions = useDarkHeaderOptions();
   return (
+    <ScreenErrorBoundary screenName="MeetingsStack">
     <MeetingsStack.Navigator screenOptions={darkHeaderOptions}>
       <MeetingsStack.Screen
         name="MeetingFinder"
@@ -296,12 +297,14 @@ function MeetingsStackNavigator(): React.ReactElement {
         options={{ title: 'Favorite Meetings', headerBackTitle: 'Back' }}
       />
     </MeetingsStack.Navigator>
+    </ScreenErrorBoundary>
   );
 }
 
 function ProfileStackNavigator(): React.ReactElement {
   const darkHeaderOptions = useDarkHeaderOptions();
   return (
+    <ScreenErrorBoundary screenName="ProfileStack">
     <ProfileStack.Navigator screenOptions={darkHeaderOptions}>
       <ProfileStack.Screen
         name="ProfileHome"
@@ -359,6 +362,7 @@ function ProfileStackNavigator(): React.ReactElement {
         options={{ title: 'Terms of Service', headerBackTitle: 'Back' }}
       />
     </ProfileStack.Navigator>
+    </ScreenErrorBoundary>
   );
 }
 
