@@ -9,6 +9,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { ScrollView, StyleSheet, View, Linking, Text } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
 import type { ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -58,6 +59,7 @@ const GENTLE_DURATION = 400;
 const getStaggerDelay = (index: number): number => Math.min(index * 100, 500);
 
 export function EmergencyScreen({ userId: _userId }: EmergencyScreenProps): React.ReactElement {
+  useKeepAwake();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const navigation = useNavigation();

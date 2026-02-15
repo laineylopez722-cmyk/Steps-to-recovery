@@ -5,6 +5,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
@@ -60,6 +61,7 @@ const STEPS: GroundingStep[] = [
 ];
 
 export function GroundingExerciseScreen(): React.ReactElement {
+  useKeepAwake();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const navigation = useNavigation();

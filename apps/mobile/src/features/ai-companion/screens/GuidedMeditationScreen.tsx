@@ -5,6 +5,7 @@
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, Pressable } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
@@ -27,6 +28,7 @@ const HOLD_MS = 4000;
 const EXHALE_MS = 6000;
 
 export function GuidedMeditationScreen(): React.ReactElement {
+  useKeepAwake();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const navigation = useNavigation();

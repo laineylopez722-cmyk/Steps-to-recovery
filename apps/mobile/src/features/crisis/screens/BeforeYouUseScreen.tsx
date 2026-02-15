@@ -8,6 +8,7 @@
 
 import { useEffect, useState, type ReactElement } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -57,6 +58,7 @@ interface BeforeYouUseScreenProps {
 // ========================================
 
 export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactElement {
+  useKeepAwake();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const navigation = useNavigation<RNNavigationProp<RootStackParamList>>();
