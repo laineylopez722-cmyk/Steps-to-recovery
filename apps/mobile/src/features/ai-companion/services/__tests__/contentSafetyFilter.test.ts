@@ -6,7 +6,7 @@
  * someone in recovery.
  */
 
-import { filterAIResponse, type SafetyLevel } from '../contentSafetyFilter';
+import { filterAIResponse } from '../contentSafetyFilter';
 
 describe('filterAIResponse', () => {
   // ── Safe Content ───────────────────────────────────────────────
