@@ -3,7 +3,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, Text, RefreshControl, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, RefreshControl, ActivityIndicator, Pressable, Linking } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -182,6 +182,14 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
       currentFilters.time_of_day !== null ||
       currentFilters.meeting_types.length > 0;
 
+    const handleOpenOnlineMeetings = (): void => {
+      void Linking.openURL('https://aa-intergroup.org/meetings/');
+    };
+
+    const handleOpenAuMeetings = (): void => {
+      void Linking.openURL('https://meetings.aa.org.au/');
+    };
+
     return (
       <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <Animated.View entering={MotionTransitions.fade()} style={styles.emptyHeader}>
@@ -253,17 +261,115 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
             </Pressable>
           </View>
         </Animated.View>
-        <EmptyState
-          icon="search-off"
-          title="No meetings found"
-          description={
-            hasFilters
-              ? 'Try adjusting your filters or search radius.'
-              : 'Finding your people is part of recovery. Try expanding your search radius.'
-          }
-          actionLabel={hasFilters ? 'Clear Filters' : 'Search Again'}
-          onAction={hasFilters ? clearFilters : handleSearch}
-        />
+        {hasFilters ? (
+          <EmptyState
+            icon="search-off"
+            title="No meetings match"
+            description="Try adjusting your filters or search radius."
+            actionLabel="Clear Filters"
+            onAction={clearFilters}
+          />
+        ) : (
+          <Animated.View entering={MotionTransitions.fade()} style={styles.noMeetingsContainer}>
+            <View
+              style={[
+                styles.noMeetingsIconWrap,
+                { backgroundColor: ds.semantic.intent.primary.solid + '15' },
+              ]}
+            >
+              <MaterialIcons
+                name="people-outline"
+                size={48}
+                color={ds.semantic.intent.primary.solid}
+                importantForAccessibility="no"
+                accessibilityElementsHidden
+              />
+            </View>
+            <Text
+              style={[styles.noMeetingsTitle, { color: ds.semantic.text.primary }]}
+              accessibilityRole="header"
+            >
+              No nearby meetings found
+            </Text>
+            <Text style={[styles.noMeetingsDesc, { color: ds.semantic.text.secondary }]}>
+              In-app meeting data currently covers select US areas. You can find meetings near you
+              through these resources:
+            </Text>
+
+            <View style={styles.noMeetingsActions}>
+              <Pressable
+                onPress={handleOpenOnlineMeetings}
+                accessibilityRole="link"
+                accessibilityLabel="Find online meetings"
+                accessibilityHint="Opens the Online Intergroup meeting directory in your browser"
+                style={({ pressed }) => [
+                  styles.resourceButton,
+                  {
+                    backgroundColor: ds.semantic.intent.primary.solid,
+                    opacity: pressed ? 0.85 : 1,
+                  },
+                ]}
+              >
+                <MaterialIcons
+                  name="videocam"
+                  size={20}
+                  color={ds.semantic.surface.app}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                />
+                <Text style={[styles.resourceButtonText, { color: ds.semantic.surface.app }]}>
+                  Find Online Meetings
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={handleOpenAuMeetings}
+                accessibilityRole="link"
+                accessibilityLabel="Find Australian meetings"
+                accessibilityHint="Opens the AA Australia meeting directory in your browser"
+                style={({ pressed }) => [
+                  styles.resourceButton,
+                  {
+                    backgroundColor: ds.semantic.surface.card,
+                    borderWidth: 1,
+                    borderColor: ds.semantic.surface.overlay,
+                    opacity: pressed ? 0.85 : 1,
+                  },
+                ]}
+              >
+                <MaterialIcons
+                  name="place"
+                  size={20}
+                  color={ds.semantic.intent.primary.solid}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                />
+                <Text
+                  style={[
+                    styles.resourceButtonText,
+                    { color: ds.semantic.text.primary },
+                  ]}
+                >
+                  Australian Meetings
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={handleSearch}
+                accessibilityRole="button"
+                accessibilityLabel="Search again"
+                style={({ pressed }) => [
+                  styles.retryLink,
+                  { opacity: pressed ? 0.6 : 1 },
+                ]}
+              >
+                <Text style={[styles.retryLinkText, { color: ds.semantic.text.secondary }]}>
+                  Search again
+                </Text>
+              </Pressable>
+            </View>
+          </Animated.View>
+        )}
       </View>
     );
   }
@@ -431,5 +537,61 @@ const createStyles = (ds: DS) =>
       paddingHorizontal: ds.semantic.layout.screenPadding,
       paddingTop: ds.space[4],
       paddingBottom: ds.space[2],
+    },
+    noMeetingsContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: ds.space[8],
+      paddingTop: ds.space[6],
+    },
+    noMeetingsIconWrap: {
+      width: 96,
+      height: 96,
+      borderRadius: 48,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: ds.space[5],
+    },
+    noMeetingsTitle: {
+      ...ds.semantic.typography.screenTitle,
+      textAlign: 'center',
+      marginBottom: ds.space[2],
+    },
+    noMeetingsDesc: {
+      ...ds.semantic.typography.body,
+      textAlign: 'center',
+      maxWidth: 300,
+      marginBottom: ds.space[6],
+      lineHeight: 22,
+    },
+    noMeetingsActions: {
+      width: '100%',
+      maxWidth: 300,
+      gap: ds.space[3],
+      alignItems: 'center',
+    },
+    resourceButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: ds.space[2],
+      width: '100%',
+      paddingVertical: ds.space[3],
+      paddingHorizontal: ds.space[4],
+      borderRadius: ds.radius.lg,
+      minHeight: ds.semantic.layout.touchTarget,
+    },
+    resourceButtonText: {
+      ...ds.semantic.typography.body,
+      fontWeight: '600',
+    },
+    retryLink: {
+      paddingVertical: ds.space[2],
+      minHeight: ds.semantic.layout.touchTarget,
+      justifyContent: 'center',
+    },
+    retryLinkText: {
+      ...ds.semantic.typography.meta,
+      textDecorationLine: 'underline',
     },
   }) as const;
