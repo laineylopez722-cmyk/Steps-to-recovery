@@ -7,6 +7,11 @@ import NetInfo from '@react-native-community/netinfo';
 import { AppState, type AppStateStatus, Platform } from 'react-native';
 import { logger } from '../utils/logger';
 
+// React Query dev plugin — visible in Expo DevTools (dev only, tree-shaken in production)
+if (__DEV__) {
+  import('@dev-plugins/react-query').catch(() => {});
+}
+
 // Global query client configuration
 const queryClientConfig = {
   defaultOptions: {

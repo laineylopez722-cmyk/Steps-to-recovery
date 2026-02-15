@@ -21,9 +21,10 @@ initSentry();
 import { initGlobalErrorHandlers } from './src/utils/globalErrorHandler';
 initGlobalErrorHandlers();
 
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider, SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { Uniwind } from 'uniwind';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -41,6 +42,7 @@ import { useBiometricLock } from './src/hooks/useBiometricLock';
 import { useQuickEscape, QuickEscapeTapZone } from './src/hooks/useQuickEscape';
 import { navigationRef } from './src/navigation/navigationRef';
 import { PortalHost } from '@rn-primitives/portal';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 /**
  * Biometric Lock Overlay
@@ -177,12 +179,21 @@ function App(): React.ReactElement {
     setResetKey((k: number) => k + 1);
   }, []);
 
+  // Android: set system navigation bar to true black to match app theme
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      NavigationBar.setBackgroundColorAsync('#000000').catch(() => {});
+      NavigationBar.setButtonStyleAsync('light').catch(() => {});
+    }
+  }, []);
+
   return (
     <ErrorBoundary key={resetKey} onReset={handleReset}>
       <QueryProvider>
         <SafeAreaProvider>
           <UniwindSafeAreaBridge>
             <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
               <ThemeProvider>
                 <DsProvider>
                   <DatabaseProvider>
@@ -206,6 +217,7 @@ function App(): React.ReactElement {
                   </DatabaseProvider>
                 </DsProvider>
               </ThemeProvider>
+            </BottomSheetModalProvider>
             </GestureHandlerRootView>
           </UniwindSafeAreaBridge>
         </SafeAreaProvider>
