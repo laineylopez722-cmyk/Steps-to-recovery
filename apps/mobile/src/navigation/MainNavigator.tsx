@@ -118,13 +118,13 @@ function HomeStackNavigator(): React.ReactElement {
       </HomeStack.Screen>
       <HomeStack.Screen
         name="MorningIntention"
-        options={{ title: 'Morning Intention', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       >
         {() => <MorningIntentionScreen userId={userId} />}
       </HomeStack.Screen>
       <HomeStack.Screen
         name="EveningPulse"
-        options={{ title: 'Evening Pulse Check', headerBackTitle: 'Back' }}
+        options={{ headerShown: false }}
       >
         {() => <EveningPulseScreen userId={userId} />}
       </HomeStack.Screen>
