@@ -7,7 +7,7 @@
  * Design: Amber/warning color, dismissible, with suggested actions
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import type { StyleProp, ViewStyle } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -70,6 +70,14 @@ export function RiskAlertCard({
   const navigation = useNavigation();
   const [isNotifying, setIsNotifying] = useState(false);
   const [notifySuccess, setNotifySuccess] = useState(false);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    };
+  }, []);
 
   const colors = SEVERITY_COLORS[pattern.severity];
 
@@ -104,7 +112,7 @@ export function RiskAlertCard({
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
         // Hide success message after 2 seconds
-        setTimeout(() => {
+        successTimerRef.current = setTimeout(() => {
           setNotifySuccess(false);
         }, 2000);
       } else {

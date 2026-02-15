@@ -3,7 +3,7 @@
  * Modal that appears when checking in to a meeting
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -50,6 +50,14 @@ export function CheckInModal({
 }: CheckInModalProps): React.ReactElement {
   const [notes, setNotes] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    };
+  }, []);
 
   const handleConfirm = async (): Promise<void> => {
     if (isLoading) {
@@ -66,7 +74,7 @@ export function CheckInModal({
 
       // Show success animation briefly
       setShowSuccess(true);
-      setTimeout(() => {
+      successTimerRef.current = setTimeout(() => {
         setShowSuccess(false);
         onClose();
       }, 1500);
