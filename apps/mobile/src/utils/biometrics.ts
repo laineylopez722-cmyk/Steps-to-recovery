@@ -1,6 +1,7 @@
+
 import * as LocalAuthentication from 'expo-local-authentication';
 import { Platform } from 'react-native';
-import { logger } from './logger';
+import { logger } from "./logger";
 
 /**
  * Biometric Authentication Utilities

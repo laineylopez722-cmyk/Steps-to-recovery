@@ -41,18 +41,6 @@ export {
 // Conversation summarization
 export { shouldSummarize, summarizeConversation } from './conversationSummarizer';
 
-// Emotional state tracking
-export {
-  detectEmotionalState,
-  trackEmotionalState,
-  getEmotionalPatterns,
-  type EmotionalState,
-  type EmotionalPattern,
-} from './emotionalTracker';
-
-// Personality learning
-export { getPersonalityLearner } from './personalityLearner';
-
 // Content safety filter
 export { filterAIResponse, type SafetyFilterResult } from './contentSafetyFilter';
 
@@ -61,9 +49,6 @@ export { detectCrisisWithAI, type CrisisAssessment } from './crisisDetector';
 
 // Bookmarks
 export { getBookmarkService, type Bookmark } from './bookmarkService';
-
-// Mood trend analysis
-export { analyzeMoodTrends, type MoodTrendCard } from './moodTrendAnalysis';
 
 // Weekly reports
 export { generateWeeklyReport, type WeeklyReport } from './weeklyReport';
@@ -76,37 +61,6 @@ export {
   formatPlanForContext,
   type SafetyPlan,
 } from './safetyPlanService';
-
-// Warm handoff
-export {
-  draftSponsorMessage,
-  formatForSMS,
-  suggestMeeting,
-  type HandoffDraft,
-} from './warmHandoff';
-
-// Post-crisis follow-up
-export {
-  createFollowUpSchedule,
-  getNextDueFollowUp,
-  markFollowUpSent,
-  type FollowUpSchedule,
-  type FollowUp,
-} from './postCrisisFollowUp';
-
-// Daily reflection prompts
-export {
-  getDailyPrompt,
-  getReflectionPrompts,
-  type ReflectionPrompt,
-} from './dailyReflectionPrompts';
-
-// Journal analysis
-export {
-  buildJournalContext,
-  createJournalAnalysisPrompt,
-  getSuggestedQueries,
-} from './journalAnalysis';
 
 // Recovery strength score
 export {
@@ -156,17 +110,6 @@ export {
   type HealthStatus,
 } from './providerHealthCheck';
 
-// Multi-session continuity
-export {
-  storeConversationSummary,
-  loadStoredSummaries,
-  buildContinuityContext,
-  findRelevantSummaries,
-} from './multiSessionContinuity';
-
-// Semantic memory search
-export { searchMemories, type MemoryDocument } from './semanticSearch';
-
 // Voice output (TTS)
 export {
   speakText,
@@ -177,27 +120,11 @@ export {
   type VoicePreferences,
 } from './voiceOutput';
 
-// Professional referral
-export {
-  getRelevantResources,
-  getCrisisHotlines,
-  generateReferralMessage,
-  type ProfessionalResource,
-} from './professionalReferral';
-
 // OpenClaw provider
 export { getOpenClawProvider } from './openClawProvider';
 
-// OpenClaw context sync
-export { syncContextToOpenClaw, buildRecoveryMetadata } from './openClawContextSync';
-
-// OpenClaw multi-channel
-export {
-  loadChannelConfig,
-  saveChannelConfig,
-  syncChannelsToOpenClaw,
-  getAvailableChannels,
-} from './openClawMultiChannel';
+// Recovery context enricher
+export { buildEnrichedContext } from './recoveryContextEnricher';
 
 // Conversation export
 export { exportConversation, type ExportFormat, type ExportResult } from './conversationExport';
