@@ -112,19 +112,28 @@ function PremiumProgressHero({
   const yearProgress = Math.min(days / 365, 1);
   const strokeDashoffset = circumference * (1 - yearProgress);
 
+  const streakStatus = days > 0 ? 'Streak intact' : 'Day zero, still progress';
+  const clockDisplay = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  const heroA11yLabel = `Clean time: ${days} ${days === 1 ? 'day' : 'days'}, ${hours} hours ${minutes} minutes. ${streakStatus}`;
+
   return (
     <Animated.View entering={MotionTransitions.fadeDelayed(150)} style={styles.heroCard}>
       <View style={styles.heroTopRow}>
-        <Text style={styles.heroTitle}>Clean Time</Text>
+        <Text style={styles.heroTitle} accessibilityRole="header">Clean Time</Text>
         <View style={styles.heroBadge}>
           <Text style={styles.heroBadgeText}>
-            {days > 0 ? 'Streak intact' : 'Day zero, still progress'}
+            {streakStatus}
           </Text>
         </View>
       </View>
 
-      <View style={styles.ringWrap}>
-        <Svg width={size} height={size}>
+      <View
+        style={styles.ringWrap}
+        accessible
+        accessibilityLabel={heroA11yLabel}
+        accessibilityRole="text"
+      >
+        <Svg width={size} height={size} accessibilityElementsHidden>
           <Defs>
             <LinearGradient id="sereneRing" x1="0%" y1="0%" x2="100%" y2="100%">
               <Stop offset="0%" stopColor={ds.colors.accentLight} />
@@ -155,12 +164,10 @@ function PremiumProgressHero({
           />
         </Svg>
 
-        <View style={styles.ringCenter}>
+        <View style={styles.ringCenter} importantForAccessibility="no-hide-descendants">
           <Text style={styles.dayCount}>{days}</Text>
           <Text style={styles.dayLabel}>{days === 1 ? 'day clean' : 'days clean'}</Text>
-          <Text style={styles.heroClock}>
-            {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}
-          </Text>
+          <Text style={styles.heroClock}>{clockDisplay}</Text>
         </View>
       </View>
 
@@ -180,9 +187,9 @@ function PremiumProgressHero({
 function MiniStat({ label, value, tint }: { label: string; value: string; tint?: string }) {
   const styles = useThemedStyles(createStyles);
   return (
-    <View style={styles.miniStat}>
-      <Text style={[styles.miniStatValue, tint ? { color: tint } : null]}>{value}</Text>
-      <Text style={styles.miniStatLabel}>{label}</Text>
+    <View style={styles.miniStat} accessible accessibilityLabel={`${label}: ${value}`} accessibilityRole="text">
+      <Text style={[styles.miniStatValue, tint ? { color: tint } : null]} importantForAccessibility="no">{value}</Text>
+      <Text style={styles.miniStatLabel} importantForAccessibility="no">{label}</Text>
     </View>
   );
 }
@@ -208,7 +215,7 @@ function ShortcutCard({
       accessibilityHint={subtitle}
     >
       <Action.Icon style={styles.shortcutIconWrap}>
-        <Feather name={icon} size={18} color={ds.semantic.intent.primary.solid} />
+        <Feather name={icon} size={18} color={ds.semantic.intent.primary.solid} importantForAccessibility="no" />
       </Action.Icon>
       <Action.Title style={styles.shortcutTitle}>{title}</Action.Title>
       <Action.Subtitle style={styles.shortcutSubtitle}>{subtitle}</Action.Subtitle>
@@ -217,6 +224,7 @@ function ShortcutCard({
         size={14}
         color={ds.semantic.text.muted}
         style={styles.shortcutArrow}
+        importantForAccessibility="no"
       />
     </ActionCard>
   );
@@ -228,7 +236,7 @@ function HomeScreenSkeleton() {
   return (
     <View style={styles.container} testID="home-screen">
       <SafeAreaView style={styles.safe} edges={['top']}>
-        <View style={styles.loadingContainer}>
+        <View style={styles.loadingContainer} accessible accessibilityLabel="Loading home screen" accessibilityRole="text">
           {/* Header skeleton */}
           <View style={styles.skeletonHeader}>
             <View>
@@ -399,9 +407,9 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
   return (
     <View style={styles.container}>
-      <View pointerEvents="none" style={styles.bgLayerTop} />
-      <View pointerEvents="none" style={styles.bgLayerMid} />
-      <View pointerEvents="none" style={styles.bgLayerBottom} />
+      <View pointerEvents="none" style={styles.bgLayerTop} importantForAccessibility="no-hide-descendants" />
+      <View pointerEvents="none" style={styles.bgLayerMid} importantForAccessibility="no-hide-descendants" />
+      <View pointerEvents="none" style={styles.bgLayerBottom} importantForAccessibility="no-hide-descendants" />
 
       <SafeAreaView style={styles.safe} edges={['top']}>
         <ScrollView
@@ -419,9 +427,9 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           }
         >
           <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
-            <View>
-              <Text style={styles.date}>{date}</Text>
-              <Text style={styles.greeting}>{greeting}</Text>
+            <View accessible accessibilityRole="header" accessibilityLabel={`${greeting}. ${date}`}>
+              <Text style={styles.date} importantForAccessibility="no">{date}</Text>
+              <Text style={styles.greeting} importantForAccessibility="no">{greeting}</Text>
               <Text style={styles.subtitle}>Welcome back — keep your next right move simple.</Text>
             </View>
 
@@ -439,8 +447,8 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
           </Animated.View>
 
           {hasError && (
-            <Animated.View entering={FadeIn} style={styles.errorBanner}>
-              <Feather name="alert-circle" size={18} color={ds.semantic.intent.alert.solid} />
+            <Animated.View entering={FadeIn} style={styles.errorBanner} accessible accessibilityRole="alert" accessibilityLiveRegion="polite">
+              <Feather name="alert-circle" size={18} color={ds.semantic.intent.alert.solid} accessibilityElementsHidden />
               <Text style={styles.errorText}>Unable to load some data. Pull to retry.</Text>
             </Animated.View>
           )}
@@ -455,8 +463,8 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
           <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Daily intention</Text>
-              <Text style={styles.sectionHint}>Choose one now</Text>
+              <Text style={styles.sectionTitle} accessibilityRole="header">Daily intention</Text>
+              <Text style={styles.sectionHint} importantForAccessibility="no">Choose one now</Text>
             </View>
 
             <View style={styles.pillsRow}>
@@ -484,7 +492,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             accessibilityHint="Get support before things spiral"
           >
             <View style={styles.companionCard}>
-              <View style={styles.companionIcon}>
+              <View style={styles.companionIcon} importantForAccessibility="no-hide-descendants">
                 <Feather
                   name="message-circle"
                   size={24}
@@ -495,14 +503,14 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
                 <Text style={styles.companionTitle}>Talk to your companion</Text>
                 <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
               </View>
-              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" />
+              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" importantForAccessibility="no" />
             </View>
           </ActionCard>
 
           <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
-              <Text style={styles.sectionTitle}>Today shortcuts</Text>
-              <Text style={styles.sectionHint}>Tap to open</Text>
+              <Text style={styles.sectionTitle} accessibilityRole="header">Today shortcuts</Text>
+              <Text style={styles.sectionHint} importantForAccessibility="no">Tap to open</Text>
             </View>
             <View style={styles.shortcutsGrid}>
               <ShortcutCard
