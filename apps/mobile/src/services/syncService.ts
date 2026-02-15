@@ -1335,8 +1335,10 @@ export async function addToSyncQueue(
       supabaseId: supabaseId || null,
     });
   } catch (error) {
+    // Never throw — sync queue is a best-effort side effect.
+    // The primary SQLite write already succeeded; a sync queue failure
+    // should not propagate up and cause optimistic UI rollbacks.
     logger.error('Failed to add to sync queue', { tableName, recordId, error });
-    throw error;
   }
 }
 
@@ -1378,8 +1380,10 @@ export async function addDeleteToSyncQueue(
       });
     }
   } catch (error) {
+    // Never throw — sync queue is a best-effort side effect.
+    // The record will still be deleted locally; it just won't sync the
+    // deletion to Supabase until re-queued or the next full sync.
     logger.error('Failed to queue delete operation', { tableName, recordId, error });
-    throw error;
   }
 }
 
