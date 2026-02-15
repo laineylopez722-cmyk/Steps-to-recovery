@@ -31,6 +31,7 @@ import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { Action } from '../../../design-system/primitives';
 import { useCleanTime, useMilestones } from '../hooks/useCleanTime';
 import { useTodayCheckIns } from '../hooks/useCheckIns';
+import { useStepProgress } from '../../steps/hooks/useStepWork';
 import { MilestoneCelebrationModal } from '../../../components/MilestoneCelebrationModal';
 import { TodayWidget } from '../../../components/TodayWidget';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
@@ -94,11 +95,13 @@ function PremiumProgressHero({
   hours,
   minutes,
   completedToday,
+  currentStep,
 }: {
   days: number;
   hours: number;
   minutes: number;
   completedToday: number;
+  currentStep: number;
 }) {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
@@ -168,7 +171,7 @@ function PremiumProgressHero({
           tint={ds.semantic.intent.primary.solid}
         />
         <MiniStat label="Year path" value={`${Math.round(yearProgress * 100)}%`} />
-        <MiniStat label="Current step" value="1/12" />
+        <MiniStat label="Current step" value={`${currentStep}/12`} />
       </View>
     </Animated.View>
   );
@@ -280,6 +283,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   } = useTodayCheckIns(userId);
   const { newMilestone, checkForNewMilestones } = useMilestones(userId);
   const { checkMilestoneReview } = useAppReview();
+  const { currentStep } = useStepProgress(userId);
 
   const [refreshing, setRefreshing] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
@@ -446,6 +450,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             hours={hours}
             minutes={minutes}
             completedToday={completedToday}
+            currentStep={currentStep}
           />
 
           <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
