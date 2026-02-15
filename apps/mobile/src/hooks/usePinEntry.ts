@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import * as Haptics from 'expo-haptics';
 
 interface UsePinEntryProps {
@@ -17,6 +17,12 @@ export function usePinEntry({
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
+  const validationTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup validation timer on unmount
+  useEffect(() => {
+    return () => { if (validationTimerRef.current) clearTimeout(validationTimerRef.current); };
+  }, []);
 
   const clear = useCallback(() => {
     setPin('');
@@ -46,7 +52,7 @@ export function usePinEntry({
       if (newPin.length === requiredLength) {
         setIsValidating(true);
         // Small delay for visual feedback of the last dot
-        setTimeout(async () => {
+        validationTimerRef.current = setTimeout(async () => {
           try {
             const success = await validator(newPin);
             if (success) {

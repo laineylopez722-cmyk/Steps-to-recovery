@@ -68,6 +68,12 @@ export function SafeDialInterventionScreen({
   const stopTimerRef = useRef<NodeJS.Timeout | null>(null);
   const whyTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const actionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup action timer on unmount
+  useEffect(() => {
+    return () => { if (actionTimerRef.current) clearTimeout(actionTimerRef.current); };
+  }, []);
 
   useEffect(() => {
     if (step === 'stop') {
@@ -162,7 +168,7 @@ export function SafeDialInterventionScreen({
       setIsProcessing(true);
       await handleLogAction('called_sponsor', `Called sponsor instead of ${riskyContact.name}`);
       await Linking.openURL(`tel:${sponsorPhone}`);
-      setTimeout(() => setStep('complete'), 500);
+      actionTimerRef.current = setTimeout(() => setStep('complete'), 500);
     } catch {
       Alert.alert('Error', 'Failed to call sponsor. Please try again.');
     } finally {
@@ -177,7 +183,7 @@ export function SafeDialInterventionScreen({
       setIsProcessing(true);
       await handleLogAction('texted_sponsor', `Texted sponsor instead of ${riskyContact.name}`);
       await Linking.openURL(`sms:${sponsorPhone}&body=I need help. I almost called ${riskyContact.name}.`);
-      setTimeout(() => setStep('complete'), 500);
+      actionTimerRef.current = setTimeout(() => setStep('complete'), 500);
     } catch {
       Alert.alert('Error', 'Failed to text sponsor. Please try again.');
     } finally {
