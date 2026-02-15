@@ -185,7 +185,7 @@ describe('riskDetectionService', () => {
 
   describe('dismissPattern', () => {
     it('should store dismissal timestamp in MMKV', async () => {
-      mockMmkvStorage.setItem.mockImplementation((key: string, value: string) => {
+      mockMmkvStorage.setItem.mockImplementation((_key: string, _value: string) => {
         // Sync implementation - just store
       });
 
@@ -231,7 +231,7 @@ describe('riskDetectionService', () => {
   describe('wasRecentlyDismissed', () => {
     it('should return true if dismissed less than 24 hours ago', async () => {
       const oneHourAgo = (Date.now() - 1 * 60 * 60 * 1000).toString();
-      mockMmkvStorage.getItem.mockImplementation((key: string) => oneHourAgo);
+      mockMmkvStorage.getItem.mockImplementation((_key: string) => oneHourAgo);
 
       const result = await wasRecentlyDismissed('user-1', 'journal_inactive');
 
@@ -246,7 +246,7 @@ describe('riskDetectionService', () => {
 
     it('should return false if dismissed more than 24 hours ago', async () => {
       const twoDaysAgo = (Date.now() - 48 * 60 * 60 * 1000).toString();
-      mockMmkvStorage.getItem.mockImplementation((key: string) => twoDaysAgo);
+      mockMmkvStorage.getItem.mockImplementation((_key: string) => twoDaysAgo);
 
       const result = await wasRecentlyDismissed('user-1', 'journal_inactive');
 
@@ -254,7 +254,7 @@ describe('riskDetectionService', () => {
     });
 
     it('should return false if never dismissed', async () => {
-      mockMmkvStorage.getItem.mockImplementation((key: string) => null);
+      mockMmkvStorage.getItem.mockImplementation((_key: string) => null);
 
       const result = await wasRecentlyDismissed('user-1', 'checkin_gap');
 

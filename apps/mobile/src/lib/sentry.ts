@@ -27,6 +27,7 @@ export function initSentry(): void {
   if (!dsn || __DEV__) {
     // Skip Sentry entirely in dev — avoids "Transport disabled" console errors
     if (__DEV__ && dsn) {
+      // eslint-disable-next-line no-console
       console.log('Sentry: skipped in dev mode');
     }
     return;

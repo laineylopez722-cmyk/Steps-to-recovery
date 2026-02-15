@@ -4,13 +4,12 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   View,
   type ListRenderItemInfo,
   type ViewToken,
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Button, Card, Text } from '../../../design-system';
+import { Button, Text } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { StepSectionHeader } from './StepSectionHeader';

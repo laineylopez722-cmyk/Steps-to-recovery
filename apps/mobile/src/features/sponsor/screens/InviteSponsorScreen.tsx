@@ -249,7 +249,7 @@ export function InviteSponsorScreen(): React.ReactElement {
   );
 }
 
-function InfoItem({ ds, text }: { ds: ReturnType<typeof import('../../../design-system/DsProvider').useDs>; text: string }): React.ReactElement {
+function InfoItem({ ds, text }: { ds: ReturnType<typeof useDs>; text: string }): React.ReactElement {
   return (
     <View style={{ flexDirection: 'row' }}>
       <Text style={{ ...ds.semantic.typography.body, color: ds.semantic.intent.primary.solid }}>

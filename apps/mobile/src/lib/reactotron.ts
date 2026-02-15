@@ -29,13 +29,16 @@ if (__DEV__) {
     .connect();
 
   // Patch console.log to also send to Reactotron
+  // eslint-disable-next-line no-console
   const originalConsoleLog = console.log;
+  // eslint-disable-next-line no-console
   console.log = (...args: unknown[]) => {
     originalConsoleLog(...args);
     Reactotron.log?.(...args);
   };
   
   // Make available globally for debugging
+  // eslint-disable-next-line no-console
   console.tron = Reactotron;
 }
 

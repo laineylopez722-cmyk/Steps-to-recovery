@@ -86,7 +86,7 @@ function getQuestionHint(prompt: string): string | null {
 }
 
 export function StepSingleQuestionView({
-  stepNumber,
+  stepNumber: _stepNumber,
   description,
   totalQuestions,
   answeredCount,
