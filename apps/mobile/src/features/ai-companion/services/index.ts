@@ -13,23 +13,12 @@ export {
   type AIProvider,
 } from './aiService';
 
-// Context builder
-export {
-  buildContextString,
-  assembleFullContext,
-  toAIContext,
-  type ContextData,
-} from './contextBuilder';
-
 // Memory extractor (rule-based)
 export {
   extractMemoriesFromMessage,
   extractMemoriesFromAssistantExchange,
   extractMemoriesWithAI,
 } from './memoryExtractor';
-
-// AI-powered memory extraction
-export { extractMemoriesWithAIService } from './aiMemoryExtractor';
 
 // Semantic memory extraction (AI-enhanced)
 export {
@@ -38,17 +27,8 @@ export {
   type ExtractedSemanticMemory,
 } from './semanticMemoryExtractor';
 
-// Conversation summarization
-export { shouldSummarize, summarizeConversation } from './conversationSummarizer';
-
 // Content safety filter
 export { filterAIResponse, type SafetyFilterResult } from './contentSafetyFilter';
-
-// AI crisis detection
-export { detectCrisisWithAI, type CrisisAssessment } from './crisisDetector';
-
-// Bookmarks
-export { getBookmarkService, type Bookmark } from './bookmarkService';
 
 // Weekly reports
 export { generateWeeklyReport, type WeeklyReport } from './weeklyReport';
@@ -100,34 +80,11 @@ export {
   type RateLimitStatus,
 } from './rateLimiter';
 
-// Provider health check
-export {
-  checkProviderHealth,
-  getProviderHealth,
-  getStatusColor,
-  getStatusLabel,
-  type ProviderHealth,
-  type HealthStatus,
-} from './providerHealthCheck';
-
-// Voice output (TTS)
-export {
-  speakText,
-  stopSpeaking,
-  isSpeaking,
-  loadVoicePreferences,
-  saveVoicePreferences,
-  type VoicePreferences,
-} from './voiceOutput';
-
 // OpenClaw provider
 export { getOpenClawProvider } from './openClawProvider';
 
 // Recovery context enricher
 export { buildEnrichedContext } from './recoveryContextEnricher';
-
-// Conversation export
-export { exportConversation, type ExportFormat, type ExportResult } from './conversationExport';
 
 // Offline fallback
 export {
