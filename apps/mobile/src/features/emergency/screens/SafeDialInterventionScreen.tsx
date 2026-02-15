@@ -12,7 +12,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, TextInput, Alert, BackHandler, Linking, Pressable } from 'react-native';
+import { View, Text, TextInput, Alert, BackHandler, Linking, Pressable, KeyboardAvoidingView, Platform, ScrollView, Keyboard } from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -288,40 +288,51 @@ export function SafeDialInterventionScreen({
   const renderFinalStep = (): React.ReactElement => (
     <Animated.View entering={FadeIn.duration(300)} style={[styles.stepContainer, { backgroundColor: ds.semantic.surface.app }]}>
       <SafeAreaView style={styles.stepContent} edges={['top', 'bottom']}>
-        <View style={styles.stepInner}>
-          <MaterialCommunityIcons name="alert-octagon" size={80} color={ds.semantic.intent.alert.solid} accessibilityElementsHidden />
-          <Text style={[styles.bigText, { color: ds.semantic.intent.alert.solid, marginTop: ds.space[6], textAlign: 'center' }]} accessibilityRole="header">Last Chance to Choose Recovery</Text>
-          <Text style={[styles.bodyText, { color: ds.semantic.text.primary, marginTop: ds.space[4], textAlign: 'center' }]}>
-            This call could end your sobriety.{'\n'}Type "YES I AM RELAPSING" to proceed:
-          </Text>
-          <TextInput
-            value={confirmText}
-            onChangeText={setConfirmText}
-            placeholder="YES I AM RELAPSING"
-            placeholderTextColor={ds.semantic.text.muted}
-            style={styles.confirmInput}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            editable={!isProcessing}
-            accessibilityLabel="Type YES I AM RELAPSING to confirm"
-            accessibilityHint="You must type the exact phrase to proceed with the call"
-          />
-          <View style={styles.countdownContainer}>
-            <Text
-              style={[styles.countdownText, { color: ds.semantic.intent.alert.solid }]}
-              accessibilityLabel={`Call will proceed in ${countdown} seconds`}
-              accessibilityLiveRegion="polite"
-            >
-              Call will proceed in: {countdown}s
-            </Text>
-          </View>
-          <Button title="Cancel - I Changed My Mind" onPress={() => handleDismiss('dismissed')} variant="primary" size="large" fullWidth disabled={isProcessing} style={{ marginTop: ds.space[6] }} accessibilityLabel="Cancel, I changed my mind" accessibilityHint="Cancels the call and returns to safety" />
-          <View style={styles.progressDots} accessibilityLabel="Step 4 of 4" accessibilityRole="text">
-            {[0, 1, 2, 3].map((i) => (
-              <View key={i} style={[styles.progressDot, { backgroundColor: i === 3 ? ds.semantic.intent.primary.solid : ds.semantic.surface.overlay }]} />
-            ))}
-          </View>
-        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoid}
+        >
+          <ScrollView
+            contentContainerStyle={styles.finalScrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            <Pressable onPress={Keyboard.dismiss} style={styles.stepInner}>
+              <MaterialCommunityIcons name="alert-octagon" size={80} color={ds.semantic.intent.alert.solid} accessibilityElementsHidden />
+              <Text style={[styles.bigText, { color: ds.semantic.intent.alert.solid, marginTop: ds.space[6], textAlign: 'center' }]} accessibilityRole="header">Last Chance to Choose Recovery</Text>
+              <Text style={[styles.bodyText, { color: ds.semantic.text.primary, marginTop: ds.space[4], textAlign: 'center' }]}>
+                This call could end your sobriety.{'\n'}Type &quot;YES I AM RELAPSING&quot; to proceed:
+              </Text>
+              <TextInput
+                value={confirmText}
+                onChangeText={setConfirmText}
+                placeholder="YES I AM RELAPSING"
+                placeholderTextColor={ds.semantic.text.muted}
+                style={styles.confirmInput}
+                autoCapitalize="characters"
+                autoCorrect={false}
+                editable={!isProcessing}
+                accessibilityLabel="Type YES I AM RELAPSING to confirm"
+                accessibilityHint="You must type the exact phrase to proceed with the call"
+              />
+              <View style={styles.countdownContainer}>
+                <Text
+                  style={[styles.countdownText, { color: ds.semantic.intent.alert.solid }]}
+                  accessibilityLabel={`Call will proceed in ${countdown} seconds`}
+                  accessibilityLiveRegion="polite"
+                >
+                  Call will proceed in: {countdown}s
+                </Text>
+              </View>
+              <Button title="Cancel - I Changed My Mind" onPress={() => handleDismiss('dismissed')} variant="primary" size="large" fullWidth disabled={isProcessing} style={{ marginTop: ds.space[6] }} accessibilityLabel="Cancel, I changed my mind" accessibilityHint="Cancels the call and returns to safety" />
+              <View style={styles.progressDots} accessibilityLabel="Step 4 of 4" accessibilityRole="text">
+                {[0, 1, 2, 3].map((i) => (
+                  <View key={i} style={[styles.progressDot, { backgroundColor: i === 3 ? ds.semantic.intent.primary.solid : ds.semantic.surface.overlay }]} />
+                ))}
+              </View>
+            </Pressable>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </Animated.View>
   );
@@ -358,6 +369,15 @@ const createStyles = (ds: DS) =>
     },
     stepContent: {
       flex: 1,
+      justifyContent: 'center' as const,
+      alignItems: 'center' as const,
+    },
+    keyboardAvoid: {
+      flex: 1,
+      width: '100%' as const,
+    },
+    finalScrollContent: {
+      flexGrow: 1,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },

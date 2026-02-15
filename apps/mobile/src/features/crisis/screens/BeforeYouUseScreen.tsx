@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useState, type ReactElement } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View, KeyboardAvoidingView, Platform } from 'react-native';
 import { useKeepAwake } from 'expo-keep-awake';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -591,18 +591,24 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
           <View style={{ width: 28 }} />
         </View>
 
-        <ScrollView
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
-          {stage === 'initial' && renderInitialStage()}
-          {stage === 'pause' && renderPauseStage()}
-          {stage === 'grounding' && renderGroundingStage()}
-          {stage === 'reflect' && renderReflectStage()}
-          {stage === 'contact' && renderContactStage()}
-          {stage === 'complete' && renderCompleteStage()}
-        </ScrollView>
+          <ScrollView
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {stage === 'initial' && renderInitialStage()}
+            {stage === 'pause' && renderPauseStage()}
+            {stage === 'grounding' && renderGroundingStage()}
+            {stage === 'reflect' && renderReflectStage()}
+            {stage === 'contact' && renderContactStage()}
+            {stage === 'complete' && renderCompleteStage()}
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
   );
