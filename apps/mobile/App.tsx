@@ -9,6 +9,19 @@ if (__DEV__) {
 // Uniwind - Import global CSS with design system tokens
 import './src/global.css';
 
+// Set Inter as default font for ALL Text components app-wide.
+// This catches the ~470 inline fontWeight usages that don't go through
+// the design system typography tokens. Without this, those render as
+// system font (Roboto on Android) instead of Inter.
+import { Text as RNText } from 'react-native';
+import { fonts } from './src/lib/fonts';
+
+const _defaultStyle = (RNText as any).defaultProps?.style;
+(RNText as any).defaultProps = {
+  ...(RNText as any).defaultProps,
+  style: [{ fontFamily: fonts.regular }, _defaultStyle],
+};
+
 // Keep native splash screen visible until app is fully initialized
 // (DB migrations + auth check complete). Prevents flash of loading spinner.
 import * as SplashScreen from 'expo-splash-screen';
