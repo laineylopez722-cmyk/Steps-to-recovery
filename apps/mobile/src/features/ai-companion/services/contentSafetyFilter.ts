@@ -25,7 +25,7 @@ interface FilterRule {
 const FILTER_RULES: FilterRule[] = [
   // Block: substance suggestions
   {
-    pattern: /\b(you should|try|consider)\b.{0,30}\b(drink|use|take|smoke|inject)\b/i,
+    pattern: /\b(you should|try|consider)\b.{0,30}\b(drink|us(?:e|ing)|tak(?:e|ing)|smok(?:e|ing)|inject(?:ing)?)\b/i,
     severity: 'block',
     category: 'substance_suggestion',
   },
