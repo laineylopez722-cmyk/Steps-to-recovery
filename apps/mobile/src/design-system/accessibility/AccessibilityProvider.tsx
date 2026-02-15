@@ -97,7 +97,7 @@ export function AccessibilityProvider({
     };
 
     // Get initial state
-    AccessibilityInfo.isScreenReaderEnabled().then(handleScreenReaderChange);
+    AccessibilityInfo.isScreenReaderEnabled().then(handleScreenReaderChange).catch(() => {});
 
     // Subscribe to changes
     const subscription = AccessibilityInfo.addEventListener(
@@ -117,7 +117,7 @@ export function AccessibilityProvider({
     };
 
     // Get initial state
-    AccessibilityInfo.isReduceMotionEnabled?.().then(handleReduceMotionChange);
+    AccessibilityInfo.isReduceMotionEnabled?.().then(handleReduceMotionChange).catch(() => {});
 
     // Subscribe to changes if available
     if (AccessibilityInfo.addEventListener) {
@@ -139,7 +139,7 @@ export function AccessibilityProvider({
         setSettings((prev) => ({ ...prev, boldTextEnabled: enabled }));
       };
 
-      AccessibilityInfo.isBoldTextEnabled().then(handleBoldTextChange);
+      AccessibilityInfo.isBoldTextEnabled().then(handleBoldTextChange).catch(() => {});
 
       const subscription = AccessibilityInfo.addEventListener(
         'boldTextChanged' as AccessibilityChangeEventName,
@@ -159,7 +159,7 @@ export function AccessibilityProvider({
         setSettings((prev) => ({ ...prev, grayscaleEnabled: enabled }));
       };
 
-      AccessibilityInfo.isGrayscaleEnabled().then(handleGrayscaleChange);
+      AccessibilityInfo.isGrayscaleEnabled().then(handleGrayscaleChange).catch(() => {});
 
       const subscription = AccessibilityInfo.addEventListener(
         'grayscaleChanged' as AccessibilityChangeEventName,
@@ -179,7 +179,7 @@ export function AccessibilityProvider({
         setSettings((prev) => ({ ...prev, invertColorsEnabled: enabled }));
       };
 
-      AccessibilityInfo.isInvertColorsEnabled().then(handleInvertColorsChange);
+      AccessibilityInfo.isInvertColorsEnabled().then(handleInvertColorsChange).catch(() => {});
 
       const subscription = AccessibilityInfo.addEventListener(
         'invertColorsChanged' as AccessibilityChangeEventName,
