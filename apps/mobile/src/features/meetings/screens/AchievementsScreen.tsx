@@ -89,8 +89,18 @@ export function AchievementsScreen(): React.ReactElement {
             end={{ x: 1, y: 1 }}
             style={styles.statsBanner}
           >
-            <View style={styles.statsContent}>
-              <MaterialIcons name="emoji-events" size={48} color={ds.semantic.text.onDark} />
+            <View
+              style={styles.statsContent}
+              accessible
+              accessibilityLabel={`${unlockedCount} of ${totalCount} achievements unlocked`}
+            >
+              <MaterialIcons
+                name="emoji-events"
+                size={48}
+                color={ds.semantic.text.onDark}
+                importantForAccessibility="no"
+                accessibilityElementsHidden
+              />
               <View>
                 <Text style={styles.statsValue}>
                   {unlockedCount} / {totalCount}
@@ -98,7 +108,16 @@ export function AchievementsScreen(): React.ReactElement {
                 <Text style={styles.statsLabel}>Achievements Unlocked</Text>
               </View>
             </View>
-            <View style={styles.progressTrack}>
+            <View
+              style={styles.progressTrack}
+              accessible
+              accessibilityRole="progressbar"
+              accessibilityValue={{
+                min: 0,
+                max: totalCount,
+                now: unlockedCount,
+              }}
+            >
               <View
                 style={[styles.progressFill, { width: `${(unlockedCount / totalCount) * 100}%` }]}
               />
@@ -107,7 +126,11 @@ export function AchievementsScreen(): React.ReactElement {
         </Animated.View>
 
         {/* Filter Tabs */}
-        <Animated.View entering={FadeInUp.delay(200)} style={styles.filterContainer}>
+        <Animated.View
+          entering={FadeInUp.delay(200)}
+          style={styles.filterContainer}
+          accessibilityRole="tablist"
+        >
           <Pressable
             onPress={() => setFilter('all')}
             style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
@@ -292,7 +315,13 @@ export function AchievementsScreen(): React.ReactElement {
 
           {filteredAchievements.length === 0 && (
             <View style={styles.emptyContainer}>
-              <MaterialIcons name="emoji-events" size={64} color={darkAccent.textMuted} />
+              <MaterialIcons
+                name="emoji-events"
+                size={64}
+                color={darkAccent.textMuted}
+                importantForAccessibility="no"
+                accessibilityElementsHidden
+              />
               <Text style={styles.emptyText}>
                 {filter === 'unlocked' ? 'No achievements unlocked yet' : 'No locked achievements'}
               </Text>

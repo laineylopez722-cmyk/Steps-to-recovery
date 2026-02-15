@@ -75,10 +75,10 @@ export function PreMeetingReflectionModal({
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header */}
               <View style={styles.header}>
-                <View style={styles.iconCircle}>
+                <View style={styles.iconCircle} importantForAccessibility="no-hide-descendants">
                   <MaterialIcons name="psychology" size={32} color={darkAccent.primary} />
                 </View>
-                <Text style={styles.title}>Before You Go</Text>
+                <Text style={styles.title} accessibilityRole="header">Before You Go</Text>
                 <Text style={styles.subtitle}>Set an intention for {meetingName}</Text>
               </View>
 
@@ -91,8 +91,9 @@ export function PreMeetingReflectionModal({
                       key={value}
                       style={[styles.moodButton, mood === value && styles.moodButtonSelected]}
                       onPress={() => setMood(value)}
-                      accessibilityLabel={`Mood ${value} out of 5`}
+                      accessibilityLabel={`Mood ${value} out of 5, ${getMoodEmoji(value)}`}
                       accessibilityRole="button"
+                      accessibilityState={{ selected: mood === value }}
                     >
                       <Text style={styles.moodEmoji}>{getMoodEmoji(value)}</Text>
                     </Pressable>

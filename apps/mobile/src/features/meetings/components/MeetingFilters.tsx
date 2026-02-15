@@ -97,7 +97,9 @@ export function MeetingFilters({
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[ds.typography.h2, { color: ds.semantic.text.primary }]}>Filter Meetings</Text>
+          <Text style={[ds.typography.h2, { color: ds.semantic.text.primary }]} accessibilityRole="header">
+            Filter Meetings
+          </Text>
           {hasActiveFilters && (
             <Pressable
               onPress={handleClear}
@@ -114,7 +116,10 @@ export function MeetingFilters({
 
         {/* Day of Week */}
         <View style={styles.section}>
-          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text
+            style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}
+            accessibilityRole="header"
+          >
             Day of Week
           </Text>
           <View style={styles.chipContainer}>
@@ -153,7 +158,10 @@ export function MeetingFilters({
 
         {/* Time of Day */}
         <View style={styles.section}>
-          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text
+            style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}
+            accessibilityRole="header"
+          >
             Time of Day
           </Text>
           <View style={styles.chipContainer}>
@@ -192,7 +200,10 @@ export function MeetingFilters({
 
         {/* Meeting Types */}
         <View style={styles.section}>
-          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text
+            style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}
+            accessibilityRole="header"
+          >
             Meeting Type
           </Text>
           <View style={styles.chipContainer}>

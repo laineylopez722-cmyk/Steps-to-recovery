@@ -95,10 +95,10 @@ export function PostMeetingReflectionModal({
             <ScrollView showsVerticalScrollIndicator={false}>
               {/* Header */}
               <View style={styles.header}>
-                <View style={styles.iconCircle}>
+                <View style={styles.iconCircle} importantForAccessibility="no-hide-descendants">
                   <MaterialIcons name="favorite" size={32} color={darkAccent.success} />
                 </View>
-                <Text style={styles.title}>How Was It?</Text>
+                <Text style={styles.title} accessibilityRole="header">How Was It?</Text>
                 <Text style={styles.subtitle}>Reflect on {meetingName}</Text>
               </View>
 
@@ -111,8 +111,9 @@ export function PostMeetingReflectionModal({
                       key={value}
                       style={[styles.moodButton, mood === value && styles.moodButtonSelected]}
                       onPress={() => setMood(value)}
-                      accessibilityLabel={`Mood ${value} out of 5`}
+                      accessibilityLabel={`Mood ${value} out of 5, ${getMoodEmoji(value)}`}
                       accessibilityRole="button"
+                      accessibilityState={{ selected: mood === value }}
                     >
                       <Text style={styles.moodEmoji}>{getMoodEmoji(value)}</Text>
                     </Pressable>
@@ -125,11 +126,13 @@ export function PostMeetingReflectionModal({
 
                 {/* Mood Lift Indicator */}
                 {moodLift !== null && moodLift !== 0 && (
-                  <View style={styles.moodLiftContainer}>
+                  <View style={styles.moodLiftContainer} accessibilityLiveRegion="polite">
                     <MaterialIcons
                       name={moodLift > 0 ? 'trending-up' : 'trending-down'}
                       size={20}
                       color={moodLift > 0 ? darkAccent.success : darkAccent.error}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
                     />
                     <Text
                       style={[

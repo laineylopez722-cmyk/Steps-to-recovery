@@ -140,6 +140,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
     return (
       <View
         style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}
+        accessibilityLabel="Finding nearby meetings"
+        accessibilityRole="progressbar"
       >
         <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
       </View>
@@ -184,7 +186,10 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
       <View style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
         <Animated.View entering={MotionTransitions.fade()} style={styles.emptyHeader}>
           <View>
-            <Text style={[styles.screenTitle, { color: ds.semantic.text.primary }]}>
+            <Text
+              style={[styles.screenTitle, { color: ds.semantic.text.primary }]}
+              accessibilityRole="header"
+            >
               Meeting finder
             </Text>
             <Text style={[styles.screenSubtitle, { color: ds.semantic.text.secondary }]}>
@@ -214,6 +219,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                   name="favorite"
                   size={20}
                   color={ds.semantic.intent.primary.solid}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
                 />
               </Animated.View>
             </Pressable>
@@ -239,6 +246,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                   name="filter-list"
                   size={20}
                   color={ds.semantic.intent.primary.solid}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
                 />
               </Animated.View>
             </Pressable>
@@ -278,11 +287,15 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
         ListHeaderComponent={
           <Animated.View entering={MotionTransitions.fade()} style={styles.listHeader}>
             <View>
-              <Text style={[styles.screenTitle, { color: ds.semantic.text.primary }]}>
+              <Text
+                style={[styles.screenTitle, { color: ds.semantic.text.primary }]}
+                accessibilityRole="header"
+              >
                 Meeting finder
               </Text>
               <Text
                 style={[styles.screenSubtitle, { color: ds.semantic.text.secondary }]}
+                accessibilityLabel={`${meetings.length} meetings found nearby`}
               >
                 {meetings.length} meetings nearby
               </Text>
@@ -310,6 +323,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                     name="favorite"
                     size={20}
                     color={ds.semantic.intent.primary.solid}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden
                   />
                 </Animated.View>
               </Pressable>
@@ -335,6 +350,8 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
                     name="filter-list"
                     size={20}
                     color={ds.semantic.intent.primary.solid}
+                    importantForAccessibility="no"
+                    accessibilityElementsHidden
                   />
                 </Animated.View>
               </Pressable>

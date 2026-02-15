@@ -81,6 +81,8 @@ export const MeetingCard = React.memo(function MeetingCard({
               size={18}
               color={ds.semantic.intent.alert.solid}
               style={styles.favoriteIcon}
+              importantForAccessibility="no"
+              accessibilityElementsHidden
             />
           )}
         </View>
@@ -98,6 +100,8 @@ export const MeetingCard = React.memo(function MeetingCard({
           size={16}
           color={ds.semantic.text.secondary}
           style={styles.icon}
+          importantForAccessibility="no"
+          accessibilityElementsHidden
         />
         <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.secondary }]}>
           {dayText} • {timeText}
@@ -111,6 +115,8 @@ export const MeetingCard = React.memo(function MeetingCard({
           size={16}
           color={ds.semantic.text.secondary}
           style={styles.icon}
+          importantForAccessibility="no"
+          accessibilityElementsHidden
         />
         <View style={styles.locationText}>
           <Text

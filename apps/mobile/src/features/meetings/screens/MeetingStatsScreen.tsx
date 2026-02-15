@@ -121,26 +121,36 @@ export function MeetingStatsScreen(): React.ReactElement {
           {/* Stats Cards Row */}
           <Animated.View entering={FadeInUp.delay(100)} style={styles.statsRow}>
             {/* Total Meetings */}
-            <GlassCard style={styles.statCard}>
+            <GlassCard
+              style={styles.statCard}
+              accessible
+              accessibilityLabel={`Total Meetings: ${totalMeetings}`}
+            >
               <LinearGradient
                 colors={[ds.colors.info, ds.semantic.intent.primary.solid]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
+                importantForAccessibility="no-hide-descendants"
               >
                 <MaterialIcons name="event-available" size={24} color={ds.semantic.text.onDark} />
               </LinearGradient>
-              <Text style={styles.statValue}>{totalMeetings}</Text>
-              <Text style={styles.statLabel}>Total Meetings</Text>
+              <Text style={styles.statValue} importantForAccessibility="no">{totalMeetings}</Text>
+              <Text style={styles.statLabel} importantForAccessibility="no">Total Meetings</Text>
             </GlassCard>
 
             {/* Current Streak */}
-            <GlassCard style={styles.statCard}>
+            <GlassCard
+              style={styles.statCard}
+              accessible
+              accessibilityLabel={`Current Streak: ${currentStreak} days`}
+            >
               <LinearGradient
                 colors={[ds.colors.warning, ds.semantic.intent.secondary.solid]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
+                importantForAccessibility="no-hide-descendants"
               >
                 <MaterialIcons
                   name="local-fire-department"
@@ -148,22 +158,27 @@ export function MeetingStatsScreen(): React.ReactElement {
                   color={ds.semantic.text.onDark}
                 />
               </LinearGradient>
-              <Text style={styles.statValue}>{currentStreak}</Text>
-              <Text style={styles.statLabel}>Day Streak</Text>
+              <Text style={styles.statValue} importantForAccessibility="no">{currentStreak}</Text>
+              <Text style={styles.statLabel} importantForAccessibility="no">Day Streak</Text>
             </GlassCard>
 
             {/* Longest Streak */}
-            <GlassCard style={styles.statCard}>
+            <GlassCard
+              style={styles.statCard}
+              accessible
+              accessibilityLabel={`Best Streak: ${longestStreak} days`}
+            >
               <LinearGradient
                 colors={[ds.colors.accent, ds.semantic.intent.primary.solid]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
                 style={styles.statIconBg}
+                importantForAccessibility="no-hide-descendants"
               >
                 <MaterialIcons name="emoji-events" size={24} color={ds.semantic.text.onDark} />
               </LinearGradient>
-              <Text style={styles.statValue}>{longestStreak}</Text>
-              <Text style={styles.statLabel}>Best Streak</Text>
+              <Text style={styles.statValue} importantForAccessibility="no">{longestStreak}</Text>
+              <Text style={styles.statLabel} importantForAccessibility="no">Best Streak</Text>
             </GlassCard>
           </Animated.View>
 
@@ -171,15 +186,33 @@ export function MeetingStatsScreen(): React.ReactElement {
           <Animated.View entering={FadeInUp.delay(200)}>
             <GlassCard style={styles.ninetyCard}>
               <View style={styles.ninetyHeader}>
-                <MaterialIcons name="star" size={32} color={ds.colors.accent} />
+                <MaterialIcons
+                  name="star"
+                  size={32}
+                  color={ds.colors.accent}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                />
                 <View style={styles.ninetyTitleContainer}>
-                  <Text style={styles.ninetyTitle}>90 in 90 Challenge</Text>
+                  <Text style={styles.ninetyTitle} accessibilityRole="header">
+                    90 in 90 Challenge
+                  </Text>
                   <Text style={styles.ninetySubtitle}>{motivationalMessage}</Text>
                 </View>
               </View>
 
               {/* Progress Ring/Bar */}
-              <View style={styles.progressContainer}>
+              <View
+                style={styles.progressContainer}
+                accessible
+                accessibilityRole="progressbar"
+                accessibilityLabel={`90 in 90 progress: ${ninetyInNinetyProgress.daysCompleted} of 90 days, ${Math.round(percentComplete)}% complete`}
+                accessibilityValue={{
+                  min: 0,
+                  max: 90,
+                  now: ninetyInNinetyProgress.daysCompleted,
+                }}
+              >
                 <View style={styles.progressTrack}>
                   <View style={[styles.progressFill, { width: `${percentComplete}%` }]}>
                     <LinearGradient
@@ -199,17 +232,35 @@ export function MeetingStatsScreen(): React.ReactElement {
               <View style={styles.statusBadges}>
                 {ninetyInNinetyProgress.isComplete ? (
                   <View style={[styles.statusBadge, styles.completeBadge]}>
-                    <MaterialIcons name="check-circle" size={16} color={ds.colors.success} />
+                    <MaterialIcons
+                      name="check-circle"
+                      size={16}
+                      color={ds.colors.success}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.completeBadgeText}>Complete! 🎉</Text>
                   </View>
                 ) : isOnTrack ? (
                   <View style={[styles.statusBadge, styles.onTrackBadge]}>
-                    <MaterialIcons name="trending-up" size={16} color={ds.colors.success} />
+                    <MaterialIcons
+                      name="trending-up"
+                      size={16}
+                      color={ds.colors.success}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.onTrackBadgeText}>On Track!</Text>
                   </View>
                 ) : (
                   <View style={[styles.statusBadge, styles.behindBadge]}>
-                    <MaterialIcons name="schedule" size={16} color={ds.colors.warning} />
+                    <MaterialIcons
+                      name="schedule"
+                      size={16}
+                      color={ds.colors.warning}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.behindBadgeText}>Keep Going!</Text>
                   </View>
                 )}
@@ -226,7 +277,7 @@ export function MeetingStatsScreen(): React.ReactElement {
           {/* Achievements Preview */}
           <Animated.View entering={FadeInUp.delay(300)} style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Achievements</Text>
+              <Text style={styles.sectionTitle} accessibilityRole="header">Achievements</Text>
               <Pressable
                 onPress={() => navigation.navigate('Achievements' as never)}
                 accessibilityLabel="View all achievements"
@@ -283,11 +334,17 @@ export function MeetingStatsScreen(): React.ReactElement {
 
           {/* Recent Check-Ins */}
           <Animated.View entering={FadeInUp.delay(400)} style={styles.section}>
-            <Text style={styles.sectionTitle}>Recent Check-Ins</Text>
+            <Text style={styles.sectionTitle} accessibilityRole="header">Recent Check-Ins</Text>
 
             {checkIns.length === 0 ? (
               <GlassCard style={styles.emptyCard}>
-                <MaterialIcons name="event-note" size={48} color={darkAccent.textMuted} />
+                <MaterialIcons
+                  name="event-note"
+                  size={48}
+                  color={darkAccent.textMuted}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
+                />
                 <Text style={styles.emptyText}>No check-ins yet</Text>
                 <Text style={styles.emptySubtext}>
                   Start attending meetings to build your streak!
@@ -295,8 +352,13 @@ export function MeetingStatsScreen(): React.ReactElement {
               </GlassCard>
             ) : (
               checkIns.slice(0, 10).map((checkIn) => (
-                <GlassCard key={checkIn.id} style={styles.checkInCard}>
-                  <View style={styles.checkInIcon}>
+                <GlassCard
+                  key={checkIn.id}
+                  style={styles.checkInCard}
+                  accessible
+                  accessibilityLabel={`${checkIn.meetingName}, ${formatDate(checkIn.createdAt)} at ${formatTime(checkIn.createdAt)}`}
+                >
+                  <View style={styles.checkInIcon} importantForAccessibility="no-hide-descendants">
                     <MaterialIcons name="check-circle" size={20} color={ds.colors.success} />
                   </View>
                   <View style={styles.checkInContent}>

@@ -118,7 +118,11 @@ export function FavoriteMeetingsScreen({
   // Loading state
   if (isLoading && meetings.length === 0) {
     return (
-      <View style={[styles.centerContainer, screenBg]}>
+      <View
+        style={[styles.centerContainer, screenBg]}
+        accessibilityLabel="Loading favorite meetings"
+        accessibilityRole="progressbar"
+      >
         <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
       </View>
     );

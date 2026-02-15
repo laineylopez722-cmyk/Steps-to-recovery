@@ -104,8 +104,13 @@ export function CheckInModal({
         />
 
         {showSuccess ? (
-          <Animated.View entering={ZoomIn.springify().damping(15)} style={styles.successContainer}>
-            <View style={styles.successIcon}>
+          <Animated.View
+            entering={ZoomIn.springify().damping(15)}
+            style={styles.successContainer}
+            accessibilityRole="alert"
+            accessibilityLabel="Checked in successfully. Keep up the great work!"
+          >
+            <View style={styles.successIcon} importantForAccessibility="no-hide-descendants">
               <MaterialIcons name="check-circle" size={80} color={ds.colors.success} />
             </View>
             <Text style={styles.successText}>Checked In! 🎉</Text>
@@ -120,10 +125,10 @@ export function CheckInModal({
             <GlassCard style={styles.card}>
               {/* Header */}
               <View style={styles.header}>
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainer} importantForAccessibility="no-hide-descendants">
                   <MaterialIcons name="check-circle-outline" size={32} color={ds.colors.success} />
                 </View>
-                <Text style={styles.title}>Check In to Meeting</Text>
+                <Text style={styles.title} accessibilityRole="header">Check In to Meeting</Text>
                 <Pressable
                   onPress={handleClose}
                   style={styles.closeButton}
@@ -142,20 +147,38 @@ export function CheckInModal({
                 {/* Meeting Details */}
                 <View style={styles.meetingInfo}>
                   <View style={styles.infoRow}>
-                    <MaterialIcons name="event" size={20} color={darkAccent.textMuted} />
+                    <MaterialIcons
+                      name="event"
+                      size={20}
+                      color={darkAccent.textMuted}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.meetingName}>{meeting.name}</Text>
                   </View>
 
                   {meeting.address && (
                     <View style={styles.infoRow}>
-                      <MaterialIcons name="place" size={20} color={darkAccent.textMuted} />
+                      <MaterialIcons
+                        name="place"
+                        size={20}
+                        color={darkAccent.textMuted}
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden
+                      />
                       <Text style={styles.meetingAddress}>{meeting.address}</Text>
                     </View>
                   )}
 
                   {meeting.time && (
                     <View style={styles.infoRow}>
-                      <MaterialIcons name="access-time" size={20} color={darkAccent.textMuted} />
+                      <MaterialIcons
+                        name="access-time"
+                        size={20}
+                        color={darkAccent.textMuted}
+                        importantForAccessibility="no"
+                        accessibilityElementsHidden
+                      />
                       <Text style={styles.meetingTime}>{meeting.time}</Text>
                     </View>
                   )}
@@ -184,15 +207,33 @@ export function CheckInModal({
                 <View style={styles.impactSection}>
                   <Text style={styles.impactTitle}>This check-in will:</Text>
                   <View style={styles.impactItem}>
-                    <MaterialIcons name="trending-up" size={18} color={ds.colors.success} />
+                    <MaterialIcons
+                      name="trending-up"
+                      size={18}
+                      color={ds.colors.success}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.impactText}>Update your meeting streak</Text>
                   </View>
                   <View style={styles.impactItem}>
-                    <MaterialIcons name="emoji-events" size={18} color={ds.colors.warning} />
+                    <MaterialIcons
+                      name="emoji-events"
+                      size={18}
+                      color={ds.colors.warning}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.impactText}>Count toward achievements</Text>
                   </View>
                   <View style={styles.impactItem}>
-                    <MaterialIcons name="star" size={18} color={ds.colors.accent} />
+                    <MaterialIcons
+                      name="star"
+                      size={18}
+                      color={ds.colors.accent}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
+                    />
                     <Text style={styles.impactText}>Progress your 90-in-90 challenge</Text>
                   </View>
                 </View>

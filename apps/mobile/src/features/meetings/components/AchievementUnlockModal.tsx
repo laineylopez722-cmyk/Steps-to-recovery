@@ -149,6 +149,7 @@ export function AchievementUnlockModal({
                     top: i % 2 === 0 ? 20 : 40,
                   },
                 ]}
+                importantForAccessibility="no-hide-descendants"
               >
                 <MaterialIcons
                   name={['star', 'favorite', 'emoji-events'][i % 3] as IconName}
@@ -171,7 +172,7 @@ export function AchievementUnlockModal({
 
             {/* Title and Message */}
             <Animated.View entering={FadeIn.delay(300)}>
-              <Text style={styles.badge}>Achievement Unlocked!</Text>
+              <Text style={styles.badge} accessibilityRole="header">Achievement Unlocked!</Text>
               <Text style={styles.title}>{achievement.title}</Text>
               <Text style={styles.description}>{achievement.description}</Text>
               <Text style={styles.message}>{message}</Text>
