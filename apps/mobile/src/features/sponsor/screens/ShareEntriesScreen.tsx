@@ -124,6 +124,8 @@ export function ShareEntriesScreen(): React.ReactElement {
             name="account-alert"
             size={48}
             color={styles.mutedIcon.color}
+            importantForAccessibility="no"
+            accessibilityElementsHidden
           />
           <Text style={styles.emptyText}>Connect a sponsor to share entries.</Text>
         </View>

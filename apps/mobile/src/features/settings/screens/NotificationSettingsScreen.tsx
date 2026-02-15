@@ -382,8 +382,8 @@ export function NotificationSettingsScreen(): React.ReactElement {
         >
           {/* Permission Warning */}
           {permissionStatus === 'denied' && (
-            <Animated.View entering={FadeIn.duration(300)} style={styles.warningCard}>
-              <Feather name="alert-circle" size={20} color={ds.colors.warning} />
+            <Animated.View entering={FadeIn.duration(300)} style={styles.warningCard} accessibilityRole="alert" accessibilityLiveRegion="polite">
+              <Feather name="alert-circle" size={20} color={ds.colors.warning} importantForAccessibility="no" accessibilityElementsHidden />
               <View style={styles.warningContent}>
                 <Text style={styles.warningTitle}>Notifications Disabled</Text>
                 <Text style={styles.warningText}>
@@ -407,7 +407,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
           {/* Reminders Section */}
           {notificationsEnabled && permissionGranted && (
             <>
-              <Text style={styles.sectionHeader}>Daily Reminders</Text>
+              <Text style={styles.sectionHeader} accessibilityRole="header">Daily Reminders</Text>
 
               <Animated.View entering={FadeInDown.delay(100).duration(300)} style={styles.card}>
                 <TimePickerRow
@@ -458,7 +458,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
               </Animated.View>
 
               {/* Celebrations & Encouragement Section */}
-              <Text style={styles.sectionHeader}>Celebrations & Encouragement</Text>
+              <Text style={styles.sectionHeader} accessibilityRole="header">Celebrations & Encouragement</Text>
 
               <Animated.View entering={FadeInDown.delay(150).duration(300)} style={styles.card}>
                 <ToggleRow
@@ -483,7 +483,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
               {/* Meeting Reminders Section (Geofencing) */}
               {geofencingSupported && (
                 <>
-                  <Text style={styles.sectionHeader}>Meeting Reminders</Text>
+                  <Text style={styles.sectionHeader} accessibilityRole="header">Meeting Reminders</Text>
 
                   <Animated.View entering={FadeInDown.delay(175).duration(300)} style={styles.card}>
                     <ToggleRow
@@ -535,7 +535,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
                         <View style={styles.divider} />
 
                         <View style={styles.geofenceInfo}>
-                          <Feather name="info" size={14} color={ds.colors.textTertiary} />
+                          <Feather name="info" size={14} color={ds.colors.textTertiary} importantForAccessibility="no" accessibilityElementsHidden />
                           <Text style={styles.geofenceInfoText}>
                             {geofenceCount > 0
                               ? `Monitoring ${geofenceCount} meeting location${geofenceCount !== 1 ? 's' : ''}.`
@@ -549,8 +549,8 @@ export function NotificationSettingsScreen(): React.ReactElement {
                     {geoPermStatus === 'foreground_only' && geofencingEnabled && (
                       <>
                         <View style={styles.divider} />
-                        <View style={styles.geofenceWarning}>
-                          <Feather name="alert-triangle" size={14} color={ds.colors.warning} />
+                        <View style={styles.geofenceWarning} accessibilityRole="alert">
+                          <Feather name="alert-triangle" size={14} color={ds.colors.warning} importantForAccessibility="no" accessibilityElementsHidden />
                           <Text style={styles.geofenceWarningText}>
                             Background location not granted. Open device settings to allow "Always"
                             location access for geofencing to work.
@@ -563,7 +563,7 @@ export function NotificationSettingsScreen(): React.ReactElement {
               )}
 
               {/* Actions Section */}
-              <Text style={styles.sectionHeader}>Actions</Text>
+              <Text style={styles.sectionHeader} accessibilityRole="header">Actions</Text>
 
               <Animated.View entering={FadeInDown.delay(200).duration(300)}>
                 <Pressable

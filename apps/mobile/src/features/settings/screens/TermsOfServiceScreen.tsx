@@ -122,7 +122,7 @@ function Section({
 }): React.ReactElement {
   return (
     <View style={styles.section}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">{title}</Text>
       <Text style={styles.body}>{children}</Text>
     </View>
   );

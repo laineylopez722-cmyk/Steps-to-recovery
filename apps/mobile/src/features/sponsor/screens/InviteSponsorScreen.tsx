@@ -101,7 +101,7 @@ export function InviteSponsorScreen(): React.ReactElement {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View entering={FadeInDown.duration(300)} style={styles.header}>
-            <Text style={styles.screenTitle}>Invite a Sponsor</Text>
+            <Text style={styles.screenTitle} accessibilityRole="header">Invite a Sponsor</Text>
             <Text style={styles.headerSubtitle}>
               Create a private invite payload and share it with your sponsor. They will reply with a
               confirmation payload to complete the connection.
