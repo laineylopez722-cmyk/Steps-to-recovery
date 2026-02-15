@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { BackHandler, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AuthNavigator } from './AuthNavigator';
@@ -178,7 +179,17 @@ export function RootNavigator() {
     return undefined;
   }, [user, needsOnboarding]);
 
-  if ((!authInitialized && authLoading) || checkingProfile) {
+  // Hide native splash screen once initialization is complete.
+  // This keeps the branded splash visible during DB migration + auth + profile check,
+  // then transitions directly to auth/main content with no intermediary spinner.
+  const appReady = authInitialized && !checkingProfile;
+  useEffect(() => {
+    if (appReady) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [appReady]);
+
+  if (!appReady && authLoading) {
     return <LoadingSpinner message="Loading your journey..." />;
   }
 

@@ -9,6 +9,11 @@ if (__DEV__) {
 // Uniwind - Import global CSS with design system tokens
 import './src/global.css';
 
+// Keep native splash screen visible until app is fully initialized
+// (DB migrations + auth check complete). Prevents flash of loading spinner.
+import * as SplashScreen from 'expo-splash-screen';
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 // Initialize Sentry early for crash reporting
 import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
 initSentry();
