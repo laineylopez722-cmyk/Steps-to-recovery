@@ -58,5 +58,5 @@ export type { InputProps } from './Input';
 // PROGRESS INDICATORS
 // ============================================================================
 
-export { LinearProgress, CircularProgress } from './Progress';
-export type { LinearProgressProps, CircularProgressProps } from './Progress';
+export { CircularProgress } from './Progress';
+export type { CircularProgressProps } from './Progress';
