@@ -50,7 +50,7 @@ export const CRISIS_KEYWORDS = {
     'might relapse',
     'close to using',
     'losing hope',
-    "don't know if I can",
+    "don't know if i can",
     'slipping',
     'urges are bad',
     'craving hard',
