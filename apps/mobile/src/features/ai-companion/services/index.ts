@@ -33,15 +33,6 @@ export { filterAIResponse, type SafetyFilterResult } from './contentSafetyFilter
 // Weekly reports
 export { generateWeeklyReport, type WeeklyReport } from './weeklyReport';
 
-// Safety plan
-export {
-  loadSafetyPlan,
-  saveSafetyPlan,
-  getRelevantPlanSection,
-  formatPlanForContext,
-  type SafetyPlan,
-} from './safetyPlanService';
-
 // Recovery strength score
 export {
   calculateRecoveryStrength,
