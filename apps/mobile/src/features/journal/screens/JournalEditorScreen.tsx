@@ -233,7 +233,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
               testID="journal-back-button"
             >
               <View style={styles.backBtnInner}>
-                <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
+                <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} accessibilityElementsHidden importantForAccessibility="no" />
               </View>
             </Pressable>
 
@@ -245,7 +245,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
                 accessibilityLabel="Share journal entry"
                 accessibilityRole="button"
               >
-                <Feather name="share" size={18} color={ds.colors.textPrimary} />
+                <Feather name="share" size={18} color={ds.colors.textPrimary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
               <Pressable
                 onPress={handleMore}
@@ -254,7 +254,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
                 accessibilityRole="button"
                 accessibilityHint="Permanently removes this journal entry"
               >
-                <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} />
+                <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
             </View>
           </View>
@@ -313,14 +313,14 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
                 accessibilityLabel="Add checklist"
                 accessibilityRole="button"
               >
-                <Feather name="check-square" size={20} color={ds.colors.textSecondary} />
+                <Feather name="check-square" size={20} color={ds.colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
               <Pressable
                 style={styles.toolBtn}
                 accessibilityLabel="Attach file"
                 accessibilityRole="button"
               >
-                <Feather name="paperclip" size={20} color={ds.colors.textSecondary} />
+                <Feather name="paperclip" size={20} color={ds.colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
               <Pressable
                 style={styles.toolBtn}
@@ -328,12 +328,12 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
                 accessibilityRole="button"
                 accessibilityHint="Mention a person or tag"
               >
-                <Feather name="at-sign" size={20} color={ds.colors.textSecondary} />
+                <Feather name="at-sign" size={20} color={ds.colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
             </View>
 
             {/* Saving indicator */}
-            <View style={styles.saveStatus}>
+            <View style={styles.saveStatus} accessibilityLiveRegion="polite">
               {saveError ? (
                 <Pressable onPress={handleAutoSave} accessibilityLabel="Save failed, tap to retry" accessibilityRole="button">
                   <Animated.Text entering={FadeIn} style={styles.saveErrorText}>
@@ -341,7 +341,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
                   </Animated.Text>
                 </Pressable>
               ) : !isSaved ? (
-                <Animated.Text entering={FadeIn} style={styles.savingText}>
+                <Animated.Text entering={FadeIn} style={styles.savingText} accessibilityLabel="Saving journal entry">
                   Saving...
                 </Animated.Text>
               ) : null}
@@ -355,7 +355,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
               accessibilityRole="button"
               accessibilityHint="Saves current entry and starts a new one"
             >
-              <Feather name="edit" size={20} color={ds.colors.accent} />
+              <Feather name="edit" size={20} color={ds.colors.accent} accessibilityElementsHidden importantForAccessibility="no" />
             </Pressable>
           </Animated.View>
         </KeyboardAvoidingView>
@@ -464,8 +464,8 @@ const createStyles = (ds: DS) =>
       gap: ds.space[3],
     },
     toolBtn: {
-      width: 32,
-      height: 28,
+      minWidth: 48,
+      minHeight: 48,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
     },
