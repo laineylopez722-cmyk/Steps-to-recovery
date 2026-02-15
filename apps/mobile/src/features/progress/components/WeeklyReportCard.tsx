@@ -154,6 +154,10 @@ export function WeeklyReportCard({
     report.checkInSummary.completedDays,
     prev?.checkInSummary.completedDays,
   );
+  const meetingTrend = getTrend(
+    report.meetingSummary.attended,
+    prev?.meetingSummary?.attended,
+  );
 
   return (
     <Animated.View entering={ScreenAnimations.entrance}>
@@ -199,6 +203,12 @@ export function WeeklyReportCard({
             label="Check-in Days"
             value={`${report.checkInSummary.completedDays}/7`}
             trend={checkinTrend}
+          />
+          <StatItem
+            icon="account-group"
+            label="Meetings"
+            value={report.meetingSummary.attended}
+            trend={meetingTrend}
           />
         </View>
 
