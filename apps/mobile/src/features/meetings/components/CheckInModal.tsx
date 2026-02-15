@@ -14,6 +14,7 @@ import {
   Platform,
   ScrollView,
   Pressable,
+  Alert,
 } from 'react-native';
 import Animated, {
   FadeIn,
@@ -55,19 +56,24 @@ export function CheckInModal({
       return;
     }
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    const success = await onConfirm(notes.trim() || undefined);
-    if (success === false) {
-      return;
-    }
-    setNotes('');
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      const success = await onConfirm(notes.trim() || undefined);
+      if (success === false) {
+        return;
+      }
+      setNotes('');
 
-    // Show success animation briefly
-    setShowSuccess(true);
-    setTimeout(() => {
-      setShowSuccess(false);
-      onClose();
-    }, 1500);
+      // Show success animation briefly
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        onClose();
+      }, 1500);
+    } catch {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert('Check-In Failed', 'Something went wrong. Please try again.');
+    }
   };
 
   const handleClose = () => {

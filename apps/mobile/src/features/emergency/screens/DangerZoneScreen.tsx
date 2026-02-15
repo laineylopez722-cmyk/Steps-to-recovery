@@ -52,8 +52,13 @@ export function DangerZoneScreen({
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetchContacts(), refetchStats()]);
-    setRefreshing(false);
+    try {
+      await Promise.all([refetchContacts(), refetchStats()]);
+    } catch {
+      // Swallow — hooks expose error state for UI
+    } finally {
+      setRefreshing(false);
+    }
   }, [refetchContacts, refetchStats]);
 
   const handleAddContact = useCallback(
@@ -63,16 +68,24 @@ export function DangerZoneScreen({
       relationshipType: RelationshipType;
       notes?: string;
     }) => {
-      await addContact(contact);
-      hapticSelection();
+      try {
+        await addContact(contact);
+        hapticSelection();
+      } catch {
+        Alert.alert('Failed to Add', 'Could not save this contact. Please try again.');
+      }
     },
     [addContact],
   );
 
   const handleRemoveContact = useCallback(
     async (contactId: string) => {
-      await removeContact(contactId);
-      hapticSelection();
+      try {
+        await removeContact(contactId);
+        hapticSelection();
+      } catch {
+        Alert.alert('Failed to Remove', 'Could not remove this contact. Please try again.');
+      }
     },
     [removeContact],
   );

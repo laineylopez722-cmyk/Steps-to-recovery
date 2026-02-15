@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { FlatList, View, Text, Share } from 'react-native';
+import { FlatList, View, Text, Share, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
@@ -59,20 +59,32 @@ export function ShareEntriesScreen(): React.ReactElement {
 
   const handleShare = async (): Promise<void> => {
     if (!mySponsor || selectedEntries.length === 0) return;
-    const payloads = await shareEntries(mySponsor.id, selectedEntries, user?.user_metadata?.name);
-    const bundle = payloads.join('\n');
-    setShareBundle(bundle);
-    setShareModalVisible(true);
+    try {
+      const payloads = await shareEntries(mySponsor.id, selectedEntries, user?.user_metadata?.name);
+      const bundle = payloads.join('\n');
+      setShareBundle(bundle);
+      setShareModalVisible(true);
+    } catch {
+      Alert.alert('Share Failed', 'Could not prepare entries for sharing. Please try again.');
+    }
   };
 
   const handleCopy = async (): Promise<void> => {
     if (!shareBundle) return;
-    await Clipboard.setStringAsync(shareBundle);
+    try {
+      await Clipboard.setStringAsync(shareBundle);
+    } catch {
+      Alert.alert('Copy Failed', 'Could not copy to clipboard.');
+    }
   };
 
   const handleShareBundle = async (): Promise<void> => {
     if (!shareBundle) return;
-    await Share.share({ message: shareBundle });
+    try {
+      await Share.share({ message: shareBundle });
+    } catch {
+      // User cancelled share sheet — no error needed
+    }
   };
 
   const renderItem = ({ item, index }: { item: JournalEntryDecrypted; index: number }): React.ReactElement => {

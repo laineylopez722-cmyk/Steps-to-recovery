@@ -65,8 +65,13 @@ export function MeetingFinderScreen({ navigation }: MeetingFinderScreenProps): R
 
   const handleRefresh = useCallback(async (): Promise<void> => {
     setIsRefreshing(true);
-    await searchNearby();
-    setIsRefreshing(false);
+    try {
+      await searchNearby();
+    } catch {
+      // Swallow — hook exposes error state for UI
+    } finally {
+      setIsRefreshing(false);
+    }
   }, [searchNearby]);
 
   const handleMeetingPress = useCallback(

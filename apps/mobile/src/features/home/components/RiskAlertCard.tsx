@@ -96,20 +96,24 @@ export function RiskAlertCard({
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsNotifying(true);
 
-    const result = await onNotifySponsor();
+    try {
+      const result = await onNotifySponsor();
 
-    setIsNotifying(false);
+      if (result.success) {
+        setNotifySuccess(true);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-    if (result.success) {
-      setNotifySuccess(true);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      // Hide success message after 2 seconds
-      setTimeout(() => {
-        setNotifySuccess(false);
-      }, 2000);
-    } else {
+        // Hide success message after 2 seconds
+        setTimeout(() => {
+          setNotifySuccess(false);
+        }, 2000);
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      }
+    } catch {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } finally {
+      setIsNotifying(false);
     }
   };
 

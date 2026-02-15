@@ -74,7 +74,11 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
   const handleManualSync = useCallback(async (): Promise<void> => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-    await syncWidget();
+    try {
+      await syncWidget();
+    } catch {
+      // Widget sync is best-effort
+    }
   }, [syncWidget]);
 
   return (

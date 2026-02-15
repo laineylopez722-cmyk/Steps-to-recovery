@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView, Alert } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
@@ -66,12 +66,18 @@ export function PostMeetingReflectionModal({
       willApply,
     };
 
-    const result = await savePostMeetingReflection(userId, checkinId, prompts);
+    try {
+      const result = await savePostMeetingReflection(userId, checkinId, prompts);
 
-    setSaving(false);
-
-    if (result.success) {
-      onComplete();
+      if (result.success) {
+        onComplete();
+      } else {
+        Alert.alert('Save Failed', 'Could not save your reflection. Please try again.');
+      }
+    } catch {
+      Alert.alert('Save Failed', 'Something went wrong. Your reflection was not saved — please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 

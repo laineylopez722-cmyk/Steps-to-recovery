@@ -49,8 +49,13 @@ export function MeetingStatsScreen(): React.ReactElement {
 
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([refetchCheckIns(), refetchProgress()]);
-    setRefreshing(false);
+    try {
+      await Promise.all([refetchCheckIns(), refetchProgress()]);
+    } catch {
+      // Swallow — hooks expose error state for UI
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleAchievementPress = (achievementKey: string) => {
