@@ -63,16 +63,21 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
   const originalTitle = useRef('');
   const originalBody = useRef('');
+  // Track created entry ID so subsequent auto-saves use updateEntry (not createEntry)
+  const createdEntryIdRef = useRef<string | null>(null);
 
   const isEditMode = params?.mode === 'edit';
-  const entryId = params?.entryId;
+  const paramEntryId = params?.entryId;
+  // Use created ID if we already saved a new entry, otherwise use route param
+  const entryId = createdEntryIdRef.current || paramEntryId;
+  const effectiveEditMode = isEditMode || !!createdEntryIdRef.current;
   const currentEntry =
-    isEditMode && entryId ? (entries.find((e) => e.id === entryId) ?? null) : null;
+    effectiveEditMode && entryId ? (entries.find((e) => e.id === entryId) ?? null) : null;
 
   // Load existing entry
   useEffect(() => {
-    if (isEditMode && entryId) {
-      const entry = entries.find((e) => e.id === entryId);
+    if (isEditMode && paramEntryId) {
+      const entry = entries.find((e) => e.id === paramEntryId);
       if (entry) {
         setTitle(entry.title || '');
         setBody(entry.body);
@@ -80,7 +85,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
         originalBody.current = entry.body;
       }
     }
-  }, [isEditMode, entryId, entries]);
+  }, [isEditMode, paramEntryId, entries]);
 
   // Check if content changed
   const hasChanges = title !== originalTitle.current || body !== originalBody.current;
@@ -116,7 +121,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
     if (!trimmedTitle && !trimmedBody) return;
 
     try {
-      if (isEditMode && entryId) {
+      if (effectiveEditMode && entryId) {
         await updateEntry(entryId, {
           title: trimmedTitle || null,
           body: trimmedBody || trimmedTitle, // Use title as body if body is empty
@@ -125,13 +130,15 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
           tags: [],
         });
       } else {
-        await createEntry({
+        const newId = await createEntry({
           title: trimmedTitle || null,
           body: trimmedBody || trimmedTitle,
           mood: null,
           craving: null,
           tags: [],
         });
+        // Store created ID so subsequent saves use updateEntry
+        createdEntryIdRef.current = newId;
       }
 
       setIsSaved(true);
@@ -211,6 +218,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
     setBody('');
     originalTitle.current = '';
     originalBody.current = '';
+    createdEntryIdRef.current = null;
     hapticLight();
   };
 
@@ -309,26 +317,32 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
             {/* Left tools */}
             <View style={styles.toolsPill}>
               <Pressable
-                style={styles.toolBtn}
-                accessibilityLabel="Add checklist"
+                style={[styles.toolBtn, styles.toolBtnDisabled]}
+                disabled
+                accessibilityLabel="Add checklist — coming soon"
                 accessibilityRole="button"
+                accessibilityState={{ disabled: true }}
               >
-                <Feather name="check-square" size={20} color={ds.colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
+                <Feather name="check-square" size={20} color={ds.colors.textQuaternary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
               <Pressable
-                style={styles.toolBtn}
-                accessibilityLabel="Attach file"
+                style={[styles.toolBtn, styles.toolBtnDisabled]}
+                disabled
+                accessibilityLabel="Attach file — coming soon"
                 accessibilityRole="button"
+                accessibilityState={{ disabled: true }}
               >
-                <Feather name="paperclip" size={20} color={ds.colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
+                <Feather name="paperclip" size={20} color={ds.colors.textQuaternary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
               <Pressable
-                style={styles.toolBtn}
-                accessibilityLabel="Add mention"
+                style={[styles.toolBtn, styles.toolBtnDisabled]}
+                disabled
+                accessibilityLabel="Add mention — coming soon"
                 accessibilityRole="button"
                 accessibilityHint="Mention a person or tag"
+                accessibilityState={{ disabled: true }}
               >
-                <Feather name="at-sign" size={20} color={ds.colors.textSecondary} accessibilityElementsHidden importantForAccessibility="no" />
+                <Feather name="at-sign" size={20} color={ds.colors.textQuaternary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
             </View>
 
@@ -468,6 +482,9 @@ const createStyles = (ds: DS) =>
       minHeight: 48,
       justifyContent: 'center' as const,
       alignItems: 'center' as const,
+    },
+    toolBtnDisabled: {
+      opacity: 0.5,
     },
     saveStatus: {
       flex: 1,

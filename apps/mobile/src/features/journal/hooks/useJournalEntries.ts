@@ -119,14 +119,14 @@ export function useCreateJournalEntry(userId: string): {
       JournalEntryDecrypted,
       'id' | 'user_id' | 'created_at' | 'updated_at' | 'sync_status' | 'supabase_id'
     >,
-  ) => Promise<void>;
+  ) => Promise<string>;
   isPending: boolean;
 } {
   const { db } = useDatabase();
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
-    void,
+    string,
     Error,
     CreateEntryVariables,
     { previousEntries: JournalEntryDecrypted[] | undefined }
@@ -168,6 +168,7 @@ export function useCreateJournalEntry(userId: string): {
       await addToSyncQueue(db, 'journal_entries', id, 'insert');
 
       logger.info('Journal entry created', { id });
+      return id;
     },
 
     // Optimistically update the UI immediately
@@ -214,6 +215,7 @@ export function useCreateJournalEntry(userId: string): {
     isPending: mutation.isPending,
   };
 }
+
 
 // Type for update entry variables
 interface UpdateEntryVariables {
