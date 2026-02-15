@@ -178,8 +178,15 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
   const abortControllerRef = useRef<AbortController | null>(null);
   const messageQueueRef = useRef<string[]>([]);
   const processingRef = useRef(false);
+  // Mirror currentConversation in a ref so processQueue always sees latest value
+  // (avoids stale closure from setTimeout / React batch updates)
+  const currentConversationRef = useRef<Conversation | null>(null);
 
   // Check AI configuration on mount
+  useEffect(() => {
+    currentConversationRef.current = currentConversation;
+  }, [currentConversation]);
+
   useEffect(() => {
     const checkConfig = async (): Promise<void> => {
       try {
@@ -233,6 +240,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
         const conversation = await chatHistory.createConversation(type, stepNumber);
         setCurrentConversation(conversation);
+        currentConversationRef.current = conversation;
         setMessages([]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to start conversation');
@@ -288,7 +296,9 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     agentSpan?.setAttribute('gen_ai.agent.name', 'RecoveryCompanion');
 
     try {
-      if (!currentConversation) {
+      // Use ref to get latest conversation (avoids stale closure from React batch updates)
+      const activeConversation = currentConversationRef.current;
+      if (!activeConversation) {
         throw new Error('No active conversation');
       }
 
@@ -306,7 +316,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
 
       // Add user message
-      const userMessage = await chatHistory.addMessage(currentConversation.id, 'user', content);
+      const userMessage = await chatHistory.addMessage(activeConversation.id, 'user', content);
       setMessages((prev) => [...prev, userMessage]);
 
       // Check if offline — use cached/prewritten response instead
@@ -317,7 +327,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
         // Save offline response as assistant message
         const offlineMsg = await chatHistory.addMessage(
-          currentConversation.id,
+          activeConversation.id,
           'assistant',
           offlineResult.content,
           { offline: true, offlineSource: offlineResult.source },
@@ -325,13 +335,13 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         setMessages((prev) => [...prev, offlineMsg]);
 
         // Queue the user message for sending when back online
-        await queuePendingMessage(content, currentConversation.id);
+        await queuePendingMessage(content, activeConversation.id);
 
         // Auto-title if first exchange
         if (messages.length === 0 && content.length > 0) {
           const title = generateConversationTitle(content);
           try {
-            await chatHistory.updateConversationTitle(currentConversation.id, title);
+            await chatHistory.updateConversationTitle(activeConversation.id, title);
             setCurrentConversation((prev) => (prev ? { ...prev, title } : prev));
           } catch {
             // Title update failed, not critical
@@ -455,13 +465,13 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           setIsOfflineResponse(true);
           const offlineResult = await getOfflineResponse(content);
           const offlineMsg = await chatHistory.addMessage(
-            currentConversation.id,
+            activeConversation.id,
             'assistant',
             offlineResult.content,
             { offline: true, offlineSource: offlineResult.source },
           );
           setMessages((prev) => [...prev, offlineMsg]);
-          await queuePendingMessage(content, currentConversation.id);
+          await queuePendingMessage(content, activeConversation.id);
           return;
         }
 
@@ -477,7 +487,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         if (safetyResult.blocked) {
           logger.warn('AI response blocked by safety filter', {
             reason: safetyResult.blockReason,
-            conversationId: currentConversation.id,
+            conversationId: activeConversation.id,
           });
           Sentry.addBreadcrumb({
             category: 'ai.safety',
@@ -490,7 +500,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         }
 
         const aiMessage = await chatHistory.addMessage(
-          currentConversation.id,
+          activeConversation.id,
           'assistant',
           safeContent,
           { crisisDetected: crisis?.detected },
@@ -517,7 +527,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           // Generate a short title from the first user message
           const title = generateConversationTitle(content);
           try {
-            await chatHistory.updateConversationTitle(currentConversation.id, title);
+            await chatHistory.updateConversationTitle(activeConversation.id, title);
             setCurrentConversation((prev) => (prev ? { ...prev, title } : prev));
           } catch {
             // Title update failed, not critical
@@ -531,7 +541,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
             name: 'execute_tool memoryExtractor',
           });
           toolSpan?.setAttribute('gen_ai.tool.name', 'memoryExtractor');
-          const memories = extractMemoriesFromMessage(userId, content, currentConversation.id);
+          const memories = extractMemoriesFromMessage(userId, content, activeConversation.id);
           if (memories.length > 0) {
             await memoryStore.addMemories(memories);
           }
@@ -558,11 +568,11 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
               recentMessages,
               existingMemories,
               userId,
-              currentConversation.id,
+              activeConversation.id,
             );
 
             if (semanticMemories.length > 0) {
-              await storeSemanticMemories(db, semanticMemories, userId, currentConversation.id);
+              await storeSemanticMemories(db, semanticMemories, userId, activeConversation.id);
               logger.debug('Stored semantic memories', { count: semanticMemories.length });
             }
           } catch (semanticErr) {
@@ -589,7 +599,6 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
     }
   }, [
-    currentConversation,
     chatHistory,
     messages,
     sobrietyDays,
@@ -623,7 +632,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         // If rate limit check fails, allow the message
       }
 
-      // If no conversation, start a new one
+      // If no conversation, start a new one (also sets ref synchronously)
       if (!currentConversation) {
         await startNewConversation();
       }
@@ -631,14 +640,10 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       setIsLoading(true);
       setError(null);
 
-      // Add to queue
+      // Add to queue and process immediately — ref-based lookup avoids stale state
       messageQueueRef.current.push(content.trim());
-
-      // Wait a tick for conversation to be set
-      setTimeout(() => {
-        processQueue();
-        setIsLoading(false);
-      }, 100);
+      processQueue();
+      setIsLoading(false);
     },
     [currentConversation, startNewConversation, processQueue],
   );
