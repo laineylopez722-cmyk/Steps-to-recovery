@@ -9,8 +9,8 @@ export function StepDetailErrorState(): React.ReactElement {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
-      <View style={styles.errorContainer}>
-        <MaterialIcons name="error-outline" size={48} color={ds.semantic.intent.alert.solid} />
+      <View style={styles.errorContainer} accessible accessibilityRole="alert" accessibilityLabel="Step not found">
+        <MaterialIcons name="error-outline" size={48} color={ds.semantic.intent.alert.solid} importantForAccessibility="no" />
         <Text style={[ds.typography.h2, { color: ds.semantic.text.primary, marginTop: 16 }]}>
           Step not found
         </Text>

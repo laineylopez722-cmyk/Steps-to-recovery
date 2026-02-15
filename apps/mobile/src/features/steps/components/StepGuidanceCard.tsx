@@ -26,9 +26,10 @@ export const StepGuidanceCard = React.memo(function StepGuidanceCard({
         style={styles.guidanceToggle}
         accessibilityRole="button"
         accessibilityLabel={showGuidance ? 'Hide step guidance' : 'Show step guidance'}
+        accessibilityState={{ expanded: showGuidance }}
       >
         <View style={styles.descriptionHeader}>
-          <View style={styles.iconWrap}>
+          <View style={styles.iconWrap} importantForAccessibility="no-hide-descendants">
             <MaterialCommunityIcons name="lightbulb-on-outline" size={18} color={ds.colors.accent} />
           </View>
 
@@ -44,6 +45,7 @@ export const StepGuidanceCard = React.memo(function StepGuidanceCard({
           name={showGuidance ? 'chevron-up' : 'chevron-down'}
           size={20}
           color={ds.colors.textSecondary}
+          importantForAccessibility="no"
         />
       </Pressable>
 

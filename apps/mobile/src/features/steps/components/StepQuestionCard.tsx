@@ -32,7 +32,7 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
   return (
     <Card variant="elevated" style={[styles.card, isAnswered && styles.cardAnswered]}>
       {/* Top row: number badge + status */}
-      <View style={styles.topRow}>
+      <View style={styles.topRow} importantForAccessibility="no-hide-descendants">
         <View
           style={[
             styles.numberBadge,
@@ -53,7 +53,7 @@ export const StepQuestionCard = React.memo(function StepQuestionCard({
       </View>
 
       {/* Prompt */}
-      <Text style={[ds.semantic.typography.body, styles.prompt]}>{prompt}</Text>
+      <Text style={[ds.semantic.typography.body, styles.prompt]} accessibilityRole="header">{prompt}</Text>
 
       {/* Answer */}
       <TextArea

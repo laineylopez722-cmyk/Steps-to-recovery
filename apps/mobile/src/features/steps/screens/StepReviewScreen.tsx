@@ -319,8 +319,9 @@ export function StepReviewScreen(): React.ReactElement {
               styles.sectionHeader,
               { backgroundColor: ds.colors.bgSecondary, borderColor: ds.colors.borderSubtle },
             ]}
+            accessibilityRole="header"
           >
-            <MaterialCommunityIcons name="bookmark-outline" size={20} color={ds.colors.accent} />
+            <MaterialCommunityIcons name="bookmark-outline" size={20} color={ds.colors.accent} importantForAccessibility="no" />
             <View style={styles.sectionHeaderContent}>
               <Text variant="labelLarge" style={{ color: ds.colors.textPrimary }}>
                 {item.title}
@@ -337,7 +338,7 @@ export function StepReviewScreen(): React.ReactElement {
       const hasAnswer = Boolean(answer && answer.trim().length > 0);
 
       return (
-        <Card variant="elevated" style={styles.questionCard}>
+        <Card variant="elevated" style={styles.questionCard} accessibilityLabel={`Question ${item.questionNumber}: ${item.prompt}. ${hasAnswer ? 'Answered' : 'Not answered yet'}`}>
           <View style={styles.questionHeader}>
             <View
               style={[
@@ -350,6 +351,7 @@ export function StepReviewScreen(): React.ReactElement {
                       borderWidth: 2,
                     },
               ]}
+              importantForAccessibility="no-hide-descendants"
             >
               {hasAnswer ? (
                 <MaterialCommunityIcons name="check" size={18} color={ds.semantic.text.onDark} />
@@ -409,11 +411,12 @@ export function StepReviewScreen(): React.ReactElement {
   if (!stepData) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
-        <View style={styles.centered}>
+        <View style={styles.centered} accessible accessibilityRole="alert" accessibilityLabel="Step not found">
           <MaterialCommunityIcons
             name="alert-circle-outline"
             size={48}
             color={ds.semantic.intent.alert.solid}
+            importantForAccessibility="no"
           />
           <Text variant="h2" style={{ marginTop: theme.spacing.md, color: ds.semantic.text.primary }}>
             Step not found
@@ -426,7 +429,7 @@ export function StepReviewScreen(): React.ReactElement {
   if (isLoading) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
-        <View style={styles.centered}>
+        <View style={styles.centered} accessible accessibilityLabel="Loading your answers" accessibilityRole="progressbar">
           <Text variant="body" color="textSecondary">
             Loading your answers...
           </Text>
@@ -438,8 +441,8 @@ export function StepReviewScreen(): React.ReactElement {
   if (error) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}>
-        <View style={styles.centered}>
-          <MaterialCommunityIcons name="alert-circle" size={32} color={ds.semantic.intent.alert.solid} />
+        <View style={styles.centered} accessible accessibilityRole="alert" accessibilityLabel="Could not load your answers. Please try again.">
+          <MaterialCommunityIcons name="alert-circle" size={32} color={ds.semantic.intent.alert.solid} importantForAccessibility="no" />
           <Text variant="body" style={{ marginTop: theme.spacing.sm }}>
             We couldn't load your answers. Please try again.
           </Text>
@@ -471,7 +474,7 @@ export function StepReviewScreen(): React.ReactElement {
         contentContainerStyle={[styles.content, { paddingBottom: theme.spacing.xl }]}
         ListHeaderComponent={() => (
           <View style={styles.header}>
-            <Text variant="title2" style={{ color: ds.semantic.text.primary }}>
+            <Text variant="title2" style={{ color: ds.semantic.text.primary }} accessibilityRole="header">
               Step {stepNumber} Review
             </Text>
             <Text variant="bodySmall" color="textSecondary" style={{ marginTop: theme.spacing.xs }}>

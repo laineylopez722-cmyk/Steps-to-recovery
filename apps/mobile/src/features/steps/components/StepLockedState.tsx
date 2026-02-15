@@ -18,9 +18,9 @@ export function StepLockedState({
   const ds = useDs();
 
   return (
-    <View style={styles.lockedContainer}>
-      <MaterialCommunityIcons name="lock" size={48} color={ds.semantic.text.secondary} />
-      <Text style={[ds.typography.h2, { color: ds.semantic.text.primary, marginTop: 16 }]}>
+    <View style={styles.lockedContainer} accessible accessibilityRole="alert">
+      <MaterialCommunityIcons name="lock" size={48} color={ds.semantic.text.secondary} importantForAccessibility="no" />
+      <Text style={[ds.typography.h2, { color: ds.semantic.text.primary, marginTop: 16 }]} accessibilityRole="header">
         Step {stepNumber}
       </Text>
       <Text
