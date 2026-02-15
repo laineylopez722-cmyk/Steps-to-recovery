@@ -43,6 +43,13 @@ import { useQuickEscape, QuickEscapeTapZone } from './src/hooks/useQuickEscape';
 import { navigationRef } from './src/navigation/navigationRef';
 import { PortalHost } from '@rn-primitives/portal';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from './src/lib/fonts';
 
 /**
  * Biometric Lock Overlay
@@ -174,6 +181,14 @@ function App(): React.ReactElement {
   // Key used to force a full remount of the app tree on error recovery
   const [resetKey, setResetKey] = useState(0);
 
+  // Load Inter font family — splash screen stays visible until fonts are ready
+  const [fontsLoaded, fontError] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
   // Callback to trigger a full app remount (used by ErrorBoundary)
   const handleReset = useCallback(() => {
     setResetKey((k: number) => k + 1);
@@ -186,6 +201,11 @@ function App(): React.ReactElement {
       NavigationBar.setButtonStyleAsync('light').catch(() => {});
     }
   }, []);
+
+  // Don't render until fonts are loaded (splash screen stays visible)
+  if (!fontsLoaded && !fontError) {
+    return <></>;
+  }
 
   return (
     <ErrorBoundary key={resetKey} onReset={handleReset}>
