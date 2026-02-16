@@ -2,15 +2,17 @@
 
 ## In Progress
 - Device validation prep (blocked by EAS free tier, local dev only)
+- Offline AI fallback testing (checklist enhanced, pending device test)
 
 ## Pending
 
 ### High Priority
-- [ ] Verify app loads on device
-- [ ] Test offline journal entries
-- [ ] Test offline check-ins
-- [ ] Validate crisis screens work without network
-- [ ] Test meeting finder empty state (non-US users)
+- [ ] Verify app loads on device (local dev)
+- [ ] Test offline journal entries (local dev)
+- [ ] Test offline check-ins (local dev)
+- [ ] Validate crisis screens work without network (local dev)
+- [ ] Test AI offline fallback on device (checklist ready)
+- [ ] Test meeting finder empty state (non-US users) - ✅ done
 
 ### Medium Priority
 - ✅ AI companion reliability testing (11e81f6) - added try/catch guards to memory extraction paths
