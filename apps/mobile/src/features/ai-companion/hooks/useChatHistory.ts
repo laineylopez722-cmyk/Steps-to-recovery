@@ -176,7 +176,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
     if (isReady) {
       refreshConversations();
     }
-  }, [isReady, refreshConversations]);
+  }, [isReady, refreshConversations, userId]);
 
   /**
    * Create a new conversation
