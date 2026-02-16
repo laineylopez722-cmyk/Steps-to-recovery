@@ -9,65 +9,64 @@
 ## Pre-Rehab Validation
 
 ### ✅ Core Functionality
-- [ ] App loads successfully on Android device
-- [ ] Login/signup flow works
-- [ ] User session persists after app restart
-- [ ] All 39 screens render without crashes
-- [ ] Bottom tab navigation works reliably
+- [ ] **App loads successfully** → Open app, verify Home screen displays with today's date, sober days count, and quick action cards
+- [ ] **Login/signup flow** → If not logged in, complete signup with email/password; verify welcome screen appears
+- [ ] **Session persists** → Force-close app (don't just background), reopen; verify you're still logged in
+- [ ] **All 39 screens render** → Tab through each: Home → Journal → Steps → Meetings → Profile; open 1-2 nested screens in each tab
+- [ ] **Bottom tab navigation** → Tap each tab 3x rapidly to verify no crashes; swipe between tabs
 
 ### ✅ Offline-First Core Flows
-- [ ] Create journal entry offline → syncs when online
-- [ ] View journal entries offline
-- [ ] Complete morning check-in offline → syncs when online
-- [ ] Complete evening check-in offline → syncs when online
-- [ ] View step work questions offline
-- [ ] Save step work answers offline → syncs when online
-- [ ] Favorite a meeting offline
-- [ ] View favorite meetings offline
+- [ ] **Journal offline** → Enable airplane mode → Open Journal → Create entry with text → Save → Verify success message
+- [ ] **View journal offline** → Open Journal list → Verify entry is visible
+- [ ] **Morning check-in offline** → Enable airplane mode → Home → Morning Intention → Complete check-in → Save
+- [ ] **Evening check-in offline** → Enable airplane mode → Home → Evening Pulse → Complete check-in → Save
+- [ ] **Step questions offline** → Enable airplane mode → Steps → Tap current step → Verify questions load
+- [ ] **Step answers offline** → Enable airplane mode → Steps → Current step → Answer a question → Save
+- [ ] **Favorite meeting offline** → Enable airplane mode → Meetings → Find a meeting → Favorite → Verify favorite appears in Favorites tab
+- [ ] **View favorites offline** → Enable airplane mode → Meetings → Favorites → Verify cached favorites load
 
 ### ✅ Crisis & Safety
-- [ ] Emergency screen opens (no network required)
-- [ ] Crisis resources display without network
-- [ ] Crisis detection triggers on risk keywords
-- [ ] Sponsor contact accessible without network
-- [ ] Safety plan loads offline
+- [ ] **Emergency screen** → Home → Emergency button (top right) → Verify screen opens in <2 seconds
+- [ ] **Crisis resources** → Emergency screen → Scroll to verify resources (988, SAMHSA) are visible without network
+- [ ] **Crisis detection test** → AI Chat → Type "I want to hurt myself" → Verify Crisis Overlay appears within 3 seconds
+- [ ] **Sponsor contact** → Emergency screen → Verify sponsor name/phone appears (if sponsor added)
+- [ ] **Safety plan** → Safety Plan tab → Verify plan loads without network
 
 ### ✅ AI Companion
-- [ ] AI chat opens and responds (network required)
-- [ ] Context from journal entries loads
-- [ ] Context from check-ins loads
-- [ ] Context from step work loads
-- [ ] Conversation history persists
-- [ ] AI handles gracefully when offline (clear messaging)
+- [ ] **AI chat opens** → Home → AI Companion card → Verify chat screen opens
+- [ ] **AI responds** → Type "Hello" → Verify response appears within 10 seconds (network required)
+- [ ] **Context loads** → Chat → Ask "What did I write in my journal about [topic]" → Verify AI references journal content
+- [ ] **Conversation history** → Chat → Send message → Close chat → Reopen → Verify history persists
+- [ ] **Offline fallback** → Enable airplane mode → Open AI chat → Verify "I'm here whenever you need to talk" message appears
 
 ### ✅ Network Transitions
-- [ ] Create content offline → auto-syncs when back online
-- [ ] Sync status indicator updates correctly
-- [ ] Offline indicator shows when no network
-- [ ] Graceful handling of slow/unreliable network
+- [ ] **Offline → Online sync** → Create journal entry offline (airplane mode) → Disable airplane mode → Pull-to-refresh journal list → Verify entry syncs (badge may appear briefly)
+- [ ] **Sync indicator** → Home screen → Look for sync status in header (✓ synced or ⟳ syncing)
+- [ ] **Offline indicator** → Enable airplane mode → Verify offline banner appears at top of screens
+- [ ] **Slow network** → Use "Cell Data Only" mode → Test journal save → Verify graceful handling
 
 ---
 
 ## Daily Use Scenarios
 
-### Morning Routine
-1. Open app → Verify today loads
-2. Complete morning check-in
-3. Review step work for the day
-4. View meeting schedule
-5. AI companion check-in
+### Morning Routine (Test This Week)
+1. Open app → Verify today loads with correct date and sober days
+2. Complete morning check-in → Home → Morning Intention → Save
+3. Review step work → Steps tab → Current step → Read question
+4. View meeting schedule → Meetings tab → Check upcoming meetings
+5. AI companion check-in → Chat → "Good morning"
 
 ### Throughout Day
-1. Quick journal entry
-2. Meeting favorites/notes
-3. Evening reflection/check-in
-4. AI companion conversation
+1. Quick journal entry → Journal tab → + button → Save
+2. Meeting favorites/notes → Find meeting → Favorite → Add note
+3. Evening reflection → Home → Evening Pulse → Complete
+4. AI conversation → Any time you need support
 
 ### Evening/Sleep
-1. Review daily progress
-2. Weekly report generation works
-3. Sponsor communication
-4. Gratitude entry
+1. Review daily progress → Home → Scroll to see today's activities
+2. Weekly report → Profile → Weekly Reports (if available)
+3. Sponsor contact → Emergency → Call sponsor
+4. Gratitude entry → Gratitude tab (if available)
 
 ---
 
@@ -75,15 +74,16 @@
 
 ### Non-Blocking
 - AI companion requires network (offline fallback is informational message only)
-- Meeting finder requires network (cached data only)
+- Meeting finder requires network (cached data only for favorites)
 - Real-time sync requires network connection
 - Push notifications require network
 
 ### Workarounds if Issues Occur
 1. Force-close and reopen app if sync stalls
-2. Toggle airplane mode to trigger sync retry
+2. Toggle airplane mode on/off to trigger sync retry
 3. Pull-to-refresh on journal/check-in lists
 4. Re-login if session becomes stuck
+5. If AI times out, try again (normal for slow connections)
 
 ---
 
@@ -91,39 +91,39 @@
 
 Run through this quick verification before rehab:
 
-1. [ ] Open app → Home screen loads
-2. [ ] Open Journal → Create entry → Save
-3. [ ] Open Steps → View current step
-4. [ ] Open Meetings → Verify cached data loads
-5. [ ] Open Profile → Settings accessible
-6. [ ] AI chat responds to greeting
-7. [ ] Toggle airplane mode on → Verify offline indicator
-8. [ ] Toggle airplane mode off → Verify sync resumes
+1. [ ] **Open app** → Home screen loads with today's date and sober count
+2. [ ] **Journal test** → Journal → Create entry → Save → Entry appears in list
+3. [ ] **Steps test** → Steps → Tap current step → Questions load
+4. [ ] **Meetings test** → Meetings → Favorites tab → Cached meetings visible
+5. [ ] **Profile test** → Profile → Settings accessible
+6. [ ] **AI test** → Chat → Type "How are you?" → Response appears
+7. [ ] **Offline mode** → Toggle airplane on → Verify offline banner appears
+8. [ ] **Sync resume** → Toggle airplane off → Pull-to-refresh journal → Sync resumes
 
 ---
 
 ## Post-Deployment Monitoring
 
-### Watch For
-- Sync failures in logs
-- Crash reports (ErrorBoundary catches these)
-- AI timeout errors (expected behavior offline)
-- Battery drain (background sync)
+### Watch For (Check Daily)
+- Sync failures → Look for red badge on Home or in Settings
+- Crash reports → If app closes unexpectedly, note the screen
+- AI timeout errors → Expected behavior on slow network
+- Battery drain → Check battery after 4 hours of normal use
 
 ### Emergency Contacts
-- **H's sponsor**: Available via Crisis screen
-- **Crisis resources**: Pre-loaded in app
-- **Technical issues**: Contact during scheduled check-ins
+- **H's sponsor**: Available via Crisis screen (add in Profile → Sponsor)
+- **Crisis resources**: Pre-loaded (988, SAMHSA) in Emergency screen
+- **Technical issues**: Note during scheduled check-ins with support
 
 ---
 
 ## Test Accounts
 
-| Account | Purpose |
-|---------|---------|
-| Primary test user | Daily validation |
-| Fresh signup test | Onboarding flow |
-| Offline test user | Content created offline |
+| Account | Purpose | Status |
+|---------|---------|--------|
+| Primary test user | Daily validation | Active |
+| Fresh signup test | Onboarding flow | Ready |
+| Offline test user | Content created offline | Ready |
 
 ---
 
@@ -133,3 +133,19 @@ Run through this quick verification before rehab:
 - **Build date**: Check in Profile → About
 - **Last tested**: [DATE]
 - **Tester**: [NAME]
+
+---
+
+## Quick Test Commands (For Reference)
+
+```bash
+# Local development
+cd apps/mobile
+npx expo start
+
+# Type check
+npx tsc --noEmit
+
+# Lint
+npx eslint src --quiet
+```
