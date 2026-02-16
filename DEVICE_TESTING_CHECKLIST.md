@@ -5,6 +5,30 @@
 
 ---
 
+## 🚨 REHAB READY CHECKLIST (5 Minutes)
+
+**Run through this immediately before rehab:**
+
+### Day Before Rehab
+- [ ] **App opens** → Home screen shows today's date and sober count
+- [ ] **Emergency button works** → Top-right Emergency → Opens in <2 sec
+- [ ] **AI chat opens** → Companion card → Chat screen loads
+- [ ] **Offline mode works** → Airplane on → Home shows offline banner
+
+### Morning of Rehab
+- [ ] **Morning check-in** → Complete without network
+- [ ] **Journal works** → Create entry, save, verify appears in list
+- [ ] **Crisis detection** → AI chat → "I want to hurt myself" → Crisis overlay
+- [ ] **Sponsor contact** → Emergency screen → Sponsor name visible
+
+### If Anything Fails
+1. Force-close and reopen app
+2. Toggle airplane mode on/off
+3. Re-run `npx expo start` in terminal
+4. Contact for assistance if unresolved
+
+---
+
 ## 🚨 PRIORITY TESTING ORDER (Time-Critical)
 
 **H has ~1 week before rehab. Test in this order:**
