@@ -1,3 +1,4 @@
+import CryptoJS from 'crypto-js';
 /**
  * Encryption Utilities
  *
@@ -17,16 +18,9 @@
  */
 
 import { Platform } from 'react-native';
-import { secureStorage } from '../adapters/secureStorage';
-import type { StorageAdapter } from '../adapters/storage';
-import { logger } from './logger';
-import {
-  aesDecryptCBC,
-  aesEncryptCBC,
-  hmacSHA256,
-  pbkdf2,
-  sha256Bytes,
-} from './webCrypto';
+import { secureStorage } from "../adapters/secureStorage/index";
+import type { StorageAdapter } from "../adapters/storage/index.ts";
+import { logger } from "./logger";
 
 /**
  * Constant-time string comparison to prevent timing attacks
@@ -117,7 +111,10 @@ export async function generateEncryptionKey(): Promise<string> {
   // Generate a unique encryption key using PBKDF2 for key stretching
   // Note: We use a random salt per key generation, but the derived key itself is stored
   const salt = await generateUUID();
-  const derivedKey = await pbkdf2(randomString, salt, KEY_DERIVATION_ITERATIONS, 256);
+  const derivedKey = CryptoJS.PBKDF2(randomString, salt, {
+    keySize: 256 / 32,
+    iterations: KEY_DERIVATION_ITERATIONS,
+  }).toString();
   // Store only the derived key - salt is not needed for future operations
   await secureStorage.setItemAsync(ENCRYPTION_KEY_NAME, derivedKey);
   return derivedKey;
@@ -137,6 +134,7 @@ export async function generateEncryptionKey(): Promise<string> {
  * }
  * ```
  */
+// deno-lint-ignore require-await
 export async function getEncryptionKey(): Promise<string | null> {
   return secureStorage.getItemAsync(ENCRYPTION_KEY_NAME);
 }
@@ -163,26 +161,20 @@ export async function getEncryptionKey(): Promise<string | null> {
 export async function encryptContent(content: string): Promise<string> {
   const key = await getEncryptionKey();
   if (!key) throw new Error('Encryption key not found');
-
-  // Generate random IV
   const ivBytes = await getRandomBytes(16);
   const iv = Array.from(ivBytes)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
-
-  // Encrypt using AES-256-CBC
-  const ciphertext = await aesEncryptCBC(content, key, iv);
-
-  // Create payload for MAC
-  const payload = `${iv}:${ciphertext}`;
-
-  // Derive MAC key from encryption key using SHA-256
-  const keyBytes = hexToBuffer(key);
-  const macKeyHex = await sha256Bytes(keyBytes);
-
-  // Compute HMAC over payload
-  const mac = await hmacSHA256(payload, macKeyHex);
-
+  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+  const keyWordArray = CryptoJS.enc.Hex.parse(key);
+  const encrypted = CryptoJS.AES.encrypt(content, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  const payload = `${iv}:${encrypted.toString()}`;
+  const macKey = CryptoJS.SHA256(keyWordArray);
+  const mac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
   return `${payload}:${mac}`;
 }
 
@@ -209,32 +201,31 @@ export async function encryptContent(content: string): Promise<string> {
 export async function decryptContent(encrypted: string): Promise<string> {
   const key = await getEncryptionKey();
   if (!key) throw new Error('Encryption key not found');
-
   const parts = encrypted.split(':');
   if (parts.length !== 2 && parts.length !== 3) {
     throw new Error('Invalid format');
   }
-
   const [iv, ciphertext, mac] = parts;
   if (!iv || !ciphertext) throw new Error('Invalid format');
   if (parts.length === 3 && mac === '') throw new Error('Invalid format');
-
-  // Verify MAC if present
   if (mac) {
-    const keyBytes = hexToBuffer(key);
-    const macKeyHex = await sha256Bytes(keyBytes);
+    const keyWordArray = CryptoJS.enc.Hex.parse(key);
+    const macKey = CryptoJS.SHA256(keyWordArray);
     const payload = `${iv}:${ciphertext}`;
-    const expectedMac = await hmacSHA256(payload, macKeyHex);
-
+    const expectedMac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
     if (!constantTimeEqual(expectedMac, mac)) {
       throw new Error('Integrity check failed');
     }
   }
-
-  // Decrypt
-  const plaintext = await aesDecryptCBC(ciphertext, key, iv);
+  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+  const keyWordArray = CryptoJS.enc.Hex.parse(key);
+  const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
   if (!plaintext) throw new Error('Decryption failed');
-
   return plaintext;
 }
 
@@ -273,53 +264,73 @@ export async function hasEncryptionKey(): Promise<boolean> {
   return key !== null && key.length > 0;
 }
 
-/** Decrypt content with a specific key (for key rotation) */
-async function decryptWithKey(encrypted: string, key: string): Promise<string> {
+/**
+ * Decrypt content with a specific key (used for key rotation workflows).
+ *
+ * This is a low-level, synchronous helper that performs decryption and
+ * integrity verification using the provided key. Unlike {@link decryptContent},
+ * this function does not access secure storage or perform any asynchronous I/O;
+ * callers must supply the correct raw encryption key.
+ *
+ * The expected encrypted format is:
+ * - `"iv:ciphertext"` for payloads without an HMAC
+ * - `"iv:ciphertext:mac"` for payloads with an HMAC-SHA256 authentication tag
+ *
+ * @param encrypted - The encrypted payload string in `iv:ciphertext[:mac]` format,
+ *                    where `iv`, `ciphertext`, and optional `mac` are hex-encoded.
+ * @param key - Hex-encoded AES key to use for decryption. This should be the
+ *              exact key that was originally used to encrypt the content.
+ * @returns The decrypted plaintext string.
+ *
+ * @throws {Error} If the encrypted string format is invalid (missing parts).
+ * @throws {Error} If the integrity check fails due to MAC mismatch.
+ * @throws {Error} If decryption fails (for example, due to an incorrect key
+ *                 or corrupted ciphertext).
+ */
+function decryptWithKey({ encrypted, key }: { encrypted: string; key: string; }): string {
   const parts = encrypted.split(':');
   if (parts.length !== 2 && parts.length !== 3) throw new Error('Invalid format');
   const [iv, ciphertext, mac] = parts;
   if (!iv || !ciphertext) throw new Error('Invalid format');
 
-  // Verify MAC if present
   if (mac) {
-    const keyBytes = hexToBuffer(key);
-    const macKeyHex = await sha256Bytes(keyBytes);
+    const keyWordArray = CryptoJS.enc.Hex.parse(key);
+    const macKey = CryptoJS.SHA256(keyWordArray);
     const payload = `${iv}:${ciphertext}`;
-    const expectedMac = await hmacSHA256(payload, macKeyHex);
-
+    const expectedMac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
     if (!constantTimeEqual(expectedMac, mac)) {
       throw new Error('Integrity check failed');
     }
   }
 
-  // Decrypt
-  const plaintext = await aesDecryptCBC(ciphertext, key, iv);
+  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+  const keyWordArray = CryptoJS.enc.Hex.parse(key);
+  const decrypted = CryptoJS.AES.decrypt(ciphertext, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  const plaintext = decrypted.toString(CryptoJS.enc.Utf8);
   if (!plaintext) throw new Error('Decryption failed');
-
   return plaintext;
 }
 
 /** Encrypt content with a specific key (for key rotation) */
 async function encryptWithKey(content: string, key: string): Promise<string> {
-  // Generate random IV
   const ivBytes = await getRandomBytes(16);
   const iv = Array.from(ivBytes)
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
-
-  // Encrypt using AES-256-CBC
-  const ciphertext = await aesEncryptCBC(content, key, iv);
-
-  // Create payload for MAC
-  const payload = `${iv}:${ciphertext}`;
-
-  // Derive MAC key from encryption key using SHA-256
-  const keyBytes = hexToBuffer(key);
-  const macKeyHex = await sha256Bytes(keyBytes);
-
-  // Compute HMAC over payload
-  const mac = await hmacSHA256(payload, macKeyHex);
-
+  const ivWordArray = CryptoJS.enc.Hex.parse(iv);
+  const keyWordArray = CryptoJS.enc.Hex.parse(key);
+  const encrypted = CryptoJS.AES.encrypt(content, keyWordArray, {
+    iv: ivWordArray,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7,
+  });
+  const payload = `${iv}:${encrypted.toString()}`;
+  const macKey = CryptoJS.SHA256(keyWordArray);
+  const mac = CryptoJS.HmacSHA256(payload, macKey).toString(CryptoJS.enc.Hex);
   return `${payload}:${mac}`;
 }
 
@@ -349,7 +360,10 @@ export async function rotateEncryptionKey(
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
   const salt = await generateUUID();
-  const newKey = await pbkdf2(randomString, salt, KEY_DERIVATION_ITERATIONS, 256);
+  const newKey = CryptoJS.PBKDF2(randomString, salt, {
+    keySize: 256 / 32,
+    iterations: KEY_DERIVATION_ITERATIONS,
+  }).toString();
 
   // All tables with encrypted columns
   const tables = [
@@ -382,10 +396,8 @@ export async function rotateEncryptionKey(
     },
     {
       table: 'craving_surf_sessions',
-      columns: ['encrypted_initial_rating', 'encrypted_final_rating', 'encrypted_distraction_used'],
+      columns: ['encrypted_notes'],
     },
-    { table: 'favorite_meetings', columns: ['encrypted_notes'] },
-    { table: 'safety_plans', columns: ['encrypted_plan'] },
   ];
 
   // Count total items for progress
@@ -424,7 +436,7 @@ export async function rotateEncryptionKey(
       for (const col of columns) {
         const encrypted = record[col];
         if (encrypted) {
-          const plaintext = await decryptWithKey(encrypted, oldKey);
+          const plaintext = await decryptWithKey({ encrypted, key: oldKey });
           const reEncrypted = await encryptWithKey(plaintext, newKey);
           updates.push(`${col} = ?`);
           values.push(reEncrypted);
@@ -446,15 +458,4 @@ export async function rotateEncryptionKey(
 
   logger.info('Encryption key rotation complete', { totalItems: processedItems });
   onProgress?.(100);
-}
-
-/**
- * Helper to convert hex string to Uint8Array (internal)
- */
-function hexToBuffer(hex: string): Uint8Array {
-  const bytes = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < bytes.length; i++) {
-    bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-  }
-  return bytes;
 }

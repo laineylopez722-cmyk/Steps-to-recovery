@@ -272,7 +272,7 @@ export async function authenticateWithBiometrics(
  * Securely authenticate user for sensitive operations
  * Always requires biometric confirmation
  */
-export async function secureAuthenticate(
+export function secureAuthenticate(
   operation: string = 'this action',
 ): Promise<BiometricAuthResult> {
   return authenticateWithBiometrics({
@@ -285,7 +285,7 @@ export async function secureAuthenticate(
  * Quick authenticate for app unlock
  * Uses less strict requirements for better UX
  */
-export async function quickAuthenticate(): Promise<BiometricAuthResult> {
+export function quickAuthenticate(): Promise<BiometricAuthResult> {
   return authenticateWithBiometrics({
     promptMessage: 'Unlock Steps to Recovery',
     requireConfirmation: false,

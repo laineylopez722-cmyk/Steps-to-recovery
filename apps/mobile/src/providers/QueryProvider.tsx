@@ -8,8 +8,15 @@ import { AppState, type AppStateStatus, Platform } from 'react-native';
 import { logger } from '../utils/logger';
 
 // React Query dev plugin — visible in Expo DevTools (dev only, tree-shaken in production)
+// Note: @dev-plugins/react-query may not be installed in all environments
 if (__DEV__) {
-  import('@dev-plugins/react-query').catch(() => {});
+  // Use require to avoid TypeScript static import resolution
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('@dev-plugins/react-query');
+  } catch {
+    // Plugin not installed, continue without it
+  }
 }
 
 // Global query client configuration

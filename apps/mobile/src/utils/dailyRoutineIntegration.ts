@@ -6,8 +6,8 @@
  * with the existing check-in system, creating a cohesive daily practice.
  */
 
-import { logger } from '../utils/logger';
-import type { DailyReading, DailyReadingReflection } from '../types';
+import { logger } from "./logger";
+import type { DailyReading, DailyReadingReflection } from "../types/index.ts";
 
 // Define DailyCheckin interface locally since it's not exported from types
 interface DailyCheckin {

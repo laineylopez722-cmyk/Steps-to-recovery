@@ -8,8 +8,10 @@
 require('./polyfills.cjs');
 
 /** @param {import('@babel/core').ConfigAPI} api */
-module.exports = function (api)  {
-  api.cache.using(() => process.env.BABEL_ENV || process.env.NODE_ENV || 'development');
+module.exports = function (api) {
+  api.cache.using(() => {
+    return process.env.BABEL_ENV || process.env.NODE_ENV || 'development';
+  });
 
   const isTest = api.env('test');
   const isDevClient = process.env.EXPO_USE_DEV_CLIENT === '1';
@@ -53,13 +55,13 @@ module.exports = function (api)  {
     // Only apply to project source, not node_modules
     ...(isTest
       ? {
-          overrides: [
-            {
-              test: ['./src/**'],
-              plugins: ['babel-plugin-dynamic-import-node'],
-            },
-          ],
-        }
+        overrides: [
+          {
+            test: ['./src/**'],
+            plugins: ['babel-plugin-dynamic-import-node'],
+          },
+        ],
+      }
       : {}),
     // Exclude node_modules from transformation except specific packages
     // Use patterns like expo(-[^/]*)? to match expo, expo-modules-core, expo-sqlite, etc.
