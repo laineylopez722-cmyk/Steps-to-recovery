@@ -308,6 +308,7 @@ globalThis.testUtils = {
     // @ts-ignore - Mock Date constructor for testing
     globalThis.Date = class extends RealDate {
       /** @param {...any} args */
+      // deno-lint-ignore constructor-super
       constructor(...args) {
         if (args.length === 0) {
           super(date);
@@ -321,7 +322,7 @@ globalThis.testUtils = {
       }
     };
     return () => {
-      global.Date = RealDate;
+      globalThis.Date = RealDate;
     };
   },
 };
@@ -329,15 +330,15 @@ globalThis.testUtils = {
 // Add TextEncoder/TextDecoder polyfills for Node environment
 if (typeof TextEncoder === 'undefined') {
   const { TextEncoder, TextDecoder } = require('util');
-  global.TextEncoder = TextEncoder;
+  globalThis.TextEncoder = TextEncoder;
   // @ts-ignore - Node.js TextDecoder has slightly different types than browser
-  global.TextDecoder = TextDecoder;
+  globalThis.TextDecoder = TextDecoder;
 }
 
 // Mock crypto.subtle for AES-GCM tests
 if (typeof crypto === 'undefined' || !crypto.subtle) {
   // @ts-ignore - Mock crypto.subtle for testing (incomplete implementation)
-  global.crypto = {
+  globalThis.crypto = {
     subtle: {
       // @ts-ignore - Mock crypto key for testing
       importKey: jest.fn(() => Promise.resolve('mock-key')),
