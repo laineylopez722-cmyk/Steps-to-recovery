@@ -232,4 +232,66 @@ npx tsc --noEmit  # Must pass before any device test
 ```
 
 **If tsc fails:** Fix errors first, then retry device test.
-**If Metro hangs:** Press `a` for Android, `i` for iOS, or `r` to reload.
+**If Metro hangs:** Press `a` for Android, iOS, or `r` to reload.
+
+## Troubleshooting Common Issues
+
+### App Won't Start
+```
+1. Close Metro terminal (Ctrl+C)
+2. Run: cd apps/mobile && npx expo start --clear
+3. Scan QR code again
+```
+
+### Sync Stuck / Not Working
+```
+1. Toggle airplane mode ON then OFF
+2. Pull-to-refresh on the relevant screen (Journal, Meetings, etc.)
+3. Check Settings → Sync for pending count
+4. Force-close and reopen app
+```
+
+### AI Not Responding
+```
+1. Check network connection
+2. If offline: expected behavior (shows offline message)
+3. Try again after 10 seconds (normal for slow connections)
+4. Force-close and reopen chat
+```
+
+### Journal Entries Not Saving
+```
+1. Check sync status in Settings
+2. Toggle airplane off and pull-to-refresh
+3. Verify entry appears in list
+4. Force-close and reopen app
+```
+
+### Emergency Screen Slow
+```
+1. This is expected on first load (caches resources)
+2. Second open should be <2 seconds
+3. If still slow: force-close and reopen app
+```
+
+### Haptic Feedback Not Working
+```
+1. Check phone is not on silent/vibrate
+2. Check Settings → Accessibility → Haptic feedback enabled
+3. Test with Emergency screen button
+```
+
+### Login/Session Issues
+```
+1. Force-close app completely
+2. Reopen and try login again
+3. If still failing: Settings → Account → Sign Out, then re-sign in
+```
+
+---
+
+## Emergency Contacts (If Issues Persist)
+
+- **Technical issues**: Note during scheduled check-ins
+- **Crisis support**: Emergency screen → 988, SAMHSA, sponsor
+- **App issues**: Document screen/flow where issue occurred for fix
