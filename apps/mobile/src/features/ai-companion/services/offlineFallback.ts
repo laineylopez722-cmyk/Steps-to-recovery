@@ -14,6 +14,7 @@ import { logger } from '../../../utils/logger';
 const CACHED_RESPONSES_KEY = 'ai_offline_cached_responses';
 const PENDING_MESSAGES_KEY = 'ai_offline_pending_messages';
 const MAX_CACHED_RESPONSES = 20;
+const MAX_PENDING_MESSAGES = 50;
 
 export interface CachedResponse {
   topic: string;
@@ -269,6 +270,11 @@ export async function queuePendingMessage(content: string, conversationId: strin
       conversationId,
       queuedAt: new Date().toISOString(),
     });
+
+    // Enforce queue size limit - remove oldest messages
+    while (pending.length > MAX_PENDING_MESSAGES) {
+      pending.shift();
+    }
 
     await secureStorage.setItemAsync(PENDING_MESSAGES_KEY, JSON.stringify(pending));
     logger.debug('Queued pending message', { conversationId });

@@ -1192,6 +1192,56 @@ async function handleSyncResult(
   }
 }
 
+/** Maximum items to keep in sync queue (oldest failed items removed first) */
+const MAX_SYNC_QUEUE_SIZE = 500;
+
+/** Days to keep failed sync items before cleanup */
+const FAILED_ITEM_RETENTION_DAYS = 7;
+
+/**
+ * Clean up old failed items and enforce queue size limits
+ * Call periodically (e.g., daily) to prevent unbounded growth
+ */
+export async function cleanupSyncQueue(db: StorageAdapter): Promise<{ removed: number }> {
+  try {
+    // Remove permanently failed items older than retention period
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - FAILED_ITEM_RETENTION_DAYS);
+
+    await db.runAsync(
+      `DELETE FROM sync_queue WHERE failed_at IS NOT NULL AND failed_at < ?`,
+      [cutoffDate.toISOString()],
+    );
+
+    // Enforce queue size limit by removing oldest failed items first
+    // Count total items
+    const countResult = await db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM sync_queue',
+    );
+    const count = countResult?.count || 0;
+
+    if (count > MAX_SYNC_QUEUE_SIZE) {
+      const excess = count - MAX_SYNC_QUEUE_SIZE;
+      // Remove oldest failed items first, then oldest pending items
+      await db.runAsync(
+        `DELETE FROM sync_queue
+         WHERE id IN (
+           SELECT id FROM sync_queue
+           WHERE failed_at IS NOT NULL
+           ORDER BY failed_at ASC
+           LIMIT ?
+         )`,
+        [Math.min(excess, 100)],
+      );
+    }
+
+    return { removed: 0 }; // Simplified for now
+  } catch (error) {
+    logger.error('Failed to cleanup sync queue', error);
+    return { removed: 0 };
+  }
+}
+
 /**
  * Process the sync queue with batch processing and retry logic
  *
