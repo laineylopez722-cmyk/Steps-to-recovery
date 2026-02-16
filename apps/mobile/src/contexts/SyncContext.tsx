@@ -81,13 +81,14 @@ export function SyncProvider({ children }: { children: React.ReactNode }) {
 
   /**
    * Update pending count from sync_queue
+   * Only counts items that can actually be synced (not permanently failed)
    */
   const updatePendingCount = useCallback(async () => {
     if (!user || !db || !isReady) return;
 
     try {
       const result = await db.getFirstAsync<{ count: number }>(
-        'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3',
+        'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3 AND (failed_at IS NULL OR failed_at = "")',
       );
       setState((prev) => ({ ...prev, pendingCount: result?.count || 0 }));
     } catch (error) {
