@@ -10,7 +10,7 @@ import { View, TextInput, Pressable, ActivityIndicator, Keyboard } from 'react-n
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 import { Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { Icon } from '@/components/ui/Icon';
+import { Icon } from '../../../components/ui/Icon';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -20,7 +20,7 @@ interface ChatInputProps {
   placeholder?: string;
 }
 
-export function ChatInput({ onSend, isLoading, placeholder = 'Message...' }: ChatInputProps) {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, placeholder = 'Message...' }) => {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const [text, setText] = useState('');
@@ -65,7 +65,7 @@ export function ChatInput({ onSend, isLoading, placeholder = 'Message...' }: Cha
           maxLength={2000}
           style={styles.input}
           onSubmitEditing={handleSend}
-          blurOnSubmit={false}
+          // blurOnSubmit removed (deprecated)
           returnKeyType="default"
           editable={!isLoading}
           accessibilityLabel="Message input"
