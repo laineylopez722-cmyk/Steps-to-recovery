@@ -13,8 +13,8 @@
 - [ ] Test meeting finder empty state (non-US users)
 
 ### Medium Priority
-- [ ] PowerSync offline sync evaluation
 - [ ] AI companion reliability testing
+- ✅ PowerSync offline sync evaluation (38d3558)
 
 ### Lower Priority
 - [ ] Accessibility audit beyond Profile tab
@@ -34,3 +34,4 @@
 - ✅ 3073830 docs: add WAVE2_PLAN.md for expo-router migration planning
 - ✅ 5ab4233 docs: add DEVICE_TESTING_CHECKLIST.md for rehab validation (re-created 2026-02-16)
 - ✅ 67f9996 fix: exclude permanently failed items from pending sync count
+- ✅ 38d3558 docs: PowerSync offline sync evaluation (Phase 2 prep)
