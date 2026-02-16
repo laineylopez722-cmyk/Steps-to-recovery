@@ -39,6 +39,14 @@
 - [ ] **Conversation history** → Chat → Send message → Close chat → Reopen → Verify history persists
 - [ ] **Offline fallback** → Enable airplane mode → Open AI chat → Verify "I'm here whenever you need to talk" message appears
 
+### ✅ AI Offline Fallback (Critical Safety Test)
+- [ ] **AI offline test** → Enable airplane mode → AI chat → Type "I'm having urges to use" → Verify:
+  - [ ] Offline indicator appears (may say "I'm offline but here for you")
+  - [ ] Response is one of the prewritten craving support messages (not a generic error)
+  - [ ] Message is queued for later sync (check Settings → Sync for pending count)
+- [ ] **AI offline → online recovery** → While offline, send 2-3 messages → Disable airplane mode → Pull-to-refresh chat → Verify messages sync (may take 5-10 seconds)
+- [ ] **Crisis detection offline** → Enable airplane mode → Type "I want to kill myself" → Verify Crisis Overlay appears (crisis detection is local, no network needed)
+
 ### ✅ Network Transitions
 - [ ] **Offline → Online sync** → Create journal entry offline (airplane mode) → Disable airplane mode → Pull-to-refresh journal list → Verify entry syncs (badge may appear briefly)
 - [ ] **Sync indicator** → Home screen → Look for sync status in header (✓ synced or ⟳ syncing)
