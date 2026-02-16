@@ -12,7 +12,6 @@ import { logger } from '../utils/logger';
 if (__DEV__) {
   // Use require to avoid TypeScript static import resolution
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('@dev-plugins/react-query');
   } catch {
     // Plugin not installed, continue without it

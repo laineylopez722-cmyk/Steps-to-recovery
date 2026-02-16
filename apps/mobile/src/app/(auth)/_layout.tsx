@@ -9,7 +9,6 @@
 
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, StyleSheet } from 'react-native';
 
 export default function AuthLayout() {
   return (
@@ -49,10 +48,3 @@ export default function AuthLayout() {
     </Tabs>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#1C1C1E',
-    borderTopWidth: 0,
-  },
-});
