@@ -35,3 +35,4 @@
 - ✅ 5ab4233 docs: add DEVICE_TESTING_CHECKLIST.md for rehab validation (re-created 2026-02-16)
 - ✅ 67f9996 fix: exclude permanently failed items from pending sync count
 - ✅ 38d3558 docs: PowerSync offline sync evaluation (Phase 2 prep)
+- ✅ 022127a docs: enhance DEVICE_TESTING_CHECKLIST with manual test steps
