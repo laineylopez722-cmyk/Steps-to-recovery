@@ -128,6 +128,7 @@
     "zustand": "^5.0.9"
   },
   "devDependencies": {
+    "@dev-plugins/react-query": "^0.4.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/react-native": "^13.3.3",
     "@types/jest": "^29.5.14",
