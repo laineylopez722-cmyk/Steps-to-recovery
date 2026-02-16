@@ -1,8 +1,31 @@
 # Device Testing Checklist — Steps to Recovery
 
 > Comprehensive validation checklist for rehab deployment.
-> Use this checklist before H enters rehab to ensure app reliability.
-> Status: **DRAFT** | Last updated: 2026-02-16
+> Status: **READY FOR TESTING** | Last updated: 2026-02-17
+
+---
+
+## 🚨 PRIORITY TESTING ORDER (Time-Critical)
+
+**H has ~1 week before rehab. Test in this order:**
+
+### Day 1: Core Safety & Offline (Non-Negotiable)
+1. [ ] **App loads** → Open app → Home screen with today's date/sober count visible
+2. [ ] **Emergency screen** → Top-right Emergency button → Opens in <2 seconds
+3. [ ] **Crisis detection offline** → AI Chat → "I want to hurt myself" → Crisis Overlay appears (no network needed)
+4. [ ] **Journal offline** → Airplane mode on → Journal → + → Save entry → Success
+5. [ ] **Morning check-in offline** → Airplane mode → Home → Morning Intention → Save
+
+### Day 2: Daily Workflows
+6. [ ] **Evening check-in offline** → Airplane mode → Home → Evening Pulse → Save
+7. [ ] **Step work offline** → Airplane mode → Steps → Current step → Questions load
+8. [ ] **Favorites offline** → Airplane mode → Meetings → Favorites → Cached meetings visible
+9. [ ] **Session persistence** → Force-close app → Reopen → Still logged in
+
+### Day 3: Network & Sync
+10. [ ] **Offline → Online sync** → Create entry offline → Airplane off → Pull-refresh → Sync works
+11. [ ] **AI companion** → Network on → Chat opens → Responds to messages
+12. [ ] **Offline fallback** → Airplane mode → AI Chat → "I'm offline" message appears
 
 ---
 
@@ -139,8 +162,17 @@ Run through this quick verification before rehab:
 
 - **App version**: Check in Profile → About
 - **Build date**: Check in Profile → About
-- **Last tested**: [DATE]
-- **Tester**: [NAME]
+- **Last tested**: ________________
+- **Tester**: ________________
+
+---
+
+## Test Results Log
+
+| Date | Tester | Passed | Failed | Notes |
+|------|--------|--------|--------|-------|
+| | | | | |
+| | | | | |
 
 ---
 
