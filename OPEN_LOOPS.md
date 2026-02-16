@@ -41,3 +41,4 @@
 - ✅ 48780f2 feat(expo-router): Phase 1 - parallel routes setup
 - ✅ 7253a5e docs: add LOCAL DEV QUICK START to DEVICE_TESTING_CHECKLIST (2026-02-17)
 - ✅ 5d7b6c6 docs: add NAVIGATION_INVENTORY.md for expo-router migration (2026-02-17)
+- ✅ 7b072d2 docs: add PRIORITY TESTING ORDER to DEVICE_TESTING_CHECKLIST (2026-02-17)
