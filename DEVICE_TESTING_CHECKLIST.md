@@ -151,9 +151,29 @@ Run through this quick verification before rehab:
 cd apps/mobile
 npx expo start
 
-# Type check
+# Type check (ALWAYS run before committing)
 npx tsc --noEmit
 
 # Lint
 npx eslint src --quiet
 ```
+
+## Local Dev Quick Start (Before Rehab)
+
+Run these commands to validate app on device before rehab:
+
+```bash
+# 1. Start Metro bundler (from repo root)
+cd apps/mobile
+npx expo start
+
+# 2. Scan QR code with phone (same network)
+# App will load via Metro (JS bundles over network)
+
+# 3. Quick validation commands (new terminal)
+cd apps/mobile
+npx tsc --noEmit  # Must pass before any device test
+```
+
+**If tsc fails:** Fix errors first, then retry device test.
+**If Metro hangs:** Press `a` for Android, `i` for iOS, or `r` to reload.
