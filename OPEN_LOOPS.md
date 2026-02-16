@@ -13,7 +13,6 @@
 - [ ] Test meeting finder empty state (non-US users)
 
 ### Medium Priority
-- [ ] Wave 2 planning (expo-router migration)
 - [ ] PowerSync offline sync evaluation
 - [ ] AI companion reliability testing
 
@@ -31,3 +30,4 @@
 - ✅ 5d418f6 fix: make haptics error-safe
 - ✅ ba242ae fix: improve meeting finder empty state for non-US users
 - ✅ 384e157 fix: wire meeting attendance into weekly reports
+- ✅ 3073830 docs: add WAVE2_PLAN.md for expo-router migration planning
