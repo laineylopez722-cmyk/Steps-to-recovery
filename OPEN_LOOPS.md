@@ -36,3 +36,4 @@
 - ✅ 67f9996 fix: exclude permanently failed items from pending sync count
 - ✅ 38d3558 docs: PowerSync offline sync evaluation (Phase 2 prep)
 - ✅ 022127a docs: enhance DEVICE_TESTING_CHECKLIST with manual test steps
+- ✅ 48780f2 feat(expo-router): Phase 1 - parallel routes setup
