@@ -20,6 +20,7 @@
 - [ ] Accessibility audit beyond Profile tab
 - [ ] Performance profiling on lower-end devices
 - [ ] Battery impact analysis (background sync)
+- ✅ Sync queue offline→online transition handling reviewed and improved
 
 ## Blocked
 - EAS free tier exhausted until Mar 01 (cannot build for device testing via cloud)
@@ -32,3 +33,4 @@
 - ✅ 384e157 fix: wire meeting attendance into weekly reports
 - ✅ 3073830 docs: add WAVE2_PLAN.md for expo-router migration planning
 - ✅ 5ab4233 docs: add DEVICE_TESTING_CHECKLIST.md for rehab validation
+- ✅ 67f9996 fix: exclude permanently failed items from pending sync count
