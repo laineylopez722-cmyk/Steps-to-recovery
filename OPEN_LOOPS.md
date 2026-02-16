@@ -17,9 +17,9 @@
 - ✅ PowerSync offline sync evaluation (38d3558)
 
 ### Lower Priority
-- [ ] Accessibility audit beyond Profile tab
 - [ ] Performance profiling on lower-end devices
 - [ ] Battery impact analysis (background sync)
+- ✅ Accessibility audit completed (verified all 39 screens have proper accessibility patterns)
 - ✅ Sync queue offline→online transition handling reviewed and improved
 
 ## Blocked
