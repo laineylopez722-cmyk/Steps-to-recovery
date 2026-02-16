@@ -32,5 +32,5 @@
 - ✅ ba242ae fix: improve meeting finder empty state for non-US users
 - ✅ 384e157 fix: wire meeting attendance into weekly reports
 - ✅ 3073830 docs: add WAVE2_PLAN.md for expo-router migration planning
-- ✅ 5ab4233 docs: add DEVICE_TESTING_CHECKLIST.md for rehab validation
+- ✅ 5ab4233 docs: add DEVICE_TESTING_CHECKLIST.md for rehab validation (re-created 2026-02-16)
 - ✅ 67f9996 fix: exclude permanently failed items from pending sync count
