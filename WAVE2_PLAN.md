@@ -1,8 +1,19 @@
 # WAVE2_PLAN.md — Expo-Router Migration Plan
 
 > Planning document for migrating from React Navigation to expo-router.
-> Status: **PLANNED** | Priority: Post-device-validation
+> Status: **IN PROGRESS** | Priority: Post-device-validation
 > Created: 2026-02-16
+
+## Phase 1: Parallel Routes Setup (COMPLETED 2026-02-16)
+
+✅ Completed:
+- Created `/app` directory structure alongside existing navigation
+- Added `app/_layout.tsx` root layout with providers
+- Added `app/(auth)/_layout.tsx` authenticated routes layout
+- Added placeholder journal routes (`app/(auth)/journal/index.tsx`, `app/(auth)/journal/[entryId].tsx`)
+- Installed expo-router, expo-linking, expo-system-ui dependencies
+
+Status: ✅ Ready for Phase 2 when device validation is complete
 
 ## Context
 
@@ -100,8 +111,9 @@ src/
 
 ## Pre-Migration Checklist
 
-- [ ] Research expo-router best practices for React Native
-- [ ] Verify expo-router compatibility with current expo version (SDK 54)
+- [x] Research expo-router best practices for React Native
+- [x] Verify expo-router compatibility with current expo version (SDK 54)
+- [x] Install expo-router dependencies (2026-02-16)
 - [ ] Test deep linking configuration
 - [ ] Review all navigation calls (74 total)
 - [ ] Audit screen options (headers, gestures, presentations)

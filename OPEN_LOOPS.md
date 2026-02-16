@@ -13,7 +13,7 @@
 - [ ] Test meeting finder empty state (non-US users)
 
 ### Medium Priority
-- [ ] AI companion reliability testing
+- ✅ AI companion reliability testing (11e81f6) - added try/catch guards to memory extraction paths
 - ✅ PowerSync offline sync evaluation (38d3558)
 
 ### Lower Priority
