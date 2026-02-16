@@ -104,12 +104,14 @@ function InsightCard({ insight }: { insight: RecoveryInsight }): React.ReactElem
   };
 
   return (
-    <GlassCard intensity="subtle" style={styles.insightCard}>
+    <GlassCard intensity="subtle" style={styles.insightCard} accessible={true} accessibilityRole="text">
       <View style={styles.insightHeader}>
         <MaterialCommunityIcons
           name={iconMap[insight.type]}
           size={20}
           color={colorMap[insight.type]}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no-hide-descendants"
         />
         <Text style={styles.insightTitle}>{insight.title}</Text>
       </View>
@@ -144,6 +146,9 @@ function StatCard({
       ]}
       glow={glow}
       glowColor={color}
+      accessible={true}
+      accessibilityLabel={`${label}: ${value}${subtext ? ` ${subtext}` : ''}`}
+      accessibilityRole="text"
     >
       <View style={[styles.statIconContainer, { backgroundColor: color + '20' }]}>
         <MaterialCommunityIcons name={icon} size={24} color={color} />
@@ -167,7 +172,12 @@ function StepProgressCard({ step }: { step: StepProgress }): React.ReactElement 
       : styles.textSecondary.color;
 
   return (
-    <View style={styles.stepRow}>
+    <View
+      style={styles.stepRow}
+      accessible={true}
+      accessibilityLabel={`Step ${step.stepNumber}: ${step.isComplete ? 'complete' : percent > 0 ? `${percent}% done` : 'not started'}`}
+      accessibilityRole="text"
+    >
       <View style={styles.stepLabelContainer}>
         {step.isComplete ? (
           <MaterialCommunityIcons name="check-circle" size={18} color={styles.successColor.color} />
@@ -246,8 +256,8 @@ export function ProgressDashboardScreen({
   return (
     <View style={styles.container}>
       <LinearGradient colors={gradients.background} style={StyleSheet.absoluteFill} />
-      <View style={styles.glowOrbTop} pointerEvents="none" />
-      <View style={styles.glowOrbBottom} pointerEvents="none" />
+      <View style={styles.glowOrbTop} pointerEvents="none" accessibilityElementsHidden={true} importantForAccessibility="no-hide-descendants" />
+      <View style={styles.glowOrbBottom} pointerEvents="none" accessibilityElementsHidden={true} importantForAccessibility="no-hide-descendants" />
 
       <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <ScrollView

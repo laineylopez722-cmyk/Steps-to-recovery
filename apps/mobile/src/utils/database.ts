@@ -13,8 +13,8 @@
  * @module utils/database
  */
 
-import type { StorageAdapter } from '../adapters/storage';
-import { logger } from './logger';
+import type { StorageAdapter } from "../adapters/storage/index.ts";
+import { logger } from "./logger";
 
 /**
  * Guard against duplicate/concurrent initialization

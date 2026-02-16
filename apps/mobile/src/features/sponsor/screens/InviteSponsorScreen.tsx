@@ -101,7 +101,7 @@ export function InviteSponsorScreen(): React.ReactElement {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View entering={FadeInDown.duration(300)} style={styles.header}>
-            <Text style={styles.screenTitle}>Invite a Sponsor</Text>
+            <Text style={styles.screenTitle} accessibilityRole="header">Invite a Sponsor</Text>
             <Text style={styles.headerSubtitle}>
               Create a private invite payload and share it with your sponsor. They will reply with a
               confirmation payload to complete the connection.
@@ -249,7 +249,7 @@ export function InviteSponsorScreen(): React.ReactElement {
   );
 }
 
-function InfoItem({ ds, text }: { ds: ReturnType<typeof import('../../../design-system/DsProvider').useDs>; text: string }): React.ReactElement {
+function InfoItem({ ds, text }: { ds: ReturnType<typeof useDs>; text: string }): React.ReactElement {
   return (
     <View style={{ flexDirection: 'row' }}>
       <Text style={{ ...ds.semantic.typography.body, color: ds.semantic.intent.primary.solid }}>

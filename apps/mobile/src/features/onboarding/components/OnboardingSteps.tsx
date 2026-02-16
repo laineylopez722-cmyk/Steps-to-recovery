@@ -25,6 +25,7 @@ import { Feather } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { ds } from '../../../design-system/tokens/ds';
 import { useAuth } from '../../../contexts/AuthContext';
+import { mmkvStorage } from '../../../lib/mmkv';
 import { logger } from '../../../utils/logger';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -588,9 +589,8 @@ export function OnboardingSteps({ onComplete }: OnboardingStepsProps): React.Rea
 
   const saveAndComplete = useCallback(async (): Promise<void> => {
     try {
-      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-      await AsyncStorage.setItem(`onboarding_complete_${user?.id || 'unknown'}`, 'true');
-      await AsyncStorage.setItem(
+      mmkvStorage.setItem(`onboarding_complete_${user?.id || 'unknown'}`, 'true');
+      mmkvStorage.setItem(
         `onboarding_selections_${user?.id || 'unknown'}`,
         JSON.stringify({
           program: selections.program,

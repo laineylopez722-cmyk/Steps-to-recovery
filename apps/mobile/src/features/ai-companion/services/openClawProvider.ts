@@ -17,6 +17,10 @@ const OPENCLAW_URL_KEY = 'openclaw_gateway_url';
 const OPENCLAW_TOKEN_KEY = 'openclaw_auth_token';
 
 // Environment-based config (takes precedence — zero user setup)
+// ⚠️ SECURITY: EXPO_PUBLIC_* vars are embedded in the JS bundle and extractable from APKs.
+// NEVER ship production builds with EXPO_PUBLIC_OPENCLAW_TOKEN set.
+// For production: use Supabase Edge Functions with per-user JWT auth instead.
+// This env path exists ONLY for H's personal dev/admin use.
 const ENV_URL = process.env.EXPO_PUBLIC_OPENCLAW_URL || '';
 const ENV_TOKEN = process.env.EXPO_PUBLIC_OPENCLAW_TOKEN || '';
 

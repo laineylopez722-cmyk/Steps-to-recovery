@@ -97,7 +97,7 @@ function SectionHeader({ title }: { title: string }) {
   const styles = useThemedStyles(createStyles);
   return (
     <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
+      <Text style={styles.sectionTitle} accessibilityRole="header">{title}</Text>
     </View>
   );
 }
@@ -112,8 +112,10 @@ function EmptyState({ isSearching }: { isSearching: boolean }) {
         name={isSearching ? 'search' : 'book-open'}
         size={48}
         color={ds.colors.textQuaternary}
+        accessibilityElementsHidden
+        importantForAccessibility="no"
       />
-      <Text style={styles.emptyTitle}>{isSearching ? 'No Results' : 'Start Your Journal'}</Text>
+      <Text style={styles.emptyTitle} accessibilityRole="header">{isSearching ? 'No Results' : 'Start Your Journal'}</Text>
       <Text style={styles.emptyText}>
         {isSearching
           ? 'Try a different search'
@@ -247,7 +249,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
             testID="journal-list-back-button"
           >
             <View style={styles.backBtnInner}>
-              <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} />
+              <Feather name="chevron-left" size={24} color={ds.colors.textPrimary} accessibilityElementsHidden importantForAccessibility="no" />
             </View>
           </Pressable>
 
@@ -260,7 +262,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
               accessibilityLabel="Share journal entries"
               accessibilityHint="Share selected entries with sponsor or export"
             >
-              <Feather name="share" size={18} color={ds.colors.textPrimary} />
+              <Feather name="share" size={18} color={ds.colors.textPrimary} accessibilityElementsHidden importantForAccessibility="no" />
             </Pressable>
             <Pressable
               style={styles.actionBtn}
@@ -268,18 +270,18 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
               accessibilityLabel="More options"
               accessibilityHint="Opens menu with additional journal options"
             >
-              <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} />
+              <Feather name="more-horizontal" size={18} color={ds.colors.textPrimary} accessibilityElementsHidden importantForAccessibility="no" />
             </Pressable>
           </View>
         </Animated.View>
 
         {/* Title */}
         <View style={styles.titleContainer}>
-          <Text style={styles.mainTitle}>Journal</Text>
+          <Text style={styles.mainTitle} accessibilityRole="header">Journal</Text>
           <View style={styles.subtitleRow}>
-            <Feather name="lock" size={12} color={ds.colors.textTertiary} />
+            <Feather name="lock" size={12} color={ds.colors.textTertiary} accessibilityElementsHidden importantForAccessibility="no" />
             <Text style={styles.subtitle}>End-to-end encrypted</Text>
-            <Text style={styles.entryCount}>{filteredEntries.length} entries</Text>
+            <Text style={styles.entryCount} accessibilityLabel={`${filteredEntries.length} entries`}>{filteredEntries.length} entries</Text>
           </View>
         </View>
 
@@ -304,7 +306,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
         <View style={[styles.toolbar, { paddingBottom: insets.bottom || ds.space[4] }]}>
           {/* Search bar */}
           <View style={[styles.searchBar, isSearchFocused && styles.searchBarFocused]}>
-            <Feather name="search" size={18} color={ds.colors.textTertiary} />
+            <Feather name="search" size={18} color={ds.colors.textTertiary} accessibilityElementsHidden importantForAccessibility="no" />
             <TextInput
               style={styles.searchInput}
               value={search}
@@ -324,7 +326,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
               accessibilityRole="button"
               accessibilityHint="Activate voice input for search"
             >
-              <Feather name="mic" size={18} color={ds.colors.textTertiary} />
+              <Feather name="mic" size={18} color={ds.colors.textTertiary} accessibilityElementsHidden importantForAccessibility="no" />
             </Pressable>
           </View>
 
@@ -336,7 +338,7 @@ export function JournalListScreen({ userId }: Props): React.ReactElement {
             accessibilityRole="button"
             testID="journal-new-entry-button"
           >
-            <Feather name="edit-3" size={18} color={ds.colors.accent} />
+            <Feather name="edit-3" size={18} color={ds.colors.accent} accessibilityElementsHidden importantForAccessibility="no" />
             <Text style={styles.newNoteText}>New</Text>
           </Pressable>
         </View>

@@ -173,10 +173,13 @@ export function AISettingsScreen() {
       <SafeAreaView style={styles.safe} edges={['top']}>
         {/* Header */}
         <View style={styles.header}>
-          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
+          <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
             <Feather name="chevron-left" size={26} color={ds.colors.textPrimary} />
           </Pressable>
-          <Text style={styles.headerTitle}>AI Companion</Text>
+          <Text style={styles.headerTitle} accessibilityRole="header">AI Companion</Text>
           <View style={styles.headerSpacer} />
         </View>
 
@@ -195,6 +198,7 @@ export function AISettingsScreen() {
                     styles.statusDot,
                     isConfigured ? styles.statusDotActive : styles.statusDotInactive,
                   ]}
+                  importantForAccessibility="no"
                 />
                 <Text
                   style={[
@@ -243,8 +247,13 @@ export function AISettingsScreen() {
                 autoCapitalize="none"
                 autoCorrect={false}
                 style={styles.input}
+                accessibilityLabel="API key"
+                accessibilityHint="Enter your AI provider API key"
               />
-              <Pressable onPress={() => setShowKey(!showKey)} style={styles.eyeBtn}>
+              <Pressable onPress={() => setShowKey(!showKey)} style={styles.eyeBtn}
+                accessibilityRole="button"
+                accessibilityLabel={showKey ? 'Hide API key' : 'Show API key'}
+              >
                 <Feather
                   name={showKey ? 'eye-off' : 'eye'}
                   size={20}
@@ -262,6 +271,9 @@ export function AISettingsScreen() {
               onPress={handleSave}
               disabled={!canSave}
               style={[styles.saveBtn, !canSave && styles.saveBtnDisabled]}
+              accessibilityRole="button"
+              accessibilityLabel={isSaving ? 'Saving API key' : 'Save API key'}
+              accessibilityState={{ disabled: !canSave }}
             >
               <Text style={[styles.saveBtnText, !canSave && styles.saveBtnTextDisabled]}>
                 {isSaving ? 'Saving...' : 'Save API Key'}
@@ -391,51 +403,63 @@ export function AISettingsScreen() {
             <Pressable
               onPress={() => Linking.openURL('https://platform.openai.com/api-keys')}
               style={({ pressed }) => [styles.providerCard, pressed && styles.providerCardPressed]}
+              accessibilityRole="link"
+              accessibilityLabel="OpenAI — GPT-4o, GPT-4o-mini"
+              accessibilityHint="Opens OpenAI website to get an API key"
             >
               <View>
                 <Text style={styles.providerName}>OpenAI</Text>
                 <Text style={styles.providerModels}>GPT-4o, GPT-4o-mini</Text>
               </View>
-              <Feather name="external-link" size={18} color={ds.colors.textTertiary} />
+              <Feather name="external-link" size={18} color={ds.colors.textTertiary} importantForAccessibility="no" accessibilityElementsHidden />
             </Pressable>
 
             <Pressable
               onPress={() => Linking.openURL('https://console.anthropic.com/settings/keys')}
               style={({ pressed }) => [styles.providerCard, pressed && styles.providerCardPressed]}
+              accessibilityRole="link"
+              accessibilityLabel="Anthropic — Claude 3.5 Sonnet"
+              accessibilityHint="Opens Anthropic website to get an API key"
             >
               <View>
                 <Text style={styles.providerName}>Anthropic</Text>
                 <Text style={styles.providerModels}>Claude 3.5 Sonnet</Text>
               </View>
-              <Feather name="external-link" size={18} color={ds.colors.textTertiary} />
+              <Feather name="external-link" size={18} color={ds.colors.textTertiary} importantForAccessibility="no" accessibilityElementsHidden />
             </Pressable>
 
             <Pressable
               onPress={() => Linking.openURL('https://openrouter.ai/keys')}
               style={({ pressed }) => [styles.providerCard, pressed && styles.providerCardPressed]}
+              accessibilityRole="link"
+              accessibilityLabel="OpenRouter — 100+ models, one key"
+              accessibilityHint="Opens OpenRouter website to get an API key"
             >
               <View>
                 <Text style={styles.providerName}>OpenRouter</Text>
                 <Text style={styles.providerModels}>100+ models, one key</Text>
               </View>
-              <Feather name="external-link" size={18} color={ds.colors.textTertiary} />
+              <Feather name="external-link" size={18} color={ds.colors.textTertiary} importantForAccessibility="no" accessibilityElementsHidden />
             </Pressable>
 
             <Pressable
               onPress={() => Linking.openURL('https://openclaw.ai')}
               style={({ pressed }) => [styles.providerCard, pressed && styles.providerCardPressed]}
+              accessibilityRole="link"
+              accessibilityLabel="OpenClaw — Self-hosted AI assistant"
+              accessibilityHint="Opens OpenClaw website"
             >
               <View>
                 <Text style={styles.providerName}>OpenClaw</Text>
                 <Text style={styles.providerModels}>Self-hosted AI assistant</Text>
               </View>
-              <Feather name="external-link" size={18} color={ds.colors.textTertiary} />
+              <Feather name="external-link" size={18} color={ds.colors.textTertiary} importantForAccessibility="no" accessibilityElementsHidden />
             </Pressable>
           </Animated.View>
 
           {/* Privacy Note */}
           <Animated.View entering={FadeInDown.delay(250).duration(300)} style={styles.privacyCard}>
-            <View style={styles.privacyIcon}>
+            <View style={styles.privacyIcon} importantForAccessibility="no" accessibilityElementsHidden>
               <Feather name="shield" size={20} color={ds.colors.success} />
             </View>
             <View style={styles.privacyContent}>

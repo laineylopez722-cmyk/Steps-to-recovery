@@ -13,10 +13,7 @@
  * - Notifications: `useNotificationPreferences`
  * - Achievements: `useAchievements`
  * - Reading: `useReading`
- * - JITAI: `useJitai`
- * - Audio: `useVoiceRecorder`
  * - PIN Entry: `usePinEntry`
- * - Performance: `usePerformanceMonitor`
  *
  * @module hooks
  */
@@ -27,7 +24,6 @@ export { useJournal } from './useJournal';
 export { useCheckin } from './useCheckin';
 export { useNotificationPreferences } from './useNotifications';
 export { useMeetings } from './useMeetings';
-export { useVoiceRecorder } from './useAudioRecorder';
 export { usePinEntry } from './usePinEntry';
 
 // V2 Hooks
@@ -38,9 +34,6 @@ export { useRegularMeetings } from './useRegularMeetings';
 
 // Phase 4 Hooks
 export { useAchievements } from './useAchievements';
-
-// JITAI Hook
-export { useJitai } from './useJitai';
 
 // Offline-first hooks
 export {
@@ -64,24 +57,3 @@ export {
   useBackgroundTimeout,
   useRefreshOnForeground,
 } from './useAppState';
-
-// Keyboard hooks
-export {
-  useKeyboard,
-  useKeyboardHeight,
-  useIsKeyboardVisible,
-  useDismissKeyboardOnTap,
-  useFocusedInput,
-  useKeyboardAwareScroll,
-  useKeyboardAnimation,
-  useAvoidKeyboard,
-  useInputFocusNavigation,
-} from './useKeyboard';
-
-// Performance monitoring hooks
-export {
-  usePerformanceMonitor,
-  useInteractionTiming,
-  useLongTaskDetection,
-  useListPerformance,
-} from './usePerformanceMonitor';

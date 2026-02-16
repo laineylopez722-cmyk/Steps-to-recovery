@@ -4,7 +4,7 @@
  * Provides consistent error handling patterns for hooks
  * to replace inconsistent try/catch patterns across the codebase.
  */
-import { logger } from './logger';
+import { logger } from "./logger";
 
 /**
  * Handle an error in a hook with consistent logging and state management.

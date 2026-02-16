@@ -9,7 +9,7 @@
  * On Android → SharedPreferences
  *
  * Until a native widget package is installed, data is persisted to
- * AsyncStorage under a well-known key so the pipeline is exercised
+ * MMKV under a well-known key so the pipeline is exercised
  * end-to-end and ready to swap in the real bridge.
  *
  * No sensitive content is stored — only aggregated counts, booleans,
@@ -19,7 +19,7 @@
  */
 
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from '../lib/mmkv';
 import type { WidgetData } from './widgetDataService';
 import type { WidgetSize } from '../config/widgetConfig';
 import { WIDGET_CONFIG } from '../config/widgetConfig';
@@ -124,7 +124,7 @@ export function payloadForSize(
  * Persist widget data to the shared container so native widgets can
  * read it on next timeline reload.
  *
- * Currently uses AsyncStorage as a placeholder. When a native widget
+ * Currently uses MMKV as a placeholder. When a native widget
  * package (e.g. `react-native-android-widget` or an Expo WidgetKit
  * plugin) is installed, replace the storage call with the package's
  * shared-container API.
@@ -138,7 +138,7 @@ export async function updateWidgetData(data: WidgetData): Promise<void> {
     // package is installed:
     //   iOS  → SharedGroupPreferences.setItem(key, payload, appGroup)
     //   Android → SharedPreferences via NativeModule
-    await AsyncStorage.setItem(WIDGET_STORAGE_KEY, json);
+    mmkvStorage.setItem(WIDGET_STORAGE_KEY, json);
 
     logger.info('Widget data updated', {
       platform: Platform.OS,
@@ -173,7 +173,7 @@ export async function refreshWidgets(): Promise<void> {
  */
 export async function readWidgetData(): Promise<WidgetBridgePayload | null> {
   try {
-    const json = await AsyncStorage.getItem(WIDGET_STORAGE_KEY);
+    const json = mmkvStorage.getItem(WIDGET_STORAGE_KEY);
     if (!json) return null;
     return JSON.parse(json) as WidgetBridgePayload;
   } catch (error) {
@@ -188,7 +188,7 @@ export async function readWidgetData(): Promise<WidgetBridgePayload | null> {
  */
 export async function clearWidgetData(): Promise<void> {
   try {
-    await AsyncStorage.removeItem(WIDGET_STORAGE_KEY);
+    mmkvStorage.removeItem(WIDGET_STORAGE_KEY);
     await refreshWidgets();
     logger.info('Widget data cleared');
   } catch (error) {

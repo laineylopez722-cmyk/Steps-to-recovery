@@ -217,7 +217,7 @@ export function SponsorScreen(): React.ReactElement {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
-        <View style={styles.loadingContainer}>
+        <View style={styles.loadingContainer} accessibilityLabel="Loading sponsor connections" accessibilityRole="progressbar">
           <SkeletonCard lines={3} />
           <SkeletonCard lines={2} />
           <SkeletonCard lines={3} />
@@ -244,8 +244,8 @@ export function SponsorScreen(): React.ReactElement {
           <Animated.View entering={FadeInDown.delay(100).duration(300)}>
           <Card variant="elevated" style={styles.sectionCard}>
             <View style={styles.cardHeader}>
-              <MaterialCommunityIcons name="account-heart" size={24} color={styles.iconPrimary.color} />
-              <Text style={styles.cardTitle}>I need a sponsor</Text>
+              <MaterialCommunityIcons name="account-heart" size={24} color={styles.iconPrimary.color} importantForAccessibility="no" accessibilityElementsHidden />
+              <Text style={styles.cardTitle} accessibilityRole="header">I need a sponsor</Text>
             </View>
             <Text style={styles.cardDescription}>
               Create an invite and share it with your sponsor. When they send back a confirmation,
@@ -282,8 +282,8 @@ export function SponsorScreen(): React.ReactElement {
           <Animated.View entering={FadeInDown.delay(200).duration(300)}>
           <Card variant="elevated" style={styles.sectionCard}>
             <View style={styles.cardHeader}>
-              <MaterialCommunityIcons name="account-tie" size={24} color={styles.iconSecondary.color} />
-              <Text style={styles.cardTitle}>I am a sponsor</Text>
+              <MaterialCommunityIcons name="account-tie" size={24} color={styles.iconSecondary.color} importantForAccessibility="no" accessibilityElementsHidden />
+              <Text style={styles.cardTitle} accessibilityRole="header">I am a sponsor</Text>
             </View>
             <Text style={styles.cardDescription}>
               Paste an invite from your sponsee to connect. You will receive a confirmation payload
@@ -306,8 +306,10 @@ export function SponsorScreen(): React.ReactElement {
                   name="account-supervisor"
                   size={24}
                   color={styles.iconSuccess.color}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
                 />
-                <Text style={styles.cardTitle}>My Sponsor</Text>
+                <Text style={styles.cardTitle} accessibilityRole="header">My Sponsor</Text>
               </View>
               <Text style={styles.cardDescription}>{mySponsor.display_name || 'Sponsor connected'}</Text>
               <Button
@@ -340,6 +342,8 @@ export function SponsorScreen(): React.ReactElement {
                       name="account-check"
                       size={24}
                       color={styles.iconSuccess.color}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
                     />
                     <Text style={styles.cardTitle}>{sponsee.display_name || 'Sponsee'}</Text>
                   </View>

@@ -56,8 +56,9 @@ export function useStepAnswerSave({
       try {
         await saveAnswer(stepNumber, questionNumber, normalizedAnswer, true);
 
+        // Fire-and-forget: never let haptics failure affect save outcome
         if (Platform.OS !== 'web') {
-          await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
         }
 
         presentToast('Answer saved successfully', 'success');

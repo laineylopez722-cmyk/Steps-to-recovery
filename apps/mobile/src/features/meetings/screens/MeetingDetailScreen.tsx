@@ -294,7 +294,11 @@ export function MeetingDetailScreen({
 
   if (isLoading) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}>
+      <View
+        style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}
+        accessibilityLabel="Loading meeting details"
+        accessibilityRole="progressbar"
+      >
         <ActivityIndicator size="large" color={ds.semantic.intent.primary.solid} />
       </View>
     );
@@ -302,7 +306,11 @@ export function MeetingDetailScreen({
 
   if (!meeting) {
     return (
-      <View style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}>
+      <View
+        style={[styles.centerContainer, { backgroundColor: ds.semantic.surface.app }]}
+        accessibilityRole="alert"
+        accessibilityLabel="Meeting not found"
+      >
         <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.primary }]}>Meeting not found</Text>
       </View>
     );
@@ -334,7 +342,10 @@ export function MeetingDetailScreen({
       >
         {/* Meeting Name */}
         <View style={styles.header}>
-          <Text style={[ds.semantic.typography.screenTitle, { color: ds.semantic.text.primary, flex: 1 }]}>
+          <Text
+            style={[ds.semantic.typography.screenTitle, { color: ds.semantic.text.primary, flex: 1 }]}
+            accessibilityRole="header"
+          >
             {meetingName}
           </Text>
           <Pressable
@@ -417,9 +428,18 @@ export function MeetingDetailScreen({
         {/* Time and Day */}
         <Card style={styles.section}>
           <View style={styles.infoRow}>
-            <MaterialIcons name="schedule" size={24} color={ds.semantic.intent.primary.solid} />
+            <MaterialIcons
+              name="schedule"
+              size={24}
+              color={ds.semantic.intent.primary.solid}
+              importantForAccessibility="no"
+              accessibilityElementsHidden
+            />
             <View style={styles.infoText}>
-              <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
+              <Text
+                style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}
+                accessibilityRole="header"
+              >
                 When
               </Text>
               <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]}>
@@ -432,9 +452,18 @@ export function MeetingDetailScreen({
         {/* Location */}
         <Card style={styles.section}>
           <View style={styles.infoRow}>
-            <MaterialIcons name="place" size={24} color={ds.semantic.intent.primary.solid} />
+            <MaterialIcons
+              name="place"
+              size={24}
+              color={ds.semantic.intent.primary.solid}
+              importantForAccessibility="no"
+              accessibilityElementsHidden
+            />
             <View style={styles.infoText}>
-              <Text style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}>
+              <Text
+                style={[ds.semantic.typography.sectionLabel, { color: ds.semantic.text.secondary }]}
+                accessibilityRole="header"
+              >
                 Where
               </Text>
               <Text style={[ds.typography.h3, { color: ds.semantic.text.primary }]}>
@@ -453,7 +482,10 @@ export function MeetingDetailScreen({
         {/* Meeting Types */}
         {meetingTypes.length > 0 && (
           <Card style={styles.section}>
-            <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+            <Text
+              style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}
+              accessibilityRole="header"
+            >
               Meeting Type
             </Text>
             <View style={styles.typesContainer}>
@@ -469,7 +501,10 @@ export function MeetingDetailScreen({
         {/* Notes */}
         {meeting.notes && (
           <Card style={styles.section}>
-            <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}>
+            <Text
+              style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 8 }]}
+              accessibilityRole="header"
+            >
               Meeting Notes
             </Text>
             <Text style={[ds.semantic.typography.body, { color: ds.semantic.text.secondary }]}>
@@ -480,7 +515,10 @@ export function MeetingDetailScreen({
 
         {/* Personal Notes */}
         <Card style={styles.section}>
-          <Text style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}>
+          <Text
+            style={[ds.typography.h3, { color: ds.semantic.text.primary, marginBottom: 12 }]}
+            accessibilityRole="header"
+          >
             Personal Notes
           </Text>
           <TextArea

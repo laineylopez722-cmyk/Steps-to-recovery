@@ -1,10 +1,10 @@
 /**
  * Rate Limiter Service
  * Tracks and enforces daily AI message limits.
- * Uses AsyncStorage for non-sensitive config/counter data.
+ * Uses MMKV for non-sensitive config/counter data.
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from '../../../lib/mmkv';
 import { logger } from '../../../utils/logger';
 
 const STORAGE_KEYS = {
@@ -50,19 +50,19 @@ function getResetTime(): string {
  */
 async function loadCount(): Promise<number> {
   try {
-    const storedDate = await AsyncStorage.getItem(STORAGE_KEYS.countDate);
+    const storedDate = mmkvStorage.getItem(STORAGE_KEYS.countDate);
     const today = getTodayKey();
 
     if (storedDate !== today) {
       // New day — reset counter
-      await AsyncStorage.multiSet([
+      mmkvStorage.multiSet([
         [STORAGE_KEYS.messageCount, '0'],
         [STORAGE_KEYS.countDate, today],
       ]);
       return 0;
     }
 
-    const countStr = await AsyncStorage.getItem(STORAGE_KEYS.messageCount);
+    const countStr = mmkvStorage.getItem(STORAGE_KEYS.messageCount);
     return countStr ? parseInt(countStr, 10) : 0;
   } catch (err: unknown) {
     logger.warn('Failed to load rate limit count', err);
@@ -95,10 +95,10 @@ export async function checkRateLimit(): Promise<RateLimitStatus> {
 export async function incrementMessageCount(): Promise<void> {
   try {
     const today = getTodayKey();
-    const storedDate = await AsyncStorage.getItem(STORAGE_KEYS.countDate);
+    const storedDate = mmkvStorage.getItem(STORAGE_KEYS.countDate);
 
     if (storedDate !== today) {
-      await AsyncStorage.multiSet([
+      mmkvStorage.multiSet([
         [STORAGE_KEYS.messageCount, '1'],
         [STORAGE_KEYS.countDate, today],
       ]);
@@ -106,7 +106,7 @@ export async function incrementMessageCount(): Promise<void> {
     }
 
     const current = await loadCount();
-    await AsyncStorage.setItem(STORAGE_KEYS.messageCount, String(current + 1));
+    mmkvStorage.setItem(STORAGE_KEYS.messageCount, String(current + 1));
   } catch (err: unknown) {
     logger.warn('Failed to increment rate limit count', err);
   }
@@ -126,7 +126,7 @@ export async function getRemainingMessages(): Promise<number> {
 export async function setDailyLimit(limit: number): Promise<void> {
   const clamped = Math.min(MAX_DAILY_LIMIT, Math.max(MIN_DAILY_LIMIT, Math.round(limit)));
   try {
-    await AsyncStorage.setItem(STORAGE_KEYS.dailyLimit, String(clamped));
+    mmkvStorage.setItem(STORAGE_KEYS.dailyLimit, String(clamped));
     logger.debug('Daily AI limit updated', { limit: clamped });
   } catch (err: unknown) {
     logger.warn('Failed to save daily limit', err);
@@ -138,7 +138,7 @@ export async function setDailyLimit(limit: number): Promise<void> {
  */
 export async function getDailyLimit(): Promise<number> {
   try {
-    const stored = await AsyncStorage.getItem(STORAGE_KEYS.dailyLimit);
+    const stored = mmkvStorage.getItem(STORAGE_KEYS.dailyLimit);
     if (stored) {
       const parsed = parseInt(stored, 10);
       if (!isNaN(parsed) && parsed >= MIN_DAILY_LIMIT && parsed <= MAX_DAILY_LIMIT) {
@@ -156,7 +156,7 @@ export async function getDailyLimit(): Promise<number> {
  */
 export async function setRateLimitEnabled(enabled: boolean): Promise<void> {
   try {
-    await AsyncStorage.setItem(STORAGE_KEYS.enabled, enabled ? 'true' : 'false');
+    mmkvStorage.setItem(STORAGE_KEYS.enabled, enabled ? 'true' : 'false');
     logger.debug('Rate limiting toggled', { enabled });
   } catch (err: unknown) {
     logger.warn('Failed to save rate limit toggle', err);
@@ -168,7 +168,7 @@ export async function setRateLimitEnabled(enabled: boolean): Promise<void> {
  */
 export async function isRateLimitEnabled(): Promise<boolean> {
   try {
-    const stored = await AsyncStorage.getItem(STORAGE_KEYS.enabled);
+    const stored = mmkvStorage.getItem(STORAGE_KEYS.enabled);
     // Default to enabled if never set
     return stored !== 'false';
   } catch (err: unknown) {

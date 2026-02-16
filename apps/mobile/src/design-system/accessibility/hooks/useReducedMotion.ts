@@ -2,7 +2,7 @@
  * useReducedMotion Hook
  *
  * Detects system reduced motion preference with detailed settings.
- * Persists user overrides in AsyncStorage and listens to system setting changes.
+ * Persists user overrides in MMKV and listens to system setting changes.
  *
  * @example
  * ```tsx
@@ -15,7 +15,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { AccessibilityInfo, type AccessibilityChangeEventName } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { mmkvStorage } from '../../../lib/mmkv';
 
 /** Storage key for user override */
 const STORAGE_KEY = '@reduced_motion_override';
@@ -62,7 +62,7 @@ export function useReducedMotion(): UseReducedMotionReturn {
   useEffect(() => {
     const loadOverride = async (): Promise<void> => {
       try {
-        const saved = await AsyncStorage.getItem(STORAGE_KEY);
+        const saved = mmkvStorage.getItem(STORAGE_KEY);
         if (saved !== null && mountedRef.current) {
           setUserOverrideState(saved === 'true' ? true : saved === 'false' ? false : null);
         }
@@ -124,9 +124,9 @@ export function useReducedMotion(): UseReducedMotionReturn {
   const setOverride = useCallback(async (value: boolean | null): Promise<void> => {
     try {
       if (value === null) {
-        await AsyncStorage.removeItem(STORAGE_KEY);
+        mmkvStorage.removeItem(STORAGE_KEY);
       } else {
-        await AsyncStorage.setItem(STORAGE_KEY, String(value));
+        mmkvStorage.setItem(STORAGE_KEY, String(value));
       }
       if (mountedRef.current) {
         setUserOverrideState(value);

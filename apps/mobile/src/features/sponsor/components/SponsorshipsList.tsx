@@ -64,6 +64,8 @@ export function SponsorshipsList({
           name="account-multiple-outline"
           size={48}
           color={darkAccent.textSubtle}
+          importantForAccessibility="no"
+          accessibilityElementsHidden
         />
         <Text style={styles.emptyText}>{emptyMessage}</Text>
       </View>
@@ -125,6 +127,8 @@ export function SponsorshipsList({
                   name="chevron-right"
                   size={24}
                   color={darkAccent.textSubtle}
+                  importantForAccessibility="no"
+                  accessibilityElementsHidden
                 />
               </View>
             </GlassCard>

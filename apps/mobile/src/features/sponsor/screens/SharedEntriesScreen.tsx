@@ -136,7 +136,7 @@ export function SharedEntriesScreen(): React.ReactElement {
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
-        <View style={styles.loadingContainer}>
+        <View style={styles.loadingContainer} accessibilityLabel="Loading shared entries" accessibilityRole="progressbar">
           <SkeletonCard lines={3} />
           <SkeletonCard lines={3} />
           <SkeletonCard lines={2} />
@@ -149,7 +149,7 @@ export function SharedEntriesScreen(): React.ReactElement {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <View style={styles.errorContainer}>
-          <Card variant="elevated" style={styles.errorCard}>
+          <Card variant="elevated" style={styles.errorCard} accessibilityRole="alert">
             <Text style={styles.errorTitle}>Error</Text>
             <Text style={styles.errorBody}>{error}</Text>
             <Button
@@ -170,7 +170,7 @@ export function SharedEntriesScreen(): React.ReactElement {
     <>
       <SafeAreaView style={styles.container} edges={['bottom']}>
         <Card variant="flat" style={styles.header}>
-          <Text style={styles.screenTitle}>
+          <Text style={styles.screenTitle} accessibilityRole="header">
             {connection?.display_name || 'Shared Entries'}
           </Text>
           <Text style={styles.headerCaption}>

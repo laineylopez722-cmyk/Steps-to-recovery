@@ -1,8 +1,31 @@
 // CRITICAL: Import polyfills FIRST before any other code
 import './polyfills';
 
+// Reactotron - Development debugging (dev only)
+if (__DEV__) {
+  require('./src/lib/reactotron');
+}
+
 // Uniwind - Import global CSS with design system tokens
 import './src/global.css';
+
+// Set Inter as default font for ALL Text components app-wide.
+// This catches the ~470 inline fontWeight usages that don't go through
+// the design system typography tokens. Without this, those render as
+// system font (Roboto on Android) instead of Inter.
+import { Text as RNText } from 'react-native';
+import { fonts } from './src/lib/fonts';
+
+const _defaultStyle = (RNText as any).defaultProps?.style;
+(RNText as any).defaultProps = {
+  ...(RNText as any).defaultProps,
+  style: [{ fontFamily: fonts.regular }, _defaultStyle],
+};
+
+// Keep native splash screen visible until app is fully initialized
+// (DB migrations + auth check complete). Prevents flash of loading spinner.
+import * as SplashScreen from 'expo-splash-screen';
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // Initialize Sentry early for crash reporting
 import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
@@ -11,9 +34,10 @@ initSentry();
 import { initGlobalErrorHandlers } from './src/utils/globalErrorHandler';
 initGlobalErrorHandlers();
 
-import React, { Suspense, useState, useCallback } from 'react';
+import React, { Suspense, useState, useCallback, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Text, Platform } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 import { SafeAreaProvider, SafeAreaInsetsContext } from 'react-native-safe-area-context';
 import { Uniwind } from 'uniwind';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -31,6 +55,14 @@ import { useBiometricLock } from './src/hooks/useBiometricLock';
 import { useQuickEscape, QuickEscapeTapZone } from './src/hooks/useQuickEscape';
 import { navigationRef } from './src/navigation/navigationRef';
 import { PortalHost } from '@rn-primitives/portal';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from './src/lib/fonts';
 
 /**
  * Biometric Lock Overlay
@@ -162,10 +194,31 @@ function App(): React.ReactElement {
   // Key used to force a full remount of the app tree on error recovery
   const [resetKey, setResetKey] = useState(0);
 
+  // Load Inter font family — splash screen stays visible until fonts are ready
+  const [fontsLoaded, fontError] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
   // Callback to trigger a full app remount (used by ErrorBoundary)
   const handleReset = useCallback(() => {
     setResetKey((k: number) => k + 1);
   }, []);
+
+  // Android: set system navigation bar to true black to match app theme
+  useEffect(() => {
+    if (Platform.OS === 'android') {
+      NavigationBar.setBackgroundColorAsync('#000000').catch(() => {});
+      NavigationBar.setButtonStyleAsync('light').catch(() => {});
+    }
+  }, []);
+
+  // Don't render until fonts are loaded (splash screen stays visible)
+  if (!fontsLoaded && !fontError) {
+    return <></>;
+  }
 
   return (
     <ErrorBoundary key={resetKey} onReset={handleReset}>
@@ -173,6 +226,7 @@ function App(): React.ReactElement {
         <SafeAreaProvider>
           <UniwindSafeAreaBridge>
             <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
               <ThemeProvider>
                 <DsProvider>
                   <DatabaseProvider>
@@ -196,6 +250,7 @@ function App(): React.ReactElement {
                   </DatabaseProvider>
                 </DsProvider>
               </ThemeProvider>
+            </BottomSheetModalProvider>
             </GestureHandlerRootView>
           </UniwindSafeAreaBridge>
         </SafeAreaProvider>

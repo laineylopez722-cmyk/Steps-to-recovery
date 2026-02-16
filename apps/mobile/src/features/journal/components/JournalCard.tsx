@@ -100,7 +100,7 @@ export const JournalCard = React.memo(function JournalCard({
             {formatDate(entry.created_at)}
           </Text>
         </View>
-        <MaterialCommunityIcons name="lock" size={16} color={ds.semantic.text.secondary} />
+        <MaterialCommunityIcons name="lock" size={16} color={ds.semantic.text.secondary} accessibilityElementsHidden importantForAccessibility="no" />
       </View>
 
       <Text

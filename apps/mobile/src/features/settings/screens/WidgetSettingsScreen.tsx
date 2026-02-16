@@ -74,7 +74,11 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
   const handleManualSync = useCallback(async (): Promise<void> => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
-    await syncWidget();
+    try {
+      await syncWidget();
+    } catch {
+      // Widget sync is best-effort
+    }
   }, [syncWidget]);
 
   return (
@@ -99,7 +103,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
           {/* Setup Instructions */}
           <Animated.View entering={FadeInDown.delay(100).duration(400)}>
-            <Text style={styles.sectionHeader}>How to Add</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">How to Add</Text>
             <View style={styles.cardGroup}>
               <InstructionStep
                 number={1}
@@ -142,7 +146,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
           {/* Widget Preview */}
           <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-            <Text style={styles.sectionHeader}>Preview</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">Preview</Text>
             <View style={styles.previewContainer}>
               <WidgetPreview data={previewData} prefs={prefs} styles={styles} ds={ds} />
             </View>
@@ -150,7 +154,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
           {/* Display Options */}
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-            <Text style={styles.sectionHeader}>Display Options</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">Display Options</Text>
             <View style={styles.cardGroup}>
               <ToggleRow
                 icon="clock"
@@ -197,7 +201,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
           {/* Sync Status */}
           <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-            <Text style={styles.sectionHeader}>Sync</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">Sync</Text>
             <View style={styles.cardGroup}>
               <View style={styles.settingItem}>
                 <View style={styles.settingInfo}>
@@ -238,7 +242,7 @@ export function WidgetSettingsScreen(): React.ReactElement {
 
           {/* Info Banner */}
           <Animated.View entering={FadeInDown.delay(500).duration(400)} style={styles.infoBanner}>
-            <Feather name="info" size={16} color={ds.semantic.text.tertiary} />
+            <Feather name="info" size={16} color={ds.semantic.text.tertiary} importantForAccessibility="no" accessibilityElementsHidden />
             <Text style={styles.infoText}>
               Widget data updates automatically every 5 minutes. Only aggregated counts are shown —
               no sensitive content leaves the app.

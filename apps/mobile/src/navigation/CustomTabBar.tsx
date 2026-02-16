@@ -8,7 +8,6 @@ import Animated, {
   withSpring,
   useSharedValue,
   withTiming,
-  interpolateColor,
 } from 'react-native-reanimated';
 import { useDs } from '../design-system/DsProvider';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';

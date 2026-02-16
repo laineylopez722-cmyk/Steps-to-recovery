@@ -94,7 +94,6 @@ export function Skeleton({
  * Card skeleton with title and content lines
  */
 export function SkeletonCard({ lines = 3 }: { lines?: number }): React.ReactElement {
-  const theme = useTheme();
   const ds = useDs();
 
   return (
@@ -176,7 +175,6 @@ export const SkeletonJournalList = SkeletonList;
  * Home screen skeleton
  */
 export function SkeletonHome(): React.ReactElement {
-  const theme = useTheme();
   const ds = useDs();
 
   return (

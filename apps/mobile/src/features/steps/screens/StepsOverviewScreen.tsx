@@ -88,8 +88,8 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
         >
           {/* Page header */}
           <View style={styles.pageHeader}>
-            <Feather name="book-open" size={20} color={ds.colors.accent} />
-            <Text style={styles.pageTitle}>Step Work</Text>
+            <Feather name="book-open" size={20} color={ds.colors.accent} importantForAccessibility="no" accessibilityElementsHidden />
+            <Text style={styles.pageTitle} accessibilityRole="header">Step Work</Text>
           </View>
           <Text style={styles.pageSubtitle}>
             Work through the 12 steps at your own pace with your sponsor.
@@ -100,9 +100,9 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
             style={styles.heroCard}
             onPress={() => handleStepPress(currentStepData, false)}
             accessibilityRole="button"
-            accessibilityLabel={`Continue working on Step ${currentStepData.number}`}
+            accessibilityLabel={`${isCurrentCompleted ? 'Review' : 'Continue working on'} Step ${currentStepData.number}: ${currentStepData.title}. ${currentPercent}% complete, ${currentAnswered} of ${currentTotal} questions answered`}
           >
-            <View style={styles.heroTop}>
+            <View style={styles.heroTop} importantForAccessibility="no-hide-descendants">
               <Text style={styles.heroEyebrow}>CURRENTLY WORKING ON</Text>
               <View style={[styles.heroBadge, isCurrentCompleted && styles.heroBadgeComplete]}>
                 <Text style={[styles.heroBadgeText, isCurrentCompleted && styles.heroBadgeTextComplete]}>
@@ -111,14 +111,14 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
               </View>
             </View>
 
-            <Text style={styles.heroStepTitle}>Step {currentStepData.number}</Text>
-            <Text style={styles.heroDescription} numberOfLines={2}>
+            <Text style={styles.heroStepTitle} importantForAccessibility="no">Step {currentStepData.number}</Text>
+            <Text style={styles.heroDescription} numberOfLines={2} importantForAccessibility="no">
               {currentStepData.title}
             </Text>
 
             {/* Progress bar */}
             {currentTotal > 0 && (
-              <View style={styles.heroProgressWrap}>
+              <View style={styles.heroProgressWrap} importantForAccessibility="no-hide-descendants">
                 <View style={styles.heroProgressTrack}>
                   <View style={[styles.heroProgressFill, { width: `${currentPercent}%` }]} />
                 </View>
@@ -126,7 +126,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
               </View>
             )}
 
-            <View style={styles.heroCTA}>
+            <View style={styles.heroCTA} importantForAccessibility="no-hide-descendants">
               <Text style={styles.heroCTAText}>
                 {isCurrentCompleted ? 'Review Step' : 'Continue Working'}
               </Text>
@@ -135,7 +135,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
           </Pressable>
 
           {/* Section label */}
-          <Text style={styles.sectionLabel}>All Steps</Text>
+          <Text style={styles.sectionLabel} accessibilityRole="header">All Steps</Text>
 
           {/* Step rows */}
           {STEPS.map((step) => {
@@ -158,16 +158,20 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                 style={[styles.stepRow, isCurrent && styles.stepRowCurrent]}
                 onPress={() => handleStepPress(step, isLocked)}
                 accessibilityRole="button"
-                accessibilityLabel={`Step ${step.number}: ${step.title}`}
-                accessibilityHint={isLocked ? 'Locked' : isCurrent ? 'Current step' : completed ? 'Completed' : 'Tap to open'}
+                accessibilityLabel={`Step ${step.number}: ${step.title}${completed ? ', completed' : isCurrent ? ', current step' : isLocked ? ', locked' : ''}${!isLocked && totalQuestions > 0 && answeredCount > 0 ? `, ${answeredCount} of ${totalQuestions} answered` : ''}`}
+                accessibilityHint={isLocked ? 'Complete 50% of the previous step to unlock' : 'Tap to open'}
+                accessibilityState={{ disabled: isLocked }}
               >
                 {/* Badge */}
-                <View style={[
-                  styles.rowBadge,
-                  isCurrent && styles.rowBadgeCurrent,
-                  completed && styles.rowBadgeCompleted,
-                  isLocked && styles.rowBadgeLocked,
-                ]}>
+                <View
+                  style={[
+                    styles.rowBadge,
+                    isCurrent && styles.rowBadgeCurrent,
+                    completed && styles.rowBadgeCompleted,
+                    isLocked && styles.rowBadgeLocked,
+                  ]}
+                  importantForAccessibility="no-hide-descendants"
+                >
                   {isLocked ? (
                     <Feather name="lock" size={16} color={ds.colors.textQuaternary} />
                   ) : completed ? (
@@ -183,7 +187,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
                 </View>
 
                 {/* Text */}
-                <View style={styles.rowContent}>
+                <View style={styles.rowContent} importantForAccessibility="no-hide-descendants">
                   <View style={styles.rowTitleRow}>
                     <Text style={[styles.rowTitle, isLocked && styles.rowTitleLocked]} numberOfLines={1}>
                       Step {step.number}
@@ -218,7 +222,7 @@ export function StepsOverviewScreen({ userId }: StepsOverviewScreenProps): React
 
                 {/* Chevron */}
                 {!isLocked && (
-                  <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} />
+                  <Feather name="chevron-right" size={18} color={ds.colors.textQuaternary} importantForAccessibility="no" />
                 )}
               </Pressable>
             );

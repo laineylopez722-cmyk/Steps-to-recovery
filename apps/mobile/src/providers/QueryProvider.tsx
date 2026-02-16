@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { QueryClient, onlineManager } from '@tanstack/react-query';
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
+import { mmkvStorage } from '../lib/mmkv';
 import NetInfo from '@react-native-community/netinfo';
 import { AppState, type AppStateStatus, Platform } from 'react-native';
 import { logger } from '../utils/logger';
+
+// React Query dev plugin — visible in Expo DevTools (dev only, tree-shaken in production)
+// Note: @dev-plugins/react-query may not be installed in all environments
+if (__DEV__) {
+  // Use require to avoid TypeScript static import resolution
+  try {
+    require('@dev-plugins/react-query');
+  } catch {
+    // Plugin not installed, continue without it
+  }
+}
 
 // Global query client configuration
 const queryClientConfig = {
@@ -32,9 +43,9 @@ const queryClientConfig = {
   },
 };
 
-// Create persister using AsyncStorage
-const asyncStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
+// Create sync persister using MMKV for ~30x faster storage
+const mmkvPersister = createSyncStoragePersister({
+  storage: mmkvStorage,
   key: 'RECOVERY_APP_QUERY_CACHE',
   // Throttle persistence to avoid excessive writes
   throttleTime: 1000,
@@ -108,13 +119,13 @@ export function QueryProvider({ children }: QueryProviderProps): React.ReactElem
 
   // Show loading state while cache is restoring
   if (isRestoring && Platform.OS !== 'web') {
-    // On web, we don't block - AsyncStorage is fast enough
+    // On web, we don't block - MMKV is fast enough
     // On native, briefly wait for restoration to prevent UI flash
     return (
       <PersistQueryClientProvider
         client={queryClient}
         persistOptions={{
-          persister: asyncStoragePersister,
+          persister: mmkvPersister,
           maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         }}
         onSuccess={onCacheRestore}
@@ -128,7 +139,7 @@ export function QueryProvider({ children }: QueryProviderProps): React.ReactElem
     <PersistQueryClientProvider
       client={queryClient}
       persistOptions={{
-        persister: asyncStoragePersister,
+        persister: mmkvPersister,
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       }}
       onSuccess={onCacheRestore}

@@ -211,7 +211,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
           {/* Biometric Lock Toggle */}
           <Animated.View entering={MotionTransitions.cardEnter(1)}>
-            <Text style={styles.sectionHeader}>APP LOCK</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">APP LOCK</Text>
             <View style={styles.cardGroup}>
               <View style={styles.settingItem}>
                 <View style={styles.settingInfo}>
@@ -250,7 +250,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
           {/* Lock Options - Only show when lock is enabled */}
           {settings.enabled ? (
             <Animated.View entering={MotionTransitions.cardEnter(2)}>
-              <Text style={styles.sectionHeader}>LOCK OPTIONS</Text>
+              <Text style={styles.sectionHeader} accessibilityRole="header">LOCK OPTIONS</Text>
               <View style={styles.cardGroup}>
                 {/* Lock on background */}
                 <View style={styles.settingItem}>
@@ -366,7 +366,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
           {/* Quick Escape */}
           <Animated.View entering={MotionTransitions.cardEnter(3)}>
-            <Text style={styles.sectionHeader}>SAFETY</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">SAFETY</Text>
             <View style={styles.cardGroup}>
               <View style={styles.settingItem}>
                 <View style={styles.settingInfo}>
@@ -397,7 +397,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
           {/* Encryption Key */}
           <Animated.View entering={MotionTransitions.cardEnter(4)}>
-            <Text style={styles.sectionHeader}>ENCRYPTION KEY</Text>
+            <Text style={styles.sectionHeader} accessibilityRole="header">ENCRYPTION KEY</Text>
             <View style={styles.cardGroup}>
               <View style={styles.settingItem}>
                 <View style={styles.settingInfo}>
@@ -477,15 +477,15 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
             {/* Progress indicator during rotation */}
             {rotationProgress?.status === 'in_progress' ? (
-              <View style={styles.rotationProgress}>
-                <Text style={styles.rotationProgressText}>
+              <View style={styles.rotationProgress} accessibilityLiveRegion="polite">
+                <Text style={styles.rotationProgressText} accessibilityLabel={`Re-encrypting ${rotationProgress.currentTable || 'data'}. ${rotationProgress.totalRecords > 0 ? `${rotationProgress.processedRecords} of ${rotationProgress.totalRecords} records processed` : ''}`}>
                   Re-encrypting {rotationProgress.currentTable || 'data'}...{' '}
                   {rotationProgress.totalRecords > 0
                     ? `${rotationProgress.processedRecords}/${rotationProgress.totalRecords}`
                     : ''}
                 </Text>
                 {rotationProgress.totalRecords > 0 ? (
-                  <View style={styles.progressBar}>
+                  <View style={styles.progressBar} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: rotationProgress.totalRecords, now: rotationProgress.processedRecords }}>
                     <View
                       style={[
                         styles.progressFill,
@@ -530,7 +530,7 @@ export function SecuritySettingsScreen(): React.ReactElement {
 
           {/* Privacy Info */}
           <Animated.View entering={MotionTransitions.cardEnter(5)} style={styles.infoCard}>
-            <View style={styles.infoIcon}>
+            <View style={styles.infoIcon} importantForAccessibility="no" accessibilityElementsHidden>
               <Feather name="shield" size={20} color={ds.semantic.intent.secondary.solid} />
             </View>
             <View style={styles.infoContent}>

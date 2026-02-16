@@ -55,8 +55,8 @@ export function TodayWidget({
     <Animated.View entering={FadeInUp.duration(300).delay(100)} style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.title}>Today</Text>
-        <Text style={styles.count}>
+        <Text style={styles.title} accessibilityRole="header">Today</Text>
+        <Text style={styles.count} accessible accessibilityLabel={`${completedCount} of ${statusItems.length} completed`}>
           {completedCount}/{statusItems.length}
         </Text>
       </View>
@@ -77,6 +77,7 @@ export function TodayWidget({
                   borderColor: ds.colors.success,
                 },
               ]}
+              importantForAccessibility="no-hide-descendants"
             >
               {item.completed && (
                 <Feather name="check" size={10} color={ds.semantic.text.primary} />
@@ -97,7 +98,7 @@ export function TodayWidget({
 
       {/* Quote — single line */}
       {data.dailyQuote?.text && (
-        <Text style={styles.quote} numberOfLines={2}>
+        <Text style={styles.quote} numberOfLines={2} accessibilityRole="text" accessibilityLabel={`Daily quote: ${data.dailyQuote.text}${data.dailyQuote.source ? `, by ${data.dailyQuote.source}` : ''}`}>
           &ldquo;{data.dailyQuote.text}&rdquo;
           {data.dailyQuote.source ? ` — ${data.dailyQuote.source}` : ''}
         </Text>

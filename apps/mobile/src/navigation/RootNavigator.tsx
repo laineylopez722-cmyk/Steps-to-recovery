@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { BackHandler, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as SplashScreen from 'expo-splash-screen';
 import { useAuth } from '../contexts/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AuthNavigator } from './AuthNavigator';
@@ -9,6 +10,7 @@ import { MainNavigator } from './MainNavigator';
 import { OnboardingSteps } from '../features/onboarding/components/OnboardingSteps';
 import { supabase } from '../lib/supabase';
 import { navigationRef } from './navigationRef';
+import { mmkvStorage } from '../lib/mmkv';
 import type { RootStackParamList } from './types';
 import { logger } from '../utils/logger';
 
@@ -107,8 +109,7 @@ export function RootNavigator() {
 
     try {
       // First check local storage (fallback for when Supabase table doesn't exist)
-      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-      const localComplete = await AsyncStorage.getItem(`onboarding_complete_${user.id}`);
+      const localComplete = mmkvStorage.getItem(`onboarding_complete_${user.id}`);
 
       if (localComplete === 'true') {
         logger.info('Onboarding already completed (from local storage)');
@@ -178,7 +179,17 @@ export function RootNavigator() {
     return undefined;
   }, [user, needsOnboarding]);
 
-  if ((!authInitialized && authLoading) || checkingProfile) {
+  // Hide native splash screen once initialization is complete.
+  // This keeps the branded splash visible during DB migration + auth + profile check,
+  // then transitions directly to auth/main content with no intermediary spinner.
+  const appReady = authInitialized && !checkingProfile;
+  useEffect(() => {
+    if (appReady) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [appReady]);
+
+  if (!appReady && authLoading) {
     return <LoadingSpinner message="Loading your journey..." />;
   }
 

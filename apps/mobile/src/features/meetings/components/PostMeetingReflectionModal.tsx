@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
@@ -66,12 +66,18 @@ export function PostMeetingReflectionModal({
       willApply,
     };
 
-    const result = await savePostMeetingReflection(userId, checkinId, prompts);
+    try {
+      const result = await savePostMeetingReflection(userId, checkinId, prompts);
 
-    setSaving(false);
-
-    if (result.success) {
-      onComplete();
+      if (result.success) {
+        onComplete();
+      } else {
+        Alert.alert('Save Failed', 'Could not save your reflection. Please try again.');
+      }
+    } catch {
+      Alert.alert('Save Failed', 'Something went wrong. Your reflection was not saved — please try again.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -84,15 +90,19 @@ export function PostMeetingReflectionModal({
       <View style={styles.backdrop}>
         <Pressable style={styles.backdropPress} onPress={onClose} />
 
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.kavContainer}
+        >
         <Animated.View entering={SlideInDown.duration(400)} style={styles.modalContainer}>
           <GlassCard intensity="heavy" style={styles.modalCard}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
               {/* Header */}
               <View style={styles.header}>
-                <View style={styles.iconCircle}>
+                <View style={styles.iconCircle} importantForAccessibility="no-hide-descendants">
                   <MaterialIcons name="favorite" size={32} color={darkAccent.success} />
                 </View>
-                <Text style={styles.title}>How Was It?</Text>
+                <Text style={styles.title} accessibilityRole="header">How Was It?</Text>
                 <Text style={styles.subtitle}>Reflect on {meetingName}</Text>
               </View>
 
@@ -105,8 +115,9 @@ export function PostMeetingReflectionModal({
                       key={value}
                       style={[styles.moodButton, mood === value && styles.moodButtonSelected]}
                       onPress={() => setMood(value)}
-                      accessibilityLabel={`Mood ${value} out of 5`}
+                      accessibilityLabel={`Mood ${value} out of 5, ${getMoodEmoji(value)}`}
                       accessibilityRole="button"
+                      accessibilityState={{ selected: mood === value }}
                     >
                       <Text style={styles.moodEmoji}>{getMoodEmoji(value)}</Text>
                     </Pressable>
@@ -119,11 +130,13 @@ export function PostMeetingReflectionModal({
 
                 {/* Mood Lift Indicator */}
                 {moodLift !== null && moodLift !== 0 && (
-                  <View style={styles.moodLiftContainer}>
+                  <View style={styles.moodLiftContainer} accessibilityLiveRegion="polite">
                     <MaterialIcons
                       name={moodLift > 0 ? 'trending-up' : 'trending-down'}
                       size={20}
                       color={moodLift > 0 ? darkAccent.success : darkAccent.error}
+                      importantForAccessibility="no"
+                      accessibilityElementsHidden
                     />
                     <Text
                       style={[
@@ -204,6 +217,7 @@ export function PostMeetingReflectionModal({
             </ScrollView>
           </GlassCard>
         </Animated.View>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );
@@ -232,6 +246,11 @@ const styles = StyleSheet.create({
   },
   backdropPress: {
     ...StyleSheet.absoluteFillObject,
+  },
+  kavContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContainer: {
     width: '100%',

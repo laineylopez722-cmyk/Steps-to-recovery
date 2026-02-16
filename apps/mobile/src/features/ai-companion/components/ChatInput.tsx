@@ -7,10 +7,10 @@
 
 import React, { useState, useRef, useCallback } from 'react';
 import { View, TextInput, Pressable, ActivityIndicator, Keyboard } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 import { Send } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { Icon } from '@/components/ui/Icon';
+import { Icon } from '../../../components/ui/Icon';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -20,7 +20,7 @@ interface ChatInputProps {
   placeholder?: string;
 }
 
-export function ChatInput({ onSend, isLoading, placeholder = 'Message...' }: ChatInputProps) {
+export const ChatInput: React.FC<ChatInputProps> = ({ onSend, isLoading, placeholder = 'Message...' }) => {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const [text, setText] = useState('');
@@ -36,10 +36,11 @@ export function ChatInput({ onSend, isLoading, placeholder = 'Message...' }: Cha
     if (text.trim() && !isLoading) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
 
-      scale.value = withSpring(0.85, ds.spring.snappy);
-      setTimeout(() => {
-        scale.value = withSpring(1, ds.spring.smooth);
-      }, 100);
+      // Bounce animation using withSequence (no setTimeout cleanup needed)
+      scale.value = withSequence(
+        withSpring(0.85, ds.spring.snappy),
+        withSpring(1, ds.spring.smooth),
+      );
 
       onSend(text.trim());
       setText('');
@@ -64,7 +65,7 @@ export function ChatInput({ onSend, isLoading, placeholder = 'Message...' }: Cha
           maxLength={2000}
           style={styles.input}
           onSubmitEditing={handleSend}
-          blurOnSubmit={false}
+          // blurOnSubmit removed (deprecated)
           returnKeyType="default"
           editable={!isLoading}
           accessibilityLabel="Message input"

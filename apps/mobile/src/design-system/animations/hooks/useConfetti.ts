@@ -18,7 +18,7 @@
  * ```
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useEffect, useState } from 'react';
 import { Dimensions } from 'react-native';
 import { useReducedMotion } from '../presets/motion';
 
@@ -179,6 +179,12 @@ export function useConfetti(options: UseConfettiOptions = {}): UseConfettiReturn
 
   const [particles, setParticles] = useState<ConfettiParticle[]>([]);
   const [isActive, setIsActive] = useState(false);
+  const cleanupTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => { if (cleanupTimerRef.current) clearTimeout(cleanupTimerRef.current); };
+  }, []);
 
   // Trigger confetti animation
   const trigger = useCallback(() => {
@@ -193,7 +199,7 @@ export function useConfetti(options: UseConfettiOptions = {}): UseConfettiReturn
 
     // Auto-cleanup after duration
     const totalDuration = config.duration + config.fadeDuration;
-    setTimeout(() => {
+    cleanupTimerRef.current = setTimeout(() => {
       setIsActive(false);
       setParticles([]);
     }, totalDuration);

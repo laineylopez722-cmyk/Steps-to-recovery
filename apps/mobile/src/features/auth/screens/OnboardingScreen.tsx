@@ -27,6 +27,7 @@ import { OnboardingIllustration } from '../../../design-system/components/Illust
 import { hapticLight, hapticMedium, hapticSuccess } from '../../../utils/haptics';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
+import { mmkvStorage } from '../../../lib/mmkv';
 import { logger } from '../../../utils/logger';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -119,11 +120,10 @@ export function OnboardingScreen({ onComplete }: OnboardingScreenProps) {
 
     // Save completion locally first (always works)
     try {
-      const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-      await AsyncStorage.setItem(`onboarding_complete_${user?.id || 'unknown'}`, 'true');
+      mmkvStorage.setItem(`onboarding_complete_${user?.id || 'unknown'}`, 'true');
       logger.info('Onboarding completion saved locally');
     } catch (err) {
-      logger.warn('Could not save to AsyncStorage', err);
+      logger.warn('Could not save to MMKV storage', err);
     }
 
     // Try Supabase (optional, may fail if table doesn't exist)

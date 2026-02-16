@@ -82,7 +82,7 @@ export function SharedEntryCard({
           {/* Header Row */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <View style={[styles.moodIndicator, { backgroundColor: getMoodColor(entry.mood) }]} />
+              <View style={[styles.moodIndicator, { backgroundColor: getMoodColor(entry.mood) }]} importantForAccessibility="no" />
               <Text style={styles.title} numberOfLines={1}>
                 {entry.title || 'Untitled Entry'}
               </Text>
@@ -99,7 +99,7 @@ export function SharedEntryCard({
           <View style={styles.footer}>
             {entry.mood && (
               <View style={styles.moodChip}>
-                <MaterialIcons name="mood" size={14} color={getMoodColor(entry.mood)} />
+                <MaterialIcons name="mood" size={14} color={getMoodColor(entry.mood)} importantForAccessibility="no" accessibilityElementsHidden />
                 <Text style={[styles.moodText, { color: getMoodColor(entry.mood) }]}>
                   {getMoodLabel(entry.mood)}
                 </Text>
@@ -108,14 +108,14 @@ export function SharedEntryCard({
 
             {entry.craving !== null && entry.craving > 3 && (
               <View style={[styles.cravingChip, styles.highCraving]}>
-                <MaterialIcons name="warning" size={14} color={ds.colors.warning} />
+                <MaterialIcons name="warning" size={14} color={ds.colors.warning} importantForAccessibility="no" accessibilityElementsHidden />
                 <Text style={styles.cravingText}>High Craving</Text>
               </View>
             )}
 
             {entry.tags.length > 0 && (
               <View style={styles.tagContainer}>
-                <MaterialIcons name="label" size={12} color={darkAccent.textSubtle} />
+                <MaterialIcons name="label" size={12} color={darkAccent.textSubtle} importantForAccessibility="no" accessibilityElementsHidden />
                 <Text style={styles.tagText} numberOfLines={1}>
                   {entry.tags.slice(0, 2).join(', ')}
                   {entry.tags.length > 2 && ` +${entry.tags.length - 2}`}
@@ -125,7 +125,7 @@ export function SharedEntryCard({
 
             <View style={styles.spacer} />
 
-            <MaterialIcons name="chevron-right" size={20} color={darkAccent.textSubtle} />
+            <MaterialIcons name="chevron-right" size={20} color={darkAccent.textSubtle} importantForAccessibility="no" accessibilityElementsHidden />
           </View>
         </GlassCard>
       </Pressable>

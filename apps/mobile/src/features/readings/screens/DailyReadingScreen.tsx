@@ -10,7 +10,7 @@
  * - Offline-first with sync queue integration
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -51,6 +51,14 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
   const [isSaving, setIsSaving] = useState(false);
   const [hasReflected, setHasReflected] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (successTimerRef.current) clearTimeout(successTimerRef.current);
+    };
+  }, []);
 
   const isPlaceholder = todayReading?.content === PLACEHOLDER_CONTENT;
 
@@ -94,7 +102,7 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
       setHasReflected(true);
       setShowSuccess(true);
 
-      setTimeout(() => setShowSuccess(false), 3000);
+      successTimerRef.current = setTimeout(() => setShowSuccess(false), 3000);
 
       logger.info('Reflection saved successfully', { userId });
     } catch (error) {

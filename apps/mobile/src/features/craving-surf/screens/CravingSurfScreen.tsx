@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { useKeepAwake } from 'expo-keep-awake';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { ProgressBar } from '../../../design-system/components/ProgressBar';
 import { useCravingSurf } from '../hooks/useCravingSurf';
@@ -49,6 +50,7 @@ const createStyles = (ds: DS) =>
   }) as const;
 
 export function CravingSurfScreen({ navigation }: CravingSurfScreenProps): React.ReactElement {
+  useKeepAwake();
   const styles = useThemedStyles(createStyles);
   const {
     session,

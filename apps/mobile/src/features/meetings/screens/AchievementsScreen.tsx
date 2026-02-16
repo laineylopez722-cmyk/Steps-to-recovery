@@ -3,7 +3,7 @@
  * Full gallery of all achievements with progress tracking
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -30,13 +30,23 @@ export function AchievementsScreen(): React.ReactElement {
   const [refreshing, setRefreshing] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
+  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { achievements, isLoading: _isLoading, unlockedCount, totalCount } = useAchievements();
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (refreshTimerRef.current) clearTimeout(refreshTimerRef.current);
+    };
+  }, []);
 
   const handleRefresh = async () => {
     setRefreshing(true);
     // Refetch happens automatically through React Query
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => {
+      refreshTimerRef.current = setTimeout(resolve, 1000);
+    });
     setRefreshing(false);
   };
 
@@ -89,8 +99,18 @@ export function AchievementsScreen(): React.ReactElement {
             end={{ x: 1, y: 1 }}
             style={styles.statsBanner}
           >
-            <View style={styles.statsContent}>
-              <MaterialIcons name="emoji-events" size={48} color={ds.semantic.text.onDark} />
+            <View
+              style={styles.statsContent}
+              accessible
+              accessibilityLabel={`${unlockedCount} of ${totalCount} achievements unlocked`}
+            >
+              <MaterialIcons
+                name="emoji-events"
+                size={48}
+                color={ds.semantic.text.onDark}
+                importantForAccessibility="no"
+                accessibilityElementsHidden
+              />
               <View>
                 <Text style={styles.statsValue}>
                   {unlockedCount} / {totalCount}
@@ -98,7 +118,16 @@ export function AchievementsScreen(): React.ReactElement {
                 <Text style={styles.statsLabel}>Achievements Unlocked</Text>
               </View>
             </View>
-            <View style={styles.progressTrack}>
+            <View
+              style={styles.progressTrack}
+              accessible
+              accessibilityRole="progressbar"
+              accessibilityValue={{
+                min: 0,
+                max: totalCount,
+                now: unlockedCount,
+              }}
+            >
               <View
                 style={[styles.progressFill, { width: `${(unlockedCount / totalCount) * 100}%` }]}
               />
@@ -107,7 +136,11 @@ export function AchievementsScreen(): React.ReactElement {
         </Animated.View>
 
         {/* Filter Tabs */}
-        <Animated.View entering={FadeInUp.delay(200)} style={styles.filterContainer}>
+        <Animated.View
+          entering={FadeInUp.delay(200)}
+          style={styles.filterContainer}
+          accessibilityRole="tablist"
+        >
           <Pressable
             onPress={() => setFilter('all')}
             style={[styles.filterTab, filter === 'all' && styles.filterTabActive]}
@@ -292,7 +325,13 @@ export function AchievementsScreen(): React.ReactElement {
 
           {filteredAchievements.length === 0 && (
             <View style={styles.emptyContainer}>
-              <MaterialIcons name="emoji-events" size={64} color={darkAccent.textMuted} />
+              <MaterialIcons
+                name="emoji-events"
+                size={64}
+                color={darkAccent.textMuted}
+                importantForAccessibility="no"
+                accessibilityElementsHidden
+              />
               <Text style={styles.emptyText}>
                 {filter === 'unlocked' ? 'No achievements unlocked yet' : 'No locked achievements'}
               </Text>

@@ -6,7 +6,7 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Modal, Pressable, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { SlideInDown } from 'react-native-reanimated';
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
@@ -70,15 +70,19 @@ export function PreMeetingReflectionModal({
       <View style={styles.backdrop}>
         <Pressable style={styles.backdropPress} onPress={onClose} />
 
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.kavContainer}
+        >
         <Animated.View entering={SlideInDown.duration(400)} style={styles.modalContainer}>
           <GlassCard intensity="heavy" style={styles.modalCard}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
               {/* Header */}
               <View style={styles.header}>
-                <View style={styles.iconCircle}>
+                <View style={styles.iconCircle} importantForAccessibility="no-hide-descendants">
                   <MaterialIcons name="psychology" size={32} color={darkAccent.primary} />
                 </View>
-                <Text style={styles.title}>Before You Go</Text>
+                <Text style={styles.title} accessibilityRole="header">Before You Go</Text>
                 <Text style={styles.subtitle}>Set an intention for {meetingName}</Text>
               </View>
 
@@ -91,8 +95,9 @@ export function PreMeetingReflectionModal({
                       key={value}
                       style={[styles.moodButton, mood === value && styles.moodButtonSelected]}
                       onPress={() => setMood(value)}
-                      accessibilityLabel={`Mood ${value} out of 5`}
+                      accessibilityLabel={`Mood ${value} out of 5, ${getMoodEmoji(value)}`}
                       accessibilityRole="button"
+                      accessibilityState={{ selected: mood === value }}
                     >
                       <Text style={styles.moodEmoji}>{getMoodEmoji(value)}</Text>
                     </Pressable>
@@ -155,6 +160,7 @@ export function PreMeetingReflectionModal({
             </ScrollView>
           </GlassCard>
         </Animated.View>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );
@@ -183,6 +189,11 @@ const styles = StyleSheet.create({
   },
   backdropPress: {
     ...StyleSheet.absoluteFillObject,
+  },
+  kavContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContainer: {
     width: '100%',

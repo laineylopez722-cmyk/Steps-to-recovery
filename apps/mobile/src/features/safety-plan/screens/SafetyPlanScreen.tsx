@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useCallback, useMemo } from 'react';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Alert } from 'react-native';
 import { Text } from '../../../design-system/components/Text';
 import { Button } from '../../../design-system/components/Button';
 import { ProgressBar } from '../../../design-system/components/ProgressBar';
@@ -153,6 +153,11 @@ export function SafetyPlanScreen({
       setIsEditing(false);
     } catch (err) {
       logger.error('Failed to save safety plan', err);
+      Alert.alert(
+        'Could not save',
+        'Your safety plan could not be saved. Your entries are still here — please try again.',
+        [{ text: 'OK' }],
+      );
     }
   }, [
     savePlan,

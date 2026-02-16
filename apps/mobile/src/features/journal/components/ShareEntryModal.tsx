@@ -114,8 +114,8 @@ export function ShareEntryModal({
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <MaterialIcons name="share" size={24} color={darkAccent.primary} />
-              <Text style={styles.headerTitle}>Share Entry</Text>
+              <MaterialIcons name="share" size={24} color={darkAccent.primary} accessibilityElementsHidden importantForAccessibility="no" />
+              <Text style={styles.headerTitle} accessibilityRole="header">Share Entry</Text>
             </View>
             <Pressable
               onPress={handleClose}
@@ -124,7 +124,7 @@ export function ShareEntryModal({
               accessibilityHint="Closes the share entry modal"
               hitSlop={8}
             >
-              <MaterialIcons name="close" size={24} color={darkAccent.textSubtle} />
+              <MaterialIcons name="close" size={24} color={darkAccent.textSubtle} accessibilityElementsHidden importantForAccessibility="no" />
             </Pressable>
           </View>
 
@@ -151,11 +151,11 @@ export function ShareEntryModal({
 
               {/* Sponsor Selection */}
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Share with</Text>
+                <Text style={styles.sectionTitle} accessibilityRole="header">Share with</Text>
 
                 {sponsorsLoading ? (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color={darkAccent.primary} />
+                  <View style={styles.loadingContainer} accessibilityLabel="Loading sponsors" accessibilityRole="text">
+                    <ActivityIndicator size="small" color={darkAccent.primary} accessibilityElementsHidden importantForAccessibility="no" />
                     <Text style={styles.loadingText}>Loading sponsors...</Text>
                   </View>
                 ) : mySponsor ? (
@@ -192,8 +192,10 @@ export function ShareEntryModal({
                       name="supervisor-account"
                       size={48}
                       color={darkAccent.textSubtle}
+                      accessibilityElementsHidden
+                      importantForAccessibility="no"
                     />
-                    <Text style={styles.emptyText}>No sponsor connected</Text>
+                    <Text style={styles.emptyText} accessibilityRole="header">No sponsor connected</Text>
                     <Text style={styles.emptySubtext}>
                       Connect with a sponsor first to share entries
                     </Text>
@@ -230,10 +232,10 @@ export function ShareEntryModal({
             <>
               {/* Success State */}
               <View style={styles.successContainer}>
-                <View style={styles.successIcon}>
+                <View style={styles.successIcon} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                   <MaterialIcons name="check-circle" size={64} color={darkAccent.success} />
                 </View>
-                <Text style={styles.successTitle}>Entry Shared!</Text>
+                <Text style={styles.successTitle} accessibilityRole="header">Entry Shared!</Text>
                 <Text style={styles.successSubtext}>
                   A secure share code has been generated. Send this code to your sponsor.
                 </Text>

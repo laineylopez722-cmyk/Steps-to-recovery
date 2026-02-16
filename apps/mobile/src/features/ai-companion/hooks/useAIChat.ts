@@ -17,6 +17,8 @@ import {
   queuePendingMessage,
   cacheResponse,
 } from '../services/offlineFallback';
+import { filterAIResponse } from '../services/contentSafetyFilter';
+import { detectCrisis as detectCrisisRaw, toCrisisSignal } from '../prompts/crisis';
 import { buildEnrichedContext } from '../services/recoveryContextEnricher';
 import { addToSessionCost, addToDailyCost, estimateCost } from '../services/costEstimation';
 import { checkRateLimit, incrementMessageCount } from '../services/rateLimiter';
@@ -65,26 +67,11 @@ export interface UseAIChatReturn {
 }
 
 /**
- * Crisis detection keywords and phrases
+ * Maximum number of previous messages to include as context.
+ * Prevents token limit blowout on long conversations.
+ * 50 messages ≈ 25 exchanges — enough for continuity without hitting limits.
  */
-const CRISIS_PATTERNS = {
-  high: [
-    /\bsuicid(e|al)\b/i,
-    /\bkill (myself|me)\b/i,
-    /\bend (it|my life)\b/i,
-    /\bwant to die\b/i,
-    /\bbetter off dead\b/i,
-  ],
-  medium: [
-    /\brelaps(e|ed|ing)\b/i,
-    /\busing again\b/i,
-    /\bcan't do this\b/i,
-    /\bgive up\b/i,
-    /\bhurt myself\b/i,
-    /\bself.?harm\b/i,
-  ],
-  low: [/\bcraving\b/i, /\btriggered\b/i, /\btempted\b/i, /\bstrongly urge\b/i, /\bcan't cope\b/i],
-};
+const MAX_HISTORY_MESSAGES = 50;
 
 /**
  * Detect if an error is a network/server failure (vs. user error or logic bug).
@@ -111,60 +98,13 @@ function isNetworkOrServerError(err: unknown): boolean {
 }
 
 /**
- * Detect crisis signals in user message
+ * Detect crisis signals in user message.
+ * Delegates to the canonical crisis module (prompts/crisis.ts)
+ * which has the most comprehensive keyword coverage.
  */
 function detectCrisis(content: string): CrisisSignal | null {
-  const keywords: string[] = [];
-
-  // Check high severity first
-  for (const pattern of CRISIS_PATTERNS.high) {
-    const match = content.match(pattern);
-    if (match) {
-      keywords.push(match[0]);
-    }
-  }
-  if (keywords.length > 0) {
-    return {
-      detected: true,
-      severity: 'high',
-      keywords,
-      suggestedAction: 'emergency',
-    };
-  }
-
-  // Check medium severity
-  for (const pattern of CRISIS_PATTERNS.medium) {
-    const match = content.match(pattern);
-    if (match) {
-      keywords.push(match[0]);
-    }
-  }
-  if (keywords.length > 0) {
-    return {
-      detected: true,
-      severity: 'medium',
-      keywords,
-      suggestedAction: 'intervene',
-    };
-  }
-
-  // Check low severity
-  for (const pattern of CRISIS_PATTERNS.low) {
-    const match = content.match(pattern);
-    if (match) {
-      keywords.push(match[0]);
-    }
-  }
-  if (keywords.length > 0) {
-    return {
-      detected: true,
-      severity: 'low',
-      keywords,
-      suggestedAction: 'monitor',
-    };
-  }
-
-  return null;
+  const result = detectCrisisRaw(content);
+  return result.detected ? toCrisisSignal(result) : null;
 }
 
 /**
@@ -238,8 +178,15 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
   const abortControllerRef = useRef<AbortController | null>(null);
   const messageQueueRef = useRef<string[]>([]);
   const processingRef = useRef(false);
+  // Mirror currentConversation in a ref so processQueue always sees latest value
+  // (avoids stale closure from setTimeout / React batch updates)
+  const currentConversationRef = useRef<Conversation | null>(null);
 
   // Check AI configuration on mount
+  useEffect(() => {
+    currentConversationRef.current = currentConversation;
+  }, [currentConversation]);
+
   useEffect(() => {
     const checkConfig = async (): Promise<void> => {
       try {
@@ -293,6 +240,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
         const conversation = await chatHistory.createConversation(type, stepNumber);
         setCurrentConversation(conversation);
+        currentConversationRef.current = conversation;
         setMessages([]);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to start conversation');
@@ -348,7 +296,9 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
     agentSpan?.setAttribute('gen_ai.agent.name', 'RecoveryCompanion');
 
     try {
-      if (!currentConversation) {
+      // Use ref to get latest conversation (avoids stale closure from React batch updates)
+      const activeConversation = currentConversationRef.current;
+      if (!activeConversation) {
         throw new Error('No active conversation');
       }
 
@@ -366,7 +316,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
 
       // Add user message
-      const userMessage = await chatHistory.addMessage(currentConversation.id, 'user', content);
+      const userMessage = await chatHistory.addMessage(activeConversation.id, 'user', content);
       setMessages((prev) => [...prev, userMessage]);
 
       // Check if offline — use cached/prewritten response instead
@@ -377,7 +327,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
         // Save offline response as assistant message
         const offlineMsg = await chatHistory.addMessage(
-          currentConversation.id,
+          activeConversation.id,
           'assistant',
           offlineResult.content,
           { offline: true, offlineSource: offlineResult.source },
@@ -385,13 +335,13 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         setMessages((prev) => [...prev, offlineMsg]);
 
         // Queue the user message for sending when back online
-        await queuePendingMessage(content, currentConversation.id);
+        await queuePendingMessage(content, activeConversation.id);
 
         // Auto-title if first exchange
         if (messages.length === 0 && content.length > 0) {
           const title = generateConversationTitle(content);
           try {
-            await chatHistory.updateConversationTitle(currentConversation.id, title);
+            await chatHistory.updateConversationTitle(activeConversation.id, title);
             setCurrentConversation((prev) => (prev ? { ...prev, title } : prev));
           } catch {
             // Title update failed, not critical
@@ -407,8 +357,9 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       let memoryContext = '';
       try {
         memoryContext = await memoryStore.generateAIContext();
-      } catch {
+      } catch (err) {
         // Memories not available yet, that's okay
+        logger.debug('Memory context unavailable', err);
       }
 
       // Get enriched context from journal, step work, and check-ins
@@ -479,7 +430,8 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       const aiMessages: ChatMessage[] = [
         // Only include system message if there's actual context to send
         ...(contextualSystemPrompt ? [{ role: 'system' as const, content: contextualSystemPrompt }] : []),
-        ...messages.map((m) => ({ role: m.role, content: m.content })),
+        // Sliding window: only send recent history to avoid token limit blowout
+        ...messages.slice(-MAX_HISTORY_MESSAGES).map((m) => ({ role: m.role, content: m.content })),
         { role: 'user' as const, content },
       ];
 
@@ -514,13 +466,13 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           setIsOfflineResponse(true);
           const offlineResult = await getOfflineResponse(content);
           const offlineMsg = await chatHistory.addMessage(
-            currentConversation.id,
+            activeConversation.id,
             'assistant',
             offlineResult.content,
             { offline: true, offlineSource: offlineResult.source },
           );
           setMessages((prev) => [...prev, offlineMsg]);
-          await queuePendingMessage(content, currentConversation.id);
+          await queuePendingMessage(content, activeConversation.id);
           return;
         }
 
@@ -529,20 +481,39 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
 
       // Save AI response
       if (fullResponse) {
+        // Run content safety filter before saving/displaying
+        const safetyResult = filterAIResponse(fullResponse);
+        const safeContent = safetyResult.filteredContent;
+
+        if (safetyResult.blocked) {
+          logger.warn('AI response blocked by safety filter', {
+            reason: safetyResult.blockReason,
+            conversationId: activeConversation.id,
+          });
+          Sentry.addBreadcrumb({
+            category: 'ai.safety',
+            message: `Response blocked: ${safetyResult.blockReason}`,
+            level: 'warning',
+          });
+        }
+        if (safetyResult.warnings.length > 0) {
+          logger.warn('AI response safety warnings', { warnings: safetyResult.warnings });
+        }
+
         const aiMessage = await chatHistory.addMessage(
-          currentConversation.id,
+          activeConversation.id,
           'assistant',
-          fullResponse,
+          safeContent,
           { crisisDetected: crisis?.detected },
         );
         setMessages((prev) => [...prev, aiMessage]);
 
         // Cache this response for offline use (fire-and-forget)
-        cacheResponse(content, fullResponse).catch(() => {});
+        cacheResponse(content, safeContent).catch(() => {});
 
         // Track cost and rate limit
         try {
-          const costEst = estimateCost(content + fullResponse);
+          const costEst = estimateCost(content + safeContent);
           addToSessionCost(costEst.estimatedCostUSD);
           await addToDailyCost(costEst.estimatedCostUSD);
           await incrementMessageCount();
@@ -557,7 +528,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
           // Generate a short title from the first user message
           const title = generateConversationTitle(content);
           try {
-            await chatHistory.updateConversationTitle(currentConversation.id, title);
+            await chatHistory.updateConversationTitle(activeConversation.id, title);
             setCurrentConversation((prev) => (prev ? { ...prev, title } : prev));
           } catch {
             // Title update failed, not critical
@@ -571,7 +542,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
             name: 'execute_tool memoryExtractor',
           });
           toolSpan?.setAttribute('gen_ai.tool.name', 'memoryExtractor');
-          const memories = extractMemoriesFromMessage(userId, content, currentConversation.id);
+          const memories = extractMemoriesFromMessage(userId, content, activeConversation.id);
           if (memories.length > 0) {
             await memoryStore.addMemories(memories);
           }
@@ -589,7 +560,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
             const recentMessages = [
               ...messages,
               { role: 'user' as const, content },
-              { role: 'assistant' as const, content: fullResponse },
+              { role: 'assistant' as const, content: safeContent },
             ]
               .slice(-10)
               .map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content }));
@@ -598,11 +569,11 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
               recentMessages,
               existingMemories,
               userId,
-              currentConversation.id,
+              activeConversation.id,
             );
 
             if (semanticMemories.length > 0) {
-              await storeSemanticMemories(db, semanticMemories, userId, currentConversation.id);
+              await storeSemanticMemories(db, semanticMemories, userId, activeConversation.id);
               logger.debug('Stored semantic memories', { count: semanticMemories.length });
             }
           } catch (semanticErr) {
@@ -629,7 +600,6 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       }
     }
   }, [
-    currentConversation,
     chatHistory,
     messages,
     sobrietyDays,
@@ -663,7 +633,7 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
         // If rate limit check fails, allow the message
       }
 
-      // If no conversation, start a new one
+      // If no conversation, start a new one (also sets ref synchronously)
       if (!currentConversation) {
         await startNewConversation();
       }
@@ -671,14 +641,10 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       setIsLoading(true);
       setError(null);
 
-      // Add to queue
+      // Add to queue and process immediately — ref-based lookup avoids stale state
       messageQueueRef.current.push(content.trim());
-
-      // Wait a tick for conversation to be set
-      setTimeout(() => {
-        processQueue();
-        setIsLoading(false);
-      }, 100);
+      processQueue();
+      setIsLoading(false);
     },
     [currentConversation, startNewConversation, processQueue],
   );

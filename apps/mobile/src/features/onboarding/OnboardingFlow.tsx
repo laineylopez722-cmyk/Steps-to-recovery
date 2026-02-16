@@ -90,15 +90,26 @@ function OnboardingPage({
   }));
 
   return (
-    <View style={styles.page}>
+    <View
+      style={styles.page}
+      accessible={true}
+      accessibilityLabel={`${step.title.replace('\n', ' ')}. ${step.description.replace('\n', ' ')}`}
+      accessibilityRole="summary"
+    >
       <Animated.View style={[styles.iconWrap, iconStyle]}>
-        <View style={[styles.iconBg, { backgroundColor: `${step.color}15` }]}>
+        <View
+          style={[styles.iconBg, { backgroundColor: `${step.color}15` }]}
+          accessibilityElementsHidden={true}
+          importantForAccessibility="no-hide-descendants"
+        >
           <Feather name={step.icon} size={56} color={step.color} />
         </View>
       </Animated.View>
 
       <Animated.View style={[styles.textWrap, textStyle]}>
-        <Text style={styles.title}>{step.title}</Text>
+        <Text style={styles.title} accessibilityRole="header">
+          {step.title}
+        </Text>
         <Text style={styles.description}>{step.description}</Text>
       </Animated.View>
     </View>
@@ -108,10 +119,12 @@ function OnboardingPage({
 function Dot({
   index,
   currentIndex,
+  totalSteps,
   onPress,
 }: {
   index: number;
   currentIndex: number;
+  totalSteps: number;
   onPress: () => void;
 }) {
   const isActive = index === currentIndex;
@@ -125,7 +138,14 @@ function Dot({
   }));
 
   return (
-    <Pressable onPress={onPress} hitSlop={12}>
+    <Pressable
+      onPress={onPress}
+      hitSlop={12}
+      accessibilityRole="button"
+      accessibilityLabel={`Page ${index + 1} of ${totalSteps}${isActive ? ', current' : ''}`}
+      accessibilityHint={`Go to page ${index + 1}`}
+      style={styles.dotPressable}
+    >
       <Animated.View style={[styles.dot, animStyle]} />
     </Pressable>
   );
@@ -178,6 +198,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
             <Pressable
               onPress={onComplete}
               style={({ pressed }) => [styles.skipBtn, pressed && styles.skipBtnPressed]}
+              accessibilityRole="button"
+              accessibilityLabel="Skip onboarding"
+              accessibilityHint="Skip to sign in"
             >
               <Text style={styles.skipText}>Skip</Text>
             </Pressable>
@@ -202,12 +225,13 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
 
         {/* Footer */}
         <View style={styles.footer}>
-          <View style={styles.dots}>
+          <View style={styles.dots} accessibilityRole="tablist">
             {STEPS.map((_, index) => (
               <Dot
                 key={index}
                 index={index}
                 currentIndex={currentIndex}
+                totalSteps={STEPS.length}
                 onPress={() => scrollTo(index)}
               />
             ))}
@@ -216,6 +240,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
           <Pressable
             onPress={handleContinue}
             style={({ pressed }) => [styles.continueBtn, pressed && styles.continueBtnPressed]}
+            accessibilityRole="button"
+            accessibilityLabel={isLast ? 'Get Started' : `Continue to page ${currentIndex + 2}`}
           >
             <Text style={styles.continueText}>{isLast ? 'Get Started' : 'Continue'}</Text>
             {!isLast && (
@@ -224,6 +250,8 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps): React.React
                 size={20}
                 color={ds.colors.text}
                 style={{ marginLeft: 8 }}
+                accessibilityElementsHidden={true}
+                importantForAccessibility="no-hide-descendants"
               />
             )}
           </Pressable>
@@ -315,6 +343,12 @@ const styles = StyleSheet.create({
   dot: {
     height: 8,
     borderRadius: 4,
+  },
+  dotPressable: {
+    minWidth: 48,
+    minHeight: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   continueBtn: {
     flexDirection: 'row',

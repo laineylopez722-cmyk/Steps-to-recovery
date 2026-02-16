@@ -5,10 +5,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Linking, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Linking, Modal, StyleSheet } from 'react-native';
 import { Heart, Phone } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import { Icon } from '@/components/ui/Icon';
+import { Icon } from '../../../components/ui/Icon';
 
 interface CrisisOverlayProps {
   visible: boolean;
@@ -65,14 +65,14 @@ export function CrisisOverlay({
       accessibilityViewIsModal
       accessibilityLabel="Crisis support overlay"
     >
-      <View className="flex-1 bg-black/90 justify-center items-center px-6">
-        <View className="bg-gray-900 rounded-3xl p-8 w-full max-w-sm">
-          <View className="items-center mb-6">
-            <View className="w-16 h-16 rounded-full bg-amber-500/20 items-center justify-center mb-4">
-              <Icon as={Heart} size={32} className="text-amber-500" />
+      <View style={styles.overlay}>
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <View style={styles.iconWrapper}>
+              <Icon as={Heart} size={32} color="#F59E0B" />
             </View>
-            <Text className="text-2xl font-bold text-white text-center">I'm here for you</Text>
-            <Text className="text-gray-400 text-center mt-2">
+            <Text style={styles.title}>I'm here for you</Text>
+            <Text style={styles.subtitle}>
               Whatever you're going through, you don't have to face it alone.
             </Text>
           </View>
@@ -81,36 +81,36 @@ export function CrisisOverlay({
           {sponsorPhone && (
             <TouchableOpacity
               onPress={callSponsor}
-              className="bg-amber-500 rounded-2xl py-4 px-6 flex-row items-center justify-center mb-3"
+              style={styles.sponsorButton}
               accessibilityRole="button"
               accessibilityLabel={`Call ${sponsorName || 'Sponsor'}`}
             >
-              <Icon as={Phone} size={20} className="text-black" />
-              <Text className="text-black font-semibold ml-2">Call {sponsorName || 'Sponsor'}</Text>
+              <Icon as={Phone} size={20} color="#000000" />
+              <Text style={styles.sponsorButtonText}>Call {sponsorName || 'Sponsor'}</Text>
             </TouchableOpacity>
           )}
 
           {/* Crisis hotline */}
           <TouchableOpacity
             onPress={callHotline}
-            className="bg-gray-800 rounded-2xl py-4 px-6 flex-row items-center justify-center mb-6"
+            style={styles.hotlineButton}
             accessibilityRole="button"
             accessibilityLabel="Call Crisis Hotline 988"
           >
-            <Icon as={Phone} size={20} className="text-white" />
-            <Text className="text-white font-semibold ml-2">Crisis Hotline (988)</Text>
+            <Icon as={Phone} size={20} color="#FFFFFF" />
+            <Text style={styles.hotlineButtonText}>Crisis Hotline (988)</Text>
           </TouchableOpacity>
 
           {/* Dismiss */}
           <TouchableOpacity
             onPress={handleDismiss}
             disabled={!canDismiss}
-            className={`py-3 ${canDismiss ? 'opacity-100' : 'opacity-30'}`}
+            style={[styles.dismissButton, !canDismiss && styles.dismissButtonDisabled]}
             accessibilityRole="button"
             accessibilityLabel={canDismiss ? "I'm okay, dismiss" : 'Please wait'}
             accessibilityState={{ disabled: !canDismiss }}
           >
-            <Text className="text-gray-500 text-center text-base">
+            <Text style={styles.dismissText}>
               {canDismiss ? "I'm okay, thanks" : 'Take a breath...'}
             </Text>
           </TouchableOpacity>
@@ -119,3 +119,86 @@ export function CrisisOverlay({
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  container: {
+    backgroundColor: '#1C1C1E',
+    borderRadius: 24,
+    padding: 32,
+    width: '100%',
+    maxWidth: 340,
+  },
+  header: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  iconWrapper: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  sponsorButton: {
+    backgroundColor: '#F59E0B',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  sponsorButtonText: {
+    color: '#000000',
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  hotlineButton: {
+    backgroundColor: '#374151',
+    borderRadius: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 24,
+  },
+  hotlineButtonText: {
+    color: '#FFFFFF',
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  dismissButton: {
+    paddingVertical: 12,
+  },
+  dismissButtonDisabled: {
+    opacity: 0.3,
+  },
+  dismissText: {
+    color: '#6B7280',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+});

@@ -74,7 +74,7 @@ function ListItem({
             { backgroundColor: iconColor ? `${iconColor}20` : ds.semantic.intent.primary.muted },
           ]}
         >
-          <Feather name={icon} size={20} color={iconColor || ds.semantic.intent.primary.solid} />
+          <Feather name={icon} size={20} color={iconColor || ds.semantic.intent.primary.solid} importantForAccessibility="no" accessibilityElementsHidden />
         </View>
 
         <View style={styles.listItemContent}>
@@ -82,7 +82,7 @@ function ListItem({
           {subtitle && <Text style={styles.listItemSubtitle}>{subtitle}</Text>}
         </View>
 
-        {!disabled && <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} />}
+        {!disabled && <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} importantForAccessibility="no" accessibilityElementsHidden />}
       </Animated.View>
 
       {!isLast && <View style={styles.listItemDivider} />}
@@ -95,7 +95,7 @@ function SectionHeader({ title, delay = 0 }: { title: string; delay?: number }) 
   const styles = useThemedStyles(createStyles);
   return (
     <Animated.View entering={MotionTransitions.fadeDelayed(delay)}>
-      <Text style={styles.sectionHeader}>{title}</Text>
+      <Text style={styles.sectionHeader} accessibilityRole="header">{title}</Text>
     </Animated.View>
   );
 }
@@ -150,23 +150,23 @@ export function ProfileScreen(): React.ReactElement {
           >
             {/* Header */}
             <Animated.View entering={MotionTransitions.screenEnter()} style={styles.header}>
-              <Text style={styles.title}>Settings</Text>
+              <Text style={styles.title} accessibilityRole="header">Settings</Text>
               <Text style={styles.subtitle}>Recovery profile, privacy, and app preferences</Text>
             </Animated.View>
 
             {/* Profile Card */}
             <CardGroup delay={100}>
-              <View style={styles.profileCard}>
-                <View style={styles.avatar}>
+              <View style={styles.profileCard} accessible accessibilityLabel={`Profile: ${user?.email || 'Loading'}, Personal Account`}>
+                <View style={styles.avatar} importantForAccessibility="no" accessibilityElementsHidden>
                   <Feather name="user" size={32} color={ds.semantic.intent.primary.solid} />
                 </View>
-                <View style={styles.profileInfo}>
+                <View style={styles.profileInfo} importantForAccessibility="no">
                   <Text style={styles.profileEmail} numberOfLines={1}>
                     {user?.email || 'Loading...'}
                   </Text>
                   <Text style={styles.profileLabel}>Personal Account</Text>
                 </View>
-                <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} />
+                <Feather name="chevron-right" size={18} color={ds.semantic.text.muted} importantForAccessibility="no" accessibilityElementsHidden />
               </View>
             </CardGroup>
 
@@ -244,11 +244,11 @@ export function ProfileScreen(): React.ReactElement {
 
             {/* Privacy Banner */}
             <Animated.View entering={MotionTransitions.cardEnter(5)} style={styles.privacyBanner}>
-              <View style={styles.privacyIcon}>
+              <View style={styles.privacyIcon} importantForAccessibility="no" accessibilityElementsHidden>
                 <Feather name="lock" size={20} color={ds.semantic.intent.secondary.solid} />
               </View>
               <View style={styles.privacyContent}>
-                <Text style={styles.privacyTitle}>End-to-End Encrypted</Text>
+                <Text style={styles.privacyTitle} accessibilityRole="header">End-to-End Encrypted</Text>
                 <Text style={styles.privacyText}>
                   Your journal and step work are encrypted with AES-256. Only you can read them.
                 </Text>

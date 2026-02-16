@@ -1,3 +1,4 @@
+import CryptoJS from 'crypto-js';
 /**
  * Encryption Utilities
  *
@@ -16,11 +17,10 @@
  * @module utils/encryption
  */
 
-import CryptoJS from 'crypto-js';
 import { Platform } from 'react-native';
-import { secureStorage } from '../adapters/secureStorage';
-import type { StorageAdapter } from '../adapters/storage';
-import { logger } from './logger';
+import { secureStorage } from "../adapters/secureStorage/index";
+import type { StorageAdapter } from "../adapters/storage/index.ts";
+import { logger } from "./logger";
 
 /**
  * Constant-time string comparison to prevent timing attacks
@@ -134,6 +134,7 @@ export async function generateEncryptionKey(): Promise<string> {
  * }
  * ```
  */
+// deno-lint-ignore require-await
 export async function getEncryptionKey(): Promise<string | null> {
   return secureStorage.getItemAsync(ENCRYPTION_KEY_NAME);
 }
@@ -263,8 +264,30 @@ export async function hasEncryptionKey(): Promise<boolean> {
   return key !== null && key.length > 0;
 }
 
-/** Decrypt content with a specific key (for key rotation) */
-async function decryptWithKey(encrypted: string, key: string): Promise<string> {
+/**
+ * Decrypt content with a specific key (used for key rotation workflows).
+ *
+ * This is a low-level, synchronous helper that performs decryption and
+ * integrity verification using the provided key. Unlike {@link decryptContent},
+ * this function does not access secure storage or perform any asynchronous I/O;
+ * callers must supply the correct raw encryption key.
+ *
+ * The expected encrypted format is:
+ * - `"iv:ciphertext"` for payloads without an HMAC
+ * - `"iv:ciphertext:mac"` for payloads with an HMAC-SHA256 authentication tag
+ *
+ * @param encrypted - The encrypted payload string in `iv:ciphertext[:mac]` format,
+ *                    where `iv`, `ciphertext`, and optional `mac` are hex-encoded.
+ * @param key - Hex-encoded AES key to use for decryption. This should be the
+ *              exact key that was originally used to encrypt the content.
+ * @returns The decrypted plaintext string.
+ *
+ * @throws {Error} If the encrypted string format is invalid (missing parts).
+ * @throws {Error} If the integrity check fails due to MAC mismatch.
+ * @throws {Error} If decryption fails (for example, due to an incorrect key
+ *                 or corrupted ciphertext).
+ */
+function decryptWithKey({ encrypted, key }: { encrypted: string; key: string; }): string {
   const parts = encrypted.split(':');
   if (parts.length !== 2 && parts.length !== 3) throw new Error('Invalid format');
   const [iv, ciphertext, mac] = parts;
@@ -373,10 +396,8 @@ export async function rotateEncryptionKey(
     },
     {
       table: 'craving_surf_sessions',
-      columns: ['encrypted_initial_rating', 'encrypted_final_rating', 'encrypted_distraction_used'],
+      columns: ['encrypted_notes'],
     },
-    { table: 'favorite_meetings', columns: ['encrypted_notes'] },
-    { table: 'safety_plans', columns: ['encrypted_plan'] },
   ];
 
   // Count total items for progress
@@ -415,7 +436,7 @@ export async function rotateEncryptionKey(
       for (const col of columns) {
         const encrypted = record[col];
         if (encrypted) {
-          const plaintext = await decryptWithKey(encrypted, oldKey);
+          const plaintext = await decryptWithKey({ encrypted, key: oldKey });
           const reEncrypted = await encryptWithKey(plaintext, newKey);
           updates.push(`${col} = ?`);
           values.push(reEncrypted);

@@ -15,6 +15,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { mmkvStorage } from '../lib/mmkv';
 import { logger } from '../utils/logger';
 
 // ========================================
@@ -374,7 +375,7 @@ export async function detectRiskPatterns(userId: string): Promise<RiskDetectionR
 // ========================================
 
 /**
- * Mark a pattern as dismissed (store in AsyncStorage)
+ * Mark a pattern as dismissed (store in MMKV)
  * User can dismiss alerts to avoid notification fatigue
  */
 export async function dismissPattern(userId: string, patternType: RiskPatternType): Promise<void> {
@@ -382,10 +383,9 @@ export async function dismissPattern(userId: string, patternType: RiskPatternTyp
     const key = `risk_dismissed_${userId}_${patternType}`;
     const value = Date.now().toString();
 
-    // AsyncStorage is acceptable here: dismissed timestamps are non-sensitive UI preference
+    // MMKV is acceptable here: dismissed timestamps are non-sensitive UI preference
     // data (no PII, no recovery content). SecureStore is reserved for encryption keys/tokens.
-    const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
-    await AsyncStorage.setItem(key, value);
+    mmkvStorage.setItem(key, value);
 
     logger.info('Risk detection: Pattern dismissed', { userId, patternType });
   } catch (error) {
@@ -402,9 +402,8 @@ export async function wasRecentlyDismissed(
   patternType: RiskPatternType,
 ): Promise<boolean> {
   try {
-    const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
     const key = `risk_dismissed_${userId}_${patternType}`;
-    const dismissed = await AsyncStorage.getItem(key);
+    const dismissed = mmkvStorage.getItem(key);
 
     if (!dismissed) return false;
 

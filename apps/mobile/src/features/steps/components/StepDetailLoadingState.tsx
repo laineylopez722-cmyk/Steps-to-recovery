@@ -13,7 +13,7 @@ export function StepDetailLoadingState(): React.ReactElement {
       style={[styles.container, { backgroundColor: ds.semantic.surface.app }]}
       edges={['bottom']}
     >
-      <View style={styles.loadingSkeletonContainer}>
+      <View style={styles.loadingSkeletonContainer} accessible accessibilityLabel="Loading step details" accessibilityRole="progressbar">
         <Card variant="elevated" style={styles.headerCard}>
           <View style={styles.header}>
             <Skeleton width={50} height={50} borderRadius={25} />

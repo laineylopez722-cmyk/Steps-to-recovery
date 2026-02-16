@@ -15,6 +15,7 @@ export interface WeeklyReport {
   checkInSummary: { completedDays: number; totalDays: number; streak: number };
   cravingSummary: { average: number; peak: number; trend: string };
   stepWorkSummary: { currentStep: number; entriesThisWeek: number };
+  meetingSummary: { attended: number };
   highlights: string[];
   encouragement: string;
 }
@@ -27,6 +28,7 @@ export interface WeeklyReportData {
   checkInDates: string[];
   currentStep: number;
   stepWorkEntries: number;
+  meetingsAttended: number;
   sobrietyDays: number;
 }
 
@@ -88,6 +90,9 @@ export function generateWeeklyReport(data: WeeklyReportData): WeeklyReport {
       currentStep: data.currentStep,
       entriesThisWeek: data.stepWorkEntries,
     },
+    meetingSummary: {
+      attended: data.meetingsAttended,
+    },
     highlights,
     encouragement,
   };
@@ -133,6 +138,10 @@ function generateHighlights(data: WeeklyReportData, moodAvg: number, streak: num
   const highlights: string[] = [];
   if (streak >= 7) highlights.push('🔥 Perfect check-in streak this week!');
   else if (streak >= 3) highlights.push(`📊 ${streak}-day check-in streak`);
+  if (data.meetingsAttended >= 3)
+    highlights.push(`🤝 ${data.meetingsAttended} meetings attended — strong fellowship`);
+  else if (data.meetingsAttended > 0)
+    highlights.push(`🤝 ${data.meetingsAttended} meeting${data.meetingsAttended > 1 ? 's' : ''} attended`);
   if (data.journalEntryCount >= 5)
     highlights.push(`✍️ ${data.journalEntryCount} journal entries — strong reflection practice`);
   if (data.stepWorkEntries > 0) highlights.push(`📖 Step ${data.currentStep} work in progress`);

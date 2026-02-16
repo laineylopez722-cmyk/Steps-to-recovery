@@ -86,7 +86,7 @@ function getQuestionHint(prompt: string): string | null {
 }
 
 export function StepSingleQuestionView({
-  stepNumber,
+  stepNumber: _stepNumber,
   description,
   totalQuestions,
   answeredCount,
@@ -181,13 +181,19 @@ export function StepSingleQuestionView({
         showsVerticalScrollIndicator={false}
       >
         {/* Step description (no back button — nav bar handles that) */}
-        <Text style={[ds.semantic.typography.body, styles.stepDescription]} numberOfLines={3}>
+        <Text style={[ds.semantic.typography.body, styles.stepDescription]} numberOfLines={3} accessibilityRole="summary">
           {description}
         </Text>
 
         {/* Progress bar */}
-        <View style={styles.progressSection}>
-          <View style={styles.progressRow}>
+        <View
+          style={styles.progressSection}
+          accessible
+          accessibilityRole="progressbar"
+          accessibilityLabel={`Question ${currentQ} of ${safeTotal}. ${answeredCount} answered, ${progressPercent}% complete`}
+          accessibilityValue={{ min: 0, max: 100, now: progressPercent }}
+        >
+          <View style={styles.progressRow} importantForAccessibility="no-hide-descendants">
             <Text style={[ds.semantic.typography.body, styles.progressLeft]}>
               Question {currentQ} of {safeTotal}
             </Text>
@@ -195,7 +201,7 @@ export function StepSingleQuestionView({
               {answeredCount} answered • {progressPercent}%
             </Text>
           </View>
-          <View style={styles.progressTrack}>
+          <View style={styles.progressTrack} importantForAccessibility="no-hide-descendants">
             <View
               style={[
                 styles.progressFill,
@@ -209,14 +215,14 @@ export function StepSingleQuestionView({
         <Animated.View style={[styles.questionArea, { opacity: fadeAnim }]}>
           {/* Section label */}
           {question?.sectionTitle && (
-            <Text style={[ds.semantic.typography.sectionLabel, styles.sectionLabel]}>
+            <Text style={[ds.semantic.typography.sectionLabel, styles.sectionLabel]} accessibilityRole="header">
               {question.sectionTitle.toUpperCase()}
             </Text>
           )}
 
           {/* Prompt */}
           {question && (
-            <Text style={[ds.typography.h3, styles.prompt]}>
+            <Text style={[ds.typography.h3, styles.prompt]} accessibilityRole="header">
               {question.prompt}
             </Text>
           )}
@@ -224,7 +230,7 @@ export function StepSingleQuestionView({
           {/* Plain-language hint */}
           {hint && (
             <View style={styles.hintRow}>
-              <Feather name="info" size={14} color={ds.colors.textTertiary} />
+              <Feather name="info" size={14} color={ds.colors.textTertiary} importantForAccessibility="no" />
               <Text style={[ds.semantic.typography.sectionLabel, styles.hintText]}>{hint}</Text>
             </View>
           )}
@@ -243,7 +249,11 @@ export function StepSingleQuestionView({
             accessibilityLabel={`Answer for question ${currentQ}`}
           />
 
-          <Text style={[ds.semantic.typography.sectionLabel, styles.autoSaveHint]}>
+          <Text
+            style={[ds.semantic.typography.sectionLabel, styles.autoSaveHint]}
+            accessibilityLiveRegion="polite"
+            accessibilityLabel={isSaving ? 'Saving your answer' : isAnswered ? 'Answer saved' : 'Auto-saves when you move to next question'}
+          >
             {isSaving ? 'Saving...' : isAnswered ? '✓ Saved' : 'Auto-saves when you move to next question'}
           </Text>
         </Animated.View>
@@ -256,8 +266,9 @@ export function StepSingleQuestionView({
             style={[styles.navButton, !hasPrev && styles.navButtonDisabled]}
             accessibilityLabel="Previous question"
             accessibilityRole="button"
+            accessibilityState={{ disabled: !hasPrev }}
           >
-            <Feather name="chevron-left" size={20} color={hasPrev ? ds.colors.textPrimary : ds.colors.textQuaternary} />
+            <Feather name="chevron-left" size={20} color={hasPrev ? ds.colors.textPrimary : ds.colors.textQuaternary} importantForAccessibility="no" />
             <Text style={[styles.navText, !hasPrev && styles.navTextDisabled]}>Prev</Text>
           </Pressable>
 
@@ -270,7 +281,7 @@ export function StepSingleQuestionView({
             <Text style={styles.navTextPrimary}>
               {hasNext ? 'Next' : 'Review'}
             </Text>
-            <Feather name={hasNext ? 'chevron-right' : 'check-circle'} size={20} color={ds.semantic.text.onDark} />
+            <Feather name={hasNext ? 'chevron-right' : 'check-circle'} size={20} color={ds.semantic.text.onDark} importantForAccessibility="no" />
           </Pressable>
         </View>
 

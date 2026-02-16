@@ -41,7 +41,7 @@ function MilestoneRow({
         accessibilityLabel={`${prediction.title}, ${countdownText}`}
         accessibilityHint={prediction.description}
       >
-        <Text style={styles.milestoneEmoji}>{prediction.emoji}</Text>
+        <Text style={styles.milestoneEmoji} importantForAccessibility="no">{prediction.emoji}</Text>
         <View style={styles.milestoneContent}>
           <Text style={styles.milestoneTitle}>{prediction.title}</Text>
           <Text style={styles.milestoneDesc}>{prediction.description}</Text>
@@ -76,8 +76,8 @@ export function UpcomingMilestones({ userId }: UpcomingMilestonesProps): React.R
   return (
     <Animated.View entering={FadeInUp.delay(150)} style={styles.container}>
       <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionTitle}>Upcoming milestones</Text>
-        <Feather name="award" size={14} color={ds.semantic.text.muted} />
+        <Text style={styles.sectionTitle} accessibilityRole="header">Upcoming milestones</Text>
+        <Feather name="award" size={14} color={ds.semantic.text.muted} importantForAccessibility="no" />
       </View>
 
       <View style={styles.card} accessibilityRole="list" accessibilityLabel="Upcoming milestones">

@@ -3,7 +3,7 @@
  * Displays recovery achievements with unlock animations
  */
 
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, AccessibilityInfo, useColorScheme } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -120,6 +120,12 @@ export function AchievementBadge({
   const rotation = useSharedValue(0);
   const glowOpacity = useSharedValue(0);
   const [showParticles, setShowParticles] = React.useState(showConfetti);
+  const particlesTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup particles timer on unmount
+  useEffect(() => {
+    return () => { if (particlesTimerRef.current) clearTimeout(particlesTimerRef.current); };
+  }, []);
 
   // Trigger unlock animation
   React.useEffect(() => {
@@ -162,7 +168,7 @@ export function AchievementBadge({
 
       // Show confetti
       setShowParticles(true);
-      setTimeout(() => setShowParticles(false), 3000);
+      particlesTimerRef.current = setTimeout(() => setShowParticles(false), 3000);
     } else {
       badgeScale.value = 1;
     }
