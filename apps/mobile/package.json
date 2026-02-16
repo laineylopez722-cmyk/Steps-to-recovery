@@ -33,7 +33,6 @@
     "e2e:validate": "maestro test --dry-run .maestro/flows"
   },
   "dependencies": {
-    "@dev-plugins/react-query": "^0.4.0",
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.8",
