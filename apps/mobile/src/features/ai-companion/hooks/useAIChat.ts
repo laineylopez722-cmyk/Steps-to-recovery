@@ -357,8 +357,9 @@ export function useAIChat(options: UseAIChatOptions): UseAIChatReturn {
       let memoryContext = '';
       try {
         memoryContext = await memoryStore.generateAIContext();
-      } catch {
+      } catch (err) {
         // Memories not available yet, that's okay
+        logger.debug('Memory context unavailable', err);
       }
 
       // Get enriched context from journal, step work, and check-ins
