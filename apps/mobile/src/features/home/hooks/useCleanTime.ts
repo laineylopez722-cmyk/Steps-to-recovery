@@ -73,6 +73,16 @@ function calculateCleanTime(sobrietyStartDate: string): {
   };
 }
 
+interface CleanTimeQueryResult {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  nextMilestone: Milestone | null;
+  recentMilestones: Milestone[];
+  hasSobrietyDate: boolean;
+}
+
 /**
  * Hook to get clean time and milestones
  */
@@ -89,7 +99,7 @@ export function useCleanTime(userId: string): {
 } {
   const { db, isReady } = useDatabase();
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<CleanTimeQueryResult>({
     queryKey: ['clean_time', userId],
     queryFn: async () => {
       if (!db || !isReady) {
@@ -101,6 +111,7 @@ export function useCleanTime(userId: string): {
           seconds: 0,
           nextMilestone: MILESTONES[0],
           recentMilestones: [],
+          hasSobrietyDate: false,
         };
       }
       try {
@@ -119,6 +130,7 @@ export function useCleanTime(userId: string): {
             seconds: 0,
             nextMilestone: MILESTONES[0],
             recentMilestones: [],
+            hasSobrietyDate: false,
           };
         }
 
@@ -130,6 +142,7 @@ export function useCleanTime(userId: string): {
           ...cleanTime,
           nextMilestone,
           recentMilestones,
+          hasSobrietyDate: true,
         };
       } catch (err) {
         logger.error('Failed to calculate clean time', err);
@@ -141,11 +154,15 @@ export function useCleanTime(userId: string): {
           seconds: 0,
           nextMilestone: MILESTONES[0],
           recentMilestones: [],
+          hasSobrietyDate: false,
         };
       }
     },
     enabled: isReady && !!db,
-    refetchInterval: 1000, // Update every second for live counter
+    refetchInterval: (query) => {
+      const cleanTime = query.state.data as CleanTimeQueryResult | undefined;
+      return cleanTime?.hasSobrietyDate ? 1000 : 60 * 1000;
+    }, // Keep live timer only when sobriety date exists
   });
 
   return {
