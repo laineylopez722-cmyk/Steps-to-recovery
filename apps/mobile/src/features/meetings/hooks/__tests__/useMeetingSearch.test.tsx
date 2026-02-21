@@ -101,6 +101,15 @@ describe('useMeetingSearch', () => {
     mockSearchMeetings.mockResolvedValue([]);
   });
 
+  afterEach(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  });
+
   describe('Search Functionality', () => {
     it('should return cached meetings immediately when cache is fresh', async () => {
       const cachedMeetings = [
