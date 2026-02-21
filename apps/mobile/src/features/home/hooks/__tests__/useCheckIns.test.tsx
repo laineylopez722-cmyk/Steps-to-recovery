@@ -107,6 +107,15 @@ describe('useCheckIns', () => {
     mockDb.runAsync.mockResolvedValue({ lastInsertRowId: 1, changes: 1 });
   });
 
+  afterEach(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  });
+
   describe('useTodayCheckIns', () => {
     it('should return null for both check-ins when none exist', async () => {
       mockDb.getAllAsync.mockResolvedValue([]);
