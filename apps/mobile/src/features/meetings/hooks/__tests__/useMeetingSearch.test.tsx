@@ -35,6 +35,7 @@ jest.mock('../../../../contexts/DatabaseContext', () => ({
 
 const mockSearchMeetings = jest.fn();
 const mockCacheMeetings = jest.fn();
+const mockClearStaleCache = jest.fn();
 const mockGetCachedMeetings = jest.fn();
 const mockIsCacheStale = jest.fn();
 const mockGenerateCacheRegionKey = jest.fn();
@@ -45,6 +46,7 @@ jest.mock('../../services/meetingGuideApi', () => ({
 
 jest.mock('../../services/meetingCacheService', () => ({
   cacheMeetings: (...args: unknown[]) => mockCacheMeetings(...args),
+  clearStaleCache: (...args: unknown[]) => mockClearStaleCache(...args),
   getCachedMeetings: (...args: unknown[]) => mockGetCachedMeetings(...args),
   isCacheStale: (...args: unknown[]) => mockIsCacheStale(...args),
   generateCacheRegionKey: (...args: unknown[]) => mockGenerateCacheRegionKey(...args),
@@ -95,6 +97,7 @@ describe('useMeetingSearch', () => {
     mockIsCacheStale.mockResolvedValue(false);
     mockGetCachedMeetings.mockResolvedValue([]);
     mockCacheMeetings.mockResolvedValue(undefined);
+    mockClearStaleCache.mockResolvedValue(undefined);
     mockSearchMeetings.mockResolvedValue([]);
   });
 
@@ -129,6 +132,25 @@ describe('useMeetingSearch', () => {
       expect(searchResult).toEqual(cachedMeetings);
       expect(mockGetCachedMeetings).toHaveBeenCalledWith(mockDb, 'cache-region-key-123');
       expect(mockSearchMeetings).not.toHaveBeenCalled();
+    });
+
+    it('should trigger stale cache housekeeping on each search', async () => {
+      mockIsCacheStale.mockResolvedValue(false);
+      mockGetCachedMeetings.mockResolvedValue([]);
+
+      const { result } = renderHook(() => useMeetingSearch(), {
+        wrapper: createWrapper(),
+      });
+
+      await act(async () => {
+        await result.current.search({
+          latitude: 40.7128,
+          longitude: -74.006,
+          radius_miles: 5,
+        });
+      });
+
+      expect(mockClearStaleCache).toHaveBeenCalledWith(mockDb);
     });
 
     it('should fetch from API when cache is stale', async () => {
@@ -599,6 +621,29 @@ describe('useMeetingSearch', () => {
   });
 
   describe('Edge Cases', () => {
+    it('should continue search when housekeeping cleanup fails', async () => {
+      const cachedMeetings = [{ id: 'm1', name: 'Meeting 1', cache_region: 'key-123' }];
+
+      mockClearStaleCache.mockRejectedValue(new Error('cleanup failed'));
+      mockIsCacheStale.mockResolvedValue(false);
+      mockGetCachedMeetings.mockResolvedValue(cachedMeetings);
+
+      const { result } = renderHook(() => useMeetingSearch(), {
+        wrapper: createWrapper(),
+      });
+
+      let searchResult: typeof cachedMeetings = [];
+      await act(async () => {
+        searchResult = await result.current.search({
+          latitude: 40.7128,
+          longitude: -74.006,
+          radius_miles: 5,
+        });
+      });
+
+      expect(searchResult).toEqual(cachedMeetings);
+    });
+
     it('should handle empty API response', async () => {
       mockIsCacheStale.mockResolvedValue(true);
       mockGetCachedMeetings.mockResolvedValue([]);

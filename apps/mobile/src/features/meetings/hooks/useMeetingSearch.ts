@@ -12,6 +12,7 @@ import { logger } from '../../../utils/logger';
 import { searchMeetings } from '../services/meetingGuideApi';
 import {
   cacheMeetings,
+  clearStaleCache,
   getCachedMeetings,
   isCacheStale,
   generateCacheRegionKey,
@@ -65,6 +66,11 @@ export function useMeetingSearch(options: UseMeetingSearchOptions = {}): UseMeet
         longitude,
         radius_miles,
         cacheRegionKey,
+      });
+
+      // Best-effort housekeeping to avoid unbounded cache growth across regions
+      void clearStaleCache(db).catch(() => {
+        // clearStaleCache already logs internally; never block search on housekeeping
       });
 
       try {

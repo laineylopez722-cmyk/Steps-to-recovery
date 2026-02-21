@@ -79,7 +79,7 @@ export function useDebouncedCallback<T extends (...args: Parameters<T>) => void>
   callback: T,
   delay: number,
 ): [T, () => void] {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const callbackRef = useRef(callback);
 
   // Update callback ref when callback changes
@@ -161,7 +161,7 @@ export function useDebouncedState<T>(
 export function useThrottledValue<T>(value: T, delay: number): T {
   const [throttledValue, setThrottledValue] = useState<T>(value);
   const lastUpdatedRef = useRef<number>(Date.now());
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const now = Date.now();

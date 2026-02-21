@@ -36,7 +36,7 @@ const MIN_SYNC_COOLDOWN_MS = 30 * 1000; // 30 seconds between manual syncs
 export function SyncProvider({ children }: { children: React.ReactNode }) {
   const { db, isReady } = useDatabase();
   const { user } = useAuth();
-  const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const syncIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isOnlineRef = useRef<boolean>(false);
   const isSyncingRef = useRef<boolean>(false);
   const lastSyncTimeRef = useRef<number>(0);

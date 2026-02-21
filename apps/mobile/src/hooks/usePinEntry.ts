@@ -17,7 +17,7 @@ export function usePinEntry({
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
   const [isValidating, setIsValidating] = useState(false);
-  const validationTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const validationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cleanup validation timer on unmount
   useEffect(() => {

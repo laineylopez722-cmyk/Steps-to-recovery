@@ -235,7 +235,7 @@ export function useBackgroundTimeout(timeoutMs: number): {
 } {
   const [hasTimedOut, setHasTimedOut] = useState(false);
   const backgroundTimeRef = useRef<number | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const resetTimeout = useCallback(() => {
     setHasTimedOut(false);

@@ -65,10 +65,10 @@ export function SafeDialInterventionScreen({
   // Track whether countdown has expired to avoid repeated handleProceed calls
   const countdownExpiredRef = useRef(false);
 
-  const stopTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const whyTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const actionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const stopTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const whyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const countdownIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const actionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cleanup action timer on unmount
   useEffect(() => {

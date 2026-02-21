@@ -168,7 +168,7 @@ export function useCravingTracker(): CravingTrackerState & CravingTrackerActions
   const [cravingHistory, setCravingHistory] = useState<CravingEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const elapsedIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const elapsedIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Update elapsed time for active craving
   useEffect(() => {

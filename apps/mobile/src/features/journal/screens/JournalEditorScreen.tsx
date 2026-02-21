@@ -60,7 +60,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const [showShareModal, setShowShareModal] = useState(false);
 
   const bodyRef = useRef<TextInput>(null);
-  const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const originalTitle = useRef('');
   const originalBody = useRef('');
   // Track created entry ID so subsequent auto-saves use updateEntry (not createEntry)

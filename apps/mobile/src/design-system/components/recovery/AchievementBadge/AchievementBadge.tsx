@@ -120,7 +120,7 @@ export function AchievementBadge({
   const rotation = useSharedValue(0);
   const glowOpacity = useSharedValue(0);
   const [showParticles, setShowParticles] = React.useState(showConfetti);
-  const particlesTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const particlesTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cleanup particles timer on unmount
   useEffect(() => {

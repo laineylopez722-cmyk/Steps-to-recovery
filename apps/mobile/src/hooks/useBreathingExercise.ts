@@ -178,7 +178,7 @@ export function useBreathingExercise(
     totalDuration: 0,
   });
 
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const phaseStartRef = useRef<number>(0);
   const currentPhaseIndexRef = useRef<number>(0);
   const elapsedInPhaseRef = useRef<number>(0);

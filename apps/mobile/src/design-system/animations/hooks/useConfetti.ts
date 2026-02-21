@@ -179,7 +179,7 @@ export function useConfetti(options: UseConfettiOptions = {}): UseConfettiReturn
 
   const [particles, setParticles] = useState<ConfettiParticle[]>([]);
   const [isActive, setIsActive] = useState(false);
-  const cleanupTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const cleanupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Cleanup timer on unmount
   useEffect(() => {

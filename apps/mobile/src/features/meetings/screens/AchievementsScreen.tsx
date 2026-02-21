@@ -30,7 +30,7 @@ export function AchievementsScreen(): React.ReactElement {
   const [refreshing, setRefreshing] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedAchievement, setSelectedAchievement] = useState<string | null>(null);
-  const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const refreshTimerRef = useRef<NodeJS.Timeout | number | null>(null);
 
   const { achievements, isLoading: _isLoading, unlockedCount, totalCount } = useAchievements();
 

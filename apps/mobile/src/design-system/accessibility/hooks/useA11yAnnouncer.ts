@@ -91,7 +91,7 @@ const DEFAULT_ANNOUNCEMENT_DURATION = 2000;
 export function useA11yAnnouncer(): UseA11yAnnouncerReturn {
   const queueRef = useRef<AnnouncementQueueItem[]>([]);
   const processingRef = useRef(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastAnnouncementRef = useRef<string | null>(null);
   const lastAnnounceTimeRef = useRef(0);
   const mountedRef = useRef(true);
