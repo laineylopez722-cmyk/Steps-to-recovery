@@ -8,6 +8,7 @@
  */
 
 import { logger } from '../../../utils/logger';
+import { fetchWithTimeout, sleep } from '../../../utils/network';
 import type { MeetingGuideResponse, CachedMeeting, MeetingSearchParams } from '../types/meeting';
 import { fetchTSMLMeetings } from '../../../services/meetingApiService';
 
@@ -188,43 +189,6 @@ function transformMeetingGuideToInternal(meeting: MeetingGuideResponse): CachedM
 }
 
 /**
- * Fetch with timeout
- * @param url URL to fetch
- * @param timeoutMs Timeout in milliseconds
- * @returns Response
- * @throws Error if timeout or network error
- */
-async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'Steps-to-Recovery-App/1.0',
-      },
-    });
-    return response;
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error(`Request timeout after ${timeoutMs}ms`);
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
-
-/**
- * Sleep utility for retry delays
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
  * Validate coordinates
  * @param latitude Latitude (-90 to 90)
  * @param longitude Longitude (-180 to 180)
@@ -244,3 +208,5 @@ export function validateCoordinates(latitude: number, longitude: number): boolea
     !(latitude === 0 && longitude === 0)
   );
 }
+
+

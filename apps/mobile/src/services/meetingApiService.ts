@@ -9,6 +9,7 @@
  */
 
 import { logger } from '../utils/logger';
+import { fetchWithTimeout, sleep } from '../utils/network';
 import type { CachedMeeting, MeetingSearchParams } from '../features/meetings/types/meeting';
 import { calculateDistance } from '../features/meetings/types/meeting';
 
@@ -523,35 +524,5 @@ function getFallbackMeetings(): CachedMeeting[] {
   }));
 }
 
-/**
- * Fetch with timeout
- */
-async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-  try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        Accept: 'application/json',
-        'User-Agent': 'Steps-to-Recovery-App/1.0',
-      },
-    });
-    return response;
-  } catch (error) {
-    if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error(`Request timeout after ${timeoutMs}ms`);
-    }
-    throw error;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
 
-/**
- * Sleep utility for retry delays
- */
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
