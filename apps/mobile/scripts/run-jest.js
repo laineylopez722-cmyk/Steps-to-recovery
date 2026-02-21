@@ -16,15 +16,4 @@ process.emitWarning = (warning, type, code, ctor) => {
   return originalEmitWarning(warning, type, code, ctor);
 };
 
-const args = process.argv.slice(2);
-const isWatchMode = args.includes('--watch') || args.includes('--watchAll');
-const hasForceExit = args.includes('--forceExit');
-
-// Some RN/Jest suites leave non-critical async handles alive (React Query timers, etc.)
-// and can hang autonomous runs indefinitely after reporting results.
-// Enforce deterministic exits for non-watch runs while still allowing explicit override.
-if (!isWatchMode && !hasForceExit) {
-  process.argv.push('--forceExit');
-}
-
 require('jest/bin/jest');

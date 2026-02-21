@@ -5,7 +5,7 @@
 
 import { act, cleanup } from '@testing-library/react-native';
 import process from 'node:process';
-import { notifyManager } from '@tanstack/query-core';
+import { notifyManager, timeoutManager } from '@tanstack/query-core';
 
 // Set up Supabase environment variables BEFORE any module imports
 // This prevents supabase.ts from throwing during initialization
@@ -31,6 +31,27 @@ process.emitWarning = (warning, type, code, ctor) => {
 // Ensure React Query updates are wrapped in act(...) during tests
 notifyManager.setNotifyFunction((fn) => {
   act(fn);
+});
+
+// Prevent React Query GC/retry timers from keeping Node alive after tests complete.
+// This targets root-cause lingering handles instead of relying only on forced process exit.
+timeoutManager.setTimeoutProvider({
+  setTimeout: (callback, delay) => {
+    const timeout = setTimeout(callback, delay);
+    if (typeof timeout?.unref === 'function') {
+      timeout.unref();
+    }
+    return timeout;
+  },
+  clearTimeout: (timeout) => clearTimeout(timeout),
+  setInterval: (callback, delay) => {
+    const interval = setInterval(callback, delay);
+    if (typeof interval?.unref === 'function') {
+      interval.unref();
+    }
+    return interval;
+  },
+  clearInterval: (interval) => clearInterval(interval),
 });
 
 // ============================================================================
