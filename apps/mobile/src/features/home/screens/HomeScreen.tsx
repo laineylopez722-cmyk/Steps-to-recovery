@@ -63,14 +63,16 @@ function formatDate(): string {
 const ActionCard = React.memo(function ActionCard({
   children,
   onPress,
-  style,
+  containerStyle,
+  contentStyle,
   delay = 0,
   accessibilityLabel,
   accessibilityHint,
 }: {
   children: React.ReactNode;
   onPress: () => void;
-  style?: StyleProp<ViewStyle>;
+  containerStyle?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
   delay?: number;
   accessibilityLabel: string;
   accessibilityHint?: string;
@@ -79,7 +81,8 @@ const ActionCard = React.memo(function ActionCard({
     <Animated.View entering={MotionTransitions.cardEnter(Math.floor(delay / 50))}>
       <Action.Root
         onPress={onPress}
-        contentStyle={style}
+        containerStyle={containerStyle}
+        contentStyle={contentStyle}
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         accessibilityHint={accessibilityHint}
@@ -210,7 +213,8 @@ function ShortcutCard({
   return (
     <ActionCard
       onPress={onPress}
-      style={styles.shortcutCard}
+      containerStyle={styles.shortcutCardContainer}
+      contentStyle={styles.shortcutCard}
       accessibilityLabel={title}
       accessibilityHint={subtitle}
     >
@@ -487,24 +491,23 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
 
           <ActionCard
             onPress={handleCompanion}
+            contentStyle={styles.companionCard}
             delay={220}
             accessibilityLabel="Talk to your companion"
             accessibilityHint="Get support before things spiral"
           >
-            <View style={styles.companionCard}>
-              <View style={styles.companionIcon} importantForAccessibility="no-hide-descendants">
-                <Feather
-                  name="message-circle"
-                  size={24}
-                  color={ds.semantic.intent.primary.onSolid}
-                />
-              </View>
-              <View style={styles.companionContent}>
-                <Text style={styles.companionTitle}>Talk to your companion</Text>
-                <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
-              </View>
-              <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" importantForAccessibility="no" />
+            <View style={styles.companionIcon} importantForAccessibility="no-hide-descendants">
+              <Feather
+                name="message-circle"
+                size={24}
+                color={ds.semantic.intent.primary.onSolid}
+              />
             </View>
+            <View style={styles.companionContent}>
+              <Text style={styles.companionTitle}>Talk to your companion</Text>
+              <Text style={styles.companionSubtitle}>Get support before things spiral</Text>
+            </View>
+            <Feather name="arrow-right" size={20} color="rgba(0,0,0,0.4)" importantForAccessibility="no" />
           </ActionCard>
 
           <Animated.View entering={MotionTransitions.cardEnter(4)} style={styles.section}>
@@ -852,13 +855,14 @@ const createStyles = (ds: DS) =>
     shortcutsGrid: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      gap: ds.space[3],
+      justifyContent: 'space-between',
       marginBottom: ds.space[2],
     },
+    shortcutCardContainer: {
+      width: '48%',
+      marginBottom: ds.space[3],
+    },
     shortcutCard: {
-      flexBasis: '47%',
-      flexGrow: 1,
-      flexShrink: 1,
       backgroundColor: ds.semantic.surface.card,
       borderRadius: ds.radius.lg,
       padding: ds.space[3],
