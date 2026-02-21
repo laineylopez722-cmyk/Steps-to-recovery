@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
 
@@ -239,3 +239,4 @@ const createStyles = (ds: DS) =>
       backgroundColor: ds.colors.bgTertiary,
     },
   }) as const;
+

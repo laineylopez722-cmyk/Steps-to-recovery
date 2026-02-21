@@ -21,7 +21,7 @@ import { useRouterCompat, useSegmentsCompat } from '../../utils/navigationHelper
 import { Feather } from '@expo/vector-icons';
 import { useSettingsStore } from '@recovery/shared';
 import { getCrisisResources, type CrisisResource } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 export function CrisisButton() {
@@ -214,3 +214,4 @@ export function CrisisButton() {
     </>
   );
 }
+

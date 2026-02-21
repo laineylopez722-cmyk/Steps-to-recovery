@@ -17,7 +17,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useSharePrepStore } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface SharePrepCardProps {
@@ -248,3 +248,4 @@ const styles = StyleSheet.create({
     color: ds.colors.text,
   },
 });
+

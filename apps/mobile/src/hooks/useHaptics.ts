@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Platform } from 'react-native';
 
 // Check if haptics are available (not on web/simulator)
@@ -137,3 +137,4 @@ export const haptics = {
   // Check-in complete
   checkInComplete: () => safeHaptic(() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)),
 };
+

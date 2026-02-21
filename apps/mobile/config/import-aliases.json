@@ -1,0 +1,22 @@
+{
+  "tsconfigPaths": {
+    "@/*": ["./src/*"],
+    "@recovery/shared": ["../../packages/shared/src/index.ts"],
+    "@recovery/shared/*": ["../../packages/shared/*"]
+  },
+  "babelModuleResolverAlias": {
+    "@": "./src",
+    "@recovery/shared": "../../packages/shared/src"
+  },
+  "jestModuleNameMapper": {
+    "^@/(.*)$": "<rootDir>/apps/mobile/src/$1",
+    "^@recovery/shared$": "<rootDir>/packages/shared/src/index.ts",
+    "^@recovery/shared/(.*)$": "<rootDir>/packages/shared/$1"
+  },
+  "componentsAliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib"
+  }
+}

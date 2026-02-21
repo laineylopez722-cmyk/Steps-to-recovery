@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { FourthStepType } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 const TYPE_CONFIG: Record<
@@ -251,3 +251,4 @@ const styles = StyleSheet.create({
     color: ds.colors.textTertiary,
   },
 });
+

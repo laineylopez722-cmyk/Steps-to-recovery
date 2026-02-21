@@ -20,7 +20,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { useJournalStore } from '@recovery/shared';
 import { decryptContent } from '../../utils/encryption';
 import type { JournalEntry } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { logger } from '../../utils/logger';
 import { ds } from '../../design-system/tokens/ds';
 
@@ -310,3 +310,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+

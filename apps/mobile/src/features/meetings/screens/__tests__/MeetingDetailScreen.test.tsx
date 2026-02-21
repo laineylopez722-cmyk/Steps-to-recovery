@@ -64,9 +64,28 @@ jest.mock('../../../../design-system/hooks/useThemedStyles', () => ({
 jest.mock('../../../../design-system/DsProvider', () => ({
   useDs: () => ({
     semantic: {
+      surface: {
+        app: '#000000',
+        card: '#111111',
+        overlay: '#222222',
+      },
+      intent: {
+        primary: { solid: '#00AA88' },
+        alert: { solid: '#DD3333' },
+      },
       text: {
+        primary: '#FFFFFF',
+        secondary: '#B3B3B3',
         onDark: '#FFFFFF',
       },
+      typography: {
+        body: {},
+        screenTitle: {},
+        sectionLabel: {},
+      },
+    },
+    typography: {
+      h3: {},
     },
   }),
 }));

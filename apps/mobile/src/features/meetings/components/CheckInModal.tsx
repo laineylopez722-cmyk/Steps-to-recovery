@@ -24,7 +24,7 @@ import Animated, {
   ZoomIn,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { GlassCard } from '../../../design-system/components/GlassCard';
 import { darkAccent, radius, spacing, typography } from '../../../design-system/tokens/modern';
@@ -419,3 +419,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+

@@ -15,7 +15,7 @@ import Animated, {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Lock, Award, Trophy, Star, Zap, Heart, Target, Flame } from 'lucide-react-native';
 import { COLORS, ANIMATION, DIMENSIONS, TYPOGRAPHY, SPACING } from '../constants';
 import type { Achievement } from '../types';
@@ -345,3 +345,4 @@ export function AchievementBadge({
 }
 
 export default AchievementBadge;
+

@@ -19,7 +19,7 @@
 
 import { useState, useEffect, useCallback, useRef, type ReactElement } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Platform } from 'react-native';
 import { secureStorage } from '../adapters/secureStorage';
 import { logger } from '../utils/logger';
@@ -168,3 +168,4 @@ const tapZoneStyles = StyleSheet.create({
     zIndex: 9999,
   },
 });
+

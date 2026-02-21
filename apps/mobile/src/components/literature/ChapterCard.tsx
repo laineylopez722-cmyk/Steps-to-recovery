@@ -16,7 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { Chapter } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface ChapterCardProps {
@@ -160,3 +160,4 @@ const styles = StyleSheet.create({
     color: ds.colors.textSecondary,
   },
 });
+

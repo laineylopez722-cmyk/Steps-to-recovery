@@ -94,6 +94,11 @@ describe('NotificationContext', () => {
       expect(result.current.isLoading).toBe(true);
       expect(result.current.expoPushToken).toBe(null);
       expect(result.current.notificationsEnabled).toBe(true);
+
+      // Allow initial permission check to settle to avoid act warnings
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
     });
 
     it('should check permission status on mount', async () => {
@@ -236,6 +241,10 @@ describe('NotificationContext', () => {
       const { result } = renderHook(() => useNotifications(), { wrapper });
 
       expect(result.current.notificationsEnabled).toBe(true);
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
     });
 
     it('should allow toggling notifications enabled state', async () => {

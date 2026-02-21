@@ -27,7 +27,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Platform, Vibration } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { logger } from '../utils/logger';
 
 type BreathingPhase = 'inhale' | 'hold-in' | 'exhale' | 'hold-out' | 'idle';
@@ -392,3 +392,4 @@ export function useBreathingExercise(
 // Export pattern presets for UI
 export const BREATHING_PATTERNS = PATTERNS;
 export type { BreathingPhase, BreathingPattern, PatternConfig };
+

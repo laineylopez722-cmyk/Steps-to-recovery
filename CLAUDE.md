@@ -1424,6 +1424,9 @@ eas secret:delete --name SECRET_NAME
 - [ ] `npm test` - All tests passing
 - [ ] `npm run type-check` - 0 TypeScript errors
 - [ ] `npm run lint` - 0 ESLint warnings
+- [ ] `npm run doctor:toolchain` - Node/npm/workspace scripts verified
+- [ ] `npm run doctor:aliases` - Alias maps consistent across tsconfig/Babel/Jest
+- [ ] `npm run verify:strict` - Full strict gate passes locally
 - [ ] `.env` file properly configured
 - [ ] Version bumped in `package.json` and `app.json`
 - [ ] Changelog updated

@@ -11,7 +11,7 @@ import React, { useState, useCallback, type ReactElement } from 'react';
 import { Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Platform } from 'react-native';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { spacing, radius } from '../../../design-system/tokens/modern';
@@ -291,3 +291,4 @@ const createStyles = (ds: DS) =>
       textDecorationLine: 'underline' as const,
     },
   }) as const;
+

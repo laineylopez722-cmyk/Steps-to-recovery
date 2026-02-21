@@ -24,7 +24,7 @@ import Animated, {
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RegularMeeting, RegularMeetingType } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
 
@@ -521,3 +521,4 @@ const createStyles = (ds: DS) =>
       color: ds.colors.textTertiary,
     },
   }) as const;
+

@@ -19,7 +19,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GradientButton } from '../../../design-system/components/GradientButton';
 import { logger } from '../../../utils/logger';
@@ -330,3 +330,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+

@@ -10,9 +10,9 @@ const cssInterop = (component) => component;
 const remapProps = (component) => component;
 
 // StyleSheet mock - passes through to React Native StyleSheet
-const { StyleSheet: RNStyleSheet } = require('react-native');
+import { StyleSheet as RNStyleSheet } from react-native;
 
-module.exports = {
+export default {
   cssInterop,
   remapProps,
   StyleSheet: RNStyleSheet,

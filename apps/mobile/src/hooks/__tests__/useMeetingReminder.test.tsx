@@ -762,6 +762,11 @@ describe('useMeetingReminder', () => {
         wrapper: createWrapper(),
       });
 
+      await waitFor(() => {
+        expect(result.current.notificationPermission).toBe('granted');
+        expect(result.current.locationPermission).toBe('granted');
+      });
+
       const upcoming = result.current.getUpcomingReminders();
 
       expect(upcoming).toEqual([]);
@@ -1175,7 +1180,7 @@ describe('useMeetingReminder', () => {
   });
 
   describe('Initial State', () => {
-    it('should have correct initial state values', () => {
+    it('should have correct initial state values', async () => {
       const { result } = renderHook(() => useMeetingReminder(), {
         wrapper: createWrapper(),
       });
@@ -1184,6 +1189,12 @@ describe('useMeetingReminder', () => {
       expect(result.current.isGeofencingActive).toBe(false);
       expect(result.current.locationPermission).toBe('undetermined');
       expect(result.current.notificationPermission).toBe('undetermined');
+
+      // Allow permission checks to settle to avoid act warnings
+      await waitFor(() => {
+        expect(result.current.notificationPermission).toBe('granted');
+        expect(result.current.locationPermission).toBe('granted');
+      });
     });
   });
 

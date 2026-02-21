@@ -9,7 +9,7 @@ import React, { useState, useRef, useCallback } from 'react';
 import { View, TextInput, Pressable, ActivityIndicator, Keyboard } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 import { Send } from 'lucide-react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Icon } from '../../../components/ui/Icon';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
@@ -142,3 +142,4 @@ const createStyles = (ds: DS) =>
       backgroundColor: ds.colors.bgTertiary,
     },
   }) as const;
+

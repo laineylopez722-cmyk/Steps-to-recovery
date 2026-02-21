@@ -11,7 +11,7 @@ import React, { useCallback, type ReactElement } from 'react';
 import { Linking, Platform, Pressable, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { MaterialIcons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { spacing, radius } from '../../../design-system/tokens/modern';
 import { Text } from '../../../design-system/components/Text';
@@ -338,3 +338,4 @@ const createStyles = (ds: DS) =>
       marginTop: 1,
     },
   }) as const;
+

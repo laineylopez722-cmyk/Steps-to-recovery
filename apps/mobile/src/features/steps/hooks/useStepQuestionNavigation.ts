@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type FlatList, Platform, type ViewToken } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import type { StepListItem } from '../utils/stepListItems';
 import { getFirstVisibleQuestionNumber } from '../utils/stepViewability';
 
@@ -91,3 +91,4 @@ export function useStepQuestionNavigation({
     viewabilityConfig,
   };
 }
+

@@ -18,7 +18,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RecoveryContact, ContactRole } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface ContactCardProps {
@@ -310,3 +310,4 @@ const styles = StyleSheet.create({
     backgroundColor: ds.colors.successMuted,
   },
 });
+

@@ -10,7 +10,7 @@ import { ScrollView, View, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Toggle } from '../../../design-system/components/Toggle';
 import { Text } from '../../../design-system/components/Text';
 import { Modal } from '../../../design-system';
@@ -897,3 +897,4 @@ const createStyles = (ds: DS) => ({
     borderRadius: 2,
   },
 });
+

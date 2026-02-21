@@ -25,7 +25,7 @@ import {
   ImpactFeedbackStyle,
   notificationAsync,
   NotificationFeedbackType,
-} from 'expo-haptics';
+} from '@/platform/haptics';
 import Svg, { Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { MotionTransitions } from '../../../design-system/tokens/motion';
 import { Action } from '../../../design-system/primitives';
@@ -925,3 +925,4 @@ const createStyles = (ds: DS) =>
       marginTop: 2,
     },
   }) as const;
+

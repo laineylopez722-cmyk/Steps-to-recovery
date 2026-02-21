@@ -26,7 +26,7 @@ import {
   notificationAsync,
   NotificationFeedbackType,
   selectionAsync,
-} from 'expo-haptics';
+} from '@/platform/haptics';
 import { Platform } from 'react-native';
 import { logger } from '@/utils/logger';
 
@@ -804,3 +804,4 @@ export const hapticImpact = hapticMedium;
 export const hapticTick = hapticSelection;
 export const hapticCelebration = hapticSuccess;
 export const hapticThreshold = hapticWarning;
+

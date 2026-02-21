@@ -19,7 +19,7 @@ import { darkAccent, radius, spacing, typography } from '../../../design-system/
 import { ds } from '../../../design-system/tokens/ds';
 import type { RiskPattern } from '../../../services/riskDetectionService';
 import { useNavigation } from '@react-navigation/native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 
 // ========================================
 // Props
@@ -345,3 +345,4 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+

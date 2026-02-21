@@ -26,7 +26,7 @@ import Animated, {
   useAnimatedScrollHandler,
 } from 'react-native-reanimated';
 import { Feather } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -367,3 +367,4 @@ const styles = StyleSheet.create({
     color: ds.colors.text,
   },
 });
+

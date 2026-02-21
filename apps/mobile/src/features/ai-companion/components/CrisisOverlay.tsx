@@ -7,7 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Linking, Modal, StyleSheet } from 'react-native';
 import { Heart, Phone } from 'lucide-react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Icon } from '../../../components/ui/Icon';
 
 interface CrisisOverlayProps {
@@ -202,3 +202,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+

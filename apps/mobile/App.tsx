@@ -13,7 +13,7 @@ import './src/global.css';
 // This catches the ~470 inline fontWeight usages that don't go through
 // the design system typography tokens. Without this, those render as
 // system font (Roboto on Android) instead of Inter.
-import { Text as RNText } from 'react-native';
+import { Text as RNText } from "react-native";
 import { fonts } from './src/lib/fonts';
 
 const _defaultStyle = (RNText as any).defaultProps?.style;
@@ -24,7 +24,7 @@ const _defaultStyle = (RNText as any).defaultProps?.style;
 
 // Keep native splash screen visible until app is fully initialized
 // (DB migrations + auth check complete). Prevents flash of loading spinner.
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // Initialize Sentry early for crash reporting
@@ -217,6 +217,7 @@ function App(): React.ReactElement {
 
   // Don't render until fonts are loaded (splash screen stays visible)
   if (!fontsLoaded && !fontError) {
+    // deno-lint-ignore jsx-no-useless-fragment
     return <></>;
   }
 

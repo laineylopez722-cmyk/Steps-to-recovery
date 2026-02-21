@@ -103,11 +103,12 @@ describe('useFormValidation', () => {
     expect(result.current.errors.email).toBeUndefined();
   });
 
-  it('should mark field as touched on handleBlur', () => {
+  it('should mark field as touched on handleBlur', async () => {
     const { result } = renderHook(() => useFormValidation({ initialValues }));
 
-    act(() => {
+    await act(async () => {
       result.current.handleBlur('email');
+      await Promise.resolve();
     });
 
     expect(result.current.touched.email).toBe(true);
@@ -229,9 +230,10 @@ describe('useFormValidation', () => {
       }),
     );
 
-    act(() => {
+    await act(async () => {
       result.current.handleChange('email', 'test@example.com');
       result.current.handleBlur('email');
+      await Promise.resolve();
     });
 
     // Verify dirty state

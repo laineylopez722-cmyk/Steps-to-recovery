@@ -1,6 +1,6 @@
 import type React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react-native';
-import * as Haptics from 'expo-haptics';
+import { render, fireEvent, waitFor, screen, act } from '@testing-library/react-native';
+import * as Haptics from '@/platform/haptics';
 import type { MeetingWithDetails } from '../../types/meeting';
 import { CheckInModal } from '../CheckInModal';
 
@@ -90,7 +90,9 @@ describe('CheckInModal', () => {
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     jest.useRealTimers();
   });
 
@@ -143,7 +145,9 @@ describe('CheckInModal', () => {
     expect(hapticsSpy).toHaveBeenCalled();
     expect(screen.getByText('Checked In! 🎉')).toBeTruthy();
 
-    jest.advanceTimersByTime(1500);
+    act(() => {
+      jest.advanceTimersByTime(1500);
+    });
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);
@@ -184,3 +188,4 @@ describe('CheckInModal', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 });
+

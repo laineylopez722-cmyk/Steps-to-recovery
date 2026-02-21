@@ -11,6 +11,7 @@ import { AccessibilityInfo, type AccessibilityChangeEventName } from 'react-nati
 import { mmkvStorage } from '../../lib/mmkv';
 import type { AccessibilitySettings } from './types';
 import { DEFAULT_TEXT_SCALE } from './constants';
+import { logger } from '../../utils/logger';
 
 /** Storage key for accessibility preferences */
 const STORAGE_KEY = '@accessibility_settings';
@@ -72,7 +73,7 @@ export function AccessibilityProvider({
           setSettings((prev) => ({ ...prev, ...parsed }));
         }
       } catch (error) {
-        console.error('Failed to load accessibility settings:', error);
+        logger.error('Failed to load accessibility settings', error);
       } finally {
         setIsLoading(false);
       }
@@ -86,7 +87,7 @@ export function AccessibilityProvider({
     try {
       mmkvStorage.setItem(STORAGE_KEY, JSON.stringify(newSettings));
     } catch (error) {
-      console.error('Failed to save accessibility settings:', error);
+      logger.error('Failed to save accessibility settings', error);
     }
   }, []);
 

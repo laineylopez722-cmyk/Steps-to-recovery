@@ -27,7 +27,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { Linking, Platform, Alert } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useContactStore } from '@recovery/shared';
 import type { RecoveryContact } from '@recovery/shared';
 import { logger } from '../utils/logger';
@@ -365,3 +365,4 @@ export function useEmergencyAccess(): EmergencyAccessState & EmergencyAccessActi
 
 export { CRISIS_HOTLINES };
 export type { CrisisHotline, SafetyPlanItem };
+

@@ -23,18 +23,6 @@
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
     "paths": {
       "@/*": ["./src/*"],
-      "@/lib/utils": ["./src/lib/utils.ts"],
-      "@/components/ui/text": ["./src/components/ui/text.tsx"],
-      "@/components/ui/Icon": ["./src/components/ui/Icon.tsx"],
-      "@/components/ui/*": ["./src/components/ui/*"],
-      "@/components/*": ["./src/components/*"],
-      "@/contexts/*": ["./src/contexts/*"],
-      "@/features/*": ["./src/features/*"],
-      "@/hooks/*": ["./src/hooks/*"],
-      "@/lib/*": ["./src/lib/*"],
-      "@/utils/*": ["./src/utils/*"],
-      "@/design-system": ["./src/design-system/index.ts"],
-      "@/design-system/*": ["./src/design-system/*"],
       "@recovery/shared": ["../../packages/shared/src/index.ts"],
       "@recovery/shared/*": ["../../packages/shared/*"]
     }

@@ -40,6 +40,7 @@ import {
 } from 'react-native';
 import { useA11yAnnouncer } from '../hooks/useA11yAnnouncer';
 import { ds } from '../../tokens/ds';
+import { logger } from '../../../utils/logger';
 
 // ============================================================================
 // CONSTANTS
@@ -112,9 +113,10 @@ export function EmergencyButton({
 
       // Log slow response in dev mode
       if (__DEV__ && responseTime > MAX_RESPONSE_TIME_MS) {
-        console.warn(
-          `Emergency button response time: ${responseTime}ms (target: <${MAX_RESPONSE_TIME_MS}ms)`,
-        );
+        logger.warn('Emergency button response time exceeded target', {
+          responseTimeMs: responseTime,
+          targetMs: MAX_RESPONSE_TIME_MS,
+        });
       }
 
       // Call original handler

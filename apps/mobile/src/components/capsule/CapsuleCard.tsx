@@ -16,7 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { TimeCapsule } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface CapsuleCardProps {
@@ -191,3 +191,4 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 });
+

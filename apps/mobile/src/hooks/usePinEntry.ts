@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 
 interface UsePinEntryProps {
   onSuccess: () => void;
@@ -85,3 +85,4 @@ export function usePinEntry({
     clear,
   };
 }
+

@@ -9,7 +9,7 @@ import {
   notificationAsync,
   NotificationFeedbackType,
   selectionAsync,
-} from 'expo-haptics';
+} from '@/platform/haptics';
 import { Platform } from 'react-native';
 
 // Check if haptics are available (not on web/simulator)

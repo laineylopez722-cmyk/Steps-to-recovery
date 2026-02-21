@@ -29,11 +29,5 @@ jobs:
       - name: Validate env
         run: npm run validate-env
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Test
-        run: npm run test
+      - name: Strict Verification
+        run: npm run verify:strict

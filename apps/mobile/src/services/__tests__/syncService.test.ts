@@ -108,13 +108,13 @@ describe('syncService Integration Tests', () => {
       expect(callArgs[3]).toBe('delete');
     });
 
-    it('should throw error if database operation fails', async () => {
+    it('should log error if database operation fails', async () => {
       const dbError = new Error('Database error');
       mockDb.runAsync.mockRejectedValueOnce(dbError);
 
-      await expect(addToSyncQueue(mockDb, 'journal_entries', 'test-id', 'insert')).rejects.toThrow(
-        'Database error',
-      );
+      await expect(
+        addToSyncQueue(mockDb, 'journal_entries', 'test-id', 'insert'),
+      ).resolves.toBeUndefined();
 
       expect(logger.error).toHaveBeenCalledWith(
         'Failed to add to sync queue',

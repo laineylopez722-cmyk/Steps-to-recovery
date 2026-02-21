@@ -118,6 +118,10 @@ describe('useMeetingCheckIns hooks', () => {
         wrapper: createWrapper(),
       });
 
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
       await act(async () => {
         const response = await result.current.checkInAsync({
           meetingName: 'Noon Meeting',

@@ -7,7 +7,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import { View, Text, Animated, Easing } from 'react-native';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import type { Message } from '../types';
@@ -196,3 +196,4 @@ const createStyles = (ds: DS) =>
       marginHorizontal: 2,
     },
   }) as const;
+

@@ -6,37 +6,48 @@
 
 const { resolve } = require('path');
 const expoPreset = require('jest-expo/jest-preset');
+const appRoot = __dirname;
+const repoRoot = resolve(appRoot, '..', '..');
+const importAliases = require('./config/import-aliases.json');
 
 const {
   transform: _transform,
+  setupFiles: _setupFiles,
   setupFilesAfterEnv: _setupFilesAfterEnv,
   moduleNameMapper: _moduleNameMapper,
 } = expoPreset;
 
 module.exports = {
   ...expoPreset,
-  // Explicitly pin rootDir so Jest resolves Babel config and module paths from apps/mobile
-  rootDir: __dirname,
+  // Use repo root to keep node_modules in-scope for Jest runtime
+  rootDir: repoRoot,
+  // Limit test discovery to the mobile app
+  roots: ['<rootDir>/apps/mobile'],
 
   // Explicit transform ensures TS/TSX + JSX go through babel-jest with our Babel config
   transform: {
     ...(_transform ?? {}),
-    '^.+\\.(js|jsx|ts|tsx)$': [
+    '\\.[jt]sx?$': [
       'babel-jest',
       {
-        configFile: resolve(__dirname, 'babel.config.js'),
+        caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
+        configFile: resolve(appRoot, 'babel.config.js'),
         babelrc: false,
       },
     ],
   },
 
+  // Preload mocks before React Native / Expo setup
+  setupFiles: ['<rootDir>/apps/mobile/jest.preload.js', ...(_setupFiles ?? [])],
+
   // Setup files to run before tests
-  setupFilesAfterEnv: [...(_setupFilesAfterEnv ?? []), '<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: [...(_setupFilesAfterEnv ?? []), '<rootDir>/apps/mobile/jest.setup.js'],
 
   // Transform settings - handle monorepo and React Native 0.81+
   // Packages that need transformation (ESM or JSX)
+  // Use a broad allowlist to support npm/yarn/pnpm node_modules layouts.
   transformIgnorePatterns: [
-    'node_modules/(?!(' +
+    'node_modules/(?!.*(' +
       '(jest-)?react-native|' +
       'react-native-.*|' +
       '@react-native(-community)?|' +
@@ -64,22 +75,26 @@ module.exports = {
   // Module name mappings
   moduleNameMapper: {
     ...(_moduleNameMapper ?? {}),
-    '^@/(.*)$': '<rootDir>/$1',
+    ...importAliases.jestModuleNameMapper,
+    '^expo$': '<rootDir>/apps/mobile/__mocks__/expo.js',
+    '^expo/internal/install-global$':
+      '<rootDir>/apps/mobile/__mocks__/expo-internal-install-global.js',
+    '^expo/src/winter$': '<rootDir>/apps/mobile/__mocks__/expo-winter.js',
+    '^expo/src/winter/runtime(\\.native)?(\\.ts)?$':
+      '<rootDir>/apps/mobile/__mocks__/expo-winter-runtime.js',
+    '^expo/src/winter/installGlobal(\\.ts)?$':
+      '<rootDir>/apps/mobile/__mocks__/expo-winter-installGlobal.js',
     // Mock NativeWind css-interop for Jest - prevents JSX runtime errors
     '^react-native-css-interop/jsx-runtime$':
-      '<rootDir>/__mocks__/react-native-css-interop-jsx-runtime.js',
-    '^react-native-css-interop$': '<rootDir>/__mocks__/react-native-css-interop.js',
-  },
-
-  // Use separate tsconfig for tests with skipLibCheck to avoid React 19 type issues
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.test.json',
-    },
+      '<rootDir>/apps/mobile/__mocks__/react-native-css-interop-jsx-runtime.js',
+    '^react-native-css-interop$': '<rootDir>/apps/mobile/__mocks__/react-native-css-interop.js',
   },
 
   // Test file patterns
-  testMatch: ['**/__tests__/**/*.(spec|test).[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
+  testMatch: [
+    '<rootDir>/apps/mobile/src/**/__tests__/**/*.(spec|test).[jt]s?(x)',
+    '<rootDir>/apps/mobile/src/**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
 
   // Files to ignore
   testPathIgnorePatterns: [
@@ -94,13 +109,13 @@ module.exports = {
 
   // Coverage configuration
   collectCoverageFrom: [
-    'lib/**/*.{js,jsx,ts,tsx}',
-    'components/**/*.{js,jsx,ts,tsx}',
-    'app/**/*.{js,jsx,ts,tsx}',
-    'src/contexts/**/*.{ts,tsx}',
-    'src/features/**/hooks/**/*.{ts,tsx}',
-    'src/services/**/*.{ts,tsx}',
-    'src/utils/**/*.{ts,tsx}',
+    'apps/mobile/src/lib/**/*.{js,jsx,ts,tsx}',
+    'apps/mobile/src/components/**/*.{js,jsx,ts,tsx}',
+    'apps/mobile/src/app/**/*.{js,jsx,ts,tsx}',
+    'apps/mobile/src/contexts/**/*.{ts,tsx}',
+    'apps/mobile/src/features/**/hooks/**/*.{ts,tsx}',
+    'apps/mobile/src/services/**/*.{ts,tsx}',
+    'apps/mobile/src/utils/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
@@ -141,10 +156,6 @@ module.exports = {
 
   // Verbose output
   verbose: true,
-
-  // Some RN/native mocks leave background handles alive in Jest.
-  // Keep CI/local runs deterministic until the underlying leak is isolated.
-  forceExit: true,
 
   // Module file extensions
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],

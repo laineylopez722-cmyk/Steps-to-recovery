@@ -22,6 +22,7 @@
 
 import React, { Component, type ReactNode, type ErrorInfo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { logger } from '../../../utils/logger';
 
 // ============================================================================
 // TYPES
@@ -94,8 +95,10 @@ export class AccessibilityErrorBoundary extends Component<
 
     // Log error
     if (__DEV__) {
-      console.warn('AccessibilityErrorBoundary caught error:', error);
-      console.warn('Component stack:', errorInfo.componentStack);
+      logger.warn('AccessibilityErrorBoundary caught error', error);
+      logger.warn('AccessibilityErrorBoundary component stack', {
+        stack: errorInfo.componentStack,
+      });
     }
 
     // Call error handler
@@ -149,7 +152,7 @@ export function useAnimationError(): {
     setError(err);
 
     if (__DEV__) {
-      console.warn('Animation error caught:', err);
+      logger.warn('Animation error caught', err);
     }
   }, []);
 

@@ -22,7 +22,7 @@ import Animated, {
 import { GlassCard } from '../../design-system/components';
 import type { KeytagWithStatus } from '@recovery/shared';
 import type { ReactElement } from 'react';
-import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface KeytagWallProps {
@@ -380,3 +380,4 @@ const styles = StyleSheet.create({
     color: ds.colors.textTertiary,
   },
 });
+

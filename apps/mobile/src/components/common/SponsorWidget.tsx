@@ -22,7 +22,7 @@ import { usePhoneCalls } from '../../hooks/usePhoneCalls';
 import { sendSOSMessage, makePhoneCall, openMessagingApp, SOS_MESSAGE } from '@recovery/shared';
 import { logger } from '../../utils/logger';
 import { useRouterCompat } from '../../utils/navigationHelper';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 
 interface SponsorWidgetProps {
   /** Compact mode for smaller display */
@@ -469,3 +469,4 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 });
+

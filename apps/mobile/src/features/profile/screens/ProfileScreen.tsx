@@ -10,7 +10,7 @@ import { ScrollView, StyleSheet, View, Text, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { CompositeNavigationProp } from '@react-navigation/native';
@@ -482,3 +482,4 @@ const createStyles = (ds: DS) =>
       marginTop: ds.space[6],
     },
   }) as const;
+

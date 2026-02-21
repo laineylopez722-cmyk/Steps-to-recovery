@@ -116,6 +116,11 @@ describe('AuthContext', () => {
       expect(result.current.initialized).toBe(false);
       expect(result.current.user).toBe(null);
       expect(result.current.session).toBe(null);
+
+      // Allow initialization effect to settle to avoid act warnings
+      await waitFor(() => {
+        expect(result.current.initialized).toBe(true);
+      });
     });
 
     it('should initialize with no session when not logged in', async () => {
@@ -213,8 +218,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      // Start sign in - don't await yet
-      const signInPromise = result.current.signIn('test@example.com', 'password123');
+      // Start sign in - don't await yet (wrap in act to avoid warnings)
+      let signInPromise: Promise<void> = Promise.resolve();
+      await act(async () => {
+        signInPromise = result.current.signIn('test@example.com', 'password123');
+      });
 
       // Give React time to process the setState call
       await act(async () => {

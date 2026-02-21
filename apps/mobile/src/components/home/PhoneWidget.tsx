@@ -25,7 +25,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { usePhoneCalls } from '../../hooks/usePhoneCalls';
 import { useContacts } from '../../hooks/useContacts';
 import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { logger } from '../../utils/logger';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
@@ -528,3 +528,4 @@ const createStyles = (ds: DS) =>
       fontSize: 14,
     },
   }) as const;
+

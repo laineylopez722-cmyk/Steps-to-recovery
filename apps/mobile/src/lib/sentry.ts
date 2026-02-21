@@ -11,6 +11,7 @@
 import * as Sentry from '@sentry/react-native';
 import type { ErrorEvent, Breadcrumb } from '@sentry/react-native';
 import Constants from 'expo-constants';
+import { logger } from '../utils/logger';
 import {
   sanitizeEvent,
   sanitizeBreadcrumb,
@@ -27,8 +28,7 @@ export function initSentry(): void {
   if (!dsn || __DEV__) {
     // Skip Sentry entirely in dev — avoids "Transport disabled" console errors
     if (__DEV__ && dsn) {
-      // eslint-disable-next-line no-console
-      console.log('Sentry: skipped in dev mode');
+      logger.info('Sentry: skipped in dev mode');
     }
     return;
   }

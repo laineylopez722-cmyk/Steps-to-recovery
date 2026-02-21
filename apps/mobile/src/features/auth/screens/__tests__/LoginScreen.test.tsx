@@ -164,7 +164,7 @@ jest.mock('../../../../hooks/useKeyboardOffset', () => ({
   useKeyboardBehavior: () => 'padding' as const,
 }));
 
-jest.mock('expo-haptics', () => ({
+jest.mock('@/platform/haptics', () => ({
   impactAsync: jest.fn(() => Promise.resolve()),
   ImpactFeedbackStyle: { Light: 'Light', Medium: 'Medium', Heavy: 'Heavy' },
   notificationAsync: jest.fn(() => Promise.resolve()),
@@ -383,6 +383,3 @@ describe('LoginScreen', () => {
   });
 });
 
-function expect(_arg0: ReactTestInstance) {
-  throw new Error('Function not implemented.');
-}

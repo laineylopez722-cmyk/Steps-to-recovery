@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { View, Pressable, Text, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -211,3 +211,4 @@ const styles = StyleSheet.create({
     lineHeight: 12,
   },
 });
+

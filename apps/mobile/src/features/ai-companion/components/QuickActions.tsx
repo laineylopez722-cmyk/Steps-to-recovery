@@ -8,7 +8,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { ScrollView, Pressable, Text, View, StyleSheet } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 
@@ -213,3 +213,4 @@ const createStyles = (ds: DS) =>
       color: ds.colors.textQuaternary,
     },
   }) as const;
+

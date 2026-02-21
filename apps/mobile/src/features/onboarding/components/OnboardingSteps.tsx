@@ -22,7 +22,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { ds } from '../../../design-system/tokens/ds';
 import { useAuth } from '../../../contexts/AuthContext';
 import { mmkvStorage } from '../../../lib/mmkv';
@@ -1197,3 +1197,4 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+

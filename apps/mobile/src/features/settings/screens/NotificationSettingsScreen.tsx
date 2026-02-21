@@ -20,7 +20,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useNotifications } from '../../../contexts/NotificationContext';
 import { useNotificationPreferences } from '../../../hooks/useNotifications';
 import { useGeofencing, type GeofenceRadius } from '../../../hooks/useGeofencing';
@@ -915,3 +915,4 @@ const createStyles = (ds: DS) =>
       flex: 1,
     },
   }) as const;
+

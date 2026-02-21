@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import type { StepsStackParamList } from '../../../navigation/types';
 import { Modal } from '../../../design-system';
 import { useStepProgress } from '../hooks/useStepWork';
@@ -487,3 +487,4 @@ const createStyles = (ds: DS) =>
       borderRadius: 999,
     },
   }) as const;
+

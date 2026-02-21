@@ -11,8 +11,10 @@
  * @module lib/mmkv
  */
 
-import { createMMKV, type MMKV } from 'react-native-mmkv';
 import { Platform } from 'react-native';
+import type { MMKV } from 'react-native-mmkv';
+import { nativeModulePort } from '@/platform/runtime/NativeModulePort';
+import type { KVStorePort } from '@/platform/storage/KVStorePort';
 
 // ========================================
 // MMKV Instance
@@ -22,8 +24,18 @@ import { Platform } from 'react-native';
  * Direct MMKV access for advanced use cases.
  * Returns null on web where MMKV is not available.
  */
+type CreateMMKV = (options: { id: string }) => MMKV;
+
+const createMMKV =
+  Platform.OS !== 'web'
+    ? nativeModulePort.loadOptional<CreateMMKV>(() => {
+        const mmkvModule = require('react-native-mmkv') as { createMMKV: CreateMMKV };
+        return mmkvModule.createMMKV;
+      })
+    : null;
+
 export const mmkv: MMKV | null =
-  Platform.OS !== 'web' ? createMMKV({ id: 'steps-to-recovery-storage' }) : null;
+  createMMKV !== null ? createMMKV({ id: 'steps-to-recovery-storage' }) : null;
 
 // ========================================
 // AsyncStorage-Compatible Wrapper
@@ -38,7 +50,7 @@ export const mmkv: MMKV | null =
  * - Returns null instead of throwing for missing keys
  * - getAllKeys() returns string[] directly
  */
-export const mmkvStorage = {
+export const mmkvStorage: KVStorePort = {
   /**
    * Get a value by key
    * @returns The stored value, or null if not found

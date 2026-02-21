@@ -9,27 +9,30 @@
  * - Message queue handling
  */
 
+
 import { renderHook, act, waitFor } from '@testing-library/react-native';
+import type { Mock } from 'jest-mock';
 
 // Mock dependencies
-const mockCreateConversation = jest.fn();
-const mockGetConversation = jest.fn();
-const mockGetMessages = jest.fn();
-const mockAddMessage = jest.fn();
-const mockArchiveConversation = jest.fn();
-const mockUpdateConversationTitle = jest.fn();
-const mockGenerateAIContext = jest.fn();
-const mockAddMemories = jest.fn();
+
+const mockCreateConversation: Mock = jest.fn();
+const mockGetConversation: Mock = jest.fn();
+const mockGetMessages: Mock = jest.fn();
+const mockAddMessage: Mock = jest.fn();
+const mockArchiveConversation: Mock = jest.fn();
+const mockUpdateConversationTitle: Mock = jest.fn();
+const mockGenerateAIContext: Mock = jest.fn();
+const mockAddMemories: Mock = jest.fn();
 
 const mockChatService = {
   isConfigured: jest.fn(),
   chat: jest.fn(),
+  getProvider: jest.fn(),
+  getModel: jest.fn(),
 };
 
 const mockGetAIService = jest.fn();
 const mockGetRecoverySystemPrompt = jest.fn();
-const mockExtractMemoriesFromMessage = jest.fn();
-
 jest.mock('react-native', () => ({
   Platform: { OS: 'web' },
 }));
@@ -59,6 +62,7 @@ jest.mock('../../services/aiService', () => ({
   getRecoverySystemPrompt: (...args: unknown[]) => mockGetRecoverySystemPrompt(...args),
 }));
 
+const mockExtractMemoriesFromMessage = jest.fn();
 jest.mock('../../services/memoryExtractor', () => ({
   extractMemoriesFromMessage: (...args: unknown[]) => mockExtractMemoriesFromMessage(...args),
 }));
@@ -100,6 +104,8 @@ describe('useAIChat', () => {
     mockChatService.chat.mockImplementation((_messages: unknown[], _options?: unknown) => {
       return mockStreamGenerator(['Hello, ', 'how ', 'can ', 'I ', 'help?']);
     });
+    mockChatService.getProvider.mockReturnValue('openai');
+    mockChatService.getModel.mockReturnValue('mock-model');
     mockGetRecoverySystemPrompt.mockReturnValue('Mock system prompt');
 
     mockCreateConversation.mockResolvedValue({
@@ -459,7 +465,7 @@ describe('useAIChat', () => {
       });
 
       await act(async () => {
-        await result.current.sendMessage('Having a strong craving right now');
+        await result.current.sendMessage('craving hard right now');
         jest.advanceTimersByTime(100);
         await Promise.resolve();
       });

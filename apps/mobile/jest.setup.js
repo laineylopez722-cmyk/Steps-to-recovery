@@ -3,30 +3,108 @@
  * Mocks for Expo modules and React Native APIs
  */
 
-import { cleanup } from '@testing-library/react-native';
-import process from "node:process";
+import { act, cleanup } from '@testing-library/react-native';
+import process from 'node:process';
+import { notifyManager } from '@tanstack/query-core';
 
 // Set up Supabase environment variables BEFORE any module imports
 // This prevents supabase.ts from throwing during initialization
 process.env.EXPO_PUBLIC_SUPABASE_URL = 'https://test-project.supabase.co';
 process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key-for-jest';
 
+// Suppress Node.js deprecation warning for punycode (DEP0040) in test output.
+// This is dependency-level noise (jsdom/whatwg-url) and not actionable in app code.
+const originalEmitWarning = process.emitWarning.bind(process);
+process.emitWarning = (warning, type, code, ctor) => {
+  const message = typeof warning === 'string' ? warning : warning?.message;
+  const warningCode =
+    (typeof warning === 'object' && warning?.code) ||
+    (typeof type === 'object' && type?.code) ||
+    code;
+  if (warningCode === 'DEP0040' || (typeof message === 'string' && message.includes('punycode'))) {
+    return;
+  }
+  // @ts-ignore - Node's overloads allow multiple signatures
+  return originalEmitWarning(warning, type, code, ctor);
+};
+
+// Ensure React Query updates are wrapped in act(...) during tests
+notifyManager.setNotifyFunction((fn) => {
+  act(fn);
+});
+
 // ============================================================================
-// React 19 + Testing Library Compatibility
+// Console Policy (Warnings Are Blocking)
 // ============================================================================
-// Suppress React 19 act() warnings for async state updates in tests
-// This is needed because some async operations in providers may update state
-// after the initial render, which is expected behavior in production but
-// triggers warnings in tests.
-//
-// Also suppress key prop warnings that arise from:
-// 1. Animated values in style arrays being treated as children by react-test-renderer
-// 2. React 19's stricter key handling with mocked animation hooks
-// These warnings don't indicate actual bugs in the component logic.
+// Test runs must stay warning-clean for key failure classes that indicate
+// nondeterministic behavior or native/runtime wiring issues.
+const blockingConsoleMessages = [];
+const blockingPatterns = [
+  /not wrapped in act/i,
+  /you are trying to `import` a file outside of the scope of the test code/i,
+  /failed to get nitromodules/i,
+  /requireoptionalnativemodule\) is not a function/i,
+  /turbomoduleregistry\.getenforcing/i,
+  /unhandledpromise(rejection)?/i,
+];
+const warningAllowlistPatterns = [
+  // Legacy warnings from react-test-renderer and animated mocks that do not
+  // change runtime behavior in this repository.
+  /componentwillreceiveprops/i,
+  /componentwillmount/i,
+  /^animated:/i,
+];
+
+/**
+ * @param {unknown[]} args
+ * @returns {string}
+ */
+function formatConsoleArgs(args) {
+  return args
+    .map((arg) => {
+      if (typeof arg === 'string') return arg;
+      try {
+        return JSON.stringify(arg);
+      } catch {
+        return String(arg);
+      }
+    })
+    .join(' ');
+}
+
+/**
+ * @param {string} message
+ * @returns {boolean}
+ */
+function isBlockingMessage(message) {
+  return blockingPatterns.some((pattern) => pattern.test(message));
+}
+
 const originalError = console.error;
 console.error = (...args) => {
+  const message = formatConsoleArgs(args);
+  if (isBlockingMessage(message)) {
+    blockingConsoleMessages.push(message);
+  }
   originalError.apply(console, args);
 };
+
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  const message = formatConsoleArgs(args);
+  const isAllowlisted = warningAllowlistPatterns.some((pattern) => pattern.test(message));
+  if (isAllowlisted) {
+    return;
+  }
+  if (isBlockingMessage(message)) {
+    blockingConsoleMessages.push(message);
+  }
+  originalWarn(...args);
+};
+
+beforeEach(() => {
+  blockingConsoleMessages.length = 0;
+});
 
 // Global afterEach cleanup to prevent test leaks
 afterEach(() => {
@@ -36,6 +114,18 @@ afterEach(() => {
 
   // Clear all mocks
   jest.clearAllMocks();
+
+  // Reset MMKV mock storage between tests
+  const mmkvMock = jest.requireMock('react-native-mmkv');
+  if (mmkvMock?.__unsafe__reset) {
+    mmkvMock.__unsafe__reset();
+  }
+
+  if (blockingConsoleMessages.length > 0) {
+    const failureDetails = blockingConsoleMessages.map((message) => `- ${message}`).join('\n');
+    blockingConsoleMessages.length = 0;
+    throw new Error(`Blocking console warnings/errors detected:\n${failureDetails}`);
+  }
 });
 
 // Mock react-native-css-interop (NativeWind)
@@ -122,6 +212,55 @@ jest.mock('expo-crypto', () => ({
     SHA512: 'SHA-512',
   },
 }));
+
+// Mock expo-haptics
+jest.mock('expo-haptics', () => ({
+  impactAsync: jest.fn(() => Promise.resolve()),
+  notificationAsync: jest.fn(() => Promise.resolve()),
+  selectionAsync: jest.fn(() => Promise.resolve()),
+  ImpactFeedbackStyle: {
+    Light: 'light',
+    Medium: 'medium',
+    Heavy: 'heavy',
+  },
+  NotificationFeedbackType: {
+    Success: 'success',
+    Warning: 'warning',
+    Error: 'error',
+  },
+}));
+
+// Mock expo-image
+jest.mock('expo-image', () => {
+  const React = require('react');
+  const Image = React.forwardRef((props, ref) =>
+    React.createElement('Image', { ...props, ref }),
+  );
+  Image.displayName = 'ExpoImage';
+  return {
+    Image,
+    default: Image,
+  };
+});
+
+// Mock react-native-mmkv (native module)
+jest.mock('react-native-mmkv', () => {
+  const store = new Map();
+  return {
+    createMMKV: () => ({
+      getString: (key) => (store.has(key) ? String(store.get(key)) : undefined),
+      set: (key, value) => {
+        store.set(key, value);
+      },
+      remove: (key) => {
+        store.delete(key);
+      },
+      getAllKeys: () => Array.from(store.keys()),
+      clearAll: () => store.clear(),
+    }),
+    __unsafe__reset: () => store.clear(),
+  };
+});
 
 // Mock expo-sqlite
 jest.mock('expo-sqlite', () => ({
@@ -278,20 +417,6 @@ jest.mock('@react-native-community/netinfo', () => ({
 jest.mock('uuid', () => ({
   v4: jest.fn(() => 'mock-uuid-' + Math.random().toString(36).substr(2, 9)),
 }));
-
-// Suppress console warnings in tests
-const originalWarn = console.warn;
-console.warn = (...args) => {
-  // Suppress specific React Native warnings
-  if (
-    args[0]?.includes?.('Animated:') ||
-    args[0]?.includes?.('componentWillReceiveProps') ||
-    args[0]?.includes?.('componentWillMount')
-  ) {
-    return;
-  }
-  originalWarn(...args);
-};
 
 // Global test utilities
 globalThis.testUtils = {

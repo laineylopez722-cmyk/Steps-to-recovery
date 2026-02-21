@@ -1,11 +1,12 @@
 import Reactotron from 'reactotron-react-native';
+import { logger } from '../utils/logger';
 
 /**
  * Reactotron configuration for development debugging.
  * 
  * Features:
  * - Network request monitoring
- * - Console log capture
+ * - Logger output capture
  * - AsyncStorage inspection
  * - Performance benchmarking
  * 
@@ -28,18 +29,33 @@ if (__DEV__) {
     })
     .connect();
 
-  // Patch console.log to also send to Reactotron
-  // eslint-disable-next-line no-console
-  const originalConsoleLog = console.log;
-  // eslint-disable-next-line no-console
-  console.log = (...args: unknown[]) => {
-    originalConsoleLog(...args);
-    Reactotron.log?.(...args);
+  const logToReactotron = (level: string, message: string): void => {
+    Reactotron.log?.({ level, message });
   };
-  
-  // Make available globally for debugging
-  // eslint-disable-next-line no-console
-  console.tron = Reactotron;
+
+  const originalInfo = logger.info;
+  logger.info = (message: string, data?: unknown): void => {
+    originalInfo(message, data);
+    logToReactotron('info', message);
+  };
+
+  const originalWarn = logger.warn;
+  logger.warn = (message: string, data?: unknown): void => {
+    originalWarn(message, data);
+    logToReactotron('warn', message);
+  };
+
+  const originalError = logger.error;
+  logger.error = (message: string, error?: unknown): void => {
+    originalError(message, error);
+    logToReactotron('error', message);
+  };
+
+  const originalDebug = logger.debug;
+  logger.debug = (message: string, data?: unknown): void => {
+    originalDebug(message, data);
+    logToReactotron('debug', message);
+  };
 }
 
 export default Reactotron;

@@ -24,6 +24,15 @@
   - `EXPO_PUBLIC_SUPABASE_URL=https://example.supabase.co`
   - `EXPO_PUBLIC_SUPABASE_ANON_KEY=test-anon-key`
 
+## Workspace `tsc` cannot be found
+
+- Symptom:
+  - `npm run type-check --workspace=apps/mobile` fails with missing `.../node_modules/typescript/bin/tsc`.
+- Fix:
+  - Reinstall with npm from the repo root: `npm install`
+  - Validate toolchain invariants: `npm run doctor:toolchain`
+  - Use strict gate to confirm: `npm run verify:strict`
+
 ## Expo dev server issues
 
 - Clear cache: `cd apps/mobile && npm run clean`

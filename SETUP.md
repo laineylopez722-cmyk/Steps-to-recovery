@@ -77,7 +77,7 @@ apps/mobile/src/features/
 ### Prerequisites
 
 - Node.js >=20.0.0
-- npm (pinned: 10.9.2 via `packageManager` field)
+- npm (pinned: 11.8.x via `packageManager` field)
 - Supabase account (free tier works)
 - Expo Go app (for physical device testing)
 
@@ -144,6 +144,9 @@ npm run e2e:validate        # Dry-run syntax check
 # Quality
 npm run lint                # ESLint (via Turborepo)
 npm run type-check          # TypeScript check (via Turborepo)
+npm run doctor:toolchain    # Verify Node/npm/workspace script invariants
+npm run doctor:aliases      # Verify alias maps stay in sync
+npm run verify:strict       # Full strict gate (doctor + lint + type-check + tests)
 npm run format              # Prettier format
 npm run format:check        # Check formatting
 ```

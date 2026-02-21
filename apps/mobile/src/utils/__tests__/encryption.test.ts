@@ -12,6 +12,7 @@ import {
   deleteEncryptionKey,
   hasEncryptionKey,
 } from '../encryption';
+import CryptoJS from 'crypto-js';
 
 // Mock Platform.OS to use 'web' path to avoid dynamic imports
 interface PlatformSelectObject {
@@ -236,20 +237,20 @@ describe('Encryption Utilities', () => {
       mockGetRandomValues.mockReturnValue(mockRandomBytes);
       mockRandomUUID.mockReturnValue(TEST_UUID_2);
       mockSecureStorage.setItemAsync.mockResolvedValue(undefined);
+      const pbkdf2Spy = jest.spyOn(CryptoJS, 'PBKDF2');
 
       const key = await generateEncryptionKey();
 
       expect(key).toBeDefined();
       // Verify PBKDF2 was called with correct iterations
-      expect(mockSubtle.deriveBits).toHaveBeenCalledWith(
+      expect(pbkdf2Spy).toHaveBeenCalledWith(
+        expect.any(String),
+        TEST_UUID_2,
         expect.objectContaining({
-          name: 'PBKDF2',
           iterations: 100000,
-          hash: 'SHA-256',
         }),
-        expect.any(Object),
-        256,
       );
+      pbkdf2Spy.mockRestore();
     });
 
     it('should use getRandomBytesAsync for key generation', async () => {

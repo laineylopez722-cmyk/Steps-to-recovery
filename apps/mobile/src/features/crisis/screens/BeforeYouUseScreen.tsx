@@ -14,7 +14,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInDown, SlideInDown, ZoomIn } from 'react-native-reanimated';
 import Slider from '@react-native-community/slider';
-import { useNavigation, type NavigationProp as RNNavigationProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { darkAccent, spacing, radius, typography } from '../../../design-system/tokens/modern';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
@@ -33,7 +34,7 @@ import {
 } from '../../../services/crisisCheckpointService';
 
 import { useSponsorInfo } from '../../../hooks/useSponsorInfo';
-import { type RootStackParamList } from '../../../navigation/types';
+import { type HomeStackParamList } from '../../../navigation/types';
 import { type SponsorInfo } from '../../../types/index';
 import { makePhoneCall, sendSMS } from '@recovery/shared';
 import { BreathingExercise } from '../components/BreathingExercise';
@@ -61,7 +62,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
   useKeepAwake();
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
-  const navigation = useNavigation<RNNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
 
   const { sponsor, isLoading: sponsorLoading } = useSponsorInfo(userId);
   const sponsorInfo = sponsor as SponsorInfo | null | undefined;
@@ -379,11 +380,7 @@ export function BeforeYouUseScreen({ userId }: BeforeYouUseScreenProps): ReactEl
         <Pressable
           onPress={() => {
             logger.info('User requested to talk to someone', { checkpointId });
-            navigation.navigate('MainApp', {
-              screen: 'Home',
-              params: { screen: 'CompanionChat' },
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            } as any);
+            navigation.navigate('CompanionChat');
           }}
           style={styles.talkButton}
           accessibilityLabel="Talk to someone"

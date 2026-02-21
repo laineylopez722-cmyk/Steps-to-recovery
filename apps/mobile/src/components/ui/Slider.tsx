@@ -7,7 +7,7 @@
 import React, { useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 
 interface SliderProps {
   value: number;
@@ -226,3 +226,4 @@ export function Slider({
     </View>
   );
 }
+

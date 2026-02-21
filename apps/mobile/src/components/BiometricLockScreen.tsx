@@ -19,7 +19,7 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
 import { useMotionPress } from '../design-system/hooks/useMotionPress';
 import { useDs } from '../design-system/DsProvider';
@@ -484,3 +484,4 @@ const createStyles = (ds: DS) => ({
     color: ds.semantic.intent.primary.solid,
   },
 });
+

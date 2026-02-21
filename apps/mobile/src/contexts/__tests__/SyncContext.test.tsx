@@ -506,7 +506,7 @@ describe('SyncContext', () => {
 
       // Pending count should be updated
       expect(mockDb.getFirstAsync).toHaveBeenCalledWith(
-        'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3',
+        'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < 3 AND (failed_at IS NULL OR failed_at = "")',
       );
     });
   });
@@ -517,6 +517,10 @@ describe('SyncContext', () => {
       mockUseDatabase.mockReturnValue({ db: mockDb, isReady: true });
 
       renderHook(() => useSync(), { wrapper });
+
+      await waitFor(() => {
+        expect(mockDb.getFirstAsync).toHaveBeenCalled();
+      });
 
       // Should have set up interval
       // Advance timers and verify periodic behavior
@@ -549,11 +553,14 @@ describe('SyncContext', () => {
       mockLogger.info.mockClear();
 
       // Advance 5 minutes
-      act(() => {
+      await act(async () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
+        await Promise.resolve();
       });
 
-      expect(mockLogger.info).toHaveBeenCalledWith('Periodic sync triggered');
+      await waitFor(() => {
+        expect(mockLogger.info).toHaveBeenCalledWith('Periodic sync triggered');
+      });
     });
 
     it('should not trigger periodic sync when offline', async () => {
@@ -563,18 +570,23 @@ describe('SyncContext', () => {
       const { result } = renderHook(() => useSync(), { wrapper });
 
       // Stay offline
-      expect(result.current.isOnline).toBe(false);
+      await waitFor(() => {
+        expect(result.current.isOnline).toBe(false);
+      });
 
       // Clear any calls
       mockProcessSyncQueue.mockClear();
 
       // Advance 5 minutes
-      act(() => {
+      await act(async () => {
         jest.advanceTimersByTime(5 * 60 * 1000);
+        await Promise.resolve();
       });
 
       // Should not have processed sync
-      expect(mockProcessSyncQueue).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockProcessSyncQueue).not.toHaveBeenCalled();
+      });
     });
 
     it('should clear interval on unmount', async () => {
@@ -642,18 +654,23 @@ describe('SyncContext', () => {
       const { result } = renderHook(() => useSync(), { wrapper });
 
       // Stay offline
-      expect(result.current.isOnline).toBe(false);
+      await waitFor(() => {
+        expect(result.current.isOnline).toBe(false);
+      });
 
       // Clear any calls
       mockProcessSyncQueue.mockClear();
 
       // Simulate app coming to foreground
-      act(() => {
+      await act(async () => {
         appStateCallback?.('active');
+        await Promise.resolve();
       });
 
       // Should not sync since offline
-      expect(mockProcessSyncQueue).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockProcessSyncQueue).not.toHaveBeenCalled();
+      });
     });
 
     it('should clean up AppState listener on unmount', () => {

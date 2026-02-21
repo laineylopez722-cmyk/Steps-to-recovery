@@ -11,7 +11,7 @@
 import React, { useCallback } from 'react';
 import { Pressable, StyleSheet, View, Text, ActivityIndicator, type ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { aestheticColors, buttonSizes } from '../tokens/aesthetic';
 
 type ButtonVariant = 'primary' | 'secondary' | 'success' | 'ghost' | 'danger' | 'outline';
@@ -169,3 +169,4 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+

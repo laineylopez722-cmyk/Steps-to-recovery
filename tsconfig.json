@@ -1,15 +1,11 @@
 {
   "compilerOptions": {
     "ignoreDeprecations": "5.0",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["apps/mobile/src/*"]
-    },
     "skipLibCheck": true,
     "noEmit": true
   },
   "files": [],
   "exclude": ["node_modules"],
   "extends": "expo/tsconfig.base",
-  "references": [{ "path": "./apps/mobile" }]
+  "references": [{ "path": "./apps/mobile" }, { "path": "./packages/shared" }]
 }

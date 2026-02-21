@@ -6,6 +6,7 @@
 
 // Load polyfills for Metro and Jest compatibility
 require('./polyfills.cjs');
+const importAliases = require('./config/import-aliases.json');
 
 /** @param {import('@babel/core').ConfigAPI} api */
 module.exports = function (api) {
@@ -33,21 +34,12 @@ module.exports = function (api) {
         'module-resolver',
         {
           root: ['./src'],
-          alias: {
-            '@': './src',
-            '@/components': './src/components',
-            '@/contexts': './src/contexts',
-            '@/features': './src/features',
-            '@/hooks': './src/hooks',
-            '@/lib': './src/lib',
-            '@/utils': './src/utils',
-            '@/design-system': './src/design-system',
-            '@/navigation': './src/navigation',
-            '@recovery/shared': '../../packages/shared/src',
-          },
+          alias: importAliases.babelModuleResolverAlias,
           extensions: ['.ios.js', '.android.js', '.js', '.jsx', '.json', '.ts', '.tsx'],
         },
       ],
+      // Strip Flow types used by React Native internals (safe for JS files)
+      '@babel/plugin-transform-flow-strip-types',
       // Reanimated plugin must be last
       'react-native-reanimated/plugin',
     ],

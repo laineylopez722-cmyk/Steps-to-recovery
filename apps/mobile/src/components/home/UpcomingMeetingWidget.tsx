@@ -20,7 +20,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { useRegularMeetings } from '../../hooks/useRegularMeetings';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 
 interface UpcomingMeetingWidgetProps {
   /** Delay index for staggered entrance animation */
@@ -510,3 +510,4 @@ const createStyles = (ds: DS) =>
       color: ds.colors.info,
     },
   }) as const;
+

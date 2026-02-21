@@ -14,7 +14,7 @@ import Animated, {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { Sun, Moon, Check, Circle } from 'lucide-react-native';
 import { COLORS, ANIMATION, DIMENSIONS, TYPOGRAPHY, SHADOWS, SPACING } from '../constants';
 import type { CheckInData, CheckInStatus } from '../types';
@@ -461,3 +461,4 @@ export function DailyCheckInCard({
 }
 
 export default DailyCheckInCard;
+

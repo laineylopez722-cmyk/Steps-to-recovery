@@ -11,7 +11,7 @@ function loadHapticsForPlatform(os: string): typeof HapticsModule {
   jest.doMock('react-native', () => ({
     Platform: { OS: os },
   }));
-  jest.doMock('expo-haptics', () => ({
+  jest.doMock('@/platform/haptics', () => ({
     impactAsync: mockImpactAsync,
     ImpactFeedbackStyle: { Light: 'light', Medium: 'medium', Heavy: 'heavy' },
     notificationAsync: mockNotificationAsync,
@@ -166,3 +166,4 @@ describe('haptics on web platform', () => {
     expect(mockSelectionAsync).not.toHaveBeenCalled();
   });
 });
+

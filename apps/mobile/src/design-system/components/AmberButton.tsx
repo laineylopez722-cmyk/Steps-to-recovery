@@ -12,7 +12,7 @@ import React from 'react';
 import { Pressable, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
 import type { TextStyle, ViewStyle } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
+import * as Haptics from '@/platform/haptics';
 import { aestheticColors, buttonSizes } from '../tokens/aesthetic';
 
 export interface AmberButtonProps {
@@ -181,3 +181,4 @@ const styles = StyleSheet.create({
 
 // Export alias
 export { AmberButton as PrimaryButton };
+
