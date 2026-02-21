@@ -68,18 +68,16 @@ export function GroundingExercise({ onComplete }: GroundingExerciseProps): React
   const [currentStep, setCurrentStep] = useState(0);
   const [completed, setCompleted] = useState(false);
 
-  const triggerHaptic = useCallback(async (): Promise<void> => {
-    try {
-      if (Platform.OS === 'ios') {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      }
-    } catch {
-      // Haptics not available
+  const triggerHaptic = useCallback((): void => {
+    if (Platform.OS === 'ios') {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {
+        // Haptics not available
+      });
     }
   }, []);
 
-  const handleNext = useCallback(async (): Promise<void> => {
-    await triggerHaptic();
+  const handleNext = useCallback((): void => {
+    triggerHaptic();
 
     if (currentStep < GROUNDING_STEPS.length - 1) {
       setCurrentStep((prev) => prev + 1);

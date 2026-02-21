@@ -126,8 +126,8 @@ export function SOSOverlay({ visible, onClose }: SOSOverlayProps): React.ReactEl
     transform: [{ translateY: translateY.value }],
   }));
 
-  const handleClose = async (): Promise<void> => {
-    await hapticHeavy();
+  const handleClose = (): void => {
+    void hapticHeavy();
     onClose();
   };
 

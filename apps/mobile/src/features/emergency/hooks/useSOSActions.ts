@@ -68,7 +68,7 @@ export function useSOSActions(): UseSOSActionsReturn {
       setIsExecuting(true);
 
       try {
-        await hapticHeavy();
+        void hapticHeavy();
         logger.info('SOS action triggered', { actionId: action.id, type: action.type });
 
         switch (action.type) {
@@ -78,7 +78,7 @@ export function useSOSActions(): UseSOSActionsReturn {
               if (phone) {
                 await dialPhone(phone);
               } else {
-                await hapticWarning();
+                void hapticWarning();
                 Alert.alert(
                   'No Sponsor Found',
                   "You don't have an active sponsor connection. Would you like to call the crisis hotline instead?",
@@ -111,7 +111,7 @@ export function useSOSActions(): UseSOSActionsReturn {
         }
       } catch (error) {
         logger.error('SOS action failed', error);
-        await hapticWarning();
+        void hapticWarning();
         Alert.alert(
           'Action Failed',
           'Something went wrong. Please try again or call 988 directly.',

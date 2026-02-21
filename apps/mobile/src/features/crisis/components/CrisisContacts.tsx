@@ -61,29 +61,35 @@ export function CrisisContacts({ showCustomContacts = true }: CrisisContactsProp
   const styles = useThemedStyles(createStyles);
   const { emergencyContacts, callCrisisLine: _callCrisisLine } = useEmergencyAccess();
 
-  const triggerHaptic = useCallback(async (): Promise<void> => {
-    try {
-      if (Platform.OS === 'ios') {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      }
-    } catch {
-      // Haptics not available
+  const triggerHaptic = useCallback((): void => {
+    if (Platform.OS === 'ios') {
+      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {
+        // Haptics not available
+      });
     }
   }, []);
 
   const handleCallHotline = useCallback(
     async (number: string, name: string): Promise<void> => {
-      await triggerHaptic();
+      triggerHaptic();
       logger.info('Crisis hotline call initiated', { hotline: name });
       const cleanNumber = number.replace(/[^\d+]/g, '');
-      await Linking.openURL(`tel:${cleanNumber}`);
+
+      try {
+        await Linking.openURL(`tel:${cleanNumber}`);
+      } catch (error) {
+        logger.warn('Failed to initiate crisis hotline call', {
+          hotline: name,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
     },
     [triggerHaptic],
   );
 
   const handleTextHotline = useCallback(
     async (number: string, name: string): Promise<void> => {
-      await triggerHaptic();
+      triggerHaptic();
       logger.info('Crisis text line initiated', { hotline: name });
       const cleanNumber = number.replace(/[^\d+]/g, '');
       const body = encodeURIComponent('HOME');
@@ -91,17 +97,33 @@ export function CrisisContacts({ showCustomContacts = true }: CrisisContactsProp
         Platform.OS === 'ios'
           ? `sms:${cleanNumber}&body=${body}`
           : `sms:${cleanNumber}?body=${body}`;
-      await Linking.openURL(smsUrl);
+
+      try {
+        await Linking.openURL(smsUrl);
+      } catch (error) {
+        logger.warn('Failed to initiate crisis text line', {
+          hotline: name,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
     },
     [triggerHaptic],
   );
 
   const handleCallContact = useCallback(
     async (phone: string, name: string): Promise<void> => {
-      await triggerHaptic();
+      triggerHaptic();
       logger.info('Emergency contact call initiated', { contactName: name });
       const cleanNumber = phone.replace(/[^\d+]/g, '');
-      await Linking.openURL(`tel:${cleanNumber}`);
+
+      try {
+        await Linking.openURL(`tel:${cleanNumber}`);
+      } catch (error) {
+        logger.warn('Failed to initiate emergency contact call', {
+          contactName: name,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
     },
     [triggerHaptic],
   );
