@@ -126,6 +126,17 @@ describe('useJournalEntries', () => {
     mockDbInstance.runAsync.mockResolvedValue({ lastInsertRowId: 1, changes: 1 });
   });
 
+  afterEach(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+
+    mockDbIsReady = true;
+  });
+
   describe('useJournalEntries', () => {
     it('should return empty array when no entries exist', async () => {
       mockDbInstance.getAllAsync.mockResolvedValue([]);
