@@ -26,6 +26,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run async-act guardrail
+        run: npm run audit:test-act --workspace=apps/mobile
+
+      - name: Run TypeScript type-check
+        run: npm run type-check --workspace=apps/mobile
+
       - name: Validate env
         run: npm run validate-env
 
