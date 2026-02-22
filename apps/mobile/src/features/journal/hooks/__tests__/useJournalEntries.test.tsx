@@ -83,6 +83,18 @@ describe('useJournalEntries', () => {
     };
   };
 
+  // LEGACY_ACT_ROLLBACK_EXCEPTION: centralized helper for rollback-coupled rejection assertions.
+  const expectLegacyRollbackRejection = async (
+    operation: () => Promise<unknown>,
+    expectedMessage: string,
+  ) => {
+    await expect(
+      act(async () => {
+        await operation();
+      }),
+    ).rejects.toThrow(expectedMessage);
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -527,18 +539,17 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
-      // LEGACY_ACT_ROLLBACK_EXCEPTION: keep pattern to preserve rollback timing semantics in this test.
-      await expect(
-        act(async () => {
-          await result.current.createEntry({
+      await expectLegacyRollbackRejection(
+        () =>
+          result.current.createEntry({
             title: 'New Entry',
             body: 'New body',
             mood: null,
             craving: null,
             tags: [],
-          });
-        }),
-      ).rejects.toThrow('Database error');
+          }),
+        'Database error',
+      );
 
       // Verify rollback occurred
       const cachedData = queryClient.getQueryData<(typeof existingEntry)[]>(
@@ -758,14 +769,13 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
-      // LEGACY_ACT_ROLLBACK_EXCEPTION: keep pattern to preserve rollback timing semantics in this test.
-      await expect(
-        act(async () => {
-          await result.current.updateEntry('entry-123', {
+      await expectLegacyRollbackRejection(
+        () =>
+          result.current.updateEntry('entry-123', {
             title: 'New Title',
-          });
-        }),
-      ).rejects.toThrow('Update failed');
+          }),
+        'Update failed',
+      );
 
       // Verify rollback
       const cachedData = queryClient.getQueryData<typeof existingEntries>(
@@ -902,12 +912,10 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
-      // LEGACY_ACT_ROLLBACK_EXCEPTION: keep pattern to preserve rollback timing semantics in this test.
-      await expect(
-        act(async () => {
-          await result.current.deleteEntry('entry-123');
-        }),
-      ).rejects.toThrow('Delete failed');
+      await expectLegacyRollbackRejection(
+        () => result.current.deleteEntry('entry-123'),
+        'Delete failed',
+      );
 
       // Verify rollback
       const cachedData = queryClient.getQueryData<typeof existingEntries>(

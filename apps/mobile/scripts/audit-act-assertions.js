@@ -16,13 +16,9 @@ const TARGET_FILE_SUFFIX = path.join(
 
 const FRAGILE_PATTERN = /await\s+expect\(\s*act\s*\(\s*async\s*\(\)\s*=>\s*\{/g;
 const LEGACY_MARKER = 'LEGACY_ACT_ROLLBACK_EXCEPTION';
-const EXPECTED_LEGACY_EXCEPTIONS = 3;
+const EXPECTED_LEGACY_EXCEPTIONS = 1;
 
-const ALLOWED_SNIPPETS = [
-  ").rejects.toThrow('Database error')",
-  ").rejects.toThrow('Update failed')",
-  ").rejects.toThrow('Delete failed')",
-];
+const ALLOWED_SNIPPETS = [').rejects.toThrow(expectedMessage)'];
 
 function walk(dir, files = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
