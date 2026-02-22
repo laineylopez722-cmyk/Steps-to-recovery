@@ -145,6 +145,15 @@ describe('useMeetingReminder', () => {
     mockStopGeofencingAsync.mockResolvedValue(undefined);
   });
 
+  afterEach(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  });
+
   describe('Permission Management', () => {
     it('should check notification permission on mount', async () => {
       mockGetPermissionsAsync.mockResolvedValue({ granted: true, canAskAgain: true });

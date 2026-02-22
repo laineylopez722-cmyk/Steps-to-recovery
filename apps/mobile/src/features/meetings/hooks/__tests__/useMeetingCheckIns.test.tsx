@@ -63,6 +63,23 @@ describe('useMeetingCheckIns hooks', () => {
     mockHasCheckedInToMeetingToday.mockResolvedValue(false);
   });
 
+  afterEach(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  });
+
+  afterEach(async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+  });
+
   describe('useMeetingCheckIns', () => {
     it('loads check-ins and stats for authenticated user', async () => {
       const checkIns = [
