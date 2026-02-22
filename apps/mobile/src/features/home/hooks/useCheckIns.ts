@@ -232,7 +232,7 @@ export function useCreateCheckIn(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: checkInKeys.today(userId) });
       queryClient.invalidateQueries({ queryKey: checkInKeys.streak(userId) });
     },
@@ -343,7 +343,7 @@ export function useUpdateCheckIn(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: checkInKeys.today(userId) });
       queryClient.invalidateQueries({ queryKey: checkInKeys.streak(userId) });
     },
@@ -408,7 +408,7 @@ export function useDeleteCheckIn(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: checkInKeys.today(userId) });
       queryClient.invalidateQueries({ queryKey: checkInKeys.streak(userId) });
     },
