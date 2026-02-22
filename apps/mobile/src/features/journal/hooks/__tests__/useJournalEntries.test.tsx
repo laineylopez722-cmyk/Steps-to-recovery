@@ -527,6 +527,7 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
+      // LEGACY_ACT_ROLLBACK_EXCEPTION: keep pattern to preserve rollback timing semantics in this test.
       await expect(
         act(async () => {
           await result.current.createEntry({
@@ -757,6 +758,7 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
+      // LEGACY_ACT_ROLLBACK_EXCEPTION: keep pattern to preserve rollback timing semantics in this test.
       await expect(
         act(async () => {
           await result.current.updateEntry('entry-123', {
@@ -900,6 +902,7 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
+      // LEGACY_ACT_ROLLBACK_EXCEPTION: keep pattern to preserve rollback timing semantics in this test.
       await expect(
         act(async () => {
           await result.current.deleteEntry('entry-123');
