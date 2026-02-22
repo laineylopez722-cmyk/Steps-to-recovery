@@ -29,6 +29,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run async-act guardrail audit
+        run: npm run audit:test-act --workspace=apps/mobile
+
+      - name: Run TypeScript type-check
+        run: npm run type-check --workspace=apps/mobile
+
       - name: Run bundle analysis
         run: node scripts/analyze-bundle.js
 
