@@ -205,7 +205,7 @@ export function useCreateJournalEntry(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
     },
   });
@@ -327,7 +327,7 @@ export function useUpdateJournalEntry(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
     },
   });
@@ -387,7 +387,7 @@ export function useDeleteJournalEntry(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
     },
   });
