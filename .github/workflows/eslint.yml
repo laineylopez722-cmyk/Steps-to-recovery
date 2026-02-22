@@ -33,6 +33,10 @@ jobs:
         working-directory: apps/mobile
         run: npm run audit:test-act
 
+      - name: Run TypeScript type-check
+        working-directory: apps/mobile
+        run: npm run type-check
+
       - name: Run ESLint (SARIF)
         working-directory: apps/mobile
         env:
