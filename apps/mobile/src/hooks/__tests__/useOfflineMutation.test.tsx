@@ -36,7 +36,7 @@ describe('useOfflineMutation', () => {
       defaultOptions: {
         queries: {
           retry: false,
-          gcTime: 0,
+          gcTime: 5 * 60 * 1000,
         },
         mutations: {
           retry: false,
@@ -93,6 +93,35 @@ describe('useOfflineMutation', () => {
     });
 
     expect(invalidateSpy).not.toHaveBeenCalled();
+  });
+
+  it('rolls back optimistic updates on error', async () => {
+    const targetKey = ['offline-items'];
+    const initialData = [{ id: 'a' }];
+
+    queryClient.setQueryData(targetKey, initialData);
+
+    const { result } = renderHook(
+      () =>
+        useOfflineMutation<{ id: string }[], Error, { id: string }>({
+          mutationKey: ['offline-optimistic-rollback'],
+          mutationFn: async () => {
+            throw new Error('Mutation failed');
+          },
+          optimisticUpdate: {
+            queryKeys: [targetKey],
+            updateFn: (currentData, variables) => [...(currentData ?? []), { id: variables.id }],
+          },
+          showErrorToast: false,
+        }),
+      { wrapper: createWrapper() },
+    );
+
+    await act(async () => {
+      await expect(result.current.mutateAsync({ id: 'b' })).rejects.toThrow('Mutation failed');
+    });
+
+    expect(queryClient.getQueryData(targetKey)).toEqual(initialData);
   });
 
   it('calls user-provided onSuccess callback', async () => {
