@@ -176,7 +176,7 @@ export function useSaveSafetyPlan(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: safetyPlanKeys.byUser(userId) });
     },
   });

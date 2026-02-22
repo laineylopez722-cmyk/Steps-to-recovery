@@ -186,7 +186,7 @@ export function useSaveInventory(userId: string): {
       }
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: inventoryKeys.byDate(userId, today) });
     },
   });
