@@ -623,11 +623,11 @@ describe('useStepWork', () => {
       // Clear previous logger calls
       (mockLogger.error as jest.Mock).mockClear();
 
-      await expect(
-        act(async () => {
-          await result.current.saveAnswer(1, 1, 'Answer', true);
-        }),
-      ).rejects.toThrow('Save failed');
+      await act(async () => {
+        await expect(result.current.saveAnswer(1, 1, 'Answer', true)).rejects.toThrow(
+          'Save failed',
+        );
+      });
 
       // Wait for the error to be logged
       await waitFor(() => {
@@ -645,11 +645,11 @@ describe('useStepWork', () => {
         wrapper: createWrapper(),
       });
 
-      await expect(
-        act(async () => {
-          await result.current.saveAnswer(1, 1, 'Answer', true);
-        }),
-      ).rejects.toThrow('Database not initialized');
+      await act(async () => {
+        await expect(result.current.saveAnswer(1, 1, 'Answer', true)).rejects.toThrow(
+          'Database not initialized',
+        );
+      });
 
       // Restore
       mockDbInstance = mockDb;

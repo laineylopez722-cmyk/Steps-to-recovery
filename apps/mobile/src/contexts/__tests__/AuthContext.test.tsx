@@ -255,11 +255,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.signIn('test@example.com', 'wrongpassword');
-        }),
-      ).rejects.toEqual(mockError);
+      await act(async () => {
+        await expect(result.current.signIn('test@example.com', 'wrongpassword')).rejects.toEqual(
+          mockError,
+        );
+      });
 
       // Error state may be briefly set then cleared by auth state change
       // Just verify the rejection occurred and loading is false
@@ -304,11 +304,11 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.signUp('existing@example.com', 'password123');
-        }),
-      ).rejects.toEqual(mockError);
+      await act(async () => {
+        await expect(result.current.signUp('existing@example.com', 'password123')).rejects.toEqual(
+          mockError,
+        );
+      });
 
       // Just verify the rejection occurred - error state may be cleared by auth state change
       expect(result.current.loading).toBe(false);
@@ -372,11 +372,9 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.signOut();
-        }),
-      ).rejects.toEqual(mockError);
+      await act(async () => {
+        await expect(result.current.signOut()).rejects.toEqual(mockError);
+      });
 
       // Just verify the rejection occurred - error state may be cleared by auth state change
       expect(result.current.loading).toBe(false);
@@ -417,11 +415,9 @@ describe('AuthContext', () => {
         expect(result.current.initialized).toBe(true);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.resetPassword('unknown@example.com');
-        }),
-      ).rejects.toEqual(mockError);
+      await act(async () => {
+        await expect(result.current.resetPassword('unknown@example.com')).rejects.toEqual(mockError);
+      });
 
       // Just verify the rejection occurred - error state may be cleared by auth state change
       expect(result.current.loading).toBe(false);
