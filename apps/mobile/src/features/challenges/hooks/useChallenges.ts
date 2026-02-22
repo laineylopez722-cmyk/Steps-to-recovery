@@ -185,7 +185,7 @@ export function useStartChallenge(userId: string): {
 
       logger.info('Challenge started', { id, templateId: template.id });
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: challengeKeys.byUser(userId) });
     },
     onError: (err) => {
@@ -223,7 +223,7 @@ export function useAbandonChallenge(userId: string): {
 
       logger.info('Challenge abandoned', { challengeId });
     },
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: challengeKeys.byUser(userId) });
     },
     onError: (err) => {

@@ -244,7 +244,7 @@ export function useSaveGratitude(userId: string): {
       logger.info('Gratitude entry saved', { id, entryDate: today });
     },
 
-    onSettled: () => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: gratitudeKeys.today(userId) });
       queryClient.invalidateQueries({ queryKey: gratitudeKeys.streak(userId) });
       queryClient.invalidateQueries({ queryKey: gratitudeKeys.history(userId) });
