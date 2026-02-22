@@ -53,6 +53,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run async-act guardrail audit
+        run: npm run audit:test-act --workspace=apps/mobile
+
       - name: Doctor toolchain
         run: npm run doctor:toolchain
 
