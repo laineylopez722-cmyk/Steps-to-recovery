@@ -29,6 +29,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run async-act guardrail audit
+        working-directory: apps/mobile
+        run: npm run audit:test-act
+
       - name: Run ESLint (SARIF)
         working-directory: apps/mobile
         env:
