@@ -384,11 +384,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest('myself@example.com');
-        }),
-      ).rejects.toThrow('Cannot sponsor yourself');
+      await act(async () => {
+        await expect(result.current.sendRequest('myself@example.com')).rejects.toThrow(
+          'Cannot sponsor yourself',
+        );
+      });
     });
 
     it('should handle sponsor not found', async () => {
@@ -403,11 +403,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest('nonexistent@example.com');
-        }),
-      ).rejects.toThrow('Sponsor not found with that email');
+      await act(async () => {
+        await expect(result.current.sendRequest('nonexistent@example.com')).rejects.toThrow(
+          'Sponsor not found with that email',
+        );
+      });
     });
 
     it('should throw when not authenticated', async () => {
@@ -419,11 +419,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest('sponsor@example.com');
-        }),
-      ).rejects.toThrow('Not authenticated');
+      await act(async () => {
+        await expect(result.current.sendRequest('sponsor@example.com')).rejects.toThrow(
+          'Not authenticated',
+        );
+      });
     });
 
     it('should handle insert errors', async () => {
@@ -439,11 +439,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest('sponsor@example.com');
-        }),
-      ).rejects.toThrow('Insert failed');
+      await act(async () => {
+        await expect(result.current.sendRequest('sponsor@example.com')).rejects.toThrow(
+          'Insert failed',
+        );
+      });
     });
 
     it('should refresh sponsorships after successful request', async () => {
@@ -520,11 +520,9 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.acceptRequest('sp-123');
-        }),
-      ).rejects.toThrow('Update failed');
+      await act(async () => {
+        await expect(result.current.acceptRequest('sp-123')).rejects.toThrow('Update failed');
+      });
 
       expect(mockLogger.warn).toHaveBeenCalledWith('Failed to accept request', expect.anything());
     });
@@ -581,11 +579,9 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.declineRequest('sp-123');
-        }),
-      ).rejects.toThrow('Update failed');
+      await act(async () => {
+        await expect(result.current.declineRequest('sp-123')).rejects.toThrow('Update failed');
+      });
 
       expect(mockLogger.warn).toHaveBeenCalledWith('Failed to decline request', expect.anything());
     });
@@ -642,11 +638,9 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.removeSponsor('sp-123');
-        }),
-      ).rejects.toThrow('Delete failed');
+      await act(async () => {
+        await expect(result.current.removeSponsor('sp-123')).rejects.toThrow('Delete failed');
+      });
 
       expect(mockLogger.warn).toHaveBeenCalledWith('Failed to remove sponsor', expect.anything());
     });

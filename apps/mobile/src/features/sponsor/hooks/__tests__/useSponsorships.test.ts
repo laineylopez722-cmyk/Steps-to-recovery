@@ -179,11 +179,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest('nonexistent@example.com');
-        }),
-      ).rejects.toThrow('Sponsor not found with that email');
+      await act(async () => {
+        await expect(result.current.sendRequest('nonexistent@example.com')).rejects.toThrow(
+          'Sponsor not found with that email',
+        );
+      });
     });
 
     it('should throw error when trying to sponsor yourself', async () => {
@@ -196,11 +196,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest(currentUserEmail);
-        }),
-      ).rejects.toThrow('Cannot sponsor yourself');
+      await act(async () => {
+        await expect(result.current.sendRequest(currentUserEmail)).rejects.toThrow(
+          'Cannot sponsor yourself',
+        );
+      });
     });
 
     it('should convert email to lowercase', async () => {
@@ -232,11 +232,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.sendRequest('sponsor@example.com');
-        }),
-      ).rejects.toThrow('Insert failed');
+      await act(async () => {
+        await expect(result.current.sendRequest('sponsor@example.com')).rejects.toThrow(
+          'Insert failed',
+        );
+      });
     });
   });
 
@@ -289,11 +289,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.acceptRequest('sponsorship-123');
-        }),
-      ).rejects.toThrow('Update failed');
+      await act(async () => {
+        await expect(result.current.acceptRequest('sponsorship-123')).rejects.toThrow(
+          'Update failed',
+        );
+      });
     });
   });
 
@@ -327,11 +327,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.declineRequest('sponsorship-123');
-        }),
-      ).rejects.toThrow('Decline failed');
+      await act(async () => {
+        await expect(result.current.declineRequest('sponsorship-123')).rejects.toThrow(
+          'Decline failed',
+        );
+      });
     });
   });
 
@@ -366,11 +366,11 @@ describe('useSponsorships', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      await expect(
-        act(async () => {
-          await result.current.removeSponsor('sponsorship-123');
-        }),
-      ).rejects.toThrow('Delete failed');
+      await act(async () => {
+        await expect(result.current.removeSponsor('sponsorship-123')).rejects.toThrow(
+          'Delete failed',
+        );
+      });
     });
   });
 
