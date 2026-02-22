@@ -84,6 +84,7 @@ export function useOfflineMutation<TData = unknown, TError = Error, TVariables =
     optimisticUpdate,
     invalidateQueries,
     showErrorToast = true,
+    onSuccess: userOnSuccess,
     ...mutationOptions
   } = options;
 
@@ -137,8 +138,10 @@ export function useOfflineMutation<TData = unknown, TError = Error, TVariables =
       }
     },
 
-    // On success or error, invalidate related queries
-    onSettled: (_data, _error, _variables, _context) => {
+    // Invalidate related queries only after successful mutation
+    onSuccess: (data, variables, onMutateResult, mutationContext) => {
+      userOnSuccess?.(data, variables, onMutateResult, mutationContext);
+
       // Invalidate specified queries to ensure data consistency
       if (invalidateQueries) {
         invalidateQueries.forEach((queryKey) => {
