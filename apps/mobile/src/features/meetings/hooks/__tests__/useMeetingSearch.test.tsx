@@ -287,15 +287,15 @@ describe('useMeetingSearch', () => {
         wrapper: createWrapper(),
       });
 
-      await expect(
-        act(async () => {
-          await result.current.search({
+      await act(async () => {
+        await expect(
+          result.current.search({
             latitude: 40.7128,
             longitude: -74.006,
             radius_miles: 5,
-          });
-        }),
-      ).rejects.toThrow('Network unavailable');
+          }),
+        ).rejects.toThrow('Network unavailable');
+      });
     });
 
     it('should throw error when database is not initialized', async () => {
@@ -308,15 +308,15 @@ describe('useMeetingSearch', () => {
         wrapper: createWrapper(),
       });
 
-      await expect(
-        act(async () => {
-          await result.current.search({
+      await act(async () => {
+        await expect(
+          result.current.search({
             latitude: 40.7128,
             longitude: -74.006,
             radius_miles: 5,
-          });
-        }),
-      ).rejects.toThrow('Database not initialized');
+          }),
+        ).rejects.toThrow('Database not initialized');
+      });
 
       // Restore mock
       mockUseDatabase.mockReturnValue({

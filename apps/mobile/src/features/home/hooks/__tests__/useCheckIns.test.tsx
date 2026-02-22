@@ -360,15 +360,15 @@ describe('useCheckIns', () => {
       // Clear any previous calls before testing
       (mockLogger.error as jest.Mock).mockClear();
 
-      await expect(
-        act(async () => {
-          await result.current.createCheckIn({
+      await act(async () => {
+        await expect(
+          result.current.createCheckIn({
             type: 'morning',
             intention: 'Test',
             mood: 4,
-          });
-        }),
-      ).rejects.toThrow('Database error');
+          }),
+        ).rejects.toThrow('Database error');
+      });
 
       // Wait for the error to be logged
       await waitFor(() => {
@@ -470,13 +470,13 @@ describe('useCheckIns', () => {
       // Clear any previous calls before testing
       (mockLogger.error as jest.Mock).mockClear();
 
-      await expect(
-        act(async () => {
-          await result.current.updateCheckIn('checkin-123', {
+      await act(async () => {
+        await expect(
+          result.current.updateCheckIn('checkin-123', {
             mood: 5,
-          });
-        }),
-      ).rejects.toThrow('Update failed');
+          }),
+        ).rejects.toThrow('Update failed');
+      });
 
       // Wait for the error to be logged
       await waitFor(() => {
@@ -525,11 +525,9 @@ describe('useCheckIns', () => {
       // Clear any previous calls before testing
       (mockLogger.error as jest.Mock).mockClear();
 
-      await expect(
-        act(async () => {
-          await result.current.deleteCheckIn('checkin-123');
-        }),
-      ).rejects.toThrow('Delete failed');
+      await act(async () => {
+        await expect(result.current.deleteCheckIn('checkin-123')).rejects.toThrow('Delete failed');
+      });
 
       // Wait for the error to be logged
       await waitFor(() => {

@@ -555,17 +555,17 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
-      await expect(
-        act(async () => {
-          await result.current.createEntry({
+      await act(async () => {
+        await expect(
+          result.current.createEntry({
             title: 'Test',
             body: 'Body',
             mood: null,
             craving: null,
             tags: [],
-          });
-        }),
-      ).rejects.toThrow('Database not initialized');
+          }),
+        ).rejects.toThrow('Database not initialized');
+      });
     });
 
     it('should invalidate queries after creation', async () => {
@@ -937,11 +937,11 @@ describe('useJournalEntries', () => {
         wrapper: createWrapper(),
       });
 
-      await expect(
-        act(async () => {
-          await result.current.deleteEntry('entry-123');
-        }),
-      ).rejects.toThrow('Database not initialized');
+      await act(async () => {
+        await expect(result.current.deleteEntry('entry-123')).rejects.toThrow(
+          'Database not initialized',
+        );
+      });
     });
   });
 
