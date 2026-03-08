@@ -136,7 +136,7 @@ async function buildJournalContextFromDb(
 
     return lines.length > 1 ? lines.join('\n') : '';
   } catch (err) {
-    logger.warn('Failed to build journal context', err);
+    logger.error('Failed to build journal context', err);
     return '';
   }
 }
@@ -222,7 +222,7 @@ async function buildStepWorkContext(
 
     return lines.length > 1 ? lines.join('\n') : '';
   } catch (err) {
-    logger.warn('Failed to build step work context', err);
+    logger.error('Failed to build step work context', err);
     return '';
   }
 }
@@ -320,7 +320,7 @@ async function buildCheckInContext(
 
     return lines.length > 1 ? lines.join('\n') : '';
   } catch (err) {
-    logger.warn('Failed to build check-in context', err);
+    logger.error('Failed to build check-in context', err);
     return '';
   }
 }

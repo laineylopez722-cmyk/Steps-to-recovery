@@ -158,7 +158,7 @@ export function useUserLocation(): UseUserLocationReturn {
         error: errorMessage,
       }));
 
-      logger.warn('Failed to get user location', error);
+      logger.error('Failed to get user location', error);
       return null;
     }
   }, []);
@@ -233,7 +233,7 @@ export function useUserLocation(): UseUserLocationReturn {
 
       return backgroundGranted;
     } catch (error) {
-      logger.warn('Failed to request background permission', error);
+      logger.error('Failed to request background permission', error);
       setState((prev) => ({
         ...prev,
         error: 'Failed to request background location permission.',

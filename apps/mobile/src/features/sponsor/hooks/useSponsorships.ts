@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../../lib/supabase';
 import { useAuth } from '../../../contexts/AuthContext';
 import { logger } from '../../../utils/logger';
@@ -14,18 +15,19 @@ export interface Sponsorship {
 
 export function useSponsorships() {
   const { user } = useAuth();
-  const [sponsorships, setSponsorships] = useState<Sponsorship[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchSponsorships = useCallback(async () => {
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+  const queryKey = ['sponsorships', user?.id];
 
-    try {
-      setLoading(true);
+  const {
+    data: sponsorships = [],
+    isLoading: loading,
+    error,
+  } = useQuery<Sponsorship[], Error>({
+    queryKey,
+    queryFn: async (): Promise<Sponsorship[]> => {
+      if (!user) return [];
+
       const { data, error: fetchError } = await supabase
         .from('sponsorships')
         .select('*')
@@ -33,143 +35,132 @@ export function useSponsorships() {
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
-      setSponsorships(data || []);
-      setError(null);
-    } catch (err) {
-      logger.warn('Failed to fetch sponsorships', err);
-      setError(err instanceof Error ? err : new Error('Failed to fetch'));
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.id]);
+      return data || [];
+    },
+    enabled: !!user?.id,
+  });
 
-  useEffect(() => {
-    fetchSponsorships();
-  }, [fetchSponsorships]);
-
-  const sendRequest = useCallback(
-    async (sponsorEmail: string): Promise<void> => {
+  const sendRequestMutation = useMutation<void, Error, string>({
+    mutationFn: async (sponsorEmail: string): Promise<void> => {
       if (!user) throw new Error('Not authenticated');
 
-      try {
-        // Find sponsor by email in profiles
-        const { data: sponsorProfile, error: profileError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', sponsorEmail.toLowerCase())
-          .single();
+      // Find sponsor by email in profiles
+      const { data: sponsorProfile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', sponsorEmail.toLowerCase())
+        .single();
 
-        if (profileError || !sponsorProfile) {
-          throw new Error('Sponsor not found with that email');
-        }
-
-        if (sponsorProfile.id === user.id) {
-          throw new Error('Cannot sponsor yourself');
-        }
-
-        // Create sponsorship request
-        const { error: insertError } = await supabase.from('sponsorships').insert({
-          sponsor_id: sponsorProfile.id,
-          sponsee_id: user.id,
-          status: 'pending',
-        });
-
-        if (insertError) throw insertError;
-
-        await fetchSponsorships();
-        logger.info('Sponsor request sent successfully');
-      } catch (err) {
-        logger.warn('Failed to send sponsor request', err);
-        throw err;
+      if (profileError || !sponsorProfile) {
+        throw new Error('Sponsor not found with that email');
       }
-    },
-    [user, fetchSponsorships],
-  );
 
-  const acceptRequest = useCallback(
-    async (sponsorshipId: string): Promise<void> => {
-      try {
-        const { error } = await supabase
-          .from('sponsorships')
-          .update({ status: 'accepted' })
-          .eq('id', sponsorshipId);
-
-        if (error) throw error;
-
-        await fetchSponsorships();
-        logger.info('Sponsor request accepted');
-      } catch (err) {
-        logger.warn('Failed to accept request', err);
-        throw err;
+      if (sponsorProfile.id === user.id) {
+        throw new Error('Cannot sponsor yourself');
       }
+
+      // Create sponsorship request
+      const { error: insertError } = await supabase.from('sponsorships').insert({
+        sponsor_id: sponsorProfile.id,
+        sponsee_id: user.id,
+        status: 'pending',
+      });
+
+      if (insertError) throw insertError;
+      logger.info('Sponsor request sent successfully');
     },
-    [fetchSponsorships],
-  );
-
-  const declineRequest = useCallback(
-    async (sponsorshipId: string): Promise<void> => {
-      try {
-        const { error } = await supabase
-          .from('sponsorships')
-          .update({ status: 'declined' })
-          .eq('id', sponsorshipId);
-
-        if (error) throw error;
-
-        await fetchSponsorships();
-        logger.info('Sponsor request declined');
-      } catch (err) {
-        logger.warn('Failed to decline request', err);
-        throw err;
-      }
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
     },
-    [fetchSponsorships],
-  );
-
-  const removeSponsor = useCallback(
-    async (sponsorshipId: string): Promise<void> => {
-      try {
-        const { error } = await supabase.from('sponsorships').delete().eq('id', sponsorshipId);
-
-        if (error) throw error;
-
-        await fetchSponsorships();
-        logger.info('Sponsor removed');
-      } catch (err) {
-        logger.warn('Failed to remove sponsor', err);
-        throw err;
-      }
+    onError: (err) => {
+      logger.error('Failed to send sponsor request', err);
     },
-    [fetchSponsorships],
+  });
+
+  const acceptMutation = useMutation<void, Error, string>({
+    mutationFn: async (sponsorshipId: string): Promise<void> => {
+      const { error } = await supabase
+        .from('sponsorships')
+        .update({ status: 'accepted' })
+        .eq('id', sponsorshipId);
+
+      if (error) throw error;
+      logger.info('Sponsor request accepted');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (err) => {
+      logger.error('Failed to accept request', err);
+    },
+  });
+
+  const declineMutation = useMutation<void, Error, string>({
+    mutationFn: async (sponsorshipId: string): Promise<void> => {
+      const { error } = await supabase
+        .from('sponsorships')
+        .update({ status: 'declined' })
+        .eq('id', sponsorshipId);
+
+      if (error) throw error;
+      logger.info('Sponsor request declined');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (err) => {
+      logger.error('Failed to decline request', err);
+    },
+  });
+
+  const removeMutation = useMutation<void, Error, string>({
+    mutationFn: async (sponsorshipId: string): Promise<void> => {
+      const { error } = await supabase.from('sponsorships').delete().eq('id', sponsorshipId);
+
+      if (error) throw error;
+      logger.info('Sponsor removed');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+    },
+    onError: (err) => {
+      logger.error('Failed to remove sponsor', err);
+    },
+  });
+
+  // Derived filter helpers
+  const mySponsor = useMemo(
+    () => sponsorships.find((s) => s.sponsee_id === user?.id && s.status === 'accepted'),
+    [sponsorships, user?.id],
   );
 
-  // Filter helpers
-  const mySponsor = sponsorships.find((s) => s.sponsee_id === user?.id && s.status === 'accepted');
-
-  const mySponsees = sponsorships.filter(
-    (s) => s.sponsor_id === user?.id && s.status === 'accepted',
+  const mySponsees = useMemo(
+    () => sponsorships.filter((s) => s.sponsor_id === user?.id && s.status === 'accepted'),
+    [sponsorships, user?.id],
   );
 
-  const pendingRequests = sponsorships.filter(
-    (s) => s.sponsor_id === user?.id && s.status === 'pending',
+  const pendingRequests = useMemo(
+    () => sponsorships.filter((s) => s.sponsor_id === user?.id && s.status === 'pending'),
+    [sponsorships, user?.id],
   );
 
-  const sentRequests = sponsorships.filter(
-    (s) => s.sponsee_id === user?.id && s.status === 'pending',
+  const sentRequests = useMemo(
+    () => sponsorships.filter((s) => s.sponsee_id === user?.id && s.status === 'pending'),
+    [sponsorships, user?.id],
   );
 
   return {
     sponsorships,
     loading,
-    error,
+    error: error ?? null,
     mySponsor,
     mySponsees,
     pendingRequests,
     sentRequests,
-    sendRequest,
-    acceptRequest,
-    declineRequest,
-    removeSponsor,
-    refresh: fetchSponsorships,
+    sendRequest: sendRequestMutation.mutateAsync,
+    acceptRequest: acceptMutation.mutateAsync,
+    declineRequest: declineMutation.mutateAsync,
+    removeSponsor: removeMutation.mutateAsync,
+    refresh: () => queryClient.invalidateQueries({ queryKey }),
   };
 }

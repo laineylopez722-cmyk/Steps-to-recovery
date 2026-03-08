@@ -186,7 +186,7 @@ export function useMoodTrends(timeRange: TimeRange): {
             dateData.moods.push(mood);
           }
         } catch {
-          logger.warn('Failed to decrypt mood value', { date });
+          logger.error('Failed to decrypt mood value', { date });
         }
       }
 
@@ -198,7 +198,7 @@ export function useMoodTrends(timeRange: TimeRange): {
             dateData.cravings.push(craving);
           }
         } catch {
-          logger.warn('Failed to decrypt craving value', { date });
+          logger.error('Failed to decrypt craving value', { date });
         }
       }
     }

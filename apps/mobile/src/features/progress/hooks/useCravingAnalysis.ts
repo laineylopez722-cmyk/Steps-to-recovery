@@ -319,7 +319,7 @@ export function useCravingAnalysis(timeRange: TimeRange): UseCravingAnalysisRetu
           hourOfDay: createdDate.getHours(),
         });
       } catch {
-        logger.warn('Failed to decrypt craving value', { date: checkIn.check_in_date });
+        logger.error('Failed to decrypt craving value', { date: checkIn.check_in_date });
       }
     }
 
@@ -354,7 +354,7 @@ export function useCravingAnalysis(timeRange: TimeRange): UseCravingAnalysisRetu
           hourOfDay: sessionDate.getHours(),
         });
       } catch {
-        logger.warn('Failed to decrypt surf session rating', { sessionId: session.id });
+        logger.error('Failed to decrypt surf session rating', { sessionId: session.id });
       }
     }
 
@@ -390,7 +390,7 @@ export function useCravingAnalysis(timeRange: TimeRange): UseCravingAnalysisRetu
           }
         }
       } catch {
-        logger.warn('Failed to process surf session', { sessionId: session.id });
+        logger.error('Failed to process surf session', { sessionId: session.id });
       }
     }
 

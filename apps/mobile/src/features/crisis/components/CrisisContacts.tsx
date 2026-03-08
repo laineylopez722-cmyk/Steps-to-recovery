@@ -78,7 +78,7 @@ export function CrisisContacts({ showCustomContacts = true }: CrisisContactsProp
       try {
         await Linking.openURL(`tel:${cleanNumber}`);
       } catch (error) {
-        logger.warn('Failed to initiate crisis hotline call', {
+        logger.error('Failed to initiate crisis hotline call', {
           hotline: name,
           error: error instanceof Error ? error.message : 'Unknown error',
         });
@@ -101,7 +101,7 @@ export function CrisisContacts({ showCustomContacts = true }: CrisisContactsProp
       try {
         await Linking.openURL(smsUrl);
       } catch (error) {
-        logger.warn('Failed to initiate crisis text line', {
+        logger.error('Failed to initiate crisis text line', {
           hotline: name,
           error: error instanceof Error ? error.message : 'Unknown error',
         });
@@ -119,7 +119,7 @@ export function CrisisContacts({ showCustomContacts = true }: CrisisContactsProp
       try {
         await Linking.openURL(`tel:${cleanNumber}`);
       } catch (error) {
-        logger.warn('Failed to initiate emergency contact call', {
+        logger.error('Failed to initiate emergency contact call', {
           contactName: name,
           error: error instanceof Error ? error.message : 'Unknown error',
         });

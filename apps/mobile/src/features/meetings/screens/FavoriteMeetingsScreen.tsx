@@ -92,7 +92,7 @@ export function FavoriteMeetingsScreen({
 
         setMeetings(validMeetings);
       } catch (error) {
-        logger.warn('Failed to load favorite meetings', error);
+        logger.error('Failed to load favorite meetings', error);
         setMeetings([]);
       } finally {
         setIsLoadingMeetings(false);
