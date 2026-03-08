@@ -84,7 +84,7 @@ export function ShareEntryModal({
         message: `Journal Entry Share Code\n\nPaste this code into your Steps to Recovery app to view the shared entry:\n\n${sharePayload}`,
       });
     } catch (error) {
-      logger.warn('Failed to share payload', error);
+      logger.error('Failed to share payload', error);
     }
   }, [sharePayload]);
 

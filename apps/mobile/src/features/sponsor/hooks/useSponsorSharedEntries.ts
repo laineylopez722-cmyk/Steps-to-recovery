@@ -226,7 +226,7 @@ export function useSponsorSharedEntries(userId: string) {
           const decrypted = await decryptWithSharedKey(sharedKey, targetPayload.encrypted);
           JSON.parse(decrypted);
         } catch (error) {
-          logger.warn('Failed to decrypt sponsor payload', { error });
+          logger.error('Failed to decrypt sponsor payload', { error });
           skipped += 1;
           continue;
         }
@@ -312,7 +312,7 @@ export function useSponsorSharedEntries(userId: string) {
             sharedAt: row.created_at,
           });
         } catch (error) {
-          logger.warn('Failed to decrypt shared entry payload', { error });
+          logger.error('Failed to decrypt shared entry payload', { error });
         }
       }
 
@@ -356,7 +356,7 @@ export function useSponsorSharedEntries(userId: string) {
             createdAt: content.createdAt ?? row.created_at,
           });
         } catch (error) {
-          logger.warn('Failed to decrypt sponsor comment payload', { error });
+          logger.error('Failed to decrypt sponsor comment payload', { error });
         }
       }
 

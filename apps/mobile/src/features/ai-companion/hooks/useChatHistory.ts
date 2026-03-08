@@ -301,17 +301,8 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
       const now = new Date().toISOString();
 
       // Encrypt the content before storing (skip empty strings)
-      let encryptedContent: string;
-      if (content.length === 0) {
-        encryptedContent = content;
-      } else {
-        try {
-          encryptedContent = await encryptContent(content);
-        } catch (encryptErr) {
-          logger.error('Failed to encrypt message, storing plaintext as fallback', encryptErr);
-          encryptedContent = content;
-        }
-      }
+      const encryptedContent =
+        content.length === 0 ? content : await encryptContent(content);
 
       const message: Message = {
         id,
@@ -398,11 +389,8 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
             try {
               decryptedContent = await decryptContent(row.encrypted_content);
             } catch {
-              // Likely an unencrypted legacy message — return as-is
-              logger.warn(
-                'Message decryption failed, returning raw content (possible legacy data)',
-              );
-              decryptedContent = row.encrypted_content;
+              logger.error('Message decryption failed', { messageId: row.id });
+              decryptedContent = '[Message could not be decrypted]';
             }
           }
           messages.push(rowToMessage(row, decryptedContent));

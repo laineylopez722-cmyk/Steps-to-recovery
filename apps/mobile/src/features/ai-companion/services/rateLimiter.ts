@@ -65,7 +65,7 @@ async function loadCount(): Promise<number> {
     const countStr = mmkvStorage.getItem(STORAGE_KEYS.messageCount);
     return countStr ? parseInt(countStr, 10) : 0;
   } catch (err: unknown) {
-    logger.warn('Failed to load rate limit count', err);
+    logger.error('Failed to load rate limit count', err);
     return 0;
   }
 }
@@ -108,7 +108,7 @@ export async function incrementMessageCount(): Promise<void> {
     const current = await loadCount();
     mmkvStorage.setItem(STORAGE_KEYS.messageCount, String(current + 1));
   } catch (err: unknown) {
-    logger.warn('Failed to increment rate limit count', err);
+    logger.error('Failed to increment rate limit count', err);
   }
 }
 
@@ -129,7 +129,7 @@ export async function setDailyLimit(limit: number): Promise<void> {
     mmkvStorage.setItem(STORAGE_KEYS.dailyLimit, String(clamped));
     logger.debug('Daily AI limit updated', { limit: clamped });
   } catch (err: unknown) {
-    logger.warn('Failed to save daily limit', err);
+    logger.error('Failed to save daily limit', err);
   }
 }
 
@@ -146,7 +146,7 @@ export async function getDailyLimit(): Promise<number> {
       }
     }
   } catch (err: unknown) {
-    logger.warn('Failed to load daily limit', err);
+    logger.error('Failed to load daily limit', err);
   }
   return DEFAULT_DAILY_LIMIT;
 }
@@ -159,7 +159,7 @@ export async function setRateLimitEnabled(enabled: boolean): Promise<void> {
     mmkvStorage.setItem(STORAGE_KEYS.enabled, enabled ? 'true' : 'false');
     logger.debug('Rate limiting toggled', { enabled });
   } catch (err: unknown) {
-    logger.warn('Failed to save rate limit toggle', err);
+    logger.error('Failed to save rate limit toggle', err);
   }
 }
 
@@ -172,7 +172,7 @@ export async function isRateLimitEnabled(): Promise<boolean> {
     // Default to enabled if never set
     return stored !== 'false';
   } catch (err: unknown) {
-    logger.warn('Failed to load rate limit toggle', err);
+    logger.error('Failed to load rate limit toggle', err);
     return true;
   }
 }

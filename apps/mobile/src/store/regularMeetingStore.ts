@@ -120,13 +120,8 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
 
       let encryptedNotes: string | undefined;
       if (options?.notes) {
-        try {
-          const { encryptContent } = await import('../utils/encryption');
-          encryptedNotes = await encryptContent(options.notes);
-        } catch (error) {
-          logger.warn('Failed to encrypt notes, saving without encryption', error);
-          encryptedNotes = undefined;
-        }
+        const { encryptContent } = await import('../utils/encryption');
+        encryptedNotes = await encryptContent(options.notes);
       }
 
       const newMeeting: RegularMeeting = {
@@ -193,12 +188,8 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
       let encryptedNotes: string | undefined;
       if (updates.notes !== undefined) {
         if (updates.notes) {
-          try {
-            const { encryptContent } = await import('../utils/encryption');
-            encryptedNotes = await encryptContent(updates.notes);
-          } catch (error) {
-            logger.warn('Failed to encrypt notes during update', error);
-          }
+          const { encryptContent } = await import('../utils/encryption');
+          encryptedNotes = await encryptContent(updates.notes);
         } else {
           encryptedNotes = undefined;
         }

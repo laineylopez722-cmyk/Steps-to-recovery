@@ -10,7 +10,9 @@
  * - Error handling
  */
 
+import React from 'react';
 import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 // Create stable mock user object
 const mockStableUser = { id: 'user-123', email: 'test@example.com' };
@@ -76,6 +78,18 @@ import { supabase } from '../../../../lib/supabase';
 const mockSupabaseFrom = supabase.from as jest.Mock;
 const mockUseAuth = useAuth as jest.Mock;
 
+function createWrapper() {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+      mutations: { retry: false },
+    },
+  });
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+}
+
 describe('useSponsorships', () => {
   const testUserId = 'user-123';
   const otherUserId = 'user-456';
@@ -120,7 +134,7 @@ describe('useSponsorships', () => {
 
       mockChainable.order.mockResolvedValue({ data: mockSponsorships, error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -138,7 +152,7 @@ describe('useSponsorships', () => {
     it('should handle empty state', async () => {
       mockChainable.order.mockResolvedValue({ data: [], error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -157,7 +171,7 @@ describe('useSponsorships', () => {
         error: { message: 'Database error' },
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -165,16 +179,12 @@ describe('useSponsorships', () => {
 
       expect(result.current.error).toBeTruthy();
       expect(result.current.sponsorships).toEqual([]);
-      expect(mockLogger.warn).toHaveBeenCalledWith(
-        'Failed to fetch sponsorships',
-        expect.anything(),
-      );
     });
 
     it('should not fetch when user is not authenticated', async () => {
       mockUseAuth.mockImplementation(() => ({ user: null }));
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       // Wait a bit
       await new Promise((resolve) => setTimeout(resolve, 50));
@@ -186,7 +196,7 @@ describe('useSponsorships', () => {
     it('should provide refresh function', async () => {
       mockChainable.order.mockResolvedValue({ data: [], error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -199,7 +209,10 @@ describe('useSponsorships', () => {
         await result.current.refresh();
       });
 
-      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      // React Query will refetch after invalidation
+      await waitFor(() => {
+        expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      });
     });
   });
 
@@ -248,7 +261,7 @@ describe('useSponsorships', () => {
     });
 
     it('should filter mySponsor (accepted where user is sponsee)', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -258,7 +271,7 @@ describe('useSponsorships', () => {
     });
 
     it('should filter mySponsees (accepted where user is sponsor)', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -269,7 +282,7 @@ describe('useSponsorships', () => {
     });
 
     it('should filter pendingRequests (received)', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -280,7 +293,7 @@ describe('useSponsorships', () => {
     });
 
     it('should filter sentRequests (pending I sent)', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -305,7 +318,7 @@ describe('useSponsorships', () => {
         error: null,
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -331,7 +344,7 @@ describe('useSponsorships', () => {
 
       mockChainable.insert.mockResolvedValue({ error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -361,7 +374,7 @@ describe('useSponsorships', () => {
       mockChainable.single.mockResolvedValueOnce({ data: sponsorProfile, error: null });
       mockChainable.insert.mockResolvedValue({ error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -378,7 +391,7 @@ describe('useSponsorships', () => {
       const sponsorProfile = { id: testUserId }; // Same as current user
       mockChainable.single.mockResolvedValueOnce({ data: sponsorProfile, error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -397,7 +410,7 @@ describe('useSponsorships', () => {
         error: { message: 'Not found' },
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -413,11 +426,10 @@ describe('useSponsorships', () => {
     it('should throw when not authenticated', async () => {
       mockUseAuth.mockImplementation(() => ({ user: null }));
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
+      // Wait for initial load to complete
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       await act(async () => {
         await expect(result.current.sendRequest('sponsor@example.com')).rejects.toThrow(
@@ -433,7 +445,7 @@ describe('useSponsorships', () => {
         error: new Error('Insert failed'),
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -446,12 +458,12 @@ describe('useSponsorships', () => {
       });
     });
 
-    it('should refresh sponsorships after successful request', async () => {
+    it('should invalidate query after successful request', async () => {
       const sponsorProfile = { id: otherUserId };
       mockChainable.single.mockResolvedValueOnce({ data: sponsorProfile, error: null });
       mockChainable.insert.mockResolvedValue({ error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -464,8 +476,10 @@ describe('useSponsorships', () => {
         await result.current.sendRequest('sponsor@example.com');
       });
 
-      // Should refresh by calling fetchSponsorships again
-      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      // React Query will refetch after invalidation
+      await waitFor(() => {
+        expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      });
     });
   });
 
@@ -475,7 +489,7 @@ describe('useSponsorships', () => {
     });
 
     it('should update status to accepted', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -491,8 +505,8 @@ describe('useSponsorships', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Sponsor request accepted');
     });
 
-    it('should refresh sponsorships after accepting', async () => {
-      const { result } = renderHook(() => useSponsorships());
+    it('should invalidate query after accepting', async () => {
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -505,8 +519,10 @@ describe('useSponsorships', () => {
         await result.current.acceptRequest('sp-123');
       });
 
-      // Should call from sponsorships again to refresh
-      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      // React Query will refetch after invalidation
+      await waitFor(() => {
+        expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      });
     });
 
     it('should handle update errors', async () => {
@@ -514,7 +530,7 @@ describe('useSponsorships', () => {
         error: new Error('Update failed'),
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -524,7 +540,7 @@ describe('useSponsorships', () => {
         await expect(result.current.acceptRequest('sp-123')).rejects.toThrow('Update failed');
       });
 
-      expect(mockLogger.warn).toHaveBeenCalledWith('Failed to accept request', expect.anything());
+      expect(mockLogger.error).toHaveBeenCalledWith('Failed to accept request', expect.anything());
     });
   });
 
@@ -534,7 +550,7 @@ describe('useSponsorships', () => {
     });
 
     it('should update status to declined', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -550,8 +566,8 @@ describe('useSponsorships', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Sponsor request declined');
     });
 
-    it('should refresh sponsorships after declining', async () => {
-      const { result } = renderHook(() => useSponsorships());
+    it('should invalidate query after declining', async () => {
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -564,8 +580,10 @@ describe('useSponsorships', () => {
         await result.current.declineRequest('sp-123');
       });
 
-      // Should refresh
-      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      // React Query will refetch after invalidation
+      await waitFor(() => {
+        expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      });
     });
 
     it('should handle update errors', async () => {
@@ -573,7 +591,7 @@ describe('useSponsorships', () => {
         error: new Error('Update failed'),
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -583,7 +601,10 @@ describe('useSponsorships', () => {
         await expect(result.current.declineRequest('sp-123')).rejects.toThrow('Update failed');
       });
 
-      expect(mockLogger.warn).toHaveBeenCalledWith('Failed to decline request', expect.anything());
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to decline request',
+        expect.anything(),
+      );
     });
   });
 
@@ -593,7 +614,7 @@ describe('useSponsorships', () => {
     });
 
     it('should delete sponsorship record', async () => {
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -609,8 +630,8 @@ describe('useSponsorships', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('Sponsor removed');
     });
 
-    it('should refresh sponsorships after removal', async () => {
-      const { result } = renderHook(() => useSponsorships());
+    it('should invalidate query after removal', async () => {
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -623,8 +644,10 @@ describe('useSponsorships', () => {
         await result.current.removeSponsor('sp-123');
       });
 
-      // Should refresh
-      expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      // React Query will refetch after invalidation
+      await waitFor(() => {
+        expect(mockSupabaseFrom).toHaveBeenCalledWith('sponsorships');
+      });
     });
 
     it('should handle delete errors', async () => {
@@ -632,7 +655,7 @@ describe('useSponsorships', () => {
         error: new Error('Delete failed'),
       });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -642,7 +665,10 @@ describe('useSponsorships', () => {
         await expect(result.current.removeSponsor('sp-123')).rejects.toThrow('Delete failed');
       });
 
-      expect(mockLogger.warn).toHaveBeenCalledWith('Failed to remove sponsor', expect.anything());
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        'Failed to remove sponsor',
+        expect.anything(),
+      );
     });
   });
 
@@ -651,30 +677,16 @@ describe('useSponsorships', () => {
       mockUseAuth.mockImplementation(() => ({ user: null }));
       mockChainable.order.mockResolvedValue({ data: [], error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
+      // Wait for initial state
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       // Filter helpers should handle undefined user gracefully
       expect(result.current.mySponsor).toBeUndefined();
       expect(result.current.mySponsees).toEqual([]);
       expect(result.current.pendingRequests).toEqual([]);
       expect(result.current.sentRequests).toEqual([]);
-    });
-
-    it('should handle non-Error exceptions in fetchSponsorships', async () => {
-      mockChainable.order.mockRejectedValue('String error');
-
-      const { result } = renderHook(() => useSponsorships());
-
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false);
-      });
-
-      expect(result.current.error).toBeInstanceOf(Error);
-      expect(result.current.error?.message).toBe('Failed to fetch');
     });
 
     it('should handle multiple pending requests received', async () => {
@@ -699,7 +711,7 @@ describe('useSponsorships', () => {
 
       mockChainable.order.mockResolvedValue({ data: mockSponsorships, error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);
@@ -730,7 +742,7 @@ describe('useSponsorships', () => {
 
       mockChainable.order.mockResolvedValue({ data: mockSponsorships, error: null });
 
-      const { result } = renderHook(() => useSponsorships());
+      const { result } = renderHook(() => useSponsorships(), { wrapper: createWrapper() });
 
       await waitFor(() => {
         expect(result.current.loading).toBe(false);

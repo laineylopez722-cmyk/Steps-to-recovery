@@ -120,7 +120,7 @@ export async function addToDailyCost(cost: number): Promise<void> {
     const current = await getDailyCost();
     mmkvStorage.setItem(DAILY_COST_KEY, String(current + cost));
   } catch (err: unknown) {
-    logger.warn('Failed to update daily cost', err);
+    logger.error('Failed to update daily cost', err);
   }
 }
 
@@ -139,7 +139,7 @@ export async function getDailyCost(): Promise<number> {
     const costStr = mmkvStorage.getItem(DAILY_COST_KEY);
     return costStr ? parseFloat(costStr) : 0;
   } catch (err: unknown) {
-    logger.warn('Failed to load daily cost', err);
+    logger.error('Failed to load daily cost', err);
     return 0;
   }
 }
@@ -160,7 +160,7 @@ async function saveCostToHistory(date: string, cost: number): Promise<void> {
     const trimmed = history.slice(-7);
     mmkvStorage.setItem(COST_HISTORY_KEY, JSON.stringify(trimmed));
   } catch (err: unknown) {
-    logger.warn('Failed to save cost history', err);
+    logger.error('Failed to save cost history', err);
   }
 }
 
@@ -175,7 +175,7 @@ export async function getCostHistory(): Promise<DailyCostEntry[]> {
       return Array.isArray(parsed) ? parsed : [];
     }
   } catch (err: unknown) {
-    logger.warn('Failed to load cost history', err);
+    logger.error('Failed to load cost history', err);
   }
   return [];
 }

@@ -578,7 +578,7 @@ describe('useMeetingReminder', () => {
       });
 
       expect(notificationId).toBeNull();
-      expect(mockLoggerWarn).toHaveBeenCalledWith(
+      expect(mockLoggerError).toHaveBeenCalledWith(
         'Failed to schedule meeting reminder',
         expect.any(Error),
       );
@@ -679,7 +679,7 @@ describe('useMeetingReminder', () => {
         await result.current.cancelReminder('reminder-id-123');
       });
 
-      expect(mockLoggerWarn).toHaveBeenCalledWith(
+      expect(mockLoggerError).toHaveBeenCalledWith(
         'Failed to cancel meeting reminder',
         expect.any(Error),
       );
@@ -1090,7 +1090,7 @@ describe('useMeetingReminder', () => {
       });
 
       expect(success).toBe(false);
-      expect(mockLoggerWarn).toHaveBeenCalledWith('Failed to set up geofence', expect.any(Error));
+      expect(mockLoggerError).toHaveBeenCalledWith('Failed to set up geofence', expect.any(Error));
     });
 
     it('should not redefine task if already defined', async () => {
@@ -1184,7 +1184,7 @@ describe('useMeetingReminder', () => {
         await result.current.removeGeofence('meeting-1');
       });
 
-      expect(mockLoggerWarn).toHaveBeenCalledWith('Failed to remove geofence', expect.any(Error));
+      expect(mockLoggerError).toHaveBeenCalledWith('Failed to remove geofence', expect.any(Error));
     });
   });
 

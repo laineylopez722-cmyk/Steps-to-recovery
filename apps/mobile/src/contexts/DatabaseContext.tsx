@@ -15,11 +15,13 @@ import { logger } from '../utils/logger';
 interface DatabaseContextValue {
   db: StorageAdapter | null;
   isReady: boolean;
+  error: Error | null;
 }
 
 const DatabaseContext = createContext<DatabaseContextValue>({
   db: null,
   isReady: false,
+  error: null,
 });
 
 export function useDatabase(): DatabaseContextValue {
@@ -45,7 +47,7 @@ export function DatabaseProvider({ children }: DatabaseProviderProps): React.Rea
  */
 function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.ReactElement {
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
-  const [_isLoading, setIsLoading] = useState(true);
+  const [initError, setInitError] = useState<Error | null>(null);
   const initStartedRef = useRef(false);
 
   useEffect(() => {
@@ -57,7 +59,7 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
 
     let isMounted = true;
 
-    async function initializeDatabase() {
+    async function initializeDatabase(): Promise<void> {
       try {
         logger.info('Mobile: Starting database initialization');
 
@@ -83,9 +85,8 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
         setAdapter(storageAdapter);
       } catch (err) {
         logger.error('Mobile: Database initialization failed', err);
-      } finally {
         if (isMounted) {
-          setIsLoading(false);
+          setInitError(err instanceof Error ? err : new Error('Database initialization failed'));
         }
       }
     }
@@ -97,7 +98,10 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
     };
   }, []);
 
-  const contextValue = useMemo(() => ({ db: adapter, isReady: adapter !== null }), [adapter]);
+  const contextValue = useMemo(
+    () => ({ db: adapter, isReady: adapter !== null, error: initError }),
+    [adapter, initError],
+  );
 
   // Always render children - don't block on database loading
   return <DatabaseContext.Provider value={contextValue}>{children}</DatabaseContext.Provider>;
@@ -108,6 +112,7 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
  */
 function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactElement {
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
+  const [initError, setInitError] = useState<Error | null>(null);
   const initStartedRef = useRef(false);
 
   useEffect(() => {
@@ -116,7 +121,7 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
 
     let isMounted = true;
 
-    async function setupAdapter() {
+    async function setupAdapter(): Promise<void> {
       try {
         logger.info('Web: Initializing IndexedDB adapter');
         const storageAdapter = await createStorageAdapter();
@@ -127,6 +132,9 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
         }
       } catch (err) {
         logger.error('Web: Failed to initialize database', err);
+        if (isMounted) {
+          setInitError(err instanceof Error ? err : new Error('Database initialization failed'));
+        }
       }
     }
 
@@ -137,7 +145,10 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
     };
   }, []);
 
-  const contextValue = useMemo(() => ({ db: adapter, isReady: adapter !== null }), [adapter]);
+  const contextValue = useMemo(
+    () => ({ db: adapter, isReady: adapter !== null, error: initError }),
+    [adapter, initError],
+  );
 
   return <DatabaseContext.Provider value={contextValue}>{children}</DatabaseContext.Provider>;
 }

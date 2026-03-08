@@ -162,41 +162,14 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
     }
   },
 
-  markAsRead: async (readingId: string): Promise<void> => {
-    try {
-      logger.info('Marking reading as read', { readingId });
-      // This would typically update a user_readings table to track read status
-    } catch (error) {
-      logger.error('Failed to mark reading as read', error);
-      set({ error: error instanceof Error ? error.message : 'Failed to mark as read' });
-    }
-  },
+  // TODO: Not yet implemented — needs user_readings table integration
+  markAsRead: async (_readingId: string): Promise<void> => {},
 
-  getReadingForDate: async (date: Date): Promise<DailyReading | null> => {
-    try {
-      const dayOfYear = getDayOfYear(date);
-      logger.info('Getting reading for date', { date: date.toISOString(), dayOfYear });
+  // TODO: Not yet implemented — needs database query by day_of_year
+  getReadingForDate: async (_date: Date): Promise<DailyReading | null> => null,
 
-      // Would query database for reading by day_of_year
-      return null;
-    } catch (error) {
-      logger.error('Failed to get reading for date', error);
-      return null;
-    }
-  },
-
-  getReflectionForDate: async (date: Date): Promise<DailyReadingReflection | null> => {
-    try {
-      const dateKey = formatDateKey(date);
-      logger.info('Getting reflection for date', { date: date.toISOString(), dateKey });
-
-      // Would query database for reflection by reading_date
-      return null;
-    } catch (error) {
-      logger.error('Failed to get reflection for date', error);
-      return null;
-    }
-  },
+  // TODO: Not yet implemented — needs database query by reading_date
+  getReflectionForDate: async (_date: Date): Promise<DailyReadingReflection | null> => null,
 
   decryptReflectionContent: async (reflection: DailyReadingReflection): Promise<string> => {
     try {
@@ -226,48 +199,11 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
     return todayReflection.readingDate === todayKey;
   },
 
-  calculateStreak: async (): Promise<number> => {
-    try {
-      // Calculate consecutive days with reflections, working backwards from today
-      let streak = 0;
-      const today = new Date();
+  // TODO: Not yet implemented — getReflectionForDate returns null, so streak is always 0.
+  // Once getReflectionForDate is implemented, this should query the database directly
+  // with SQL (e.g., consecutive days with reflections) instead of looping 365 times.
+  calculateStreak: async (): Promise<number> => 0,
 
-      for (let i = 0; i < 365; i++) {
-        // Check up to 365 days back
-        const checkDate = new Date(today);
-        checkDate.setDate(today.getDate() - i);
-
-        const reflection = await get().getReflectionForDate(checkDate);
-        if (reflection) {
-          streak++;
-        } else {
-          break; // Streak broken
-        }
-      }
-
-      logger.info('Calculated reading streak', { streak });
-      return streak;
-    } catch (error) {
-      logger.error('Failed to calculate streak', error);
-      return 0;
-    }
-  },
-
-  initializeReadings: async (): Promise<void> => {
-    try {
-      set({ isLoading: true, error: null });
-
-      // This would populate the daily_readings table with 365 readings
-      // For now, we'll just log that initialization is needed
-      logger.info('Daily readings initialization needed');
-
-      set({ isLoading: false });
-    } catch (error) {
-      logger.error('Failed to initialize readings', error);
-      set({
-        error: error instanceof Error ? error.message : 'Failed to initialize readings',
-        isLoading: false,
-      });
-    }
-  },
+  // TODO: Not yet implemented — should populate daily_readings table with 365 readings
+  initializeReadings: async (): Promise<void> => {},
 }));

@@ -50,7 +50,7 @@ export function useSponsorConnections(userId: string) {
       );
       setConnections(rows);
     } catch (loadError) {
-      logger.warn('Failed to load sponsor connections', loadError);
+      logger.error('Failed to load sponsor connections', loadError);
       setError(loadError instanceof Error ? loadError.message : 'Failed to load connections');
     } finally {
       setIsLoading(false);
