@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 19;
+const CURRENT_SCHEMA_VERSION = 20;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -988,6 +988,24 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
 
     await recordMigration(db, 19);
     logger.info('Migration v19 completed');
+  }
+
+  // Migration version 20: Add encrypted_audio column to journal_entries for voice journaling
+  if (currentVersion < 20) {
+    logger.info('Running migration v20: Adding encrypted_audio to journal_entries');
+
+    if (!(await columnExists(db, 'journal_entries', 'encrypted_audio'))) {
+      try {
+        await db.execAsync(
+          'ALTER TABLE journal_entries ADD COLUMN encrypted_audio TEXT',
+        );
+      } catch (error) {
+        logger.warn('Migration v20: Failed to add encrypted_audio column', error);
+      }
+    }
+
+    await recordMigration(db, 20);
+    logger.info('Migration v20 completed');
   }
 
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });

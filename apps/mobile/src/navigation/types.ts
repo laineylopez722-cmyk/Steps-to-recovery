@@ -35,6 +35,9 @@ export type HomeStackParamList = {
   CravingSurf: undefined;
   Gratitude: undefined;
   SafetyPlan: undefined;
+  MindfulnessLibrary: undefined;
+  MeditationPlayer: { meditationId: string };
+  CopingRecommendations: { userId: string };
 };
 
 // Journal Stack

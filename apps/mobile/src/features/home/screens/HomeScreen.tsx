@@ -39,6 +39,8 @@ import { useDs } from '../../../design-system/DsProvider';
 import type { HomeStackParamList } from '../../../navigation/types';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { UpcomingMilestones } from '../components/UpcomingMilestones';
+import { RelapseRiskCard } from '../components/RelapseRiskCard';
+import { useRelapseRisk } from '../hooks/useRelapseRisk';
 import { useAppReview } from '../../../hooks/useAppReview';
 
 interface HomeScreenProps {
@@ -297,6 +299,9 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const { checkMilestoneReview } = useAppReview();
   const { currentStep } = useStepProgress(userId);
 
+  const { risk, refetch: refetchRisk } = useRelapseRisk(userId);
+  const [riskDismissed, setRiskDismissed] = useState(false);
+
   const [refreshing, setRefreshing] = useState(false);
   const [showMilestone, setShowMilestone] = useState(false);
   const lastCelebratedKeyRef = useRef<string | null>(null);
@@ -339,7 +344,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
 
     try {
-      await Promise.all([refetchDays?.(), refetchCheckins?.()]);
+      await Promise.all([refetchDays?.(), refetchCheckins?.(), refetchRisk()]);
     } finally {
       setRefreshing(false);
     }
@@ -368,6 +373,11 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
   const handleEmergency = useCallback(() => {
     notificationAsync(NotificationFeedbackType.Warning).catch(() => {});
     navigation.navigate('Emergency');
+  }, [navigation]);
+
+  const handleMindfulness = useCallback(() => {
+    hapticLight();
+    navigation.navigate('MindfulnessLibrary');
   }, [navigation]);
 
   const handleProgress = useCallback(() => {
@@ -465,6 +475,14 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
             currentStep={currentStep}
           />
 
+          {risk && !riskDismissed && (
+            <RelapseRiskCard
+              risk={risk}
+              userId={userId}
+              onDismiss={() => setRiskDismissed(true)}
+            />
+          )}
+
           <Animated.View entering={MotionTransitions.cardEnter(3)} style={styles.section}>
             <View style={styles.sectionHeaderRow}>
               <Text style={styles.sectionTitle} accessibilityRole="header">Daily intention</Text>
@@ -539,6 +557,12 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
                 title="Emergency"
                 subtitle="Open support instantly"
                 onPress={handleEmergency}
+              />
+              <ShortcutCard
+                icon="wind"
+                title="Mindfulness"
+                subtitle="Breathing & meditations"
+                onPress={handleMindfulness}
               />
             </View>
           </Animated.View>

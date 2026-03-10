@@ -400,3 +400,45 @@ export function useDeleteJournalEntry(userId: string): {
 
 // Re-export query keys for use in other components
 export { journalKeys };
+
+// ============================================================
+// Update Journal Audio
+// ============================================================
+
+/**
+ * Saves encrypted audio to an existing journal entry.
+ * Called after recording is finalised in JournalEditorScreen.
+ */
+export function useUpdateJournalAudio(userId: string): {
+  saveAudio: (entryId: string, encryptedAudio: string | null) => Promise<void>;
+  isPending: boolean;
+} {
+  const { db } = useDatabase();
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation<void, Error, { entryId: string; encryptedAudio: string | null }>({
+    mutationKey: ['updateJournalAudio', userId],
+    mutationFn: async ({ entryId, encryptedAudio }) => {
+      if (!db) throw new Error('Database not initialized');
+
+      await db.runAsync(
+        'UPDATE journal_entries SET encrypted_audio = ?, updated_at = ? WHERE id = ? AND user_id = ?',
+        [encryptedAudio, new Date().toISOString(), entryId, userId],
+      );
+
+      await addToSyncQueue(db, 'journal_entries', entryId, 'update');
+      logger.info('Journal audio saved', { entryId, hasAudio: encryptedAudio !== null });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: journalKeys.byUser(userId) });
+    },
+    onError: (error) => {
+      logger.error('Failed to save journal audio', error);
+    },
+  });
+
+  return {
+    saveAudio: (entryId, encryptedAudio) => mutation.mutateAsync({ entryId, encryptedAudio }),
+    isPending: mutation.isPending,
+  };
+}

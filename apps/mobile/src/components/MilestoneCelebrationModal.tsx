@@ -5,7 +5,7 @@
  * Celebrates achievements with real confetti, haptic feedback, and encouraging messages.
  */
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import {
   Modal,
   View,
@@ -13,6 +13,7 @@ import {
   Pressable,
   Dimensions,
   Platform,
+  Share,
 } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -57,6 +58,22 @@ export function MilestoneCelebrationModal({
     hapticCelebration();
   }, []);
 
+  const [shareAnonymous, setShareAnonymous] = useState(true);
+
+  const handleShare = useCallback(async (): Promise<void> => {
+    if (!milestone) return;
+    hapticCelebration();
+    const dayWord = milestone.days === 1 ? 'day' : 'days';
+    const message = shareAnonymous
+      ? `Someone just hit ${milestone.days} ${dayWord} clean! ${milestone.icon}\n\n"${getEncouragementMessage(milestone.days)}"\n\n#Recovery #OneDay`
+      : `I just hit ${milestone.days} ${dayWord} clean! ${milestone.icon}\n\n"${getEncouragementMessage(milestone.days)}"\n\nTracking my journey with Steps to Recovery. #Recovery`;
+    try {
+      await Share.share({ message });
+    } catch {
+      // User cancelled or share unavailable — no action needed
+    }
+  }, [milestone, shareAnonymous]);
+
   useEffect(() => {
     if (visible && milestone) {
       scale.value = 0;
@@ -67,7 +84,7 @@ export function MilestoneCelebrationModal({
       opacity.value = withTiming(1, { duration: 200 });
       scale.value = withDelay(
         100,
-        withSpring(1, { damping: 12, stiffness: 150 }, (finished) => {
+        withSpring(1, { damping: 12, stiffness: 150 }, (finished?: boolean) => {
           if (finished) runOnJS(triggerHaptic)();
         }),
       );
@@ -154,6 +171,30 @@ export function MilestoneCelebrationModal({
           </View>
 
           <Animated.View style={[styles.buttonContainer, buttonAnimatedStyle]}>
+            {/* Privacy toggle */}
+            <Pressable
+              style={styles.privacyToggle}
+              onPress={() => setShareAnonymous((prev: boolean) => !prev)}
+              accessibilityRole="switch"
+              accessibilityLabel={shareAnonymous ? 'Share anonymously — tap to share as yourself' : 'Sharing as yourself — tap to share anonymously'}
+              accessibilityState={{ checked: !shareAnonymous }}
+            >
+              <Text style={styles.privacyToggleText}>
+                {shareAnonymous ? '👤 Share anonymously' : '🙋 Share as myself'}
+              </Text>
+            </Pressable>
+
+            {/* Share button */}
+            <Pressable
+              style={styles.shareButton}
+              onPress={handleShare}
+              accessibilityLabel="Share your milestone"
+              accessibilityRole="button"
+              accessibilityHint="Opens the share sheet to share your achievement"
+            >
+              <Text style={styles.shareButtonText}>Share Victory 🎉</Text>
+            </Pressable>
+
             <Pressable
               style={styles.button}
               onPress={onClose}
@@ -264,6 +305,32 @@ const createStyles = (ds: DS) =>
     buttonContainer: {
       width: '100%' as const,
       marginBottom: ds.space[4],
+      gap: ds.space[3],
+    },
+    privacyToggle: {
+      alignSelf: 'center' as const,
+      paddingHorizontal: ds.space[4],
+      paddingVertical: ds.space[2],
+      borderRadius: ds.radius.full,
+      borderWidth: 1,
+      borderColor: ds.semantic.intent.primary.muted,
+      backgroundColor: ds.semantic.intent.primary.subtle,
+    },
+    privacyToggleText: {
+      ...ds.typography.caption,
+      color: ds.semantic.text.secondary,
+    },
+    shareButton: {
+      paddingHorizontal: ds.space[8],
+      paddingVertical: ds.space[4],
+      borderRadius: ds.radius.lg,
+      alignItems: 'center' as const,
+      backgroundColor: ds.semantic.intent.primary.solid,
+    },
+    shareButtonText: {
+      ...ds.typography.body,
+      color: ds.semantic.text.onDark,
+      fontWeight: '600' as const,
     },
     button: {
       paddingHorizontal: ds.space[8],

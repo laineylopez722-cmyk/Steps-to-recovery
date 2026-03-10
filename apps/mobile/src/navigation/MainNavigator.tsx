@@ -39,6 +39,9 @@ import { AISettingsScreen } from '../features/ai-companion/screens/AISettingsScr
 import { CravingSurfScreen } from '../features/craving-surf/screens/CravingSurfScreen';
 import { GratitudeScreen } from '../features/gratitude/screens/GratitudeScreen';
 import { SafetyPlanScreen } from '../features/safety-plan/screens/SafetyPlanScreen';
+import { MindfulnessLibraryScreen } from '../features/mindfulness/screens/MindfulnessLibraryScreen';
+import { MeditationPlayerScreen } from '../features/mindfulness/screens/MeditationPlayerScreen';
+import { CopingRecommendationsScreen } from '../features/craving-surf/screens/CopingRecommendationsScreen';
 import { ChallengesScreen } from '../features/challenges/screens/ChallengesScreen';
 import { StatusBar } from 'expo-status-bar';
 import { useDs, useDsIsDark } from '../design-system/DsProvider';
@@ -312,6 +315,21 @@ function HomeStackNavigator(): React.ReactElement {
           </ScreenErrorBoundary>
         )}
       </HomeStack.Screen>
+      <HomeStack.Screen
+        name="MindfulnessLibrary"
+        component={MindfulnessLibraryScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="MeditationPlayer"
+        component={MeditationPlayerScreen}
+        options={{ headerShown: false }}
+      />
+      <HomeStack.Screen
+        name="CopingRecommendations"
+        component={CopingRecommendationsScreen}
+        options={{ headerShown: false }}
+      />
     </HomeStack.Navigator>
     </ScreenErrorBoundary>
   );
