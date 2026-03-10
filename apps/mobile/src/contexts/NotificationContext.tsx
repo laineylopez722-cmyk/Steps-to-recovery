@@ -19,6 +19,12 @@ import { logger } from '../utils/logger';
 import { navigateFromNotification } from '../navigation/navigationRef';
 import type { NotificationPayload } from '../types/notifications';
 import { registerPushToken, unregisterPushToken } from '../services/pushTokenService';
+import {
+  computeOptimalSchedule,
+  scheduleSmartReminders,
+  removeSmartReminders,
+} from '../features/ai-companion/services/smartNotificationScheduler';
+import { useDatabase } from './DatabaseContext';
 
 interface NotificationContextValue {
   // Permission state
@@ -35,6 +41,11 @@ interface NotificationContextValue {
   // Preferences
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
+
+  // Smart scheduling
+  smartSchedulingEnabled: boolean;
+  enableSmartScheduling: (userId: string) => Promise<void>;
+  disableSmartScheduling: () => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextValue | null>(null);
@@ -45,6 +56,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [smartSchedulingEnabled, setSmartSchedulingEnabled] = useState(false);
+  const { db } = useDatabase();
 
   /**
    * Check current permission status on mount
@@ -211,6 +224,31 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     };
   }, []);
 
+  const enableSmartScheduling = useCallback(
+    async (userId: string): Promise<void> => {
+      if (!db) return;
+      try {
+        const schedule = await computeOptimalSchedule(db, userId);
+        await scheduleSmartReminders(schedule);
+        setSmartSchedulingEnabled(true);
+        logger.info('Smart scheduling enabled', { source: schedule.source });
+      } catch (error) {
+        logger.error('Failed to enable smart scheduling', { error });
+      }
+    },
+    [db],
+  );
+
+  const disableSmartScheduling = useCallback(async (): Promise<void> => {
+    try {
+      await removeSmartReminders();
+      setSmartSchedulingEnabled(false);
+      logger.info('Smart scheduling disabled');
+    } catch (error) {
+      logger.error('Failed to disable smart scheduling', { error });
+    }
+  }, []);
+
   const value = useMemo(
     () => ({
       permissionStatus,
@@ -222,6 +260,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       unregisterPushTokenForUser,
       notificationsEnabled,
       setNotificationsEnabled,
+      smartSchedulingEnabled,
+      enableSmartScheduling,
+      disableSmartScheduling,
     }),
     [
       permissionStatus,
@@ -233,6 +274,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       unregisterPushTokenForUser,
       notificationsEnabled,
       setNotificationsEnabled,
+      smartSchedulingEnabled,
+      enableSmartScheduling,
+      disableSmartScheduling,
     ],
   );
 

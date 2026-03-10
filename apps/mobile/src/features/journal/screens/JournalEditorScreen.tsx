@@ -30,10 +30,12 @@ import {
   useUpdateJournalEntry,
   useJournalEntries,
   useDeleteJournalEntry,
+  useUpdateJournalAudio,
 } from '../hooks/useJournalEntries';
 import { extractMemories } from '../utils/memoryExtraction';
 import { useMemoryStore } from '../../../hooks/useMemoryStore';
 import { ShareEntryModal } from '../components/ShareEntryModal';
+import { VoiceRecorder } from '../components/VoiceRecorder';
 
 interface Props {
   userId: string;
@@ -51,6 +53,7 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const { createEntry, isPending: _isCreating } = useCreateJournalEntry(userId);
   const { updateEntry, isPending: _isUpdating } = useUpdateJournalEntry(userId);
   const { deleteEntry } = useDeleteJournalEntry(userId);
+  const { saveAudio } = useUpdateJournalAudio(userId);
   const memoryStore = useMemoryStore(userId);
 
   const [title, setTitle] = useState('');
@@ -58,6 +61,8 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
   const [isSaved, setIsSaved] = useState(true);
   const [saveError, setSaveError] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showVoiceRecorder, setShowVoiceRecorder] = useState(false);
+  const [encryptedAudio, setEncryptedAudio] = useState<string | null>(null);
 
   const bodyRef = useRef<TextInput>(null);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -307,6 +312,36 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
               accessibilityHint="Write your thoughts, feelings, and reflections"
               testID="journal-content-input"
             />
+
+            {/* Voice recorder (shown when toggled) */}
+            {showVoiceRecorder && (
+              <VoiceRecorder
+                existingEncryptedAudio={encryptedAudio}
+                onRecordingComplete={async (audio) => {
+                  setEncryptedAudio(audio);
+                  // Ensure entry exists before saving audio
+                  const targetId = entryId ?? createdEntryIdRef.current;
+                  if (targetId) {
+                    await saveAudio(targetId, audio);
+                  } else {
+                    // Entry not yet created — auto-save text first, then persist audio
+                    await handleAutoSave();
+                    const savedId = createdEntryIdRef.current;
+                    if (savedId) {
+                      await saveAudio(savedId, audio);
+                    }
+                  }
+                }}
+                onDiscard={async () => {
+                  setEncryptedAudio(null);
+                  setShowVoiceRecorder(false);
+                  const targetId = entryId ?? createdEntryIdRef.current;
+                  if (targetId) {
+                    await saveAudio(targetId, null);
+                  }
+                }}
+              />
+            )}
           </ScrollView>
 
           {/* Bottom Toolbar */}
@@ -326,13 +361,19 @@ export function JournalEditorScreen({ userId }: Props): React.ReactElement {
                 <Feather name="check-square" size={20} color={ds.colors.textQuaternary} accessibilityElementsHidden importantForAccessibility="no" />
               </Pressable>
               <Pressable
-                style={[styles.toolBtn, styles.toolBtnDisabled]}
-                disabled
-                accessibilityLabel="Attach file — coming soon"
+                style={[styles.toolBtn, showVoiceRecorder && styles.toolBtnActive]}
+                onPress={() => setShowVoiceRecorder((v) => !v)}
+                accessibilityLabel={showVoiceRecorder ? 'Hide voice recorder' : 'Add voice note'}
                 accessibilityRole="button"
-                accessibilityState={{ disabled: true }}
+                accessibilityState={{ selected: showVoiceRecorder }}
               >
-                <Feather name="paperclip" size={20} color={ds.colors.textQuaternary} accessibilityElementsHidden importantForAccessibility="no" />
+                <Feather
+                  name="mic"
+                  size={20}
+                  color={showVoiceRecorder ? ds.colors.accent : (encryptedAudio ? ds.colors.accent : ds.colors.textSecondary)}
+                  accessibilityElementsHidden
+                  importantForAccessibility="no"
+                />
               </Pressable>
               <Pressable
                 style={[styles.toolBtn, styles.toolBtnDisabled]}
@@ -485,6 +526,10 @@ const createStyles = (ds: DS) =>
     },
     toolBtnDisabled: {
       opacity: 0.5,
+    },
+    toolBtnActive: {
+      backgroundColor: ds.colors.accentMuted,
+      borderRadius: 10,
     },
     saveStatus: {
       flex: 1,
