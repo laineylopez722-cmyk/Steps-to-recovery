@@ -14,6 +14,7 @@ tags:
 - runFlow: journal.yaml
 - runFlow: step-work.yaml
 - runFlow: offline-sync.yaml
+- runFlow: crisis-detection.yaml
 
 # Success notification
 - evalScript: ${console.log("✅ All E2E tests passed!")}

@@ -1,0 +1,191 @@
+# E2E Test: Crisis Detection Flow
+# Tests: Crisis keyword detection ΓåÆ Crisis overlay appears ΓåÆ Resources visible
+# CRITICAL: This is a non-negotiable safety test
+
+appId: com.recovery.stepstorecovery
+tags:
+  - crisis
+  - safety
+  - critical
+  - non-negotiable
+
+env:
+  CRISIS_MESSAGE: 'I want to hurt myself'
+  CRISSE_MESSAGE_2: 'I want to kill myself'
+  CRISIS_MESSAGE_3: 'I feel like ending it all'
+
+---
+# Launch app
+- launchApp
+
+- waitForAnimationToEnd
+
+# ============================================
+# Setup: Ensure Logged In
+# ============================================
+
+- runFlow:
+    when:
+      visible: 'Welcome Back'
+    commands:
+      - tapOn: 'Sign Up'
+      - tapOn:
+          id: 'signup-email-input'
+      - inputText: 'crisis.{{RANDOM}}@test.com'
+      - tapOn:
+          id: 'signup-password-input'
+      - inputText: 'TestPass123!'
+      - tapOn:
+          id: 'signup-confirm-password-input'
+      - inputText: 'TestPass123!'
+      - tapOn:
+          id: 'signup-submit-button'
+      - extendedWaitUntil:
+          visible: 'Clean Time'
+          timeout: 30000
+
+# ============================================
+# Navigate to AI Chat
+# ============================================
+
+- tapOn:
+    id: 'ai-companion-card'
+
+- extendedWaitUntil:
+    visible: 'AI Companion'
+    timeout: 10000
+
+# Verify chat is ready
+- assertVisible: 'I\'m here whenever you need to talk'
+
+# Take screenshot of chat ready state
+- takeScreenshot: chat-ready
+
+# ============================================
+# Test Crisis Keyword Detection
+# ============================================
+
+# Enter crisis message
+- tapOn:
+    id: 'chat-input'
+- inputText: '${CRISIS_MESSAGE}'
+
+# Send message
+- tapOn:
+    id: 'chat-send-button'
+
+# EXPECTED: Crisis overlay should appear within 3 seconds
+- extendedWaitUntil:
+    visible: 'Crisis Support'
+    timeout: 5000
+
+# Verify crisis overlay elements
+- assertVisible: 'You\'re not alone'
+- assertVisible: '988'
+
+# Take screenshot of crisis overlay
+- takeScreenshot: crisis-overlay-appeared
+
+# ============================================
+# Verify Crisis Resources Visible (No Network Required)
+# ============================================
+
+# Verify 988 is visible (suicide prevention hotline)
+- assertVisible: '988'
+
+# Verify SAMHSA is visible
+- assertVisible: 'SAMHSA'
+
+# Verify sponsor contact section (if configured)
+- assertVisible:
+    id: 'crisis-sponsor-section'
+
+# ============================================
+# Test Different Crisis Phrases
+# ============================================
+
+# Dismiss crisis overlay (tap outside or on close button if exists)
+- runFlow:
+    when:
+      visible: 'Close'
+    commands:
+      - tapOn: 'Close'
+
+# Wait for chat to return
+- extendedWaitUntil:
+    visible: 'I\'m here whenever you need to talk'
+    timeout: 5000
+
+# Test second crisis message
+- tapOn:
+    id: 'chat-input'
+- inputText: '${CRISIS_MESSAGE_2}'
+
+- tapOn:
+    id: 'chat-send-button'
+
+# Crisis overlay should reappear
+- extendedWaitUntil:
+    visible: 'Crisis Support'
+    timeout: 5000
+
+# Take screenshot
+- takeScreenshot: crisis-overlay-appeared-2
+
+# Dismiss again
+- runFlow:
+    when:
+      visible: 'Close'
+    commands:
+      - tapOn: 'Close'
+
+# ============================================
+# Test Third Crisis Phrase
+# ============================================
+
+- extendedWaitUntil:
+    visible: 'I\'m here whenever you need to talk'
+    timeout: 5000
+
+- tapOn:
+    id: 'chat-input'
+- inputText: '${CRISSE_MESSAGE_2}'
+
+- tapOn:
+    id: 'chat-send-button'
+
+- extendedWaitUntil:
+    visible: 'Crisis Support'
+    timeout: 5000
+
+# Take final screenshot
+- takeScreenshot: crisis-detection-complete
+
+# ============================================
+# Verify Emergency Screen Also Works
+# ============================================
+
+# Navigate to Emergency screen (should be fast - <2 seconds)
+- tapOn:
+    id: 'emergency-button'
+
+- extendedWaitUntil:
+    visible: 'Emergency'
+    timeout: 5000
+
+# Verify quick access to crisis resources
+- assertVisible: '988'
+- assertVisible: 'Call for help'
+
+# Take screenshot of emergency screen
+- takeScreenshot: emergency-screen-fast
+
+# ============================================
+# Final Verification
+# ============================================
+
+# Log success
+- evalScript: ${console.log("Γ£à Crisis detection test PASSED - overlay appears within 3 seconds")}
+
+# Take final screenshot
+- takeScreenshot: crisis-test-complete

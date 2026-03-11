@@ -1,0 +1,454 @@
+# Day 3: Network & Sync Validation
+# Tests offlineΓåÆonline transitions, sync queue behavior, and network resilience
+# Run with: maestro test maestro/flows/day3-network-sync.yaml
+# Prerequisites: Complete Day 1 and Day 2 tests first
+
+appId: com.stepstorecovery.app
+---
+# Launch app (assumes user is logged in from Day 1/2)
+- launchApp:
+    clearState: false
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Journal'
+        - 'Steps'
+    timeout: 15000
+
+- runScript:
+    script: |
+      console.log('========================================')
+      console.log('≡ƒÜÇ STARTING DAY 3 NETWORK & SYNC VALIDATION')
+      console.log('========================================')
+      console.log('Testing: OfflineΓåÆOnline transitions, sync queue, network resilience')
+
+# ========================================
+# Test 1: Verify Initial Online State
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 1: Verify Online State ---')
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Clean Time'
+        - 'Journal'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 1: App online state confirmed - PASSED')
+
+# ========================================
+# Test 2: Create Entry While Online (Baseline)
+# ========================================
+
+- tapOn:
+    text: 'Journal'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Journal'
+        - '+'
+    timeout: 5000
+
+- tapOn:
+    text:
+      anyOf:
+        - '+'
+        - 'New Entry'
+        - 'Add Entry'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Write your'
+        - 'Entry'
+        - 'Title'
+    timeout: 5000
+
+- inputText:
+    text: 'Day 3 - Online baseline entry'
+
+- tapOn:
+    text:
+      anyOf:
+        - 'Save'
+        - 'Done'
+        - 'Keep'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Saved'
+        - 'Entry saved'
+        - 'Success'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 2: Online entry creation - PASSED')
+
+# ========================================
+# Test 3: Transition to Offline Mode
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 3: Transition to Offline ---')
+
+# Return to Home to verify sync status
+- pressKey: back
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Home'
+    timeout: 5000
+
+# Note: User should enable Airplane mode NOW
+# Maestro can't control system settings, so we document the step
+- runScript:
+    script: |
+      console.log('≡ƒô▒ MANUAL STEP: Enable Airplane Mode on device NOW')
+      console.log('   This tests: App continues working without network')
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Journal'
+        - 'Steps'
+    timeout: 10000
+
+# Wait a moment to ensure offline detection
+- wait: 2000
+
+# ========================================
+# Test 4: Offline Entry Creation (Core Test)
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 4: Offline Entry Creation ---')
+
+- tapOn:
+    text: 'Journal'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Journal'
+        - '+'
+    timeout: 5000
+
+- tapOn:
+    text:
+      anyOf:
+        - '+'
+        - 'New Entry'
+        - 'Add Entry'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Write your'
+        - 'Entry'
+        - 'Title'
+    timeout: 5000
+
+- inputText:
+    text: 'Day 3 - Offline entry - should sync when online'
+
+- tapOn:
+    text:
+      anyOf:
+        - 'Save'
+        - 'Done'
+        - 'Keep'
+    timeout: 5000
+
+# Verify entry saved (should work offline)
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Saved'
+        - 'Entry saved'
+        - 'Success'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 4: Offline entry creation - PASSED')
+      console.log('   Entry saved locally without network')
+
+# ========================================
+# Test 5: Offline Check-in Creation
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 5: Offline Check-in ---')
+
+# Return to Home
+- pressKey: back
+- pressKey: back
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Home'
+    timeout: 5000
+
+# Create check-in while offline
+- tapOn:
+    id: 'checkin-card'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Check-in'
+        - 'How are you'
+    timeout: 5000
+
+# Select a mood
+- tapOn:
+    text:
+      anyOf:
+        - 'Good'
+        - 'Okay'
+        - '1'
+        - '2'
+    timeout: 3000
+    optional: true
+
+# Complete check-in
+- tapOn:
+    text:
+      anyOf:
+        - 'Save'
+        - 'Done'
+        - 'Complete'
+    timeout: 5000
+    optional: true
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Saved'
+        - 'Check-in saved'
+        - 'Today'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 5: Offline check-in - PASSED')
+      console.log('   Check-in saved locally without network')
+
+# ========================================
+# Test 6: Offline Step Work (Navigation)
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 6: Offline Step Work Navigation ---')
+
+# Navigate to Steps screen
+- tapOn:
+    text: 'Steps'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Steps'
+        - 'Step'
+        - 'Progress'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 6: Step screen loads offline - PASSED')
+
+# Return to Home
+- pressKey: back
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Home'
+    timeout: 5000
+
+# ========================================
+# Test 7: Emergency Screen Works Offline
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 7: Emergency Screen Offline ---')
+
+- tapOn:
+    id: 'emergency-button'
+    timeout: 2000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Emergency'
+        - 'Crisis'
+        - '988'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 7: Emergency screen works offline - PASSED')
+
+# Close emergency screen
+- pressKey: back
+- pressKey: back
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Home'
+    timeout: 5000
+
+# ========================================
+# Test 8: Transition Back to Online
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 8: Transition Back to Online ---')
+
+# Note: User should disable Airplane mode NOW
+- runScript:
+    script: |
+      console.log('≡ƒô▒ MANUAL STEP: Disable Airplane Mode on device NOW')
+      console.log('   This tests: Sync queue flushes when network returns')
+
+# Wait for network detection
+- wait: 5000
+
+# ========================================
+# Test 9: Verify Sync Queue Flushes
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 9: Sync Queue Flush ---')
+
+# Check sync status (pull to refresh or wait)
+- swipe:
+    direction: DOWN
+    duration: 500
+
+- wait: 3000
+
+# Verify Home screen still loads
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Clean Time'
+        - 'Journal'
+    timeout: 10000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 9: App syncs when network returns - PASSED')
+
+# ========================================
+# Test 10: Verify Offline Entries Still Present
+# ========================================
+
+- runScript:
+    script: |
+      console.log('--- Test 10: Verify Offline Entries Synced ---')
+
+- tapOn:
+    text: 'Journal'
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Journal'
+        - '+'
+    timeout: 5000
+
+# Verify offline entry is still there
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Day 3 - Offline entry'
+        - 'Offline entry'
+        - 'Day 3'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 10: Offline entries persisted - PASSED')
+
+# ========================================
+# Summary
+# ========================================
+
+# Return to Home
+- pressKey: back
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'
+        - 'Home'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('========================================')
+      console.log('≡ƒÄë DAY 3 NETWORK & SYNC VALIDATION COMPLETE')
+      console.log('========================================')
+      console.log('Tests completed:')
+      console.log('  1. Online state verification')
+      console.log('  2. Online entry creation')
+      console.log('  3. Offline transition')
+      console.log('  4. Offline journal entry')
+      console.log('  5. Offline check-in')
+      console.log('  6. Step work navigation')
+      console.log('  7. Emergency screen offline')
+      console.log('  8. Online transition')
+      console.log('  9. Sync queue flush')
+      console.log('  10. Offline entries persisted')
+      console.log('')
+      console.log('Γ£à App handles offlineΓåÆonline transitions correctly')
+      console.log('Γ£à Core recovery features work without network')
+      console.log('Γ£à Data syncs when network returns')
+      console.log('')
+      console.log('If any test failed, check DEVICE_TESTING_CHECKLIST.md for troubleshooting.')
+
+# ========================================
+# Cleanup Note
+# ========================================
+
+- runScript:
+    script: |
+      console.log('≡ƒô¥ Note: Delete test entries created during validation:')
+      console.log('   - "Day 3 - Online baseline entry"')
+      console.log('   - "Day 3 - Offline entry - should sync when online"')

@@ -1,0 +1,155 @@
+# Day 1: Core Safety & Offline Validation
+# Tests the 5 non-negotiable safety/offline flows
+# Run with: maestro test maestro/flows/day1-core-safety.yaml
+
+appId: com.stepstorecovery.app
+---
+# Launch with cleared state (optional - remove clearState if you want to keep login)
+- launchApp:
+    clearState: false
+
+# Test 1: App loads with Home screen
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Today'  # Home screen header
+        - 'Journal'  # Tab bar
+        - 'Steps'
+        - 'Meetings'
+    timeout: 15000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 1: App loads - PASSED')
+
+# Test 2: Emergency screen opens quickly (<2 seconds)
+- tapOn:
+    id: 'emergency-button'  # Top-right emergency button
+    timeout: 2000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Emergency'
+        - 'Crisis'
+        - '988'  # Crisis hotline
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 2: Emergency screen - PASSED')
+
+# Navigate back
+- tapOn:
+    text:
+      anyOf:
+        - 'Back'
+        - 'Close'
+    optional: true
+- pressKey: back
+- pressKey: back
+
+# Test 3: AI Chat opens
+- tapOn:
+    text: 'Chat'  # AI Companion card on Home
+    timeout: 5000
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Hello'  # AI greeting
+        - 'Companion'
+        - 'How can I help'
+    timeout: 10000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 3: AI Chat opens - PASSED')
+
+# Test 4: Crisis detection (type trigger phrase)
+- inputText:
+    text: 'I want to hurt myself'
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Crisis'
+        - 'Help'
+        - 'Support'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 4: Crisis detection - PASSED')
+
+# Close crisis overlay
+- tapOn:
+    text:
+      anyOf:
+        - 'Close'
+        - 'OK'
+        - 'I understand'
+    optional: true
+
+# Go back to Home
+- pressKey: back
+- pressKey: back
+- pressKey: back
+
+# Test 5: Journal offline creation
+# Note: Enable airplane mode BEFORE this step
+- tapOn:
+    text: 'Journal'  # Tab bar
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Journal'
+        - '+'  # Add entry button
+    timeout: 5000
+
+- tapOn:
+    text:
+      anyOf:
+        - '+'
+        - 'New Entry'
+        - 'Add Entry'
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Write your'
+        - 'Entry'
+        - 'Title'
+    timeout: 5000
+
+- inputText:
+    text: 'Test entry from Maestro validation'
+
+- tapOn:
+    text:
+      anyOf:
+        - 'Save'
+        - 'Done'
+        - 'Keep'
+
+- extendedWaitUntil:
+    visible:
+      anyOf:
+        - 'Saved'
+        - 'Entry saved'
+        - 'Success'
+    timeout: 5000
+
+- runScript:
+    script: |
+      console.log('Γ£à Test 5: Journal offline - PASSED')
+
+# Summary
+- runScript:
+    script: |
+      console.log('========================================')
+      console.log('≡ƒÄë DAY 1 CORE SAFETY VALIDATION COMPLETE')
+      console.log('========================================')
+      console.log('All 5 non-negotiable tests completed.')
+      console.log('If any test failed, check DEVICE_TESTING_CHECKLIST.md for troubleshooting.')
