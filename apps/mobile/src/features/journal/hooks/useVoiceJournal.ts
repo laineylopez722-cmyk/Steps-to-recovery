@@ -12,7 +12,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { Platform } from 'react-native';
 import { useAudioRecorder, useAudioPlayer, AudioModule, RecordingPresets } from 'expo-audio';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 

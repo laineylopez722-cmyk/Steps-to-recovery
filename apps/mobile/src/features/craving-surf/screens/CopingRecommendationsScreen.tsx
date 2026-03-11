@@ -18,6 +18,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
+import type { ComponentProps } from 'react';
 import { useDs } from '../../../design-system/DsProvider';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useCopingRecommendations } from '../hooks/useCopingRecommendations';
@@ -62,7 +63,7 @@ function StrategyCard({
       <View style={styles.strategyHeader}>
         <View style={[styles.strategyIconBox, { backgroundColor: ds.semantic.surface.elevated }]}>
           <Feather
-            name={strategy.icon as Parameters<typeof Feather>[0]['name']}
+            name={strategy.icon as ComponentProps<typeof Feather>['name']}
             size={20}
             color={ds.semantic.intent.primary.solid}
             accessibilityElementsHidden
