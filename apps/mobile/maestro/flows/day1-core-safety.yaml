@@ -152,4 +152,4 @@ appId: com.stepstorecovery.app
       console.log('≡ƒÄë DAY 1 CORE SAFETY VALIDATION COMPLETE')
       console.log('========================================')
       console.log('All 5 non-negotiable tests completed.')
-      console.log('If any test failed, check DEVICE_TESTING_CHECKLIST.md for troubleshooting.')
+      console.log('If any test failed, check reference/guides/DEVICE_TESTING_CHECKLIST.md for troubleshooting.')

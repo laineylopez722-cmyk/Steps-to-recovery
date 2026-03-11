@@ -1,5 +1,8 @@
 # Navigation Inventory — Expo-Router Migration Reference
 
+> **Usage note (2026-03-12):** Reference document for a deferred migration path. Not a current top priority; live project priorities now live in `C:\Users\H\.openclaw\workspace\to be done\02-active-priorities.md`.
+
+
 > Complete inventory of all navigation patterns for Wave 2 migration planning.
 > Generated: 2026-02-17 | Status: Wave 2 Ready (for migration planning)
 

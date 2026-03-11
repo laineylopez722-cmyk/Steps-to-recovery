@@ -283,5 +283,5 @@ When working without H:
 5. Small, focused, green commits only
 6. Run `tsc --noEmit` before every commit
 7. Keep daily logs in `memory/YYYY-MM-DD.md`
-8. Update `OPEN_LOOPS.md` with blockers
+8. Update the live workspace trackers (`to be done/01-current-state.md` and `02-active-priorities.md`) with blockers
 9. If something feels risky, document it and wait

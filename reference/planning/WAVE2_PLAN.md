@@ -1,5 +1,8 @@
 # WAVE2_PLAN.md — Expo-Router Migration Plan
 
+> **Usage note (2026-03-12):** Deferred planning reference. Keep for later, but do not treat this as active work while sync/build/device hardening is still the main priority. Current live priorities now live in `C:\Users\H\.openclaw\workspace\to be done\02-active-priorities.md`.
+
+
 > Planning document for migrating from React Navigation to expo-router.
 > Status: **IN PROGRESS** | Priority: Post-device-validation
 > Created: 2026-02-16

@@ -1,5 +1,8 @@
 # Device Testing Checklist — Steps to Recovery
 
+> **Usage note (2026-03-12):** This remains the detailed operational device-test reference. Current live priority/status tracking now lives in `C:\Users\H\.openclaw\workspace\to be done\`.
+
+
 > Comprehensive validation checklist for rehab deployment.
 > Status: **READY FOR TESTING** | Last updated: 2026-02-17
 

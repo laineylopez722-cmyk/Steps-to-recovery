@@ -503,7 +503,7 @@ appId: com.stepstorecovery.app
       console.log('')
       console.log('DEVICE READINESS: Γ£à READY FOR REHAB USE')
       console.log('')
-      console.log('If any test failed, check DEVICE_TESTING_CHECKLIST.md for troubleshooting.')
+      console.log('If any test failed, check reference/guides/DEVICE_TESTING_CHECKLIST.md for troubleshooting.')
 
 # ========================================
 # Final Health Check
