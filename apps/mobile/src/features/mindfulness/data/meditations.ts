@@ -70,7 +70,6 @@ export const MEDITATIONS: Meditation[] = [
     description: '4-4-4-4 technique. Inhale, hold, exhale, hold. Proven to reduce acute stress.',
     category: 'breathing',
     durationSeconds: 4 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/box-breathing-4m.mp3'),
     icon: '🫁',
     isEmergency: true,
@@ -81,7 +80,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Simple slow belly breathing to interrupt a craving cycle.',
     category: 'breathing',
     durationSeconds: 3 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/deep-breath-3m.mp3'),
     icon: '🌬️',
     isEmergency: true,
@@ -92,7 +90,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Inhale 4s, hold 7s, exhale 8s. Activates the parasympathetic nervous system.',
     category: 'breathing',
     durationSeconds: 5 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/478-breathing-5m.mp3'),
     icon: '💨',
     isEmergency: false,
@@ -105,7 +102,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Notice the craving, observe it without judgment, watch it pass.',
     category: 'urge_surfing',
     durationSeconds: 3 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/urge-surf-3m.mp3'),
     icon: '🌊',
     isEmergency: true,
@@ -116,7 +112,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'A complete guided session. Cravings peak and pass — you can ride this wave.',
     category: 'urge_surfing',
     durationSeconds: 5 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/urge-surf-5m.mp3'),
     icon: '🏄',
     isEmergency: false,
@@ -127,7 +122,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Extended body-scan approach for intense or prolonged cravings.',
     category: 'urge_surfing',
     durationSeconds: 10 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/urge-surf-10m.mp3'),
     icon: '🌊',
     isEmergency: false,
@@ -140,7 +134,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Start your day grounded in what recovery has given you.',
     category: 'gratitude',
     durationSeconds: 5 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/gratitude-morning-5m.mp3'),
     icon: '☀️',
     isEmergency: false,
@@ -151,7 +144,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Deep appreciation practice. Works best in the evening.',
     category: 'gratitude',
     durationSeconds: 7 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/gratitude-reflection-7m.mp3'),
     icon: '🙏',
     isEmergency: false,
@@ -164,7 +156,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Progressive body relaxation to prepare for sleep.',
     category: 'sleep',
     durationSeconds: 10 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/sleep-winddown-10m.mp3'),
     icon: '🌙',
     isEmergency: false,
@@ -175,7 +166,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Let go of the weight of the day and surrender to rest.',
     category: 'sleep',
     durationSeconds: 15 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/sleep-release-15m.mp3'),
     icon: '😴',
     isEmergency: false,
@@ -188,7 +178,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Powerful affirmations for high-craving moments. Short and direct.',
     category: 'affirmation',
     durationSeconds: 4 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/affirmations-ican-4m.mp3'),
     icon: '💪',
     isEmergency: true,
@@ -199,7 +188,6 @@ export const MEDITATIONS: Meditation[] = [
     description: 'Reinforce who you are becoming — not who you were.',
     category: 'affirmation',
     durationSeconds: 6 * 60,
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     audioAsset: require('../../../../assets/audio/affirmations-identity-6m.mp3'),
     icon: '✨',
     isEmergency: false,

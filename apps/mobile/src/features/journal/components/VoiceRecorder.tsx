@@ -6,7 +6,7 @@
  * All audio is encrypted before leaving this component.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
 import Animated, {
   useSharedValue,
@@ -67,7 +67,7 @@ export function VoiceRecorder({
   const {
     recordingState,
     durationMs,
-    hasRecording,
+    hasRecording: _hasRecording,
     errorMessage,
     startRecording,
     stopRecording,

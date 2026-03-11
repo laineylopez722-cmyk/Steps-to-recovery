@@ -15,7 +15,6 @@ import {
   StyleSheet,
   FlatList,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useDs } from '../../../design-system/DsProvider';
