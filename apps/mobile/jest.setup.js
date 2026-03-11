@@ -149,6 +149,13 @@ afterEach(() => {
   }
 });
 
+// Mock react-native-worklets (peer dep of Reanimated 4.x)
+// Required since Reanimated 4 extracted worklets into a separate native package.
+// Using the official mock from react-native-worklets/src/mock.
+jest.mock('react-native-worklets', () =>
+  require('react-native-worklets/src/mock'),
+);
+
 // Mock react-native-css-interop (NativeWind)
 jest.mock('react-native-css-interop/jsx-runtime', () => ({
   jsx: jest.fn((type, props) => require('react').createElement(type, props)),

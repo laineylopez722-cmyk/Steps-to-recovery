@@ -109,8 +109,8 @@ describe('database utilities', () => {
     it('skips migrations when schema is up to date', async () => {
       const freshName = `fresh-${Date.now()}.db`;
       mockDb.getDatabaseName.mockReturnValue(freshName);
-      // Return a high version that equals CURRENT_SCHEMA_VERSION (19)
-      mockDb.getFirstAsync.mockResolvedValue({ version: 19 });
+      // Return a high version that equals CURRENT_SCHEMA_VERSION (20)
+      mockDb.getFirstAsync.mockResolvedValue({ version: 20 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -119,7 +119,7 @@ describe('database utilities', () => {
     });
 
     it('sets WAL journal mode pragma', async () => {
-      mockDb.getFirstAsync.mockResolvedValue({ version: 19 });
+      mockDb.getFirstAsync.mockResolvedValue({ version: 20 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -243,8 +243,8 @@ describe('database utilities', () => {
           typeof c[0] === 'string' && (c[0] as string).includes('INSERT INTO schema_migrations'),
       );
 
-      // Should have recorded migrations 1 through 19
-      expect(migrationRecords.length).toBe(19);
+      // Should have recorded migrations 1 through 20
+      expect(migrationRecords.length).toBe(20);
     });
   });
 });
