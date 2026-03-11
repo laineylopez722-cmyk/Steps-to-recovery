@@ -85,3 +85,10 @@ play-store-key.json
 AuthKey_*.p8
 *.mobileprovision
 *.p12
+
+# AI agent workspace files (Claw / Claude / OpenClaw)
+SOUL.md
+IDENTITY.md
+BOOTSTRAP.md
+memory/
+.factory/
