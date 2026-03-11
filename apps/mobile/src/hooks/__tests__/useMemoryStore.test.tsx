@@ -170,6 +170,9 @@ describe('useMemoryStore', () => {
       expect(mockExecAsync).toHaveBeenCalledWith(
         expect.stringContaining('CREATE INDEX IF NOT EXISTS idx_memories_key'),
       );
+      expect(mockExecAsync).toHaveBeenCalledWith(
+        expect.stringContaining('CREATE INDEX IF NOT EXISTS idx_memories_user_key'),
+      );
     });
 
     it('should not initialize if database is not ready', async () => {
@@ -302,7 +305,7 @@ describe('useMemoryStore', () => {
     });
 
     it('should update existing memory when key matches', async () => {
-      mockGetFirstAsync.mockResolvedValue({ id: 'existing-mem-123' });
+      mockGetAllAsync.mockResolvedValue([{ id: 'existing-mem-123', key: 'person:john' }]);
 
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
@@ -320,9 +323,9 @@ describe('useMemoryStore', () => {
         await result.current.addMemories([memory]);
       });
 
-      // Should check for existing memory
-      expect(mockGetFirstAsync).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT id FROM memories'),
+      // Should check for existing keyed memories in a single query
+      expect(mockGetAllAsync).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT id, key FROM memories WHERE user_id = ? AND key IN (?)'),
         [testUserId, 'person:john'],
       );
 
@@ -334,7 +337,7 @@ describe('useMemoryStore', () => {
     });
 
     it('should insert new memory when key does not match', async () => {
-      mockGetFirstAsync.mockResolvedValue(null);
+      mockGetAllAsync.mockResolvedValue([]);
 
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
@@ -351,8 +354,11 @@ describe('useMemoryStore', () => {
         await result.current.addMemories([memory]);
       });
 
-      // Should check for existing
-      expect(mockGetFirstAsync).toHaveBeenCalled();
+      // Should check for existing keys
+      expect(mockGetAllAsync).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT id, key FROM memories WHERE user_id = ? AND key IN (?)'),
+        [testUserId, 'person:new-person'],
+      );
 
       // Should insert new
       expect(mockRunAsync).toHaveBeenCalledWith(
@@ -1684,7 +1690,7 @@ describe('useMemoryStore', () => {
     });
 
     it('should handle memory with key in update deduplication', async () => {
-      mockGetFirstAsync.mockResolvedValue({ id: 'existing-id' });
+      mockGetAllAsync.mockResolvedValue([{ id: 'existing-id', key: 'unique:key' }]);
 
       const { result } = renderHook(() => useMemoryStore(testUserId));
 
@@ -1701,8 +1707,8 @@ describe('useMemoryStore', () => {
         await result.current.addMemories([memory]);
       });
 
-      expect(mockGetFirstAsync).toHaveBeenCalledWith(
-        expect.stringContaining('SELECT id FROM memories'),
+      expect(mockGetAllAsync).toHaveBeenCalledWith(
+        expect.stringContaining('SELECT id, key FROM memories WHERE user_id = ? AND key IN (?)'),
         [testUserId, 'unique:key'],
       );
     });
