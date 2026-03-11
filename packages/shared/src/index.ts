@@ -12,16 +12,6 @@
  * ```
  */
 
-import {
-  DailyCheckIn,
-  DailyCheckInDecrypted,
-  JournalEntryDecrypted,
-  MilestoneDefinition,
-  StepWork,
-  SyncQueueItem,
-  SyncStatus,
-  UserProfile,
-} from './types';
 
 // Export only non-conflicting types from ./types
 export type {
@@ -142,4 +132,88 @@ export * from './jitai';
 export * from './notifications';
 export * from './animations';
 export * from './export';
-export * from './services';
+/**
+ * Services barrel export
+ *
+ * Provides centralized services for:
+ * - Achievement triggers
+ * - Error tracking
+ * - Sponsor connections
+ * - Weekly reports
+ */
+
+// Achievement Trigger Services
+export {
+  onContactAdded,
+  onMeetingLogged,
+  onStepWorkUpdated,
+  onCheckinCompleted,
+  onReadingCompleted,
+  onSobrietyDaysUpdated,
+  triggerFullAchievementCheck,
+} from './services/achievementTriggers';
+
+// Error Tracking Services
+export {
+  type ErrorContext,
+  type BreadcrumbData,
+  initializeErrorTracking,
+  captureException,
+  captureMessage,
+  addBreadcrumb,
+  setUserContext,
+  clearUserContext,
+  setTag,
+  startTransaction,
+  withErrorBoundary,
+  ErrorFallback,
+  logNavigation,
+  logUserAction,
+  logDatabaseOperation,
+} from './services/errorTracking';
+
+// Sponsor Connection Services
+export {
+  type ConnectionCode,
+  type SponsorKeyPair,
+  type EncryptedPayload,
+  type SponsorInvitePayload,
+  type SponsorConfirmPayload,
+  type EntrySharePayload,
+  type CommentSharePayload,
+  type SponseeConnection,
+  type SponsorShareData,
+  generateSponsorCode,
+  generateSponsorKeyPair,
+  deriveSharedKeyBase64,
+  encryptWithSharedKey,
+  decryptWithSharedKey,
+  createInvitePayload,
+  parseInvitePayload,
+  createConfirmPayload,
+  parseConfirmPayload,
+  createEntrySharePayload,
+  parseEntrySharePayload,
+  createCommentSharePayload,
+  parseCommentSharePayload,
+  getCurrentSponsorCode,
+  revokeSponsorCode,
+  addSponseeConnection,
+  getSponseeConnections,
+  getSponseeConnectionById,
+  updateSponseeConnectionName,
+  removeSponseeConnection,
+  generateShareData,
+  encodeShareData,
+  decodeShareData,
+  generateShareMessage,
+  isValidCodeFormat,
+} from './services/sponsorConnection';
+
+// Weekly Report Services
+export {
+  type WeeklyReport,
+  generateWeeklyReport,
+  formatReportForDisplay,
+  formatReportForSponsor,
+} from './services/weeklyReport';
