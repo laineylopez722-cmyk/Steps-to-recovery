@@ -38,13 +38,16 @@ export interface OfflineResponse {
 
 /**
  * Check if the device is currently offline.
+ * Returns true on error (fail-safe for rehab environments).
  */
 export async function isOfflineMode(): Promise<boolean> {
   try {
     const state = await NetInfo.fetch();
     return !state.isConnected || !state.isInternetReachable;
   } catch {
-    return false;
+    // Fail-safe: if we can't determine network state, assume offline
+    // This prevents incorrect online reporting in unreliable environments
+    return true;
   }
 }
 
