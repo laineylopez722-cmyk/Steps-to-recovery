@@ -30,6 +30,11 @@ interface MemoryRow {
   updated_at: string;
 }
 
+interface ExistingMemoryKeyRow {
+  id: string;
+  key: string;
+}
+
 // Memory summary for AI context
 export interface MemorySummary {
   // Key people in user's life
@@ -125,6 +130,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
           CREATE INDEX IF NOT EXISTS idx_memories_user ON memories(user_id);
           CREATE INDEX IF NOT EXISTS idx_memories_type ON memories(type);
           CREATE INDEX IF NOT EXISTS idx_memories_key ON memories(key);
+          CREATE INDEX IF NOT EXISTS idx_memories_user_key ON memories(user_id, key);
         `);
       } catch (err) {
         logger.error('Failed to init memory table', {
@@ -142,38 +148,47 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
 
       setIsLoading(true);
       try {
-        for (const memory of memories) {
-          // Check if memory with same key exists (for deduplication)
-          if (memory.key) {
-            const existing = await db.getFirstAsync<{ id: string }>(
-              'SELECT id FROM memories WHERE user_id = ? AND key = ?',
-              [userId, memory.key],
-            );
+        const keyedMemories = memories.filter((memory) => Boolean(memory.key));
+        const existingByKey = new Map<string, string>();
 
-            if (existing) {
-              // Update existing memory - encrypt before storing
-              const encryptedContent = await encryptContent(memory.content);
-              const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
+        if (keyedMemories.length > 0) {
+          const keyPlaceholders = keyedMemories.map(() => '?').join(', ');
+          const existingRows = await db.getAllAsync<ExistingMemoryKeyRow>(
+            `SELECT id, key FROM memories WHERE user_id = ? AND key IN (${keyPlaceholders})`,
+            [userId, ...keyedMemories.map((memory) => memory.key ?? '')],
+          );
 
-              await db.runAsync(
-                `UPDATE memories SET
+          for (const row of existingRows) {
+            existingByKey.set(row.key, row.id);
+          }
+        }
+
+        const encryptedMemories = await Promise.all(
+          memories.map(async (memory) => ({
+            memory,
+            encryptedContent: await encryptContent(memory.content),
+            encryptedContext: memory.context ? await encryptContent(memory.context) : null,
+          })),
+        );
+
+        for (const { memory, encryptedContent, encryptedContext } of encryptedMemories) {
+          const existingId = memory.key ? existingByKey.get(memory.key) : undefined;
+
+          if (existingId) {
+            await db.runAsync(
+              `UPDATE memories SET
                 encrypted_content = ?, encrypted_context = ?, confidence = ?, updated_at = ?
               WHERE id = ?`,
-                [
-                  encryptedContent,
-                  encryptedContext,
-                  memory.confidence,
-                  new Date().toISOString(),
-                  existing.id,
-                ],
-              );
-              continue;
-            }
+              [
+                encryptedContent,
+                encryptedContext,
+                memory.confidence,
+                new Date().toISOString(),
+                existingId,
+              ],
+            );
+            continue;
           }
-
-          // Insert new memory - encrypt before storing
-          const encryptedContent = await encryptContent(memory.content);
-          const encryptedContext = memory.context ? await encryptContent(memory.context) : null;
 
           await db.runAsync(
             `INSERT INTO memories
@@ -193,6 +208,10 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
               memory.updatedAt.toISOString(),
             ],
           );
+
+          if (memory.key) {
+            existingByKey.set(memory.key, memory.id);
+          }
         }
       } catch (err) {
         logger.error('Failed to add memories', {
