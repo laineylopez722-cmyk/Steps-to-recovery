@@ -1,130 +1,195 @@
 # Steps to Recovery
 
-Privacy-first 12-step recovery companion built with React Native + Expo.
+Privacy-first recovery companion built with React Native, Expo, Supabase, and an offline-first local data model.
 
-## Mission
+## What this repo is
 
-Support people in recovery with practical daily tools, strong privacy defaults, and a calm, non-judgmental experience.
+This is a monorepo for the **Steps to Recovery** mobile app and shared code.
 
-## Current Status
+The project already has a lot of real functionality in place — journaling, check-ins, step work, crisis support, sponsor flows, meetings, progress tracking, and an AI companion — but the repo is currently in a **beta hardening / release-confidence** phase, not a clean “ready for public beta” state.
 
-- ✅ Core mobile app shipped and actively iterating
-- ✅ AI Companion, journaling, step work, and check-ins are live
-- ✅ Crisis and safety features are implemented
-- 🚧 Beta polish and release hardening in progress
+## Current reality
 
-See `docs/STATUS_REPORT.md` for latest release readiness detail.
+### In good shape
+- Core mobile app exists and is substantial
+- Root TypeScript check passes
+- Mobile type-check passes
+- Mobile lint passes
+- Mobile test suite passes
+- Production `npm audit` is clean
+- Privacy / terms docs exist
+- Maestro flows exist for key user journeys
 
-## Feature Highlights
+### Still needs work before real beta confidence
+- Sync correctness and local ↔ cloud schema drift need hardening
+- Android preview EAS build confidence is not back yet
+- Real device validation is still the biggest gap
+- `verify:strict` is currently failing because `packages/shared/package.json` scripts do not match `scripts/doctor/check-toolchain.mjs`
+- Some paths look more complete than they really are:
+  - daily reading persistence/behavior
+  - router compatibility fallbacks
+  - widget integration
 
-### Privacy + Security
+## Current priorities
 
-- Local-first architecture with encrypted on-device storage
-- Secure cloud sync with Supabase + Row Level Security
-- Sensitive user data encrypted before persistence/sync paths
-- No ad-tech or third-party tracking stack in core flows
+1. Harden sync correctness
+2. Clean up build / config drift
+3. Get green preview builds again
+4. Validate critical flows on a real device
+5. Finish or intentionally hide incomplete feature paths
 
-### Recovery Toolkit
+## Feature areas in the app
 
-- Encrypted personal journal
-- Guided 12-step work tracking
-- Daily check-ins and progress tracking
-- Sponsor support flows
-- Meeting tools and reflections
-- Sobriety streak and milestone tracking
+- Encrypted journal
+- Daily check-ins
+- 12-step work
+- Sponsor support and sharing flows
+- Meeting tools
+- Sobriety / milestone tracking
+- Crisis and emergency support
+- Safety plan
 - Gratitude and inventory workflows
 - Daily readings
+- AI companion
 
-### Immediate Support
+## Tech stack
 
-- AI Companion with recovery-focused context
-- Crisis detection + support surfaces
-- Safety plan and emergency support flows
-- Local/push reminders and nudges
-
-## Tech Stack
-
-- **Mobile:** React Native 0.81 + Expo SDK 54
+- **Mobile:** React Native 0.81.5 + Expo SDK 54
 - **Language:** TypeScript (strict)
-- **Backend:** Supabase (Auth, Postgres, RLS, Edge Functions)
-- **Local Data:** SQLite + secure storage
 - **State:** React Query + Zustand
-- **Styling/UI:** Uniwind + custom design system
+- **Backend:** Supabase (Auth, Postgres, RLS, Edge Functions)
+- **Local data:** SQLite on mobile, IndexedDB adapter on web
+- **Security:** encrypted sensitive fields + secure local storage
+- **UI:** custom design system + Uniwind
 - **Monorepo:** npm workspaces + Turborepo
 
-## Project Structure
+## Repo structure
 
 ```text
 apps/
-  mobile/               # Expo app
+  mobile/                Expo mobile app
     src/
-      features/         # Domain features (ai-companion, crisis, journal, steps, etc.)
-      design-system/    # Shared design tokens/components
-      db/               # Local database + repositories
-      services/         # Sync, notifications, integrations
+      adapters/          Platform storage / secure storage adapters
+      components/        Shared UI components
+      contexts/          Auth / DB / sync contexts
+      design-system/     Tokens, primitives, accessibility, animations
+      features/          Domain features (journal, steps, crisis, sponsor, etc.)
+      hooks/             Shared hooks
+      navigation/        React Navigation setup
+      services/          Sync, notifications, meetings, widgets, risk detection
+      store/             Zustand stores
+      types/             App types, including DB types
+      utils/             Encryption, database init, logger, helpers
 packages/
-  shared/               # Shared types/utilities
+  shared/                Shared types, utilities, and services
 supabase/
-  functions/            # Edge functions (including ai-chat)
-  migrations/           # SQL migrations
-docs/                   # Product + engineering documentation
+  functions/             Edge functions
+  migrations/            Database migrations
+reference/               Repo-side reference docs map and guides
+scripts/                 Doctor / validation / maintenance scripts
+docs/                    Historical + deep-dive product/engineering docs
 ```
 
-## Quick Start
+## Development notes
+
+### Requirements
+- Node.js 20+
+- npm 11.x
+- JDK 17 for Android builds
+- Expo / EAS account for remote builds
+
+### Important constraint
+This app uses native modules and a custom dev client setup.
+
+**Do not assume Expo Go is enough.** Use the configured development / preview build flows instead.
+
+## Quick start
 
 ```bash
 npm install
 cd apps/mobile
-npm start
+npm run start:dev
 ```
 
-## Common Commands
+## Useful commands
+
+### From repo root
 
 ```bash
-# Type check
-npm run type-check --workspace=apps/mobile
+# Root type-check across the repo
+npm run type-check
 
-# Test suite
-npm test --workspace=apps/mobile
+# Toolchain validation
+npm run doctor:toolchain
 
-# Coverage
-npm run test:coverage --workspace=apps/mobile
-
-# E2E (Maestro)
-npm run e2e --workspace=apps/mobile
+# Strict verification (currently expected to fail until shared package scripts are aligned)
+npm run verify:strict
 ```
 
-## Build
+### From `apps/mobile`
+
+```bash
+# Start dev client metro server
+npm run start:dev
+
+# Type-check mobile app
+npm run type-check
+
+# Lint mobile app
+npm run lint
+
+# Run tests
+npm run test
+
+# Coverage
+npm run test:coverage
+
+# Validate Maestro flows without fully running them
+npm run e2e:validate
+```
+
+## Build commands
+
+### Preview Android build
 
 ```bash
 cd apps/mobile
 eas build --profile preview --platform android
-eas build --profile production --platform all
 ```
 
-See `SETUP.md` and `DEPLOYMENT.md` for full environment and release setup.
+### Production builds
 
-## Documentation Index
+```bash
+cd apps/mobile
+eas build --profile production --platform android
+eas build --profile production --platform ios
+```
 
+## Documentation
+
+### Start here
 - [Setup Guide](./SETUP.md)
 - [Testing Guide](./TESTING.md)
 - [Deployment Guide](./DEPLOYMENT.md)
-- [Status Report](./docs/STATUS_REPORT.md)
-- [AI Companion Architecture](./docs/AI-COMPANION-ARCHITECTURE.md)
-- [Risk Detection Feature](./docs/RISK-DETECTION-FEATURE.md)
-- [Privacy Policy](./docs/PRIVACY_POLICY.md)
-- [Terms of Service](./docs/TERMS_OF_SERVICE.md)
+- [Reference Docs Map](./reference/README.md)
 - [Security Policy](./SECURITY.md)
 
-## Support Resources
+### App/legal docs
+- [Privacy Policy](./apps/mobile/legal/PRIVACY_POLICY.md)
+- [Terms of Service](./apps/mobile/legal/TERMS_OF_SERVICE.md)
 
-If you or someone you know is in immediate danger, call local emergency services first.
+### Architecture / feature docs
+- [AI Companion Architecture](./docs/AI-COMPANION-ARCHITECTURE.md)
+- [Risk Detection Feature](./docs/RISK-DETECTION-FEATURE.md)
 
-- SAMHSA National Helpline (US): 1-800-662-4357
-- Crisis Text Line (US/CA/UK/IE): Text HOME to 741741 (US/CA), 85258 (UK), 50808 (IE)
-- Alcoholics Anonymous: https://www.aa.org
-- Narcotics Anonymous: https://www.na.org
+## Notes on older docs
 
----
+Some files under `docs/` are historical snapshots or deep-dive references rather than live status tracking.
 
-This app supports recovery. It is not a replacement for professional medical care, therapy, or emergency services.
+If a repo doc sounds more optimistic than reality, trust the code, tests, current build state, and recent commits over old status writeups.
+
+## Safety note
+
+This app is meant to support recovery, not replace professional care, therapy, crisis services, or emergency services.
+
+If someone is in immediate danger, contact local emergency services first.
