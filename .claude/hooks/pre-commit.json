@@ -1,8 +1,0 @@
-{
-  "name": "pre-commit-security",
-  "description": "Verify encryption tests pass before commit",
-  "event": "pre-commit",
-  "command": "cd apps/mobile && npm run test:encryption",
-  "failOnError": true,
-  "timeout": 60000
-}

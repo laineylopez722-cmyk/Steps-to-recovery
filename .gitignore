@@ -90,5 +90,17 @@ AuthKey_*.p8
 SOUL.md
 IDENTITY.md
 BOOTSTRAP.md
+USER.md
+AGENTS.md
+TOOLS.md
 memory/
 .factory/
+
+# AI coding tool configs (not app source)
+.claude/
+.codex/
+.cursor/
+.zencoder/
+.zenflow/
+_bmad-output/
+coverage/
