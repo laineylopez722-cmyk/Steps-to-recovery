@@ -38,7 +38,7 @@
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
-    "@react-native-community/datetimepicker": "8.4.4",
+    "@react-native-community/datetimepicker": "8.6.0",
     "@react-native-community/netinfo": "12.0.1",
     "@react-native-community/slider": "5.0.1",
     "@react-navigation/bottom-tabs": "^7.14.0",
