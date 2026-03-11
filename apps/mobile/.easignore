@@ -1,0 +1,26 @@
+# EAS ignore file — keeps archive size small
+# EAS needs node_modules at build time if not using npm install on the worker,
+# but for monorepos with workspaces it's typically better to exclude and let EAS install
+
+# Build artifacts
+android/app/build/
+android/.gradle/
+android/build/
+ios/build/
+ios/Pods/
+ios/DerivedData/
+
+# Test output
+coverage/
+jest-results/
+.maestro/
+
+# Dev tooling (not needed for build)
+.vscode/
+.turbo/
+docs/
+docs to reference/
+
+# Large files not needed for bundling
+*.log
+*.map
