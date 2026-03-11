@@ -44,14 +44,14 @@ export type HomeStackParamList = {
 export type JournalStackParamList = {
   JournalList: undefined;
   JournalEditor:
-    | {
-        mode?: 'create' | 'edit';
-        entryId?: string;
-        initialTitle?: string;
-        initialContent?: string;
-        tags?: string[];
-      }
-    | undefined;
+  | {
+    mode?: 'create' | 'edit';
+    entryId?: string;
+    initialTitle?: string;
+    initialContent?: string;
+    tags?: string[];
+  }
+  | undefined;
 };
 
 // Steps Stack
@@ -137,6 +137,6 @@ export type MeetingsStackScreenProps<T extends keyof MeetingsStackParamList> = C
 // Declaration for useNavigation hook typing
 declare global {
   namespace ReactNavigation {
-    interface RootParamList extends RootStackParamList {}
+    interface RootParamList extends RootStackParamList { }
   }
 }

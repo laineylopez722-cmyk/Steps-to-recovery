@@ -21,7 +21,7 @@ import {
   SyncQueueItem,
   SyncStatus,
   UserProfile,
-} from '../types';
+} from './types';
 
 // Export only non-conflicting types from ./types
 export type {
@@ -38,7 +38,7 @@ export type {
   StepWork,
   StepWorkDecrypted,
   CheckInType,
-} from '../types';
+} from './types';
 
 // Export application types (camelCase)
 export type {
@@ -59,7 +59,7 @@ export type {
   AmendsType,
   AmendsStatus,
   StepProgress,
-} from '../types';
+} from './types';
 
 // Explicit exports from constants to avoid naming conflicts
 export {
@@ -69,7 +69,7 @@ export {
   getLatestMilestone,
   getAchievedMilestones,
   hasAchievedMilestone,
-} from '../constants';
+} from './constants';
 
 export {
   getAchievementDefinition,
@@ -82,7 +82,7 @@ export {
   getRandomAchievementMessage,
   type Achievement,
   type AchievementDefinition,
-} from '../constants';
+} from './constants';
 
 export {
   STEP_PROMPTS,
@@ -94,7 +94,7 @@ export {
   getTotalQuestionCount,
   isValidStepNumber,
   getAllStepNumbers,
-} from '../constants';
+} from './constants';
 
 export {
   type CrisisResource,
@@ -107,7 +107,7 @@ export {
   getEmergencyNumber,
   getAvailableRegions,
   isValidRegion,
-} from '../constants';
+} from './constants';
 
 export {
   PRAYERS,
@@ -115,7 +115,7 @@ export {
   getPrayerById,
   getPrayersByCategory,
   getPrayersForStep,
-} from '../constants';
+} from './constants';
 
 export {
   SLOGANS,
@@ -123,7 +123,7 @@ export {
   getSloganById,
   getSlogansByCategory,
   getRandomSlogan,
-} from '../constants';
+} from './constants';
 
 export {
   type Keytag,
@@ -133,13 +133,13 @@ export {
   getNextKeytag,
   getKeytagsWithStatus,
   getEarnedKeytagsCount,
-} from '../constants';
-export * from '../db';
-export * from '../store';
-export * from '../utils';
-export * from '../utils/encryption';
-export * from '../jitai';
-export * from '../notifications';
-export * from '../animations';
-export * from '../export';
-export * from './services/sponsorConnection';
+} from './constants';
+export * from './db';
+export * from './store';
+export * from './utils';
+export * from './utils/encryption';
+export * from './jitai';
+export * from './notifications';
+export * from './animations';
+export * from './export';
+export * from './services';

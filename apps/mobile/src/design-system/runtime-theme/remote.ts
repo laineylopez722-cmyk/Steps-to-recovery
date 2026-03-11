@@ -3,13 +3,16 @@ import { logger } from '@/utils/logger';
 import type { UserRuntimeTheme } from './types';
 
 /**
- * Supabase fetch hook stub for runtime themes.
+ * Fetch the user's runtime theme override from Supabase.
  *
- * TODO(rollout):
- * - confirm table/view name and RLS policy
- * - formalize payload validation (zod)
- * - support ETag/version conflict handling
- * Remote config integration deferred to Phase 3+.
+ * @remarks
+ * This function is intentionally fail-safe — it returns `null` on any error
+ * so the app always falls back to local cache or default theme.
+ * Pending backend work before full rollout:
+ * - Confirm `user_theme_preferences` table name and RLS policy.
+ * - Add Zod-based payload validation.
+ * - Support ETag / version conflict handling.
+ * Remote config integration is deferred to Phase 3+.
  */
 export async function fetchRuntimeThemeFromSupabase(): Promise<UserRuntimeTheme | null> {
   try {

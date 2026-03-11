@@ -9,6 +9,7 @@
  */
 
 import { useCallback, useRef, useEffect, useState } from 'react';
+import { Image } from 'react-native';
 import { logger } from './logger';
 
 /**
@@ -226,15 +227,12 @@ export async function batchDatabaseOperations<T>(
  * Preload images for smoother rendering
  */
 export async function preloadImages(imageUrls: string[]): Promise<void> {
-  // In React Native, we'd use Image.prefetch
-  // This is a placeholder for the concept
   await Promise.all(
-    imageUrls.map((url) => {
-      return new Promise<void>((resolve) => {
-        // Image.prefetch(url).then(() => resolve()).catch(() => resolve());
-        resolve();
-      });
-    }),
+    imageUrls.map((url) =>
+      Image.prefetch(url).catch((err) => {
+        logger.warn('Image prefetch failed', { url, error: err instanceof Error ? err.message : String(err) });
+      }),
+    ),
   );
 }
 
@@ -276,8 +274,16 @@ export async function measurePerformanceAsync<T>(name: string, fn: () => Promise
  * native modules or Expo's device info
  */
 export function isLowMemory(): boolean {
-  // Placeholder - would need native module to check actual memory
-  return false;
+  try {
+    // expo-device exposes totalMemory in bytes; treat < 512 MB as low-memory.
+    // Dynamic import keeps the build working even if expo-device is absent.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Device = require('expo-device') as { totalMemory?: number | null };
+    const totalMb = (Device.totalMemory ?? 0) / (1024 * 1024);
+    return totalMb > 0 && totalMb < 512;
+  } catch {
+    return false;
+  }
 }
 
 /**

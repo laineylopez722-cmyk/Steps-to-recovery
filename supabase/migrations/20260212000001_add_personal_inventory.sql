@@ -19,9 +19,14 @@ CREATE INDEX IF NOT EXISTS idx_personal_inventory_user
 CREATE INDEX IF NOT EXISTS idx_personal_inventory_user_date
   ON personal_inventory(user_id, check_date);
 
-CREATE TRIGGER update_personal_inventory_updated_at
-  BEFORE UPDATE ON personal_inventory
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_personal_inventory_updated_at
+      BEFORE UPDATE ON personal_inventory
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE personal_inventory ENABLE ROW LEVEL SECURITY;
 

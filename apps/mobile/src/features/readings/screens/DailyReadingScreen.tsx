@@ -10,25 +10,25 @@
  * - Offline-first with sync queue integration
  */
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Linking,
+  Platform,
   ScrollView,
   StyleSheet,
-  View,
   Text,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Linking,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Card, Button, TextArea, Badge } from '../../../design-system';
+import { FALLBACK_READING_CTA } from '../../../data/dailyReadings';
+import { Badge, Button, Card, TextArea } from '../../../design-system';
+import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useReadingDatabase } from '../../../hooks/useReadingDatabase';
 import { hapticSuccess } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
-import { PLACEHOLDER_CONTENT } from '../../../data/dailyReadings';
-import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 
 interface DailyReadingScreenProps {
   userId: string;
@@ -60,7 +60,7 @@ export function DailyReadingScreen({ userId }: DailyReadingScreenProps): React.R
     };
   }, []);
 
-  const isPlaceholder = todayReading?.content === PLACEHOLDER_CONTENT;
+  const isPlaceholder = todayReading?.content === FALLBACK_READING_CTA;
 
   const handleOpenReading = useCallback(async (): Promise<void> => {
     const url = todayReading?.external_url || 'https://www.jftna.org/jft/';

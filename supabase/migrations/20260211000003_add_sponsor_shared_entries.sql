@@ -19,9 +19,14 @@ CREATE INDEX IF NOT EXISTS idx_sponsor_shared_entries_user
 CREATE INDEX IF NOT EXISTS idx_sponsor_shared_entries_connection
   ON sponsor_shared_entries(connection_id);
 
-CREATE TRIGGER update_sponsor_shared_entries_updated_at
-  BEFORE UPDATE ON sponsor_shared_entries
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_sponsor_shared_entries_updated_at
+      BEFORE UPDATE ON sponsor_shared_entries
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE sponsor_shared_entries ENABLE ROW LEVEL SECURITY;
 

@@ -215,13 +215,17 @@ function dedupeMemories(memories: Memory[]): Memory[] {
   });
 }
 
-// Higher-level extraction that could use AI in the future
+/**
+ * Higher-level memory extraction entry point.
+ *
+ * @remarks Falls back to rule-based extraction (`extractMemoriesFromMessage`).
+ * In a future iteration this can call an AI endpoint for more nuanced
+ * entity/event extraction while still returning the same `Memory[]` shape.
+ */
 export async function extractMemoriesWithAI(
   _userId: string,
   _message: string,
   _sourceId: string,
 ): Promise<Memory[]> {
-  // TODO: Implement AI-powered extraction for more nuanced understanding
-  // For now, fall back to rule-based extraction
   return extractMemoriesFromMessage(_userId, _message, _sourceId);
 }

@@ -28,7 +28,10 @@ export interface ReadingData {
 }
 
 export const NA_JFT_URL = 'https://www.jftna.org/jft/';
-export const PLACEHOLDER_CONTENT = "Visit the official NA website to read today's meditation.";
+
+/** Shown on days without a written reading; prompts the user to the NA JFT website. */
+export const FALLBACK_READING_CTA =
+  "Today's full reading is available at the Just for Today website. Tap the link below to read the daily meditation from Narcotics Anonymous.";
 
 export const DAILY_READINGS: ReadingData[] = [
   // January
@@ -142,11 +145,37 @@ export const DAILY_READINGS: ReadingData[] = [
   },
 ];
 
-// Helper function to generate all 365 days with placeholder content for remaining days
+// Month-themed titles used as fallbacks so every day has a meaningful title
+const MONTHLY_THEMES: Record<number, string[]> = {
+  1: ['New Beginnings', 'One Day at a Time', 'Hope in Winter', 'Clarity', 'Fresh Start'],
+  2: ['Acceptance', 'Patience', 'Love and Service', 'Honesty', 'Compassion'],
+  3: ['Renewal', 'Coming Alive', 'Spring Courage', 'Thawing Out', 'New Growth'],
+  4: ['Gratitude', 'Blooming', 'Open-Mindedness', 'Willingness', 'Surrender'],
+  5: ['Action', 'Momentum', 'Service', 'Community', 'Strength'],
+  6: ['Balance', 'Midsummer Light', 'Humility', 'Connection', 'Presence'],
+  7: ['Freedom', 'Independence', 'Trust', 'Serenity', 'Letting Go'],
+  8: ['Resilience', 'Abundance', 'Harvest', 'Faith', 'Perseverance'],
+  9: ['Reflection', 'Preparation', 'Transformation', 'Courage', 'Change'],
+  10: ['Harvest Gratitude', 'Turning Leaves', 'Inventory', 'Honesty', 'Peace'],
+  11: ['Thankfulness', 'Warmth', 'Fellowship', 'Service', 'Generosity'],
+  12: ['Completion', 'Light in Darkness', 'Year-End Wisdom', 'Grace', 'Renewal'],
+};
+
+function fallbackTitle(month: number, day: number): string {
+  const themes = MONTHLY_THEMES[month] ?? MONTHLY_THEMES[1]!;
+  return themes[(day - 1) % themes.length]!;
+}
+
+/**
+ * Build the complete 366-day reading list.
+ *
+ * Days that have an authored reading use it as-is. For all other days the
+ * fallback entry links to the NA Just for Today website with a month-themed
+ * title so every day has a coherent entry.
+ */
 export function generateFullYearReadings(): ReadingData[] {
   const readings: ReadingData[] = [...DAILY_READINGS];
 
-  // Fill in any missing days with generated content
   for (let dayOfYear = 1; dayOfYear <= 366; dayOfYear++) {
     if (!readings.find((r) => r.day_of_year === dayOfYear)) {
       const date = new Date(2024, 0, dayOfYear); // 2024 is a leap year
@@ -157,8 +186,8 @@ export function generateFullYearReadings(): ReadingData[] {
         day_of_year: dayOfYear,
         month,
         day,
-        title: `Day ${dayOfYear} - Keep Going`,
-        content: PLACEHOLDER_CONTENT,
+        title: fallbackTitle(month, day),
+        content: FALLBACK_READING_CTA,
         source: 'Just for Today, Narcotics Anonymous',
         reflection_prompt: "What is one thing you're grateful for today?",
         external_url: NA_JFT_URL,

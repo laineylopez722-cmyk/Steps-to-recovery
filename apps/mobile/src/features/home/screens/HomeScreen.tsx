@@ -348,7 +348,7 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     } finally {
       setRefreshing(false);
     }
-  }, [refetchDays, refetchCheckins]);
+  }, [refetchDays, refetchCheckins, refetchRisk]);
 
   const handleMorning = useCallback(() => {
     hapticLight();

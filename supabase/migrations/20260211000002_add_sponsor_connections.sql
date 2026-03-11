@@ -23,9 +23,14 @@ CREATE INDEX IF NOT EXISTS idx_sponsor_connections_user
 CREATE INDEX IF NOT EXISTS idx_sponsor_connections_invite
   ON sponsor_connections(invite_code);
 
-CREATE TRIGGER update_sponsor_connections_updated_at
-  BEFORE UPDATE ON sponsor_connections
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_sponsor_connections_updated_at
+      BEFORE UPDATE ON sponsor_connections
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE sponsor_connections ENABLE ROW LEVEL SECURITY;
 

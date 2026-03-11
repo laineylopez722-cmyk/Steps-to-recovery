@@ -20,9 +20,14 @@ CREATE INDEX IF NOT EXISTS idx_craving_surf_sessions_user
 CREATE INDEX IF NOT EXISTS idx_craving_surf_sessions_created
   ON craving_surf_sessions(created_at DESC);
 
-CREATE TRIGGER update_craving_surf_sessions_updated_at
-  BEFORE UPDATE ON craving_surf_sessions
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_craving_surf_sessions_updated_at
+      BEFORE UPDATE ON craving_surf_sessions
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE craving_surf_sessions ENABLE ROW LEVEL SECURITY;
 

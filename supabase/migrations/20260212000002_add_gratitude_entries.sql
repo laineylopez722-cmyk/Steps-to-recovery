@@ -20,9 +20,14 @@ CREATE INDEX IF NOT EXISTS idx_gratitude_entries_user
 CREATE INDEX IF NOT EXISTS idx_gratitude_entries_user_date
   ON gratitude_entries(user_id, entry_date DESC);
 
-CREATE TRIGGER update_gratitude_entries_updated_at
-  BEFORE UPDATE ON gratitude_entries
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_gratitude_entries_updated_at
+      BEFORE UPDATE ON gratitude_entries
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE gratitude_entries ENABLE ROW LEVEL SECURITY;
 

@@ -27,9 +27,14 @@ CREATE INDEX IF NOT EXISTS idx_daily_checkins_date
 CREATE INDEX IF NOT EXISTS idx_daily_checkins_user_date
   ON daily_checkins(user_id, checkin_date DESC);
 
-CREATE TRIGGER update_daily_checkins_updated_at
-  BEFORE UPDATE ON daily_checkins
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_daily_checkins_updated_at
+      BEFORE UPDATE ON daily_checkins
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE daily_checkins ENABLE ROW LEVEL SECURITY;
 

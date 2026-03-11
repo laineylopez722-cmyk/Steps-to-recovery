@@ -54,4 +54,4 @@ CREATE POLICY "Users can update own favorite meetings"
 
 CREATE POLICY "Users can delete own favorite meetings"
   ON favorite_meetings FOR DELETE
-  USING (auth.uid() = user_id);;
+  USING (auth.uid() = user_id);

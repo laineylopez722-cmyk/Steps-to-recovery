@@ -13,9 +13,14 @@ CREATE TABLE IF NOT EXISTS safety_plans (
 CREATE INDEX IF NOT EXISTS idx_safety_plans_user
   ON safety_plans(user_id);
 
-CREATE TRIGGER update_safety_plans_updated_at
-  BEFORE UPDATE ON safety_plans
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_safety_plans_updated_at
+      BEFORE UPDATE ON safety_plans
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE safety_plans ENABLE ROW LEVEL SECURITY;
 

@@ -23,9 +23,14 @@ CREATE INDEX IF NOT EXISTS idx_reading_reflections_date
 CREATE INDEX IF NOT EXISTS idx_reading_reflections_user_date
   ON reading_reflections(user_id, reading_date DESC);
 
-CREATE TRIGGER update_reading_reflections_updated_at
-  BEFORE UPDATE ON reading_reflections
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_proc WHERE proname = 'update_updated_at_column') THEN
+    CREATE TRIGGER update_reading_reflections_updated_at
+      BEFORE UPDATE ON reading_reflections
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
 ALTER TABLE reading_reflections ENABLE ROW LEVEL SECURITY;
 

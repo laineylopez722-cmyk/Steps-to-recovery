@@ -1,6 +1,6 @@
 /**
  * Global Type Definitions
- * Stub implementations for planned features
+ * Shared interfaces used across all mobile app features.
  */
 
 export type RegularMeetingType = 'in_person' | 'online' | 'hybrid';
