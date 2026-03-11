@@ -5,9 +5,9 @@
  * Smooth animations, no harsh edges.
  */
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { View, Text, Animated, Easing } from 'react-native';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import type { Message } from '../types';
@@ -18,7 +18,7 @@ interface ChatBubbleProps {
   isNew?: boolean;
 }
 
-export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps) {
+export const ChatBubble = memo(function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps) {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const isUser = message.role === 'user';
@@ -28,7 +28,7 @@ export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps
   useEffect(() => {
     if (isNew) {
       if (!isUser) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+        impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
       }
 
       Animated.parallel([
@@ -74,7 +74,7 @@ export function ChatBubble({ message, isTyping, isNew = false }: ChatBubbleProps
       </View>
     </Animated.View>
   );
-}
+});
 
 function TypingDots() {
   const styles = useThemedStyles(createStyles);

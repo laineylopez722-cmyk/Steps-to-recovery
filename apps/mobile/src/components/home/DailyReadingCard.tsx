@@ -10,14 +10,14 @@
  * - Streak celebration
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, memo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useReading } from '../../hooks/useReading';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
 
@@ -26,7 +26,7 @@ interface DailyReadingCardProps {
   enteringDelay?: number;
 }
 
-export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
+export const DailyReadingCard = memo(function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
   const router = useRouterCompat();
   const {
     todayReading,
@@ -42,12 +42,12 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
   const ds = useDs();
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/reading');
   }, [router]);
 
   const handleRetry = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     loadTodayReading();
   }, [loadTodayReading]);
 
@@ -150,7 +150,7 @@ export function DailyReadingCard({ enteringDelay = 1 }: DailyReadingCardProps) {
       </TouchableOpacity>
     </Animated.View>
   );
-}
+});
 
 const createStyles = (ds: DS) =>
   ({

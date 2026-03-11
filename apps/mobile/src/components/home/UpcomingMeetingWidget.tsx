@@ -20,7 +20,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { useRegularMeetings } from '../../hooks/useRegularMeetings';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 
 interface UpcomingMeetingWidgetProps {
   /** Delay index for staggered entrance animation */
@@ -50,28 +50,28 @@ export function UpcomingMeetingWidget({ enteringDelay = 2 }: UpcomingMeetingWidg
   }, [meetings.length, isLoading, loadMeetings]);
 
   const handleViewAll = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/my-meetings');
   }, [router]);
 
   const handlePrepareShare = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/share-prep');
   }, [router]);
 
   const handleLogAttendance = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/meetings/new');
   }, [router]);
 
   const handleAddMeeting = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/my-meetings/add');
   }, [router]);
 
   const handleMeetingPress = useCallback(
     (meetingId: string) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
       router.push(`/my-meetings/${meetingId}`);
     },
     [router],

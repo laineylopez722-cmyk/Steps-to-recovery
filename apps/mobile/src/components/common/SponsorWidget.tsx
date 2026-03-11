@@ -22,7 +22,7 @@ import { usePhoneCalls } from '../../hooks/usePhoneCalls';
 import { sendSOSMessage, makePhoneCall, openMessagingApp, SOS_MESSAGE } from '@recovery/shared';
 import { logger } from '../../utils/logger';
 import { useRouterCompat } from '../../utils/navigationHelper';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle, notificationAsync, NotificationFeedbackType } from '@/platform/haptics';
 
 interface SponsorWidgetProps {
   /** Compact mode for smaller display */
@@ -59,7 +59,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
   }, [sponsor]);
 
   const handleCall = useCallback(async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Medium).catch(() => {});
     try {
       const success = await makePhoneCall(sponsor!.phone);
       if (success) {
@@ -73,7 +73,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
   }, [sponsor, logCallWithContact, markContacted]);
 
   const handleText = useCallback(async () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     try {
       const success = await openMessagingApp(sponsor!.phone);
       if (success) {
@@ -86,7 +86,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
 
   const handleSOS = useCallback(async () => {
     // Haptic warning
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning).catch(() => {});
+    notificationAsync(NotificationFeedbackType.Warning).catch(() => {});
 
     // Confirmation dialog to prevent accidental sends
     Alert.alert('Send SOS Message?', `This will text your sponsor: "${SOS_MESSAGE}"`, [
@@ -96,7 +96,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
         style: 'destructive',
         onPress: async () => {
           try {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+            notificationAsync(NotificationFeedbackType.Success).catch(() => {});
             const result = await sendSOSMessage(sponsor!.phone, sponsor!.name);
             if (result.success) {
               await markContacted(sponsor!.id);
@@ -112,7 +112,7 @@ export function SponsorWidget({ compact = false, enteringDelay = 0 }: SponsorWid
   }, [sponsor, markContacted]);
 
   const handleAddSponsor = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/sponsor/connect');
   }, [router]);
 

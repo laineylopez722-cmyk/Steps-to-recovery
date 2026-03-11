@@ -15,7 +15,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn, FadeInUp } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
@@ -56,7 +56,7 @@ export const EmptyState = memo(function EmptyState({
   const ds = useDs();
   const iconColor = iconColorProp ?? ds.colors.info;
   const handleAction = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onAction?.();
   }, [onAction]);
 

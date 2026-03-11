@@ -18,7 +18,7 @@ import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RecoveryContact, ContactRole } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface ContactCardProps {
@@ -120,7 +120,7 @@ function ContactCardComponent({
   }, [contact.lastContactedAt]);
 
   const handleLongPress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Heavy).catch(() => {});
     if (onEdit || onDelete) {
       const buttons: AlertButton[] = [];
       if (onEdit) buttons.push({ text: 'Edit', onPress: onEdit });
@@ -137,12 +137,12 @@ function ContactCardComponent({
   }, [contact.name, onEdit, onDelete]);
 
   const handleCall = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Medium).catch(() => {});
     onCall();
   }, [onCall]);
 
   const handleText = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onText();
   }, [onText]);
 

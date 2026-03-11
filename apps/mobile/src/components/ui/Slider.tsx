@@ -7,7 +7,7 @@
 import React, { useRef } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 
 interface SliderProps {
   value: number;
@@ -129,7 +129,7 @@ export function Slider({
       // Haptic feedback on value change
       const diff = Math.abs(newValue - previousValue.current);
       if (diff >= step) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        impactAsync(ImpactFeedbackStyle.Light);
       }
       previousValue.current = newValue;
     }

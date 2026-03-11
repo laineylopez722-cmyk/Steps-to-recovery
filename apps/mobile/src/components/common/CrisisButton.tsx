@@ -21,7 +21,7 @@ import { useRouterCompat, useSegmentsCompat } from '../../utils/navigationHelper
 import { Feather } from '@expo/vector-icons';
 import { useSettingsStore } from '@recovery/shared';
 import { getCrisisResources, type CrisisResource } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle, notificationAsync, NotificationFeedbackType } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 export function CrisisButton() {
@@ -45,7 +45,7 @@ export function CrisisButton() {
 
   const handlePress = () => {
     // Haptic feedback for accessibility
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Medium).catch(() => {});
     setShowQuickHelp(true);
     // Announce modal opening to screen readers
     AccessibilityInfo.announceForAccessibility(
@@ -61,7 +61,7 @@ export function CrisisButton() {
   const handleCallResource = (resource: CrisisResource) => {
     setShowQuickHelp(false);
     // Haptic feedback for action
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    notificationAsync(NotificationFeedbackType.Success).catch(() => {});
     Linking.openURL(`tel:${resource.phone}`);
   };
 

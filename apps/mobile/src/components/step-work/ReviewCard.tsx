@@ -15,7 +15,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface ReviewCardProps {
@@ -80,7 +80,7 @@ export function ReviewCard({
   };
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onPress?.();
   }, [onPress]);
 

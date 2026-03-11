@@ -19,7 +19,7 @@ import Animated, {
   withTiming,
   interpolate,
 } from 'react-native-reanimated';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle, notificationAsync, NotificationFeedbackType } from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../design-system/hooks/useThemedStyles';
 import { useMotionPress } from '../design-system/hooks/useMotionPress';
 import { useDs } from '../design-system/DsProvider';
@@ -65,7 +65,7 @@ export function BiometricLockScreen({
       logger.info('PIN unlock successful');
     },
     onFailure: () => {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error).catch(() => {});
+      notificationAsync(NotificationFeedbackType.Error).catch(() => {});
     },
     validator: onPinValidate,
     requiredLength: 4,
@@ -99,7 +99,7 @@ export function BiometricLockScreen({
   }, [isAuthenticating, onAuthenticate]);
 
   const handleEmergency = useCallback((): void => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Heavy).catch(() => {});
     onEmergencyAccess();
   }, [onEmergencyAccess]);
 

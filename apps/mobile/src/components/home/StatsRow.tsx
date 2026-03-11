@@ -10,7 +10,7 @@
  * - Micro-interactions
  */
 
-import React, { useCallback } from 'react';
+import React, { useCallback, memo } from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, {
@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
 
@@ -35,7 +35,7 @@ interface StatItemProps {
   delay?: number;
 }
 
-function StatItem({
+const StatItem = memo(function StatItem({
   value,
   label,
   icon,
@@ -61,7 +61,7 @@ function StatItem({
   }, [scale]);
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onPress?.();
   }, [onPress]);
 
@@ -125,7 +125,7 @@ function StatItem({
       {content}
     </Animated.View>
   );
-}
+});
 
 interface StatsRowProps {
   meetingCount?: number;

@@ -17,7 +17,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { useSharePrepStore } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 interface SharePrepCardProps {
@@ -30,7 +30,7 @@ export function SharePrepCard({ compact = false, enteringDelay = 0 }: SharePrepC
   const { hasContent, notes } = useSharePrepStore();
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/share-prep');
   }, [router]);
 

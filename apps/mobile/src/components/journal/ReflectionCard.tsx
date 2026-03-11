@@ -20,7 +20,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { useJournalStore } from '@recovery/shared';
 import { decryptContent } from '../../utils/encryption';
 import type { JournalEntry } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { logger } from '../../utils/logger';
 import { ds } from '../../design-system/tokens/ds';
 
@@ -94,12 +94,12 @@ export function ReflectionCard({ daysAgo = 30, enteringDelay = 4 }: ReflectionCa
 
   const handlePress = useCallback(() => {
     if (!pastEntry) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push(`/journal/${pastEntry.id}`);
   }, [pastEntry, router]);
 
   const handleWriteEntry = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/journal');
   }, [router]);
 

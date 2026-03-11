@@ -25,7 +25,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { usePhoneCalls } from '../../hooks/usePhoneCalls';
 import { useContacts } from '../../hooks/useContacts';
 import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { logger } from '../../utils/logger';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
@@ -105,7 +105,7 @@ function QuickCallButton({
   }, [scale]);
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     onPress();
   }, [onPress]);
 
@@ -184,12 +184,12 @@ export function PhoneWidget({ enteringDelay = 3 }: PhoneWidgetProps) {
   );
 
   const handleViewAll = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/contacts');
   }, [router]);
 
   const handleAddContact = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push('/contacts/add');
   }, [router]);
 

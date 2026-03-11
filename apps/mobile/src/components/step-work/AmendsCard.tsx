@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { AmendsStatus, AmendsType } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 
 const STATUS_CONFIG: Record<
@@ -119,7 +119,7 @@ export function AmendsCard({
   }));
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     rotate.value = withSpring(isExpanded ? 0 : 180, { damping: 15, stiffness: 200 });
     onPress?.();
   }, [onPress, isExpanded, rotate]);

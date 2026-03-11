@@ -24,7 +24,7 @@ import Animated, {
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import type { RegularMeeting, RegularMeetingType } from '@recovery/shared';
-import * as Haptics from '@/platform/haptics';
+import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';
 
@@ -112,13 +112,13 @@ function MeetingCardComponent({
   }, [scale]);
 
   const handlePress = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
     router.push(`/my-meetings/${meeting.id}`);
   }, [router, meeting.id]);
 
   const handleToggleReminder = useCallback(
     (value: boolean) => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+      impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
       onToggleReminder?.(meeting.id, value);
     },
     [onToggleReminder, meeting.id],
