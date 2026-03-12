@@ -74,7 +74,12 @@ export function useJournalEntries(userId: string): {
           [userId],
         );
 
-        const decrypted = await Promise.all(result.map(decryptJournalEntry));
+        const settled = await Promise.allSettled(result.map(decryptJournalEntry));
+        const decrypted = settled.flatMap((r, i) => {
+          if (r.status === 'fulfilled') return [r.value];
+          logger.error('Failed to decrypt journal entry', { entryId: result[i]?.id });
+          return [];
+        });
         return decrypted;
       } catch (err) {
         logger.error('Failed to fetch journal entries', err);

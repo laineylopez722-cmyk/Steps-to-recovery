@@ -1,0 +1,43 @@
+env: load .env
+env: export EXPO_PUBLIC_ENV EXPO_PUBLIC_SUPABASE_ANON_KEY EXPO_PUBLIC_SUPABASE_URL
+Running 17 checks on your project...
+15/17 checks passed. 2 checks failed. Possible issues detected:
+Use the --verbose flag to see more details about passed checks.
+
+Γ£û Check that no duplicate dependencies are installed
+Your project contains duplicate native module dependencies, which should be de-duplicated.
+Native builds may only contain one version of any given native module, and having multiple versions of a single Native module installed may lead to unexpected build errors.
+Found duplicates for react-native-reanimated:
+  Γö£ΓöÇ react-native-reanimated@4.2.2 (at: node_modules\react-native-reanimated)
+  ΓööΓöÇ react-native-reanimated@4.1.6 (at: ..\..\node_modules\react-native-reanimated)
+Found duplicates for react-native-worklets:
+  Γö£ΓöÇ react-native-worklets@0.7.4 (at: node_modules\react-native-worklets)
+  ΓööΓöÇ react-native-worklets@0.5.1 (at: ..\..\node_modules\react-native-worklets)
+Advice:
+Resolve your dependency issues and deduplicate your dependencies. Learn more: https://expo.fyi/resolving-dependency-issues
+
+Γ£û Check that packages match versions required by installed Expo SDK
+
+Γ¥ù Major version mismatches
+package                                 expected  found    
+@react-native-community/netinfo         11.4.1    12.0.1   
+@types/jest                             29.5.14   30.0.0   
+jest                                    ~29.7.0   30.2.0   
+
+ΓÜá∩╕Å Minor version mismatches
+package                                 expected  found    
+@react-native-community/datetimepicker  8.4.4     8.6.0    
+@react-native-community/slider          5.0.1     5.1.2    
+react-native-gesture-handler            ~2.28.0   2.30.0   
+react-native-reanimated                 ~4.1.1    4.2.2    
+react-native-svg                        15.12.1   15.15.3  
+react-native-worklets                   0.5.1     0.7.4    
+
+
+
+9 packages out of date.
+Advice:
+Use 'npx expo install --check' to review and upgrade your dependencies.
+To ignore specific packages, add them to "expo.install.exclude" in package.json. Learn more: https://expo.fyi/dependency-validation
+
+2 checks failed, indicating possible issues with the project.

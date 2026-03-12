@@ -370,7 +370,8 @@ describe('useJournalEntries', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.error).toBeTruthy();
+      expect(result.current.error).toBeNull();
+      expect(result.current.entries).toHaveLength(0); // entry filtered out
     });
 
     it('should provide refetch function', async () => {
@@ -1120,8 +1121,9 @@ describe('useJournalEntries', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      // Should throw when trying to parse invalid JSON
-      expect(result.current.error).toBeTruthy();
+      // Entry with invalid JSON tags is silently filtered out (resilience pattern)
+      expect(result.current.error).toBeNull();
+      expect(result.current.entries).toHaveLength(0);
     });
   });
 

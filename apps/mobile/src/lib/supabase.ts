@@ -95,29 +95,80 @@ if (__DEV__) {
 }
 
 /** Supabase project URL from environment */
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const rawSupabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
 
 /** Supabase anonymous key from environment */
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+const rawSupabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+const supabaseUrl = rawSupabaseUrl?.trim();
+const supabaseAnonKey = rawSupabaseAnonKey?.trim();
+
+function looksLikePlaceholder(value: string | undefined): boolean {
+  if (!value) return false;
+
+  const normalized = value.trim().toLowerCase();
+  return (
+    normalized.includes('your-project') ||
+    normalized.includes('your-anon-key') ||
+    normalized.includes('example.supabase.co') ||
+    normalized === 'test-anon-key' ||
+    normalized === 'test-anon-key-for-jest'
+  );
+}
+
+function isValidHttpUrl(value: string | undefined): boolean {
+  if (!value) return false;
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
 
 /**
- * Validates that required Supabase environment variables are present
- * @throws Error if environment variables are missing
+ * Validates that required Supabase environment variables are present and sane
+ * @throws Error if environment variables are missing or obviously invalid
  * @internal
  */
 function validateEnvironmentVariables(): void {
   const missing: string[] = [];
+  const invalid: string[] = [];
 
   if (!supabaseUrl) missing.push('EXPO_PUBLIC_SUPABASE_URL');
   if (!supabaseAnonKey) missing.push('EXPO_PUBLIC_SUPABASE_ANON_KEY');
 
-  if (missing.length > 0) {
-    const errorMessage =
-      `Missing required Supabase environment variables: ${missing.join(', ')}. ` +
-      'Please create a .env file in apps/mobile/ with the required variables. ' +
-      'See env.example for the expected format.';
+  if (supabaseUrl && (looksLikePlaceholder(supabaseUrl) || !isValidHttpUrl(supabaseUrl))) {
+    invalid.push('EXPO_PUBLIC_SUPABASE_URL');
+  }
 
-    logger.error('Supabase configuration error', { missingVariables: missing });
+  if (supabaseAnonKey && looksLikePlaceholder(supabaseAnonKey)) {
+    invalid.push('EXPO_PUBLIC_SUPABASE_ANON_KEY');
+  }
+
+  if (missing.length > 0 || invalid.length > 0) {
+    const parts: string[] = [];
+
+    if (missing.length > 0) {
+      parts.push(`Missing required Supabase environment variables: ${missing.join(', ')}`);
+    }
+
+    if (invalid.length > 0) {
+      parts.push(`Invalid or placeholder Supabase environment variables: ${invalid.join(', ')}`);
+    }
+
+    const errorMessage =
+      `${parts.join('. ')}. ` +
+      'Update apps/mobile/.env with the real Supabase Project URL and anon/public key from Supabase Dashboard → Settings → API. ' +
+      'Do not leave template values like "your-project..." or "your-anon-key..." in place.';
+
+    logger.error('Supabase configuration error', {
+      missingVariables: missing,
+      invalidVariables: invalid,
+      urlPresent: !!supabaseUrl,
+      keyPresent: !!supabaseAnonKey,
+    });
     throw new Error(errorMessage);
   }
 
@@ -130,8 +181,10 @@ function validateEnvironmentVariables(): void {
   }
 }
 
-// Validate environment variables
-validateEnvironmentVariables();
+// Validate environment variables (skip in test environment)
+if (!IS_TEST_ENV) {
+  validateEnvironmentVariables();
+}
 
 /**
  * Supabase client instance

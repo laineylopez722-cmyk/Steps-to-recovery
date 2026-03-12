@@ -79,8 +79,14 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
     const storedSalt = localStorage.getItem(saltKey);
 
     if (storedSalt) {
-      // Reconstruct Uint8Array from stored JSON array
-      return new Uint8Array(JSON.parse(storedSalt));
+      try {
+        // Reconstruct Uint8Array from stored JSON array
+        return new Uint8Array(JSON.parse(storedSalt) as number[]);
+      } catch {
+        // Corrupted localStorage value — regenerate salt
+        logger.warn('Corrupted salt in localStorage, regenerating');
+        localStorage.removeItem(saltKey);
+      }
     }
 
     // Generate new random salt (32 bytes)
@@ -109,8 +115,14 @@ export class WebSecureStorageAdapter implements SecureStorageAdapter {
     const storedSeed = localStorage.getItem(seedKey);
 
     if (storedSeed) {
-      this.keySeed = new Uint8Array(JSON.parse(storedSeed));
-      return this.keySeed;
+      try {
+        this.keySeed = new Uint8Array(JSON.parse(storedSeed) as number[]);
+        return this.keySeed;
+      } catch {
+        // Corrupted localStorage value — regenerate seed
+        logger.warn('Corrupted key seed in localStorage, regenerating');
+        localStorage.removeItem(seedKey);
+      }
     }
 
     // Generate new random seed (32 bytes)

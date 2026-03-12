@@ -27,11 +27,52 @@ for (const envPath of envPaths) {
 const required = ['EXPO_PUBLIC_SUPABASE_URL', 'EXPO_PUBLIC_SUPABASE_ANON_KEY'];
 const missing = required.filter((key) => !process.env[key] || process.env[key].trim() === '');
 
-if (missing.length > 0) {
+function looksLikePlaceholder(value) {
+  if (!value) return false;
+  const normalized = value.trim().toLowerCase();
+  return (
+    normalized.includes('your-project') ||
+    normalized.includes('your-anon-key') ||
+    normalized.includes('example.supabase.co')
+  );
+}
+
+function isValidHttpUrl(value) {
+  if (!value) return false;
+  try {
+    const parsed = new URL(value.trim());
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+const invalid = [];
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL?.trim();
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY?.trim();
+
+if (supabaseUrl && (looksLikePlaceholder(supabaseUrl) || !isValidHttpUrl(supabaseUrl))) {
+  invalid.push('EXPO_PUBLIC_SUPABASE_URL');
+}
+
+if (supabaseAnonKey && looksLikePlaceholder(supabaseAnonKey)) {
+  invalid.push('EXPO_PUBLIC_SUPABASE_ANON_KEY');
+}
+
+if (missing.length > 0 || invalid.length > 0) {
   const hint = loadedFromFile
     ? 'Check apps/mobile/.env values.'
     : 'Create apps/mobile/.env from apps/mobile/.env.example.';
-  console.error(`[validate-env] Missing required variables: ${missing.join(', ')}.`);
+
+  if (missing.length > 0) {
+    console.error(`[validate-env] Missing required variables: ${missing.join(', ')}.`);
+  }
+
+  if (invalid.length > 0) {
+    console.error(`[validate-env] Invalid or placeholder variables: ${invalid.join(', ')}.`);
+    console.error('[validate-env] Replace template values with the real Supabase Project URL and anon/public key from Supabase Dashboard → Settings → API.');
+  }
+
   console.error(`[validate-env] ${hint}`);
   process.exit(1);
 }
