@@ -32,7 +32,7 @@
     "e2e:steps": "maestro test .maestro/flows/step-work.yaml",
     "e2e:sync": "maestro test .maestro/flows/offline-sync.yaml",
     "e2e:validate": "maestro test --dry-run .maestro/flows",
-    "eas-build-pre-install": "npm config set legacy-peer-deps true"
+    "eas-build-pre-install": "cd ../.. && npm ci --ignore-scripts"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",

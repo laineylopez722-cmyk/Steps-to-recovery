@@ -1,8 +1,13 @@
 # EAS ignore file — keeps archive size small
-# EAS needs node_modules at build time if not using npm install on the worker,
-# but for monorepos with workspaces it's typically better to exclude and let EAS install
+# Exclude node_modules; EAS will install via eas-build-pre-install hook from monorepo root
+# This ensures npm is used (not bun auto-detection), reduces archive size, and keeps builds reproducible
 
-# Build artifacts
+# Dependencies — excluded; installed via eas-build-pre-install
+node_modules/
+apps/mobile/node_modules/
+packages/shared/node_modules/
+
+# Native build artifacts
 android/app/build/
 android/.gradle/
 android/build/
@@ -24,3 +29,6 @@ docs to reference/
 # Large files not needed for bundling
 *.log
 *.map
+
+# Expo cache
+.expo/
