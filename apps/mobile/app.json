@@ -116,7 +116,7 @@
       "@sentry/react-native"
     ],
     "updates": {
-      "enabled": true,
+      "enabled": false,
       "fallbackToCacheTimeout": 30000,
       "checkAutomatically": "ON_LOAD"
     },
