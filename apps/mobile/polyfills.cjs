@@ -26,7 +26,49 @@ if (!isNodeRuntime) {
     }
   }
 }
-const { decode: atobPolyfill, encode: btoaPolyfill } = require('base-64');
+/**
+ * Prefer built-in base64 support during Node/Babel tooling execution so validation
+ * commands do not depend on the optional state of hoisted workspace installs.
+ * Fall back to the existing runtime dependency when Buffer is unavailable.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function atobPolyfill(value) {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(value, 'base64').toString('binary');
+  }
+
+  try {
+    return require('base-64').decode(value);
+  } catch (error) {
+    throw new Error(
+      `Base64 decode polyfill is unavailable in this environment. Install the "base-64" package or ensure Buffer is available: ${
+        error instanceof Error ? error.message : 'unknown error'
+      }`,
+    );
+  }
+}
+
+/**
+ * @param {string} value
+ * @returns {string}
+ */
+function btoaPolyfill(value) {
+  if (typeof Buffer !== 'undefined') {
+    return Buffer.from(value, 'binary').toString('base64');
+  }
+
+  try {
+    return require('base-64').encode(value);
+  } catch (error) {
+    throw new Error(
+      `Base64 encode polyfill is unavailable in this environment. Install the "base-64" package or ensure Buffer is available: ${
+        error instanceof Error ? error.message : 'unknown error'
+      }`,
+    );
+  }
+}
 
 // Force a predictable in-memory localStorage to avoid CLI-provided incomplete shims.
 /** @type {Map<string, string>} */

@@ -123,7 +123,7 @@ npm run type-check
 # Toolchain validation
 npm run doctor:toolchain
 
-# Strict verification (currently expected to fail until shared package scripts are aligned)
+# Strict verification
 npm run verify:strict
 ```
 
