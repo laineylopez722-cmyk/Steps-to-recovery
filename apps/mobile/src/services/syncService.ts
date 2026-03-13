@@ -25,6 +25,13 @@ import { supabase } from '../lib/supabase';
 import type { StorageAdapter } from '../adapters/storage';
 import { logger } from '../utils/logger';
 import { decryptContent } from '../utils/encryption';
+import {
+  VALID_SYNC_TABLES,
+  PULL_SYNC_TABLES,
+  isValidSyncTable,
+  type ValidSyncTable,
+  type PullSyncTable,
+} from './syncRegistry';
 
 /**
  * Pull sync result for tracking cloud→device sync
@@ -82,37 +89,8 @@ const MAX_RETRY_COUNT = 3;
 /** Base delay for exponential backoff (in milliseconds) */
 const BASE_BACKOFF_MS = 1000;
 
-/**
- * Valid table names for sync operations (whitelist to prevent SQL injection).
- *
- * A table belongs here only when ALL THREE are true:
- *   1. A sync function exists in processSyncItem (push)
- *   2. The table has sync_status TEXT and supabase_id columns
- *   3. addDeleteToSyncQueue can safely capture supabase_id before deletion
- *
- * Tables NOT listed here (personal_inventory, gratitude_entries, safety_plans,
- * sponsor_messages, craving_surf_sessions) use `synced INTEGER` instead of
- * `sync_status TEXT` and have no processSyncItem handler. They are excluded
- * until a full sync implementation is added (see migration v21 for schema prep).
- */
-const VALID_SYNC_TABLES = [
-  'journal_entries',
-  'step_work',
-  'daily_checkins',
-  'favorite_meetings',
-  'reading_reflections',
-  'weekly_reports',
-  'sponsor_connections',
-  'sponsor_shared_entries',
-  'achievements',
-  'ai_memories',
-] as const;
-
-type ValidSyncTable = (typeof VALID_SYNC_TABLES)[number];
-
-function isValidSyncTable(tableName: string): tableName is ValidSyncTable {
-  return (VALID_SYNC_TABLES as readonly string[]).includes(tableName);
-}
+// VALID_SYNC_TABLES, ValidSyncTable, isValidSyncTable, PULL_SYNC_TABLES, and
+// PullSyncTable are imported from syncRegistry (single source of truth).
 
 /**
  * Wrap a promise with a timeout
@@ -1498,19 +1476,7 @@ export async function addDeleteToSyncQueue(
 
 // ─── Pull Sync (Cloud → Device) ─────────────────────────────────────────────
 
-/** Tables that support pull sync, mapped to their local schema */
-const PULL_SYNC_TABLES = [
-  'journal_entries',
-  'step_work',
-  'daily_checkins',
-  'favorite_meetings',
-  'reading_reflections',
-  'weekly_reports',
-  'achievements',
-  'ai_memories',
-] as const;
-
-type PullSyncTable = (typeof PULL_SYNC_TABLES)[number];
+// PULL_SYNC_TABLES and PullSyncTable are imported from syncRegistry.
 
 /**
  * Pull changes from Supabase for a single table.

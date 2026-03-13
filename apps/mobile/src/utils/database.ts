@@ -14,6 +14,7 @@
  */
 
 import type { StorageAdapter } from "../adapters/storage/index.ts";
+import { CLEANUP_TABLES } from "../services/syncRegistry";
 import { logger } from "./logger";
 
 /**
@@ -31,7 +32,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 21;
+const CURRENT_SCHEMA_VERSION = 22;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -1057,6 +1058,42 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
     logger.info('Migration v21 completed');
   }
 
+  // Migration version 22: Add updated_at to achievements
+  // The pull-sync path (upsertLocalRecord) queries `updated_at` for every table
+  // in PULL_SYNC_TABLES to drive last-write-wins conflict resolution.
+  // `achievements` was the only syncable table missing this column, which caused
+  // "no such column: updated_at" errors during pull sync for achievements.
+  if (currentVersion < 22) {
+    logger.info('Running migration v22: Adding updated_at to achievements');
+
+    if (!(await columnExists(db, 'achievements', 'updated_at'))) {
+      try {
+        // Default to earned_at so existing rows get a sensible timestamp.
+        await db.execAsync(
+          `ALTER TABLE achievements ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''`,
+        );
+        // Back-fill from earned_at for all existing rows.
+        await db.execAsync(
+          `UPDATE achievements SET updated_at = earned_at WHERE updated_at = ''`,
+        );
+      } catch (error) {
+        logger.warn('Migration v22: Failed to add achievements.updated_at', error);
+      }
+    } else {
+      // Column already exists (e.g. schema was manually updated); back-fill nulls.
+      try {
+        await db.execAsync(
+          `UPDATE achievements SET updated_at = earned_at WHERE updated_at IS NULL OR updated_at = ''`,
+        );
+      } catch (error) {
+        logger.warn('Migration v22: Back-fill of achievements.updated_at failed', error);
+      }
+    }
+
+    await recordMigration(db, 22);
+    logger.info('Migration v22 completed');
+  }
+
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });
 }
 
@@ -1077,33 +1114,11 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
  * ```
  */
 export async function clearDatabase(db: StorageAdapter): Promise<void> {
-  // Delete order respects foreign key constraints (children before parents).
-  // Tables added in migrations v14–v18 that were previously missing are now included.
-  const statements = [
-    'DELETE FROM sync_queue',
-    'DELETE FROM sync_metadata',       // v15 — pull-sync timestamp tracking
-    'DELETE FROM active_challenges',   // v17
-    'DELETE FROM weather_snapshots',   // v18
-    'DELETE FROM ai_memories',         // v16
-    'DELETE FROM craving_surf_sessions',
-    'DELETE FROM safety_plans',
-    'DELETE FROM sponsor_messages',    // v14 — references sponsor_connections
-    'DELETE FROM sponsor_shared_entries',
-    'DELETE FROM sponsor_connections',
-    'DELETE FROM favorite_meetings',
-    'DELETE FROM meeting_search_cache',
-    'DELETE FROM cached_meetings',
-    'DELETE FROM reading_reflections',
-    'DELETE FROM daily_readings',
-    'DELETE FROM achievements',
-    'DELETE FROM step_work',
-    'DELETE FROM daily_checkins',
-    'DELETE FROM journal_entries',
-    'DELETE FROM weekly_reports',
-    'DELETE FROM gratitude_entries',
-    'DELETE FROM personal_inventory',
-    'DELETE FROM user_profile',
-  ];
+  // Table order is defined canonically in syncRegistry.CLEANUP_TABLES,
+  // which respects foreign key constraints (children before parents).
+  // schema_migrations is intentionally excluded — it is device-level metadata
+  // that must survive logout so migrations don't re-run on next login.
+  const statements = CLEANUP_TABLES.map((table) => `DELETE FROM ${table}`);
 
   await db.withTransactionAsync(async () => {
     for (const sql of statements) {

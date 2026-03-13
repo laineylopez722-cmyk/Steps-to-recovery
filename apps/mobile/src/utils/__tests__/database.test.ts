@@ -109,8 +109,8 @@ describe('database utilities', () => {
     it('skips migrations when schema is up to date', async () => {
       const freshName = `fresh-${Date.now()}.db`;
       mockDb.getDatabaseName.mockReturnValue(freshName);
-      // Return a version that equals CURRENT_SCHEMA_VERSION (21)
-      mockDb.getFirstAsync.mockResolvedValue({ version: 21 });
+      // Return a version that equals CURRENT_SCHEMA_VERSION (22)
+      mockDb.getFirstAsync.mockResolvedValue({ version: 22 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -243,8 +243,8 @@ describe('database utilities', () => {
           typeof c[0] === 'string' && (c[0] as string).includes('INSERT INTO schema_migrations'),
       );
 
-      // Should have recorded migrations 1 through 21
-      expect(migrationRecords.length).toBe(21);
+      // Should have recorded migrations 1 through 22
+      expect(migrationRecords.length).toBe(22);
     });
   });
 
