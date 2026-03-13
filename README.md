@@ -24,7 +24,8 @@ The project already has a lot of real functionality in place — journaling, che
 - Sync correctness and local ↔ cloud schema drift need hardening
 - Android preview EAS build confidence is not back yet
 - Real device validation is still the biggest gap
-- `verify:strict` is currently failing because `packages/shared/package.json` scripts do not match `scripts/doctor/check-toolchain.mjs`
+- `verify:strict` now passes after a clean install
+- `expo-doctor` still needs network access for remote schema and React Native Directory checks in restricted/offline environments
 - Some paths look more complete than they really are:
   - daily reading persistence/behavior
   - router compatibility fallbacks
@@ -125,6 +126,10 @@ npm run doctor:toolchain
 # Strict verification (currently expected to fail until shared package scripts are aligned)
 npm run verify:strict
 ```
+
+### Configuration note
+
+`react-native-gesture-handler` and `react-native-svg` are managed by the workspace dependency graph, so they are excluded from Expo's install-version check in `apps/mobile/package.json`. This prevents Expo doctor from reporting false-positive version drift when the workspace hoists compatible native module versions for the Android app.
 
 ### From `apps/mobile`
 

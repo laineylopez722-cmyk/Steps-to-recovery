@@ -113,8 +113,7 @@
         }
       ],
       "@react-native-community/datetimepicker",
-      "@sentry/react-native",
-      "expo-router"
+      "@sentry/react-native"
     ],
     "updates": {
       "enabled": true,
