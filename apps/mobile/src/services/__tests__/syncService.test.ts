@@ -231,7 +231,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localEntry);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncJournalEntry(mockDb, entryId, userId);
 
@@ -260,7 +260,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localEntry);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncJournalEntry(mockDb, entryId, userId);
 
@@ -288,7 +288,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localEntry);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncJournalEntry(mockDb, entryId, userId);
 
@@ -314,7 +314,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localEntry);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncJournalEntry(mockDb, entryId, userId);
 
@@ -399,7 +399,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localStepWork);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncStepWork(mockDb, stepWorkId, userId);
 
@@ -435,7 +435,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localStepWork);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncStepWork(mockDb, stepWorkId, userId);
 
@@ -464,7 +464,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(completeStepWork);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncStepWork(mockDb, stepWorkId, userId);
 
@@ -484,7 +484,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(incompleteStepWork);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncStepWork(mockDb, stepWorkId, userId);
 
@@ -512,7 +512,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localStepWork);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncStepWork(mockDb, stepWorkId, userId);
 
@@ -538,7 +538,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(localStepWork);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await syncStepWork(mockDb, stepWorkId, userId);
 
@@ -620,7 +620,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(checkIn);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncDailyCheckIn(mockDb, checkInId, userId);
 
@@ -652,7 +652,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(checkIn);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
       (decryptContent as jest.Mock).mockResolvedValueOnce('7');
 
       const result = await syncDailyCheckIn(mockDb, checkInId, userId);
@@ -689,7 +689,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getFirstAsync.mockResolvedValueOnce(checkIn);
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
       (decryptContent as jest.Mock).mockRejectedValueOnce(new Error('decrypt failed'));
 
       const result = await syncDailyCheckIn(mockDb, checkInId, userId);
@@ -716,7 +716,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncFavoriteMeeting(mockDb, favoriteId, userId);
 
@@ -775,7 +775,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncReadingReflection(mockDb, reflectionId, userId);
 
@@ -821,7 +821,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncWeeklyReport(mockDb, reportId, userId);
 
@@ -860,7 +860,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncSponsorConnection(mockDb, connectionId, userId);
 
@@ -898,7 +898,7 @@ describe('syncService Integration Tests', () => {
           supabase_id: null,
         })
         .mockResolvedValueOnce({ supabase_id: 'supabase-connection-1' });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       const result = await syncSponsorSharedEntry(mockDb, entryId, userId);
 
@@ -950,7 +950,7 @@ describe('syncService Integration Tests', () => {
 
     it('should queue delete with existing supabase_id', async () => {
       mockDb.getFirstAsync.mockResolvedValueOnce({ supabase_id: 'sb-123' });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await addDeleteToSyncQueue(mockDb, 'journal_entries', 'entry-1', userId);
 
@@ -967,7 +967,7 @@ describe('syncService Integration Tests', () => {
 
     it('should queue delete without supabase_id for unsynced records', async () => {
       mockDb.getFirstAsync.mockResolvedValueOnce({ supabase_id: null });
-      mockDb.runAsync.mockResolvedValueOnce({} as any);
+      mockDb.runAsync.mockResolvedValueOnce(undefined);
 
       await addDeleteToSyncQueue(mockDb, 'daily_checkins', 'checkin-1', userId);
 
@@ -1037,7 +1037,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       await processSyncQueue(mockDb, userId);
 
@@ -1131,7 +1131,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1207,7 +1207,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const startTime = Date.now();
       await processSyncQueue(mockDb, userId);
@@ -1257,7 +1257,7 @@ describe('syncService Integration Tests', () => {
       // Second item fails (not found)
       mockDb.getFirstAsync.mockResolvedValueOnce(null);
 
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1290,7 +1290,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1311,7 +1311,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getAllAsync.mockResolvedValueOnce([queueItem]);
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1332,7 +1332,7 @@ describe('syncService Integration Tests', () => {
       };
 
       mockDb.getAllAsync.mockResolvedValueOnce([queueItem]);
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1406,7 +1406,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
       });
 
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1447,7 +1447,7 @@ describe('syncService Integration Tests', () => {
 
       mockDb.getAllAsync.mockResolvedValueOnce([queueItem]);
       mockDb.getFirstAsync.mockResolvedValueOnce(null);
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1471,7 +1471,8 @@ describe('syncService Integration Tests', () => {
         releaseQueue = resolve;
       });
 
-      mockDb.getAllAsync.mockReturnValueOnce(firstQueueRead as any).mockResolvedValueOnce([]);
+      mockDb.getAllAsync.mockImplementationOnce(async () => firstQueueRead);
+      mockDb.getAllAsync.mockResolvedValueOnce([]);
 
       const firstRun = processSyncQueue(mockDb, userId);
       const secondRun = await processSyncQueue(mockDb, userId);
@@ -1616,7 +1617,7 @@ describe('syncService Integration Tests', () => {
         sync_status: 'pending',
         supabase_id: null,
       });
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
@@ -1637,10 +1638,10 @@ describe('syncService Integration Tests', () => {
       mockDb.getAllAsync.mockResolvedValueOnce(queueItems);
 
       // Fail items 3, 5, 7
-      mockDb.getFirstAsync.mockImplementation(async (query: string, ...params: any[]) => {
+      mockDb.getFirstAsync.mockImplementation(async (_query: string, ...params: unknown[]) => {
         // expo-sqlite typings can be either (query, ...bindParams) OR some callers pass a single params array.
-        const bindParams: any[] =
-          params.length === 1 && Array.isArray(params[0]) ? (params[0] as any[]) : params;
+        const bindParams: unknown[] =
+          params.length === 1 && Array.isArray(params[0]) ? (params[0] as unknown[]) : params;
 
         if (!bindParams || bindParams.length === 0) return null;
 
@@ -1662,7 +1663,7 @@ describe('syncService Integration Tests', () => {
           supabase_id: null,
         };
       });
-      mockDb.runAsync.mockResolvedValue({} as any);
+      mockDb.runAsync.mockResolvedValue(undefined);
 
       const result = await processSyncQueue(mockDb, userId);
 
