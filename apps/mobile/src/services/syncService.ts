@@ -419,15 +419,19 @@ export async function syncStepWork(
     // Generate or reuse Supabase ID
     const supabaseId = stepWork.supabase_id || generateUUID();
 
-    // Map local schema to Supabase schema
-    // Supabase has simpler schema: just step_number + content (encrypted)
-    // We'll combine question_number into content for now
+    // Map local schema to Supabase schema.
+    // Field name contract (local → remote):
+    //   step_number     → step_number
+    //   question_number → question_number (added in Supabase migration 20260313000001)
+    //   encrypted_answer→ content
+    //   is_complete     → is_completed (boolean)
     const content = stepWork.encrypted_answer || '';
 
     const supabaseData = {
       id: supabaseId,
       user_id: userId,
       step_number: stepWork.step_number,
+      question_number: stepWork.question_number, // Required for UNIQUE(user_id, step_number, question_number)
       content, // Encrypted answer
       is_completed: stepWork.is_complete === 1,
       created_at: stepWork.created_at,
@@ -1767,9 +1771,11 @@ async function insertLocalFromRemote(
 
     case 'step_work':
       // Remote field names mirror what syncStepWork pushes.
-      // question_number is local-only — default to 1 since remote doesn't carry it.
+      // question_number is now included in push payload (Supabase migration 20260313000001).
+      // INSERT OR IGNORE: if the UNIQUE(user_id, step_number, question_number) constraint fires
+      // (e.g. remote schema predates the question_number column), skip the insert rather than crash.
       await db.runAsync(
-        `INSERT INTO step_work
+        `INSERT OR IGNORE INTO step_work
          (id, user_id, step_number, question_number, encrypted_answer,
           is_complete, completed_at, created_at, updated_at,
           sync_status, supabase_id)
@@ -1867,17 +1873,20 @@ async function insertLocalFromRemote(
       break;
 
     case 'achievements':
+      // updated_at added to achievements in local migration v22.
+      // Remote schema should also have it (Supabase migration 20260313000002).
       await db.runAsync(
         `INSERT INTO achievements
          (id, user_id, achievement_key, achievement_type, earned_at,
-          is_viewed, sync_status, supabase_id)
-         VALUES (?, ?, ?, ?, ?, ?, 'synced', ?)`,
+          is_viewed, updated_at, sync_status, supabase_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
         [
           localId, userId,
           (remote.achievement_key as string) || '',
           (remote.achievement_type as string) || '',
           (remote.earned_at as string) || now,
           remote.is_viewed ? 1 : 0,
+          (remote.updated_at as string) || (remote.earned_at as string) || now,
           remoteId,
         ],
       );

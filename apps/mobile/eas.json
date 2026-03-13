@@ -7,7 +7,6 @@
   "build": {
     "base": {
       "node": "20.19.4",
-      "installCommand": "npm ci",
       "cache": {
         "key": "recovery-app-v1",
         "paths": ["node_modules/.cache"]
