@@ -57,5 +57,8 @@
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "react-native": "0.81.5"
   }
 }
