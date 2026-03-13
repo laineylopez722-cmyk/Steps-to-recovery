@@ -119,7 +119,7 @@
       "expo-router"
     ],
     "updates": {
-      "enabled": true,
+      "enabled": false,
       "fallbackToCacheTimeout": 30000,
       "checkAutomatically": "ON_LOAD"
     },
