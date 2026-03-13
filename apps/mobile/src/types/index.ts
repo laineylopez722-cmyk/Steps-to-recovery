@@ -22,7 +22,7 @@ export interface DailyReadingReflection {
   readingDate: string; // Format: 'MM-DD'
   user_id: string;
   encrypted_reflection: string;
-  reflection: string;
+  reflection?: string;
   created_at: string;
 }
 

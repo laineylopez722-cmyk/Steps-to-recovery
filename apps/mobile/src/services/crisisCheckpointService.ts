@@ -7,6 +7,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { encryptContent, decryptContent } from '../utils/encryption';
 import { logger } from '../utils/logger';
 
 // ========================================
@@ -100,10 +101,11 @@ export async function updateTriggerDescription(
   triggerDescription: string,
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const encryptedTrigger = await encryptContent(triggerDescription);
     const { error } = await supabase
       .from('crisis_checkpoints')
       .update({
-        trigger_description: triggerDescription,
+        trigger_description: encryptedTrigger,
         updated_at: new Date().toISOString(),
       })
       .eq('id', checkpointId)
@@ -192,11 +194,13 @@ export async function saveReflection(
   emotions: string[],
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const encryptedJournal = await encryptContent(journalEntry);
+    const encryptedEmotions = await encryptContent(JSON.stringify(emotions));
     const { error } = await supabase
       .from('crisis_checkpoints')
       .update({
-        journal_entry: journalEntry,
-        emotions_identified: emotions,
+        journal_entry: encryptedJournal,
+        emotions_identified: encryptedEmotions,
         updated_at: new Date().toISOString(),
       })
       .eq('id', checkpointId)
@@ -287,7 +291,8 @@ async function getCheckpointStartTime(
     }
 
     return data.started_at;
-  } catch (_error) {
+  } catch (error) {
+    console.error('Error in getCheckpointStartTime:', error);
     return null;
   }
 }
@@ -296,24 +301,20 @@ async function getCheckpointStartTime(
  * Get active checkpoint for user
  */
 export async function getActiveCheckpoint(userId: string): Promise<CrisisCheckpoint | null> {
-  try {
-    const { data, error } = await supabase
-      .from('crisis_checkpoints')
-      .select('*')
-      .eq('user_id', userId)
-      .is('completed_at', null)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+  const { data, error } = await supabase
+    .from('crisis_checkpoints')
+    .select('*')
+    .eq('user_id', userId)
+    .is('completed_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
 
-    if (error) {
-      return null;
-    }
-
-    return data as CrisisCheckpoint;
-  } catch (_error) {
+  if (error) {
     return null;
   }
+
+  return data as CrisisCheckpoint;
 }
 
 /**
@@ -346,13 +347,18 @@ export async function getCrisisStats(userId: string): Promise<CrisisStats> {
     const avgIntensity =
       total > 0 ? checkpoints.reduce((sum, c) => sum + c.craving_intensity, 0) / total : 0;
 
-    // Get most common triggers
+    // Get most common triggers (decrypt first)
     const triggerCounts: Record<string, number> = {};
-    checkpoints.forEach((c) => {
+    for (const c of checkpoints) {
       if (c.trigger_description) {
-        triggerCounts[c.trigger_description] = (triggerCounts[c.trigger_description] || 0) + 1;
+        try {
+          const decrypted = await decryptContent(c.trigger_description);
+          triggerCounts[decrypted] = (triggerCounts[decrypted] || 0) + 1;
+        } catch {
+          // Skip entries that fail to decrypt
+        }
       }
-    });
+    }
 
     const mostCommon = Object.entries(triggerCounts)
       .sort((a, b) => b[1] - a[1])

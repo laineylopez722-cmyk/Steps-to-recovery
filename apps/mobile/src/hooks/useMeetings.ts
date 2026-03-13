@@ -7,7 +7,39 @@ import { useEffect, useMemo } from 'react';
 import { useMeetingStore } from '@recovery/shared';
 import type { MeetingLog, MeetingType } from '@recovery/shared';
 
-export function useMeetings() {
+interface MeetingInsights {
+  totalMeetings: number;
+  meetingsThisMonth: number;
+  meetingsThisWeek: number;
+  averageMoodImprovement: number;
+  mostCommonTopic: string | null;
+  lastMeetingDate: Date | null;
+  daysSinceLastMeeting: number | null;
+  shareRate: number;
+}
+
+interface UseMeetingsReturn {
+  meetings: MeetingLog[];
+  isLoading: boolean;
+  insights: MeetingInsights;
+  recentMeetings: MeetingLog[];
+  inPersonMeetings: MeetingLog[];
+  onlineMeetings: MeetingLog[];
+  meetingStreak: number;
+  allTopics: string[];
+  moodImprovementPercentage: number;
+  loadMeetings: ReturnType<typeof useMeetingStore.getState>['loadMeetings'];
+  createMeeting: ReturnType<typeof useMeetingStore.getState>['createMeeting'];
+  updateMeeting: ReturnType<typeof useMeetingStore.getState>['updateMeeting'];
+  deleteMeeting: (id: string) => Promise<void>;
+  getMeetingById: (id: string) => Promise<MeetingLog | null>;
+  getMeetingsByTopic: (topic: string) => MeetingLog[];
+  getMeetingsInRange: (startDate: Date, endDate: Date) => MeetingLog[];
+  getTypeLabel: (type: MeetingType) => string;
+  formatMeetingDate: (date: Date) => string;
+}
+
+export function useMeetings(): UseMeetingsReturn {
   const {
     meetings,
     isLoading,

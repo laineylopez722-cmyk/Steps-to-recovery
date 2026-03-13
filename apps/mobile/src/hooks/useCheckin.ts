@@ -7,7 +7,25 @@ import { useEffect, useMemo } from 'react';
 import { useCheckinStore } from '@recovery/shared';
 import type { DailyCheckin } from '@recovery/shared';
 
-export function useCheckin() {
+type TrendDirection = 'positive' | 'negative' | 'neutral';
+
+interface UseCheckinReturn {
+  todayCheckin: DailyCheckin | null;
+  history: DailyCheckin[];
+  isLoading: boolean;
+  error: string | null;
+  hasCheckedInToday: boolean;
+  checkinStreak: number;
+  averageMood: number;
+  averageCraving: number;
+  moodTrend: TrendDirection;
+  cravingTrend: TrendDirection;
+  checkinRate: number;
+  submitCheckin: (mood: number, cravingLevel: number, gratitude?: string) => Promise<void>;
+  loadHistory: (days?: number) => Promise<void>;
+}
+
+export function useCheckin(): UseCheckinReturn {
   const {
     todayCheckin,
     history,

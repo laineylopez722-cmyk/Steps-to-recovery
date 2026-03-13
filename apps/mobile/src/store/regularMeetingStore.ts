@@ -139,7 +139,6 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
         reminderEnabled: options?.reminderEnabled ?? false,
         reminderMinutesBefore: options?.reminderMinutesBefore ?? 30,
         encrypted_notes: encryptedNotes,
-        notes: options?.notes, // Keep in memory for immediate use
         created_at: now,
       };
 
@@ -204,7 +203,6 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
                 day_of_week: updates.dayOfWeek ?? m.day_of_week,
                 dayOfWeek: updates.dayOfWeek ?? m.dayOfWeek,
                 encrypted_notes: encryptedNotes ?? m.encrypted_notes,
-                notes: updates.notes ?? m.notes,
               }
             : m,
         ),
@@ -347,12 +345,6 @@ export const useRegularMeetingStore = create<RegularMeetingStore>((set, get) => 
 
   decryptNotes: async (meeting: RegularMeeting): Promise<string | null> => {
     try {
-      // If already decrypted in memory, return that
-      if (meeting.notes) {
-        return meeting.notes;
-      }
-
-      // If encrypted notes exist, decrypt them
       if (meeting.encrypted_notes) {
         const { decryptContent } = await import('../utils/encryption');
         return await decryptContent(meeting.encrypted_notes);

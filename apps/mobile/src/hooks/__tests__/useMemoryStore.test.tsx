@@ -53,6 +53,11 @@ jest.mock('../../utils/logger', () => ({
   },
 }));
 
+jest.mock('../../services/syncService', () => ({
+  addToSyncQueue: jest.fn(),
+  addDeleteToSyncQueue: jest.fn(),
+}));
+
 // Import hook after mocking
 import { useMemoryStore, type MemorySummary } from '../useMemoryStore';
 import { type Memory, type MemoryType } from '../../features/journal/utils/memoryExtraction';

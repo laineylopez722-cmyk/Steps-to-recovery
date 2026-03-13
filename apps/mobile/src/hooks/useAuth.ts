@@ -29,6 +29,18 @@ import { AppState, type AppStateStatus } from 'react-native';
 import { useAuthStore } from '@recovery/shared';
 import { useSettingsStore } from '@recovery/shared';
 
+interface UseAuthReturn {
+  isAuthenticated: boolean;
+  isLocked: boolean;
+  authenticate: () => Promise<boolean>;
+  authenticateWithPin: (pin: string) => Promise<boolean>;
+  setPin: (pin: string) => Promise<void>;
+  hasPin: () => Promise<boolean>;
+  lock: () => void;
+  unlock: () => void;
+  checkBiometricSupport: () => Promise<boolean>;
+}
+
 /**
  * Authentication hook
  *
@@ -37,7 +49,7 @@ import { useSettingsStore } from '@recovery/shared';
  *
  * @returns Object with authentication state and methods
  */
-export function useAuth() {
+export function useAuth(): UseAuthReturn {
   const {
     isAuthenticated,
     isLocked,

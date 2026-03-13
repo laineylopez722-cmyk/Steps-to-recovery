@@ -14,7 +14,8 @@
       "bundleIdentifier": "com.recovery.stepstorecovery",
       "infoPlist": {
         "NSFaceIDUsageDescription": "Use Face ID to securely access your private recovery data.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": true,
+        "ITSEncryptionExportComplianceCode": "N/A"
       }
     },
     "android": {

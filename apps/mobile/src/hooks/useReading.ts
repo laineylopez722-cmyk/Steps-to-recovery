@@ -7,7 +7,29 @@ import { useEffect, useMemo, useCallback } from 'react';
 import { useReadingStore } from '../store/readingStore';
 import type { DailyReading, DailyReadingReflection } from '../types';
 
-export function useReading() {
+interface UseReadingReturn {
+  todayReading: DailyReading | null;
+  todayReflection: DailyReadingReflection | null;
+  reflections: DailyReadingReflection[];
+  readingStreak: number;
+  isLoading: boolean;
+  error: string | null;
+  hasReflectedToday: boolean;
+  formattedDate: string;
+  shortDate: string;
+  readingPreview: string;
+  streakMessage: string;
+  loadTodayReading: () => Promise<void>;
+  loadReflections: () => Promise<void>;
+  submitReflection: (reflection: string) => Promise<DailyReadingReflection>;
+  getReading: (date: Date) => Promise<DailyReading | null>;
+  getReflection: (date: Date) => Promise<DailyReadingReflection | null>;
+  decryptReflection: (reflection: DailyReadingReflection) => Promise<string>;
+  formatSource: (source: string) => string;
+  hasReflectionForDate: (date: Date) => boolean;
+}
+
+export function useReading(): UseReadingReturn {
   const {
     todayReading,
     todayReflection,

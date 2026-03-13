@@ -9,6 +9,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { encryptContent, decryptContent } from '../utils/encryption';
 import { logger } from '../utils/logger';
 
 // ========================================
@@ -85,14 +86,36 @@ interface RiskyContactRow {
   is_active: boolean;
 }
 
-function mapToRiskyContact(row: RiskyContactRow): RiskyContact {
+async function mapToRiskyContact(row: RiskyContactRow): Promise<RiskyContact> {
+  let name = row.name;
+  let phoneNumber = row.phone_number;
+  let notes = row.notes;
+
+  try {
+    name = await decryptContent(row.name);
+  } catch {
+    // Fallback to raw value for legacy unencrypted data
+  }
+  try {
+    phoneNumber = await decryptContent(row.phone_number);
+  } catch {
+    // Fallback to raw value for legacy unencrypted data
+  }
+  if (notes) {
+    try {
+      notes = await decryptContent(notes);
+    } catch {
+      // Fallback to raw value for legacy unencrypted data
+    }
+  }
+
   return {
     id: row.id,
     userId: row.user_id,
-    name: row.name,
-    phoneNumber: row.phone_number,
+    name,
+    phoneNumber,
     relationshipType: row.relationship_type,
-    notes: row.notes,
+    notes,
     addedAt: row.added_at,
     isActive: row.is_active,
   };
@@ -108,14 +131,30 @@ interface CloseCallRow {
   created_at: string;
 }
 
-function mapToCloseCall(row: CloseCallRow): CloseCall {
+async function mapToCloseCall(row: CloseCallRow): Promise<CloseCall> {
+  let contactName = row.contact_name;
+  let notes = row.notes;
+
+  try {
+    contactName = await decryptContent(row.contact_name);
+  } catch {
+    // Fallback for legacy unencrypted data
+  }
+  if (notes) {
+    try {
+      notes = await decryptContent(notes);
+    } catch {
+      // Fallback for legacy unencrypted data
+    }
+  }
+
   return {
     id: row.id,
     userId: row.user_id,
     riskyContactId: row.risky_contact_id,
-    contactName: row.contact_name,
+    contactName,
     actionTaken: row.action_taken,
-    notes: row.notes,
+    notes,
     createdAt: row.created_at,
   };
 }
@@ -143,15 +182,18 @@ export function normalizePhoneNumber(phoneNumber: string): string {
 export async function addRiskyContact(params: AddRiskyContactParams): Promise<RiskyContact> {
   try {
     const normalizedPhone = normalizePhoneNumber(params.phoneNumber);
+    const encryptedName = await encryptContent(params.name);
+    const encryptedPhone = await encryptContent(normalizedPhone);
+    const encryptedNotes = params.notes ? await encryptContent(params.notes) : null;
 
     const { data, error } = await supabase
       .from('risky_contacts')
       .insert({
         user_id: params.userId,
-        name: params.name,
-        phone_number: normalizedPhone,
+        name: encryptedName,
+        phone_number: encryptedPhone,
         relationship_type: params.relationshipType,
-        notes: params.notes,
+        notes: encryptedNotes,
       })
       .select()
       .single();
@@ -167,7 +209,7 @@ export async function addRiskyContact(params: AddRiskyContactParams): Promise<Ri
       contactId: data.id,
       relationshipType: params.relationshipType,
     });
-    return mapToRiskyContact(data);
+    return await mapToRiskyContact(data);
   } catch (error) {
     logger.error('Failed to add risky contact', error);
     throw error;
@@ -188,7 +230,7 @@ export async function getRiskyContacts(userId: string): Promise<RiskyContact[]> 
 
     if (error) throw error;
 
-    return (data || []).map(mapToRiskyContact);
+    return await Promise.all((data || []).map(mapToRiskyContact));
   } catch (error) {
     logger.error('Failed to fetch risky contacts', error);
     throw error;
@@ -206,17 +248,10 @@ export async function isRiskyContact(
   try {
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
 
-    const { data, error } = await supabase
-      .from('risky_contacts')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('phone_number', normalizedPhone)
-      .eq('is_active', true)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    return data ? mapToRiskyContact(data) : null;
+    // Since phone numbers are encrypted with unique IVs, we must fetch all
+    // active contacts and compare against decrypted values
+    const contacts = await getRiskyContacts(userId);
+    return contacts.find((c) => normalizePhoneNumber(c.phoneNumber) === normalizedPhone) ?? null;
   } catch (error) {
     logger.error('Failed to check risky contact', error);
     throw error;
@@ -235,12 +270,12 @@ export async function updateRiskyContact(
   try {
     const dbUpdates: Record<string, string | number | boolean | null> = {};
 
-    if (updates.name !== undefined) dbUpdates.name = updates.name;
+    if (updates.name !== undefined) dbUpdates.name = await encryptContent(updates.name);
     if (updates.phoneNumber !== undefined)
-      dbUpdates.phone_number = normalizePhoneNumber(updates.phoneNumber);
+      dbUpdates.phone_number = await encryptContent(normalizePhoneNumber(updates.phoneNumber));
     if (updates.relationshipType !== undefined)
       dbUpdates.relationship_type = updates.relationshipType;
-    if (updates.notes !== undefined) dbUpdates.notes = updates.notes;
+    if (updates.notes !== undefined) dbUpdates.notes = updates.notes ? await encryptContent(updates.notes) : null;
     if (updates.isActive !== undefined) dbUpdates.is_active = updates.isActive;
 
     const { data, error } = await supabase
@@ -253,7 +288,7 @@ export async function updateRiskyContact(
     if (error) throw error;
 
     logger.info('Risky contact updated', { contactId });
-    return mapToRiskyContact(data);
+    return await mapToRiskyContact(data);
   } catch (error) {
     logger.error('Failed to update risky contact', error);
     throw error;
@@ -305,14 +340,16 @@ export async function permanentlyDeleteRiskyContact(contactId: string): Promise<
  */
 export async function logCloseCall(params: LogCloseCallParams): Promise<CloseCall> {
   try {
+    const encryptedContactName = await encryptContent(params.contactName);
+    const encryptedNotes = params.notes ? await encryptContent(params.notes) : null;
     const { data, error } = await supabase
       .from('close_calls')
       .insert({
         user_id: params.userId,
         risky_contact_id: params.riskyContactId,
-        contact_name: params.contactName,
+        contact_name: encryptedContactName,
         action_taken: params.actionTaken,
-        notes: params.notes,
+        notes: encryptedNotes,
       })
       .select()
       .single();
@@ -348,7 +385,7 @@ export async function getCloseCallHistory(
 
     if (error) throw error;
 
-    return (data || []).map(mapToCloseCall);
+    return await Promise.all((data || []).map(mapToCloseCall));
   } catch (error) {
     logger.error('Failed to fetch close call history', error);
     throw error;

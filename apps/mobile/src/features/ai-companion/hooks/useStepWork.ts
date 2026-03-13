@@ -7,6 +7,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
+import { addToSyncQueue, addDeleteToSyncQueue } from '../../../services/syncService';
 import { logger } from '../../../utils/logger';
 import type {
   StepWorkEntry,
@@ -191,6 +192,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [id, userId, stepNumber, type, encrypted, status, now, now],
         );
+        await addToSyncQueue(db, 'step_work_entries', id, 'insert');
       } catch (err) {
         logger.error('Failed to save step work entry', err);
         setError('Failed to save entry');
@@ -207,6 +209,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
       if (!db || !isReady) return;
 
       try {
+        await addDeleteToSyncQueue(db, 'step_work_entries', id, userId);
         await db.runAsync('DELETE FROM step_work_entries WHERE id = ? AND user_id = ?', [
           id,
           userId,
@@ -326,6 +329,7 @@ export function useStepWork(userId: string): UseStepWorkReturn {
                WHERE id = ?`,
               [encrypted, now, newStatus, row.id],
             );
+            await addToSyncQueue(db, 'step_work_entries', row.id, 'update');
             break;
           }
         } catch {

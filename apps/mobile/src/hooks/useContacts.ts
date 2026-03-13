@@ -9,7 +9,30 @@ import { useContactStore } from '@recovery/shared';
 import type { RecoveryContact, ContactRole } from '@recovery/shared';
 import { logger } from '../utils/logger';
 
-export function useContacts() {
+interface UseContactsReturn {
+  contacts: RecoveryContact[];
+  sponsor: RecoveryContact | null;
+  isLoading: boolean;
+  error: string | null;
+  contactsByRole: Record<ContactRole, RecoveryContact[]>;
+  recentContacts: RecoveryContact[];
+  needsAttention: RecoveryContact[];
+  loadContacts: () => Promise<void>;
+  addContact: (name: string, phone: string, role: ContactRole, notes?: string) => Promise<RecoveryContact>;
+  updateContact: (id: string, updates: Partial<Pick<RecoveryContact, 'name' | 'phone' | 'role' | 'notes'>>) => Promise<void>;
+  removeContact: (id: string) => Promise<void>;
+  markContacted: (id: string) => Promise<void>;
+  getContactById: (id: string) => Promise<RecoveryContact | null>;
+  getContactsByRole: (role: ContactRole) => RecoveryContact[];
+  decryptContactNotes: (contact: RecoveryContact) => Promise<string | null>;
+  callContact: (contact: RecoveryContact) => Promise<void>;
+  textContact: (contact: RecoveryContact, message?: string) => Promise<void>;
+  sendSOSToSponsor: () => Promise<void>;
+  getRoleLabel: (role: ContactRole) => string;
+  getDaysSinceContact: (contact: RecoveryContact) => string;
+}
+
+export function useContacts(): UseContactsReturn {
   const {
     contacts,
     sponsor,

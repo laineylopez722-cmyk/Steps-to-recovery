@@ -18,11 +18,44 @@ import {
 } from '@recovery/shared';
 import { getReadingStreak } from '@recovery/shared';
 import type { StepProgress, MeetingLog } from '@recovery/shared';
+import type { KeytagWithStatus } from '@recovery/shared';
+
+/** Achievement type as used by the achievement store */
+type StoreAchievement = ReturnType<typeof useAchievementStore.getState>['achievements'][number];
+
+/** Achievement category type derived from the store's achievement type */
+type StoreAchievementCategory = StoreAchievement['category'];
+
+interface UseAchievementsReturn {
+  achievements: StoreAchievement[];
+  keytags: KeytagWithStatus[];
+  isLoading: boolean;
+  isInitialized: boolean;
+  totalUnlocked: number;
+  totalAchievements: number;
+  totalKeytags: number;
+  earnedKeytags: number;
+  recentUnlock: StoreAchievement | null;
+  categoryProgress: Record<StoreAchievementCategory, { unlocked: number; total: number }>;
+  unlockedAchievements: StoreAchievement[];
+  inProgressAchievements: StoreAchievement[];
+  lockedAchievements: StoreAchievement[];
+  nextKeytag: KeytagWithStatus | undefined;
+  currentKeytag: KeytagWithStatus | undefined;
+  loadAchievements: () => Promise<void>;
+  checkAchievements: () => Promise<StoreAchievement[]>;
+  triggerCheck: () => Promise<StoreAchievement[]>;
+  selfCheckAchievement: (id: string) => Promise<StoreAchievement | null>;
+  saveReflection: (id: string, reflection: string) => Promise<void>;
+  getReflection: (id: string) => Promise<string | null>;
+  dismissRecentUnlock: () => void;
+  getAchievementsByCategory: (category: StoreAchievementCategory) => StoreAchievement[];
+}
 
 /**
  * Hook for managing and checking achievements
  */
-export function useAchievements() {
+export function useAchievements(): UseAchievementsReturn {
   const {
     achievements,
     keytags,

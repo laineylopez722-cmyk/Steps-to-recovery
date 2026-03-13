@@ -5,9 +5,40 @@
 
 import { useEffect, useCallback } from 'react';
 import { useJournalStore } from '@recovery/shared';
-import type { JournalType } from '@recovery/shared';
+import type { JournalEntry, JournalType } from '@recovery/shared';
 
-export function useJournal() {
+interface UseJournalReturn {
+  entries: JournalEntry[];
+  currentEntry: JournalEntry | null;
+  decryptedContent: string | null;
+  isLoading: boolean;
+  error: string | null;
+  filterType: JournalType | null;
+  searchQuery: string;
+  loadEntries: (type?: JournalType) => Promise<void>;
+  loadEntry: (id: string) => Promise<void>;
+  createEntry: (
+    type: JournalType,
+    content: string,
+    options?: {
+      moodBefore?: number;
+      moodAfter?: number;
+      cravingLevel?: number;
+      emotionTags?: string[];
+      stepNumber?: number;
+      meetingId?: string;
+    },
+  ) => Promise<JournalEntry>;
+  deleteEntry: (id: string) => Promise<void>;
+  decryptEntry: (entry: JournalEntry) => Promise<string>;
+  setFilterType: (type: JournalType | null) => void;
+  setSearchQuery: (query: string) => void;
+  clearCurrentEntry: () => void;
+  getTypeLabel: (type: JournalType) => string;
+  formatDuration: (seconds: number) => string;
+}
+
+export function useJournal(): UseJournalReturn {
   const {
     entries,
     currentEntry,

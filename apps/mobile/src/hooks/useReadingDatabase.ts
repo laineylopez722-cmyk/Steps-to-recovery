@@ -31,7 +31,28 @@ function formatDateKey(date: Date): string {
   return `${month}-${day}`;
 }
 
-export function useReadingDatabase() {
+interface UseReadingDatabaseReturn {
+  initializeReadings: () => Promise<void>;
+  loadTodayReading: () => Promise<void>;
+  loadTodayReflection: () => Promise<void>;
+  saveReflection: (reflectionText: string, userId: string) => Promise<DailyReadingReflection | null>;
+  deleteReflection: (readingDate: string) => Promise<void>;
+  calculateStreak: () => Promise<number>;
+  getReflectionForDate: (date: Date) => Promise<DailyReadingReflection | null>;
+  todayReading: DailyReading | null;
+  todayReflection: DailyReadingReflection | null;
+  reflections: DailyReadingReflection[];
+  readingStreak: number;
+  isLoading: boolean;
+  error: string | null;
+  decryptReflectionContent: (reflection: DailyReadingReflection) => Promise<string>;
+  hasReflectedToday: () => boolean;
+  markAsRead: (readingId: string) => void;
+  getReadingForDate: (date: Date) => Promise<DailyReading | null>;
+  isReady: boolean;
+}
+
+export function useReadingDatabase(): UseReadingDatabaseReturn {
   const { db, isReady } = useDatabase();
   const store = useReadingStore();
 

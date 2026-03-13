@@ -24,7 +24,8 @@
 import { supabase } from '../lib/supabase';
 import type { StorageAdapter } from '../adapters/storage';
 import { logger } from '../utils/logger';
-import { decryptContent } from '../utils/encryption';
+import { generateId } from '../utils/id';
+import { decryptContent, encryptContent } from '../utils/encryption';
 import {
   PULL_SYNC_TABLES,
   isValidSyncTable,
@@ -298,19 +299,7 @@ interface LocalAIMemory {
   supabase_id: string | null;
 }
 
-/**
- * Generate a UUID v4
- */
-function generateUUID(): string {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID();
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
+
 
 /**
  * Sync a single journal entry to Supabase
@@ -333,7 +322,7 @@ export async function syncJournalEntry(
     }
 
     // Generate UUID for Supabase if not already synced
-    const supabaseId = entry.supabase_id || generateUUID();
+    const supabaseId = entry.supabase_id || generateId();
 
     // Tags: stored locally as a single encrypted blob. Supabase column is TEXT[].
     // Send as single-element array preserving the encrypted payload.
@@ -415,7 +404,7 @@ export async function syncStepWork(
     }
 
     // Generate or reuse Supabase ID
-    const supabaseId = stepWork.supabase_id || generateUUID();
+    const supabaseId = stepWork.supabase_id || generateId();
 
     // Map local schema to Supabase schema.
     // Field name contract (local → remote):
@@ -498,7 +487,7 @@ export async function syncDailyCheckIn(
     }
 
     // Generate UUID for Supabase if not already synced
-    const supabaseId = checkIn.supabase_id || generateUUID();
+    const supabaseId = checkIn.supabase_id || generateId();
 
     // Map local schema to Supabase schema
     // The Supabase schema has different field structure for morning vs evening
@@ -601,7 +590,7 @@ export async function syncFavoriteMeeting(
     }
 
     // Generate UUID for Supabase if not already synced
-    const supabaseId = favorite.supabase_id || generateUUID();
+    const supabaseId = favorite.supabase_id || generateId();
 
     // Map local schema to Supabase schema
     const supabaseData = {
@@ -674,7 +663,7 @@ export async function syncReadingReflection(
     }
 
     // Generate Supabase ID if needed
-    const supabaseId = reflection.supabase_id || generateUUID();
+    const supabaseId = reflection.supabase_id || generateId();
 
     // Prepare data for Supabase (using established schema patterns)
     const supabaseData = {
@@ -741,7 +730,7 @@ export async function syncWeeklyReport(
       return { success: false, error: 'Weekly report not found' };
     }
 
-    const supabaseId = report.supabase_id || generateUUID();
+    const supabaseId = report.supabase_id || generateId();
 
     const supabaseData = {
       id: supabaseId,
@@ -801,7 +790,7 @@ export async function syncSponsorConnection(
       return { success: false, error: 'Sponsor connection not found' };
     }
 
-    const supabaseId = connection.supabase_id || generateUUID();
+    const supabaseId = connection.supabase_id || generateId();
 
     const supabaseData = {
       id: supabaseId,
@@ -812,8 +801,8 @@ export async function syncSponsorConnection(
       display_name: connection.display_name,
       own_public_key: connection.own_public_key,
       peer_public_key: connection.peer_public_key,
-      shared_key: connection.shared_key,
-      pending_private_key: connection.pending_private_key,
+      shared_key: connection.shared_key ? await encryptContent(connection.shared_key) : null,
+      pending_private_key: connection.pending_private_key ? await encryptContent(connection.pending_private_key) : null,
       created_at: connection.created_at,
       updated_at: connection.updated_at,
     };
@@ -867,7 +856,7 @@ export async function syncSponsorSharedEntry(
       return { success: false, error: 'Sponsor shared entry not found' };
     }
 
-    const supabaseId = entry.supabase_id || generateUUID();
+    const supabaseId = entry.supabase_id || generateId();
 
     // Get the supabase_id for the connection_id reference
     const connection = await db.getFirstAsync<{ supabase_id: string | null }>(
@@ -938,7 +927,7 @@ export async function syncAchievement(
       return { success: false, error: 'Achievement not found' };
     }
 
-    const supabaseId = achievement.supabase_id || generateUUID();
+    const supabaseId = achievement.supabase_id || generateId();
 
     const supabaseData = {
       id: supabaseId,
@@ -998,7 +987,7 @@ export async function syncAIMemory(
       return { success: false, error: 'AI memory not found' };
     }
 
-    const supabaseId = memory.supabase_id || generateUUID();
+    const supabaseId = memory.supabase_id || generateId();
 
     const supabaseData = {
       id: supabaseId,
@@ -1233,9 +1222,9 @@ export async function cleanupSyncQueue(db: StorageAdapter): Promise<{ removed: n
       const excess = count - MAX_SYNC_QUEUE_SIZE;
       const removeCount = Math.min(excess, 100);
 
-      // Count oldest failed items before deleting
+      // Count failed items before deleting
       const sizeCountResult = await db.getFirstAsync<{ count: number }>(
-        `SELECT COUNT(*) as count FROM sync_queue WHERE failed_at IS NOT NULL LIMIT ${removeCount}`,
+        `SELECT COUNT(*) as count FROM sync_queue WHERE failed_at IS NOT NULL`,
       );
       const sizeCount = sizeCountResult?.count || 0;
 
@@ -1408,7 +1397,7 @@ export async function addToSyncQueue(
       logger.warn('Sync queue at capacity, removed oldest permanently-failed items', { removed: deleteResult });
     }
 
-    const queueId = `sync_${generateUUID()}`;
+    const queueId = generateId('sync');
     const now = new Date().toISOString();
 
     await db.runAsync(
@@ -1739,7 +1728,7 @@ async function insertLocalFromRemote(
   remote: Record<string, unknown>,
   userId: string,
 ): Promise<void> {
-  const localId = `pull_${generateUUID()}`;
+  const localId = generateId('pull');
   const remoteId = remote.id as string;
   const now = new Date().toISOString();
 

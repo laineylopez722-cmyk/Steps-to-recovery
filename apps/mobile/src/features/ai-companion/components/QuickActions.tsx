@@ -112,7 +112,7 @@ function ActionChip({
   action: QuickAction;
   onPress: () => void;
   disabled?: boolean;
-}) {
+}): React.ReactElement {
   const styles = useThemedStyles(createStyles);
   const ds = useDs();
   const scale = useSharedValue(1);
@@ -135,6 +135,10 @@ function ActionChip({
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={disabled}
+      accessibilityLabel={`Quick action: ${action.label}`}
+      accessibilityRole="button"
+      accessibilityHint={`Sends "${action.label}" prompt to the AI companion`}
+      accessibilityState={{ disabled: !!disabled }}
     >
       <Animated.View style={[styles.chip, disabled && styles.chipDisabled, animatedStyle]}>
         <Text style={[styles.chipText, disabled && styles.chipTextDisabled]}>{action.label}</Text>
@@ -148,7 +152,7 @@ interface QuickActionsProps {
   disabled?: boolean;
 }
 
-export function QuickActions({ onSelect, disabled }: QuickActionsProps) {
+export function QuickActions({ onSelect, disabled }: QuickActionsProps): React.ReactElement {
   const styles = useThemedStyles(createStyles);
   const actions = useMemo(() => getTimeBasedActions(), []);
 

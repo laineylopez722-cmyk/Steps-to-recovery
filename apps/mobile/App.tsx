@@ -16,9 +16,10 @@ import './src/global.css';
 import { Text as RNText } from "react-native";
 import { fonts } from './src/lib/fonts';
 
-const _defaultStyle = (RNText as any).defaultProps?.style;
-(RNText as any).defaultProps = {
-  ...(RNText as any).defaultProps,
+const RNTextWithDefaults = RNText as unknown as { defaultProps?: { style?: unknown } };
+const _defaultStyle = RNTextWithDefaults.defaultProps?.style;
+RNTextWithDefaults.defaultProps = {
+  ...RNTextWithDefaults.defaultProps,
   style: [{ fontFamily: fonts.regular }, _defaultStyle],
 };
 
@@ -56,6 +57,7 @@ import { useQuickEscape, QuickEscapeTapZone } from './src/hooks/useQuickEscape';
 import { navigationRef } from './src/navigation/navigationRef';
 import { PortalHost } from '@rn-primitives/portal';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { AccessibilityProvider } from './src/design-system/accessibility/AccessibilityProvider';
 import {
   useFonts,
   Inter_400Regular,
@@ -68,7 +70,7 @@ import {
  * Biometric Lock Overlay
  * Shows lock screen when app is locked. Must be inside DsProvider for theming.
  */
-function BiometricLockOverlay({ children }: { children: React.ReactNode }): React.ReactElement {
+function BiometricLockOverlay({ children }: { children: React.ReactNode } ): React.ReactElement {
   const { isLocked, authenticate, validatePin, emergencyUnlock, biometricType, hasPinSet } =
     useBiometricLock();
   const {
@@ -227,31 +229,33 @@ function App(): React.ReactElement {
         <SafeAreaProvider>
           <UniwindSafeAreaBridge>
             <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
               <ThemeProvider>
                 <DsProvider>
-                  <DatabaseProvider>
-                    <AuthProvider>
-                      <SyncProvider>
-                        <NotificationProvider>
-                          <BiometricLockOverlay>
-                            <Suspense fallback={<LoadingFallback />}>
-                              <RootNavigator />
-                            </Suspense>
-                          </BiometricLockOverlay>
-                          <StatusBar
-                            style="light"
-                            backgroundColor="#000000"
-                            translucent={Platform.OS === 'android'}
-                          />
-                          <PortalHost />
-                        </NotificationProvider>
-                      </SyncProvider>
-                    </AuthProvider>
-                  </DatabaseProvider>
+                  <AccessibilityProvider>
+                    <BottomSheetModalProvider>
+                      <DatabaseProvider>
+                        <AuthProvider>
+                          <SyncProvider>
+                            <NotificationProvider>
+                              <BiometricLockOverlay>
+                                <Suspense fallback={<LoadingFallback />}>
+                                  <RootNavigator />
+                                </Suspense>
+                              </BiometricLockOverlay>
+                              <StatusBar
+                                style="light"
+                                backgroundColor="#000000"
+                                translucent={Platform.OS === 'android'}
+                              />
+                              <PortalHost />
+                            </NotificationProvider>
+                          </SyncProvider>
+                        </AuthProvider>
+                      </DatabaseProvider>
+                    </BottomSheetModalProvider>
+                  </AccessibilityProvider>
                 </DsProvider>
               </ThemeProvider>
-            </BottomSheetModalProvider>
             </GestureHandlerRootView>
           </UniwindSafeAreaBridge>
         </SafeAreaProvider>

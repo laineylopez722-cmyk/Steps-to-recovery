@@ -11,6 +11,7 @@
  */
 
 import type { StorageAdapter } from '../adapters/storage';
+import { decryptContent } from '../utils/encryption';
 import { logger } from '../utils/logger';
 
 const WEATHER_API_URL = 'https://api.openweathermap.org/data/2.5/weather';
@@ -234,49 +235,75 @@ async function correlateMoodWithWeather(
   userId: string,
 ): Promise<MoodWeatherCorrelation[]> {
   try {
+    // Fetch raw rows and decrypt mood/craving values client-side
+    // (encrypted_mood and encrypted_craving are ciphertext, not numeric)
     const rows = await db.getAllAsync<{
       condition: string;
-      avg_mood: number;
-      avg_craving: number;
-      sample_count: number;
+      encrypted_mood: string;
+      encrypted_craving: string;
     }>(
       `SELECT
         ws.condition,
-        AVG(CAST(dc.encrypted_mood AS REAL)) as avg_mood,
-        AVG(CAST(dc.encrypted_craving AS REAL)) as avg_craving,
-        COUNT(*) as sample_count
+        dc.encrypted_mood,
+        dc.encrypted_craving
       FROM weather_snapshots ws
       INNER JOIN daily_checkins dc
         ON ws.user_id = dc.user_id AND ws.date = dc.check_in_date
       WHERE ws.user_id = ?
         AND dc.encrypted_mood IS NOT NULL
-        AND dc.encrypted_mood != ''
-      GROUP BY ws.condition
-      HAVING COUNT(*) >= 2
-      ORDER BY sample_count DESC`,
+        AND dc.encrypted_mood != ''`,
       [userId],
     );
 
-    // Calculate overall average mood for trend comparison
-    const overallAvg =
-      rows.length > 0
-        ? rows.reduce((sum, r) => sum + r.avg_mood * r.sample_count, 0) /
-          rows.reduce((sum, r) => sum + r.sample_count, 0)
-        : 3;
+    // Decrypt and group by condition
+    const conditionData: Record<string, { moods: number[]; cravings: number[] }> = {};
+    for (const row of rows) {
+      try {
+        const mood = parseFloat(await decryptContent(row.encrypted_mood));
+        const craving = row.encrypted_craving
+          ? parseFloat(await decryptContent(row.encrypted_craving))
+          : 0;
+        if (isNaN(mood)) continue;
 
-    return rows.map((row) => {
+        if (!conditionData[row.condition]) {
+          conditionData[row.condition] = { moods: [], cravings: [] };
+        }
+        conditionData[row.condition].moods.push(mood);
+        conditionData[row.condition].cravings.push(isNaN(craving) ? 0 : craving);
+      } catch {
+        // Skip entries that fail to decrypt
+      }
+    }
+
+    // Filter conditions with at least 2 samples and compute averages
+    const results = Object.entries(conditionData)
+      .filter(([, data]) => data.moods.length >= 2)
+      .map(([condition, data]) => ({
+        condition,
+        avgMood: data.moods.reduce((s, v) => s + v, 0) / data.moods.length,
+        avgCraving: data.cravings.reduce((s, v) => s + v, 0) / data.cravings.length,
+        sampleSize: data.moods.length,
+      }))
+      .sort((a, b) => b.sampleSize - a.sampleSize);
+
+    // Calculate overall average mood for trend comparison
+    const totalMoods = results.reduce((sum, r) => sum + r.avgMood * r.sampleSize, 0);
+    const totalSamples = results.reduce((sum, r) => sum + r.sampleSize, 0);
+    const overallAvg = totalSamples > 0 ? totalMoods / totalSamples : 3;
+
+    return results.map((row) => {
       let trend: CorrelationTrend = 'neutral';
-      if (row.avg_mood > overallAvg + 0.3) {
+      if (row.avgMood > overallAvg + 0.3) {
         trend = 'positive';
-      } else if (row.avg_mood < overallAvg - 0.3) {
+      } else if (row.avgMood < overallAvg - 0.3) {
         trend = 'negative';
       }
 
       return {
         condition: row.condition,
-        avgMood: Math.round(row.avg_mood * 10) / 10,
-        avgCraving: Math.round(row.avg_craving * 10) / 10,
-        sampleSize: row.sample_count,
+        avgMood: Math.round(row.avgMood * 10) / 10,
+        avgCraving: Math.round(row.avgCraving * 10) / 10,
+        sampleSize: row.sampleSize,
         trend,
       };
     });

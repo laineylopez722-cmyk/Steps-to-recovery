@@ -7,7 +7,39 @@ import { useEffect, useMemo, useCallback } from 'react';
 import { usePhoneStore, useContactStore } from '@recovery/shared';
 import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
 
-export function usePhoneCalls() {
+interface PhoneStats {
+  todayCallCount: number;
+  weekCallCount: number;
+  totalCallMinutes: number;
+  dailyGoal: number;
+  goalProgress: number;
+}
+
+interface UsePhoneCallsReturn {
+  todayCalls: PhoneCallLog[];
+  callHistory: PhoneCallLog[];
+  isLoading: boolean;
+  error: string | null;
+  stats: PhoneStats;
+  hasCalledToday: boolean;
+  isMeetingGoal: boolean;
+  recentlyCalledContacts: PhoneCallLog[];
+  callsByDate: Record<string, PhoneCallLog[]>;
+  loadTodayCalls: () => Promise<void>;
+  loadCallHistory: (limit?: number) => Promise<void>;
+  logCall: (contactId: string, contactName: string, duration?: number, notes?: string) => Promise<PhoneCallLog>;
+  logCallWithContact: (contact: RecoveryContact, duration?: number, notes?: string) => Promise<PhoneCallLog>;
+  deleteCall: (id: string) => Promise<void>;
+  getCallsByContact: (contactId: string) => Promise<PhoneCallLog[]>;
+  decryptCallNotes: (call: PhoneCallLog) => Promise<string | null>;
+  getCallCountForContact: (contactId: string) => number;
+  formatCallTime: (call: PhoneCallLog) => string;
+  formatCallDate: (call: PhoneCallLog) => string;
+  formatDuration: (minutes?: number) => string;
+  getContactForCall: (call: PhoneCallLog) => RecoveryContact | undefined;
+}
+
+export function usePhoneCalls(): UsePhoneCallsReturn {
   const {
     todayCalls,
     callHistory,

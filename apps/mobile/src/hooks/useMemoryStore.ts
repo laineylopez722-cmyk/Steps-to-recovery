@@ -12,6 +12,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useDatabase } from '../contexts/DatabaseContext';
 import type { Memory, MemoryType } from '../features/journal/utils/memoryExtraction';
 import { encryptContent, decryptContent } from '../utils/encryption';
+import { addToSyncQueue, addDeleteToSyncQueue } from '../services/syncService';
 import { logger } from '../utils/logger';
 
 type MemorySource = Memory['source'];
@@ -187,6 +188,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
                 existingId,
               ],
             );
+            await addToSyncQueue(db, 'ai_memories', existingId, 'update');
             continue;
           }
 
@@ -208,6 +210,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
               memory.updatedAt.toISOString(),
             ],
           );
+          await addToSyncQueue(db, 'ai_memories', memory.id, 'insert');
 
           if (memory.key) {
             existingByKey.set(memory.key, memory.id);
@@ -480,6 +483,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         values.push(id);
 
         await db.runAsync(`UPDATE memories SET ${fields.join(', ')} WHERE id = ?`, values);
+        await addToSyncQueue(db, 'ai_memories', id, 'update');
       } catch (err) {
         logger.error('Failed to update memory', {
           errorType: err instanceof Error ? err.name : 'Unknown',
@@ -494,6 +498,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
       if (!db || !isReady) return;
 
       try {
+        await addDeleteToSyncQueue(db, 'ai_memories', id, userId);
         await db.runAsync('DELETE FROM memories WHERE id = ?', [id]);
       } catch (err) {
         logger.error('Failed to delete memory', {
@@ -501,7 +506,7 @@ export function useMemoryStore(userId: string): UseMemoryStoreReturn {
         });
       }
     },
-    [db, isReady],
+    [db, isReady, userId],
   );
 
   return {

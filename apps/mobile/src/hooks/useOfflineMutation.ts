@@ -227,7 +227,7 @@ export function useHasPendingMutations(): boolean {
  * Manually trigger sync of pending mutations
  * Call this from "Pull to refresh" or manual sync buttons
  */
-export function useSyncPendingMutations() {
+export function useSyncPendingMutations(): () => Promise<number> {
   const queryClient = useQueryClient();
 
   return useCallback(async () => {

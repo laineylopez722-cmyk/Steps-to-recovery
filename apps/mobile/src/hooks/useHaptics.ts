@@ -19,12 +19,24 @@ async function safeHaptic(fn: () => Promise<void>): Promise<void> {
   }
 }
 
+interface UseHapticsReturn {
+  light: () => Promise<void>;
+  medium: () => Promise<void>;
+  heavy: () => Promise<void>;
+  success: () => Promise<void>;
+  error: () => Promise<void>;
+  warning: () => Promise<void>;
+  selection: () => Promise<void>;
+  milestone: () => Promise<void>;
+  celebrate: () => Promise<void>;
+}
+
 /**
  * Comprehensive haptic feedback hook
  * Provides different feedback types for different interactions.
  * All methods are error-safe — they never throw.
  */
-export function useHaptics() {
+export function useHaptics(): UseHapticsReturn {
   // Light impact - subtle feedback
   const light = useCallback(
     () => safeHaptic(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)),

@@ -147,7 +147,6 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
         readingDate: dateKey,
         user_id: '', // Set by the persistence layer when saved to the database
         encrypted_reflection: encryptedReflection,
-        reflection, // Keep plain text in memory for immediate use
         created_at: now.toISOString(),
       };
 
@@ -227,9 +226,6 @@ export const useReadingStore = create<ReadingStore>((set, get) => ({
   // ─── decryptReflectionContent ─────────────────────────────────────────────
   decryptReflectionContent: async (reflection: DailyReadingReflection): Promise<string> => {
     try {
-      if (reflection.reflection) {
-        return reflection.reflection;
-      }
       if (reflection.encrypted_reflection) {
         return await decryptContent(reflection.encrypted_reflection);
       }

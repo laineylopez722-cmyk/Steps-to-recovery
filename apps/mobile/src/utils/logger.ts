@@ -26,6 +26,24 @@
 const isDevelopment = process.env.EXPO_PUBLIC_ENV === 'development';
 
 /**
+ * Lazy-loaded Sentry module singleton.
+ * Avoids calling require() on every log invocation.
+ */
+let _sentry: typeof import('../lib/sentry') | null = null;
+let _sentryLoaded = false;
+function getSentry(): typeof import('../lib/sentry') | null {
+  if (!_sentryLoaded) {
+    _sentryLoaded = true;
+    try {
+      _sentry = require('../lib/sentry');
+    } catch {
+      _sentry = null; // Not available
+    }
+  }
+  return _sentry;
+}
+
+/**
  * List of sensitive field names that should be redacted from logs
  *
  * Any field matching these names (case-insensitive) will be replaced
@@ -199,11 +217,13 @@ export const logger = {
 
       // Sentry integration (automatically sanitized by sentry.ts beforeSend)
       if (typeof error === 'object' && error !== null) {
-        try {
-          const { captureException: sentryCaptureException } = require('../lib/sentry');
-          sentryCaptureException(error instanceof Error ? error : new Error(message), sanitized);
-        } catch {
-          // Sentry not configured or failed, silently continue
+        const sentry = getSentry();
+        if (sentry) {
+          try {
+            sentry.captureException(error instanceof Error ? error : new Error(message), sanitized as Record<string, unknown> | undefined);
+          } catch {
+            // Sentry capture failed, silently continue
+          }
         }
       }
     }
@@ -223,11 +243,13 @@ export const logger = {
     }
 
     // Add Sentry breadcrumb for warnings (sanitized by sentry beforeBreadcrumb)
-    try {
-      const { addBreadcrumb: sentryAddBreadcrumb } = require('../lib/sentry');
-      sentryAddBreadcrumb('logger', message, sanitized as Record<string, unknown> | undefined);
-    } catch {
-      // Sentry not configured, silently continue
+    const sentry = getSentry();
+    if (sentry) {
+      try {
+        sentry.addBreadcrumb('logger', message, sanitized as Record<string, unknown> | undefined);
+      } catch {
+        // Sentry breadcrumb failed, silently continue
+      }
     }
   },
 
@@ -246,11 +268,13 @@ export const logger = {
     }
 
     // Add Sentry breadcrumb for info (sanitized by sentry beforeBreadcrumb)
-    try {
-      const { addBreadcrumb: sentryAddBreadcrumb } = require('../lib/sentry');
-      sentryAddBreadcrumb('logger', message, sanitized as Record<string, unknown> | undefined);
-    } catch {
-      // Sentry not configured, silently continue
+    const sentry = getSentry();
+    if (sentry) {
+      try {
+        sentry.addBreadcrumb('logger', message, sanitized as Record<string, unknown> | undefined);
+      } catch {
+        // Sentry breadcrumb failed, silently continue
+      }
     }
   },
 

@@ -320,13 +320,7 @@ export function SponsorScreen(): React.ReactElement {
                 textStyle={styles.dangerText}
                 style={styles.mediumTopMargin}
               />
-              <Button
-                title="Message Sponsor"
-                onPress={() => navigation.navigate('SponsorChat', { connectionId: mySponsor.id })}
-                variant="primary"
-                size="small"
-                style={styles.smallTopMargin}
-              />
+
             </Card>
           )}
 
@@ -358,17 +352,7 @@ export function SponsorScreen(): React.ReactElement {
                     size="small"
                     style={styles.mediumTopMargin}
                   />
-                  <Button
-                    title="Message Sponsee"
-                    onPress={() =>
-                      navigation.navigate('SponsorChat', {
-                        connectionId: sponsee.id,
-                      })
-                    }
-                    variant="primary"
-                    size="small"
-                    style={styles.smallTopMargin}
-                  />
+
                   <Button
                     title="Remove Sponsee"
                     onPress={() => handleRemove(sponsee.id)}

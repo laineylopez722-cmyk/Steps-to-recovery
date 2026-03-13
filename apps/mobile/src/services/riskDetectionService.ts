@@ -1,8 +1,9 @@
 /**
  * Risk Pattern Detection Service
  *
- * Privacy-first client-side detection of behavioral patterns that may indicate risk.
- * NO DATA LEAVES THE DEVICE - all logic runs locally.
+ * Privacy-first detection of behavioral patterns that may indicate risk.
+ * Queries user's own data via Supabase (protected by RLS policies).
+ * Detection logic runs client-side; only aggregate pattern results are used locally.
  *
  * Patterns detected:
  * - Journal inactivity (3+ days)
@@ -15,6 +16,7 @@
  */
 
 import { supabase } from '../lib/supabase';
+import { encryptContent } from '../utils/encryption';
 import { mmkvStorage } from '../lib/mmkv';
 import { logger } from '../utils/logger';
 
@@ -443,14 +445,15 @@ export async function notifySponsor(
       return { success: false, error: 'No active sponsor connection' };
     }
 
-    // Create notification entry
+    // Create notification entry (encrypt sensitive message content)
     const message = `📊 Recovery Check-In Alert\n\n${pattern.message}\n\nYour sponsee might benefit from a check-in.`;
+    const encryptedMessage = await encryptContent(message);
 
     const { error: notifError } = await supabase.from('sponsor_notifications').insert({
       sponsor_id: sponsorship.sponsor_id,
       sponsee_id: userId,
       notification_type: 'risk_alert',
-      message,
+      message: encryptedMessage,
       severity: pattern.severity,
       created_at: new Date().toISOString(),
     });

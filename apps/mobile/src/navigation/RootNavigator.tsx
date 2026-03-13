@@ -10,6 +10,7 @@ import { MainNavigator } from './MainNavigator';
 import { OnboardingSteps } from '../features/onboarding/components/OnboardingSteps';
 import { supabase } from '../lib/supabase';
 import { navigationRef } from './navigationRef';
+import { linking } from './linking';
 import { mmkvStorage } from '../lib/mmkv';
 import type { RootStackParamList } from './types';
 import { logger } from '../utils/logger';
@@ -154,6 +155,13 @@ export function RootNavigator() {
     }
   }, [user]);
 
+  // Reset profile check flag on logout so re-login triggers a fresh check
+  useEffect(() => {
+    if (!user) {
+      hasCheckedProfileRef.current = false;
+    }
+  }, [user]);
+
   useEffect(() => {
     checkOnboardingStatus();
   }, [checkOnboardingStatus]);
@@ -194,7 +202,7 @@ export function RootNavigator() {
   }
 
   return (
-    <NavigationContainer ref={navigationRef}>
+    <NavigationContainer ref={navigationRef} linking={linking}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,

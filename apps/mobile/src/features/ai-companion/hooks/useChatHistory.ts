@@ -12,6 +12,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Platform } from 'react-native';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { encryptContent, decryptContent } from '../../../utils/encryption';
+import { addToSyncQueue } from '../../../services/syncService';
 import { logger } from '../../../utils/logger';
 import type { Conversation, Message, ConversationType, ConversationStatus } from '../types';
 
@@ -224,6 +225,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [id, userId, title, type, stepNumber ?? null, 'active', now, now],
         );
+        await addToSyncQueue(db, 'chat_conversations', id, 'insert');
 
         // Update local state
         setConversations((prev) => [conversation, ...prev]);
@@ -272,6 +274,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
           `UPDATE chat_conversations SET status = 'archived', updated_at = ? WHERE id = ?`,
           [new Date().toISOString(), id],
         );
+        await addToSyncQueue(db, 'chat_conversations', id, 'update');
 
         // Update local state
         setConversations((prev) => prev.filter((c) => c.id !== id));
@@ -326,12 +329,14 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
             now,
           ],
         );
+        await addToSyncQueue(db, 'chat_messages', id, 'insert');
 
         // Update conversation's updated_at timestamp
         await db.runAsync(`UPDATE chat_conversations SET updated_at = ? WHERE id = ?`, [
           now,
           conversationId,
         ]);
+        await addToSyncQueue(db, 'chat_conversations', conversationId, 'update');
 
         // Update title if this is the first user message
         if (role === 'user') {
@@ -347,6 +352,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
               `UPDATE chat_conversations SET title = ? WHERE id = ? AND title IS NULL`,
               [title, conversationId],
             );
+            await addToSyncQueue(db, 'chat_conversations', conversationId, 'update');
           }
         }
 
@@ -418,6 +424,7 @@ export function useChatHistory(userId: string): UseChatHistoryReturn {
           new Date().toISOString(),
           conversationId,
         ]);
+        await addToSyncQueue(db, 'chat_conversations', conversationId, 'update');
 
         // Update local state
         setConversations((prev) =>

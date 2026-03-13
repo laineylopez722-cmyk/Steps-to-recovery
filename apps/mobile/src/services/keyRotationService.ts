@@ -95,7 +95,7 @@ const ENCRYPTED_TABLES: EncryptedTableDef[] = [
   { table: 'favorite_meetings', columns: ['encrypted_notes'] },
   { table: 'safety_plans', columns: ['encrypted_plan'] },
   { table: 'sponsor_messages', columns: ['encrypted_content'] },
-  { table: 'memories', columns: ['encrypted_content', 'encrypted_context'] },
+  { table: 'ai_memories', columns: ['encrypted_content', 'encrypted_context'] },
 ];
 
 /**
@@ -348,9 +348,19 @@ export async function rotateEncryptionKey(
               const reEncrypted = await encryptWithKey(plaintext, newKey);
               updates.push(`${col} = ?`);
               values.push(reEncrypted);
-            } catch {
-              // Column value may not be encrypted or may be corrupt; skip it
-              logger.warn('Skipped column during rotation', { table, col, recordId: record['id'] });
+            } catch (decryptError) {
+              // Abort rotation — leaving this column would make it
+              // permanently unrecoverable after the key swap
+              const msg = decryptError instanceof Error ? decryptError.message : 'Decrypt failed';
+              logger.error('Key rotation aborted: failed to decrypt column', {
+                table,
+                col,
+                recordId: record['id'],
+                error: msg,
+              });
+              throw new Error(
+                `Rotation aborted: cannot decrypt ${table}.${col} for record ${record['id']}. Old key preserved.`,
+              );
             }
           }
         }

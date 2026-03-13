@@ -1,43 +1,31 @@
 import { CommonActions, StackActions } from '@react-navigation/native';
 import { logger } from '../utils/logger';
-import type { NavigationContainerRef } from '@react-navigation/native';
-import type { RootStackParamList } from './types';
+import { navigationRef } from './navigationRef';
 
 /**
  * Navigation Utilities
  *
  * Provides centralized navigation helpers for programmatic navigation.
+ * Uses the shared navigationRef from navigationRef.ts (connected via
+ * NavigationContainer ref in RootNavigator).
  *
  * @example
  * ```tsx
- * import { navigationRef, goBack } from './navigation/navigationUtils';
+ * import { goBack } from './navigation/navigationUtils';
  *
  * // Go back
  * goBack();
  * ```
  */
 
-// Navigation reference for use outside React components
-export const navigationRef = {
-  current: null as NavigationContainerRef<RootStackParamList> | null,
-};
-
-/**
- * Set the navigation container reference
- * Call this in your root navigation component
- */
-export function setNavigationRef(ref: NavigationContainerRef<RootStackParamList> | null): void {
-  navigationRef.current = ref;
-}
-
 /**
  * Navigate to a screen
  * Note: Use type assertion for screen names to avoid complex type issues
  */
 export function navigate(name: string, params?: Record<string, unknown>): void {
-  if (navigationRef.current) {
+  if (navigationRef.isReady()) {
     // Use type assertion to avoid complex navigation type issues
-    (navigationRef.current.navigate as (name: string, params?: Record<string, unknown>) => void)(
+    (navigationRef.navigate as (name: string, params?: Record<string, unknown>) => void)(
       name,
       params,
     );
@@ -152,8 +140,8 @@ export const authNavigation = {
  * Push a screen onto the stack
  */
 export function push(name: string, params?: Record<string, unknown>): void {
-  if (navigationRef.current) {
-    navigationRef.current.dispatch(StackActions.push(name, params));
+  if (navigationRef.isReady()) {
+    navigationRef.dispatch(StackActions.push(name, params));
     logger.debug('Navigation: push', { name, params });
   } else {
     logger.warn('Navigation: Navigation ref not set');
@@ -164,8 +152,8 @@ export function push(name: string, params?: Record<string, unknown>): void {
  * Replace current screen with new one
  */
 export function replace(name: string, params?: Record<string, unknown>): void {
-  if (navigationRef.current) {
-    navigationRef.current.dispatch(StackActions.replace(name, params));
+  if (navigationRef.isReady()) {
+    navigationRef.dispatch(StackActions.replace(name, params));
     logger.debug('Navigation: replace', { name, params });
   } else {
     logger.warn('Navigation: Navigation ref not set');
@@ -176,9 +164,9 @@ export function replace(name: string, params?: Record<string, unknown>): void {
  * Go back to previous screen
  */
 export function goBack(): void {
-  if (navigationRef.current) {
-    if (navigationRef.current.canGoBack()) {
-      navigationRef.current.goBack();
+  if (navigationRef.isReady()) {
+    if (navigationRef.canGoBack()) {
+      navigationRef.goBack();
       logger.debug('Navigation: goBack');
     } else {
       logger.warn('Navigation: Cannot go back');
@@ -192,8 +180,8 @@ export function goBack(): void {
  * Pop to top of stack
  */
 export function popToTop(): void {
-  if (navigationRef.current) {
-    navigationRef.current.dispatch(StackActions.popToTop());
+  if (navigationRef.isReady()) {
+    navigationRef.dispatch(StackActions.popToTop());
     logger.debug('Navigation: popToTop');
   } else {
     logger.warn('Navigation: Navigation ref not set');
@@ -204,8 +192,8 @@ export function popToTop(): void {
  * Pop n screens from stack
  */
 export function pop(count: number = 1): void {
-  if (navigationRef.current) {
-    navigationRef.current.dispatch(StackActions.pop(count));
+  if (navigationRef.isReady()) {
+    navigationRef.dispatch(StackActions.pop(count));
     logger.debug('Navigation: pop', { count });
   } else {
     logger.warn('Navigation: Navigation ref not set');
@@ -216,8 +204,8 @@ export function pop(count: number = 1): void {
  * Reset navigation state
  */
 export function reset(state: Parameters<typeof CommonActions.reset>[0]): void {
-  if (navigationRef.current) {
-    navigationRef.current.dispatch(CommonActions.reset(state));
+  if (navigationRef.isReady()) {
+    navigationRef.dispatch(CommonActions.reset(state));
     logger.debug('Navigation: reset');
   } else {
     logger.warn('Navigation: Navigation ref not set');
@@ -228,14 +216,14 @@ export function reset(state: Parameters<typeof CommonActions.reset>[0]): void {
  * Check if can go back
  */
 export function canGoBack(): boolean {
-  return navigationRef.current?.canGoBack() ?? false;
+  return navigationRef.isReady() ? navigationRef.canGoBack() : false;
 }
 
 /**
  * Get current route name
  */
 export function getCurrentRoute(): string | undefined {
-  return navigationRef.current?.getCurrentRoute()?.name;
+  return navigationRef.isReady() ? navigationRef.getCurrentRoute()?.name : undefined;
 }
 
 /**

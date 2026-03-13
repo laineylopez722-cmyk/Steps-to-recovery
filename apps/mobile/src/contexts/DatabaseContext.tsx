@@ -1,5 +1,6 @@
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -16,12 +17,14 @@ interface DatabaseContextValue {
   db: StorageAdapter | null;
   isReady: boolean;
   error: Error | null;
+  retryInit: () => void;
 }
 
 const DatabaseContext = createContext<DatabaseContextValue>({
   db: null,
   isReady: false,
   error: null,
+  retryInit: () => {},
 });
 
 export function useDatabase(): DatabaseContextValue {
@@ -48,9 +51,15 @@ export function DatabaseProvider({ children }: DatabaseProviderProps): React.Rea
 function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.ReactElement {
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
   const [initError, setInitError] = useState<Error | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const initStartedRef = useRef(false);
 
   useEffect(() => {
+    // Reset the guard on retry so initialization can re-run
+    if (retryCount > 0) {
+      initStartedRef.current = false;
+    }
+
     // Prevent double initialization in StrictMode or re-renders
     if (initStartedRef.current) {
       return;
@@ -61,6 +70,7 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
 
     async function initializeDatabase(): Promise<void> {
       try {
+        setInitError(null);
         logger.info('Mobile: Starting database initialization');
 
         // Dynamically import expo-sqlite
@@ -96,11 +106,15 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
     return () => {
       isMounted = false;
     };
+  }, [retryCount]);
+
+  const retryInit = useCallback(() => {
+    setRetryCount((c) => c + 1);
   }, []);
 
   const contextValue = useMemo(
-    () => ({ db: adapter, isReady: adapter !== null, error: initError }),
-    [adapter, initError],
+    () => ({ db: adapter, isReady: adapter !== null, error: initError, retryInit }),
+    [adapter, initError, retryInit],
   );
 
   // Always render children - don't block on database loading
@@ -113,9 +127,13 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
 function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactElement {
   const [adapter, setAdapter] = useState<StorageAdapter | null>(null);
   const [initError, setInitError] = useState<Error | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const initStartedRef = useRef(false);
 
   useEffect(() => {
+    if (retryCount > 0) {
+      initStartedRef.current = false;
+    }
     if (initStartedRef.current) return;
     initStartedRef.current = true;
 
@@ -123,6 +141,7 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
 
     async function setupAdapter(): Promise<void> {
       try {
+        setInitError(null);
         logger.info('Web: Initializing IndexedDB adapter');
         const storageAdapter = await createStorageAdapter();
         await initDatabase(storageAdapter);
@@ -143,11 +162,15 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
     return () => {
       isMounted = false;
     };
+  }, [retryCount]);
+
+  const retryInit = useCallback(() => {
+    setRetryCount((c) => c + 1);
   }, []);
 
   const contextValue = useMemo(
-    () => ({ db: adapter, isReady: adapter !== null, error: initError }),
-    [adapter, initError],
+    () => ({ db: adapter, isReady: adapter !== null, error: initError, retryInit }),
+    [adapter, initError, retryInit],
   );
 
   return <DatabaseContext.Provider value={contextValue}>{children}</DatabaseContext.Provider>;

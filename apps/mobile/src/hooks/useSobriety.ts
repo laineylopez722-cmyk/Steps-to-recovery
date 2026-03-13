@@ -28,7 +28,29 @@ import {
   getAchievedMilestones,
   scheduleMilestoneNotification,
 } from '@recovery/shared';
-import type { AppSettings } from '@recovery/shared';
+import type { AppSettings, TimeMilestone } from '@recovery/shared';
+
+/** Sobriety profile type derived from the profile store */
+type ProfileType = ReturnType<typeof useProfileStore.getState>['profile'];
+
+/** Program type for profile creation */
+type ProgramType = '12-step-aa' | '12-step-na' | 'smart' | 'custom';
+
+interface UseSobrietyReturn {
+  profile: ProfileType;
+  soberDays: number;
+  soberHours: number;
+  soberMinutes: number;
+  isLoading: boolean;
+  createProfile: (sobrietyDate: Date, programType: ProgramType, displayName?: string) => Promise<void>;
+  updateProfile: (updates: Partial<{ sobrietyDate: Date; programType: ProgramType; displayName: string }>) => Promise<void>;
+  nextMilestone: TimeMilestone | null;
+  latestMilestone: TimeMilestone | null;
+  achievedMilestones: readonly TimeMilestone[];
+  daysUntilNextMilestone: number | null;
+  progressToNextMilestone: number;
+  formattedDuration: string;
+}
 
 /**
  * Sobriety calculation and milestone tracking hook
@@ -38,7 +60,7 @@ import type { AppSettings } from '@recovery/shared';
  *
  * @returns Object with sobriety state, calculations, and milestones
  */
-export function useSobriety() {
+export function useSobriety(): UseSobrietyReturn {
   const {
     profile,
     soberDays,
