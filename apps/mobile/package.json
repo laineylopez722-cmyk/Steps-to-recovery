@@ -64,7 +64,7 @@
     "@supabase/supabase-js": "^2.95.3",
     "@tanstack/query-sync-storage-persister": "^5.90.22",
     "@tanstack/react-query": "^5.90.21",
-    "@tanstack/react-query-persist-client": "^5.90.22",
+    "@tanstack/react-query-persist-client": "^5.90.24",
     "@types/crypto-js": "^4.2.2",
     "arg": "^5.0.2",
     "base-64": "^1.0.0",
