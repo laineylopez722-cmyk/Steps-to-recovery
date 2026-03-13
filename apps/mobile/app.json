@@ -108,12 +108,15 @@
       [
         "@sentry/react-native/expo",
         {
+          "url": "https://sentry.io/",
           "organization": "steps-to-recovery",
-          "project": "mobile"
+          "project": "mobile",
+          "experimental_android": {
+            "pluginVersion": "6.0.0"
+          }
         }
       ],
       "@react-native-community/datetimepicker",
-      "@sentry/react-native",
       "expo-router"
     ],
     "updates": {

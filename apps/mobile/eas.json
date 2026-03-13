@@ -17,6 +17,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
+        "image": "latest",
         "simulator": true,
         "resourceClass": "m-medium"
       },
@@ -43,6 +44,7 @@
       "extends": "base",
       "distribution": "internal",
       "ios": {
+        "image": "latest",
         "resourceClass": "m-medium"
       },
       "android": {
