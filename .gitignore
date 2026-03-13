@@ -104,3 +104,7 @@ memory/
 .zenflow/
 _bmad-output/
 coverage/
+
+# Root-level Expo config stubs (real config lives in apps/mobile/)
+/app.json
+/eas.json
