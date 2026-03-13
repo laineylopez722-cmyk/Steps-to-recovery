@@ -108,7 +108,6 @@
       [
         "@sentry/react-native/expo",
         {
-          "url": "https://sentry.io/",
           "organization": "steps-to-recovery",
           "project": "mobile",
           "experimental_android": {
