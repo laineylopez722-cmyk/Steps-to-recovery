@@ -151,10 +151,31 @@ afterEach(() => {
 
 // Mock react-native-worklets (peer dep of Reanimated 4.x)
 // Required since Reanimated 4 extracted worklets into a separate native package.
-// Using the official mock from react-native-worklets/src/mock.
-jest.mock('react-native-worklets', () =>
-  require('react-native-worklets/src/mock'),
-);
+// Worklets 0.5.x no longer ships a mock, so we provide a comprehensive one inline.
+jest.mock('react-native-worklets', () => {
+  const noopFn = jest.fn();
+  const identity = jest.fn((value) => value);
+  return {
+    WorkletsModule: { makeShareableClone: noopFn },
+    isWorklet: jest.fn(() => false),
+    isWorkletFunction: jest.fn(() => false),
+    isShareable: jest.fn(() => false),
+    isRemoteFunction: jest.fn(() => false),
+    makeShareable: identity,
+    makeShareableCloneRecursive: identity,
+    makeShareableCloneOnUIRecursive: identity,
+    executeOnUIRuntimeSync: jest.fn(() => noopFn),
+    runOnUI: jest.fn(() => noopFn),
+    runOnJS: jest.fn(() => noopFn),
+    createSerializable: jest.fn((value) => value),
+    callMicrotasks: noopFn,
+    RuntimeKind: { UI: 'UI', JS: 'JS' },
+    WorkletFunction: {},
+    SerializableRef: jest.fn(),
+    Synchronizable: jest.fn(),
+    serializableMappingCache: new Map(),
+  };
+});
 
 // Mock react-native-css-interop (NativeWind)
 jest.mock('react-native-css-interop/jsx-runtime', () => ({
