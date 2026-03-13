@@ -19,7 +19,12 @@ import { darkAccent, radius, spacing, typography } from '../../../design-system/
 import { ds } from '../../../design-system/tokens/ds';
 import type { RiskPattern } from '../../../services/riskDetectionService';
 import { useNavigation } from '@react-navigation/native';
-import * as Haptics from '@/platform/haptics';
+import {
+  impactAsync,
+  ImpactFeedbackStyle,
+  notificationAsync,
+  NotificationFeedbackType,
+} from '@/platform/haptics';
 
 // ========================================
 // Props
@@ -83,7 +88,7 @@ export function RiskAlertCard({
 
   // Handle suggested action
   const handleAction = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    impactAsync(ImpactFeedbackStyle.Medium);
 
     // Navigate to suggested route (cross-navigator navigation)
     (
@@ -93,7 +98,7 @@ export function RiskAlertCard({
 
   // Handle dismiss
   const handleDismiss = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    impactAsync(ImpactFeedbackStyle.Light);
     onDismiss();
   };
 
@@ -101,7 +106,7 @@ export function RiskAlertCard({
   const handleNotifySponsor = async () => {
     if (!onNotifySponsor) return;
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    impactAsync(ImpactFeedbackStyle.Medium);
     setIsNotifying(true);
 
     try {
@@ -109,17 +114,17 @@ export function RiskAlertCard({
 
       if (result.success) {
         setNotifySuccess(true);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        notificationAsync(NotificationFeedbackType.Success);
 
         // Hide success message after 2 seconds
         successTimerRef.current = setTimeout(() => {
           setNotifySuccess(false);
         }, 2000);
       } else {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        notificationAsync(NotificationFeedbackType.Error);
       }
     } catch {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      notificationAsync(NotificationFeedbackType.Error);
     } finally {
       setIsNotifying(false);
     }
@@ -345,4 +350,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-
