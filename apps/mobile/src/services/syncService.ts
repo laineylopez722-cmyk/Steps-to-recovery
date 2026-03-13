@@ -26,10 +26,8 @@ import type { StorageAdapter } from '../adapters/storage';
 import { logger } from '../utils/logger';
 import { decryptContent } from '../utils/encryption';
 import {
-  VALID_SYNC_TABLES,
   PULL_SYNC_TABLES,
   isValidSyncTable,
-  type ValidSyncTable,
   type PullSyncTable,
 } from './syncRegistry';
 
@@ -89,8 +87,8 @@ const MAX_RETRY_COUNT = 3;
 /** Base delay for exponential backoff (in milliseconds) */
 const BASE_BACKOFF_MS = 1000;
 
-// VALID_SYNC_TABLES, ValidSyncTable, isValidSyncTable, PULL_SYNC_TABLES, and
-// PullSyncTable are imported from syncRegistry (single source of truth).
+// isValidSyncTable, PULL_SYNC_TABLES, and PullSyncTable are imported from
+// syncRegistry (single source of truth).
 
 /**
  * Wrap a promise with a timeout
