@@ -58,7 +58,7 @@ module.exports = function (api) {
     // Exclude node_modules from transformation except specific packages
     // Use patterns like expo(-[^/]*)? to match expo, expo-modules-core, expo-sqlite, etc.
     exclude: [
-      /node_modules\/(?!(.pnpm|(jest-)?react-native(-[^/]*)?|@react-native(-[^/]*)?|expo(-[^/]*)?|@expo(-[^/]*)?|@unimodules|nativewind|uniwind|@react-navigation(-[^/]*)?|@sentry\/react-native|@gorhom(-[^/]*)?)\/).*/,
+      /node_modules\/(?!(.pnpm|(jest-)?react-native(-[^/]*)?|@react-native(-[^/]*)?|expo(-[^/]*)?|@expo(-[^/]*)?|@unimodules|nativewind|uniwind|@react-navigation(-[^/]*)?|@sentry\/react-native|@gorhom(-[^/]*)?|@rn-primitives(-[^/]*)?|@hookform(-[^/]*)?|react-hook-form|@tanstack(-[^/]*)?|@supabase(-[^/]*)?|@shopify(-[^/]*)?)\/).*/,
     ],
   };
 };
