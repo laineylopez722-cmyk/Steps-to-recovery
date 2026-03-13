@@ -82,21 +82,30 @@ const MAX_RETRY_COUNT = 3;
 /** Base delay for exponential backoff (in milliseconds) */
 const BASE_BACKOFF_MS = 1000;
 
-/** Valid table names for sync operations (whitelist to prevent SQL injection) */
+/**
+ * Valid table names for sync operations (whitelist to prevent SQL injection).
+ *
+ * A table belongs here only when ALL THREE are true:
+ *   1. A sync function exists in processSyncItem (push)
+ *   2. The table has sync_status TEXT and supabase_id columns
+ *   3. addDeleteToSyncQueue can safely capture supabase_id before deletion
+ *
+ * Tables NOT listed here (personal_inventory, gratitude_entries, safety_plans,
+ * sponsor_messages, craving_surf_sessions) use `synced INTEGER` instead of
+ * `sync_status TEXT` and have no processSyncItem handler. They are excluded
+ * until a full sync implementation is added (see migration v21 for schema prep).
+ */
 const VALID_SYNC_TABLES = [
   'journal_entries',
   'step_work',
   'daily_checkins',
   'favorite_meetings',
   'reading_reflections',
-  'sponsor_messages',
   'weekly_reports',
   'sponsor_connections',
   'sponsor_shared_entries',
-  'personal_inventory',
-  'craving_surf_sessions',
-  'gratitude_entries',
-  'safety_plans',
+  'achievements',
+  'ai_memories',
 ] as const;
 
 type ValidSyncTable = (typeof VALID_SYNC_TABLES)[number];
@@ -158,6 +167,8 @@ interface LocalJournalEntry {
   encrypted_mood: string | null;
   encrypted_craving: string | null;
   encrypted_tags: string | null;
+  /** Added in migration v20 — may be absent on older schema versions */
+  encrypted_audio: string | null;
   created_at: string;
   updated_at: string;
   sync_status: string;
@@ -352,13 +363,22 @@ export async function syncJournalEntry(
     // Send as single-element array preserving the encrypted payload.
     const tags: string[] = entry.encrypted_tags ? [entry.encrypted_tags] : [];
 
-    // Map local schema to Supabase schema
+    // Map local schema to Supabase schema.
+    // Field name contract (local → remote):
+    //   encrypted_title  → title
+    //   encrypted_body   → content
+    //   encrypted_mood   → mood
+    //   encrypted_craving→ craving
+    //   encrypted_tags   → tags (single-element array preserving the encrypted blob)
+    //   encrypted_audio  → audio
     const supabaseData = {
       id: supabaseId,
       user_id: userId,
       title: entry.encrypted_title || '', // Encrypted title
       content: entry.encrypted_body, // Encrypted content
       mood: entry.encrypted_mood, // Encrypted mood (nullable)
+      craving: entry.encrypted_craving || null, // Encrypted craving intensity (nullable)
+      audio: entry.encrypted_audio || null, // Encrypted audio (v20, nullable)
       tags, // Array with encrypted tags
       created_at: entry.created_at,
       updated_at: entry.updated_at,
@@ -1386,26 +1406,26 @@ export async function addToSyncQueue(
   supabaseId?: string | null,
 ): Promise<void> {
   try {
-    // Enforce queue size limit before adding - remove oldest pending items if at capacity
-    const countResult = await db.getFirstAsync<{ count: number }>(
-      'SELECT COUNT(*) as count FROM sync_queue WHERE retry_count < ? AND failed_at IS NULL',
-      [MAX_RETRY_COUNT],
+    // Enforce queue size limit before adding.
+    // IMPORTANT: Only evict permanently-failed items (failed_at IS NOT NULL).
+    // Never evict pending items — that would silently drop unsynced user data.
+    const totalResult = await db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM sync_queue',
     );
-    const count = countResult?.count || 0;
+    const total = totalResult?.count || 0;
 
-    if (count >= MAX_SYNC_QUEUE_SIZE) {
-      // Remove oldest pending items to make room
+    if (total >= MAX_SYNC_QUEUE_SIZE) {
+      // Remove only permanently-failed items to make room, oldest first.
       const deleteResult = await db.runAsync(
         `DELETE FROM sync_queue
          WHERE id IN (
            SELECT id FROM sync_queue
-           WHERE retry_count < ? AND failed_at IS NULL
-           ORDER BY created_at ASC
+           WHERE failed_at IS NOT NULL
+           ORDER BY failed_at ASC
            LIMIT 10
          )`,
-        [MAX_RETRY_COUNT],
       );
-      logger.warn('Sync queue at capacity, removed oldest pending items', { removed: deleteResult });
+      logger.warn('Sync queue at capacity, removed oldest permanently-failed items', { removed: deleteResult });
     }
 
     const queueId = `sync_${generateUUID()}`;
@@ -1477,9 +1497,6 @@ export async function addDeleteToSyncQueue(
 }
 
 // ─── Pull Sync (Cloud → Device) ─────────────────────────────────────────────
-
-/** SecureStore key for tracking last pull timestamp */
-const LAST_PULL_KEY_PREFIX = 'last_pull_';
 
 /** Tables that support pull sync, mapped to their local schema */
 const PULL_SYNC_TABLES = [
@@ -1604,18 +1621,26 @@ async function updateLocalFromRemote(
 ): Promise<void> {
   switch (tableName) {
     case 'journal_entries':
+      // Remote field names must match what syncJournalEntry pushes:
+      //   title → encrypted_title
+      //   content → encrypted_body
+      //   mood → encrypted_mood
+      //   craving → encrypted_craving
+      //   tags[0] → encrypted_tags (stored as single-element array on remote)
+      //   audio → encrypted_audio
       await db.runAsync(
         `UPDATE journal_entries
          SET encrypted_title = ?, encrypted_body = ?, encrypted_mood = ?,
-             encrypted_craving = ?, encrypted_tags = ?,
+             encrypted_craving = ?, encrypted_tags = ?, encrypted_audio = ?,
              updated_at = ?, sync_status = 'synced'
          WHERE id = ?`,
         [
           (remote.title as string) || null,
-          (remote.body as string) || '',
+          (remote.content as string) || '',
           (remote.mood as string) || null,
-          (remote.craving_level as string) || null,
-          (remote.tags as string) || null,
+          (remote.craving as string) || null,
+          Array.isArray(remote.tags) ? ((remote.tags as string[])[0] ?? null) : ((remote.tags as string) || null),
+          (remote.audio as string) || null,
           (remote.updated_at as string) || new Date().toISOString(),
           localId,
         ],
@@ -1623,14 +1648,17 @@ async function updateLocalFromRemote(
       break;
 
     case 'step_work':
+      // Remote field name must match what syncStepWork pushes:
+      //   content → encrypted_answer
+      //   is_completed → is_complete (boolean → integer)
       await db.runAsync(
         `UPDATE step_work
          SET encrypted_answer = ?, is_complete = ?, completed_at = ?,
              updated_at = ?, sync_status = 'synced'
          WHERE id = ?`,
         [
-          (remote.answer as string) || null,
-          remote.is_complete ? 1 : 0,
+          (remote.content as string) || null,
+          remote.is_completed ? 1 : 0,
           (remote.completed_at as string) || null,
           (remote.updated_at as string) || new Date().toISOString(),
           localId,
@@ -1672,13 +1700,15 @@ async function updateLocalFromRemote(
       break;
 
     case 'reading_reflections':
+      // Remote field name must match what syncReadingReflection pushes:
+      //   encrypted_reflection → encrypted_reflection (same name kept on remote)
       await db.runAsync(
         `UPDATE reading_reflections
          SET encrypted_reflection = ?, word_count = ?,
              updated_at = ?, sync_status = 'synced'
          WHERE id = ?`,
         [
-          (remote.reflection as string) || '',
+          (remote.encrypted_reflection as string) || '',
           (remote.word_count as number) || 0,
           (remote.updated_at as string) || new Date().toISOString(),
           localId,
@@ -1747,19 +1777,21 @@ async function insertLocalFromRemote(
 
   switch (tableName) {
     case 'journal_entries':
+      // Remote field names mirror what syncJournalEntry pushes.
       await db.runAsync(
         `INSERT INTO journal_entries
          (id, user_id, encrypted_title, encrypted_body, encrypted_mood,
-          encrypted_craving, encrypted_tags, created_at, updated_at,
+          encrypted_craving, encrypted_tags, encrypted_audio, created_at, updated_at,
           sync_status, supabase_id)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced', ?)`,
         [
           localId, userId,
           (remote.title as string) || null,
-          (remote.body as string) || '',
+          (remote.content as string) || '',
           (remote.mood as string) || null,
-          (remote.craving_level as string) || null,
-          (remote.tags as string) || null,
+          (remote.craving as string) || null,
+          Array.isArray(remote.tags) ? ((remote.tags as string[])[0] ?? null) : ((remote.tags as string) || null),
+          (remote.audio as string) || null,
           (remote.created_at as string) || now,
           (remote.updated_at as string) || now,
           remoteId,
@@ -1768,6 +1800,8 @@ async function insertLocalFromRemote(
       break;
 
     case 'step_work':
+      // Remote field names mirror what syncStepWork pushes.
+      // question_number is local-only — default to 1 since remote doesn't carry it.
       await db.runAsync(
         `INSERT INTO step_work
          (id, user_id, step_number, question_number, encrypted_answer,
@@ -1778,8 +1812,8 @@ async function insertLocalFromRemote(
           localId, userId,
           (remote.step_number as number) || 1,
           (remote.question_number as number) || 1,
-          (remote.answer as string) || null,
-          remote.is_complete ? 1 : 0,
+          (remote.content as string) || null,
+          remote.is_completed ? 1 : 0,
           (remote.completed_at as string) || null,
           (remote.created_at as string) || now,
           (remote.updated_at as string) || now,
@@ -1830,6 +1864,7 @@ async function insertLocalFromRemote(
       break;
 
     case 'reading_reflections':
+      // Remote field names mirror what syncReadingReflection pushes.
       await db.runAsync(
         `INSERT INTO reading_reflections
          (id, user_id, reading_id, reading_date, encrypted_reflection,
@@ -1839,7 +1874,7 @@ async function insertLocalFromRemote(
           localId, userId,
           (remote.reading_id as string) || '',
           (remote.reading_date as string) || now.split('T')[0],
-          (remote.reflection as string) || '',
+          (remote.encrypted_reflection as string) || '',
           (remote.word_count as number) || 0,
           (remote.created_at as string) || now,
           (remote.updated_at as string) || now,
@@ -1930,12 +1965,13 @@ export async function pullFromCloud(
 
   try {
     for (const tableName of PULL_SYNC_TABLES) {
-      // Get last pull timestamp for this table
-      const lastPullRow = await db.getFirstAsync<{ value: string }>(
-        `SELECT value FROM sync_metadata WHERE key = ?`,
-        [`${LAST_PULL_KEY_PREFIX}${tableName}`],
+      // Get last pull timestamp for this table.
+      // sync_metadata schema: (table_name TEXT PRIMARY KEY, last_pull_at TEXT, ...)
+      const lastPullRow = await db.getFirstAsync<{ last_pull_at: string | null }>(
+        `SELECT last_pull_at FROM sync_metadata WHERE table_name = ?`,
+        [tableName],
       );
-      const lastPullAt = lastPullRow?.value || null;
+      const lastPullAt = lastPullRow?.last_pull_at ?? null;
 
       const tableResult = await pullTable(db, tableName, userId, lastPullAt);
 
@@ -1945,11 +1981,11 @@ export async function pullFromCloud(
       } else {
         result.pulled += tableResult.pulled;
 
-        // Update last pull timestamp
+        // Update last pull timestamp using the correct column names from migration v15.
         const now = new Date().toISOString();
         await db.runAsync(
-          `INSERT OR REPLACE INTO sync_metadata (key, value) VALUES (?, ?)`,
-          [`${LAST_PULL_KEY_PREFIX}${tableName}`, now],
+          `INSERT OR REPLACE INTO sync_metadata (table_name, last_pull_at) VALUES (?, ?)`,
+          [tableName, now],
         );
       }
 

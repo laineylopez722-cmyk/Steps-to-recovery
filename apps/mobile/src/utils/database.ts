@@ -31,7 +31,7 @@ const initPromises = new Map<string, Promise<void>>();
  * Increment this when adding new migrations. Migrations are applied
  * sequentially from the current version to this target version.
  */
-const CURRENT_SCHEMA_VERSION = 20;
+const CURRENT_SCHEMA_VERSION = 21;
 
 /**
  * Initialize database with schema for offline-first storage
@@ -1008,6 +1008,55 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
     logger.info('Migration v20 completed');
   }
 
+  // Migration version 21: Normalize sync fields on tables that use `synced INTEGER`
+  // instead of the standard `sync_status TEXT DEFAULT 'pending'` / `supabase_id TEXT`.
+  // Affected tables: personal_inventory, gratitude_entries, safety_plans, sponsor_messages.
+  // This prepares them for future sync implementation without breaking existing data.
+  if (currentVersion < 21) {
+    logger.info('Running migration v21: Normalizing sync fields on personal_inventory, gratitude_entries, safety_plans, sponsor_messages');
+
+    const v21Migrations: Array<{ table: string; column: string; sql: string }> = [
+      {
+        table: 'personal_inventory',
+        column: 'sync_status',
+        sql: `ALTER TABLE personal_inventory ADD COLUMN sync_status TEXT DEFAULT 'pending'`,
+      },
+      {
+        table: 'gratitude_entries',
+        column: 'sync_status',
+        sql: `ALTER TABLE gratitude_entries ADD COLUMN sync_status TEXT DEFAULT 'pending'`,
+      },
+      {
+        table: 'safety_plans',
+        column: 'sync_status',
+        sql: `ALTER TABLE safety_plans ADD COLUMN sync_status TEXT DEFAULT 'pending'`,
+      },
+      {
+        table: 'sponsor_messages',
+        column: 'sync_status',
+        sql: `ALTER TABLE sponsor_messages ADD COLUMN sync_status TEXT DEFAULT 'pending'`,
+      },
+      {
+        table: 'sponsor_messages',
+        column: 'user_id',
+        sql: `ALTER TABLE sponsor_messages ADD COLUMN user_id TEXT`,
+      },
+    ];
+
+    for (const migration of v21Migrations) {
+      try {
+        if (!(await columnExists(db, migration.table, migration.column))) {
+          await db.execAsync(migration.sql);
+        }
+      } catch (error) {
+        logger.warn(`Migration v21: Failed to add ${migration.table}.${migration.column}`, error);
+      }
+    }
+
+    await recordMigration(db, 21);
+    logger.info('Migration v21 completed');
+  }
+
   logger.info('All migrations completed', { newVersion: CURRENT_SCHEMA_VERSION });
 }
 
@@ -1028,11 +1077,19 @@ async function runMigrations(db: StorageAdapter): Promise<void> {
  * ```
  */
 export async function clearDatabase(db: StorageAdapter): Promise<void> {
+  // Delete order respects foreign key constraints (children before parents).
+  // Tables added in migrations v14–v18 that were previously missing are now included.
   const statements = [
     'DELETE FROM sync_queue',
-    'DELETE FROM active_challenges',
+    'DELETE FROM sync_metadata',       // v15 — pull-sync timestamp tracking
+    'DELETE FROM active_challenges',   // v17
+    'DELETE FROM weather_snapshots',   // v18
+    'DELETE FROM ai_memories',         // v16
     'DELETE FROM craving_surf_sessions',
     'DELETE FROM safety_plans',
+    'DELETE FROM sponsor_messages',    // v14 — references sponsor_connections
+    'DELETE FROM sponsor_shared_entries',
+    'DELETE FROM sponsor_connections',
     'DELETE FROM favorite_meetings',
     'DELETE FROM meeting_search_cache',
     'DELETE FROM cached_meetings',
@@ -1042,8 +1099,6 @@ export async function clearDatabase(db: StorageAdapter): Promise<void> {
     'DELETE FROM step_work',
     'DELETE FROM daily_checkins',
     'DELETE FROM journal_entries',
-    'DELETE FROM sponsor_shared_entries',
-    'DELETE FROM sponsor_connections',
     'DELETE FROM weekly_reports',
     'DELETE FROM gratitude_entries',
     'DELETE FROM personal_inventory',

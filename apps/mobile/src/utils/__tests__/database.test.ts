@@ -109,8 +109,8 @@ describe('database utilities', () => {
     it('skips migrations when schema is up to date', async () => {
       const freshName = `fresh-${Date.now()}.db`;
       mockDb.getDatabaseName.mockReturnValue(freshName);
-      // Return a high version that equals CURRENT_SCHEMA_VERSION (20)
-      mockDb.getFirstAsync.mockResolvedValue({ version: 20 });
+      // Return a version that equals CURRENT_SCHEMA_VERSION (21)
+      mockDb.getFirstAsync.mockResolvedValue({ version: 21 });
       mockDb.getAllAsync.mockResolvedValue([]);
 
       await initDatabase(mockDb);
@@ -243,8 +243,115 @@ describe('database utilities', () => {
           typeof c[0] === 'string' && (c[0] as string).includes('INSERT INTO schema_migrations'),
       );
 
-      // Should have recorded migrations 1 through 20
-      expect(migrationRecords.length).toBe(20);
+      // Should have recorded migrations 1 through 21
+      expect(migrationRecords.length).toBe(21);
+    });
+  });
+
+  // ── Regression: clearDatabase completeness ─────────────────────────────────
+  // These tests guard against tables created in later migrations being omitted
+  // from the logout wipe (which would leave user data behind on logout).
+  describe('clearDatabase completeness regression', () => {
+    const EXPECTED_CLEARED_TABLES = [
+      'sync_queue',
+      'sync_metadata',
+      'active_challenges',
+      'weather_snapshots',
+      'ai_memories',
+      'craving_surf_sessions',
+      'safety_plans',
+      'sponsor_messages',
+      'sponsor_shared_entries',
+      'sponsor_connections',
+      'favorite_meetings',
+      'meeting_search_cache',
+      'cached_meetings',
+      'reading_reflections',
+      'daily_readings',
+      'achievements',
+      'step_work',
+      'daily_checkins',
+      'journal_entries',
+      'weekly_reports',
+      'gratitude_entries',
+      'personal_inventory',
+      'user_profile',
+    ] as const;
+
+    it('clears every user-owned and migration-created table', async () => {
+      await clearDatabase(mockDb);
+      const runCalls = mockDb.runAsync.mock.calls.map((c) => c[0] as string);
+      for (const table of EXPECTED_CLEARED_TABLES) {
+        expect(runCalls.some((sql) => sql.includes(`DELETE FROM ${table}`))).toBe(true);
+      }
+    });
+
+    it('clears ai_memories (v16) during logout', async () => {
+      await clearDatabase(mockDb);
+      const runCalls = mockDb.runAsync.mock.calls.map((c) => c[0] as string);
+      expect(runCalls.some((sql) => sql.includes('DELETE FROM ai_memories'))).toBe(true);
+    });
+
+    it('clears sponsor_messages (v14) during logout', async () => {
+      await clearDatabase(mockDb);
+      const runCalls = mockDb.runAsync.mock.calls.map((c) => c[0] as string);
+      expect(runCalls.some((sql) => sql.includes('DELETE FROM sponsor_messages'))).toBe(true);
+    });
+
+    it('clears sync_metadata (v15) during logout', async () => {
+      await clearDatabase(mockDb);
+      const runCalls = mockDb.runAsync.mock.calls.map((c) => c[0] as string);
+      expect(runCalls.some((sql) => sql.includes('DELETE FROM sync_metadata'))).toBe(true);
+    });
+
+    it('clears weather_snapshots (v18) during logout', async () => {
+      await clearDatabase(mockDb);
+      const runCalls = mockDb.runAsync.mock.calls.map((c) => c[0] as string);
+      expect(runCalls.some((sql) => sql.includes('DELETE FROM weather_snapshots'))).toBe(true);
+    });
+
+    it('deletes sponsor_messages before sponsor_connections (FK order)', async () => {
+      await clearDatabase(mockDb);
+      const runCalls = mockDb.runAsync.mock.calls.map((c) => c[0] as string);
+      const messagesIdx = runCalls.findIndex((s) => s.includes('DELETE FROM sponsor_messages'));
+      const connectionsIdx = runCalls.findIndex((s) => s.includes('DELETE FROM sponsor_connections'));
+      expect(messagesIdx).toBeGreaterThanOrEqual(0);
+      expect(connectionsIdx).toBeGreaterThanOrEqual(0);
+      expect(messagesIdx).toBeLessThan(connectionsIdx);
+    });
+  });
+
+  // ── Regression: migration v21 sync_status normalization ───────────────────
+  describe('migration v21: sync_status normalization', () => {
+    it('adds sync_status to personal_inventory when missing', async () => {
+      const m21Name = `v21-${Date.now()}.db`;
+      mockDb.getDatabaseName.mockReturnValue(m21Name);
+      mockDb.getFirstAsync.mockResolvedValue({ version: 20 });
+      // Simulate columns NOT existing on these tables
+      mockDb.getAllAsync.mockResolvedValue([{ name: 'id' }]);
+
+      await initDatabase(mockDb);
+
+      const execCalls = mockDb.execAsync.mock.calls.map((c) => c[0] as string);
+      const personalInvAlter = execCalls.find(
+        (sql) => sql.includes('ALTER TABLE personal_inventory') && sql.includes('sync_status'),
+      );
+      expect(personalInvAlter).toBeDefined();
+    });
+
+    it('adds sync_status to gratitude_entries when missing', async () => {
+      const m21bName = `v21b-${Date.now()}.db`;
+      mockDb.getDatabaseName.mockReturnValue(m21bName);
+      mockDb.getFirstAsync.mockResolvedValue({ version: 20 });
+      mockDb.getAllAsync.mockResolvedValue([{ name: 'id' }]);
+
+      await initDatabase(mockDb);
+
+      const execCalls = mockDb.execAsync.mock.calls.map((c) => c[0] as string);
+      const gratitudeAlter = execCalls.find(
+        (sql) => sql.includes('ALTER TABLE gratitude_entries') && sql.includes('sync_status'),
+      );
+      expect(gratitudeAlter).toBeDefined();
     });
   });
 });
