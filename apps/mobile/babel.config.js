@@ -53,12 +53,14 @@ module.exports = function (api) {
             plugins: ['babel-plugin-dynamic-import-node'],
           },
         ],
+        // In test mode, exclude most node_modules for speed — only transform packages
+        // that ship TypeScript/JSX source (react-native field or .mjs with JSX).
+        // In Metro (EAS/dev builds), NO exclude is applied — babel-preset-expo handles
+        // all packages correctly including those that ship TS/JSX source files.
+        exclude: [
+          /node_modules\/(?!(.pnpm|(jest-)?react-native(-[^/]*)?|@react-native(-[^/]*)?|expo(-[^/]*)?|@expo(-[^/]*)?|@unimodules|nativewind|uniwind|@react-navigation(-[^/]*)?|@sentry\/react-native|@gorhom(-[^/]*)?|@rn-primitives(-[^/]*)?|@hookform(-[^/]*)?|react-hook-form|react-freeze|@tanstack(-[^/]*)?|@supabase(-[^/]*)?|@shopify(-[^/]*)?)\/).*/,
+        ],
       }
       : {}),
-    // Exclude node_modules from transformation except specific packages
-    // Use patterns like expo(-[^/]*)? to match expo, expo-modules-core, expo-sqlite, etc.
-    exclude: [
-      /node_modules\/(?!(.pnpm|(jest-)?react-native(-[^/]*)?|@react-native(-[^/]*)?|expo(-[^/]*)?|@expo(-[^/]*)?|@unimodules|nativewind|uniwind|@react-navigation(-[^/]*)?|@sentry\/react-native|@gorhom(-[^/]*)?|@rn-primitives(-[^/]*)?|@hookform(-[^/]*)?|react-hook-form|@tanstack(-[^/]*)?|@supabase(-[^/]*)?|@shopify(-[^/]*)?)\/).*/,
-    ],
   };
 };
