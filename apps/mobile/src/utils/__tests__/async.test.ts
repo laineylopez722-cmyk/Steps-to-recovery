@@ -10,8 +10,8 @@ describe('withTimeout', () => {
       // Intentionally left pending.
     });
 
-    await expect(withTimeout(neverResolvingPromise, 1, 'slow operation')).rejects.toThrow(
-      'slow operation timed out after 1ms',
+    await expect(withTimeout(neverResolvingPromise, 50, 'slow operation')).rejects.toThrow(
+      'slow operation timed out after 50ms',
     );
   });
 });
