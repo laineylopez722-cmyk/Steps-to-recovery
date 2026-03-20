@@ -110,15 +110,17 @@
         "@sentry/react-native/expo",
         {
           "organization": "steps-to-recovery",
-          "project": "mobile"
+          "project": "mobile",
+          "experimental_android": {
+            "pluginVersion": "6.0.0"
+          }
         }
       ],
       "@react-native-community/datetimepicker",
-      "@sentry/react-native",
       "expo-router"
     ],
     "updates": {
-      "enabled": true,
+      "enabled": false,
       "fallbackToCacheTimeout": 30000,
       "checkAutomatically": "ON_LOAD"
     },

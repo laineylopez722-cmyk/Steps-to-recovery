@@ -19,6 +19,7 @@ const {
 
 module.exports = {
   ...expoPreset,
+  resolver: './apps/mobile/jest.resolver.js',
   // Use repo root to keep node_modules in-scope for Jest runtime
   rootDir: repoRoot,
   // Limit test discovery to the mobile app

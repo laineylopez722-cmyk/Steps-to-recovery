@@ -47,6 +47,10 @@ interface HomeScreenProps {
   userId: string;
 }
 
+type HomeRouteWithoutParams = {
+  [K in keyof HomeStackParamList]: HomeStackParamList[K] extends undefined ? K : never;
+}[keyof HomeStackParamList];
+
 function getGreeting(): string {
   const hour = new Date().getHours();
   if (hour < 12) return 'Good morning';
@@ -335,9 +339,47 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     }
   }, [days, checkMilestoneReview]);
 
-  const hapticLight = () => {
+  const hapticLight = useCallback((): void => {
     impactAsync(ImpactFeedbackStyle.Light).catch(() => {});
-  };
+  }, []);
+
+  const triggerHapticFeedback = useCallback(
+    (feedback: 'light' | 'medium' | 'warning'): void => {
+      if (feedback === 'light') {
+        hapticLight();
+      } else if (feedback === 'medium') {
+        impactAsync(ImpactFeedbackStyle.Medium).catch(() => {});
+      } else {
+        notificationAsync(NotificationFeedbackType.Warning).catch(() => {});
+      }
+    },
+    [hapticLight],
+  );
+
+  const createNavigationHandler = useCallback(
+    <TRoute extends HomeRouteWithoutParams>(
+      route: TRoute,
+      feedback: 'light' | 'medium' | 'warning' = 'light',
+    ): (() => void) => {
+      return () => {
+        triggerHapticFeedback(feedback);
+        // React Navigation's overloaded navigate types do not flow cleanly through
+        // callback factories, so the route is constrained above and cast only here.
+        navigation.navigate(route as never);
+      };
+    },
+    [navigation, triggerHapticFeedback],
+  );
+
+  const createParentNavigationHandler = useCallback(
+    (route: 'Steps' | 'Profile' | 'Journal' | 'Meetings'): (() => void) => {
+      return () => {
+        hapticLight();
+        navigation.getParent()?.navigate(route as never);
+      };
+    },
+    [hapticLight, navigation],
+  );
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -350,60 +392,38 @@ export function HomeScreen({ userId }: HomeScreenProps): React.ReactElement {
     }
   }, [refetchDays, refetchCheckins, refetchRisk]);
 
-  const handleMorning = useCallback(() => {
-    hapticLight();
-    navigation.navigate('MorningIntention');
-  }, [navigation]);
-
-  const handleReading = useCallback(() => {
-    hapticLight();
-    navigation.navigate('DailyReading');
-  }, [navigation]);
-
-  const handleEvening = useCallback(() => {
-    hapticLight();
-    navigation.navigate('EveningPulse');
-  }, [navigation]);
-
-  const handleCompanion = useCallback(() => {
-    impactAsync(ImpactFeedbackStyle.Medium).catch(() => {});
-    navigation.navigate('CompanionChat');
-  }, [navigation]);
-
-  const handleEmergency = useCallback(() => {
-    notificationAsync(NotificationFeedbackType.Warning).catch(() => {});
-    navigation.navigate('Emergency');
-  }, [navigation]);
-
-  const handleMindfulness = useCallback(() => {
-    hapticLight();
-    navigation.navigate('MindfulnessLibrary');
-  }, [navigation]);
-
-  const handleProgress = useCallback(() => {
-    hapticLight();
-    navigation.navigate('ProgressDashboard');
-  }, [navigation]);
-
-  const handleSteps = useCallback(() => {
-    hapticLight();
-    navigation.getParent()?.navigate('Steps' as never);
-  }, [navigation]);
-
-  const handleProfile = useCallback(() => {
-    hapticLight();
-    navigation.getParent()?.navigate('Profile' as never);
-  }, [navigation]);
-
-  const handleJournal = useCallback(() => {
-    hapticLight();
-    navigation.getParent()?.navigate('Journal' as never);
-  }, [navigation]);
-
-  const handleMeetings = useCallback(() => {
-    hapticLight();
-    navigation.getParent()?.navigate('Meetings' as never);
-  }, [navigation]);
+  const handleMorning = useMemo(() => createNavigationHandler('MorningIntention'), [createNavigationHandler]);
+  const handleReading = useMemo(() => createNavigationHandler('DailyReading'), [createNavigationHandler]);
+  const handleEvening = useMemo(() => createNavigationHandler('EveningPulse'), [createNavigationHandler]);
+  const handleCompanion = useMemo(
+    () => createNavigationHandler('CompanionChat', 'medium'),
+    [createNavigationHandler],
+  );
+  const handleEmergency = useMemo(
+    () => createNavigationHandler('Emergency', 'warning'),
+    [createNavigationHandler],
+  );
+  const handleMindfulness = useMemo(
+    () => createNavigationHandler('MindfulnessLibrary'),
+    [createNavigationHandler],
+  );
+  const handleProgress = useMemo(
+    () => createNavigationHandler('ProgressDashboard'),
+    [createNavigationHandler],
+  );
+  const handleSteps = useMemo(() => createParentNavigationHandler('Steps'), [createParentNavigationHandler]);
+  const handleProfile = useMemo(
+    () => createParentNavigationHandler('Profile'),
+    [createParentNavigationHandler],
+  );
+  const handleJournal = useMemo(
+    () => createParentNavigationHandler('Journal'),
+    [createParentNavigationHandler],
+  );
+  const handleMeetings = useMemo(
+    () => createParentNavigationHandler('Meetings'),
+    [createParentNavigationHandler],
+  );
 
   const intentionPills = [
     { label: 'Stay present', icon: 'sun' as const, onPress: handleMorning },
@@ -953,4 +973,3 @@ const createStyles = (ds: DS) =>
       marginTop: 2,
     },
   }) as const;
-

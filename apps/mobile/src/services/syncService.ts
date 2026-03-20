@@ -24,13 +24,27 @@
 import { supabase } from '../lib/supabase';
 import type { StorageAdapter } from '../adapters/storage';
 import { logger } from '../utils/logger';
-import { generateId } from '../utils/id';
-import { decryptContent, encryptContent } from '../utils/encryption';
+import { decryptContent } from '../utils/encryption';
+import { withTimeout } from '../utils/async';
 import {
   PULL_SYNC_TABLES,
   isValidSyncTable,
   type PullSyncTable,
 } from './syncRegistry';
+import { SyncMutex } from './syncMutex';
+import type {
+  LocalAchievement,
+  LocalAIMemory,
+  LocalDailyCheckIn,
+  LocalFavoriteMeeting,
+  LocalJournalEntry,
+  LocalReadingReflection,
+  LocalSponsorConnection,
+  LocalSponsorSharedEntry,
+  LocalStepWork,
+  LocalWeeklyReport,
+  SyncQueueItem,
+} from './syncTypes';
 
 /**
  * Pull sync result for tracking cloud→device sync
@@ -38,43 +52,6 @@ import {
 export interface PullSyncResult {
   pulled: number;
   errors: string[];
-}
-
-/**
- * Mutex to prevent concurrent sync operations
- *
- * Ensures only one sync runs at a time to avoid race conditions
- * and data corruption.
- *
- * @internal
- */
-class SyncMutex {
-  private locked: boolean = false;
-  private queue: Array<() => void> = [];
-
-  async acquire(): Promise<void> {
-    if (!this.locked) {
-      this.locked = true;
-      return Promise.resolve();
-    }
-
-    return new Promise<void>((resolve) => {
-      this.queue.push(resolve);
-    });
-  }
-
-  release(): void {
-    const next = this.queue.shift();
-    if (next) {
-      next();
-    } else {
-      this.locked = false;
-    }
-  }
-
-  isLocked(): boolean {
-    return this.locked;
-  }
 }
 
 const syncMutex = new SyncMutex();
@@ -92,26 +69,6 @@ const BASE_BACKOFF_MS = 1000;
 // syncRegistry (single source of truth).
 
 /**
- * Wrap a promise with a timeout
- * Throws an error if the operation takes longer than the specified timeout
- */
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, operation: string): Promise<T> {
-  let timeoutId: ReturnType<typeof setTimeout> | undefined;
-
-  const timeoutPromise = new Promise<T>((_, reject) => {
-    timeoutId = setTimeout(() => {
-      reject(new Error(`${operation} timed out after ${timeoutMs}ms`));
-    }, timeoutMs);
-  });
-
-  return Promise.race([promise, timeoutPromise]).finally(() => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-  });
-}
-
-/**
  * Sync result for tracking success/failures
  */
 export interface SyncResult {
@@ -121,185 +78,18 @@ export interface SyncResult {
 }
 
 /**
- * Sync queue item from SQLite
+ * Generate a UUID v4
  */
-interface SyncQueueItem {
-  id: string;
-  table_name: string;
-  record_id: string;
-  operation: 'insert' | 'update' | 'delete';
-  supabase_id: string | null;
-  retry_count: number;
-  last_error: string | null;
+function generateUUID(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
 }
-
-/**
- * Journal entry from local SQLite
- */
-interface LocalJournalEntry {
-  id: string;
-  user_id: string;
-  encrypted_title: string | null;
-  encrypted_body: string;
-  encrypted_mood: string | null;
-  encrypted_craving: string | null;
-  encrypted_tags: string | null;
-  /** Added in migration v20 — may be absent on older schema versions */
-  encrypted_audio: string | null;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Step work from local SQLite
- */
-interface LocalStepWork {
-  id: string;
-  user_id: string;
-  step_number: number;
-  question_number: number;
-  encrypted_answer: string | null;
-  is_complete: number;
-  completed_at: string | null;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Daily check-in from local SQLite
- */
-interface LocalDailyCheckIn {
-  id: string;
-  user_id: string;
-  check_in_type: 'morning' | 'evening';
-  check_in_date: string;
-  encrypted_intention: string | null;
-  encrypted_reflection: string | null;
-  encrypted_mood: string | null;
-  encrypted_craving: string | null;
-  encrypted_gratitude: string | null;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Favorite meeting from local SQLite
- */
-interface LocalFavoriteMeeting {
-  id: string;
-  user_id: string;
-  meeting_id: string;
-  encrypted_notes: string | null;
-  notification_enabled: number;
-  created_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Reading reflection from local SQLite
- */
-interface LocalReadingReflection {
-  id: string;
-  user_id: string;
-  reading_id: string;
-  reading_date: string;
-  encrypted_reflection: string;
-  word_count: number;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Weekly report from local SQLite
- */
-interface LocalWeeklyReport {
-  id: string;
-  user_id: string;
-  week_start: string;
-  week_end: string;
-  report_json: string;
-  created_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Sponsor connection from local SQLite
- */
-interface LocalSponsorConnection {
-  id: string;
-  user_id: string;
-  role: 'sponsee' | 'sponsor';
-  status: 'pending' | 'connected';
-  invite_code: string;
-  display_name: string | null;
-  own_public_key: string;
-  peer_public_key: string | null;
-  shared_key: string | null;
-  pending_private_key: string | null;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Sponsor shared entry from local SQLite
- */
-interface LocalSponsorSharedEntry {
-  id: string;
-  user_id: string;
-  connection_id: string;
-  direction: 'outgoing' | 'incoming' | 'comment';
-  journal_entry_id: string | null;
-  payload: string;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * Achievement from local SQLite
- */
-interface LocalAchievement {
-  id: string;
-  user_id: string;
-  achievement_key: string;
-  achievement_type: string;
-  earned_at: string;
-  is_viewed: number;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-/**
- * AI memory from local SQLite
- */
-interface LocalAIMemory {
-  id: string;
-  user_id: string;
-  type: string;
-  encrypted_content: string;
-  confidence: number;
-  encrypted_context: string | null;
-  source_conversation_id: string | null;
-  created_at: string;
-  updated_at: string;
-  sync_status: string;
-  supabase_id: string | null;
-}
-
-
 
 /**
  * Sync a single journal entry to Supabase
