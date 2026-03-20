@@ -17,7 +17,7 @@
       }
     },
     "advisory": {
-      "alcoholTobaccoOrDrugUseOrReferences": "INFREQUENT_OR_MILD",
+      "alcoholTobaccoOrDrugUseOrReferences": "FREQUENT_OR_INTENSE",
       "gamblingSimulated": "NONE",
       "medicalOrTreatmentInformation": "INFREQUENT_OR_MILD",
       "profanityOrCrudeHumor": "NONE",
@@ -31,18 +31,8 @@
       "contests": "NONE",
       "gambling": false,
       "unrestrictedWebAccess": false,
-      "seventeenPlus": false
-    },
-    "release": {
-      "automaticRelease": true,
-      "phasedRelease": true
-    },
-    "review": {
-      "firstName": "Steps to Recovery",
-      "lastName": "Support",
-      "email": "review@stepstorecovery.app",
-      "phone": "+1 555-000-0000",
-      "notes": "This app is a privacy-first recovery companion for 12-step programs.\n\nTo test:\n1. Create an account with any email\n2. Set a sobriety date during onboarding\n3. Try creating a journal entry (encrypted locally)\n4. Try the daily check-in flow\n5. Browse the meeting finder\n\nNote: All data is encrypted end-to-end. The app works fully offline."
-    }
+      "ageRatingOverride"  : "UNRATED"
+    },  
+    "features" : ["alcoholTobaccoOrDrugUseOrReferences", "gamblingSimulated", "medicalOrTreatmentInformation", "profanityOrCrudeHumor", "sexualContentGraphicAndNudity", "sexualContentOrNudity", "horrorOrFearThemes", "matureOrSuggestiveThemes", "violenceCartoonOrFantasy", "violenceRealistic", "violenceRealisticProlongedGraphicOrSadistic", "contests", "gambling", "unrestrictedWebAccess"]
   }
 }

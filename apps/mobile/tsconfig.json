@@ -3,7 +3,7 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "ignoreDeprecations": "5.0",
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
