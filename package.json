@@ -40,7 +40,7 @@
     "android": "npm run android --workspace=apps/mobile",
     "ios": "npm run ios --workspace=apps/mobile",
     "prepare": "husky",
-    "postinstall": "npm run setup:verify || true"
+    "postinstall": "node scripts/skip-bash-on-windows.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",

@@ -21,6 +21,7 @@ jest.mock('../../lib/supabase');
 jest.mock('../../utils/logger');
 jest.mock('../../utils/encryption', () => ({
   decryptContent: jest.fn(),
+  encryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(`encrypted:${content}`)),
 }));
 
 // Mock UUID generation for consistent testing

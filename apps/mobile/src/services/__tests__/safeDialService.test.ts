@@ -18,6 +18,10 @@ import { logger } from '../../utils/logger';
 // Mock dependencies
 jest.mock('../../lib/supabase');
 jest.mock('../../utils/logger');
+jest.mock('../../utils/encryption', () => ({
+  encryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(`encrypted:${content}`)),
+  decryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(content.replace('encrypted:', ''))),
+}));
 
 describe('safeDialService', () => {
   const mockFrom = jest.fn();
@@ -124,7 +128,7 @@ describe('safeDialService', () => {
       expect(mockInsert).toHaveBeenCalledWith(
         expect.objectContaining({
           user_id: 'user-1',
-          phone_number: '5551112222',
+          phone_number: 'encrypted:5551112222',
           relationship_type: 'old_friend',
         }),
       );
@@ -211,7 +215,8 @@ describe('safeDialService', () => {
         added_at: '2026-01-01T00:00:00Z',
         is_active: true,
       };
-      mockMaybeSingle.mockResolvedValue({ data: dbRow, error: null });
+      // isRiskyContact calls getRiskyContacts which uses order() chain
+      mockOrder.mockReturnValue({ data: [dbRow], error: null });
 
       const result = await isRiskyContact('user-1', '(555) 111-2222');
 
@@ -220,7 +225,8 @@ describe('safeDialService', () => {
     });
 
     it('should return null when phone not found', async () => {
-      mockMaybeSingle.mockResolvedValue({ data: null, error: null });
+      // isRiskyContact calls getRiskyContacts which uses order() chain
+      mockOrder.mockReturnValue({ data: [], error: null });
 
       const result = await isRiskyContact('user-1', '9999999999');
 
@@ -228,7 +234,8 @@ describe('safeDialService', () => {
     });
 
     it('should throw on error', async () => {
-      mockMaybeSingle.mockResolvedValue({ data: null, error: { message: 'Error' } });
+      // isRiskyContact calls getRiskyContacts which uses order() chain
+      mockOrder.mockReturnValue({ data: null, error: { message: 'Error' } });
 
       await expect(isRiskyContact('user-1', '555')).rejects.toEqual({ message: 'Error' });
     });

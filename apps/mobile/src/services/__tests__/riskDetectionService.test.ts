@@ -10,6 +10,10 @@ jest.mock('../../lib/mmkv', () => ({
 
 jest.mock('../../lib/supabase');
 jest.mock('../../utils/logger');
+jest.mock('../../utils/encryption', () => ({
+  encryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(`encrypted:${content}`)),
+  decryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(content.replace('encrypted:', ''))),
+}));
 
 import {
   detectRiskPatterns,

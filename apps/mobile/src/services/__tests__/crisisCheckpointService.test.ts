@@ -15,6 +15,10 @@ import { logger } from '../../utils/logger';
 // Mock dependencies
 jest.mock('../../lib/supabase');
 jest.mock('../../utils/logger');
+jest.mock('../../utils/encryption', () => ({
+  encryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(`encrypted:${content}`)),
+  decryptContent: jest.fn().mockImplementation((content: string) => Promise.resolve(content.replace('encrypted:', ''))),
+}));
 
 describe('crisisCheckpointService', () => {
   const mockFrom = jest.fn();
@@ -129,7 +133,7 @@ describe('crisisCheckpointService', () => {
       expect(result).toEqual({ success: true });
       expect(mockFrom).toHaveBeenCalledWith('crisis_checkpoints');
       expect(mockUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({ trigger_description: 'Stress at work' }),
+        expect.objectContaining({ trigger_description: 'encrypted:Stress at work' }),
       );
     });
 
@@ -251,8 +255,8 @@ describe('crisisCheckpointService', () => {
       expect(result).toEqual({ success: true });
       expect(mockUpdate).toHaveBeenCalledWith(
         expect.objectContaining({
-          journal_entry: 'I felt strong today',
-          emotions_identified: ['Anxious', 'Stressed'],
+          journal_entry: 'encrypted:I felt strong today',
+          emotions_identified: 'encrypted:["Anxious","Stressed"]',
         }),
       );
     });

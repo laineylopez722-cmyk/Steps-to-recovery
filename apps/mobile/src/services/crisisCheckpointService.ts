@@ -301,20 +301,25 @@ async function getCheckpointStartTime(
  * Get active checkpoint for user
  */
 export async function getActiveCheckpoint(userId: string): Promise<CrisisCheckpoint | null> {
-  const { data, error } = await supabase
-    .from('crisis_checkpoints')
-    .select('*')
-    .eq('user_id', userId)
-    .is('completed_at', null)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('crisis_checkpoints')
+      .select('*')
+      .eq('user_id', userId)
+      .is('completed_at', null)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single();
 
-  if (error) {
+    if (error) {
+      return null;
+    }
+
+    return data as CrisisCheckpoint;
+  } catch (error) {
+    logger.error('Crisis checkpoint: Get active error', { error });
     return null;
   }
-
-  return data as CrisisCheckpoint;
 }
 
 /**
