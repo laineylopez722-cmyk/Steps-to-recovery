@@ -240,14 +240,6 @@ eas submit --platform android --latest
 
 ### Production Environment Variables
 
-**In Expo Dashboard** (https://expo.dev):
-
-1. Go to your project
-2. Click "Secrets" in left sidebar
-3. Add required secrets:
-   - `EXPO_PUBLIC_SUPABASE_URL`
-   - `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-
 **Local .env File** (for development):
 
 ```bash
@@ -257,6 +249,101 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```
 
 **IMPORTANT**: Never commit `.env` to git. It's already in `.gitignore`.
+
+Run the validation script after creating or editing your `.env` to catch common mistakes:
+
+```bash
+node scripts/validate-env.js
+```
+
+---
+
+### EAS Secrets for Production Builds
+
+There are two separate sets of secrets needed for automated builds. They serve different purposes and are stored in different places.
+
+#### EAS Secrets vs GitHub Secrets
+
+| Type | Where stored | What reads them | When used |
+|---|---|---|---|
+| EAS secrets | Expo project dashboard | EAS Build workers | During `eas build` on Expo infrastructure |
+| GitHub secrets | GitHub repository settings | GitHub Actions runners | In CI/CD workflows before calling EAS CLI |
+
+**EAS secrets** are injected directly into the build environment on Expo's servers. Use these for values that the app needs baked into the binary.
+
+**GitHub secrets** are available to GitHub Actions jobs. The workflows in this repo use them to pass credentials to the EAS CLI and for non-EAS steps (e.g., Play Store submission).
+
+#### Setting Up EAS Secrets (Automated)
+
+Use the provided script to configure EAS secrets interactively:
+
+```bash
+# Make sure you are logged in first
+eas login
+
+# Run the setup script from the repo root
+chmod +x scripts/setup-eas-secrets.sh
+./scripts/setup-eas-secrets.sh
+```
+
+The script walks through each required secret with prompts and validation.
+
+#### Setting Up EAS Secrets (Manual)
+
+```bash
+cd apps/mobile
+
+# Required: Supabase connection
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_URL \
+  --value "https://your-project.supabase.co"
+
+eas secret:create --scope project --name EXPO_PUBLIC_SUPABASE_ANON_KEY \
+  --value "your-anon-key"
+
+# Optional: Sentry error tracking
+eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN \
+  --value "https://your-key@sentry.io/your-project-id"
+
+eas secret:create --scope project --name SENTRY_AUTH_TOKEN \
+  --value "your-sentry-auth-token"
+
+# List all configured secrets
+eas secret:list
+
+# Delete a secret (to update it, delete then recreate)
+eas secret:delete --name EXPO_PUBLIC_SUPABASE_URL
+```
+
+#### Setting Up GitHub Secrets
+
+GitHub secrets are used by the CI/CD workflows (`.github/workflows/`). For a complete list of all required secrets, their purpose, and how to obtain each value, see:
+
+**[.github/SECRETS.md](.github/SECRETS.md)**
+
+Quick setup:
+1. Go to GitHub repository → Settings → Secrets and variables → Actions
+2. Click "New repository secret"
+3. Add each secret from the table in `SECRETS.md`
+
+The minimum set needed for `eas-build.yml` to run end-to-end:
+
+```
+EXPO_TOKEN
+EXPO_PUBLIC_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+```
+
+The minimum set needed for `release.yml` to submit to stores:
+
+```
+EXPO_TOKEN
+EXPO_PUBLIC_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+GOOGLE_SERVICE_ACCOUNT_KEY_PATH  (Android)
+EXPO_APPLE_ID                    (iOS)
+EXPO_APPLE_TEAM_ID               (iOS)
+ASC_APP_ID                       (iOS)
+```
 
 ---
 
