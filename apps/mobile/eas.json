@@ -1,6 +1,9 @@
 {
   "cli": {
-    "version": ">= 16.0.1",
+    // Minimum EAS CLI version aligned with CI workflows (eas-build.yml, release.yml).
+    // 16.28.0 is the latest stable as of 2026-03-21 and includes fixes for
+    // app-bundle signing on Android 14+ devices.
+    "version": ">= 16.28.0",
     "appVersionSource": "remote",
     "promptToConfigurePushNotifications": false
   },

@@ -25,7 +25,10 @@ on:
 
 env:
   EXPO_NO_TELEMETRY: 1
-  EAS_CLI_VERSION: 16.0.1
+  # Pinned to latest stable EAS CLI. Must stay in sync with:
+  #   - apps/mobile/eas.json  cli.version
+  #   - .github/workflows/eas-build.yml  EAS_CLI_VERSION
+  EAS_CLI_VERSION: 16.28.0
 
 permissions:
   contents: write

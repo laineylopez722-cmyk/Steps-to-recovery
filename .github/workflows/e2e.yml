@@ -2,7 +2,8 @@ name: E2E Tests (Maestro)
 
 on:
   push:
-    branches: [main, develop]
+    # Only main branch exists; develop was removed to prevent phantom runs.
+    branches: [main]
     paths:
       - 'apps/mobile/**'
       - 'packages/shared/**'
@@ -96,6 +97,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # ── Secrets validation ─────────────────────────────────────────────
+      # Fail early with a clear message rather than a cryptic Maestro error.
+      # None of the secret values are printed; only their presence is checked.
+      - name: Validate required E2E secrets
+        run: |
+          MISSING=""
+
+          if [ -z "${{ secrets.MAESTRO_CLOUD_API_KEY }}" ]; then
+            MISSING="$MISSING\n  - MAESTRO_CLOUD_API_KEY (Maestro Cloud authentication)"
+          fi
+          if [ -z "${{ secrets.MAESTRO_CLOUD_PROJECT_ID }}" ]; then
+            MISSING="$MISSING\n  - MAESTRO_CLOUD_PROJECT_ID (Maestro Cloud project identifier)"
+          fi
+          if [ -z "${{ secrets.E2E_TEST_USER_EMAIL }}" ]; then
+            MISSING="$MISSING\n  - E2E_TEST_USER_EMAIL (test account credentials)"
+          fi
+          if [ -z "${{ secrets.E2E_TEST_USER_PASSWORD }}" ]; then
+            MISSING="$MISSING\n  - E2E_TEST_USER_PASSWORD (test account credentials)"
+          fi
+
+          if [ -n "$MISSING" ]; then
+            echo "ERROR: The following required secrets are not configured in this repository."
+            echo "Add them under Settings > Secrets and variables > Actions."
+            printf "$MISSING\n"
+            exit 1
+          fi
+
+          echo "All required E2E secrets are present."
+
       - name: Download APK
         uses: actions/download-artifact@v4
         with:
@@ -167,6 +197,27 @@ jobs:
             adb shell input keyevent 82
             # Install the APK
             adb install -r ./apk/app-debug.apk
+
+      # ── Secrets validation ─────────────────────────────────────────────
+      - name: Validate required E2E secrets
+        run: |
+          MISSING=""
+
+          if [ -z "${{ secrets.E2E_TEST_USER_EMAIL }}" ]; then
+            MISSING="$MISSING\n  - E2E_TEST_USER_EMAIL (test account credentials)"
+          fi
+          if [ -z "${{ secrets.E2E_TEST_USER_PASSWORD }}" ]; then
+            MISSING="$MISSING\n  - E2E_TEST_USER_PASSWORD (test account credentials)"
+          fi
+
+          if [ -n "$MISSING" ]; then
+            echo "ERROR: The following required secrets are not configured in this repository."
+            echo "Add them under Settings > Secrets and variables > Actions."
+            printf "$MISSING\n"
+            exit 1
+          fi
+
+          echo "All required E2E secrets are present."
 
       - name: Run E2E Tests
         env:
