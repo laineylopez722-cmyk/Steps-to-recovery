@@ -1,0 +1,570 @@
+# Master Issue Tracker — Steps-to-Recovery
+# Single source of truth for all tracked issues.
+# Update counts and indexes whenever an issue status changes.
+# Last updated: 2026-03-21
+
+---
+
+metadata:
+  project: "Steps-to-Recovery"
+  total_issues: 28
+  generated_from: ".claude/CONFIGURATION-FIX-PLAN.md (2026-03-21 audit)"
+  counts:
+    open: 22
+    in_progress: 2
+    blocked: 0
+    fixed: 2
+    deferred: 2
+
+---
+
+# ============================================================
+# ISSUES BY CATEGORY
+# ============================================================
+
+issues:
+
+  # ----------------------------------------------------------
+  # CONFIGURATION (CFG)
+  # ----------------------------------------------------------
+  configuration:
+
+    - id: CFG-001
+      title: "iOS encryption compliance declaration is incorrect"
+      severity: critical
+      priority: P0
+      status: open
+      file: configuration/ios-encryption-compliance.issue.md
+      summary: >
+        app.json declares ITSAppUsesNonExemptEncryption: false but the app uses
+        AES-256-CBC encryption. This is an Apple export control compliance violation.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-002
+      title: "npm run web script has circular/broken delegation"
+      severity: critical
+      priority: P0
+      status: open
+      file: configuration/broken-web-script.issue.md
+      summary: >
+        Root package.json line 37 delegates to itself, causing an infinite loop
+        and preventing any developer from starting the web target.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-003
+      title: "Environment variable validation missing at startup"
+      severity: high
+      priority: P1
+      status: open
+      file: configuration/env-validation.issue.md
+      summary: >
+        The app starts silently with missing EXPO_PUBLIC_SUPABASE_URL or
+        EXPO_PUBLIC_SUPABASE_ANON_KEY, producing cryptic network errors rather
+        than an actionable message.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-004
+      title: "Node.js version misaligned across local, CI, and EAS"
+      severity: high
+      priority: P1
+      status: open
+      file: configuration/node-alignment.issue.md
+      summary: >
+        No .nvmrc file exists. CI workflows and EAS build reference different
+        Node versions, causing inconsistent behaviour between environments.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-005
+      title: "GitHub Actions secrets are undocumented"
+      severity: high
+      priority: P1
+      status: open
+      file: configuration/github-secrets-docs.issue.md
+      summary: >
+        14 required secrets are referenced in workflows but no guide exists
+        explaining what they are, how to obtain them, or how to set them up
+        for a new environment.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-006
+      title: "Doctor scripts do not surface actionable fix instructions"
+      severity: medium
+      priority: P2
+      status: open
+      file: configuration/doctor-scripts.issue.md
+      summary: >
+        npm run doctor:toolchain and doctor:aliases report failures but
+        do not tell the developer exactly what command to run to fix the problem.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-007
+      title: "e2e.yml references non-existent develop branch"
+      severity: medium
+      priority: P2
+      status: open
+      file: configuration/e2e-branch-reference.issue.md
+      summary: >
+        .github/workflows/e2e.yml triggers on push to a develop branch that
+        does not exist in the repository, meaning E2E tests never run on CI.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: CFG-008
+      title: "EAS CLI version inconsistent between eas.json and workflows"
+      severity: low
+      priority: P3
+      status: open
+      file: configuration/eas-cli-alignment.issue.md
+      summary: >
+        The EAS CLI version pinned in eas.json (cli.version) differs from
+        EAS_CLI_VERSION in release.yml and eas-build.yml, risking subtle
+        build differences.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+  # ----------------------------------------------------------
+  # SECURITY (SEC)
+  # ----------------------------------------------------------
+  security:
+
+    - id: SEC-001
+      title: "RLS policies not validated against all synced tables"
+      severity: high
+      priority: P1
+      status: open
+      file: security/rls-policy-validation.issue.md
+      summary: >
+        Eight tables are synced to Supabase but only journal_entries and
+        daily_checkins have documented RLS policies. The other six tables
+        (step_work, favorite_meetings, reading_reflections, weekly_reports,
+        sponsor_connections, sponsor_shared_entries) need verification.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: SEC-002
+      title: "Encryption key rotation procedure is not documented or automated"
+      severity: high
+      priority: P1
+      status: open
+      file: security/encryption-key-rotation.issue.md
+      summary: >
+        There is no documented process for rotating the user's AES-256-CBC
+        encryption key. If a key is compromised, there is no recovery path
+        short of data loss.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: SEC-003
+      title: "SecureStore usage not audited across all feature modules"
+      severity: medium
+      priority: P2
+      status: open
+      file: security/secure-storage-audit.issue.md
+      summary: >
+        The security fix history documents one instance of a hardcoded web
+        encryption key. A full audit of all features is needed to confirm no
+        other instances of keys or tokens stored outside SecureStore exist.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: SEC-004
+      title: "Sensitive data logging audit needed across all features"
+      severity: medium
+      priority: P2
+      status: open
+      file: security/sensitive-data-logging.issue.md
+      summary: >
+        The hookify pre-commit hook catches new violations but does not audit
+        existing code. A one-time scan of all logger calls and error handlers
+        is needed to confirm no sensitive data is currently being logged.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+  # ----------------------------------------------------------
+  # DATABASE (DB)
+  # ----------------------------------------------------------
+  database:
+
+    - id: DB-001
+      title: "Drizzle ORM schema not in sync with SQLite DatabaseContext migrations"
+      severity: high
+      priority: P1
+      status: open
+      file: database/drizzle-migrations.issue.md
+      summary: >
+        The Drizzle schema in src/db/ and the imperative SQL in
+        utils/database.ts (used by DatabaseContext) can diverge silently.
+        No validation enforces they describe the same tables.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DB-002
+      title: "Sync queue has no cleanup for successfully processed entries"
+      severity: medium
+      priority: P2
+      status: open
+      file: database/sync-queue-edge-cases.issue.md
+      summary: >
+        The sync_queue table grows indefinitely. Successfully synced entries
+        are marked but never deleted, leading to unbounded table growth and
+        potentially slow sync scans on long-running installs.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DB-003
+      title: "Missing database indexes on frequently queried columns"
+      severity: low
+      priority: P3
+      status: open
+      file: database/missing-indexes.issue.md
+      summary: >
+        Columns like journal_entries.created_at, daily_checkins.check_in_date,
+        and sync_queue.table_name are queried with ORDER BY and WHERE clauses
+        but lack indexes, causing full table scans as data grows.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+  # ----------------------------------------------------------
+  # DOCUMENTATION (DOC)
+  # ----------------------------------------------------------
+  documentation:
+
+    - id: DOC-001
+      title: "Feature implementation guides missing for achievements, geofencing, and search"
+      severity: high
+      priority: P1
+      status: open
+      file: documentation/feature-guides.issue.md
+      summary: >
+        CLAUDE.md lists .claude/ guides for journal, steps, sponsor, etc.
+        but guides for achievements/milestones, meeting geofencing, and
+        encrypted full-text search are absent, leaving developers to reverse-engineer.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DOC-002
+      title: "syncService and encryption utilities lack API documentation"
+      severity: medium
+      priority: P2
+      status: open
+      file: documentation/api-documentation.issue.md
+      summary: >
+        The two most critical utilities (encryption.ts and syncService.ts)
+        have no JSDoc comments explaining parameters, return types, error
+        conditions, or usage examples.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DOC-003
+      title: "Troubleshooting guide does not cover all common failure modes"
+      severity: medium
+      priority: P2
+      status: open
+      file: documentation/troubleshooting-guide.issue.md
+      summary: >
+        CLAUDE.md has a Troubleshooting section but only covers 4 scenarios.
+        At least 8 additional failure modes (sync failures, IndexedDB issues,
+        geofencing permission, Expo Go cache, RLS denial) are undocumented.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DOC-004
+      title: "SETUP.md steps not verified on a clean machine"
+      severity: medium
+      priority: P2
+      status: in-progress
+      file: documentation/setup-verification.issue.md
+      summary: >
+        SETUP.md exists but has not been tested end-to-end on a fresh machine.
+        Steps may be missing, in the wrong order, or reference files that have
+        since moved.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DOC-005
+      title: "No CI/CD workflow guide for contributors"
+      severity: low
+      priority: P3
+      status: open
+      file: documentation/cicd-guide.issue.md
+      summary: >
+        Contributors do not have documentation explaining what each GitHub
+        Actions workflow does, when it triggers, and what secrets are required.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+  # ----------------------------------------------------------
+  # DX IMPROVEMENTS (DX)
+  # ----------------------------------------------------------
+  dx-improvements:
+
+    - id: DX-001
+      title: "Import alias map inconsistent between tsconfig, Babel, and Jest"
+      severity: high
+      priority: P1
+      status: in-progress
+      file: dx-improvements/alias-validation.issue.md
+      summary: >
+        The doctor:aliases script was added to catch this, but the underlying
+        aliases in tsconfig.json, babel.config.js, and jest.config.js are not
+        always in sync, causing aliased imports that work in Expo to fail in tests.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DX-002
+      title: "Test setup requires repetitive QueryClient wrapper boilerplate"
+      severity: medium
+      priority: P2
+      status: open
+      file: dx-improvements/test-setup-simplification.issue.md
+      summary: >
+        Every hook test file duplicates the same createWrapper() function with
+        QueryClientProvider. A shared test utility should provide this so tests
+        focus on behaviour, not infrastructure setup.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DX-003
+      title: "No bundle size analysis in CI pipeline"
+      severity: low
+      priority: P3
+      status: open
+      file: dx-improvements/bundle-analysis.issue.md
+      summary: >
+        There is no automated check for JavaScript bundle size regression. Large
+        dependency additions go undetected until cold start performance degrades.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: DX-004
+      title: "Pre-commit hook does not run ESLint or TypeScript"
+      severity: medium
+      priority: P2
+      status: open
+      file: dx-improvements/precommit-enhancement.issue.md
+      summary: >
+        The Husky pre-commit hook runs lint-staged for formatting only.
+        ESLint and TypeScript type checking are not enforced at commit time,
+        allowing type errors to reach CI.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+  # ----------------------------------------------------------
+  # REFACTORING (REF)
+  # ----------------------------------------------------------
+  refactoring:
+
+    - id: REF-001
+      title: "Offline mutations have no user-facing feedback toast"
+      severity: medium
+      priority: P2
+      status: open
+      file: refactoring/offline-mutation-toast.issue.md
+      summary: >
+        useOfflineMutation performs writes and queues sync but provides no
+        toast or visual indicator to the user that the action was saved
+        locally and will sync when online.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: REF-002
+      title: "Motion token names need migration to new naming convention"
+      severity: low
+      priority: P3
+      status: open
+      file: refactoring/motion-token-migration.issue.md
+      summary: >
+        motion.ts uses legacy token names that do not match the updated
+        design system naming convention. Components referencing old names
+        need migration to avoid breakage when tokens are removed.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: REF-003
+      title: "Analytics event sending is a no-op stub"
+      severity: low
+      priority: P3
+      status: open
+      file: refactoring/analytics-event-sending.issue.md
+      summary: >
+        analytics.ts has sendEvent() and trackScreen() functions that are
+        called throughout the app but do nothing. Either wire to a real
+        analytics provider or remove the calls to reduce noise.
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: REF-004
+      title: "Share and delete entry features missing from JournalEditorScreen"
+      severity: low
+      priority: P3
+      status: deferred
+      file: refactoring/journal-share-delete.issue.md
+      summary: >
+        JournalEditorScreen has placeholder buttons for share and delete
+        that are wired to no-op handlers. These are documented as known
+        tech debt in CLAUDE.md.
+      deferral_reason: >
+        Deferred pending sponsor sharing feature design (SponsorClaude.md).
+        Revisit when sponsor flow is complete.
+      deferral_revisit: "2026-05-01"
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+    - id: REF-005
+      title: "FTS search not optimised for large encrypted item sets"
+      severity: medium
+      priority: P2
+      status: deferred
+      file: refactoring/fts-optimisation.issue.md
+      summary: >
+        useMemoryStore uses in-memory full-text search that decrypts all items
+        before searching. With >1000 entries this causes noticeable latency.
+        Needs a pre-indexed approach or client-side encrypted FTS.
+      deferral_reason: >
+        Deferred until user base reaches scale where this causes observable
+        UX degradation. Threshold: >500 journal entries in testing.
+      deferral_revisit: "2026-06-01"
+      created: "2026-03-21"
+      updated: "2026-03-21"
+
+---
+
+# ============================================================
+# INDEX BY PRIORITY
+# ============================================================
+
+by_priority:
+
+  P0:
+    description: "Release blockers — must be resolved before any release"
+    issues:
+      - CFG-001  # iOS encryption compliance declaration is incorrect
+      - CFG-002  # npm run web script has circular/broken delegation
+
+  P1:
+    description: "Current sprint — high impact, assigned this sprint"
+    issues:
+      - CFG-003  # Environment variable validation missing at startup
+      - CFG-004  # Node.js version misaligned across local, CI, and EAS
+      - CFG-005  # GitHub Actions secrets are undocumented
+      - SEC-001  # RLS policies not validated against all synced tables
+      - SEC-002  # Encryption key rotation procedure not documented
+      - DB-001   # Drizzle ORM schema not in sync with SQLite migrations
+      - DOC-001  # Feature implementation guides missing
+      - DX-001   # Import alias map inconsistent (in-progress)
+
+  P2:
+    description: "Next sprint — medium impact, planned near-term"
+    issues:
+      - CFG-006  # Doctor scripts do not surface actionable fix instructions
+      - CFG-007  # e2e.yml references non-existent develop branch
+      - SEC-003  # SecureStore usage not audited across all feature modules
+      - SEC-004  # Sensitive data logging audit needed
+      - DB-002   # Sync queue has no cleanup for processed entries
+      - DOC-002  # syncService and encryption utilities lack API docs
+      - DOC-003  # Troubleshooting guide does not cover all failure modes
+      - DOC-004  # SETUP.md steps not verified (in-progress)
+      - DX-002   # Test setup requires repetitive boilerplate
+      - DX-004   # Pre-commit hook does not run ESLint or TypeScript
+      - REF-001  # Offline mutations have no user-facing feedback toast
+      - REF-005  # FTS search not optimised (deferred)
+
+  P3:
+    description: "Backlog — low impact, addressed when capacity allows"
+    issues:
+      - CFG-008  # EAS CLI version inconsistent between files
+      - DB-003   # Missing database indexes on frequently queried columns
+      - DOC-005  # No CI/CD workflow guide for contributors
+      - DX-003   # No bundle size analysis in CI pipeline
+      - REF-002  # Motion token names need migration
+      - REF-003  # Analytics event sending is a no-op stub
+      - REF-004  # Share and delete entry features missing (deferred)
+
+---
+
+# ============================================================
+# INDEX BY STATUS
+# ============================================================
+
+by_status:
+
+  open:
+    count: 22
+    issues:
+      - CFG-001
+      - CFG-002
+      - CFG-003
+      - CFG-004
+      - CFG-005
+      - CFG-006
+      - CFG-007
+      - CFG-008
+      - SEC-001
+      - SEC-002
+      - SEC-003
+      - SEC-004
+      - DB-001
+      - DB-002
+      - DB-003
+      - DOC-001
+      - DOC-002
+      - DOC-003
+      - DOC-005
+      - DX-002
+      - DX-003
+      - DX-004
+      - REF-001
+      - REF-002
+      - REF-003
+
+  in_progress:
+    count: 2
+    issues:
+      - DOC-004  # SETUP.md verification
+      - DX-001   # Import alias validation
+
+  blocked:
+    count: 0
+    issues: []
+
+  fixed:
+    count: 2
+    issues:
+      - CFG-HIST-001  # Hardcoded web encryption master key (fixed 2026-01-01)
+      - CFG-HIST-002  # Incomplete logout cleanup (fixed 2026-01-01)
+
+  deferred:
+    count: 2
+    issues:
+      - REF-004  # Journal share/delete — revisit 2026-05-01
+      - REF-005  # FTS optimisation — revisit 2026-06-01
+
+---
+
+# ============================================================
+# AGING
+# Issues in this section need review — they are stale.
+# Update during monthly review (first Monday of each month).
+# ============================================================
+
+aging:
+  last_review: "2026-03-21"
+  next_review: "2026-04-06"
+
+  open_over_30_days:
+    description: "Issues with status: open that have been open >30 days"
+    issues: []   # None yet — all issues filed 2026-03-21
+
+  in_progress_over_14_days:
+    description: "Issues with status: in-progress stalled >14 days"
+    issues: []   # None yet — all issues filed 2026-03-21
+
+  deferral_revisit_due:
+    description: "Deferred issues whose revisit date has passed"
+    issues: []   # None due until 2026-05-01

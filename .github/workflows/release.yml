@@ -35,11 +35,63 @@ permissions:
 
 jobs:
   # ============================================================
+  # Critical Issues Gate — blocks release if open critical issues exist
+  # ============================================================
+  critical-issues-gate:
+    name: Critical Issues Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for open critical issues
+        id: check_critical
+        run: |
+          # Find all *.issue.md files with severity: critical AND status: open
+          # Uses *.issue.md glob to exclude README, TEMPLATE, and other meta files.
+          # Handles both quoted YAML ("critical") and unquoted (critical) values.
+          CRITICAL_OPEN=$(find .claude/issues -name "*.issue.md" -type f 2>/dev/null | \
+            xargs grep -lE 'severity: "?critical"?' 2>/dev/null | \
+            xargs grep -lE 'status: "?open"?' 2>/dev/null || true)
+
+          if [ -n "$CRITICAL_OPEN" ]; then
+            echo ""
+            echo "ERROR: Release blocked by open critical issues."
+            echo ""
+            echo "The following critical issues must be resolved before releasing:"
+            echo ""
+            for f in $CRITICAL_OPEN; do
+              ISSUE_ID=$(grep "^id:" "$f" | head -1 | sed 's/^id: *"*//; s/"*$//')
+              ISSUE_TITLE=$(grep "^title:" "$f" | head -1 | sed 's/^title: *"*//; s/"*$//')
+              echo "  - ${ISSUE_ID}: ${ISSUE_TITLE}"
+              echo "    File: ${f}"
+            done
+            echo ""
+            echo "To override (emergency only): set the SKIP_CRITICAL_ISSUES_GATE secret to 'true'"
+            echo "and document the reason in the release PR."
+            exit 1
+          else
+            echo "Critical issues gate passed — no open critical issues found."
+          fi
+        env:
+          SKIP_CRITICAL_ISSUES_GATE: ${{ secrets.SKIP_CRITICAL_ISSUES_GATE }}
+
+      - name: Override gate check
+        if: env.SKIP_CRITICAL_ISSUES_GATE == 'true'
+        run: |
+          echo "WARNING: Critical issues gate bypassed via SKIP_CRITICAL_ISSUES_GATE secret."
+          echo "This override should only be used for emergency hotfixes."
+          echo "Document the reason in the release PR and create a follow-up issue."
+        env:
+          SKIP_CRITICAL_ISSUES_GATE: ${{ secrets.SKIP_CRITICAL_ISSUES_GATE }}
+
+  # ============================================================
   # Quality Gates — must pass before any build
   # ============================================================
   quality-gates:
     name: Quality Gates
     runs-on: ubuntu-latest
+    needs: critical-issues-gate
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -235,15 +287,16 @@ jobs:
   notify:
     name: Release Summary
     runs-on: ubuntu-latest
-    needs: [quality-gates, build-android, build-ios, create-release]
+    needs: [critical-issues-gate, quality-gates, build-android, build-ios, create-release]
     if: always()
     steps:
       - name: Create summary
         run: |
-          echo "## 🚀 Release Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "## Release Pipeline Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Critical Issues Gate | ${{ needs.critical-issues-gate.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Quality Gates | ${{ needs.quality-gates.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Android Build & Submit | ${{ needs.build-android.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| iOS Build & Submit | ${{ needs.build-ios.result }} |" >> $GITHUB_STEP_SUMMARY

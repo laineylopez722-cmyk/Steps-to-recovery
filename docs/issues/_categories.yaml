@@ -1,0 +1,214 @@
+# Issue Category Taxonomy and Severity Matrix
+# Steps-to-Recovery Issues Tracking System
+# Last updated: 2026-03-21
+
+---
+
+categories:
+
+  configuration:
+    icon: "CFG"
+    label: "Configuration"
+    description: >
+      Issues related to environment setup, build tooling, CI/CD scripts,
+      package configuration, and developer toolchain alignment.
+    examples:
+      - Environment variable validation missing or incomplete
+      - Node.js version mismatch between local, CI, and EAS
+      - Broken or circular npm scripts
+      - Pre-commit hooks not enforcing standards
+      - EAS build profile inconsistencies
+      - Doctor scripts failing on clean machines
+    severity_guide:
+      critical: "Breaks the build pipeline or prevents any developer from running the app"
+      high: "Causes intermittent build failures or significant developer confusion"
+      medium: "Reduces consistency or produces misleading error messages"
+      low: "Minor polish, naming cleanup, or optional improvement"
+    id_prefix: "CFG"
+
+  security:
+    icon: "SEC"
+    label: "Security"
+    description: >
+      Issues related to encryption correctness, Row-Level Security policies,
+      encryption key storage and rotation, authentication flows, and
+      compliance with Apple/Google export control requirements.
+    examples:
+      - Incorrect iOS encryption compliance declaration in app.json
+      - Missing or untested RLS policies on Supabase tables
+      - Encryption keys accessible outside SecureStore
+      - Sensitive data exposed in logs or error messages
+      - Missing key rotation procedure
+      - Sync operations that send unencrypted data to Supabase
+    severity_guide:
+      critical: "Active security vulnerability or compliance violation that could expose user data"
+      high: "Potential data exposure or missing security control that should be audited"
+      medium: "Security best-practice gap without immediate exploitation risk"
+      low: "Hardening improvement or documentation of existing controls"
+    id_prefix: "SEC"
+
+  database:
+    icon: "DB"
+    label: "Database"
+    description: >
+      Issues related to SQLite schema, Drizzle ORM migrations, sync queue
+      logic, query performance, indexing, and cross-platform storage adapter
+      behaviour (SQLite on mobile, IndexedDB on web).
+    examples:
+      - Missing database indexes causing slow queries on large datasets
+      - Drizzle migration files not matching SQLite schema in DatabaseContext
+      - Sync queue growing unbounded (no cleanup after successful sync)
+      - Edge cases in sync ordering (delete-before-insert not handled)
+      - Web IndexedDB adapter missing a method the mobile adapter provides
+    severity_guide:
+      critical: "Data loss risk or corruption of encrypted user data"
+      high: "Sync failures causing data to not reach Supabase reliably"
+      medium: "Performance degradation or inconsistency between platforms"
+      low: "Cleanup, index optimisation, or minor schema improvements"
+    id_prefix: "DB"
+
+  documentation:
+    icon: "DOC"
+    label: "Documentation"
+    description: >
+      Issues related to missing, incorrect, or outdated developer guides,
+      API documentation, troubleshooting runbooks, setup instructions,
+      and inline code comments.
+    examples:
+      - Feature implementation guides missing (achievements, geofencing, search)
+      - GitHub Actions secrets not documented with setup instructions
+      - SETUP.md steps not verified on a clean machine
+      - API docs absent for syncService and encryption utilities
+      - Troubleshooting guide missing common failure modes
+    severity_guide:
+      critical: "Missing documentation blocks a developer from completing a required task"
+      high: "Causes significant developer confusion or onboarding delays (>1 hour)"
+      medium: "Gap that a developer will notice but can work around"
+      low: "Nice-to-have clarity improvement or example addition"
+    id_prefix: "DOC"
+
+  dx-improvements:
+    icon: "DX"
+    label: "DX Improvements"
+    description: >
+      Issues related to developer experience: test setup, import aliases,
+      bundle analysis tooling, CI/CD feedback speed, local development
+      scripts, and anything that makes the day-to-day development loop faster.
+    examples:
+      - Import alias map inconsistent between tsconfig, Babel, and Jest
+      - No bundle size analysis step in CI
+      - Test setup boilerplate too complex (QueryClient wrapping repeated)
+      - Missing watch mode for type checking
+      - Doctor scripts not surfacing actionable fix instructions
+    severity_guide:
+      critical: "Makes tests or builds impossible to run in CI"
+      high: "Slows development loop significantly (>5 minutes per cycle)"
+      medium: "Friction that developers notice daily but work around"
+      low: "Small ergonomic improvement"
+    id_prefix: "DX"
+
+  refactoring:
+    icon: "REF"
+    label: "Refactoring"
+    description: >
+      Issues representing known technical debt, code quality improvements,
+      performance optimisations, and migration of deprecated patterns.
+      Sourced from CLAUDE.md Known Technical Debt section.
+    examples:
+      - Missing toast notification for offline mutations
+      - FTS optimisation needed for encrypted item search at scale
+      - Motion token names need migration to new naming convention
+      - Analytics event sending not implemented (no-op stubs in place)
+      - Share/delete entry features missing from JournalEditorScreen
+      - Remote config integration not wired to runtime theme
+    severity_guide:
+      critical: "Broken feature that ships in production (not just tech debt)"
+      high: "Causes user-facing UX degradation or data integrity risk at scale"
+      medium: "Technical debt with clear negative trajectory if not addressed"
+      low: "Code quality or naming improvement with no user impact"
+    id_prefix: "REF"
+
+---
+
+severity_levels:
+
+  critical:
+    label: "Critical"
+    description: "Blocks development, causes data loss, or is a security/compliance risk"
+    sla: "Must be resolved before next release"
+    release_gate: true
+    priority_range: "P0"
+
+  high:
+    label: "High"
+    description: "Significantly impacts developer workflow or user experience"
+    sla: "Should be resolved within the current sprint"
+    release_gate: false
+    priority_range: "P1"
+
+  medium:
+    label: "Medium"
+    description: "Should be addressed this sprint or next; workarounds exist"
+    sla: "Should be resolved within 2 sprints"
+    release_gate: false
+    priority_range: "P2"
+
+  low:
+    label: "Low"
+    description: "Nice-to-have improvement; can be deferred without significant impact"
+    sla: "Addressed when capacity allows"
+    release_gate: false
+    priority_range: "P3"
+
+---
+
+statuses:
+
+  open:
+    label: "Open"
+    description: "Issue identified and confirmed, not yet assigned or started"
+    terminal: false
+
+  in-progress:
+    label: "In Progress"
+    description: "Actively being worked on by an assignee"
+    terminal: false
+
+  blocked:
+    label: "Blocked"
+    description: "Work started but stalled waiting on an external dependency"
+    terminal: false
+
+  fixed:
+    label: "Fixed"
+    description: "Fix merged to main and verified — issue is resolved"
+    terminal: true
+
+  deferred:
+    label: "Deferred"
+    description: "Intentionally postponed; add deferral reason and revisit date"
+    terminal: false
+
+---
+
+priority_levels:
+
+  P0:
+    label: "P0 — Release Blocker"
+    description: "Must be fixed before any release can proceed"
+    maps_to_severity: "critical"
+
+  P1:
+    label: "P1 — Current Sprint"
+    description: "Should be resolved in the current sprint"
+    maps_to_severity: "high"
+
+  P2:
+    label: "P2 — Next Sprint"
+    description: "Planned for near-term resolution"
+    maps_to_severity: "medium"
+
+  P3:
+    label: "P3 — Backlog"
+    description: "Tracked and visible but not actively scheduled"
+    maps_to_severity: "low"
