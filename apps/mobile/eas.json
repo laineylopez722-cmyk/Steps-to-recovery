@@ -3,11 +3,19 @@
     // Minimum EAS CLI version aligned with CI workflows (eas-build.yml, release.yml).
     // 16.28.0 is the latest stable as of 2026-03-21 and includes fixes for
     // app-bundle signing on Android 14+ devices.
+    //
+    // If you upgrade this version, also update:
+    //   - .github/workflows/eas-build.yml  EAS_CLI_VERSION
+    //   - .github/workflows/release.yml    EAS_CLI_VERSION
     "version": ">= 16.28.0",
     "appVersionSource": "remote",
     "promptToConfigurePushNotifications": false
   },
   "build": {
+    // ─────────────────────────────────────────────────────────────────────────
+    // "base" is not a runnable profile. It is a shared base that all other
+    // profiles extend. Node version must stay in sync with .nvmrc.
+    // ─────────────────────────────────────────────────────────────────────────
     "base": {
       "node": "20.19.4",
       "cache": {
@@ -15,6 +23,23 @@
         "paths": ["node_modules/.cache"]
       }
     },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // "development" — for iOS Simulator and Android Emulator testing.
+    //
+    // Use this profile when you want to install a custom dev client on a
+    // simulator (not a physical device). The iOS build uses "simulator: true"
+    // which produces a .app bundle that can only run on a simulator.
+    //
+    // Commands:
+    //   eas build --profile development --platform ios      # iOS Simulator .app
+    //   eas build --profile development --platform android  # Android debug APK
+    //
+    // When to use:
+    //   - Testing native modules that require a custom dev client
+    //   - Faster iteration on the iOS Simulator
+    //   - When expo-go is not enough (e.g., native camera, secure-store)
+    // ─────────────────────────────────────────────────────────────────────────
     "development": {
       "extends": "base",
       "developmentClient": true,
@@ -33,6 +58,24 @@
         "EXPO_PUBLIC_ENV": "development"
       }
     },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // "development-device" — for physical device testing.
+    //
+    // Extends "development" but sets "simulator: false" so EAS produces a
+    // signed IPA that can be installed on a registered physical iOS device
+    // (via Ad Hoc or Enterprise distribution). The Android APK is the same
+    // as the "development" profile.
+    //
+    // Commands:
+    //   eas build --profile development-device --platform ios      # Physical iOS device
+    //   eas build --profile development-device --platform android  # Physical Android device
+    //
+    // When to use:
+    //   - Testing on a real iPhone or iPad
+    //   - Validating hardware-specific behavior (Face ID, background tasks, GPS)
+    //   - Your device UDID must be registered in your Apple Developer account
+    // ─────────────────────────────────────────────────────────────────────────
     "development-device": {
       "extends": "development",
       "distribution": "internal",
@@ -43,6 +86,23 @@
         "buildType": "apk"
       }
     },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // "preview" — for internal QA testing (not App Store / Play Store).
+    //
+    // Produces a distribution-ready build for internal testers via TestFlight
+    // (iOS) or direct APK install (Android). This is what CI triggers on every
+    // push to main via eas-build.yml.
+    //
+    // Commands:
+    //   eas build --profile preview --platform ios      # TestFlight-ready IPA
+    //   eas build --profile preview --platform android  # Sideloadable APK
+    //
+    // When to use:
+    //   - Sending a build to QA or stakeholders before a release
+    //   - Validating a bug fix in a production-like environment
+    //   - Automatic CI builds triggered by eas-build.yml
+    // ─────────────────────────────────────────────────────────────────────────
     "preview": {
       "extends": "base",
       "distribution": "internal",
@@ -59,8 +119,40 @@
         "EXPO_PUBLIC_ENV": "preview"
       }
     },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // "production" — for App Store and Play Store submission.
+    //
+    // Produces a store-ready IPA (iOS) and AAB (Android). This profile is
+    // triggered by the release.yml workflow when a v* tag is pushed.
+    //
+    // Commands:
+    //   eas build --profile production --platform ios      # App Store IPA
+    //   eas build --profile production --platform android  # Play Store AAB
+    //
+    // autoIncrement behavior:
+    //   "autoIncrement": true tells EAS to increment the build number
+    //   (versionCode on Android, CFBundleVersion on iOS) automatically with
+    //   each build. You do NOT need to manually bump these numbers.
+    //
+    //   What you DO manage manually:
+    //   - The semantic version string ("version" in app.json, e.g. "1.2.0")
+    //   - This is the version shown to users in the App Store / Play Store
+    //
+    //   To manually override the build number for a specific build:
+    //     eas build --profile production --platform ios --build-number 42
+    //
+    //   Reference: https://semver.org for semantic versioning conventions
+    //
+    // When to use:
+    //   - Triggered automatically by release.yml on v* tag push
+    //   - Manual production builds: eas build --profile production --platform all
+    // ─────────────────────────────────────────────────────────────────────────
     "production": {
       "extends": "base",
+      // EAS auto-increments the build number (versionCode/CFBundleVersion) on
+      // each production build. The user-visible version string in app.json is
+      // managed separately. See comment above for details.
       "autoIncrement": true,
       "ios": {
         "resourceClass": "m-medium",

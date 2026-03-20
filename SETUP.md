@@ -19,6 +19,8 @@ Steps-to-recovery/
 ├── packages/
 │   └── shared/              # Shared types, constants (@recovery/shared)
 ├── .claude/                 # Claude Code agents & prompts
+├── .github/                 # CI/CD workflows, docs, secrets reference
+├── scripts/                 # Doctor scripts, toolchain utilities
 ├── supabase-schema.sql      # Base Supabase schema with RLS
 ├── turbo.json               # Turborepo task config
 └── package.json             # Monorepo workspace config
@@ -30,7 +32,7 @@ Steps-to-recovery/
 apps/mobile/src/
 ├── adapters/                # Platform abstraction (storage, secureStorage)
 ├── components/              # Shared UI components
-├── config/                  # App configuration
+├── config/                  # App configuration & import alias contract
 ├── constants/               # App constants
 ├── contexts/                # React contexts (Auth, Database, Sync)
 ├── data/                    # Static data
@@ -72,84 +74,299 @@ apps/mobile/src/features/
 └── steps/           # 12-step work tracking
 ```
 
+---
+
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js >=20.0.0
-- npm (pinned: 11.8.x via `packageManager` field)
-- Supabase account (free tier works)
-- Expo Go app (for physical device testing)
+| Requirement | Version | Notes |
+| ----------- | ------- | ----- |
+| Node.js | 20.x (exact: 20.19.4) | See `.nvmrc` — must match EAS build environment |
+| npm | 11.x | Pinned via `packageManager` field in `package.json` |
+| Git | Any recent | For cloning and commits |
+| Expo Go | Latest | For scanning QR codes on a physical device |
+| Supabase account | — | Free tier works; https://supabase.com |
 
-### Installation
+The Node.js version in `.nvmrc` is intentionally pinned to the exact version used by EAS builds. Using a different major version will cause `npm run doctor:toolchain` to fail.
 
-1. **Clone and install dependencies**
+### Step 1: Clone and Install
 
-   ```bash
-   git clone https://github.com/RipKDR/Steps-to-recovery.git
-   cd Steps-to-recovery
-   npm install
-   ```
+```bash
+git clone https://github.com/RipKDR/Steps-to-recovery.git
+cd Steps-to-recovery
 
-2. **Set up Supabase**
-   - Create a new project at https://supabase.com
-   - Run `supabase-schema.sql` in the SQL Editor to create tables with RLS
-   - Copy your project URL and anon key
+# If you use nvm, activate the exact pinned version first:
+nvm use
 
-3. **Create environment file**
+# Install all workspace dependencies (runs postinstall scripts automatically):
+npm install
+```
 
-   Create `apps/mobile/.env`:
+`npm install` installs dependencies for all workspaces (`apps/mobile`, `packages/shared`) in a single pass and runs the `postinstall` script that patches datetime-picker imports for Expo compatibility.
 
-   ```bash
-   EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-   EXPO_PUBLIC_SENTRY_DSN=              # Optional - for error monitoring
-   ```
+### Step 2: Set Up Supabase
 
-4. **Start development server**
+1. Create a new project at [supabase.com](https://supabase.com) (the free tier is sufficient).
+2. In the Supabase **SQL Editor**, run the contents of `supabase-schema.sql` to create all tables with RLS policies.
+3. If additional migration files exist (e.g., `supabase-migration-daily-checkins.sql`), run those in order after the base schema.
+4. Navigate to **Settings → API** and copy:
+   - **Project URL** — looks like `https://abcdef.supabase.co`
+   - **anon / public key** — a long JWT string
 
-   ```bash
-   # From root:
-   npm run mobile
+### Step 3: Create the Environment File
 
-   # Or from mobile dir:
-   cd apps/mobile && npx expo start
-   ```
+```bash
+cp apps/mobile/.env.example apps/mobile/.env
+```
 
-5. **Run on device/simulator**
-   - Press `i` for iOS simulator (macOS only)
-   - Press `a` for Android emulator
-   - Scan QR code with Expo Go on physical device
+Then open `apps/mobile/.env` and fill in the required values:
+
+```bash
+# =============================================================================
+# REQUIRED — Supabase Configuration
+# =============================================================================
+# Get from: Supabase dashboard → Settings → API
+EXPO_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+
+# =============================================================================
+# OPTIONAL — Sentry Error Tracking
+# =============================================================================
+# Sign up at https://sentry.io, create a React Native project, copy the DSN.
+# Leave blank to disable error tracking during local development.
+EXPO_PUBLIC_SENTRY_DSN=
+
+# =============================================================================
+# OPTIONAL — Environment Mode
+# =============================================================================
+# Options: development | staging | production  (default: development)
+EXPO_PUBLIC_ENV=development
+```
+
+**Security notes:**
+- `.env` is already listed in `.gitignore`. Never commit it.
+- The Supabase anon key is safe to include in the app because all data access is enforced by Row-Level Security (RLS) policies.
+- Encryption keys are never stored in `.env`. They are derived from the user's session token and stored in device Keychain/Keystore via `expo-secure-store`.
+
+### Step 4: Validate the Environment
+
+```bash
+npm run validate-env
+```
+
+This runs `scripts/validate-env.js` and confirms all required variables are present and correctly formatted before you attempt to start the app.
+
+### Step 5: Run the Doctor Scripts
+
+```bash
+npm run doctor:toolchain   # Verify Node version, npm version, and workspace script invariants
+npm run doctor:aliases     # Verify TypeScript / Babel / Jest path aliases are consistent
+```
+
+These scripts catch common configuration drift before it turns into a hard-to-debug runtime error. See [Doctor Scripts](#doctor-scripts) below for details on what each script checks and what its output looks like.
+
+### Step 6: Start the Development Server
+
+```bash
+# From the repo root:
+npm run mobile
+
+# Or from the mobile app directory:
+cd apps/mobile && npx expo start
+```
+
+### Step 7: Run on a Device or Simulator
+
+| Target | How |
+| ------ | --- |
+| iOS Simulator (macOS only) | Press `i` in the Expo terminal |
+| Android Emulator | Press `a` in the Expo terminal |
+| Physical device (iOS or Android) | Scan the QR code with the Expo Go app |
+
+---
 
 ## Common Commands
 
 ```bash
 # Development
 npm run mobile              # Start Expo dev server
-npm run android             # Run on Android
-npm run ios                 # Run on iOS
+npm run android             # Run on Android emulator
+npm run ios                 # Run on iOS simulator
 
 # Testing
-npm test                    # Run all tests (via Turborepo)
+npm test                    # Run all tests via Turborepo
 cd apps/mobile && npm test  # Run mobile tests directly
-npm run test:watch          # Watch mode (in apps/mobile)
-npm run test:coverage       # Coverage report (in apps/mobile)
-npm run test:encryption     # Encryption tests (in apps/mobile)
+npm run test:watch          # Watch mode (run from apps/mobile)
+npm run test:coverage       # Coverage report (run from apps/mobile)
+npm run test:encryption     # Encryption-specific tests (CRITICAL — run from apps/mobile)
 
-# E2E (Maestro)
+# E2E (Maestro) — see .github/E2E-TESTING.md for full setup
 cd apps/mobile
-npm run e2e                 # All flows
-npm run e2e:validate        # Dry-run syntax check
+npm run e2e                 # Run all flows
+npm run e2e:validate        # Dry-run syntax check on all flows
 
-# Quality
-npm run lint                # ESLint (via Turborepo)
-npm run type-check          # TypeScript check (via Turborepo)
+# Quality and Verification
+npm run lint                # ESLint via Turborepo (all workspaces)
+npm run type-check          # TypeScript check via Turborepo
 npm run doctor:toolchain    # Verify Node/npm/workspace script invariants
-npm run doctor:aliases      # Verify alias maps stay in sync
-npm run verify:strict       # Full strict gate (doctor + lint + type-check + tests)
-npm run format              # Prettier format
-npm run format:check        # Check formatting
+npm run doctor:aliases      # Verify alias maps are in sync
+npm run verify:strict       # Full strict gate: doctor + lint + type-check + tests
+npm run format              # Prettier format (all files)
+npm run format:check        # Check formatting without writing
 ```
+
+---
+
+## Post-Install Verification
+
+Run this sequence after cloning to confirm the workspace is healthy before writing any code:
+
+```bash
+# 1. Verify Node and npm versions, workspace script invariants
+npm run doctor:toolchain
+
+# Expected output:
+# Toolchain doctor passed.
+
+# 2. Verify TypeScript / Babel / Jest path aliases are consistent
+npm run doctor:aliases
+
+# Expected output:
+# Alias consistency doctor passed.
+
+# 3. Run all tests
+npm test
+
+# 4. Run the full strict gate (combines all checks above)
+npm run verify:strict
+```
+
+If any step fails, see [Troubleshooting](#troubleshooting) below.
+
+---
+
+## Doctor Scripts
+
+The project includes two automated scripts that catch configuration drift early. They run in CI on every push to `main` and on every release.
+
+### `npm run doctor:toolchain`
+
+**File**: `scripts/doctor/check-toolchain.mjs`
+
+**What it checks**:
+
+| Check | Expected |
+| ----- | -------- |
+| Node.js major version | >= 20 (warns if not exactly 20.x) |
+| npm major version | Must match `packageManager` field in `package.json` (currently 11.x) |
+| `.nvmrc` content | Must be `"20"` |
+| `apps/mobile` `type-check` script | Must be `"npm exec -- tsc --noEmit"` |
+| `packages/shared` `lint` and `type-check` scripts | Must be `"npm exec -- tsc --noEmit"` |
+
+**Success output:**
+```
+Toolchain doctor passed.
+```
+
+**Failure output** (example):
+```
+Toolchain doctor found issues:
+- npm major must be 11. Found 10.2.4.
+```
+
+**When to run**: After cloning, after upgrading Node.js or npm, before submitting a PR, before triggering a release build.
+
+### `npm run doctor:aliases`
+
+**File**: `scripts/doctor/check-alias-consistency.mjs`
+
+**What it checks**: The project uses a single **alias contract** at `apps/mobile/config/import-aliases.json` as the authoritative source for path aliases. This script verifies that four files stay in sync with that contract:
+
+| File | What is checked |
+| ---- | --------------- |
+| `apps/mobile/tsconfig.json` | `compilerOptions.paths` |
+| `apps/mobile/components.json` | `aliases` block |
+| `apps/mobile/babel.config.js` | `module-resolver` plugin alias map |
+| `apps/mobile/jest.config.js` | `moduleNameMapper` entries |
+
+It also asserts that the root `tsconfig.json` does NOT define `baseUrl` or `paths` (those belong in the mobile-specific config only).
+
+**Success output:**
+```
+Alias consistency doctor passed.
+```
+
+**Failure output** (example):
+```
+Alias consistency doctor found issues:
+- apps/mobile/tsconfig.json compilerOptions.paths mismatch.
+  Expected: { "@/*": ["./src/*"] }
+  Actual:   { "@/*": ["src/*"] }
+```
+
+**When to run**: After adding a new import alias, after editing `tsconfig.json`, `babel.config.js`, or `jest.config.js`.
+
+---
+
+## E2E Testing Setup
+
+End-to-end tests use [Maestro](https://maestro.mobile.dev/) and run against a real Android APK and a real Supabase backend.
+
+For the full local setup guide, see [`.github/E2E-TESTING.md`](.github/E2E-TESTING.md).
+
+Quick-start summary:
+
+```bash
+# 1. Install Maestro (requires Java 11+)
+curl -fsSL "https://get.maestro.mobile.dev" | bash
+
+# 2. Set up the Maestro environment file
+cp apps/mobile/.maestro/.env.example apps/mobile/.maestro/.env
+# Edit apps/mobile/.maestro/.env with your test account credentials
+
+# 3. Create a dedicated test user in Supabase
+#    Dashboard → Authentication → Users → Invite user
+#    Use a non-production email (e.g. e2e-test@yourdomain.com)
+
+# 4. Build the debug APK
+cd apps/mobile
+npx expo prebuild --platform android
+cd android && ./gradlew assembleDebug
+
+# 5. Install and run
+adb install -r android/app/build/outputs/apk/debug/app-debug.apk
+maestro test .maestro/flows/login.yaml
+```
+
+---
+
+## Error Monitoring (Sentry)
+
+Sentry is configured for production error tracking with automatic sanitization of sensitive fields.
+
+### Setup
+
+1. Create a Sentry project (React Native platform) at [sentry.io](https://sentry.io).
+2. Add the DSN to `apps/mobile/.env`:
+   ```bash
+   EXPO_PUBLIC_SENTRY_DSN=https://your-key@your-org.ingest.sentry.io/your-project-id
+   ```
+3. For EAS/production builds, store the DSN as an EAS secret instead of hard-coding it:
+   ```bash
+   cd apps/mobile
+   eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN \
+     --value "your-dsn" --type string
+   ```
+
+### How It Works
+
+- Initialized early via `initSentry()` — only active when `__DEV__ === false` (production builds).
+- User ID (not email) is tracked via `setSentryUser()` in `AuthContext`.
+- `logger.error()` forwards to Sentry automatically; sensitive fields are redacted by `sentrySanitizer.ts`.
+- Config files: `apps/mobile/src/lib/sentry.ts`, `apps/mobile/src/lib/sentrySanitizer.ts`.
+
+---
 
 ## Development Phases
 
@@ -193,23 +410,27 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 - [ ] Performance optimization (sub-2s cold start)
 - [ ] Additional feature modules (AI companion, crisis tools, etc.)
 
+---
+
 ## Key Technologies
 
-| Category         | Technology                | Version          |
-| ---------------- | ------------------------- | ---------------- |
-| Framework        | React Native + Expo       | 0.81.5 / ~54.0.0 |
-| Language         | TypeScript (strict)       | ~5.9.3           |
-| React            | React                     | 19.1.0           |
-| Backend          | Supabase                  | ^2.93.3          |
-| Offline Storage  | expo-sqlite               | ~16.0.10         |
-| Key Storage      | expo-secure-store         | ~15.0.8          |
-| Encryption       | crypto-js (AES-256-CBC)   | ^4.2.0           |
-| Server State     | @tanstack/react-query     | ^5.90.15         |
-| Client State     | Zustand                   | ^5.0.9           |
-| Navigation       | React Navigation          | ^7.x             |
-| Validation       | Zod                       | ^4.3.6           |
-| Styling          | NativeWind / Tailwind CSS | ~4.1.18          |
-| Error Monitoring | @sentry/react-native      | ~7.2.0           |
+| Category | Technology | Version |
+| -------- | ---------- | ------- |
+| Framework | React Native + Expo | 0.81.5 / ~54.0.0 |
+| Language | TypeScript (strict) | ~5.9.3 |
+| React | React | 19.1.0 |
+| Backend | Supabase | ^2.93.3 |
+| Offline Storage | expo-sqlite | ~16.0.10 |
+| Key Storage | expo-secure-store | ~15.0.8 |
+| Encryption | crypto-js (AES-256-CBC) | ^4.2.0 |
+| Server State | @tanstack/react-query | ^5.90.15 |
+| Client State | Zustand | ^5.0.9 |
+| Navigation | React Navigation | ^7.x |
+| Validation | Zod | ^4.3.6 |
+| Styling | NativeWind / Tailwind CSS | ~4.1.18 |
+| Error Monitoring | @sentry/react-native | ~7.2.0 |
+
+---
 
 ## Privacy & Security
 
@@ -217,31 +438,67 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 - **Key Storage**: expo-secure-store only (device Keychain/Keystore) — never AsyncStorage or SQLite
 - **Row-Level Security**: All Supabase tables enforce `auth.uid() = user_id`
 - **Logging**: Sanitized logger (no `console.*` with sensitive data)
-- **Sync**: Data remains encrypted end-to-end through sync pipeline
+- **Sync**: Data remains encrypted end-to-end through the sync pipeline
 
-## Error Monitoring (Sentry)
+---
 
-Sentry is configured for production error tracking with automatic sanitization.
+## Troubleshooting
 
-### Setup
+### "npm run doctor:toolchain" fails with a Node version error
 
-1. Create a Sentry project (React Native platform) at https://sentry.io
-2. Add DSN to `apps/mobile/.env`:
-   ```bash
-   EXPO_PUBLIC_SENTRY_DSN=https://your-key@your-org.ingest.sentry.io/your-project-id
-   ```
-3. For production (EAS Build):
-   ```bash
-   eas secret:create --scope project --name EXPO_PUBLIC_SENTRY_DSN \
-     --value "your-dsn" --type string
-   ```
+```
+Node major must be >= 20. Found 18.x.
+```
 
-### How It Works
+Install Node 20 and switch to it:
 
-- Initialized early via `initSentry()` — only active in production (`__DEV__ = false`)
-- User ID tracked (not email) via `setSentryUser()` in AuthContext
-- `logger.error()` auto-sends to Sentry; sensitive fields are redacted
-- Config files: `apps/mobile/src/lib/sentry.ts`, `apps/mobile/src/lib/sentrySanitizer.ts`
+```bash
+# With nvm:
+nvm install 20
+nvm use 20
+node -v   # should print v20.x.x
+```
+
+### "npm run doctor:aliases" fails with a mismatch error
+
+The alias contract at `apps/mobile/config/import-aliases.json` diverged from one of `tsconfig.json`, `babel.config.js`, `jest.config.js`, or `components.json`. Update the out-of-sync file to match the contract, then re-run the doctor.
+
+### App starts but crashes immediately on the device
+
+1. Confirm `apps/mobile/.env` exists and contains real (non-placeholder) Supabase credentials.
+2. Run `npm run validate-env` to check for missing or malformed variables.
+3. Check if the Supabase schema was applied: go to your Supabase dashboard → Table Editor and confirm `journal_entries`, `daily_checkins`, and `sync_queue` tables exist.
+
+### "Encryption key missing" — app redirects to onboarding for a logged-in user
+
+The encryption key was removed from secure storage (can happen after a clean app reinstall). The user must complete onboarding again to generate a new key. This is by design — no key means no ability to decrypt existing data.
+
+### Sync queue growing indefinitely
+
+```bash
+# In Supabase SQL Editor — check for permanently failing queue items:
+SELECT * FROM sync_queue WHERE retry_count >= 3;
+```
+
+Common causes: network never reconnecting during the session, invalid Supabase credentials in the build, or RLS policies blocking writes.
+
+### Web database not persisting on page reload
+
+Verify that `secureStorage.initializeWithSession()` is called in `AuthContext` before any database operations. Check that the browser has IndexedDB enabled (private/incognito mode may disable it).
+
+### TypeScript build fails with strict mode errors
+
+- Never use `any`. Use `unknown` and add type guards.
+- Add explicit return types to all functions.
+- All database query results can be `null` or `undefined` — always check before using.
+
+### Geofencing notifications not triggering
+
+- iOS requires "Always" location permission, not just "While Using".
+- Android requires `ACCESS_BACKGROUND_LOCATION`.
+- Check TaskManager logs for geofence events during development.
+
+---
 
 ## Resources
 
@@ -250,3 +507,7 @@ Sentry is configured for production error tracking with automatic sanitization.
 - [React Navigation](https://reactnavigation.org/)
 - [Sentry for React Native](https://docs.sentry.io/platforms/react-native/)
 - [CLAUDE.md](./CLAUDE.md) — Full architecture, conventions, and security patterns
+- [CONTRIBUTING.md](./CONTRIBUTING.md) — Git workflow, code standards, testing expectations
+- [.github/CI-CD.md](.github/CI-CD.md) — CI/CD workflow documentation
+- [.github/SECRETS.md](.github/SECRETS.md) — GitHub Actions secrets reference
+- [.github/E2E-TESTING.md](.github/E2E-TESTING.md) — Maestro E2E test setup

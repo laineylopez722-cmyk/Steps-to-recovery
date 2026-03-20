@@ -1,0 +1,126 @@
+name: Stale Issue Check
+
+# Runs on the first Monday of each month at 09:00 UTC.
+# Also available as a manual trigger so maintainers can run it on demand.
+#
+# The job scans .claude/issues/ for issues that have exceeded their age
+# thresholds (open > 30 days, in-progress > 14 days) and writes a summary
+# to the GitHub Actions job summary page.
+
+on:
+  schedule:
+    # Cron: minute hour dom month dow
+    # "At 09:00 on day-of-month 1-7 when it is Monday."
+    - cron: '0 9 1-7 * 1'
+  workflow_dispatch:
+    inputs:
+      json_output:
+        description: 'Output raw JSON instead of formatted table'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+
+jobs:
+  check-stale-issues:
+    name: Detect stale issues
+    runs-on: ubuntu-latest
+    # Do not block PRs — this is informational only
+    continue-on-error: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Shallow clone is fine — we only need the .claude/issues/ directory
+          fetch-depth: 1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Use the version pinned in .nvmrc so the script runs in the same
+          # environment as the rest of the project toolchain.
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Run stale-issues check (table)
+        if: ${{ github.event.inputs.json_output != 'true' }}
+        id: stale_table
+        # Allow non-zero exit so the step doesn't fail the job; we surface
+        # stale issues as a warning in the summary instead.
+        run: |
+          set +e
+          node scripts/check-stale-issues.js
+          STALE_EXIT=$?
+          set -e
+
+          if [ $STALE_EXIT -ne 0 ]; then
+            echo "stale_found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "stale_found=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run stale-issues check (JSON)
+        if: ${{ github.event.inputs.json_output == 'true' }}
+        id: stale_json
+        run: |
+          set +e
+          node scripts/check-stale-issues.js --json
+          set -e
+
+      - name: Write job summary
+        if: always()
+        run: |
+          echo "## Stale Issue Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Run date: $(date -u '+%Y-%m-%d %H:%M UTC')" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          set +e
+          REPORT=$(node scripts/check-stale-issues.js --json 2>/dev/null)
+          set -e
+
+          STALE_COUNT=$(echo "$REPORT" | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              try { const p=JSON.parse(d); process.stdout.write(String(p.staleCount||0)); }
+              catch(e){ process.stdout.write('0'); }
+            });
+          " 2>/dev/null || echo "0")
+
+          TOTAL=$(echo "$REPORT" | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              try { const p=JSON.parse(d); process.stdout.write(String(p.totalScanned||0)); }
+              catch(e){ process.stdout.write('0'); }
+            });
+          " 2>/dev/null || echo "0")
+
+          echo "- **Total issues scanned**: $TOTAL" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Stale issues**: $STALE_COUNT" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$STALE_COUNT" -gt 0 ]; then
+            echo "> **Action required**: $STALE_COUNT issue(s) have exceeded their age threshold." \
+              "Review \`.claude/issues/\` and update or close them." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "> All tracked issues are within their age thresholds." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Annotate stale issues as warnings
+        if: steps.stale_table.outputs.stale_found == 'true'
+        run: |
+          # Emit GitHub workflow warning annotations for each stale issue
+          set +e
+          node scripts/check-stale-issues.js --json | node -e "
+            let d=''; process.stdin.on('data',c=>d+=c).on('end',()=>{
+              try {
+                const p = JSON.parse(d);
+                for (const issue of (p.stale || [])) {
+                  const msg = \`Stale issue [\${issue.id}] \"\${issue.title}\" — \${issue.ageDays}d \${issue.status}. \${issue.recommendation}\`;
+                  process.stdout.write('::warning file=' + issue.file + '::' + msg + '\n');
+                }
+              } catch(e) { /* ignore parse errors */ }
+            });
+          "
+          set -e

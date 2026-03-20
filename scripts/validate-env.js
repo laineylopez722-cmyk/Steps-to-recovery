@@ -1,6 +1,58 @@
+// =============================================================================
+// validate-env.js — Environment variable validation for Steps to Recovery
+//
+// Usage: node scripts/validate-env.js
+//        npm run validate-env
+//
+// Validates that all required environment variables are present and
+// well-formed before the app attempts to start. Provides actionable
+// remediation steps when a variable is missing or malformed.
+// =============================================================================
+
 const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
+
+// ---------------------------------------------------------------------------
+// Remediation messages — surfaced when a specific error type is detected
+// ---------------------------------------------------------------------------
+const REMEDIATION = {
+  NO_ENV_FILE:
+    'Run: cp apps/mobile/.env.example apps/mobile/.env\n' +
+    '     Then fill in your Supabase credentials from:\n' +
+    '     https://supabase.com > your project > Settings > API',
+
+  SUPABASE_URL_MISSING:
+    'Set EXPO_PUBLIC_SUPABASE_URL in apps/mobile/.env\n' +
+    '     Format: https://yourprojectid.supabase.co\n' +
+    '     Get it from: Supabase Dashboard > Settings > API > Project URL',
+
+  SUPABASE_URL_PLACEHOLDER:
+    'Replace the placeholder value in apps/mobile/.env\n' +
+    '     Get your real URL from: Supabase Dashboard > Settings > API > Project URL',
+
+  SUPABASE_URL_INVALID:
+    'EXPO_PUBLIC_SUPABASE_URL must be a valid HTTPS URL\n' +
+    '     Format: https://yourprojectid.supabase.co',
+
+  SUPABASE_URL_NOT_SUPABASE:
+    'EXPO_PUBLIC_SUPABASE_URL does not match *.supabase.co\n' +
+    '     If using a self-hosted Supabase instance this is expected.\n' +
+    '     Otherwise check the URL in apps/mobile/.env.',
+
+  SUPABASE_KEY_MISSING:
+    'Set EXPO_PUBLIC_SUPABASE_ANON_KEY in apps/mobile/.env\n' +
+    '     Get it from: Supabase Dashboard > Settings > API > anon/public key',
+
+  SUPABASE_KEY_PLACEHOLDER:
+    'Replace the placeholder value in apps/mobile/.env\n' +
+    '     Get your real anon key from: Supabase Dashboard > Settings > API',
+
+  SUPABASE_KEY_INVALID:
+    'EXPO_PUBLIC_SUPABASE_ANON_KEY must be a JWT (three dot-separated base64url segments)\n' +
+    '     It starts with "eyJ" and looks like: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n' +
+    '     Get it from: Supabase Dashboard > Settings > API > anon/public key',
+};
 
 const root = path.resolve(__dirname, '..');
 const envPaths = [
@@ -104,23 +156,41 @@ for (const { key, description } of optional) {
 if (missing.length > 0 || invalid.length > 0) {
   const hint = loadedFromFile
     ? 'Check apps/mobile/.env values.'
-    : 'Create apps/mobile/.env from apps/mobile/.env.example.';
+    : `apps/mobile/.env not found.\n  ${REMEDIATION.NO_ENV_FILE}`;
 
   if (missing.length > 0) {
     console.error(`[validate-env] Missing required variables: ${missing.join(', ')}.`);
+
+    // Emit a targeted remediation hint for each missing variable
+    for (const key of missing) {
+      if (key === 'EXPO_PUBLIC_SUPABASE_URL') {
+        console.error(`  Remedy: ${REMEDIATION.SUPABASE_URL_MISSING}`);
+      } else if (key === 'EXPO_PUBLIC_SUPABASE_ANON_KEY') {
+        console.error(`  Remedy: ${REMEDIATION.SUPABASE_KEY_MISSING}`);
+      }
+    }
   }
 
   if (invalid.length > 0) {
     console.error(`[validate-env] Invalid or placeholder variables:`);
     for (const item of invalid) {
       console.error(`  - ${item}`);
+
+      // Emit targeted remediation hints for known invalid patterns
+      if (item.includes('SUPABASE_URL') && item.includes('placeholder')) {
+        console.error(`    Remedy: ${REMEDIATION.SUPABASE_URL_PLACEHOLDER}`);
+      } else if (item.includes('SUPABASE_URL') && item.includes('not a valid URL')) {
+        console.error(`    Remedy: ${REMEDIATION.SUPABASE_URL_INVALID}`);
+      } else if (item.includes('SUPABASE_ANON_KEY') && item.includes('placeholder')) {
+        console.error(`    Remedy: ${REMEDIATION.SUPABASE_KEY_PLACEHOLDER}`);
+      } else if (item.includes('SUPABASE_ANON_KEY') && item.includes('JWT')) {
+        console.error(`    Remedy: ${REMEDIATION.SUPABASE_KEY_INVALID}`);
+      }
     }
-    console.error(
-      '[validate-env] Obtain real values from Supabase Dashboard → Settings → API.',
-    );
   }
 
   console.error(`[validate-env] ${hint}`);
+  console.error('[validate-env] Run "bash scripts/verify-setup.sh" for a full environment check.');
   process.exit(1);
 }
 
