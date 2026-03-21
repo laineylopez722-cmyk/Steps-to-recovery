@@ -18,9 +18,9 @@ import CryptoJS from 'crypto-js';
  */
 
 import { Platform } from 'react-native';
-import { secureStorage } from "../adapters/secureStorage/index";
-import type { StorageAdapter } from "../adapters/storage/index.ts";
-import { logger } from "./logger";
+import { secureStorage } from '../adapters/secureStorage/index';
+import type { StorageAdapter } from '../adapters/storage/index.ts';
+import { logger } from './logger';
 
 /**
  * Constant-time string comparison to prevent timing attacks
@@ -287,7 +287,7 @@ export async function hasEncryptionKey(): Promise<boolean> {
  * @throws {Error} If decryption fails (for example, due to an incorrect key
  *                 or corrupted ciphertext).
  */
-function decryptWithKey({ encrypted, key }: { encrypted: string; key: string; }): string {
+function decryptWithKey({ encrypted, key }: { encrypted: string; key: string }): string {
   const parts = encrypted.split(':');
   if (parts.length !== 2 && parts.length !== 3) throw new Error('Invalid format');
   const [iv, ciphertext, mac] = parts;
@@ -422,7 +422,11 @@ export async function rotateEncryptionKey(
 
   logger.info('Starting encryption key rotation', { totalItems });
 
-  // Re-encrypt all records: decrypt with old key, encrypt with new key
+  // Pre-compute all re-encrypted values BEFORE touching the database.
+  // This keeps the transaction short and pure (only UPDATEs, no crypto work).
+  type PendingUpdate = { table: string; sql: string; values: string[] };
+  const pendingUpdates: PendingUpdate[] = [];
+
   for (const { table, columns } of tables) {
     const records = await db.getAllAsync<Record<string, string>>(
       `SELECT id, ${columns.join(', ')} FROM ${table} WHERE user_id = ?`,
@@ -445,17 +449,29 @@ export async function rotateEncryptionKey(
 
       if (updates.length > 0) {
         values.push(record['id']);
-        await db.runAsync(`UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`, values);
+        pendingUpdates.push({
+          table,
+          sql: `UPDATE ${table} SET ${updates.join(', ')} WHERE id = ?`,
+          values,
+        });
       }
 
       processedItems++;
-      onProgress?.(Math.round((processedItems / totalItems) * 100));
+      onProgress?.(Math.round((processedItems / totalItems) * 90)); // 0-90% for re-encrypt phase
     }
   }
+
+  // Apply all re-encrypted records atomically. If any UPDATE fails the
+  // transaction rolls back and the old key remains valid — no data corruption.
+  await db.withTransactionAsync(async () => {
+    for (const { sql, values } of pendingUpdates) {
+      await db.runAsync(sql, values);
+    }
+  });
 
   // All data re-encrypted successfully, now swap the key
   await secureStorage.setItemAsync(ENCRYPTION_KEY_NAME, newKey);
 
   logger.info('Encryption key rotation complete', { totalItems: processedItems });
-  onProgress?.(100);
+  onProgress?.(100); // 100% only after key swap succeeds
 }
