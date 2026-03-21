@@ -16,4 +16,15 @@ process.emitWarning = (warning, type, code, ctor) => {
   return originalEmitWarning(warning, type, code, ctor);
 };
 
+// Inject --config pointing to the mobile app's jest.config.js if not already specified.
+// This ensures Jest uses our custom config regardless of cwd.
+const path = require('path');
+const configPath = path.resolve(__dirname, '..', 'jest.config.js');
+const hasConfig = process.argv.some(
+  (arg) => arg === '--config' || arg === '-c' || arg.startsWith('--config='),
+);
+if (!hasConfig) {
+  process.argv.splice(2, 0, '--config', configPath);
+}
+
 require('jest/bin/jest');

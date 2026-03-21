@@ -49,7 +49,7 @@ module.exports = function (api) {
       ? {
         overrides: [
           {
-            test: ['./src/**'],
+            test: [/[/\\]apps[/\\]mobile[/\\]src[/\\]/, /^\.\/src[/\\]/],
             plugins: ['babel-plugin-dynamic-import-node'],
           },
         ],

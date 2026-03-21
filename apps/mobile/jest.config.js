@@ -19,7 +19,7 @@ const {
 
 module.exports = {
   ...expoPreset,
-  resolver: './apps/mobile/jest.resolver.js',
+  resolver: resolve(appRoot, 'jest.resolver.js'),
   // Use repo root to keep node_modules in-scope for Jest runtime
   rootDir: repoRoot,
   // Limit test discovery to the mobile app
@@ -103,9 +103,11 @@ module.exports = {
     '/android/',
     '/ios/',
     '/.expo/',
-    '/.claude/',
-    '/.codex/',
-    '/.cursor/',
+    // Ignore .claude, .codex, .cursor directories that are *within* the project
+    // (not the .claude/worktrees parent directory containing this project)
+    `${repoRoot.replace(/\\/g, '/')}/.claude/`,
+    `${repoRoot.replace(/\\/g, '/')}/.codex/`,
+    `${repoRoot.replace(/\\/g, '/')}/.cursor/`,
   ],
 
   // Coverage configuration
