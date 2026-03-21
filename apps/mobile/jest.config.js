@@ -19,7 +19,7 @@ const {
 
 module.exports = {
   ...expoPreset,
-  resolver: './apps/mobile/jest.resolver.js',
+  resolver: resolve(appRoot, 'jest.resolver.js'),
   // Use repo root to keep node_modules in-scope for Jest runtime
   rootDir: repoRoot,
   // Limit test discovery to the mobile app
@@ -91,11 +91,10 @@ module.exports = {
     '^react-native-css-interop$': '<rootDir>/apps/mobile/__mocks__/react-native-css-interop.js',
   },
 
-  // Test file patterns — relative globs are safe because roots: ['<rootDir>/apps/mobile']
-  // restricts Jest discovery to the mobile app directory (avoids Windows path separator issues)
+  // Test file patterns
   testMatch: [
-    '**/__tests__/**/*.(spec|test).[jt]s?(x)',
-    '**/?(*.)+(spec|test).[jt]s?(x)',
+    '<rootDir>/apps/mobile/src/**/__tests__/**/*.(spec|test).[jt]s?(x)',
+    '<rootDir>/apps/mobile/src/**/?(*.)+(spec|test).[jt]s?(x)',
   ],
 
   // Files to ignore
@@ -104,9 +103,11 @@ module.exports = {
     '/android/',
     '/ios/',
     '/.expo/',
-    '/.claude/',
-    '/.codex/',
-    '/.cursor/',
+    // Ignore .claude, .codex, .cursor directories that are *within* the project
+    // (not the .claude/worktrees parent directory containing this project)
+    `${repoRoot.replace(/\\/g, '/')}/.claude/`,
+    `${repoRoot.replace(/\\/g, '/')}/.codex/`,
+    `${repoRoot.replace(/\\/g, '/')}/.cursor/`,
   ],
 
   // Coverage configuration
@@ -126,26 +127,26 @@ module.exports = {
   // For critical utils (encryption, database, sync), aim for 80%+
   coverageThreshold: {
     // Critical security modules require higher coverage
-    'apps/mobile/src/utils/encryption.ts': {
+    './src/utils/encryption.ts': {
       statements: 90,
       branches: 85,
       functions: 90,
       lines: 90,
     },
-    'apps/mobile/src/services/syncService.ts': {
+    './src/services/syncService.ts': {
       statements: 70,
       branches: 60,
       functions: 70,
       lines: 70,
     },
     // Context coverage thresholds
-    'apps/mobile/src/contexts/AuthContext.tsx': {
+    './src/contexts/AuthContext.tsx': {
       statements: 70,
       branches: 60,
       functions: 70,
       lines: 70,
     },
-    'apps/mobile/src/contexts/SyncContext.tsx': {
+    './src/contexts/SyncContext.tsx': {
       statements: 70,
       branches: 60,
       functions: 70,

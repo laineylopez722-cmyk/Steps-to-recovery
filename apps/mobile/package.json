@@ -12,11 +12,11 @@
     "ios:dev": "expo start --dev-client --ios",
     "web": "expo start --web",
     "postinstall": "node scripts/fix-datetimepicker-imports.js",
-    "test": "npm run audit:test-act && node scripts/run-jest.js --runInBand",
-    "test:watch": "npm run audit:test-act && node scripts/run-jest.js --watch --runInBand",
-    "test:coverage": "npm run audit:test-act && node scripts/run-jest.js --coverage --runInBand",
-    "test:uiux-review": "node scripts/run-jest.js src/design-system/review/__tests__ --runInBand",
-    "test:encryption": "node scripts/run-jest.js src/utils/__tests__/encryption.test.ts --runInBand",
+    "test": "npm run audit:test-act && cd ../.. && node apps/mobile/scripts/run-jest.js --runInBand",
+    "test:watch": "npm run audit:test-act && cd ../.. && node apps/mobile/scripts/run-jest.js --watch --runInBand",
+    "test:coverage": "npm run audit:test-act && cd ../.. && node apps/mobile/scripts/run-jest.js --coverage --runInBand",
+    "test:uiux-review": "cd ../.. && node apps/mobile/scripts/run-jest.js --testPathPattern=design-system/review/__tests__ --runInBand",
+    "test:encryption": "cd ../.. && node apps/mobile/scripts/run-jest.js --testPathPattern=encryption\\.test --runInBand",
     "audit:uiux": "node scripts/audit-uiux.js",
     "audit:test-act": "node scripts/audit-act-assertions.js",
     "type-check": "npm exec -- tsc --noEmit",
@@ -25,7 +25,7 @@
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
     "e2e": "maestro test .maestro/flows",
-    "e2e:onboarding": "maestro test .maestro/flows/onboarding.yaml",
+    "e2e: onboarding": "maestro test .maestro/flows/onboarding.yaml",
     "e2e:login": "maestro test .maestro/flows/login.yaml",
     "e2e:checkin": "maestro test .maestro/flows/daily-checkin.yaml",
     "e2e:journal": "maestro test .maestro/flows/journal.yaml",
@@ -162,10 +162,7 @@
   "private": true,
   "expo": {
     "install": {
-      "exclude": [
-        "react-native-gesture-handler",
-        "react-native-svg"
-      ]
+      "exclude": ["react-native-gesture-handler", "react-native-svg"]
     }
   }
 }
