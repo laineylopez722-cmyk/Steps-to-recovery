@@ -93,8 +93,8 @@ module.exports = {
 
   // Test file patterns
   testMatch: [
-    '<rootDir>/apps/mobile/src/**/__tests__/**/*.(spec|test).[jt]s?(x)',
-    '<rootDir>/apps/mobile/src/**/?(*.)+(spec|test).[jt]s?(x)',
+    '**/__tests__/**/*.(spec|test).[jt]s?(x)',
+    '**/?(*.)+(spec|test).[jt]s?(x)',
   ],
 
   // Files to ignore
@@ -125,26 +125,26 @@ module.exports = {
   // For critical utils (encryption, database, sync), aim for 80%+
   coverageThreshold: {
     // Critical security modules require higher coverage
-    './src/utils/encryption.ts': {
+    './apps/mobile/src/utils/encryption.ts': {
       statements: 90,
       branches: 85,
       functions: 90,
       lines: 90,
     },
-    './src/services/syncService.ts': {
+    './apps/mobile/src/services/syncService.ts': {
       statements: 70,
       branches: 60,
       functions: 70,
       lines: 70,
     },
     // Context coverage thresholds
-    './src/contexts/AuthContext.tsx': {
+    './apps/mobile/src/contexts/AuthContext.tsx': {
       statements: 70,
       branches: 60,
       functions: 70,
       lines: 70,
     },
-    './src/contexts/SyncContext.tsx': {
+    './apps/mobile/src/contexts/SyncContext.tsx': {
       statements: 70,
       branches: 60,
       functions: 70,
