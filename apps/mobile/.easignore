@@ -5,7 +5,6 @@
 # Dependencies — excluded; installed via eas-build-pre-install
 node_modules/
 apps/mobile/node_modules/
-packages/shared/node_modules/
 
 # Native build artifacts
 android/app/build/
@@ -22,7 +21,6 @@ jest-results/
 
 # Dev tooling (not needed for build)
 .vscode/
-.turbo/
 docs/
 docs to reference/
 

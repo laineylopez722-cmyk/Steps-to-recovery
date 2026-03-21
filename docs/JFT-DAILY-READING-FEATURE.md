@@ -32,7 +32,7 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
 
 ### Data Layer
 
-#### Daily Readings Content (`packages/shared/constants/dailyReadings.ts`)
+#### Daily Readings Content (`apps/mobile/src/shared/constants/dailyReadings.ts`)
 
 - 35+ original daily meditations (currently)
 - Each reading includes:
@@ -58,7 +58,7 @@ The "Just For Today" feature provides daily spiritual readings for recovery, int
 - Practical, not abstract
 - Inclusive (AA/NA/CA/all programs)
 
-#### Types (`packages/shared/types/index.ts`)
+#### Types (`apps/mobile/src/shared/types/index.ts`)
 
 ```typescript
 export interface DailyReading {
@@ -410,7 +410,7 @@ apps/mobile/src/
 └── navigation/
     └── types.ts                            ✅ MODIFIED
 
-packages/shared/
+apps/mobile/src/shared/
 ├── constants/
 │   └── dailyReadings.ts                    ✅ EXISTS (35 readings)
 └── types/
@@ -448,7 +448,7 @@ Root/
 
 ### Adding New Readings
 
-1. Edit `packages/shared/constants/dailyReadings.ts`
+1. Edit `apps/mobile/src/shared/constants/dailyReadings.ts`
 2. Add entry with format: `'MM-DD': { ... }`
 3. Follow content guidelines above
 4. Test on device by changing date

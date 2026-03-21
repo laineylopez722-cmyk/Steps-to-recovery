@@ -16,8 +16,8 @@ Thanks for your interest in Steps to Recovery. This project is a privacy-first r
 
 This repository uses a **single-branch strategy**. There is no `develop` branch.
 
-| Branch | Purpose |
-| ------ | ------- |
+| Branch | Purpose                                       |
+| ------ | --------------------------------------------- |
 | `main` | Production-ready code. All PRs target `main`. |
 
 **Create a feature branch from `main` and open a PR back to `main`.**
@@ -33,14 +33,14 @@ git push -u origin feat/your-feature-name
 
 Branch naming conventions:
 
-| Prefix | Use for |
-| ------ | ------- |
-| `feat/` | New features |
-| `fix/` | Bug fixes |
+| Prefix      | Use for                                    |
+| ----------- | ------------------------------------------ |
+| `feat/`     | New features                               |
+| `fix/`      | Bug fixes                                  |
 | `refactor/` | Code restructuring without behavior change |
-| `test/` | Test additions or fixes |
-| `docs/` | Documentation only |
-| `chore/` | Tooling, dependency updates, config |
+| `test/`     | Test additions or fixes                    |
+| `docs/`     | Documentation only                         |
+| `chore/`    | Tooling, dependency updates, config        |
 
 ---
 
@@ -60,16 +60,16 @@ This repo enforces **Conventional Commits** via [commitlint](https://commitlint.
 
 ### Types
 
-| Type | When to use |
-| ---- | ----------- |
-| `feat` | A new feature visible to users |
-| `fix` | A bug fix |
-| `refactor` | Code change with no behavior change |
-| `test` | Adding or fixing tests |
-| `docs` | Documentation-only changes |
-| `chore` | Tooling, build config, dependency bumps |
-| `perf` | Performance improvement |
-| `ci` | Changes to CI/CD workflows |
+| Type       | When to use                                              |
+| ---------- | -------------------------------------------------------- |
+| `feat`     | A new feature visible to users                           |
+| `fix`      | A bug fix                                                |
+| `refactor` | Code change with no behavior change                      |
+| `test`     | Adding or fixing tests                                   |
+| `docs`     | Documentation-only changes                               |
+| `chore`    | Tooling, build config, dependency bumps                  |
+| `perf`     | Performance improvement                                  |
+| `ci`       | Changes to CI/CD workflows                               |
 | `security` | Security-critical changes (encryption, RLS, key storage) |
 
 ### Examples
@@ -87,6 +87,7 @@ chore: bump expo-sqlite to 16.0.10
 ```
 
 **Rules enforced by commitlint:**
+
 - Subject line must not end with a period.
 - Subject line must be lowercase after the colon.
 - Body and footer are separated from the subject by a blank line.
@@ -152,7 +153,7 @@ export function JournalEntry({ entryId, onSave }: any) {
 **Type checking:**
 
 ```bash
-# From the repo root (checks all workspaces via Turborepo):
+# From the repo root:
 npm run type-check
 
 # From apps/mobile directly:
@@ -165,18 +166,18 @@ cd apps/mobile && npx tsc --noEmit
 
 ESLint is configured in `apps/mobile/.eslintrc.js` (or `eslint.config.*`). Key rule categories:
 
-| Category | Key rules |
-| -------- | --------- |
-| TypeScript | No `any`, explicit return types on exports |
-| React | Hooks rules (exhaustive-deps), no deprecated APIs |
-| Security | No `console.log` (use `logger`), no hardcoded secrets |
+| Category      | Key rules                                                                      |
+| ------------- | ------------------------------------------------------------------------------ |
+| TypeScript    | No `any`, explicit return types on exports                                     |
+| React         | Hooks rules (exhaustive-deps), no deprecated APIs                              |
+| Security      | No `console.log` (use `logger`), no hardcoded secrets                          |
 | Accessibility | `@react-native-a11y` rules enforcing `accessibilityLabel`, `accessibilityRole` |
-| Imports | No unused imports, consistent ordering |
+| Imports       | No unused imports, consistent ordering                                         |
 
 Run ESLint:
 
 ```bash
-# All workspaces via Turborepo:
+# From the repo root:
 npm run lint
 
 # Mobile only:
@@ -297,12 +298,12 @@ cd apps/mobile && npm run test:coverage
 
 ### Coverage targets
 
-| Module | Target |
-| ------ | ------ |
-| Encryption | 90% |
-| Sync service | 70% |
-| Feature hooks (e.g., `useJournalEntries`) | 90% |
-| Overall | 75% |
+| Module                                    | Target |
+| ----------------------------------------- | ------ |
+| Encryption                                | 90%    |
+| Sync service                              | 70%    |
+| Feature hooks (e.g., `useJournalEntries`) | 90%    |
+| Overall                                   | 75%    |
 
 ### Test patterns
 
@@ -391,12 +392,12 @@ When you open a PR, the template at `.github/pull_request_template.md` will pre-
 
 ## Related Documentation
 
-| Document | Purpose |
-| -------- | ------- |
-| [SETUP.md](SETUP.md) | First-time environment setup |
-| [CLAUDE.md](CLAUDE.md) | Full architecture, patterns, security rules |
-| [SECURITY.md](SECURITY.md) | Security policy, vulnerability reporting |
-| [TESTING.md](TESTING.md) | Unit and integration test guide |
-| [.github/CI-CD.md](.github/CI-CD.md) | CI/CD workflow documentation |
-| [.github/SECRETS.md](.github/SECRETS.md) | GitHub Actions secrets reference |
-| [.github/E2E-TESTING.md](.github/E2E-TESTING.md) | Maestro E2E test setup and local runs |
+| Document                                         | Purpose                                     |
+| ------------------------------------------------ | ------------------------------------------- |
+| [SETUP.md](SETUP.md)                             | First-time environment setup                |
+| [CLAUDE.md](CLAUDE.md)                           | Full architecture, patterns, security rules |
+| [SECURITY.md](SECURITY.md)                       | Security policy, vulnerability reporting    |
+| [TESTING.md](TESTING.md)                         | Unit and integration test guide             |
+| [.github/CI-CD.md](.github/CI-CD.md)             | CI/CD workflow documentation                |
+| [.github/SECRETS.md](.github/SECRETS.md)         | GitHub Actions secrets reference            |
+| [.github/E2E-TESTING.md](.github/E2E-TESTING.md) | Maestro E2E test setup and local runs       |

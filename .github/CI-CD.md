@@ -9,15 +9,15 @@ For E2E test setup, see [E2E-TESTING.md](E2E-TESTING.md).
 
 ## Workflow Overview
 
-| Workflow | File | Trigger | Typical Duration | Purpose |
-| -------- | ---- | ------- | ---------------- | ------- |
-| EAS Build | `eas-build.yml` | Push/PR to `main` (mobile paths), manual | 15–40 min | Lint, test, EAS cloud build |
-| E2E Tests | `e2e.yml` | Push/PR to `main` (mobile paths), manual | 20–45 min | Maestro flows against a real APK |
-| Release | `release.yml` | `v*` tags, manual | 30–60 min | Production build + store submission |
-| ESLint | `eslint.yml` | Push/PR to `main`, weekly Friday | 5–10 min | Security scan via SARIF |
-| Bundle Analysis | `bundle-analysis.yml` | PRs to `main` (mobile/shared paths) | 10–15 min | Bundle size reporting |
-| Codacy | `codacy.yml` | Push/PR to `main`, weekly Thursday | 5–10 min | Code quality analysis |
-| CI | `webpack.yml` | Push/PR to `main` | 5–10 min | Env validation + strict gate |
+| Workflow        | File                  | Trigger                                  | Typical Duration | Purpose                             |
+| --------------- | --------------------- | ---------------------------------------- | ---------------- | ----------------------------------- |
+| EAS Build       | `eas-build.yml`       | Push/PR to `main` (mobile paths), manual | 15–40 min        | Lint, test, EAS cloud build         |
+| E2E Tests       | `e2e.yml`             | Push/PR to `main` (mobile paths), manual | 20–45 min        | Maestro flows against a real APK    |
+| Release         | `release.yml`         | `v*` tags, manual                        | 30–60 min        | Production build + store submission |
+| ESLint          | `eslint.yml`          | Push/PR to `main`, weekly Friday         | 5–10 min         | Security scan via SARIF             |
+| Bundle Analysis | `bundle-analysis.yml` | PRs to `main` (mobile/shared paths)      | 10–15 min        | Bundle size reporting               |
+| Codacy          | `codacy.yml`          | Push/PR to `main`, weekly Thursday       | 5–10 min         | Code quality analysis               |
+| CI              | `webpack.yml`         | Push/PR to `main`                        | 5–10 min         | Env validation + strict gate        |
 
 ---
 
@@ -25,18 +25,18 @@ For E2E test setup, see [E2E-TESTING.md](E2E-TESTING.md).
 
 ### When it runs
 
-- **Push to `main`**: When any file under `apps/mobile/**` or `packages/shared/**` changes.
+- **Push to `main`**: When any file under `apps/mobile/**` or `apps/mobile/src/shared/**` changes.
 - **Pull request to `main`**: On the same path filter. The `build` job is skipped on PRs — only `lint-and-typecheck` and `test` run.
 - **Manual dispatch**: Via Actions → EAS Build → Run workflow. You can select the platform (`ios`, `android`, or `all`) and the build profile (`development`, `preview`, or `production`).
 
 ### Jobs
 
-| Job | Runs on | What it does |
-| --- | ------- | ------------ |
-| `lint-and-typecheck` | All triggers | Runs `doctor:toolchain`, `doctor:aliases`, `audit:test-act`, ESLint, TypeScript type-check |
-| `test` | All triggers | Runs the full Jest test suite |
-| `build` | Push to `main` + manual only | Authenticates with Expo, runs `eas build --no-wait` with the selected profile |
-| `notify-build-started` | After `build` | Posts a build summary to the Actions run page |
+| Job                    | Runs on                      | What it does                                                                               |
+| ---------------------- | ---------------------------- | ------------------------------------------------------------------------------------------ |
+| `lint-and-typecheck`   | All triggers                 | Runs `doctor:toolchain`, `doctor:aliases`, `audit:test-act`, ESLint, TypeScript type-check |
+| `test`                 | All triggers                 | Runs the full Jest test suite                                                              |
+| `build`                | Push to `main` + manual only | Authenticates with Expo, runs `eas build --no-wait` with the selected profile              |
+| `notify-build-started` | After `build`                | Posts a build summary to the Actions run page                                              |
 
 ### Build behavior
 
@@ -46,17 +46,18 @@ For E2E test setup, see [E2E-TESTING.md](E2E-TESTING.md).
 
 ### Secrets required
 
-| Secret | Used for |
-| ------ | -------- |
-| `EXPO_TOKEN` | EAS CLI authentication |
-| `EXPO_PUBLIC_SUPABASE_URL` | Injected into the build environment |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Injected into the build environment |
-| `EXPO_PUBLIC_SENTRY_DSN` | Optional — Sentry error tracking |
-| `SENTRY_AUTH_TOKEN` | Optional — source map upload to Sentry |
+| Secret                          | Used for                               |
+| ------------------------------- | -------------------------------------- |
+| `EXPO_TOKEN`                    | EAS CLI authentication                 |
+| `EXPO_PUBLIC_SUPABASE_URL`      | Injected into the build environment    |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Injected into the build environment    |
+| `EXPO_PUBLIC_SENTRY_DSN`        | Optional — Sentry error tracking       |
+| `SENTRY_AUTH_TOKEN`             | Optional — source map upload to Sentry |
 
 ### Version pinning
 
 `EAS_CLI_VERSION` in this workflow must stay in sync with:
+
 - `apps/mobile/eas.json` → `cli.version`
 - `.github/workflows/release.yml` → `EAS_CLI_VERSION`
 
@@ -68,27 +69,27 @@ If you upgrade the EAS CLI, update all three locations.
 
 ### When it runs
 
-- **Push to `main`**: When files under `apps/mobile/**`, `packages/shared/**`, `.maestro/**`, or `.github/workflows/e2e.yml` change.
+- **Push to `main`**: When files under `apps/mobile/**`, `apps/mobile/src/shared/**`, `.maestro/**`, or `.github/workflows/e2e.yml` change.
 - **Pull request to `main`**: On the same path filter (mobile and shared only).
 - **Manual dispatch**: Via Actions → E2E Tests (Maestro) → Run workflow. You can choose a specific flow or leave the field empty to run all flows.
 
 ### Jobs
 
-| Job | Trigger | What it does |
-| --- | ------- | ------------ |
-| `build-android` | All triggers | Prebuild native project, compile debug APK, upload as artifact |
-| `validate-flows` | All triggers | Installs Maestro, dry-runs all `.yaml` flow files, checks testID count |
-| `e2e-cloud` | PRs + manual | Downloads APK, runs tests on Maestro Cloud |
-| `e2e-local` | Push to `main` + manual | Starts a GitHub-hosted Android emulator, runs tests locally |
+| Job              | Trigger                 | What it does                                                           |
+| ---------------- | ----------------------- | ---------------------------------------------------------------------- |
+| `build-android`  | All triggers            | Prebuild native project, compile debug APK, upload as artifact         |
+| `validate-flows` | All triggers            | Installs Maestro, dry-runs all `.yaml` flow files, checks testID count |
+| `e2e-cloud`      | PRs + manual            | Downloads APK, runs tests on Maestro Cloud                             |
+| `e2e-local`      | Push to `main` + manual | Starts a GitHub-hosted Android emulator, runs tests locally            |
 
 ### Maestro Cloud vs local emulator
 
-| | Maestro Cloud (`e2e-cloud`) | Local emulator (`e2e-local`) |
-| - | -------------------------- | ----------------------------- |
-| Trigger | PRs to `main`, manual | Push to `main`, manual |
-| Result visibility | Maestro Cloud dashboard + PR comments | GitHub Actions artifacts |
-| Secrets needed | `MAESTRO_CLOUD_API_KEY`, `MAESTRO_CLOUD_PROJECT_ID`, `E2E_TEST_USER_EMAIL`, `E2E_TEST_USER_PASSWORD` | `E2E_TEST_USER_EMAIL`, `E2E_TEST_USER_PASSWORD` |
-| Speed | Faster (cloud devices) | Slower (emulator startup) |
+|                   | Maestro Cloud (`e2e-cloud`)                                                                          | Local emulator (`e2e-local`)                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| Trigger           | PRs to `main`, manual                                                                                | Push to `main`, manual                          |
+| Result visibility | Maestro Cloud dashboard + PR comments                                                                | GitHub Actions artifacts                        |
+| Secrets needed    | `MAESTRO_CLOUD_API_KEY`, `MAESTRO_CLOUD_PROJECT_ID`, `E2E_TEST_USER_EMAIL`, `E2E_TEST_USER_PASSWORD` | `E2E_TEST_USER_EMAIL`, `E2E_TEST_USER_PASSWORD` |
+| Speed             | Faster (cloud devices)                                                                               | Slower (emulator startup)                       |
 
 ### Secret validation
 
@@ -96,12 +97,12 @@ Both `e2e-cloud` and `e2e-local` include an explicit secret validation step that
 
 ### Secrets required
 
-| Secret | Required for |
-| ------ | ------------ |
-| `MAESTRO_CLOUD_API_KEY` | `e2e-cloud` job |
-| `MAESTRO_CLOUD_PROJECT_ID` | `e2e-cloud` job |
-| `E2E_TEST_USER_EMAIL` | Both `e2e-cloud` and `e2e-local` |
-| `E2E_TEST_USER_PASSWORD` | Both `e2e-cloud` and `e2e-local` |
+| Secret                     | Required for                     |
+| -------------------------- | -------------------------------- |
+| `MAESTRO_CLOUD_API_KEY`    | `e2e-cloud` job                  |
+| `MAESTRO_CLOUD_PROJECT_ID` | `e2e-cloud` job                  |
+| `E2E_TEST_USER_EMAIL`      | Both `e2e-cloud` and `e2e-local` |
+| `E2E_TEST_USER_PASSWORD`   | Both `e2e-cloud` and `e2e-local` |
 
 ### Flow files
 
@@ -128,13 +129,13 @@ The `production` EAS build profile has `autoIncrement: true`, so the build numbe
 
 ### Jobs
 
-| Job | Runs on | What it does |
-| --- | ------- | ------------ |
-| `quality-gates` | All triggers | Full quality check: doctor scripts, audit, ESLint, type-check, tests, encryption tests |
-| `build-android` | Tag push + manual (all/android) | Production AAB build via EAS, submit to Play Store internal track |
-| `build-ios` | Tag push + manual (all/ios) | Production IPA build via EAS, submit to TestFlight |
-| `create-release` | After both build jobs | Generates changelog from git log, creates GitHub Release |
-| `notify` | Always (after all jobs) | Posts a pipeline summary to the Actions run page |
+| Job              | Runs on                         | What it does                                                                           |
+| ---------------- | ------------------------------- | -------------------------------------------------------------------------------------- |
+| `quality-gates`  | All triggers                    | Full quality check: doctor scripts, audit, ESLint, type-check, tests, encryption tests |
+| `build-android`  | Tag push + manual (all/android) | Production AAB build via EAS, submit to Play Store internal track                      |
+| `build-ios`      | Tag push + manual (all/ios)     | Production IPA build via EAS, submit to TestFlight                                     |
+| `create-release` | After both build jobs           | Generates changelog from git log, creates GitHub Release                               |
+| `notify`         | Always (after all jobs)         | Posts a pipeline summary to the Actions run page                                       |
 
 ### Release tags and prereleases
 
@@ -142,15 +143,15 @@ If the tag name contains `beta` or `rc` (e.g., `v1.2.0-beta.1`), the GitHub Rele
 
 ### Secrets required
 
-| Secret | Used for |
-| ------ | -------- |
-| `EXPO_TOKEN` | EAS CLI authentication |
-| `EXPO_PUBLIC_SUPABASE_URL` | Build environment |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Build environment |
-| `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` | Play Store submission |
-| `EXPO_APPLE_ID` | App Store Connect authentication |
-| `EXPO_APPLE_TEAM_ID` | App Store Connect authentication |
-| `ASC_APP_ID` | App Store Connect app record |
+| Secret                            | Used for                         |
+| --------------------------------- | -------------------------------- |
+| `EXPO_TOKEN`                      | EAS CLI authentication           |
+| `EXPO_PUBLIC_SUPABASE_URL`        | Build environment                |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY`   | Build environment                |
+| `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` | Play Store submission            |
+| `EXPO_APPLE_ID`                   | App Store Connect authentication |
+| `EXPO_APPLE_TEAM_ID`              | App Store Connect authentication |
+| `ASC_APP_ID`                      | App Store Connect app record     |
 
 ---
 
@@ -184,7 +185,7 @@ This workflow uses only the built-in `GITHUB_TOKEN` (via the `upload-sarif` acti
 
 ### When it runs
 
-- **Pull requests to `main`**: When files under `apps/mobile/**`, `packages/shared/**`, `package.json`, or `package-lock.json` change.
+- **Pull requests to `main`**: When files under `apps/mobile/**`, `apps/mobile/src/shared/**`, `package.json`, or `package-lock.json` change.
 
 This workflow does not run on pushes — only on PRs so that bundle size changes are surfaced before merging.
 
@@ -228,9 +229,9 @@ The scheduled run catches new tool rules against the unchanged codebase.
 
 ### Secrets matrix
 
-| Secret | Required | Effect without it |
-| ------ | -------- | ----------------- |
-| `CODACY_PROJECT_TOKEN` | No | Scan runs; results go to GitHub Security but not Codacy dashboard |
+| Secret                 | Required | Effect without it                                                 |
+| ---------------------- | -------- | ----------------------------------------------------------------- |
+| `CODACY_PROJECT_TOKEN` | No       | Scan runs; results go to GitHub Security but not Codacy dashboard |
 
 ---
 
@@ -261,22 +262,22 @@ Placeholder Supabase values are injected via the `env:` block in the workflow so
 
 ## Secret-to-Workflow Matrix
 
-| Secret | `eas-build.yml` | `e2e.yml` | `release.yml` | `eslint.yml` | `bundle-analysis.yml` | `codacy.yml` | `webpack.yml` |
-| ------ | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `EXPO_TOKEN` | Yes | — | Yes | — | — | — | — |
-| `EXPO_PUBLIC_SUPABASE_URL` | Yes | — | Yes | — | — | — | — |
-| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Yes | — | Yes | — | — | — | — |
-| `EXPO_PUBLIC_SENTRY_DSN` | Optional | — | — | — | — | — | — |
-| `SENTRY_AUTH_TOKEN` | Optional | — | — | — | — | — | — |
-| `MAESTRO_CLOUD_API_KEY` | — | Yes | — | — | — | — | — |
-| `MAESTRO_CLOUD_PROJECT_ID` | — | Yes | — | — | — | — | — |
-| `E2E_TEST_USER_EMAIL` | — | Yes | — | — | — | — | — |
-| `E2E_TEST_USER_PASSWORD` | — | Yes | — | — | — | — | — |
-| `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` | — | — | Yes | — | — | — | — |
-| `EXPO_APPLE_ID` | — | — | Yes | — | — | — | — |
-| `EXPO_APPLE_TEAM_ID` | — | — | Yes | — | — | — | — |
-| `ASC_APP_ID` | — | — | Yes | — | — | — | — |
-| `CODACY_PROJECT_TOKEN` | — | — | — | — | — | Optional | — |
+| Secret                            | `eas-build.yml` | `e2e.yml` | `release.yml` | `eslint.yml` | `bundle-analysis.yml` | `codacy.yml` | `webpack.yml` |
+| --------------------------------- | :-------------: | :-------: | :-----------: | :----------: | :-------------------: | :----------: | :-----------: |
+| `EXPO_TOKEN`                      |       Yes       |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `EXPO_PUBLIC_SUPABASE_URL`        |       Yes       |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY`   |       Yes       |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `EXPO_PUBLIC_SENTRY_DSN`          |    Optional     |     —     |       —       |      —       |           —           |      —       |       —       |
+| `SENTRY_AUTH_TOKEN`               |    Optional     |     —     |       —       |      —       |           —           |      —       |       —       |
+| `MAESTRO_CLOUD_API_KEY`           |        —        |    Yes    |       —       |      —       |           —           |      —       |       —       |
+| `MAESTRO_CLOUD_PROJECT_ID`        |        —        |    Yes    |       —       |      —       |           —           |      —       |       —       |
+| `E2E_TEST_USER_EMAIL`             |        —        |    Yes    |       —       |      —       |           —           |      —       |       —       |
+| `E2E_TEST_USER_PASSWORD`          |        —        |    Yes    |       —       |      —       |           —           |      —       |       —       |
+| `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` |        —        |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `EXPO_APPLE_ID`                   |        —        |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `EXPO_APPLE_TEAM_ID`              |        —        |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `ASC_APP_ID`                      |        —        |     —     |      Yes      |      —       |           —           |      —       |       —       |
+| `CODACY_PROJECT_TOKEN`            |        —        |     —     |       —       |      —       |           —           |   Optional   |       —       |
 
 For full instructions on obtaining and rotating each secret, see [SECRETS.md](SECRETS.md).
 

@@ -55,8 +55,8 @@
 
 ### Content & Data
 
-- [x] `packages/shared/constants/dailyReadings.ts` - 35 original readings (exists)
-- [x] `packages/shared/types/index.ts` - DailyReading & DailyReadingReflection types (exists)
+- [x] `apps/mobile/src/shared/constants/dailyReadings.ts` - 35 original readings (exists)
+- [x] `apps/mobile/src/shared/types/index.ts` - DailyReading & DailyReadingReflection types (exists)
 - [x] `supabase-migration-reading-reflections.sql` - Database schema (exists)
 
 ### Hooks & State

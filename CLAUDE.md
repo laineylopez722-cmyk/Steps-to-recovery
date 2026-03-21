@@ -133,11 +133,8 @@ cd apps/mobile && npm run test:encryption
 ### Building
 
 ```bash
-# Build all packages
-npm run build
-
-# Build with Turbo cache
-turbo run build
+# Build mobile app
+cd apps/mobile && npx expo export
 ```
 
 ### Linting & Type Checking
@@ -1025,21 +1022,21 @@ async function shareEntryWithSponsor(
 
 **RLS for Shared Entries**: See "Supabase RLS Policies" section above.
 
-## Monorepo Structure
+## Project Structure
 
-Uses **Turborepo** with npm workspaces:
+Single-app structure (shared code lives inside mobile app):
 
 ```
 Steps-to-recovery/
 ├── apps/
 │   ├── mobile/          # Expo React Native app (MVP focus)
+│   │   └── src/
+│   │       └── shared/  # Shared types, constants, utils, stores
 │   └── web/             # Expo web target (shared codebase, not a separate Next.js app)
-├── packages/
-│   └── shared/          # Shared types, constants, utils
-└── turbo.json           # Turborepo configuration
+└── eslint.config.js     # Root ESLint configuration
 ```
 
-**Shared Package**: Import shared types from `@recovery/shared`
+**Shared Code**: Import shared types/constants/stores from `@/shared` (alias for `apps/mobile/src/shared/`)
 
 ## Important Anti-Patterns to Avoid
 

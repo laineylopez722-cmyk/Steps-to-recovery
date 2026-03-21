@@ -6,7 +6,7 @@ A privacy-first 12-step recovery companion mobile app built with:
 
 - **Mobile**: React Native 0.81.5 + Expo SDK ~54.0.0 (TypeScript)
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Architecture**: Monorepo with Turborepo + npm workspaces
+- **Architecture**: Single-app structure (npm workspaces)
 - **Offline-First**: expo-sqlite (mobile) / IndexedDB (web)
 - **Encryption**: AES-256-CBC via crypto-js, keys in expo-secure-store
 
@@ -16,14 +16,11 @@ A privacy-first 12-step recovery companion mobile app built with:
 Steps-to-recovery/
 ├── apps/
 │   └── mobile/              # Expo React Native app
-├── packages/
-│   └── shared/              # Shared types, constants (@recovery/shared)
 ├── .claude/                 # Claude Code agents & prompts
 ├── .github/                 # CI/CD workflows, docs, secrets reference
 ├── scripts/                 # Doctor scripts, toolchain utilities
 ├── supabase-schema.sql      # Base Supabase schema with RLS
-├── turbo.json               # Turborepo task config
-└── package.json             # Monorepo workspace config
+└── package.json             # Workspace config
 ```
 
 ## Mobile App Structure
@@ -80,13 +77,13 @@ apps/mobile/src/features/
 
 ### Prerequisites
 
-| Requirement | Version | Notes |
-| ----------- | ------- | ----- |
-| Node.js | 20.x (exact: 20.19.4) | See `.nvmrc` — must match EAS build environment |
-| npm | 11.x | Pinned via `packageManager` field in `package.json` |
-| Git | Any recent | For cloning and commits |
-| Expo Go | Latest | For scanning QR codes on a physical device |
-| Supabase account | — | Free tier works; https://supabase.com |
+| Requirement      | Version               | Notes                                               |
+| ---------------- | --------------------- | --------------------------------------------------- |
+| Node.js          | 20.x (exact: 20.19.4) | See `.nvmrc` — must match EAS build environment     |
+| npm              | 11.x                  | Pinned via `packageManager` field in `package.json` |
+| Git              | Any recent            | For cloning and commits                             |
+| Expo Go          | Latest                | For scanning QR codes on a physical device          |
+| Supabase account | —                     | Free tier works; https://supabase.com               |
 
 The Node.js version in `.nvmrc` is intentionally pinned to the exact version used by EAS builds. Using a different major version will cause `npm run doctor:toolchain` to fail.
 
@@ -103,7 +100,7 @@ nvm use
 npm install
 ```
 
-`npm install` installs dependencies for all workspaces (`apps/mobile`, `packages/shared`) in a single pass and runs the `postinstall` script that patches datetime-picker imports for Expo compatibility.
+`npm install` installs dependencies for the workspace and runs the `postinstall` script that patches datetime-picker imports for Expo compatibility.
 
 ### Step 2: Set Up Supabase
 
@@ -145,6 +142,7 @@ EXPO_PUBLIC_ENV=development
 ```
 
 **Security notes:**
+
 - `.env` is already listed in `.gitignore`. Never commit it.
 - The Supabase anon key is safe to include in the app because all data access is enforced by Row-Level Security (RLS) policies.
 - Encryption keys are never stored in `.env`. They are derived from the user's session token and stored in device Keychain/Keystore via `expo-secure-store`.
@@ -178,10 +176,10 @@ cd apps/mobile && npx expo start
 
 ### Step 7: Run on a Device or Simulator
 
-| Target | How |
-| ------ | --- |
-| iOS Simulator (macOS only) | Press `i` in the Expo terminal |
-| Android Emulator | Press `a` in the Expo terminal |
+| Target                           | How                                   |
+| -------------------------------- | ------------------------------------- |
+| iOS Simulator (macOS only)       | Press `i` in the Expo terminal        |
+| Android Emulator                 | Press `a` in the Expo terminal        |
 | Physical device (iOS or Android) | Scan the QR code with the Expo Go app |
 
 ---
@@ -195,7 +193,7 @@ npm run android             # Run on Android emulator
 npm run ios                 # Run on iOS simulator
 
 # Testing
-npm test                    # Run all tests via Turborepo
+npm test                    # Run all tests
 cd apps/mobile && npm test  # Run mobile tests directly
 npm run test:watch          # Watch mode (run from apps/mobile)
 npm run test:coverage       # Coverage report (run from apps/mobile)
@@ -207,8 +205,8 @@ npm run e2e                 # Run all flows
 npm run e2e:validate        # Dry-run syntax check on all flows
 
 # Quality and Verification
-npm run lint                # ESLint via Turborepo (all workspaces)
-npm run type-check          # TypeScript check via Turborepo
+npm run lint                # ESLint
+npm run type-check          # TypeScript check
 npm run doctor:toolchain    # Verify Node/npm/workspace script invariants
 npm run doctor:aliases      # Verify alias maps are in sync
 npm run verify:strict       # Full strict gate: doctor + lint + type-check + tests
@@ -256,20 +254,22 @@ The project includes two automated scripts that catch configuration drift early.
 
 **What it checks**:
 
-| Check | Expected |
-| ----- | -------- |
-| Node.js major version | >= 20 (warns if not exactly 20.x) |
-| npm major version | Must match `packageManager` field in `package.json` (currently 11.x) |
-| `.nvmrc` content | Must be `"20"` |
-| `apps/mobile` `type-check` script | Must be `"npm exec -- tsc --noEmit"` |
-| `packages/shared` `lint` and `type-check` scripts | Must be `"npm exec -- tsc --noEmit"` |
+| Check                             | Expected                                                             |
+| --------------------------------- | -------------------------------------------------------------------- |
+| Node.js major version             | >= 20 (warns if not exactly 20.x)                                    |
+| npm major version                 | Must match `packageManager` field in `package.json` (currently 11.x) |
+| `.nvmrc` content                  | Must be `"20"`                                                       |
+| `apps/mobile` `type-check` script | Must be `"npm exec -- tsc --noEmit"`                                 |
+| Workspace script invariants       | Must match expected values                                           |
 
 **Success output:**
+
 ```
 Toolchain doctor passed.
 ```
 
 **Failure output** (example):
+
 ```
 Toolchain doctor found issues:
 - npm major must be 11. Found 10.2.4.
@@ -283,21 +283,23 @@ Toolchain doctor found issues:
 
 **What it checks**: The project uses a single **alias contract** at `apps/mobile/config/import-aliases.json` as the authoritative source for path aliases. This script verifies that four files stay in sync with that contract:
 
-| File | What is checked |
-| ---- | --------------- |
-| `apps/mobile/tsconfig.json` | `compilerOptions.paths` |
-| `apps/mobile/components.json` | `aliases` block |
+| File                          | What is checked                    |
+| ----------------------------- | ---------------------------------- |
+| `apps/mobile/tsconfig.json`   | `compilerOptions.paths`            |
+| `apps/mobile/components.json` | `aliases` block                    |
 | `apps/mobile/babel.config.js` | `module-resolver` plugin alias map |
-| `apps/mobile/jest.config.js` | `moduleNameMapper` entries |
+| `apps/mobile/jest.config.js`  | `moduleNameMapper` entries         |
 
 It also asserts that the root `tsconfig.json` does NOT define `baseUrl` or `paths` (those belong in the mobile-specific config only).
 
 **Success output:**
+
 ```
 Alias consistency doctor passed.
 ```
 
 **Failure output** (example):
+
 ```
 Alias consistency doctor found issues:
 - apps/mobile/tsconfig.json compilerOptions.paths mismatch.
@@ -374,7 +376,7 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 
 ### Phase 1: Core Architecture & Auth ✅
 
-- [x] Monorepo setup (Turborepo + npm workspaces)
+- [x] Project setup (npm workspaces)
 - [x] Supabase Auth integration
 - [x] Login/SignUp/Onboarding screens
 - [x] Secure token storage (expo-secure-store)
@@ -414,21 +416,21 @@ Following a BMAD (Build-Measure-Analyze-Decide) approach:
 
 ## Key Technologies
 
-| Category | Technology | Version |
-| -------- | ---------- | ------- |
-| Framework | React Native + Expo | 0.81.5 / ~54.0.0 |
-| Language | TypeScript (strict) | ~5.9.3 |
-| React | React | 19.1.0 |
-| Backend | Supabase | ^2.93.3 |
-| Offline Storage | expo-sqlite | ~16.0.10 |
-| Key Storage | expo-secure-store | ~15.0.8 |
-| Encryption | crypto-js (AES-256-CBC) | ^4.2.0 |
-| Server State | @tanstack/react-query | ^5.90.15 |
-| Client State | Zustand | ^5.0.9 |
-| Navigation | React Navigation | ^7.x |
-| Validation | Zod | ^4.3.6 |
-| Styling | NativeWind / Tailwind CSS | ~4.1.18 |
-| Error Monitoring | @sentry/react-native | ~7.2.0 |
+| Category         | Technology                | Version          |
+| ---------------- | ------------------------- | ---------------- |
+| Framework        | React Native + Expo       | 0.81.5 / ~54.0.0 |
+| Language         | TypeScript (strict)       | ~5.9.3           |
+| React            | React                     | 19.1.0           |
+| Backend          | Supabase                  | ^2.93.3          |
+| Offline Storage  | expo-sqlite               | ~16.0.10         |
+| Key Storage      | expo-secure-store         | ~15.0.8          |
+| Encryption       | crypto-js (AES-256-CBC)   | ^4.2.0           |
+| Server State     | @tanstack/react-query     | ^5.90.15         |
+| Client State     | Zustand                   | ^5.0.9           |
+| Navigation       | React Navigation          | ^7.x             |
+| Validation       | Zod                       | ^4.3.6           |
+| Styling          | NativeWind / Tailwind CSS | ~4.1.18          |
+| Error Monitoring | @sentry/react-native      | ~7.2.0           |
 
 ---
 

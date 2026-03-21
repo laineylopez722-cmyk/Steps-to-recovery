@@ -12,7 +12,7 @@ This feature gamifies meeting attendance with check-ins, streaks, and achievemen
 
 ### Constants
 
-- `packages/shared/constants/achievements.ts` - Achievement definitions, colors, and motivational messages
+- `apps/mobile/src/shared/constants/achievements.ts` - Achievement definitions, colors, and motivational messages
 
 ### Services
 

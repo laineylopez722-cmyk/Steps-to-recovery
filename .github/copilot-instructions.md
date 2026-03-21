@@ -245,11 +245,11 @@ it('should encrypt and decrypt to return original text', async () => {
 });
 ```
 
-## Monorepo Structure
+## Project Structure
 
-- **Turborepo** with npm workspaces
+- **Single-app layout** (no Turborepo)
 - **Path alias**: `@/` → `apps/mobile/src` (use absolute imports)
-- **Shared package**: `@recovery/shared` for types/constants
+- **Shared code**: `@/shared` (`apps/mobile/src/shared/`) for types/constants
 - **Package manager**: npm 10.9.2 (pinned via `packageManager` field)
 - **Node version**: >=20.0.0 required
 

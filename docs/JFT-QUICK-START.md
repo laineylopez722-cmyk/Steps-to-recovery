@@ -20,8 +20,8 @@ A complete "Just For Today" daily reading feature that displays spiritual recove
 
 ### Already Existed ✅
 
-1. `packages/shared/constants/dailyReadings.ts` - 35 original readings
-2. `packages/shared/types/index.ts` - DailyReading & DailyReadingReflection types
+1. `apps/mobile/src/shared/constants/dailyReadings.ts` - 35 original readings
+2. `apps/mobile/src/shared/types/index.ts` - DailyReading & DailyReadingReflection types
 3. `apps/mobile/src/hooks/useReading.ts` - Reading hook
 4. `apps/mobile/src/hooks/useReadingDatabase.ts` - Database operations
 5. `apps/mobile/src/store/readingStore.ts` - State management
@@ -217,8 +217,8 @@ HomeScreen (DailyReadingCard)
   ├─ useReading.ts                           ← Exists
   └─ useReadingDatabase.ts                   ← Exists
 
-/packages/shared/constants/dailyReadings.ts  ← 35 readings
-/packages/shared/types/index.ts              ← Types
+/apps/mobile/src/shared/constants/dailyReadings.ts  ← 35 readings
+/apps/mobile/src/shared/types/index.ts              ← Types
 
 /supabase-migration-reading-reflections.sql  ← DB schema
 ```
@@ -265,7 +265,7 @@ navigation.navigate('JournalEditor', {
 
 ```bash
 # View reading content
-code packages/shared/constants/dailyReadings.ts
+code apps/mobile/src/shared/constants/dailyReadings.ts
 
 # View main card component
 code apps/mobile/src/features/home/components/DailyReadingCard.tsx

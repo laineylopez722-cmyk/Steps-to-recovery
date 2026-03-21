@@ -61,12 +61,26 @@ const moduleResolverPlugin = babelConfig.plugins.find(
    */
   (plugin) => Array.isArray(plugin) && plugin[0] === 'module-resolver',
 );
-const babelAlias =
+const rawBabelAlias =
   Array.isArray(moduleResolverPlugin) &&
   typeof moduleResolverPlugin[1] === 'object' &&
   moduleResolverPlugin[1] !== null
     ? moduleResolverPlugin[1].alias
     : undefined;
+
+// Babel config resolves aliases to absolute paths at runtime for cwd-independence.
+// Normalize back to relative paths (from apps/mobile/) for comparison with the contract.
+const mobileRoot = resolve(process.cwd(), 'apps/mobile');
+const babelAlias = rawBabelAlias
+  ? Object.fromEntries(
+      Object.entries(rawBabelAlias).map(([key, value]) => {
+        if (typeof value === 'string' && value.startsWith(mobileRoot)) {
+          return [key, './' + value.slice(mobileRoot.length + 1).replace(/\\/g, '/')];
+        }
+        return [key, value];
+      }),
+    )
+  : undefined;
 assertDeepEqual(
   failures,
   'apps/mobile/babel.config.js module-resolver alias',

@@ -2,7 +2,7 @@
 
 **Project**: Privacy-first 12-step recovery companion mobile app  
 **Tech Stack**: React Native 0.81.5 + Expo SDK 54, TypeScript strict, Supabase, SQLite, AES-256 encryption  
-**Monorepo**: npm workspaces + Turborepo  
+**Structure**: Single-app (no Turborepo)
 **Node Version**: 20.19.4 (pinned in `.nvmrc`)  
 **Package Manager**: npm 11.8.0
 
@@ -45,15 +45,13 @@ Steps-to-recovery/
 │       │   ├── store/             # Zustand state
 │       │   └── utils/             # encryption.ts, logger.ts, database.ts
 │       └── .maestro/flows/        # E2E test flows
-├── packages/
-│   └── shared/                    # Shared types/constants (@recovery/shared)
 ├── supabase/
 │   ├── functions/                 # Edge functions (ai-chat)
 │   └── migrations/                # SQL migrations (numbered by timestamp)
 └── scripts/                       # Doctor, validation, maintenance scripts
 ```
 
-**Path aliases**: `@/*` → `apps/mobile/src/*` · `@recovery/shared` → `packages/shared/src`
+**Path alias**: `@/*` → `apps/mobile/src/*` (shared code lives at `apps/mobile/src/shared/`)
 
 ---
 
@@ -70,10 +68,12 @@ User Input → encryptContent() → SQLite/IndexedDB → sync_queue → Supabase
 ```
 
 **Critical files**:
+
 - `apps/mobile/src/utils/encryption.ts` — AES-256-CBC with PBKDF2 (100,000 iterations), HMAC-SHA256
 - `apps/mobile/src/adapters/secureStorage/` — iOS Keychain / Android Keystore / web IndexedDB
 
 **Rules**:
+
 - ✅ Call `encryptContent()` before ANY write to SQLite or Supabase
 - ✅ Store encryption keys in SecureStore ONLY
 - ❌ NEVER use AsyncStorage, SQLite, or Supabase for keys
@@ -90,6 +90,7 @@ await db.runAsync('INSERT INTO journal_entries ...', [encryptedBody]);
 ```
 
 **Implementation**:
+
 - Mobile: `expo-sqlite` with Drizzle ORM
 - Web: IndexedDB adapter
 
@@ -125,30 +126,30 @@ Each context depends on the previous one being initialized.
 
 ### Root (Monorepo)
 
-| Command | Purpose |
-|---|---|
-| `npm run mobile` | Start Expo dev server |
-| `npm run android` / `npm run ios` | Run on emulator/simulator |
-| `npm test` | Run all tests via Turborepo |
-| `npm run lint` | ESLint across all packages |
-| `npm run type-check` | TypeScript check (delegates to mobile) |
-| `npm run format` | Prettier write |
-| `npm run format:check` | Prettier check |
-| `npm run verify:strict` | Full pre-release gate (doctor + lint + type-check + tests) |
-| `npm run doctor:toolchain` | Verify Node/npm/workspace setup |
-| `npm run doctor:aliases` | Verify tsconfig/babel/jest alias consistency |
+| Command                           | Purpose                                                    |
+| --------------------------------- | ---------------------------------------------------------- |
+| `npm run mobile`                  | Start Expo dev server                                      |
+| `npm run android` / `npm run ios` | Run on emulator/simulator                                  |
+| `npm test`                        | Run all tests                                              |
+| `npm run lint`                    | ESLint                                                     |
+| `npm run type-check`              | TypeScript check (delegates to mobile)                     |
+| `npm run format`                  | Prettier write                                             |
+| `npm run format:check`            | Prettier check                                             |
+| `npm run verify:strict`           | Full pre-release gate (doctor + lint + type-check + tests) |
+| `npm run doctor:toolchain`        | Verify Node/npm/workspace setup                            |
+| `npm run doctor:aliases`          | Verify tsconfig/babel/jest alias consistency               |
 
 ### apps/mobile
 
-| Command | Purpose |
-|---|---|
-| `npm run start:dev` | Start Expo metro bundler |
+| Command                   | Purpose                                              |
+| ------------------------- | ---------------------------------------------------- |
+| `npm run start:dev`       | Start Expo metro bundler                             |
 | `npm run test:encryption` | Run encryption tests (REQUIRED after crypto changes) |
-| `npm run test:coverage` | Coverage report |
-| `npm run type-check` | TypeScript check (mobile only) |
-| `npm run lint` | ESLint mobile source |
-| `npm run e2e` | Run all Maestro E2E flows |
-| `npm run e2e:validate` | Validate E2E flows (syntax check) |
+| `npm run test:coverage`   | Coverage report                                      |
+| `npm run type-check`      | TypeScript check (mobile only)                       |
+| `npm run lint`            | ESLint mobile source                                 |
+| `npm run e2e`             | Run all Maestro E2E flows                            |
+| `npm run e2e:validate`    | Validate E2E flows (syntax check)                    |
 
 ### Build Commands
 
@@ -252,12 +253,12 @@ const ds = useDs();
 
 ### Coverage Targets
 
-| Module | Target |
-|---|---|
-| `encryption.ts` | ≥90% |
-| `syncService.ts` | ≥70% |
-| Feature hooks | ≥75% |
-| Overall | ≥75% |
+| Module           | Target |
+| ---------------- | ------ |
+| `encryption.ts`  | ≥90%   |
+| `syncService.ts` | ≥70%   |
+| Feature hooks    | ≥75%   |
+| Overall          | ≥75%   |
 
 ### Run Tests
 
@@ -281,10 +282,10 @@ cd apps/mobile && npm run test:coverage
 it('encrypts and decrypts to original value', async () => {
   const plaintext = 'Sensitive journal content';
   const encrypted = await encryptContent(plaintext);
-  
+
   expect(encrypted).not.toBe(plaintext);
   expect(encrypted).toContain(':'); // IV:ciphertext format
-  
+
   const decrypted = await decryptContent(encrypted);
   expect(decrypted).toBe(plaintext);
 });
@@ -294,28 +295,28 @@ it('encrypts and decrypts to original value', async () => {
 
 ## Feature Modules
 
-| Feature | Files | Purpose |
-|---|---|---|
-| **ai-companion** | 65 | AI chat with memory, prompts, quick actions |
-| **steps** | 38 | 12-step work: overview, single-question view, review |
-| **meetings** | 28 | Meeting finder with filters, map, details |
-| **progress** | 22 | Progress dashboard, milestones, insights |
-| **home** | 14 | Home screen, hero card, shortcuts, check-ins |
-| **emergency** | 13 | Crisis support, close calls, risky contacts |
-| **sponsor** | 13 | Sponsor management and sharing flows |
-| **journal** | 7 | Encrypted journal entries |
-| **crisis** | 4 | BeforeYouUse timer (harm reduction) |
-| **craving-surf** | 8 | Guided craving surfing exercise |
-| **safety-plan** | 7 | Personal safety plan |
-| **gratitude** | 4 | Gratitude list |
-| **inventory** | 4 | Personal inventory (Step 4/10) |
-| **settings** | 8 | App settings |
-| **auth** | 5 | Login/signup |
-| **onboarding** | 2 | First-run onboarding |
-| **readings** | 2 | Daily readings |
-| **profile** | 1 | User profile |
-| **challenges** | 6 | Recovery challenges |
-| **mindfulness** | New | Mindfulness exercises |
+| Feature          | Files | Purpose                                              |
+| ---------------- | ----- | ---------------------------------------------------- |
+| **ai-companion** | 65    | AI chat with memory, prompts, quick actions          |
+| **steps**        | 38    | 12-step work: overview, single-question view, review |
+| **meetings**     | 28    | Meeting finder with filters, map, details            |
+| **progress**     | 22    | Progress dashboard, milestones, insights             |
+| **home**         | 14    | Home screen, hero card, shortcuts, check-ins         |
+| **emergency**    | 13    | Crisis support, close calls, risky contacts          |
+| **sponsor**      | 13    | Sponsor management and sharing flows                 |
+| **journal**      | 7     | Encrypted journal entries                            |
+| **crisis**       | 4     | BeforeYouUse timer (harm reduction)                  |
+| **craving-surf** | 8     | Guided craving surfing exercise                      |
+| **safety-plan**  | 7     | Personal safety plan                                 |
+| **gratitude**    | 4     | Gratitude list                                       |
+| **inventory**    | 4     | Personal inventory (Step 4/10)                       |
+| **settings**     | 8     | App settings                                         |
+| **auth**         | 5     | Login/signup                                         |
+| **onboarding**   | 2     | First-run onboarding                                 |
+| **readings**     | 2     | Daily readings                                       |
+| **profile**      | 1     | User profile                                         |
+| **challenges**   | 6     | Recovery challenges                                  |
+| **mindfulness**  | New   | Mindfulness exercises                                |
 
 ---
 
@@ -323,22 +324,22 @@ it('encrypts and decrypts to original value', async () => {
 
 **Tables** (all user data encrypted before storage):
 
-| Table | Purpose |
-|---|---|
-| `users` | Profile, sobriety date, settings |
-| `journal_entries` | Encrypted journal with tags, mood, favorites |
-| `daily_checkins` | Morning intentions, evening reflections |
-| `step_work_answers` | 12-step question responses |
-| `reading_reflections` | Daily reading responses |
-| `contacts` | Sponsor/support network |
-| `phone_calls` | Call log to support contacts |
-| `close_calls` | Close call incidents with outcomes |
-| `risky_contacts` | Contacts to avoid |
-| `ai_conversations` / `ai_messages` | AI chat history |
-| `ai_memory_extractions` | Extracted memories from journal/check-ins |
-| `gratitude_entries` | Gratitude list |
-| `challenges` | Recovery challenges |
-| `sync_queue` | Pending sync operations |
+| Table                              | Purpose                                      |
+| ---------------------------------- | -------------------------------------------- |
+| `users`                            | Profile, sobriety date, settings             |
+| `journal_entries`                  | Encrypted journal with tags, mood, favorites |
+| `daily_checkins`                   | Morning intentions, evening reflections      |
+| `step_work_answers`                | 12-step question responses                   |
+| `reading_reflections`              | Daily reading responses                      |
+| `contacts`                         | Sponsor/support network                      |
+| `phone_calls`                      | Call log to support contacts                 |
+| `close_calls`                      | Close call incidents with outcomes           |
+| `risky_contacts`                   | Contacts to avoid                            |
+| `ai_conversations` / `ai_messages` | AI chat history                              |
+| `ai_memory_extractions`            | Extracted memories from journal/check-ins    |
+| `gratitude_entries`                | Gratitude list                               |
+| `challenges`                       | Recovery challenges                          |
+| `sync_queue`                       | Pending sync operations                      |
 
 **Migrations**: Located in `supabase/migrations/`, numbered by timestamp, run on app startup.
 
@@ -404,6 +405,7 @@ security(auth): store encryption key in SecureStore
 ```
 
 **Rules**:
+
 - Subject line: lowercase after colon, no period at end
 - Body/footer separated by blank line
 - Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`, `perf`, `ci`, `security`
@@ -431,15 +433,15 @@ git push -u origin feat/your-feature-name
 
 GitHub Actions workflows (`.github/workflows/`):
 
-| Workflow | Purpose |
-|---|---|
-| `eas-build.yml` | Lint + type-check + tests on every push |
-| `eslint.yml` | ESLint with SARIF security scan |
-| `e2e.yml` | Maestro E2E tests |
-| `release.yml` | Production releases (tagged `v*`) |
-| `bundle-analysis.yml` | Bundle size tracking |
-| `codacy.yml` | Code quality analysis |
-| `stale-issues.yml` | Auto-close stale issues |
+| Workflow              | Purpose                                 |
+| --------------------- | --------------------------------------- |
+| `eas-build.yml`       | Lint + type-check + tests on every push |
+| `eslint.yml`          | ESLint with SARIF security scan         |
+| `e2e.yml`             | Maestro E2E tests                       |
+| `release.yml`         | Production releases (tagged `v*`)       |
+| `bundle-analysis.yml` | Bundle size tracking                    |
+| `codacy.yml`          | Code quality analysis                   |
+| `stale-issues.yml`    | Auto-close stale issues                 |
 
 **EAS Builds**: Preview builds auto-triggered on push to `main`. Production requires `v*` tag.
 
@@ -471,17 +473,17 @@ set JAVA_HOME="C:\Program Files\Microsoft\jdk-17.0.17.10-hotspot"
 
 ### Critical Files
 
-| File | Purpose |
-|---|---|
-| `AGENTS.md` | Repository guidelines (coding style, conventions) |
-| `CLAUDE.md` | Full architecture, security patterns, token optimization |
-| `ARCHITECTURE.md` | System architecture, navigation, database |
-| `CONTRIBUTING.md` | Contribution guidelines, PR process |
-| `TESTING.md` | Testing strategy, Maestro E2E guide |
-| `SECURITY.md` | Security policy, environment variables |
-| `SETUP.md` | First-time setup guide |
-| `DEPLOYMENT.md` | Build and deploy instructions |
-| `VERIFICATION-CHECKLIST.md` | Pre-PR verification steps |
+| File                        | Purpose                                                  |
+| --------------------------- | -------------------------------------------------------- |
+| `AGENTS.md`                 | Repository guidelines (coding style, conventions)        |
+| `CLAUDE.md`                 | Full architecture, security patterns, token optimization |
+| `ARCHITECTURE.md`           | System architecture, navigation, database                |
+| `CONTRIBUTING.md`           | Contribution guidelines, PR process                      |
+| `TESTING.md`                | Testing strategy, Maestro E2E guide                      |
+| `SECURITY.md`               | Security policy, environment variables                   |
+| `SETUP.md`                  | First-time setup guide                                   |
+| `DEPLOYMENT.md`             | Build and deploy instructions                            |
+| `VERIFICATION-CHECKLIST.md` | Pre-PR verification steps                                |
 
 ---
 
@@ -520,14 +522,14 @@ npm install && npx husky
 
 ## Related Documentation
 
-| Document | Purpose |
-|---|---|
-| `README.md` | Project overview, current status, priorities |
-| `QUICK-START.md` | 5-minute setup guide |
-| `PRD.md` | Product requirements |
-| `CHANGELOG.md` | Version history |
-| `CODE_OF_CONDUCT.md` | Community guidelines |
-| `LICENSE` | MIT license |
+| Document             | Purpose                                      |
+| -------------------- | -------------------------------------------- |
+| `README.md`          | Project overview, current status, priorities |
+| `QUICK-START.md`     | 5-minute setup guide                         |
+| `PRD.md`             | Product requirements                         |
+| `CHANGELOG.md`       | Version history                              |
+| `CODE_OF_CONDUCT.md` | Community guidelines                         |
+| `LICENSE`            | MIT license                                  |
 
 **Legal docs**: `apps/mobile/legal/PRIVACY_POLICY.md`, `apps/mobile/legal/TERMS_OF_SERVICE.md`
 

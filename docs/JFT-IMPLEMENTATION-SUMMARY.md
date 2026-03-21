@@ -402,7 +402,7 @@ Each reading follows this structure:
      ├─ HomeScreenModern.tsx                 ← Integration point
      └─ DailyReadingScreen.tsx               ← Full view
 
-/packages/shared/constants/dailyReadings.ts  ← Content (35 readings)
+/apps/mobile/src/shared/constants/dailyReadings.ts  ← Content (35 readings)
 /supabase-migration-reading-reflections.sql  ← Database schema
 ```
 

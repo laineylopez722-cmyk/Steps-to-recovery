@@ -58,10 +58,10 @@ _Privacy-first 12-step recovery companion app. ALL sensitive data MUST be encryp
 
 - react-native-paper **5.14.5** (Material Design)
 
-**Monorepo:**
+**Project Structure:**
 
-- Turbo **1.11.0**
-- Workspaces: apps/mobile, apps/web, packages/shared
+- Single-app layout (no Turborepo)
+- Shared code lives at `apps/mobile/src/shared/`
 
 ---
 
@@ -107,7 +107,7 @@ _Privacy-first 12-step recovery companion app. ALL sensitive data MUST be encryp
 
 - ✅ Use named exports (NO default exports)
 - ✅ Import order: React → third-party → local absolute → relative
-- ✅ Shared types in `packages/shared/src/types`
+- ✅ Shared types in `apps/mobile/src/shared/types`
 
 ---
 

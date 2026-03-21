@@ -4,13 +4,14 @@ Privacy-first recovery companion built with React Native, Expo, Supabase, and an
 
 ## What this repo is
 
-This is a monorepo for the **Steps to Recovery** mobile app and shared code.
+This is the repository for the **Steps to Recovery** mobile app.
 
 The project already has a lot of real functionality in place — journaling, check-ins, step work, crisis support, sponsor flows, meetings, progress tracking, and an AI companion — but the repo is currently in a **beta hardening / release-confidence** phase, not a clean “ready for public beta” state.
 
 ## Current reality
 
 ### In good shape
+
 - Core mobile app exists and is substantial
 - Root TypeScript check passes
 - Mobile type-check passes
@@ -21,6 +22,7 @@ The project already has a lot of real functionality in place — journaling, che
 - Maestro flows exist for key user journeys
 
 ### Still needs work before real beta confidence
+
 - Sync correctness and local ↔ cloud schema drift need hardening
 - Android preview EAS build confidence is not back yet
 - Real device validation is still the biggest gap
@@ -62,7 +64,7 @@ The project already has a lot of real functionality in place — journaling, che
 - **Local data:** SQLite on mobile, IndexedDB adapter on web
 - **Security:** encrypted sensitive fields + secure local storage
 - **UI:** custom design system + Uniwind
-- **Monorepo:** npm workspaces + Turborepo
+- **Structure:** Single-app (no Turborepo)
 
 ## Repo structure
 
@@ -81,8 +83,6 @@ apps/
       store/             Zustand stores
       types/             App types, including DB types
       utils/             Encryption, database init, logger, helpers
-packages/
-  shared/                Shared types, utilities, and services
 supabase/
   functions/             Edge functions
   migrations/            Database migrations
@@ -94,12 +94,14 @@ docs/                    Historical + deep-dive product/engineering docs
 ## Development notes
 
 ### Requirements
+
 - Node.js 20+
 - npm 11.x
 - JDK 17 for Android builds
 - Expo / EAS account for remote builds
 
 ### Important constraint
+
 This app uses native modules and a custom dev client setup.
 
 **Do not assume Expo Go is enough.** Use the configured development / preview build flows instead.
@@ -173,6 +175,7 @@ eas build --profile production --platform ios
 ## Documentation
 
 ### Start here
+
 - [Setup Guide](./SETUP.md)
 - [Testing Guide](./TESTING.md)
 - [Deployment Guide](./DEPLOYMENT.md)
@@ -180,10 +183,12 @@ eas build --profile production --platform ios
 - [Security Policy](./SECURITY.md)
 
 ### App/legal docs
+
 - [Privacy Policy](./apps/mobile/legal/PRIVACY_POLICY.md)
 - [Terms of Service](./apps/mobile/legal/TERMS_OF_SERVICE.md)
 
 ### Architecture / feature docs
+
 - [AI Companion Architecture](./docs/AI-COMPANION-ARCHITECTURE.md)
 - [Risk Detection Feature](./docs/RISK-DETECTION-FEATURE.md)
 

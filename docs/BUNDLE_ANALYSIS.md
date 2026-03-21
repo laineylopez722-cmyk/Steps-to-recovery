@@ -30,7 +30,7 @@ Generated: 09/02/2026, 5:33:07 pm
 | @react-navigation/bottom-tabs             | 0 B     | 🟢 small   |
 | @react-navigation/native                  | 0 B     | 🟢 small   |
 | @react-navigation/native-stack            | 0 B     | 🟢 small   |
-| @recovery/shared                          | 0 B     | 🟢 small   |
+| @/shared (local)                          | 0 B     | 🟢 small   |
 | @rn-primitives/accordion                  | 0 B     | 🟢 small   |
 | @rn-primitives/alert-dialog               | 0 B     | 🟢 small   |
 | @rn-primitives/avatar                     | 0 B     | 🟢 small   |

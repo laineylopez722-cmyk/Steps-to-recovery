@@ -88,7 +88,7 @@ npx expo run:android --device
 
 ### **Common Build Errors**:
 
-#### **Error: "Cannot find module '@recovery/shared'"**
+#### **Error: "Cannot find module '@/shared/...'"**
 
 **Fix**:
 
