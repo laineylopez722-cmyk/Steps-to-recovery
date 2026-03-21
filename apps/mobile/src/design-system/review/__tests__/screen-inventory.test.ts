@@ -19,10 +19,11 @@ describe('review/screen-inventory', () => {
   });
 
   it('resolves inventory file paths that exist on disk', () => {
-    const projectRoot = process.cwd();
+    // filePaths are relative to apps/mobile/, not repo root
+    const mobileRoot = path.resolve(process.cwd(), 'apps/mobile');
 
     for (const entry of getScreenInventory()) {
-      const fullPath = path.resolve(projectRoot, entry.filePath);
+      const fullPath = path.resolve(mobileRoot, entry.filePath);
       expect(fs.existsSync(fullPath)).toBe(true);
     }
   });
