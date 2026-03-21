@@ -16,10 +16,11 @@ function readJson(relativePath) {
  * @param {string[]} failures
  * @param {boolean} condition
  * @param {string} message
+ * @param {string} fix
  */
-function assertCondition(failures, condition, message) {
+function assertCondition(failures, condition, message, fix) {
   if (!condition) {
-    failures.push(message);
+    failures.push(`${message}\n    Fix: ${fix}`);
   }
 }
 
@@ -41,39 +42,50 @@ assertCondition(
   failures,
   expectedPackageManager.startsWith('npm@'),
   `packageManager must be npm-based. Found "${expectedPackageManager}".`,
+  `Edit package.json → set "packageManager": "npm@${expectedNpmMajor}.x.x"`,
 );
 assertCondition(
   failures,
   currentNodeMajor >= expectedNodeMajor,
   `Node major must be >= ${expectedNodeMajor}. Found ${process.versions.node}.`,
+  `Run: nvm install ${expectedNodeMajor} && nvm use ${expectedNodeMajor}  (or see .nvmrc)`,
 );
 assertCondition(
   failures,
   currentNpmMajor === expectedNpmMajor,
   `npm major must be ${expectedNpmMajor}. Found ${currentNpmVersion}.`,
+  `Run: npm install -g npm@${expectedNpmMajor}`,
 );
-assertCondition(failures, nvmrc === String(expectedNodeMajor), `.nvmrc must be "${expectedNodeMajor}".`);
+assertCondition(
+  failures,
+  nvmrc === String(expectedNodeMajor),
+  `.nvmrc must be "${expectedNodeMajor}".`,
+  `Run: echo ${expectedNodeMajor} > .nvmrc`,
+);
 
 assertCondition(
   failures,
   mobilePackage.scripts['type-check'] === 'npm exec -- tsc --noEmit',
   'apps/mobile/package.json script "type-check" must be "npm exec -- tsc --noEmit".',
+  'Edit apps/mobile/package.json → set scripts.type-check to "npm exec -- tsc --noEmit"',
 );
 assertCondition(
   failures,
   sharedPackage.scripts.lint === 'npm exec -- tsc --noEmit',
   'packages/shared/package.json script "lint" must be "npm exec -- tsc --noEmit".',
+  'Edit packages/shared/package.json → set scripts.lint to "npm exec -- tsc --noEmit"',
 );
 assertCondition(
   failures,
   sharedPackage.scripts['type-check'] === 'npm exec -- tsc --noEmit',
   'packages/shared/package.json script "type-check" must be "npm exec -- tsc --noEmit".',
+  'Edit packages/shared/package.json → set scripts.type-check to "npm exec -- tsc --noEmit"',
 );
 
 if (failures.length > 0) {
-  console.error('Toolchain doctor found issues:');
+  console.error('Toolchain doctor found issues:\n');
   for (const failure of failures) {
-    console.error(`- ${failure}`);
+    console.error(`  ✗ ${failure}\n`);
   }
   process.exit(1);
 }
@@ -85,3 +97,4 @@ if (currentNodeMajor !== expectedNodeMajor) {
 }
 
 console.log('Toolchain doctor passed.');
+

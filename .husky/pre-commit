@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+# Run lint-staged (ESLint + Prettier on staged files)
+npx --no lint-staged
+
+# Validate import alias consistency across tsconfig, babel, jest
+npm run doctor:aliases

@@ -1123,6 +1123,17 @@ export async function processSyncQueue(
       upsertsProcessed: upsertItems.length,
     });
 
+    // Clean up old failed items after successful sync batch
+    try {
+      const cleanup = await cleanupSyncQueue(db);
+      if (cleanup.removed > 0) {
+        logger.info('Sync queue cleanup removed stale items', { removed: cleanup.removed });
+      }
+    } catch (cleanupError) {
+      // Non-fatal: cleanup failure should not affect sync result
+      logger.warn('Sync queue cleanup failed (non-fatal)', cleanupError);
+    }
+
     return result;
   } catch (error) {
     logger.error('Sync queue processing failed', error);

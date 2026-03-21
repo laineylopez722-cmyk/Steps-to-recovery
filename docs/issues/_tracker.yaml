@@ -9,11 +9,12 @@ metadata:
   project: "Steps-to-Recovery"
   total_issues: 28
   generated_from: ".claude/CONFIGURATION-FIX-PLAN.md (2026-03-21 audit)"
+  last_updated: "2026-03-21"
   counts:
-    open: 22
-    in_progress: 2
+    open: 0
+    in_progress: 1
     blocked: 0
-    fixed: 2
+    fixed: 25
     deferred: 2
 
 ---
@@ -33,7 +34,7 @@ issues:
       title: "iOS encryption compliance declaration is incorrect"
       severity: critical
       priority: P0
-      status: open
+      status: fixed
       file: configuration/ios-encryption-compliance.issue.md
       summary: >
         app.json declares ITSAppUsesNonExemptEncryption: false but the app uses
@@ -45,7 +46,7 @@ issues:
       title: "npm run web script has circular/broken delegation"
       severity: critical
       priority: P0
-      status: open
+      status: fixed
       file: configuration/broken-web-script.issue.md
       summary: >
         Root package.json line 37 delegates to itself, causing an infinite loop
@@ -57,7 +58,7 @@ issues:
       title: "Environment variable validation missing at startup"
       severity: high
       priority: P1
-      status: open
+      status: fixed
       file: configuration/env-validation.issue.md
       summary: >
         The app starts silently with missing EXPO_PUBLIC_SUPABASE_URL or
@@ -70,7 +71,7 @@ issues:
       title: "Node.js version misaligned across local, CI, and EAS"
       severity: high
       priority: P1
-      status: open
+      status: fixed
       file: configuration/node-alignment.issue.md
       summary: >
         No .nvmrc file exists. CI workflows and EAS build reference different
@@ -95,7 +96,7 @@ issues:
       title: "Doctor scripts do not surface actionable fix instructions"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: configuration/doctor-scripts.issue.md
       summary: >
         npm run doctor:toolchain and doctor:aliases report failures but
@@ -107,7 +108,7 @@ issues:
       title: "e2e.yml references non-existent develop branch"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: configuration/e2e-branch-reference.issue.md
       summary: >
         .github/workflows/e2e.yml triggers on push to a develop branch that
@@ -119,7 +120,7 @@ issues:
       title: "EAS CLI version inconsistent between eas.json and workflows"
       severity: low
       priority: P3
-      status: open
+      status: fixed
       file: configuration/eas-cli-alignment.issue.md
       summary: >
         The EAS CLI version pinned in eas.json (cli.version) differs from
@@ -151,7 +152,7 @@ issues:
       title: "Encryption key rotation procedure is not documented or automated"
       severity: high
       priority: P1
-      status: open
+      status: fixed
       file: security/encryption-key-rotation.issue.md
       summary: >
         There is no documented process for rotating the user's AES-256-CBC
@@ -195,7 +196,7 @@ issues:
       title: "Drizzle ORM schema not in sync with SQLite DatabaseContext migrations"
       severity: high
       priority: P1
-      status: open
+      status: fixed
       file: database/drizzle-migrations.issue.md
       summary: >
         The Drizzle schema in src/db/ and the imperative SQL in
@@ -208,7 +209,7 @@ issues:
       title: "Sync queue has no cleanup for successfully processed entries"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: database/sync-queue-edge-cases.issue.md
       summary: >
         The sync_queue table grows indefinitely. Successfully synced entries
@@ -221,7 +222,7 @@ issues:
       title: "Missing database indexes on frequently queried columns"
       severity: low
       priority: P3
-      status: open
+      status: fixed
       file: database/missing-indexes.issue.md
       summary: >
         Columns like journal_entries.created_at, daily_checkins.check_in_date,
@@ -239,7 +240,7 @@ issues:
       title: "Feature implementation guides missing for achievements, geofencing, and search"
       severity: high
       priority: P1
-      status: open
+      status: fixed
       file: documentation/feature-guides.issue.md
       summary: >
         CLAUDE.md lists .claude/ guides for journal, steps, sponsor, etc.
@@ -252,7 +253,7 @@ issues:
       title: "syncService and encryption utilities lack API documentation"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: documentation/api-documentation.issue.md
       summary: >
         The two most critical utilities (encryption.ts and syncService.ts)
@@ -308,7 +309,7 @@ issues:
       title: "Import alias map inconsistent between tsconfig, Babel, and Jest"
       severity: high
       priority: P1
-      status: in-progress
+      status: fixed
       file: dx-improvements/alias-validation.issue.md
       summary: >
         The doctor:aliases script was added to catch this, but the underlying
@@ -321,7 +322,7 @@ issues:
       title: "Test setup requires repetitive QueryClient wrapper boilerplate"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: dx-improvements/test-setup-simplification.issue.md
       summary: >
         Every hook test file duplicates the same createWrapper() function with
@@ -346,7 +347,7 @@ issues:
       title: "Pre-commit hook does not run ESLint or TypeScript"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: dx-improvements/precommit-enhancement.issue.md
       summary: >
         The Husky pre-commit hook runs lint-staged for formatting only.
@@ -364,7 +365,7 @@ issues:
       title: "Offline mutations have no user-facing feedback toast"
       severity: medium
       priority: P2
-      status: open
+      status: fixed
       file: refactoring/offline-mutation-toast.issue.md
       summary: >
         useOfflineMutation performs writes and queues sync but provides no
@@ -390,7 +391,7 @@ issues:
       title: "Analytics event sending is a no-op stub"
       severity: low
       priority: P3
-      status: open
+      status: fixed
       file: refactoring/analytics-event-sending.issue.md
       summary: >
         analytics.ts has sendEvent() and trackScreen() functions that are

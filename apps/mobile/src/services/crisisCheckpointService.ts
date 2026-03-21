@@ -292,7 +292,7 @@ async function getCheckpointStartTime(
 
     return data.started_at;
   } catch (error) {
-    console.error('Error in getCheckpointStartTime:', error);
+    logger.error('Error in getCheckpointStartTime', { error });
     return null;
   }
 }
