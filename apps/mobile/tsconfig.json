@@ -46,6 +46,7 @@
     "dist",
     "build",
     "**/__tests__/**",
+    "src/test-utils/**",
     "**/*.test.ts",
     "**/*.test.tsx",
     "**/*.spec.ts",

@@ -26,8 +26,8 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { db, isReady } = useDatabase();
+export function AuthProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+  const { db } = useDatabase();
   const [state, setState] = useState<AuthState>({
     session: null,
     user: null,
@@ -213,8 +213,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
-      // Perform complete logout cleanup (encryption keys + session + local data)
-      await performLogoutCleanup({ db: isReady ? (db ?? undefined) : undefined });
+      // Perform complete logout cleanup (encryption keys + session + local data).
+      // Pass db regardless of isReady — logoutCleanup handles undefined gracefully.
+      await performLogoutCleanup({ db: db ?? undefined });
 
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -224,7 +225,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
-  }, [db, isReady]);
+  }, [db]);
 
   const resetPassword = useCallback(async (email: string) => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
@@ -255,7 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-export function useAuth() {
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');

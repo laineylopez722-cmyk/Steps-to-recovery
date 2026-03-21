@@ -69,30 +69,43 @@ function MobileDatabaseProvider({ children }: DatabaseProviderProps): React.Reac
     let isMounted = true;
 
     async function initializeDatabase(): Promise<void> {
+      const INIT_TIMEOUT_MS = 10_000;
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('Database initialization timed out after 10s')),
+          INIT_TIMEOUT_MS,
+        ),
+      );
+
       try {
         setInitError(null);
         logger.info('Mobile: Starting database initialization');
 
-        // Dynamically import expo-sqlite
-        const { openDatabaseAsync } = await import('expo-sqlite');
+        await Promise.race([
+          (async () => {
+            // Dynamically import expo-sqlite
+            const { openDatabaseAsync } = await import('expo-sqlite');
 
-        // Open the database directly (not using SQLiteProvider component)
-        const db = await openDatabaseAsync('recovery.db');
+            // Open the database directly (not using SQLiteProvider component)
+            const db = await openDatabaseAsync('recovery.db');
 
-        if (!isMounted) return;
+            if (!isMounted) return;
 
-        logger.info('Mobile: Database opened, creating adapter');
-        const storageAdapter = await createStorageAdapter(db);
+            logger.info('Mobile: Database opened, creating adapter');
+            const storageAdapter = await createStorageAdapter(db);
 
-        if (!isMounted) return;
+            if (!isMounted) return;
 
-        logger.info('Mobile: Initializing schema');
-        await initDatabase(storageAdapter);
+            logger.info('Mobile: Initializing schema');
+            await initDatabase(storageAdapter);
 
-        if (!isMounted) return;
+            if (!isMounted) return;
 
-        logger.info('Mobile: Database ready');
-        setAdapter(storageAdapter);
+            logger.info('Mobile: Database ready');
+            setAdapter(storageAdapter);
+          })(),
+          timeoutPromise,
+        ]);
       } catch (err) {
         logger.error('Mobile: Database initialization failed', err);
         if (isMounted) {
@@ -140,15 +153,29 @@ function WebDatabaseProvider({ children }: DatabaseProviderProps): React.ReactEl
     let isMounted = true;
 
     async function setupAdapter(): Promise<void> {
+      const INIT_TIMEOUT_MS = 10_000;
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(
+          () => reject(new Error('Database initialization timed out after 10s')),
+          INIT_TIMEOUT_MS,
+        ),
+      );
+
       try {
         setInitError(null);
         logger.info('Web: Initializing IndexedDB adapter');
-        const storageAdapter = await createStorageAdapter();
-        await initDatabase(storageAdapter);
-        logger.info('Web: Database initialized successfully');
-        if (isMounted) {
-          setAdapter(storageAdapter);
-        }
+
+        await Promise.race([
+          (async () => {
+            const storageAdapter = await createStorageAdapter();
+            await initDatabase(storageAdapter);
+            logger.info('Web: Database initialized successfully');
+            if (isMounted) {
+              setAdapter(storageAdapter);
+            }
+          })(),
+          timeoutPromise,
+        ]);
       } catch (err) {
         logger.error('Web: Failed to initialize database', err);
         if (isMounted) {
