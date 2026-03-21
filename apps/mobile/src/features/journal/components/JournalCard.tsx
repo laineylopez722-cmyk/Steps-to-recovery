@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { View, Text } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import type { JournalEntryDecrypted } from '@recovery/shared';
+import type { JournalEntryDecrypted } from '@/shared';
 import { Card, Badge } from '../../../design-system';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';

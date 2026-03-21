@@ -15,7 +15,7 @@ import { Card, Button, TextArea, Modal } from '../../../design-system';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useJournalEntries } from '../../journal/hooks/useJournalEntries';
 import { useSponsorConnections, useSponsorSharedEntries } from '../hooks';
-import type { JournalEntryDecrypted } from '@recovery/shared';
+import type { JournalEntryDecrypted } from '@/shared';
 import type { ProfileStackParamList } from '../../../navigation/types';
 
 type ShareRoute = RouteProp<ProfileStackParamList, 'ShareEntries'>;

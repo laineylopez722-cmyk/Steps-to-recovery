@@ -16,7 +16,7 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { useDs } from '../../../design-system/DsProvider';
 import { useAchievements } from '../hooks/useAchievements';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
-import { ACHIEVEMENT_COLORS } from '@recovery/shared';
+import { ACHIEVEMENT_COLORS } from '@/shared';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 

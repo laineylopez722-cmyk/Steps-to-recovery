@@ -7,5 +7,5 @@
   "files": [],
   "exclude": ["node_modules"],
   "extends": "expo/tsconfig.base",
-  "references": [{ "path": "./apps/mobile" }, { "path": "./packages/shared" }]
+  "references": [{ "path": "./apps/mobile" }]
 }

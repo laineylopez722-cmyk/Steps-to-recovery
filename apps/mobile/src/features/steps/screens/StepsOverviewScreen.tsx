@@ -15,7 +15,7 @@ import * as Haptics from '@/platform/haptics';
 import type { StepsStackParamList } from '../../../navigation/types';
 import { Modal } from '../../../design-system';
 import { useStepProgress } from '../hooks/useStepWork';
-import { STEP_PROMPTS } from '@recovery/shared';
+import { STEP_PROMPTS } from '@/shared';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 

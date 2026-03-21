@@ -14,7 +14,7 @@ const mockLoadTodayCheckin = jest.fn();
 const mockLoadHistory = jest.fn();
 const mockSubmitCheckin = jest.fn();
 
-jest.mock('@recovery/shared', () => ({
+jest.mock('@/shared', () => ({
   useCheckinStore: jest.fn(() => ({
     todayCheckin: null,
     history: [],
@@ -31,7 +31,7 @@ jest.mock('@recovery/shared', () => ({
 
 import { renderHook } from '@testing-library/react-native';
 import { useCheckin } from '../useCheckin';
-import { useCheckinStore } from '@recovery/shared';
+import { useCheckinStore } from '@/shared';
 
 const mockUseCheckinStore = useCheckinStore as jest.MockedFunction<typeof useCheckinStore>;
 

@@ -24,7 +24,7 @@ import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
 import { usePhoneCalls } from '../../hooks/usePhoneCalls';
 import { useContacts } from '../../hooks/useContacts';
-import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
+import type { PhoneCallLog, RecoveryContact } from '@/shared';
 import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { logger } from '../../utils/logger';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';

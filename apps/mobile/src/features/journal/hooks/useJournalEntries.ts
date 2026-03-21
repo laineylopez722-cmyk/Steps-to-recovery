@@ -4,7 +4,7 @@ import { decryptContent, encryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
 import { generateId } from '../../../utils/id';
 import { addToSyncQueue, addDeleteToSyncQueue } from '../../../services/syncService';
-import type { JournalEntryDb as JournalEntry, JournalEntryDecrypted } from '@recovery/shared';
+import type { JournalEntryDb as JournalEntry, JournalEntryDecrypted } from '@/shared';
 
 // Query keys for journal entries
 const journalKeys = {

@@ -16,7 +16,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import type { TimeMilestone } from '@recovery/shared';
+import type { TimeMilestone } from '@/shared';
 import { ds } from '../../design-system/tokens/ds';
 
 interface MilestoneCardProps {

@@ -19,8 +19,8 @@ import {
 } from 'react-native';
 import { useRouterCompat, useSegmentsCompat } from '../../utils/navigationHelper';
 import { Feather } from '@expo/vector-icons';
-import { useSettingsStore } from '@recovery/shared';
-import { getCrisisResources, type CrisisResource } from '@recovery/shared';
+import { useSettingsStore } from '@/shared';
+import { getCrisisResources, type CrisisResource } from '@/shared';
 import { impactAsync, ImpactFeedbackStyle, notificationAsync, NotificationFeedbackType } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 

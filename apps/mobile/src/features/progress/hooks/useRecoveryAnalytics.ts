@@ -16,7 +16,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useDatabase } from '../../../contexts/DatabaseContext';
 import { decryptContent } from '../../../utils/encryption';
 import { logger } from '../../../utils/logger';
-import { STEP_PROMPTS } from '@recovery/shared';
+import { STEP_PROMPTS } from '@/shared';
 
 export interface MoodDataPoint {
   date: string;

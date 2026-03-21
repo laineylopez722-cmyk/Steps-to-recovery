@@ -11,8 +11,8 @@ import {
   encryptWithSharedKey,
   parseCommentSharePayload,
   parseEntrySharePayload,
-} from '@recovery/shared';
-import type { JournalEntryDecrypted } from '@recovery/shared';
+} from '@/shared';
+import type { JournalEntryDecrypted } from '@/shared';
 
 interface SponsorConnectionRow {
   id: string;

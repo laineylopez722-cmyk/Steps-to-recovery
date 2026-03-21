@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { StepPrompt, StepWorkDecrypted } from '@recovery/shared';
+import type { StepPrompt, StepWorkDecrypted } from '@/shared';
 import {
   buildQuestionIndexMap,
   buildStepListItems,

@@ -21,7 +21,7 @@ const mockDismissRecentUnlock = jest.fn();
 const mockGetAchievementsByCategory = jest.fn();
 const mockGetReadingStreak = jest.fn();
 
-jest.mock('@recovery/shared', () => ({
+jest.mock('@/shared', () => ({
   useAchievementStore: jest.fn(() => ({
     achievements: [],
     keytags: [],
@@ -80,7 +80,7 @@ import {
   useContactStore,
   useMeetingStore,
   useRegularMeetingStore,
-} from '@recovery/shared';
+} from '@/shared';
 import { useSobriety } from '../useSobriety';
 import { useCheckin } from '../useCheckin';
 

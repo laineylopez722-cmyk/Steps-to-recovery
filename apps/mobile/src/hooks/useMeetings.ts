@@ -4,8 +4,8 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useMeetingStore } from '@recovery/shared';
-import type { MeetingLog, MeetingType } from '@recovery/shared';
+import { useMeetingStore } from '@/shared';
+import type { MeetingLog, MeetingType } from '@/shared';
 
 interface MeetingInsights {
   totalMeetings: number;

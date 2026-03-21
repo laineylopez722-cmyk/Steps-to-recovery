@@ -19,7 +19,7 @@ const mockGetLatestMilestone = jest.fn();
 const mockGetAchievedMilestones = jest.fn();
 const mockScheduleMilestoneNotification = jest.fn();
 
-jest.mock('@recovery/shared', () => ({
+jest.mock('@/shared', () => ({
   useProfileStore: jest.fn(() => ({
     profile: null,
     soberDays: 0,
@@ -40,7 +40,7 @@ jest.mock('@recovery/shared', () => ({
 
 import { renderHook } from '@testing-library/react-native';
 import { useSobriety } from '../useSobriety';
-import { useProfileStore, useSettingsStore } from '@recovery/shared';
+import { useProfileStore, useSettingsStore } from '@/shared';
 
 const mockUseProfileStore = useProfileStore as jest.MockedFunction<typeof useProfileStore>;
 const _mockUseSettingsStore = useSettingsStore as jest.MockedFunction<typeof useSettingsStore>;

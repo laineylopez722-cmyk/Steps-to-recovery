@@ -18,7 +18,7 @@ import { useSponsorConnections } from '../hooks/useSponsorConnections';
 import { generateId } from '../../../utils/id';
 import { logger } from '../../../utils/logger';
 import { addToSyncQueue } from '../../../services/syncService';
-import { parseCommentSharePayload } from '@recovery/shared';
+import { parseCommentSharePayload } from '@/shared';
 import { Text } from 'react-native';
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 

@@ -26,8 +26,8 @@
 
 import { useCallback, useEffect } from 'react';
 import { AppState, type AppStateStatus } from 'react-native';
-import { useAuthStore } from '@recovery/shared';
-import { useSettingsStore } from '@recovery/shared';
+import { useAuthStore } from '@/shared';
+import { useSettingsStore } from '@/shared';
 
 interface UseAuthReturn {
   isAuthenticated: boolean;

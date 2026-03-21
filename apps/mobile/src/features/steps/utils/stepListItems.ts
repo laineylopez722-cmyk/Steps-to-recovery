@@ -1,4 +1,4 @@
-import type { StepPrompt, StepSection } from '@recovery/shared';
+import type { StepPrompt, StepSection } from '@/shared';
 
 export interface QuestionItem {
   type: 'question';

@@ -4,8 +4,8 @@
  */
 
 import { useEffect, useCallback } from 'react';
-import { useJournalStore } from '@recovery/shared';
-import type { JournalEntry, JournalType } from '@recovery/shared';
+import { useJournalStore } from '@/shared';
+import type { JournalEntry, JournalType } from '@/shared';
 
 interface UseJournalReturn {
   entries: JournalEntry[];

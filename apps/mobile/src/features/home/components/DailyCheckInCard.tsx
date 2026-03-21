@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ActivityIndicator } from 'react-native';
 import { Card, Button, Badge } from '../../../design-system/components';
 import { useDs } from '../../../design-system/DsProvider';
 import { useNavigation } from '@react-navigation/native';
-import type { DailyCheckInDecrypted } from '@recovery/shared';
+import type { DailyCheckInDecrypted } from '@/shared';
 
 interface DailyCheckInCardProps {
   morningCheckIn: DailyCheckInDecrypted | null;

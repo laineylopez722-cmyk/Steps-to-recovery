@@ -9,7 +9,7 @@ import {
   MEETING_ACHIEVEMENTS,
   getAchievementByKey,
   type Achievement as AchievementDefinition,
-} from '@recovery/shared';
+} from '@/shared';
 
 export interface AchievementWithStatus extends AchievementDefinition {
   unlocked: boolean;

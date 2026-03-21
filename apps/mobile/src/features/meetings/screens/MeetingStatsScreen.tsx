@@ -18,7 +18,7 @@ import { useMeetingCheckIns } from '../hooks/useMeetingCheckIns';
 import { useAchievements } from '../hooks/useAchievements';
 import { use90In90Progress, get90In90MotivationalMessage } from '../hooks/use90In90Progress';
 import { AchievementUnlockModal } from '../components/AchievementUnlockModal';
-import { ACHIEVEMENT_COLORS } from '@recovery/shared';
+import { ACHIEVEMENT_COLORS } from '@/shared';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 

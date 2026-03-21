@@ -4,13 +4,13 @@
  * Provides a flat, indexed view of all 12-step questions for features
  * that need per-question metadata (search, analytics, progress tracking).
  *
- * The canonical question bank lives in @recovery/shared (stepPrompts.ts).
+ * The canonical question bank lives in @/shared (stepPrompts.ts).
  * This module transforms that data into a convenient lookup structure.
  *
  * @module features/steps/data/stepQuestions
  */
 
-import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@recovery/shared';
+import { STEP_PROMPTS, type StepPrompt, type StepSection } from '@/shared';
 
 export interface StepQuestion {
   /** Unique ID: "step-{stepNumber}-q-{questionNumber}" */

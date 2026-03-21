@@ -15,6 +15,26 @@ export default defineConfig([
   // eslint-config-expo already extends @typescript-eslint/recommended.
   expoConfig,
 
+  // ── Import resolver ──────────────────────────────────────────────────────
+  // Tell eslint-plugin-import how to resolve @/ path aliases so
+  // import/no-unresolved doesn't false-positive on them.
+  {
+    files: ['**/*.{ts,tsx,js,jsx}'],
+    settings: {
+      'import/resolver': {
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        },
+      },
+      // Treat @/ imports as internal — the alias is resolved by
+      // TypeScript/Babel, not by Node's module resolution.
+      'import/ignore': ['@/'],
+    },
+    rules: {
+      'import/no-unresolved': ['error', { ignore: ['^@/'] }],
+    },
+  },
+
   // ── TypeScript overrides ────────────────────────────────────────────────
   // Scoped to TS/TSX so @typescript-eslint plugin is available (registered
   // by eslint-config-expo only for TypeScript files).
@@ -156,6 +176,21 @@ export default defineConfig([
 
       // AsyncStorage may be imported in tests to verify it is NOT called.
       'no-restricted-imports': 'off',
+    },
+  },
+
+  // ── Shared code (migrated from packages/shared) ─────────────────────────
+  // This code previously lived in packages/shared/ which was not linted by
+  // this ESLint config.  Relax rules to warnings until a dedicated cleanup
+  // pass addresses the pre-existing issues.
+  {
+    files: ['apps/mobile/src/shared/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-require-imports': 'warn',
+      'no-console': 'warn',
     },
   },
 

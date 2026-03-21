@@ -21,7 +21,7 @@
     "audit:test-act": "node scripts/audit-act-assertions.js",
     "type-check": "npm exec -- tsc --noEmit",
     "lint": "eslint src/",
-    "clean": "npx rimraf .expo node_modules/.cache .turbo coverage",
+    "clean": "npx rimraf .expo node_modules/.cache coverage",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
     "e2e": "maestro test .maestro/flows",

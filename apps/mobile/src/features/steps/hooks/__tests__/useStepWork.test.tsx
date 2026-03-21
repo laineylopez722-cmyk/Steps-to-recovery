@@ -64,7 +64,7 @@ jest.mock('../../../../utils/id', () => ({
 }));
 
 // Mock STEP_PROMPTS with 12 steps
-jest.mock('@recovery/shared', () => ({
+jest.mock('@/shared', () => ({
   STEP_PROMPTS: [
     {
       step: 1,

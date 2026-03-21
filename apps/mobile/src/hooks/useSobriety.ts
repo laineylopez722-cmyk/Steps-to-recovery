@@ -27,8 +27,8 @@ import {
   getLatestMilestone,
   getAchievedMilestones,
   scheduleMilestoneNotification,
-} from '@recovery/shared';
-import type { AppSettings, TimeMilestone } from '@recovery/shared';
+} from '@/shared';
+import type { AppSettings, TimeMilestone } from '@/shared';
 
 /** Sobriety profile type derived from the profile store */
 type ProfileType = ReturnType<typeof useProfileStore.getState>['profile'];

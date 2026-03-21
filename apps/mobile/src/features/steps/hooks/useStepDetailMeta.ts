@@ -1,4 +1,4 @@
-import { STEP_PROMPTS, type StepPrompt } from '@recovery/shared';
+import { STEP_PROMPTS, type StepPrompt } from '@/shared';
 import { useStepProgress } from './useStepWork';
 import { useCurrentUserId } from './useCurrentUserId';
 

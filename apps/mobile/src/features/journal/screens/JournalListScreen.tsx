@@ -20,7 +20,7 @@ import { MotionTransitions, motionScale } from '../../../design-system/tokens/mo
 import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../../design-system/DsProvider';
 import { hapticLight } from '../../../utils/haptics';
-import type { JournalEntryDecrypted } from '@recovery/shared';
+import type { JournalEntryDecrypted } from '@/shared';
 import type { JournalStackParamList } from '../../../navigation/types';
 
 interface Props {

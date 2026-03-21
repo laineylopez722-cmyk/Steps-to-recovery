@@ -23,7 +23,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import type { RegularMeeting, RegularMeetingType } from '@recovery/shared';
+import type { RegularMeeting, RegularMeetingType } from '@/shared';
 import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { useThemedStyles, type DS } from '../../design-system/hooks/useThemedStyles';
 import { useDs } from '../../design-system/DsProvider';

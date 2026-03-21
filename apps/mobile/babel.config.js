@@ -6,7 +6,17 @@
 
 // Load polyfills for Metro and Jest compatibility
 require('./polyfills.cjs');
+const path = require('path');
 const importAliases = require('./config/import-aliases.json');
+
+// Resolve alias paths to absolute so they work regardless of cwd (repo root vs apps/mobile)
+const appRoot = __dirname;
+const resolvedAlias = Object.fromEntries(
+  Object.entries(importAliases.babelModuleResolverAlias).map(([key, value]) => [
+    key,
+    path.resolve(appRoot, value),
+  ]),
+);
 
 /** @param {import('@babel/core').ConfigAPI} api */
 module.exports = function (api) {
@@ -33,8 +43,8 @@ module.exports = function (api) {
       [
         'module-resolver',
         {
-          root: ['./src'],
-          alias: importAliases.babelModuleResolverAlias,
+          root: [path.resolve(appRoot, 'src')],
+          alias: resolvedAlias,
           extensions: ['.ios.js', '.android.js', '.js', '.jsx', '.json', '.ts', '.tsx'],
         },
       ],

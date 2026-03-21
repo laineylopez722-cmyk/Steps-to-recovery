@@ -36,7 +36,7 @@ import {
 import { useSponsorInfo } from '../../../hooks/useSponsorInfo';
 import { type HomeStackParamList } from '../../../navigation/types';
 import { type SponsorInfo } from '../../../types/index';
-import { makePhoneCall, sendSMS } from '@recovery/shared';
+import { makePhoneCall, sendSMS } from '@/shared';
 import { BreathingExercise } from '../components/BreathingExercise';
 import { GroundingExercise } from '../components/GroundingExercise';
 import { CrisisContacts } from '../components/CrisisContacts';

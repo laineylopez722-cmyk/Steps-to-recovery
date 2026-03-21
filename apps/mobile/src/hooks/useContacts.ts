@@ -5,8 +5,8 @@
 
 import { useEffect, useMemo, useCallback } from 'react';
 import { Linking, Alert } from 'react-native';
-import { useContactStore } from '@recovery/shared';
-import type { RecoveryContact, ContactRole } from '@recovery/shared';
+import { useContactStore } from '@/shared';
+import type { RecoveryContact, ContactRole } from '@/shared';
 import { logger } from '../utils/logger';
 
 interface UseContactsReturn {

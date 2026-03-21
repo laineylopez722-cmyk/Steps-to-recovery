@@ -11,7 +11,7 @@
  * Note: TypeScript type-checking (tsc --noEmit) is intentionally omitted
  * here because lint-staged passes only staged file paths, which breaks
  * project-wide type resolution. Type-checking runs as a separate step in
- * CI (turbo run type-check) and can be run locally with:
+ * CI (npm run type-check) and can be run locally with:
  *   cd apps/mobile && npx tsc --noEmit
  */
 module.exports = {

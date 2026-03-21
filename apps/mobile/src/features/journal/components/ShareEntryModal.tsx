@@ -23,7 +23,7 @@ import { useThemedStyles, type DS } from '../../../design-system/hooks/useThemed
 import { useDs } from '../../../design-system/DsProvider';
 import { useSponsorSharedEntries } from '../../sponsor/hooks/useSponsorSharedEntries';
 import { useAuth } from '../../../contexts/AuthContext';
-import type { JournalEntryDecrypted } from '@recovery/shared';
+import type { JournalEntryDecrypted } from '@/shared';
 import { hapticSuccess, hapticWarning } from '../../../utils/haptics';
 import { logger } from '../../../utils/logger';
 

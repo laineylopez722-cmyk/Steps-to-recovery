@@ -5,7 +5,7 @@ import { logger } from '../../../utils/logger';
 import { addToSyncQueue } from '../../../services/syncService';
 import { scheduleAllMilestones } from '../../../services/notificationService';
 import { generateId } from '../../../utils/id';
-import type { UserProfile, MilestoneDefinition as Milestone } from '@recovery/shared';
+import type { UserProfile, MilestoneDefinition as Milestone } from '@/shared';
 
 /**
  * Milestones configuration

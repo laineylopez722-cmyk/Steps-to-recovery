@@ -23,9 +23,7 @@
     "incremental": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
     "paths": {
-      "@/*": ["./src/*"],
-      "@recovery/shared": ["../../packages/shared/src/index.ts"],
-      "@recovery/shared/*": ["../../packages/shared/*"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [

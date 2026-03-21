@@ -4,8 +4,8 @@
  */
 
 import { useEffect, useMemo } from 'react';
-import { useCheckinStore } from '@recovery/shared';
-import type { DailyCheckin } from '@recovery/shared';
+import { useCheckinStore } from '@/shared';
+import type { DailyCheckin } from '@/shared';
 
 type TrendDirection = 'positive' | 'negative' | 'neutral';
 

@@ -29,7 +29,7 @@ import {
   getAchievementByKey,
   getRandomAchievementMessage,
   ACHIEVEMENT_COLORS,
-} from '@recovery/shared';
+} from '@/shared';
 
 type IconName = React.ComponentProps<typeof MaterialIcons>['name'];
 

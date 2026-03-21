@@ -4,8 +4,8 @@
  */
 
 import { useEffect, useMemo, useCallback } from 'react';
-import { usePhoneStore, useContactStore } from '@recovery/shared';
-import type { PhoneCallLog, RecoveryContact } from '@recovery/shared';
+import { usePhoneStore, useContactStore } from '@/shared';
+import type { PhoneCallLog, RecoveryContact } from '@/shared';
 
 interface PhoneStats {
   todayCallCount: number;

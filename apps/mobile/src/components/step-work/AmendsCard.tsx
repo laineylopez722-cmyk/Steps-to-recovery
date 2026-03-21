@@ -20,7 +20,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { GlassCard } from '../../design-system/components/GlassCard';
-import type { AmendsStatus, AmendsType } from '@recovery/shared';
+import type { AmendsStatus, AmendsType } from '@/shared';
 import { impactAsync, ImpactFeedbackStyle } from '@/platform/haptics';
 import { ds } from '../../design-system/tokens/ds';
 

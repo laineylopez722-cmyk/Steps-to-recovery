@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GradientButton } from '../../design-system/components';
-import type { KeytagWithStatus } from '@recovery/shared';
+import type { KeytagWithStatus } from '@/shared';
 import { ds } from '../../design-system/tokens/ds';
 
 interface KeytagModalProps {

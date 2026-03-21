@@ -1,4 +1,4 @@
-import type { StepPrompt, StepWorkDecrypted } from '@recovery/shared';
+import type { StepPrompt, StepWorkDecrypted } from '@/shared';
 
 export function buildInitialAnswers(questions: StepWorkDecrypted[]): Record<number, string> {
   return questions.reduce<Record<number, string>>((acc, question) => {

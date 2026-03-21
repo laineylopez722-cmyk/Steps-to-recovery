@@ -115,13 +115,13 @@ jobs:
         run: npm run doctor:aliases
 
       - name: Run ESLint
-        run: npx turbo run lint --force
+        run: npm run lint
 
       - name: TypeScript type check
-        run: npx turbo run type-check --force
+        run: npm run type-check
 
       - name: Run tests
-        run: npm run test --workspace=apps/mobile -- --runInBand --no-cache
+        run: npm test -- --runInBand --no-cache
 
       - name: Run encryption tests
         run: |

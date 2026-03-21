@@ -1,14 +1,14 @@
 /**
  * Shared Package Exports
  *
- * This is the main entry point for the @recovery/shared package.
+ * This is the main entry point for the @/shared package.
  * It exports all shared types, utilities, constants, and services
  * used across the Steps to Recovery application.
  *
- * @module @recovery/shared
+ * @module @/shared
  * @example
  * ```ts
- * import { AchievementDefinition, sendSMS, useAuthStore } from '@recovery/shared';
+ * import { AchievementDefinition, sendSMS, useAuthStore } from '@/shared';
  * ```
  */
 

@@ -19,7 +19,7 @@ import { GlassCard } from '../../design-system/components/GlassCard';
 import { useContacts } from '../../hooks/useContacts';
 import { ds } from '../../design-system/tokens/ds';
 import { usePhoneCalls } from '../../hooks/usePhoneCalls';
-import { sendSOSMessage, makePhoneCall, openMessagingApp, SOS_MESSAGE } from '@recovery/shared';
+import { sendSOSMessage, makePhoneCall, openMessagingApp, SOS_MESSAGE } from '@/shared';
 import { logger } from '../../utils/logger';
 import { useRouterCompat } from '../../utils/navigationHelper';
 import { impactAsync, ImpactFeedbackStyle, notificationAsync, NotificationFeedbackType } from '@/platform/haptics';

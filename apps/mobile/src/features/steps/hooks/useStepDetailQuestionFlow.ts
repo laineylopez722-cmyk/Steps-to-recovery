@@ -2,7 +2,7 @@ import { useStepAnswerSave } from './useStepAnswerSave';
 import { useStepAnswersState } from './useStepAnswersState';
 import { useStepDetailDerivedState } from './useStepDetailDerivedState';
 import { useStepQuestionNavigation } from './useStepQuestionNavigation';
-import type { StepPrompt, StepWorkDecrypted } from '@recovery/shared';
+import type { StepPrompt, StepWorkDecrypted } from '@/shared';
 
 type Params = {
   stepData: StepPrompt | undefined;

@@ -1,12 +1,11 @@
 {
-  "name": "steps-to-recovery-monorepo",
+  "name": "steps-to-recovery",
   "version": "1.0.0",
   "license": "MIT",
   "private": true,
   "packageManager": "npm@11.8.0",
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "overrides": {
     "jest": "29.7.0",
@@ -23,20 +22,20 @@
     "eslint": "^9.39.2"
   },
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "type-check": "turbo run type-check",
+    "dev": "npm run start --workspace=apps/mobile",
+    "build": "npm run prebuild --workspace=apps/mobile",
+    "test": "npm test --workspace=apps/mobile",
+    "lint": "npm run lint --workspace=apps/mobile",
+    "type-check": "npm run type-check --workspace=apps/mobile",
     "doctor:toolchain": "node scripts/doctor/check-toolchain.mjs",
     "doctor:aliases": "node scripts/doctor/check-alias-consistency.mjs",
-    "verify:strict": "npm run doctor:toolchain && npm run doctor:aliases && npx turbo run lint --force && npx turbo run type-check --force && npm run test --workspace=apps/mobile -- --runInBand --no-cache",
+    "verify:strict": "npm run doctor:toolchain && npm run doctor:aliases && npm run lint && npm run type-check && npm test -- --runInBand --no-cache",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "validate-env": "node scripts/validate-env.js",
     "setup:verify": "bash scripts/verify-setup.sh",
     "check:stale-issues": "node scripts/check-stale-issues.js",
-    "clean": "turbo run clean",
+    "clean": "npm run clean --workspace=apps/mobile",
     "mobile": "npm run start --workspace=apps/mobile",
     "web": "npm run web --workspace=apps/mobile",
     "android": "npm run android --workspace=apps/mobile",
@@ -57,7 +56,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
     "prettier": "^3.8.1",
-    "turbo": "^2.8.1",
     "typescript": "^5.9.3"
   },
   "engines": {

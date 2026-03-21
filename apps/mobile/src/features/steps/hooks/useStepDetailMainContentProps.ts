@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import type { StepPrompt } from '@recovery/shared';
+import type { StepPrompt } from '@/shared';
 import { type useStepDetailQuestionFlow } from './useStepDetailQuestionFlow';
 import type { StepDetailMainContentProps } from '../components/StepDetailMainContent';
 

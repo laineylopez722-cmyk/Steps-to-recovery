@@ -190,7 +190,7 @@ async function buildStepWorkContext(
       lines.push('Recent step work answers:');
 
       // Import step prompts to get the actual question text
-      const { STEP_PROMPTS } = await import('@recovery/shared');
+      const { STEP_PROMPTS } = await import('@/shared');
 
       for (const answer of answers) {
         try {

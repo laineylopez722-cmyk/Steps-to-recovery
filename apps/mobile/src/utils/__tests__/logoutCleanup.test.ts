@@ -31,7 +31,7 @@ jest.mock('react-native', () => ({
   Platform: { OS: 'ios' },
 }));
 
-jest.mock('@recovery/shared', () => ({
+jest.mock('@/shared', () => ({
   clearAllData: jest.fn(),
 }));
 

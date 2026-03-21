@@ -28,8 +28,8 @@
 import { useCallback, useMemo } from 'react';
 import { Linking, Platform, Alert } from 'react-native';
 import * as Haptics from '@/platform/haptics';
-import { useContactStore } from '@recovery/shared';
-import type { RecoveryContact } from '@recovery/shared';
+import { useContactStore } from '@/shared';
+import type { RecoveryContact } from '@/shared';
 import { logger } from '../utils/logger';
 
 interface CrisisHotline {

@@ -16,7 +16,7 @@
  * @module utils/logger
  * @example
  * ```ts
- * import { logger } from '@recovery/shared/utils/logger';
+ * import { logger } from '@/shared/utils/logger';
  *
  * logger.info('User action', { userId, action: 'save' }); // Safe
  * logger.error('Encryption failed', error); // Error sanitized

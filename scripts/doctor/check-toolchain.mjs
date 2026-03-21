@@ -27,7 +27,6 @@ function assertCondition(failures, condition, message, fix) {
 const failures = [];
 const rootPackage = readJson('package.json');
 const mobilePackage = readJson('apps/mobile/package.json');
-const sharedPackage = readJson('packages/shared/package.json');
 const nvmrc = readFileSync(resolve(process.cwd(), '.nvmrc'), 'utf8').trim();
 
 const expectedPackageManager = rootPackage.packageManager;
@@ -69,18 +68,6 @@ assertCondition(
   'apps/mobile/package.json script "type-check" must be "npm exec -- tsc --noEmit".',
   'Edit apps/mobile/package.json → set scripts.type-check to "npm exec -- tsc --noEmit"',
 );
-assertCondition(
-  failures,
-  sharedPackage.scripts.lint === 'npm exec -- tsc --noEmit',
-  'packages/shared/package.json script "lint" must be "npm exec -- tsc --noEmit".',
-  'Edit packages/shared/package.json → set scripts.lint to "npm exec -- tsc --noEmit"',
-);
-assertCondition(
-  failures,
-  sharedPackage.scripts['type-check'] === 'npm exec -- tsc --noEmit',
-  'packages/shared/package.json script "type-check" must be "npm exec -- tsc --noEmit".',
-  'Edit packages/shared/package.json → set scripts.type-check to "npm exec -- tsc --noEmit"',
-);
 
 if (failures.length > 0) {
   console.error('Toolchain doctor found issues:\n');
@@ -97,4 +84,3 @@ if (currentNodeMajor !== expectedNodeMajor) {
 }
 
 console.log('Toolchain doctor passed.');
-

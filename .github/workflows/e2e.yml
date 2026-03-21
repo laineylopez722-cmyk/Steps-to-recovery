@@ -6,14 +6,12 @@ on:
     branches: [main]
     paths:
       - 'apps/mobile/**'
-      - 'packages/shared/**'
       - '.maestro/**'
       - '.github/workflows/e2e.yml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/mobile/**'
-      - 'packages/shared/**'
   workflow_dispatch:
     inputs:
       flow:

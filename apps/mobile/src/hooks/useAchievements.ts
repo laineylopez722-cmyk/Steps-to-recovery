@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useCallback } from 'react';
-import { useAchievementStore, type AchievementContext } from '@recovery/shared';
+import { useAchievementStore, type AchievementContext } from '@/shared';
 import { useSobriety } from './useSobriety';
 import { useCheckin } from './useCheckin';
 import { logger } from '../utils/logger';
@@ -15,10 +15,10 @@ import {
   useStepWorkStore,
   useTenthStepStore,
   usePhoneStore,
-} from '@recovery/shared';
-import { getReadingStreak } from '@recovery/shared';
-import type { StepProgress, MeetingLog } from '@recovery/shared';
-import type { KeytagWithStatus } from '@recovery/shared';
+} from '@/shared';
+import { getReadingStreak } from '@/shared';
+import type { StepProgress, MeetingLog } from '@/shared';
+import type { KeytagWithStatus } from '@/shared';
 
 /** Achievement type as used by the achievement store */
 type StoreAchievement = ReturnType<typeof useAchievementStore.getState>['achievements'][number];

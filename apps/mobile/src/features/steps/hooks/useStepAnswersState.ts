@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { StepWorkDecrypted } from '@recovery/shared';
+import type { StepWorkDecrypted } from '@/shared';
 import { buildInitialAnswers } from '../utils/stepAnswers';
 
 interface UseStepAnswersStateResult {
