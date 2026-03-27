@@ -5,6 +5,7 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { decryptContent, encryptContent } from '../../encryption';
+import { addToSyncQueue, addDeleteToSyncQueue } from '../../../services/syncService';
 import type {
   AppSettings,
   ContactRole,
@@ -49,10 +50,13 @@ export async function createSobrietyProfile(
   const now = new Date().toISOString();
 
   await db.runAsync(
-    `INSERT INTO sobriety_profile (id, sobriety_date, program_type, display_name, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO sobriety_profile (id, sobriety_date, program_type, display_name, created_at, updated_at, sync_status)
+     VALUES (?, ?, ?, ?, ?, ?, 'pending')`,
     [id, sobrietyDate.toISOString(), programType, displayName || null, now, now],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'sobriety_profile', id, 'insert');
 
   return {
     id,
@@ -94,7 +98,8 @@ export async function updateSobrietyProfile(
       sobriety_date = ?,
       program_type = ?,
       display_name = ?,
-      updated_at = ?
+      updated_at = ?,
+      sync_status = 'pending'
      WHERE id = ?`,
     [
       updates.sobrietyDate?.toISOString() || profile.sobrietyDate.toISOString(),
@@ -104,6 +109,9 @@ export async function updateSobrietyProfile(
       profile.id,
     ],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'sobriety_profile', profile.id, 'update');
 }
 
 export async function deleteSobrietyProfile(): Promise<void> {
@@ -137,8 +145,8 @@ export async function createJournalEntry(
   const encryptedContent = await encryptContent(content);
 
   await db.runAsync(
-    `INSERT INTO journal_entries (id, type, content, mood_before, mood_after, craving_level, emotion_tags, step_number, meeting_id, audio_uri, audio_duration, created_at, updated_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO journal_entries (id, type, content, mood_before, mood_after, craving_level, emotion_tags, step_number, meeting_id, audio_uri, audio_duration, created_at, updated_at, sync_status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
     [
       id,
       type,
@@ -155,6 +163,9 @@ export async function createJournalEntry(
       now,
     ],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'journal_entries', id, 'insert');
 
   return {
     id,
@@ -241,6 +252,8 @@ export async function decryptJournalContent(entry: JournalEntry): Promise<string
 
 export async function deleteJournalEntry(id: string): Promise<void> {
   const db = await getDatabase();
+  // Add to sync queue before deleting locally to capture supabase_id
+  await addDeleteToSyncQueue(db, 'journal_entries', id);
   await db.runAsync('DELETE FROM journal_entries WHERE id = ?', [id]);
 }
 
@@ -262,10 +275,21 @@ export async function createDailyCheckin(
   const encryptedGratitude = gratitude ? await encryptContent(gratitude) : null;
 
   await db.runAsync(
-    `INSERT OR REPLACE INTO daily_checkins (id, date, mood, craving_level, gratitude, is_checked_in, created_at)
-     VALUES (?, ?, ?, ?, ?, 1, ?)`,
-    [id, dateStr, mood, cravingLevel, encryptedGratitude, now.toISOString()],
+    `INSERT OR REPLACE INTO daily_checkins (id, date, mood, craving_level, gratitude, is_checked_in, created_at, updated_at, sync_status)
+     VALUES (?, ?, ?, ?, ?, 1, ?, ?, 'pending')`,
+    [
+      id,
+      dateStr,
+      mood,
+      cravingLevel,
+      encryptedGratitude,
+      now.toISOString(),
+      now.toISOString(),
+    ],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'daily_checkins', id, 'insert');
 
   return {
     id,
@@ -343,8 +367,8 @@ export async function createMilestone(
   const encryptedReflection = options?.reflection ? await encryptContent(options.reflection) : null;
 
   await db.runAsync(
-    `INSERT INTO milestones (id, type, title, description, reflection, achieved_at, metadata, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO milestones (id, type, title, description, reflection, achieved_at, metadata, created_at, sync_status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending')`,
     [
       id,
       type,
@@ -356,6 +380,9 @@ export async function createMilestone(
       now,
     ],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'milestones', id, 'insert');
 
   return {
     id,
@@ -763,10 +790,13 @@ export async function createDailyReadingReflection(
 
   // Use INSERT OR REPLACE to update if exists for same date
   await db.runAsync(
-    `INSERT OR REPLACE INTO daily_reading_reflections (id, reading_date, reflection, created_at)
-     VALUES (?, ?, ?, ?)`,
-    [id, readingDate, encryptedReflection, now.toISOString()],
+    `INSERT OR REPLACE INTO daily_reading_reflections (id, reading_date, reflection, created_at, updated_at, sync_status)
+     VALUES (?, ?, ?, ?, ?, 'pending')`,
+    [id, readingDate, encryptedReflection, now.toISOString(), now.toISOString()],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'daily_reading_reflections', id, 'insert');
 
   return {
     id,
@@ -995,9 +1025,12 @@ export async function updateAchievementProgress(
       : existing.unlockedAt?.toISOString() || null;
 
   await db.runAsync(
-    `UPDATE achievements SET current = ?, status = ?, unlocked_at = ? WHERE id = ?`,
+    `UPDATE achievements SET current = ?, status = ?, unlocked_at = ?, sync_status = 'pending' WHERE id = ?`,
     [current, newStatus, now, id],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'achievements', id, 'update');
 
   return getAchievementById(id);
 }
@@ -1010,9 +1043,12 @@ export async function unlockAchievement(id: string): Promise<Achievement | null>
   const now = new Date().toISOString();
 
   await db.runAsync(
-    `UPDATE achievements SET status = ?, unlocked_at = ?, current = target WHERE id = ?`,
+    `UPDATE achievements SET status = ?, unlocked_at = ?, current = target, sync_status = 'pending' WHERE id = ?`,
     ['unlocked', now, id],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'achievements', id, 'update');
 
   return getAchievementById(id);
 }
@@ -1025,9 +1061,12 @@ export async function setAchievementStatus(id: string, status: AchievementStatus
   const now = status === 'unlocked' ? new Date().toISOString() : null;
 
   await db.runAsync(
-    `UPDATE achievements SET status = ?, unlocked_at = COALESCE(unlocked_at, ?) WHERE id = ?`,
+    `UPDATE achievements SET status = ?, unlocked_at = COALESCE(unlocked_at, ?), sync_status = 'pending' WHERE id = ?`,
     [status, now, id],
   );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'achievements', id, 'update');
 }
 
 /**
@@ -1037,10 +1076,13 @@ export async function saveAchievementReflection(id: string, reflection: string):
   const db = await getDatabase();
   const encryptedReflection = await encryptContent(reflection);
 
-  await db.runAsync(`UPDATE achievements SET reflection = ? WHERE id = ?`, [
-    encryptedReflection,
-    id,
-  ]);
+  await db.runAsync(
+    `UPDATE achievements SET reflection = ?, sync_status = 'pending' WHERE id = ?`,
+    [encryptedReflection, id],
+  );
+
+  // Add to sync queue
+  await addToSyncQueue(db, 'achievements', id, 'update');
 }
 
 /**

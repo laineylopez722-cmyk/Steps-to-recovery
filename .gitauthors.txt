@@ -1,0 +1,6 @@
+   507	RipKDR
+    50	copilot-swe-agent[bot]
+    33	dependabot[bot]
+    24	Claude
+     1	Cursor Agent
+     1	harrisonferraro99

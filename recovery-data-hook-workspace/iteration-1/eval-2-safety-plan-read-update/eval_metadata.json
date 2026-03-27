@@ -1,0 +1,15 @@
+{
+  "eval_id": 2,
+  "eval_name": "safety-plan-read-update",
+  "prompt": "The safety-plan feature needs a hook to store the user's personal safety plan. It has these fields: warning_signs (text array), coping_strategies (text array), reasons_to_live (text array), and emergency_contacts (JSON). All fields are sensitive and need encryption. I only need read and update - no create or delete since each user has exactly one safety plan.",
+  "assertions": [
+    "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+    "The read path uses Promise.allSettled instead of Promise.all.",
+    "The query key root uses the table name.",
+    "The test file defines mock functions before any jest.mock() calls.",
+    "The test file imports the hook only after all jest.mock() declarations.",
+    "The generated hook and test use logger and contain no console.* calls.",
+    "The generated hook and test contain no any types.",
+    "The output defines read and update operations only, with no create hook and no delete hook."
+  ]
+}

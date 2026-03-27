@@ -75,7 +75,9 @@ export async function initializeDatabase(): Promise<void> {
       program_type TEXT NOT NULL,
       display_name TEXT,
       created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
+      updated_at TEXT NOT NULL,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending'
     );
 
     -- Journal Entries
@@ -93,6 +95,8 @@ export async function initializeDatabase(): Promise<void> {
       audio_duration INTEGER,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending',
       FOREIGN KEY (meeting_id) REFERENCES meeting_logs(id)
     );
 
@@ -104,7 +108,10 @@ export async function initializeDatabase(): Promise<void> {
       craving_level INTEGER NOT NULL,
       gratitude TEXT,
       is_checked_in INTEGER NOT NULL DEFAULT 0,
-      created_at TEXT NOT NULL
+      created_at TEXT NOT NULL,
+      updated_at TEXT,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending'
     );
 
     -- Milestones
@@ -116,7 +123,9 @@ export async function initializeDatabase(): Promise<void> {
       reflection TEXT,
       achieved_at TEXT NOT NULL,
       metadata TEXT,
-      created_at TEXT NOT NULL
+      created_at TEXT NOT NULL,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending'
     );
 
     -- Meeting Logs
@@ -250,7 +259,9 @@ export async function initializeDatabase(): Promise<void> {
       unlocked_at TEXT,
       requires_days_clean INTEGER,
       requires_achievements TEXT,
-      reflection TEXT
+      reflection TEXT,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending'
     );
 
     -- Daily Reading Reflections
@@ -258,7 +269,9 @@ export async function initializeDatabase(): Promise<void> {
       id TEXT PRIMARY KEY,
       reading_date TEXT NOT NULL,
       reflection TEXT NOT NULL,
-      created_at TEXT NOT NULL
+      created_at TEXT NOT NULL,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending'
     );
 
     -- Fourth Step Inventory
@@ -347,7 +360,9 @@ export async function initializeDatabase(): Promise<void> {
       completed_at TEXT,
       discussed_at TEXT,
       created_at TEXT NOT NULL,
-      updated_at TEXT NOT NULL
+      updated_at TEXT NOT NULL,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending'
     );
 
     -- Step Answers
@@ -358,6 +373,35 @@ export async function initializeDatabase(): Promise<void> {
       answer TEXT NOT NULL,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
+    );
+
+    -- Step Work (Phase 3 alignment)
+    CREATE TABLE IF NOT EXISTS step_work (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      step_number INTEGER NOT NULL,
+      question_number INTEGER NOT NULL,
+      encrypted_answer TEXT,
+      is_complete INTEGER NOT NULL DEFAULT 0,
+      completed_at TEXT,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      supabase_id TEXT,
+      sync_status TEXT DEFAULT 'pending',
+      UNIQUE(user_id, step_number, question_number)
+    );
+
+    -- Sync Queue (Required for SyncService)
+    CREATE TABLE IF NOT EXISTS sync_queue (
+      id TEXT PRIMARY KEY,
+      table_name TEXT NOT NULL,
+      record_id TEXT NOT NULL,
+      operation TEXT NOT NULL, -- 'insert', 'update', 'delete'
+      supabase_id TEXT,
+      retry_count INTEGER DEFAULT 0,
+      last_error TEXT,
+      failed_at TEXT,
+      created_at TEXT NOT NULL
     );
 
     -- Indexes for performance
@@ -403,7 +447,7 @@ export async function initializeDatabase(): Promise<void> {
 }
 
 // Current schema version - increment when adding new migrations
-const SCHEMA_VERSION = 4;
+const SCHEMA_VERSION = 5;
 
 /**
  * Migration definitions
@@ -460,6 +504,67 @@ const MIGRATIONS: Migration[] = [
           // Column may already exist from previous partial migration
         }
       }
+    },
+  },
+  {
+    version: 5,
+    description: 'Add sync metadata and sync_queue table',
+    up: async (db) => {
+      // Add sync columns to existing tables
+      const tables = [
+        'sobriety_profile',
+        'journal_entries',
+        'daily_checkins',
+        'milestones',
+        'step_progress',
+        'achievements',
+        'daily_reading_reflections',
+      ];
+
+      for (const table of tables) {
+        try {
+          await db.execAsync(`ALTER TABLE ${table} ADD COLUMN supabase_id TEXT;`);
+          await db.execAsync(`ALTER TABLE ${table} ADD COLUMN sync_status TEXT DEFAULT 'pending';`);
+          if (table !== 'achievements') {
+            await db.execAsync(`ALTER TABLE ${table} ADD COLUMN updated_at TEXT;`);
+          }
+        } catch (e) {
+          // Columns might already exist
+        }
+      }
+
+      // Create new sync-related tables
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS step_work (
+          id TEXT PRIMARY KEY,
+          user_id TEXT NOT NULL,
+          step_number INTEGER NOT NULL,
+          question_number INTEGER NOT NULL,
+          encrypted_answer TEXT,
+          is_complete INTEGER NOT NULL DEFAULT 0,
+          completed_at TEXT,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL,
+          supabase_id TEXT,
+          sync_status TEXT DEFAULT 'pending',
+          UNIQUE(user_id, step_number, question_number)
+        );
+
+        CREATE TABLE IF NOT EXISTS sync_queue (
+          id TEXT PRIMARY KEY,
+          table_name TEXT NOT NULL,
+          record_id TEXT NOT NULL,
+          operation TEXT NOT NULL,
+          supabase_id TEXT,
+          retry_count INTEGER DEFAULT 0,
+          last_error TEXT,
+          failed_at TEXT,
+          created_at TEXT NOT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_sync_queue_table ON sync_queue(table_name);
+        CREATE INDEX IF NOT EXISTS idx_sync_queue_record ON sync_queue(record_id);
+      `);
     },
   },
 ];

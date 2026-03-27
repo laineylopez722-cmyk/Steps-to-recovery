@@ -1,0 +1,15 @@
+{
+  "eval_id": 1,
+  "eval_name": "gratitude-crud",
+  "prompt": "I need to add a gratitude list feature. Users should be able to save things they're grateful for each day. The entries need encryption since they're personal. Create the data hook with CRUD operations and tests.",
+  "assertions": [
+    "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+    "The delete path calls addDeleteToSyncQueue before executing the DELETE query.",
+    "The read path uses Promise.allSettled instead of Promise.all.",
+    "The query key root uses the table name.",
+    "The test file defines mock functions before any jest.mock() calls.",
+    "The test file imports the hook only after all jest.mock() declarations.",
+    "The generated hook and test use logger and contain no console.* calls.",
+    "The generated hook and test contain no any types."
+  ]
+}

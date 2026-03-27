@@ -299,7 +299,7 @@ export const highContrastDarkTheme = {
 // THEME TYPE DEFINITIONS
 // =============================================================================
 
-export type ThemeName = 'light' | 'dark' | 'highContrastLight' | 'highContrastDark';
+export type ThemeName = 'light' | 'dark' | 'deepNavy' | 'highContrastLight' | 'highContrastDark';
 
 export interface Theme {
   name: ThemeName;
@@ -402,15 +402,46 @@ export interface Theme {
   glowStrong: string;
   glowAmber: string;
   glowCoral: string;
-}
+  }
 
-// =============================================================================
-// THEME COLLECTION
-// =============================================================================
+  // =============================================================================
+  // DEEP NAVY THEME (Tailwind-inspired)
+  // =============================================================================
+
+  export const deepNavyTheme = {
+  ...darkTheme,
+  name: 'deepNavy' as const,
+
+  // Surfaces
+  surface: '#0F172A', // navy[900]
+  surfaceVariant: '#1E293B', // navy[800]
+  surfaceContainerLowest: '#020617', // navy[950]
+  surfaceContainerLow: '#0F172A', // navy[900]
+  surfaceContainer: '#1E293B', // navy[800]
+  surfaceContainerHigh: '#334155', // navy[700]
+  surfaceContainerHighest: '#475569', // navy[600]
+
+  // Background
+  background: '#020617', // navy[950]
+
+  // Outline
+  outline: '#64748B', // navy[500]
+  outlineVariant: '#334155', // navy[700]
+
+  // Inverse
+  inverseSurface: '#F8FAFC', // navy[50]
+  inverseOnSurface: '#020617', // navy[950]
+  } as const;
+
+  // =============================================================================
+  // HIGH CONTRAST LIGHT THEME (WCAG AAA)
+  // =============================================================================
+
 
 export const themes = {
   light: lightTheme,
   dark: darkTheme,
+  deepNavy: deepNavyTheme,
   highContrastLight: highContrastLightTheme,
   highContrastDark: highContrastDarkTheme,
 } as const;
@@ -423,14 +454,15 @@ export const themes = {
  * Get a theme by name
  */
 export function getTheme(name: ThemeName): Theme {
-  return themes[name];
+  // @ts-ignore - Handle possible missing keys gracefully
+  return themes[name] || themes.dark;
 }
 
 /**
  * Check if theme is dark mode
  */
 export function isDarkTheme(name: ThemeName): boolean {
-  return name === 'dark' || name === 'highContrastDark';
+  return name === 'dark' || name === 'highContrastDark' || name === 'deepNavy';
 }
 
 /**
@@ -448,13 +480,15 @@ export function getBaseThemeVariant(name: ThemeName): 'light' | 'dark' {
 }
 
 /**
- * Toggle between light and dark variants of current theme type
+ * Toggle between theme variants
  */
 export function toggleTheme(name: ThemeName): ThemeName {
   switch (name) {
     case 'light':
       return 'dark';
     case 'dark':
+      return 'deepNavy';
+    case 'deepNavy':
       return 'light';
     case 'highContrastLight':
       return 'highContrastDark';
@@ -468,4 +502,10 @@ export function toggleTheme(name: ThemeName): ThemeName {
 /**
  * All available theme names
  */
-export const themeNames: ThemeName[] = ['light', 'dark', 'highContrastLight', 'highContrastDark'];
+export const themeNames: ThemeName[] = [
+  'light',
+  'dark',
+  'deepNavy',
+  'highContrastLight',
+  'highContrastDark',
+];

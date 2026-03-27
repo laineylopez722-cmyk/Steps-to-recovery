@@ -1,0 +1,16 @@
+{
+  "eval_id": 3,
+  "eval_name": "inventory-mixed-fields",
+  "prompt": "We need to wire up the personal inventory feature (Step 4/10 work). The table is personal_inventory with columns: id, user_id, encrypted_person_name, encrypted_resentment, encrypted_my_part, encrypted_impact, category (not encrypted - it's just 'resentment' | 'fear' | 'sex_conduct'), created_at, updated_at, sync_status, supabase_id. Create the full data hook.",
+  "assertions": [
+    "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+    "The delete path calls addDeleteToSyncQueue before executing the DELETE query.",
+    "The read path uses Promise.allSettled instead of Promise.all.",
+    "The query key root uses the table name.",
+    "The test file defines mock functions before any jest.mock() calls.",
+    "The test file imports the hook only after all jest.mock() declarations.",
+    "The generated hook and test use logger and contain no console.* calls.",
+    "The generated hook and test contain no any types.",
+    "The category field remains plaintext and is never passed to encryptContent."
+  ]
+}

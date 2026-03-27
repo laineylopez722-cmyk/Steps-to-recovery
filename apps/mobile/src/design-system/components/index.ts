@@ -44,6 +44,25 @@ export type { DividerProps } from './Divider';
 export { Text } from './Text';
 export type { TextProps } from './Text';
 
+export {
+  DisplayLarge,
+  DisplayMedium,
+  DisplaySmall,
+  HeadlineLarge,
+  HeadlineMedium,
+  HeadlineSmall,
+  TitleLarge,
+  TitleMedium,
+  TitleSmall,
+  BodyLarge,
+  BodyMedium,
+  BodySmall,
+  LabelLarge,
+  LabelMedium,
+  LabelSmall,
+} from './Typography';
+export type { TypographyProps } from './Typography';
+
 // Premium UI Components
 export { AnimatedCheckmark } from './AnimatedCheckmark';
 export type { AnimatedCheckmarkProps } from './AnimatedCheckmark';

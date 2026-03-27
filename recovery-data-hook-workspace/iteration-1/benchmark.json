@@ -1,0 +1,423 @@
+{
+  "metadata": {
+    "skill_name": "recovery-data-hook",
+    "skill_path": "C:\\Users\\H\\Steps-to-recovery\\.claude\\skills\\recovery-data-hook",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-03-21T18:12:42Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 3
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 513.9,
+        "tokens": 28353,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:156 before useGratitudeEntries.ts:159; useGratitudeEntries.ts:260 before useGratitudeEntries.ts:273"
+        },
+        {
+          "text": "The delete path calls addDeleteToSyncQueue before executing the DELETE query.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:340 addDeleteToSyncQueue() before useGratitudeEntries.ts:342 DELETE FROM"
+        },
+        {
+          "text": "The read path uses Promise.allSettled instead of Promise.all.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:97 -> const settled = await Promise.allSettled(rows.map(decryptGratitudeEntry));"
+        },
+        {
+          "text": "The query key root uses the table name.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:45 -> all: ['gratitude_entries'] as const,"
+        },
+        {
+          "text": "The test file defines mock functions before any jest.mock() calls.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.test.tsx:46 -> let mockDbIsReady = true; before useGratitudeEntries.test.tsx:49 -> jest.mock('../../../../contexts/DatabaseContext', () => ({"
+        },
+        {
+          "text": "The test file imports the hook only after all jest.mock() declarations.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.test.tsx:87 hook import after useGratitudeEntries.test.tsx:77 last jest.mock()"
+        },
+        {
+          "text": "The generated hook and test use logger and contain no console.* calls.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:103 -> logger.error('Failed to decrypt gratitude entry', {"
+        },
+        {
+          "text": "The generated hook and test contain no any types.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts and useGratitudeEntries.test.tsx contain no any types."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 798.7,
+        "tokens": 14811,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:116 before useSafetyPlan.ts:123"
+        },
+        {
+          "text": "The read path uses Promise.allSettled instead of Promise.all.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:86 -> const settled = await Promise.allSettled(rows.map(decRow));"
+        },
+        {
+          "text": "The query key root uses the table name.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:47 -> const safetyPlanKeys = { all: ['safety_plans'] as const, byUser: (u: string) => [...safetyPlanKeys.all, u] as const };"
+        },
+        {
+          "text": "The test file defines mock functions before any jest.mock() calls.",
+          "passed": true,
+          "evidence": "useSafetyPlan.test.tsx:5 -> const mockEncryptContent = jest.fn(); before useSafetyPlan.test.tsx:33 -> jest.mock('../../../../../../apps/mobile/src/contexts/DatabaseContext', () => ({"
+        },
+        {
+          "text": "The test file imports the hook only after all jest.mock() declarations.",
+          "passed": true,
+          "evidence": "useSafetyPlan.test.tsx:48 hook import after useSafetyPlan.test.tsx:43 last jest.mock()"
+        },
+        {
+          "text": "The generated hook and test use logger and contain no console.* calls.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:90 -> logger.error('Failed to decrypt safety plan', { userId, planId: rows[i]?.id });"
+        },
+        {
+          "text": "The generated hook and test contain no any types.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts and useSafetyPlan.test.tsx contain no any types."
+        },
+        {
+          "text": "The output defines read and update operations only, with no create hook and no delete hook.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:80 -> const { data, isLoading, isFetching, error, refetch } = useQuery({"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 547.6,
+        "tokens": 29775,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:78 before usePersonalInventory.ts:175; usePersonalInventory.ts:280 before usePersonalInventory.ts:310"
+        },
+        {
+          "text": "The delete path calls addDeleteToSyncQueue before executing the DELETE query.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:378 addDeleteToSyncQueue() before usePersonalInventory.ts:380 DELETE FROM"
+        },
+        {
+          "text": "The read path uses Promise.allSettled instead of Promise.all.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:114 -> const settled = await Promise.allSettled(rows.map(decryptPersonalInventory));"
+        },
+        {
+          "text": "The query key root uses the table name.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:50 -> all: ['personal_inventory'] as const,"
+        },
+        {
+          "text": "The test file defines mock functions before any jest.mock() calls.",
+          "passed": true,
+          "evidence": "usePersonalInventory.test.tsx:28 -> const mockEncryptContent = jest.fn(); before usePersonalInventory.test.tsx:48 -> jest.mock('../../../../contexts/DatabaseContext', () => ({"
+        },
+        {
+          "text": "The test file imports the hook only after all jest.mock() declarations.",
+          "passed": true,
+          "evidence": "usePersonalInventory.test.tsx:86 hook import after usePersonalInventory.test.tsx:74 last jest.mock()"
+        },
+        {
+          "text": "The generated hook and test use logger and contain no console.* calls.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:120 -> logger.error('Failed to decrypt personal inventory entry', {"
+        },
+        {
+          "text": "The generated hook and test contain no any types.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts and usePersonalInventory.test.tsx contain no any types."
+        },
+        {
+          "text": "The category field remains plaintext and is never passed to encryptContent.",
+          "passed": true,
+          "evidence": "Examples: usePersonalInventory.ts:18 -> category: PersonalInventoryCategory;; usePersonalInventory.ts:32 -> category: PersonalInventoryCategory;"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 1,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 595.0,
+        "tokens": 18154,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:143 before useGratitudeEntries.ts:148; useGratitudeEntries.ts:143 before useGratitudeEntries.ts:242"
+        },
+        {
+          "text": "The delete path calls addDeleteToSyncQueue before executing the DELETE query.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:279 addDeleteToSyncQueue() before useGratitudeEntries.ts:280 DELETE FROM"
+        },
+        {
+          "text": "The read path uses Promise.allSettled instead of Promise.all.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:90 -> const settled = await Promise.allSettled(rows.map(decryptGratitudeEntry));"
+        },
+        {
+          "text": "The query key root uses the table name.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:38 -> all: ['gratitude_entries'] as const,"
+        },
+        {
+          "text": "The test file defines mock functions before any jest.mock() calls.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.test.tsx:5 -> const mockEncryptContent = jest.fn(); before useGratitudeEntries.test.tsx:28 -> jest.mock('@/contexts/DatabaseContext', () => ({"
+        },
+        {
+          "text": "The test file imports the hook only after all jest.mock() declarations.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.test.tsx:59 hook import after useGratitudeEntries.test.tsx:49 last jest.mock()"
+        },
+        {
+          "text": "The generated hook and test use logger and contain no console.* calls.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts:96 -> logger.error('Failed to decrypt gratitude entry', {"
+        },
+        {
+          "text": "The generated hook and test contain no any types.",
+          "passed": true,
+          "evidence": "useGratitudeEntries.ts and useGratitudeEntries.test.tsx contain no any types."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 2,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.75,
+        "passed": 6,
+        "failed": 2,
+        "total": 8,
+        "time_seconds": 475.2,
+        "tokens": 18113,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:155 before useSafetyPlan.ts:164"
+        },
+        {
+          "text": "The read path uses Promise.allSettled instead of Promise.all.",
+          "passed": false,
+          "evidence": "useSafetyPlan.ts -> Promise.allSettled() not found."
+        },
+        {
+          "text": "The query key root uses the table name.",
+          "passed": false,
+          "evidence": "useSafetyPlan.ts -> inferred table \"safety_plans\" does not appear as the query key root."
+        },
+        {
+          "text": "The test file defines mock functions before any jest.mock() calls.",
+          "passed": true,
+          "evidence": "useSafetyPlan.test.tsx:15 -> const mockEncryptContent = jest.fn(); before useSafetyPlan.test.tsx:38 -> jest.mock('../../../../contexts/DatabaseContext', () => ({"
+        },
+        {
+          "text": "The test file imports the hook only after all jest.mock() declarations.",
+          "passed": true,
+          "evidence": "useSafetyPlan.test.tsx:63 hook import after useSafetyPlan.test.tsx:54 last jest.mock()"
+        },
+        {
+          "text": "The generated hook and test use logger and contain no console.* calls.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:104 -> logger.error('Failed to fetch safety plan', err);"
+        },
+        {
+          "text": "The generated hook and test contain no any types.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts and useSafetyPlan.test.tsx contain no any types."
+        },
+        {
+          "text": "The output defines read and update operations only, with no create hook and no delete hook.",
+          "passed": true,
+          "evidence": "useSafetyPlan.ts:85 -> const { data, isLoading, isFetching, error, refetch } = useQuery({"
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": 3,
+      "configuration": "without_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 9,
+        "failed": 0,
+        "total": 9,
+        "time_seconds": 798.7,
+        "tokens": 40485,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:169 before usePersonalInventory.ts:174; usePersonalInventory.ts:282 before usePersonalInventory.ts:313"
+        },
+        {
+          "text": "The delete path calls addDeleteToSyncQueue before executing the DELETE query.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:380 addDeleteToSyncQueue() before usePersonalInventory.ts:381 DELETE FROM"
+        },
+        {
+          "text": "The read path uses Promise.allSettled instead of Promise.all.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:101 -> const settled = await Promise.allSettled(rows.map(decryptPersonalInventory));"
+        },
+        {
+          "text": "The query key root uses the table name.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:39 -> all: ['personal_inventory'] as const,"
+        },
+        {
+          "text": "The test file defines mock functions before any jest.mock() calls.",
+          "passed": true,
+          "evidence": "usePersonalInventory.test.tsx:28 -> const mockEncryptContent = jest.fn((content: string) => Promise.resolve(`encrypted_${content}`)); before usePersonalInventory.test.tsx:52 -> jest.mock('../../../../contexts/DatabaseContext', () => ({"
+        },
+        {
+          "text": "The test file imports the hook only after all jest.mock() declarations.",
+          "passed": true,
+          "evidence": "usePersonalInventory.test.tsx:88 hook import after usePersonalInventory.test.tsx:78 last jest.mock()"
+        },
+        {
+          "text": "The generated hook and test use logger and contain no console.* calls.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts:107 -> logger.error('Failed to decrypt personal inventory entry', {"
+        },
+        {
+          "text": "The generated hook and test contain no any types.",
+          "passed": true,
+          "evidence": "usePersonalInventory.ts and usePersonalInventory.test.tsx contain no any types."
+        },
+        {
+          "text": "The category field remains plaintext and is never passed to encryptContent.",
+          "passed": true,
+          "evidence": "Examples: usePersonalInventory.ts:17 -> category: PersonalInventoryCategory;; usePersonalInventory.ts:31 -> category: PersonalInventoryCategory;"
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 620.0667,
+        "stddev": 155.6159,
+        "min": 513.9,
+        "max": 798.7
+      },
+      "tokens": {
+        "mean": 24313.0,
+        "stddev": 8259.6322,
+        "min": 14811,
+        "max": 29775
+      }
+    },
+    "without_skill": {
+      "pass_rate": {
+        "mean": 0.9167,
+        "stddev": 0.1443,
+        "min": 0.75,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 622.9667,
+        "stddev": 163.5532,
+        "min": 475.2,
+        "max": 798.7
+      },
+      "tokens": {
+        "mean": 25584.0,
+        "stddev": 12904.6608,
+        "min": 18113,
+        "max": 40485
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.08",
+      "time_seconds": "-2.9",
+      "tokens": "-1271"
+    }
+  },
+  "notes": []
+}

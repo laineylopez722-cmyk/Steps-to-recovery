@@ -5,7 +5,7 @@
 
 import { createContext, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { useColorScheme } from 'react-native';
-import { lightColors, darkColors, categoryColors, type ColorPalette } from '../tokens/colors';
+import { categoryColors, type ColorPalette } from '../tokens/colors';
 import { typography } from '../tokens/typography';
 import { spacing } from '../tokens/spacing';
 import { radius } from '../tokens/radius';
@@ -18,8 +18,8 @@ import {
   scales,
   opacities,
 } from '../tokens/animations';
-import { resolveRuntimeTheme } from '../runtime-theme/resolver';
-import { runtimeThemeFlags } from '../runtime-theme/flags';
+import { getTheme, isDarkTheme, type ThemeName } from '../tokens/themes';
+import { createDs } from '../tokens/ds';
 import { logger } from '@/utils/logger';
 
 /**
@@ -35,12 +35,13 @@ export interface Theme {
   animations: {
     spring: typeof springConfigs;
     timing: typeof timingDurations;
-    durations: typeof durations; // Alias for timing
+    durations: typeof durations;
     easing: typeof easingCurves;
     scales: typeof scales;
     opacities: typeof opacities;
   };
   isDark: boolean;
+  themeName: ThemeName;
 }
 
 /**
@@ -65,44 +66,20 @@ interface ThemeProviderProps {
  * Wraps the app and provides theme tokens via context
  */
 export function ThemeProvider({ children, forcedColorScheme }: ThemeProviderProps) {
-  // Detect device color scheme - default to dark for reference app design
-  const deviceColorScheme = useColorScheme();
-  const colorScheme = forcedColorScheme || deviceColorScheme || 'dark';
-  const isDark = colorScheme === 'dark';
+  // Detect device color scheme
+  const systemScheme = useColorScheme();
+  const [themeName, setThemeName] = useState<ThemeName>(
+    forcedColorScheme === 'light' ? 'light' : forcedColorScheme === 'dark' ? 'dark' : 
+    (systemScheme === 'light' ? 'light' : 'dark')
+  );
 
-  const defaultColors = isDark ? darkColors : lightColors;
-  const [resolvedColors, setResolvedColors] = useState<ColorPalette>(defaultColors);
+  const isDark = useMemo(() => isDarkTheme(themeName), [themeName]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const hydrateRuntimeTheme = async () => {
-      try {
-        const resolved = await resolveRuntimeTheme({
-          defaultColors,
-          isDark,
-          runtimeThemeEnabled: runtimeThemeFlags.runtimeThemeEnabled,
-        });
-
-        if (!cancelled) {
-          setResolvedColors(resolved.colors);
-        }
-      } catch (error) {
-        logger.warn('Theme resolver failed; using defaults', error);
-        if (!cancelled) {
-          setResolvedColors(defaultColors);
-        }
-      }
-    };
-
-    // Immediate safe fallback before async resolution.
-    setResolvedColors(defaultColors);
-    void hydrateRuntimeTheme();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [defaultColors, isDark]);
+  // Map the unified theme to the legacy ColorPalette structure
+  const resolvedColors = useMemo(() => {
+    const ds = createDs(themeName);
+    return ds.colors as unknown as ColorPalette;
+  }, [themeName]);
 
   // Memoize theme object to prevent unnecessary re-renders
   const theme: Theme = useMemo(
@@ -116,14 +93,15 @@ export function ThemeProvider({ children, forcedColorScheme }: ThemeProviderProp
       animations: {
         spring: springConfigs,
         timing: timingDurations,
-        durations, // Alias for backward compatibility
+        durations,
         easing: easingCurves,
         scales,
         opacities,
       },
       isDark,
+      themeName,
     }),
-    [isDark, resolvedColors],
+    [isDark, themeName, resolvedColors],
   );
 
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;

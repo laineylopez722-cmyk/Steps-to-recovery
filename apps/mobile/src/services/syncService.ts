@@ -1146,6 +1146,28 @@ export async function processSyncQueue(
 }
 
 /**
+ * Helper to add a delete operation to the sync queue.
+ * Captures the supabase_id of the record before it is deleted locally.
+ */
+export async function addDeleteToSyncQueue(
+  db: StorageAdapter,
+  tableName: string,
+  recordId: string,
+): Promise<void> {
+  try {
+    // Capture the supabase_id before the record is gone
+    const row = await db.getFirstAsync<{ supabase_id: string | null }>(
+      `SELECT supabase_id FROM ${tableName} WHERE id = ?`,
+      [recordId],
+    );
+
+    await addToSyncQueue(db, tableName, recordId, 'delete', row?.supabase_id || null);
+  } catch (error) {
+    logger.error('Failed to add delete to sync queue', { tableName, recordId, error });
+  }
+}
+
+/**
  * Add a record to the sync queue
  * This should be called whenever a record is created, updated, or deleted
  *

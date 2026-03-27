@@ -1,0 +1,80 @@
+{
+  "expectations": [
+    {
+      "text": "Sensitive fields are encrypted before INSERT or UPDATE db.runAsync calls.",
+      "passed": true,
+      "evidence": "useSafetyPlan.ts:116 before useSafetyPlan.ts:123"
+    },
+    {
+      "text": "The read path uses Promise.allSettled instead of Promise.all.",
+      "passed": true,
+      "evidence": "useSafetyPlan.ts:86 -> const settled = await Promise.allSettled(rows.map(decRow));"
+    },
+    {
+      "text": "The query key root uses the table name.",
+      "passed": true,
+      "evidence": "useSafetyPlan.ts:47 -> const safetyPlanKeys = { all: ['safety_plans'] as const, byUser: (u: string) => [...safetyPlanKeys.all, u] as const };"
+    },
+    {
+      "text": "The test file defines mock functions before any jest.mock() calls.",
+      "passed": true,
+      "evidence": "useSafetyPlan.test.tsx:5 -> const mockEncryptContent = jest.fn(); before useSafetyPlan.test.tsx:33 -> jest.mock('../../../../../../apps/mobile/src/contexts/DatabaseContext', () => ({"
+    },
+    {
+      "text": "The test file imports the hook only after all jest.mock() declarations.",
+      "passed": true,
+      "evidence": "useSafetyPlan.test.tsx:48 hook import after useSafetyPlan.test.tsx:43 last jest.mock()"
+    },
+    {
+      "text": "The generated hook and test use logger and contain no console.* calls.",
+      "passed": true,
+      "evidence": "useSafetyPlan.ts:90 -> logger.error('Failed to decrypt safety plan', { userId, planId: rows[i]?.id });"
+    },
+    {
+      "text": "The generated hook and test contain no any types.",
+      "passed": true,
+      "evidence": "useSafetyPlan.ts and useSafetyPlan.test.tsx contain no any types."
+    },
+    {
+      "text": "The output defines read and update operations only, with no create hook and no delete hook.",
+      "passed": true,
+      "evidence": "useSafetyPlan.ts:80 -> const { data, isLoading, isFetching, error, refetch } = useQuery({"
+    }
+  ],
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "total": 8,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "tool_calls": {},
+    "total_tool_calls": 0,
+    "total_steps": 0,
+    "files_created": [
+      "useSafetyPlan.test.tsx",
+      "useSafetyPlan.ts"
+    ],
+    "errors_encountered": 0,
+    "output_chars": 14811,
+    "transcript_chars": 0
+  },
+  "timing": {
+    "total_tokens": 0,
+    "duration_ms": 798719,
+    "total_duration_seconds": 798.7,
+    "executor_start": "2026-03-21T17:46:35.271122+00:00",
+    "executor_end": "2026-03-21T17:59:53.989916+00:00",
+    "executor_duration_seconds": 798.7
+  },
+  "claims": [],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": [],
+    "workarounds": []
+  },
+  "eval_feedback": {
+    "overall": "No additional eval feedback.",
+    "suggestions": []
+  }
+}

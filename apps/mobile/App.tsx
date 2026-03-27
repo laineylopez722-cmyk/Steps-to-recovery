@@ -15,18 +15,29 @@ import './src/global.css';
 // system font (Roboto on Android) instead of Inter.
 import { Text as RNText } from "react-native";
 import { fonts } from './src/lib/fonts';
+import { logger } from './src/utils/logger';
 
-const RNTextWithDefaults = RNText as unknown as { defaultProps?: { style?: unknown } };
-const _defaultStyle = RNTextWithDefaults.defaultProps?.style;
-RNTextWithDefaults.defaultProps = {
-  ...RNTextWithDefaults.defaultProps,
-  style: [{ fontFamily: fonts.regular }, _defaultStyle],
+type ReactNativeTextWithDefaultProps = typeof RNText & {
+  defaultProps?: {
+    style?: unknown;
+  };
+};
+
+const textWithDefaultProps = RNText as ReactNativeTextWithDefaultProps;
+const defaultTextStyle = textWithDefaultProps.defaultProps?.style;
+textWithDefaultProps.defaultProps = {
+  ...textWithDefaultProps.defaultProps,
+  style: [{ fontFamily: fonts.regular }, defaultTextStyle],
 };
 
 // Keep native splash screen visible until app is fully initialized
 // (DB migrations + auth check complete). Prevents flash of loading spinner.
 import * as SplashScreen from "expo-splash-screen";
-SplashScreen.preventAutoHideAsync().catch(() => {});
+void SplashScreen.preventAutoHideAsync().catch((error: unknown) => {
+  logger.warn('Failed to keep splash screen visible during app bootstrap', {
+    errorType: error instanceof Error ? error.name : 'Unknown',
+  });
+});
 
 // Initialize Sentry early for crash reporting
 import { initSentry, wrapWithSentry as sentryWrap } from './src/lib/sentry';
@@ -212,8 +223,17 @@ function App(): React.ReactElement {
   // Android: set system navigation bar to true black to match app theme
   useEffect(() => {
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync('#000000').catch(() => {});
-      NavigationBar.setButtonStyleAsync('light').catch(() => {});
+      void NavigationBar.setBackgroundColorAsync('#000000').catch((error: unknown) => {
+        logger.warn('Failed to set Android navigation bar background color', {
+          errorType: error instanceof Error ? error.name : 'Unknown',
+        });
+      });
+
+      void NavigationBar.setButtonStyleAsync('light').catch((error: unknown) => {
+        logger.warn('Failed to set Android navigation bar button style', {
+          errorType: error instanceof Error ? error.name : 'Unknown',
+        });
+      });
     }
   }, []);
 

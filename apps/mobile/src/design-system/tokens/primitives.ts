@@ -283,6 +283,128 @@ export const highContrast = {
 } as const;
 
 // =============================================================================
+// TAILWIND NAVY - Deep & Calming
+// =============================================================================
+
+export const navy = {
+  50: '#E6EAF0',
+  100: '#C2CAD8',
+  200: '#9AA8BE',
+  300: '#7286A4',
+  400: '#556C91',
+  500: '#38527E',
+  600: '#324A73',
+  700: '#2A4065',
+  800: '#1E293B',
+  900: '#0F172A',
+  950: '#020617',
+} as const;
+
+// =============================================================================
+// TAILWIND PRIMARY BLUE - Trust & Professionalism
+// =============================================================================
+
+export const primaryBlue = {
+  50: '#EFF6FF',
+  100: '#DBEAFE',
+  200: '#BFDBFE',
+  300: '#93C5FD',
+  400: '#60A5FA',
+  500: '#3B82F6',
+  600: '#2563EB',
+  700: '#1D4ED8',
+  800: '#1E40AF',
+  900: '#1E3A8A',
+  950: '#172554',
+} as const;
+
+// =============================================================================
+// TAILWIND SECONDARY TEAL - Focus & Calm
+// =============================================================================
+
+export const secondaryTeal = {
+  50: '#F0FDFA',
+  100: '#CCFBF1',
+  200: '#99F6E4',
+  300: '#5EEAD4',
+  400: '#2DD4BF',
+  500: '#14B8A6',
+  600: '#0D9488',
+  700: '#0F766E',
+  800: '#115E59',
+  900: '#134E4A',
+  950: '#042F2E',
+} as const;
+
+// =============================================================================
+// TAILWIND SUCCESS GREEN - Growth & Vitality
+// =============================================================================
+
+export const successGreen = {
+  50: '#F0FDF4',
+  100: '#DCFCE7',
+  200: '#BBF7D0',
+  300: '#86EFAC',
+  400: '#4ADE80',
+  500: '#22C55E',
+  600: '#16A34A',
+  700: '#15803D',
+  800: '#166534',
+  900: '#14532D',
+} as const;
+
+// =============================================================================
+// TAILWIND DANGER ROSE - Awareness & Alert
+// =============================================================================
+
+export const dangerRose = {
+  50: '#FFF1F2',
+  100: '#FFE4E6',
+  200: '#FECDD3',
+  300: '#FDA4AF',
+  400: '#FB7185',
+  500: '#F43F5E',
+  600: '#E11D48',
+  700: '#BE123C',
+  800: '#9F1239',
+  900: '#881337',
+} as const;
+
+// =============================================================================
+// TAILWIND HOPE AMBER - Celebration & Positive Energy
+// =============================================================================
+
+export const hopeAmber = {
+  50: '#FFFBEB',
+  100: '#FEF3C7',
+  200: '#FDE68A',
+  300: '#FCD34D',
+  400: '#FBBF24',
+  500: '#F59E0B',
+  600: '#D97706',
+  700: '#B45309',
+  800: '#92400E',
+  900: '#78350F',
+} as const;
+
+// =============================================================================
+// TAILWIND CALM LAVENDER - Mindfulness & Peace
+// =============================================================================
+
+export const calmLavender = {
+  50: '#FAF5FF',
+  100: '#F3E8FF',
+  200: '#E9D5FF',
+  300: '#D8B4FE',
+  400: '#C084FC',
+  500: '#A855F7',
+  600: '#9333EA',
+  700: '#7C3AED',
+  800: '#6B21A8',
+  900: '#581C87',
+} as const;
+
+// =============================================================================
 // PRIMITIVE COLLECTION
 // =============================================================================
 
@@ -296,6 +418,13 @@ export const primitives = {
   status,
   gray,
   highContrast,
+  navy,
+  primaryBlue,
+  secondaryTeal,
+  successGreen,
+  dangerRose,
+  hopeAmber,
+  calmLavender,
 } as const;
 
 // =============================================================================
@@ -309,5 +438,12 @@ export type ErrorTone = keyof typeof error;
 export type NeutralTone = keyof typeof neutral;
 export type NeutralVariantTone = keyof typeof neutralVariant;
 export type GrayTone = keyof typeof gray;
+export type NavyTone = keyof typeof navy;
+export type PrimaryBlueTone = keyof typeof primaryBlue;
+export type SecondaryTealTone = keyof typeof secondaryTeal;
+export type SuccessGreenTone = keyof typeof successGreen;
+export type DangerRoseTone = keyof typeof dangerRose;
+export type HopeAmberTone = keyof typeof hopeAmber;
+export type CalmLavenderTone = keyof typeof calmLavender;
 
 export type Primitives = typeof primitives;

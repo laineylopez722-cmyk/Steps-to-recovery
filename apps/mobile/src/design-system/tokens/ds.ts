@@ -1,4 +1,5 @@
 import { premiumTypographyAliases, serene } from './serene';
+import { themes, getTheme, type ThemeName } from './themes';
 
 /**
  * Design System Tokens
@@ -631,11 +632,134 @@ export type DS = typeof ds;
 // THEME FACTORY
 // ============================================================================
 
-/** Creates a theme-aware DS object for the given color scheme. */
-export function createDs(isDark: boolean): DS {
-  if (isDark) {
-    return ds;
-  }
+/** Creates a theme-aware DS object for the given theme name or dark/light boolean. */
+export function createDs(themeInput: ThemeName | boolean = 'dark'): DS {
+  const themeName: ThemeName =
+    typeof themeInput === 'boolean' ? (themeInput ? 'dark' : 'light') : themeInput;
+
+  const theme = getTheme(themeName);
+  const isDark = themeName !== 'light' && themeName !== 'highContrastLight';
+
+  // Map theme colors to the DS structure for backward compatibility
+  const themeColors = {
+    bgPrimary: theme.background,
+    bgSecondary: theme.surface,
+    bgTertiary: theme.surfaceVariant,
+    bgQuaternary: theme.surfaceContainerLow,
+    bgElevated: theme.surfaceContainer,
+    bgOverlay: theme.scrim,
+    overlay: theme.scrim,
+    transparent: 'transparent',
+
+    textPrimary: theme.onSurface,
+    textSecondary: theme.onSurfaceVariant,
+    textTertiary: theme.onSurfaceVariant, // Fallback
+    textQuaternary: theme.onSurfaceVariant, // Fallback
+    text: theme.onSurface,
+    textMuted: theme.onSurfaceVariant,
+
+    borderSubtle: theme.outlineVariant,
+    borderDefault: theme.outline,
+    borderStrong: theme.outline,
+    divider: theme.outlineVariant,
+    shadow: theme.shadow,
+
+    accent: theme.primary,
+    accentLight: theme.primaryContainer,
+    accentMuted: theme.primaryContainer,
+    accentSubtle: theme.primaryContainer,
+
+    success: theme.success,
+    successMuted: theme.successContainer,
+    warning: theme.warning,
+    warningMuted: theme.warningContainer,
+    error: theme.error,
+    errorMuted: theme.errorContainer,
+    info: theme.info,
+    infoMuted: theme.infoContainer,
+  };
+
+  // Map theme roles to semantic roles
+  const themeSemantic = {
+    intent: {
+      primary: {
+        solid: theme.primary,
+        muted: theme.primaryContainer,
+        subtle: theme.primaryContainer, // Fallback
+        onSolid: theme.onPrimary,
+      },
+      secondary: {
+        solid: theme.secondary,
+        muted: theme.secondaryContainer,
+        subtle: theme.secondaryContainer,
+        onSolid: theme.onSecondary,
+      },
+      alert: {
+        solid: theme.error,
+        muted: theme.errorContainer,
+        subtle: theme.errorContainer,
+        onSolid: theme.onError,
+      },
+      success: {
+        solid: theme.success,
+        muted: theme.successContainer,
+        subtle: theme.successContainer,
+        onSolid: theme.onSuccess,
+      },
+      warning: {
+        solid: theme.warning,
+        muted: theme.warningContainer,
+        subtle: theme.warningContainer,
+        onSolid: theme.onWarning,
+      },
+    },
+    surface: {
+      app: theme.background,
+      canvas: theme.surface,
+      card: theme.surfaceVariant,
+      elevated: theme.surfaceContainer,
+      interactive: theme.surfaceContainerLow,
+      overlay: theme.scrim,
+      overlayModal: theme.scrim,
+    },
+    text: {
+      primary: theme.onSurface,
+      secondary: theme.onSurfaceVariant,
+      tertiary: theme.onSurfaceVariant,
+      muted: theme.onSurfaceVariant,
+      onPrimary: theme.onPrimary,
+      onSecondary: theme.onSecondary,
+      onAlert: theme.onError,
+      onDark: isDark ? theme.onSurface : '#FFFFFF',
+      inverse: theme.inverseOnSurface,
+    },
+    emergency: {
+      calm: theme.info,
+      calmMuted: theme.infoContainer,
+      calmSubtle: theme.infoContainer,
+    },
+    elevation: {
+      base: 'sm',
+      raised: 'md',
+      overlay: 'lg',
+      focus: 'glow',
+    },
+    layout: {
+      screenPadding: space[6],
+      sectionGap: space[6],
+      cardPadding: space[5],
+      listItemPadding: space[4],
+      touchTarget: 44,
+    },
+    typography: {
+      screenTitle: typography.h1,
+      sectionLabel: typography.caption,
+      body: typography.body,
+      bodySmall: typography.bodySm,
+      meta: typography.micro,
+      button: typography.body,
+    },
+  };
 
   return {
     space,
@@ -643,14 +767,14 @@ export function createDs(isDark: boolean): DS {
     fontSize,
     fontWeight,
     lineHeight,
-    colors: colorsLight,
-    semantic: semanticLight,
-    palette: paletteLight,
+    colors: themeColors as any,
+    semantic: themeSemantic as any,
+    palette: palette, // Still provide palette for legacy
     radius,
-    shadows: shadowsLight,
+    shadows,
     sizes,
     timing,
     spring,
     serene,
-  } as unknown as DS;
+  } as DS;
 }
