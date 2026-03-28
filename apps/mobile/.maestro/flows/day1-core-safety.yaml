@@ -1,8 +1,8 @@
 # Day 1: Core Safety & Offline Validation
 # Tests the 5 non-negotiable safety/offline flows
-# Run with: maestro test maestro/flows/day1-core-safety.yaml
+# Run with: maestro test flows/day1-core-safety.yaml
 
-appId: com.stepstorecovery.app
+appId: com.recovery.stepstorecovery
 ---
 # Launch with cleared state (optional - remove clearState if you want to keep login)
 - launchApp:

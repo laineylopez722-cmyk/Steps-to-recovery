@@ -1,9 +1,9 @@
 # Day 4: Stability & Performance Validation
 # Tests startup performance, memory stability, transition latency, and error handling
-# Run with: maestro test maestro/flows/day4-stability.yaml
+# Run with: maestro test flows/day4-stability.yaml
 # Prerequisites: Complete Day 1, Day 2, and Day 3 tests first
 
-appId: com.stepstorecovery.app
+appId: com.recovery.stepstorecovery
 ---
 # Launch app with clear state for cold start test
 - launchApp:

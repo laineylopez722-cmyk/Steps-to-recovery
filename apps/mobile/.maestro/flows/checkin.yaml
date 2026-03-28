@@ -2,7 +2,7 @@
 # Tests the morning and evening check-in experience
 # Note: Requires authenticated user state
 
-appId: com.stepstorecovery.app
+appId: com.recovery.stepstorecovery
 ---
 # Launch app (assumes user is already logged in)
 - launchApp

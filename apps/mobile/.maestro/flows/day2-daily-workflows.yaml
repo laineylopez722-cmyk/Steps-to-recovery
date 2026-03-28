@@ -1,8 +1,8 @@
 # Day 2: Daily Workflows Validation
 # Tests the 4 core daily recovery workflows
-# Run with: maestro test maestro/flows/day2-daily-workflows.yaml
+# Run with: maestro test flows/day2-daily-workflows.yaml
 
-appId: com.stepstorecovery.app
+appId: com.recovery.stepstorecovery
 ---
 # Launch app (assumes user is logged in from Day 1)
 - launchApp:
