@@ -22,7 +22,13 @@
  */
 
 import { supabase } from '../lib/supabase';
-import type { StorageAdapter } from '../adapters/storage';
+type SyncStorage = {
+  getAllAsync<T = unknown>(query: string, ...params: unknown[]): Promise<T[]>;
+  getFirstAsync<T = unknown>(query: string, ...params: unknown[]): Promise<T | null>;
+  runAsync(query: string, ...params: unknown[]): Promise<unknown>;
+  execAsync(sql: string): Promise<unknown>;
+  withTransactionAsync?: (callback: () => Promise<void>) => Promise<void>;
+};
 import { logger } from '../utils/logger';
 import { decryptContent, encryptContent } from '../utils/encryption';
 import { withTimeout } from '../utils/async';
@@ -83,7 +89,7 @@ export interface SyncResult {
  * Maps local encrypted fields to Supabase schema
  */
 export async function syncJournalEntry(
-  db: StorageAdapter,
+  db: SyncStorage,
   entryId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -165,7 +171,7 @@ export async function syncJournalEntry(
  * Note: Supabase step_work schema differs from local (content vs question_number/encrypted_answer)
  */
 export async function syncStepWork(
-  db: StorageAdapter,
+  db: SyncStorage,
   stepWorkId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -248,7 +254,7 @@ export async function syncStepWork(
  * - encrypted_craving → day_rating (converted: 0-10 craving → inverted 1-10 rating)
  */
 export async function syncDailyCheckIn(
-  db: StorageAdapter,
+  db: SyncStorage,
   checkInId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -351,7 +357,7 @@ export async function syncDailyCheckIn(
  * User's favorite meetings are encrypted behavioral data
  */
 export async function syncFavoriteMeeting(
-  db: StorageAdapter,
+  db: SyncStorage,
   favoriteId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -419,7 +425,7 @@ export async function syncFavoriteMeeting(
  * Maps local encrypted fields to Supabase schema
  */
 export async function syncReadingReflection(
-  db: StorageAdapter,
+  db: SyncStorage,
   reflectionId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -493,7 +499,7 @@ export async function syncReadingReflection(
  * Maps local report data to Supabase schema
  */
 export async function syncWeeklyReport(
-  db: StorageAdapter,
+  db: SyncStorage,
   reportId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -553,7 +559,7 @@ export async function syncWeeklyReport(
  * Maps local connection data to Supabase schema
  */
 export async function syncSponsorConnection(
-  db: StorageAdapter,
+  db: SyncStorage,
   connectionId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -619,7 +625,7 @@ export async function syncSponsorConnection(
  * Maps local shared entry data to Supabase schema
  */
 export async function syncSponsorSharedEntry(
-  db: StorageAdapter,
+  db: SyncStorage,
   entryId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -690,7 +696,7 @@ export async function syncSponsorSharedEntry(
  * Sync a single achievement to Supabase
  */
 export async function syncAchievement(
-  db: StorageAdapter,
+  db: SyncStorage,
   achievementId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -750,7 +756,7 @@ export async function syncAchievement(
  * Data is already encrypted locally, so it's sent as-is.
  */
 export async function syncAIMemory(
-  db: StorageAdapter,
+  db: SyncStorage,
   memoryId: string,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -843,7 +849,7 @@ async function deleteFromSupabase(
  * Handles routing to correct sync function and result handling
  */
 async function processSyncItem(
-  db: StorageAdapter,
+  db: SyncStorage,
   item: SyncQueueItem,
   userId: string,
 ): Promise<{ success: boolean; error?: string }> {
@@ -897,7 +903,7 @@ async function processSyncItem(
  * Updates queue item on failure, removes on success
  */
 async function handleSyncResult(
-  db: StorageAdapter,
+  db: SyncStorage,
   item: SyncQueueItem,
   syncResult: { success: boolean; error?: string },
   result: SyncResult,
@@ -968,7 +974,7 @@ const FAILED_ITEM_RETENTION_DAYS = 7;
  * Clean up old failed items and enforce queue size limits
  * Call periodically (e.g., daily) to prevent unbounded growth
  */
-export async function cleanupSyncQueue(db: StorageAdapter): Promise<{ removed: number }> {
+export async function cleanupSyncQueue(db: SyncStorage): Promise<{ removed: number }> {
   let totalRemoved = 0;
   try {
     // Remove permanently failed items older than retention period
@@ -1037,7 +1043,7 @@ export async function cleanupSyncQueue(db: StorageAdapter): Promise<{ removed: n
  * @returns SyncResult with counts and errors
  */
 export async function processSyncQueue(
-  db: StorageAdapter,
+  db: SyncStorage,
   userId: string,
   maxBatchSize: number = 50,
 ): Promise<SyncResult> {
@@ -1146,28 +1152,6 @@ export async function processSyncQueue(
 }
 
 /**
- * Helper to add a delete operation to the sync queue.
- * Captures the supabase_id of the record before it is deleted locally.
- */
-export async function addDeleteToSyncQueue(
-  db: StorageAdapter,
-  tableName: string,
-  recordId: string,
-): Promise<void> {
-  try {
-    // Capture the supabase_id before the record is gone
-    const row = await db.getFirstAsync<{ supabase_id: string | null }>(
-      `SELECT supabase_id FROM ${tableName} WHERE id = ?`,
-      [recordId],
-    );
-
-    await addToSyncQueue(db, tableName, recordId, 'delete', row?.supabase_id || null);
-  } catch (error) {
-    logger.error('Failed to add delete to sync queue', { tableName, recordId, error });
-  }
-}
-
-/**
  * Add a record to the sync queue
  * This should be called whenever a record is created, updated, or deleted
  *
@@ -1178,7 +1162,7 @@ export async function addDeleteToSyncQueue(
  * @param supabaseId - Optional Supabase ID (required for delete operations)
  */
 export async function addToSyncQueue(
-  db: StorageAdapter,
+  db: SyncStorage,
   tableName: string,
   recordId: string,
   operation: 'insert' | 'update' | 'delete',
@@ -1240,10 +1224,10 @@ export async function addToSyncQueue(
  * @param userId - User ID for ownership verification
  */
 export async function addDeleteToSyncQueue(
-  db: StorageAdapter,
+  db: SyncStorage,
   tableName: string,
   recordId: string,
-  userId: string,
+  userId?: string,
 ): Promise<void> {
   try {
     if (!isValidSyncTable(tableName)) {
@@ -1251,10 +1235,15 @@ export async function addDeleteToSyncQueue(
     }
 
     // Fetch the supabase_id before deletion
-    const record = await db.getFirstAsync<{ supabase_id: string | null }>(
-      `SELECT supabase_id FROM ${tableName} WHERE id = ? AND user_id = ?`,
-      [recordId, userId],
-    );
+    const record = userId
+      ? await db.getFirstAsync<{ supabase_id: string | null }>(
+          `SELECT supabase_id FROM ${tableName} WHERE id = ? AND user_id = ?`,
+          [recordId, userId],
+        )
+      : await db.getFirstAsync<{ supabase_id: string | null }>(
+          `SELECT supabase_id FROM ${tableName} WHERE id = ?`,
+          [recordId],
+        );
 
     const supabaseId = record?.supabase_id || null;
 
@@ -1285,7 +1274,7 @@ export async function addDeleteToSyncQueue(
  * Uses last-write-wins conflict resolution based on updated_at.
  */
 async function pullTable(
-  db: StorageAdapter,
+  db: SyncStorage,
   tableName: PullSyncTable,
   userId: string,
   lastPullAt: string | null,
@@ -1344,7 +1333,7 @@ async function pullTable(
  * Returns true if the record was inserted or updated.
  */
 async function upsertLocalRecord(
-  db: StorageAdapter,
+  db: SyncStorage,
   tableName: PullSyncTable,
   remote: Record<string, unknown>,
   userId: string,
@@ -1381,7 +1370,7 @@ async function upsertLocalRecord(
  * Update an existing local record with remote data.
  */
 async function updateLocalFromRemote(
-  db: StorageAdapter,
+  db: SyncStorage,
   tableName: PullSyncTable,
   localId: string,
   remote: Record<string, unknown>,
@@ -1533,7 +1522,7 @@ async function updateLocalFromRemote(
  * Insert a new local record from remote data.
  */
 async function insertLocalFromRemote(
-  db: StorageAdapter,
+  db: SyncStorage,
   tableName: PullSyncTable,
   remote: Record<string, unknown>,
   userId: string,
@@ -1723,7 +1712,7 @@ async function insertLocalFromRemote(
  * @returns Pull sync result with count of pulled records
  */
 export async function pullFromCloud(
-  db: StorageAdapter,
+  db: SyncStorage,
   userId: string,
 ): Promise<PullSyncResult> {
   const result: PullSyncResult = { pulled: 0, errors: [] };

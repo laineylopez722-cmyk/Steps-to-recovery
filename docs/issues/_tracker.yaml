@@ -1,20 +1,20 @@
 # Master Issue Tracker — Steps-to-Recovery
 # Single source of truth for all tracked issues.
 # Update counts and indexes whenever an issue status changes.
-# Last updated: 2026-03-21
+# Last updated: 2026-03-28
 
 ---
 
 metadata:
   project: "Steps-to-Recovery"
-  total_issues: 28
+  total_issues: 29
   generated_from: ".claude/CONFIGURATION-FIX-PLAN.md (2026-03-21 audit)"
-  last_updated: "2026-03-21"
+  last_updated: "2026-03-28"
   counts:
-    open: 0
+    open: 8
     in_progress: 1
     blocked: 0
-    fixed: 25
+    fixed: 18
     deferred: 2
 
 ---

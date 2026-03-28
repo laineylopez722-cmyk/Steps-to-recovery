@@ -19,7 +19,9 @@ Steps-to-recovery/
 ├── .claude/                 # Claude Code agents & prompts
 ├── .github/                 # CI/CD workflows, docs, secrets reference
 ├── scripts/                 # Doctor scripts, toolchain utilities
-├── supabase-schema.sql      # Base Supabase schema with RLS
+├── supabase/
+│   ├── config.toml          # Supabase local/dev configuration
+│   └── migrations/          # Ordered SQL migrations for schema + RLS
 └── package.json             # Workspace config
 ```
 
@@ -105,8 +107,8 @@ npm install
 ### Step 2: Set Up Supabase
 
 1. Create a new project at [supabase.com](https://supabase.com) (the free tier is sufficient).
-2. In the Supabase **SQL Editor**, run the contents of `supabase-schema.sql` to create all tables with RLS policies.
-3. If additional migration files exist (e.g., `supabase-migration-daily-checkins.sql`), run those in order after the base schema.
+2. In the Supabase **SQL Editor**, run files from `supabase/migrations/` in chronological filename order.
+3. After running migrations, verify your key tables (e.g., `profiles`, `journal_entries`, `daily_checkins`) exist before starting the app.
 4. Navigate to **Settings → API** and copy:
    - **Project URL** — looks like `https://abcdef.supabase.co`
    - **anon / public key** — a long JWT string

@@ -23,6 +23,7 @@
   },
   "scripts": {
     "dev": "npm run start --workspace=apps/mobile",
+    "predev": "npm run validate-env",
     "build": "npm run prebuild --workspace=apps/mobile",
     "test": "npm test --workspace=apps/mobile",
     "lint": "npm run lint --workspace=apps/mobile",
@@ -36,7 +37,9 @@
     "setup:verify": "bash scripts/verify-setup.sh",
     "check:stale-issues": "node scripts/check-stale-issues.js",
     "clean": "npm run clean --workspace=apps/mobile",
+    "premobile": "npm run validate-env",
     "mobile": "npm run start --workspace=apps/mobile",
+    "preweb": "npm run validate-env",
     "web": "npm run web --workspace=apps/mobile",
     "android": "npm run android --workspace=apps/mobile",
     "ios": "npm run ios --workspace=apps/mobile",

@@ -96,8 +96,8 @@ npm run mobile
 ## Supabase Setup (First Time)
 
 1. Create a free project at https://supabase.com
-2. Open the SQL Editor and run `supabase-schema.sql` (base tables + RLS policies)
-3. Run any `supabase/migrations/*.sql` files in numeric order
+2. Open the SQL Editor and run `supabase/migrations/*.sql` in filename order
+3. Confirm core tables (for example: `profiles`, `journal_entries`, `daily_checkins`) were created
 4. Copy credentials from Settings > API:
    - **Project URL** → `EXPO_PUBLIC_SUPABASE_URL`
    - **anon/public key** → `EXPO_PUBLIC_SUPABASE_ANON_KEY`

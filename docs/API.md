@@ -22,7 +22,7 @@ Primary tables:
 
 ## Supabase
 
-The cloud schema is defined in `supabase-schema.sql`. RLS policies restrict access to the authenticated user. Supabase stores encrypted payloads only.
+The cloud schema is defined in ordered SQL files under `supabase/migrations/`. RLS policies restrict access to the authenticated user. Supabase stores encrypted payloads only.
 
 ## Sync
 

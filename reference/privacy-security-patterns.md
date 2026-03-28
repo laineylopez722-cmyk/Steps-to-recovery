@@ -136,4 +136,4 @@ console.error('Auth token:', sessionToken);  // Auth credential
 - apps/mobile/src/services/syncService.ts
 - apps/mobile/src/adapters/secureStorage/
 - SECURITY.md
-- supabase-schema.sql
+- supabase/migrations/

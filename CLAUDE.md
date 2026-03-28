@@ -161,13 +161,12 @@ EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
 ```bash
 # Apply database schema (first time only)
 # 1. Go to Supabase SQL Editor
-# 2. Run the contents of supabase-schema.sql (base schema)
-# 3. Run the contents of supabase-migration-daily-checkins.sql (CRITICAL - enables check-in sync)
-# 4. Verify RLS policies are enabled on all tables
+# 2. Run files from supabase/migrations/ in filename order
+# 3. Verify RLS policies are enabled on all sync tables
+# 4. Confirm core tables exist (profiles, journal_entries, daily_checkins)
 
-# IMPORTANT: The daily_checkins migration is REQUIRED
-# Without it, check-ins will NOT back up to cloud (data loss risk)
-# See supabase-schema.sql and migration files for detailed steps
+# IMPORTANT: keep local and cloud schema in sync.
+# Use ordered files under supabase/migrations/ as the source of truth.
 
 # Supabase MCP (optional - for Claude Code integration)
 # Project Reference: tbiunmmvfbakwlzykpwq
@@ -1250,7 +1249,7 @@ test: add coverage for step work hooks
 
 ### Supabase Integration
 
-- `supabase-schema.sql` - Base database schema with RLS policies
+- `supabase/migrations/*.sql` - Ordered cloud schema + RLS migrations
 
 ### Planning Artifacts (docs/\_bmad-output/planning-artifacts/)
 

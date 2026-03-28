@@ -294,7 +294,7 @@ export const logger = {
 
     const timestamp = new Date().toISOString();
     const sanitized = data !== undefined ? sanitizeData(data) : undefined;
-    console.log(`[INFO] [${timestamp}] ${message}`, ...formatLogArgs('', sanitized).slice(1));
+    console.warn(`[INFO] [${timestamp}] ${message}`, ...formatLogArgs('', sanitized).slice(1));
   },
 
   /**
@@ -308,7 +308,7 @@ export const logger = {
 
     const timestamp = new Date().toISOString();
     const sanitized = data !== undefined ? sanitizeData(data) : undefined;
-    console.debug(`[DEBUG] [${timestamp}] ${message}`, ...formatLogArgs('', sanitized).slice(1));
+    console.warn(`[DEBUG] [${timestamp}] ${message}`, ...formatLogArgs('', sanitized).slice(1));
   },
 
   /**
@@ -322,6 +322,6 @@ export const logger = {
 
     const timestamp = new Date().toISOString();
     const sanitized = data !== undefined ? sanitizeData(data) : undefined;
-    console.trace(`[TRACE] [${timestamp}] ${message}`, ...formatLogArgs('', sanitized).slice(1));
+    console.warn(`[TRACE] [${timestamp}] ${message}`, ...formatLogArgs('', sanitized).slice(1));
   },
 };

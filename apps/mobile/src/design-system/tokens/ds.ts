@@ -767,8 +767,8 @@ export function createDs(themeInput: ThemeName | boolean = 'dark'): DS {
     fontSize,
     fontWeight,
     lineHeight,
-    colors: themeColors as any,
-    semantic: themeSemantic as any,
+    colors: themeColors as typeof colors,
+    semantic: themeSemantic as typeof semantic,
     palette: palette, // Still provide palette for legacy
     radius,
     shadows,

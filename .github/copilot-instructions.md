@@ -178,8 +178,8 @@ async function runMigrations(db: SQLiteDatabase): Promise<void> {
 
 ### Cloud Schema Changes
 
-1. Update `supabase-schema.sql` (base schema)
-2. Create migration file: `supabase-migration-{feature}.sql`
+1. Add a new ordered SQL file under `supabase/migrations/` (do not edit historical migration files).
+2. Include table/column changes needed for the feature.
 3. **ALWAYS add RLS policies**: `ALTER TABLE table_name ENABLE ROW LEVEL SECURITY;`
 4. Filter by user: `CREATE POLICY "policy_name" ON table_name USING (auth.uid() = user_id);`
 

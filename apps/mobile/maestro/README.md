@@ -1,79 +1,16 @@
-# Maestro E2E Testing Setup
+# Legacy Maestro Scenarios (Archived)
 
-This directory contains Maestro end-to-end tests for the Steps to Recovery app.
+This directory contains older, exploratory Maestro scenarios kept for historical reference.
 
-## Prerequisites
+## Canonical E2E Suite
 
-1. Install Maestro CLI:
+Use `apps/mobile/.maestro/` as the source of truth for all active local and CI E2E runs.
 
-   ```bash
-   curl -Ls "https://get.maestro.mobile.dev" | bash
-   ```
+- Active docs: `apps/mobile/.maestro/README.md`
+- Active flow path: `apps/mobile/.maestro/flows/`
+- Active npm scripts: `apps/mobile/package.json` (`e2e*` scripts)
 
-2. For Windows, use WSL or the Windows installer from:
-   https://maestro.mobile.dev/getting-started/installing-maestro
+## Important
 
-## Running Tests
-
-### iOS Simulator
-
-```bash
-maestro test maestro/
-```
-
-### Android Emulator
-
-```bash
-maestro test maestro/
-```
-
-### Specific Test File
-
-```bash
-maestro test maestro/flows/onboarding.yaml
-```
-
-## Test Structure
-
-```
-maestro/
-├── flows/
-│   ├── onboarding.yaml      # Onboarding flow tests
-│   ├── auth.yaml            # Authentication tests
-│   ├── journal.yaml         # Journal entry tests
-│   └── checkin.yaml         # Daily check-in tests
-├── config.yaml              # Maestro configuration
-└── README.md                # This file
-```
-
-## Writing Tests
-
-Maestro uses YAML syntax. Example:
-
-```yaml
-appId: com.stepstorecovery.app
----
-- launchApp
-- tapOn: 'Sign In'
-- inputText:
-    id: 'email-input'
-    text: 'test@example.com'
-- tapOn: 'Continue'
-```
-
-## CI/CD Integration
-
-Add to your GitHub Actions workflow:
-
-```yaml
-- name: Run Maestro Tests
-  uses: mobile-dev-inc/action-maestro-cloud@v1
-  with:
-    api-key: ${{ secrets.MAESTRO_CLOUD_API_KEY }}
-    app-file: app-release.apk
-```
-
-## Resources
-
-- [Maestro Documentation](https://maestro.mobile.dev/)
-- [Maestro YAML Reference](https://maestro.mobile.dev/reference/yaml-syntax)
+Do **not** add new production E2E flows to this archived folder.
+If you need a new automated E2E flow, add it under `.maestro/flows` instead.

@@ -1,6 +1,7 @@
 import React from 'react';
-import { Text as RNText, type TextProps as RNTextProps, type TextStyle, PixelRatio } from 'react-native';
+import { Text as RNText, type TextProps as RNTextProps, type TextStyle } from 'react-native';
 import { useDs } from '../DsProvider';
+import type { DS } from '../tokens/ds';
 
 /**
  * Responsive Typography Components
@@ -34,7 +35,7 @@ function BaseText({
   children,
   allowFontScaling = true,
   ...props
-}: TypographyProps & { variant: any; weight?: 'regular' | 'medium' | 'semibold' | 'bold' }): React.ReactElement {
+}: TypographyProps & { variant: keyof DS['typography']; weight?: 'regular' | 'medium' | 'semibold' | 'bold' }): React.ReactElement {
   const ds = useDs();
   const typographyStyle = ds.typography[variant] || ds.typography.body;
   
