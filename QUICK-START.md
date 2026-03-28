@@ -96,12 +96,11 @@ npm run mobile
 ## Supabase Setup (First Time)
 
 1. Create a free project at https://supabase.com
-2. Open the SQL Editor and run `supabase-schema.sql` (base tables + RLS policies)
-3. Run any `supabase/migrations/*.sql` files in numeric order
-4. Copy credentials from Settings > API:
+2. Run the canonical bootstrap steps in [`SETUP.md` → Canonical Supabase DB Bootstrap](SETUP.md#canonical-supabase-db-bootstrap)
+3. Copy credentials from Settings > API:
    - **Project URL** → `EXPO_PUBLIC_SUPABASE_URL`
    - **anon/public key** → `EXPO_PUBLIC_SUPABASE_ANON_KEY`
-5. Paste into `apps/mobile/.env`
+4. Paste into `apps/mobile/.env`
 
 ---
 

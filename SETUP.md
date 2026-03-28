@@ -19,7 +19,8 @@ Steps-to-recovery/
 ├── .claude/                 # Claude Code agents & prompts
 ├── .github/                 # CI/CD workflows, docs, secrets reference
 ├── scripts/                 # Doctor scripts, toolchain utilities
-├── supabase-schema.sql      # Base Supabase schema with RLS
+├── supabase/
+│   └── migrations/          # Ordered SQL migrations for schema + RLS
 └── package.json             # Workspace config
 ```
 
@@ -105,11 +106,49 @@ npm install
 ### Step 2: Set Up Supabase
 
 1. Create a new project at [supabase.com](https://supabase.com) (the free tier is sufficient).
-2. In the Supabase **SQL Editor**, run the contents of `supabase-schema.sql` to create all tables with RLS policies.
-3. If additional migration files exist (e.g., `supabase-migration-daily-checkins.sql`), run those in order after the base schema.
-4. Navigate to **Settings → API** and copy:
+2. Follow the canonical migration workflow in [Canonical Supabase DB Bootstrap](#canonical-supabase-db-bootstrap).
+3. Navigate to **Settings → API** and copy:
    - **Project URL** — looks like `https://abcdef.supabase.co`
    - **anon / public key** — a long JWT string
+
+### Canonical Supabase DB Bootstrap
+
+Use exactly one of these paths. In both cases, apply every file in `supabase/migrations/*.sql` in chronological filename order.
+
+#### Path A (preferred): Supabase CLI (local)
+
+```bash
+# From repo root
+npx supabase start
+npx supabase db reset
+```
+
+`npx supabase db reset` recreates the local database and applies all migrations in order from `supabase/migrations/*.sql`.
+
+#### Path B: Supabase SQL Editor (cloud project)
+
+1. In your Supabase project, open **SQL Editor**.
+2. Run each file from `supabase/migrations/*.sql` in chronological filename order (top to bottom):
+
+```bash
+ls -1 supabase/migrations/*.sql | sort
+```
+
+3. Paste and run each file's SQL in the same order shown above.
+
+#### Verification (required)
+
+After running migrations, verify key tables exist:
+
+```sql
+select table_name
+from information_schema.tables
+where table_schema = 'public'
+  and table_name in ('profiles', 'daily_checkins', 'weekly_reports', 'sponsor_connections')
+order by table_name;
+```
+
+If all four rows are returned, migration bootstrap succeeded.
 
 ### Step 3: Create the Environment File
 
