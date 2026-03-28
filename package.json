@@ -41,7 +41,8 @@
     "android": "npm run android --workspace=apps/mobile",
     "ios": "npm run ios --workspace=apps/mobile",
     "prepare": "husky",
-    "postinstall": "node scripts/skip-bash-on-windows.mjs"
+    "postinstall": "node scripts/skip-bash-on-windows.mjs",
+    "check:issue-tracker": "node scripts/validate-issue-tracker-counts.mjs"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",

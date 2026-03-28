@@ -1,20 +1,20 @@
 # Master Issue Tracker — Steps-to-Recovery
 # Single source of truth for all tracked issues.
 # Update counts and indexes whenever an issue status changes.
-# Last updated: 2026-03-21
+# Last updated: 2026-03-28
 
 ---
 
 metadata:
   project: "Steps-to-Recovery"
-  total_issues: 28
+  total_issues: 29
   generated_from: ".claude/CONFIGURATION-FIX-PLAN.md (2026-03-21 audit)"
-  last_updated: "2026-03-21"
+  last_updated: "2026-03-28"
   counts:
-    open: 0
+    open: 8
     in_progress: 1
     blocked: 0
-    fixed: 25
+    fixed: 18
     deferred: 2
 
 ---
@@ -458,7 +458,7 @@ by_priority:
       - SEC-002  # Encryption key rotation procedure not documented
       - DB-001   # Drizzle ORM schema not in sync with SQLite migrations
       - DOC-001  # Feature implementation guides missing
-      - DX-001   # Import alias map inconsistent (in-progress)
+      - DX-001   # Import alias map inconsistent between toolchains
 
   P2:
     description: "Next sprint — medium impact, planned near-term"
@@ -496,49 +496,47 @@ by_priority:
 by_status:
 
   open:
-    count: 22
+    count: 8
     issues:
-      - CFG-001
-      - CFG-002
-      - CFG-003
-      - CFG-004
       - CFG-005
-      - CFG-006
-      - CFG-007
-      - CFG-008
       - SEC-001
-      - SEC-002
       - SEC-003
       - SEC-004
-      - DB-001
-      - DB-002
-      - DB-003
-      - DOC-001
-      - DOC-002
       - DOC-003
       - DOC-005
-      - DX-002
       - DX-003
-      - DX-004
-      - REF-001
       - REF-002
-      - REF-003
 
   in_progress:
-    count: 2
+    count: 1
     issues:
       - DOC-004  # SETUP.md verification
-      - DX-001   # Import alias validation
 
   blocked:
     count: 0
     issues: []
 
   fixed:
-    count: 2
+    count: 18
     issues:
-      - CFG-HIST-001  # Hardcoded web encryption master key (fixed 2026-01-01)
-      - CFG-HIST-002  # Incomplete logout cleanup (fixed 2026-01-01)
+      - CFG-001
+      - CFG-002
+      - CFG-003
+      - CFG-004
+      - CFG-006
+      - CFG-007
+      - CFG-008
+      - SEC-002
+      - DB-001
+      - DB-002
+      - DB-003
+      - DOC-001
+      - DOC-002
+      - DX-001
+      - DX-002
+      - DX-004
+      - REF-001
+      - REF-003
 
   deferred:
     count: 2
@@ -555,7 +553,7 @@ by_status:
 # ============================================================
 
 aging:
-  last_review: "2026-03-21"
+  last_review: "2026-03-28"
   next_review: "2026-04-06"
 
   open_over_30_days:

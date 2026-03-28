@@ -153,7 +153,22 @@ open
 | `fixed` | Merged and verified in `main` | Developer who merged |
 | `deferred` | Intentionally postponed | Tech lead / team decision |
 
-When you change status, always update the `updated` field and the count in `_tracker.yaml`.
+When you change status, always update the `updated` field, then regenerate the tracker summary blocks (`metadata.counts` and `by_status`) so they match the issue entries in `_tracker.yaml`.
+
+### Tracker update checklist (required)
+
+1. Edit the issue entry under `issues:` in `docs/issues/_tracker.yaml`.
+2. Update `metadata.last_updated` to today's date (`YYYY-MM-DD`).
+3. Recalculate:
+   - `metadata.total_issues`
+   - `metadata.counts.*`
+   - `by_status.*.count`
+   - `by_status.*.issues`
+4. Run the validator:
+   ```bash
+   npm run check:issue-tracker
+   ```
+5. Commit only when validation passes.
 
 ---
 
@@ -252,6 +267,19 @@ grep -r "severity: critical" .claude/issues/ --include="*.md" -l | \
   echo "WARNING: Open critical issues will block release" || \
   echo "No open critical issues — release gate will pass"
 ```
+
+Use the tracker consistency validator to ensure summary blocks match the issue entries:
+
+```bash
+npm run check:issue-tracker
+```
+
+This command fails if:
+- `metadata.total_issues` does not match the number of issues under `issues:`
+- `metadata.counts.*` does not match issue statuses
+- `by_status.*.count` or `by_status.*.issues` is stale or inconsistent
+
+CI also runs this check in `.github/workflows/issue-tracker-validation.yml` for issue-tracker changes.
 
 ---
 
