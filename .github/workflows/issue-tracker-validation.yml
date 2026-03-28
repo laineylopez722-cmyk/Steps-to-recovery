@@ -1,0 +1,32 @@
+name: Issue Tracker Validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/issues/**'
+      - 'scripts/validate-issue-tracker-counts.mjs'
+      - '.github/workflows/issue-tracker-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/issues/**'
+      - 'scripts/validate-issue-tracker-counts.mjs'
+      - '.github/workflows/issue-tracker-validation.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-tracker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Validate docs/issues/_tracker.yaml consistency
+        run: npm run check:issue-tracker
