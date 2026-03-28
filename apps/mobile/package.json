@@ -33,7 +33,9 @@
     "e2e:steps": "maestro test .maestro/flows/step-work.yaml",
     "e2e:sync": "maestro test .maestro/flows/offline-sync.yaml",
     "e2e:validate": "maestro test --dry-run .maestro/flows",
-    "eas-build-pre-install": "cd ../.. && HUSKY=0 npm ci"
+    "eas-build-pre-install": "cd ../.. && HUSKY=0 npm ci",
+    "prestart": "cd ../.. && npm run validate-env",
+    "prestart:dev": "cd ../.. && npm run validate-env"
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.2",
