@@ -143,6 +143,7 @@ Before building:
 - [ ] Dependencies installed (`npm install`)
 - [ ] Expo CLI up to date (`npx expo --version`)
 - [ ] Device connected / emulator running
+- [ ] Latest security audit reviewed (`docs/audits/security/2026-03-28-security-audit.md`)
 
 ---
 

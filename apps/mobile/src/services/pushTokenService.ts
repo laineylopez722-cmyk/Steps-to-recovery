@@ -92,7 +92,7 @@ export async function registerPushToken(userId: string): Promise<boolean> {
       return false;
     }
 
-    logger.info('Push token registered successfully', { userId });
+    logger.info('Push token registered successfully');
     return true;
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';
@@ -123,7 +123,7 @@ export async function unregisterPushToken(userId: string): Promise<boolean> {
       return false;
     }
 
-    logger.info('Push token unregistered', { userId });
+    logger.info('Push token unregistered');
     return true;
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error';

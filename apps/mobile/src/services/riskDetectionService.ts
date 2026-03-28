@@ -324,7 +324,7 @@ async function checkSponsorContact(userId: string): Promise<RiskPattern | null> 
  */
 export async function detectRiskPatterns(userId: string): Promise<RiskDetectionResult> {
   try {
-    logger.info('Risk detection: Starting analysis', { userId });
+    logger.info('Risk detection: Starting analysis');
 
     // Run all checks in parallel
     const [journal, checkin, meeting, jft, sponsor] = await Promise.all([
@@ -354,14 +354,13 @@ export async function detectRiskPatterns(userId: string): Promise<RiskDetectionR
     };
 
     logger.info('Risk detection: Analysis complete', {
-      userId,
       patternCount: patterns.length,
       patterns: patterns.map((p) => p.type),
     });
 
     return result;
   } catch (error) {
-    logger.error('Risk detection: Fatal error', { error, userId });
+    logger.error('Risk detection: Fatal error', { error });
 
     // Return safe empty result on error
     return {
@@ -389,9 +388,9 @@ export async function dismissPattern(userId: string, patternType: RiskPatternTyp
     // data (no PII, no recovery content). SecureStore is reserved for encryption keys/tokens.
     mmkvStorage.setItem(key, value);
 
-    logger.info('Risk detection: Pattern dismissed', { userId, patternType });
+    logger.info('Risk detection: Pattern dismissed', { patternType });
   } catch (error) {
-    logger.error('Risk detection: Dismiss failed', { error, userId, patternType });
+    logger.error('Risk detection: Dismiss failed', { error, patternType });
   }
 }
 
@@ -463,7 +462,7 @@ export async function notifySponsor(
       return { success: false, error: 'Failed to send notification' };
     }
 
-    logger.info('Risk detection: Sponsor notified', { userId, patternType: pattern.type });
+    logger.info('Risk detection: Sponsor notified', { patternType: pattern.type });
     return { success: true };
   } catch (error) {
     logger.error('Risk detection: Sponsor notification error', { error });

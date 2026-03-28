@@ -93,3 +93,9 @@ If you discover a security vulnerability:
   - Fixed hardcoded web encryption master key
   - Implemented complete logout cleanup
   - Added defense-in-depth for .env protection
+- **2026-03-28**: Synced-table RLS + logging hygiene audit completed
+  - Validated/standardized RLS coverage for synced recovery tables
+  - Added idempotent RLS backfill migration for `journal_entries` and `step_work`
+  - Added sponsor-side SELECT policy for `sponsor_shared_entries`
+  - Removed secure key identifier logging and reduced sensitive notification logging surface
+  - Full report: `docs/audits/security/2026-03-28-security-audit.md`
