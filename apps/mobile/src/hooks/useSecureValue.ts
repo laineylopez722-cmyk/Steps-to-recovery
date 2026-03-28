@@ -113,7 +113,7 @@ export function useSecureValue<T = string>(
         });
       }
     } catch (error) {
-      logger.error('Failed to load secure value', { key: keyRef.current, error });
+      logger.error('Failed to load secure value', { error });
 
       if (!mountedRef.current) return;
 
@@ -135,9 +135,9 @@ export function useSecureValue<T = string>(
         if (!mountedRef.current) return;
 
         setState((prev) => ({ ...prev, value: newValue, error: null }));
-        logger.info('Secure value saved', { key: keyRef.current });
+        logger.info('Secure value saved');
       } catch (error) {
-        logger.error('Failed to save secure value', { key: keyRef.current, error });
+        logger.error('Failed to save secure value', { error });
 
         if (!mountedRef.current) return;
 
@@ -158,9 +158,9 @@ export function useSecureValue<T = string>(
       if (!mountedRef.current) return;
 
       setState((prev) => ({ ...prev, value: defaultValue ?? null, error: null }));
-      logger.info('Secure value deleted', { key: keyRef.current });
+      logger.info('Secure value deleted');
     } catch (error) {
-      logger.error('Failed to delete secure value', { key: keyRef.current, error });
+      logger.error('Failed to delete secure value', { error });
 
       if (!mountedRef.current) return;
 

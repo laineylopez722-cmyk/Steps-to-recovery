@@ -37,7 +37,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
       // Log but don't throw - returning null allows auth flow to handle re-login
-      logger.error(`Failed to get secure item "${key}"`, error);
+      logger.error('Failed to get secure item', error);
 
       // Check for specific Android Keystore errors
       const errorMessage = error instanceof Error ? error.message : String(error);
@@ -62,7 +62,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
     try {
       await SecureStore.setItemAsync(key, value);
     } catch (error) {
-      logger.error(`Failed to set secure item "${key}"`, error);
+      logger.error('Failed to set secure item', error);
 
       throw new SecureStorageError(
         `Failed to store secure data: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -82,7 +82,7 @@ export class NativeSecureStorageAdapter implements SecureStorageAdapter {
       await SecureStore.deleteItemAsync(key);
     } catch (error) {
       // Log but don't throw - deletion failure during logout is non-critical
-      logger.error(`Failed to delete secure item "${key}"`, error);
+      logger.error('Failed to delete secure item', error);
 
       // Only throw if it's a critical Keystore error
       const errorMessage = error instanceof Error ? error.message : String(error);

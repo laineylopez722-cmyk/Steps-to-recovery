@@ -13,6 +13,14 @@ Pre-build verification checklist for Steps to Recovery mobile app.
 - [ ] `npm run lint` - 0 ESLint warnings
 - [ ] `npm run format:check` - Code properly formatted
 
+### Security Audit Gate
+
+- [ ] Review latest security audit doc:
+  - [2026-03-28 Security Audit](./audits/security/2026-03-28-security-audit.md)
+- [ ] Confirm synced-table RLS migration is applied:
+  - `supabase/migrations/20260328000000_validate_synced_table_rls.sql`
+- [ ] Confirm no sensitive/plain-text token logging regressions in release diff
+
 ### Environment
 
 - [ ] `.env` file exists in `apps/mobile/`

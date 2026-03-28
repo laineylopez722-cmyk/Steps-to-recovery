@@ -103,7 +103,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     try {
       const success = await registerPushToken(userId);
       if (!success) {
-        logger.warn('Push token registration returned false', { userId });
+        logger.warn('Push token registration returned false');
       }
     } catch (error) {
       logger.error('Error registering push token', { error });
@@ -127,7 +127,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const handleNotificationReceived = useCallback((notification: Notifications.Notification) => {
     logger.info('Notification received', {
       title: notification.request.content.title,
-      body: notification.request.content.body,
+      hasBody: Boolean(notification.request.content.body),
     });
 
     // Could add custom handling here (e.g., show in-app banner)
@@ -141,7 +141,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     logger.info('Notification tapped', {
       title,
-      data,
+      hasData: Boolean(data),
     });
 
     // Navigate using new payload structure
