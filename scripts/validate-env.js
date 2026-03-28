@@ -17,6 +17,11 @@ const path = require('path');
 const dotenv = require('dotenv');
 
 const MOBILE_ENV_PATH = path.join(__dirname, '..', 'apps', 'mobile', '.env');
+const MOBILE_ENV_EXAMPLE_PATH = path.join(__dirname, '..', 'apps', 'mobile', '.env.example');
+const REPO_ROOT = path.join(__dirname, '..');
+const isCI = process.env.CI === 'true' || process.env.CI === '1';
+const isEasBuild = process.env.EAS_BUILD === 'true' || process.env.EAS_BUILD === '1';
+const isNonInteractive = isCI || isEasBuild;
 const envFileExists = fs.existsSync(MOBILE_ENV_PATH);
 
 if (envFileExists) {
@@ -28,10 +33,17 @@ if (envFileExists) {
 // ---------------------------------------------------------------------------
 const REMEDIATION = {
   NO_ENV_FILE:
-    'Create apps/mobile/.env from the example, then add Supabase values:\n' +
-    '     Windows: copy apps\\mobile\\.env.example apps\\mobile\\.env\n' +
-    '     macOS/Linux: cp apps/mobile/.env.example apps/mobile/.env\n' +
+    `Create ${path.relative(REPO_ROOT, MOBILE_ENV_PATH)} from the example, then add Supabase values:\n` +
+    `     cd ${REPO_ROOT} && cp ${path.relative(REPO_ROOT, MOBILE_ENV_EXAMPLE_PATH)} ${path.relative(REPO_ROOT, MOBILE_ENV_PATH)}\n` +
+    `     (PowerShell) cd ${REPO_ROOT}; Copy-Item ${path.relative(REPO_ROOT, MOBILE_ENV_EXAMPLE_PATH).replaceAll('/', '\\')} ${path.relative(REPO_ROOT, MOBILE_ENV_PATH).replaceAll('/', '\\')}\n` +
     '     Then fill in credentials from: https://supabase.com → your project → Settings → API',
+
+  NO_ENV_FILE_CI:
+    'Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in CI/EAS secrets.\n' +
+    '     GitHub Actions example:\n' +
+    '       env:\n' +
+    '         EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}\n' +
+    '         EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}',
 
   SUPABASE_URL_MISSING:
     'Set EXPO_PUBLIC_SUPABASE_URL in apps/mobile/.env\n' +
@@ -143,7 +155,7 @@ for (const { key, description } of optional) {
 if (missing.length > 0 || invalid.length > 0) {
   if (!envFileExists) {
     console.error(`[validate-env] Env file not found: ${MOBILE_ENV_PATH}`);
-    console.error(`  Remedy: ${REMEDIATION.NO_ENV_FILE}`);
+    console.error(`  Remedy: ${isNonInteractive ? REMEDIATION.NO_ENV_FILE_CI : REMEDIATION.NO_ENV_FILE}`);
   }
 
   if (missing.length > 0) {
@@ -176,7 +188,9 @@ if (missing.length > 0 || invalid.length > 0) {
   }
 
   console.error(
-    '[validate-env] Optional: npm run doctor:toolchain (repo root). Full shell check: bash scripts/verify-setup.sh (macOS/Linux/WSL).',
+    isNonInteractive
+      ? '[validate-env] Non-interactive mode detected (CI/EAS). Configure EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY as pipeline secrets.'
+      : '[validate-env] Optional: npm run doctor:toolchain (repo root). Full shell check: bash scripts/verify-setup.sh (macOS/Linux/WSL).',
   );
   process.exit(1);
 }
