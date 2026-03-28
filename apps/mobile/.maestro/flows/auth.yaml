@@ -1,7 +1,7 @@
 # Authentication Flow E2E Test
 # Tests login and signup functionality
 
-appId: com.stepstorecovery.app
+appId: com.recovery.stepstorecovery
 ---
 # Launch with cleared state
 - launchApp:

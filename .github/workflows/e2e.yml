@@ -6,7 +6,7 @@ on:
     branches: [main]
     paths:
       - 'apps/mobile/**'
-      - '.maestro/**'
+      - 'apps/mobile/.maestro/**'
       - '.github/workflows/e2e.yml'
   pull_request:
     branches: [main]
@@ -27,6 +27,7 @@ on:
           - journal
           - step-work
           - offline-sync
+          - crisis-detection
 
 env:
   MAESTRO_VERSION: 1.39.0
@@ -230,6 +231,9 @@ jobs:
             maestro test .maestro/flows/login.yaml
             maestro test .maestro/flows/daily-checkin.yaml
             maestro test .maestro/flows/journal.yaml
+            maestro test .maestro/flows/step-work.yaml
+            maestro test .maestro/flows/offline-sync.yaml
+            maestro test .maestro/flows/crisis-detection.yaml
           fi
 
       - name: Upload Test Results

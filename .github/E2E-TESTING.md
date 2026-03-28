@@ -4,6 +4,10 @@ End-to-end tests for Steps to Recovery use [Maestro](https://maestro.mobile.dev/
 
 This guide covers running tests locally and understanding how they run in CI/CD.
 
+
+> **Canonical path:** Maestro assets are standardized under `apps/mobile/.maestro/`.
+> The legacy `apps/mobile/maestro/` directory has been removed; update any local scripts/bookmarks accordingly.
+
 ---
 
 ## Test Flows
@@ -18,6 +22,11 @@ All flow files live in `apps/mobile/.maestro/flows/`.
 | Journal | `journal.yaml` | Create, edit, search entries |
 | Step work | `step-work.yaml` | 12-step progress tracking |
 | Offline sync | `offline-sync.yaml` | Offline writes sync correctly on reconnect |
+| Crisis detection | `crisis-detection.yaml` | Safety overlay and emergency resources |
+| Day 1 core safety | `day1-core-safety.yaml` | Emergency + crisis + offline smoke validation |
+| Day 2 workflows | `day2-daily-workflows.yaml` | Core daily recovery workflows |
+| Day 3 network/sync | `day3-network-sync.yaml` | Offline/online transition resilience |
+| Day 4 stability | `day4-stability.yaml` | Stability and performance regression checks |
 
 ---
 
@@ -110,6 +119,7 @@ maestro test .maestro/flows/onboarding.yaml
 maestro test .maestro/flows/login.yaml
 maestro test .maestro/flows/daily-checkin.yaml
 maestro test .maestro/flows/journal.yaml
+maestro test .maestro/flows/crisis-detection.yaml
 
 # Run a single flow
 maestro test .maestro/flows/login.yaml

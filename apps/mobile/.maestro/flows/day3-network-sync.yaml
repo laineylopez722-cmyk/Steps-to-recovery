@@ -1,9 +1,9 @@
 # Day 3: Network & Sync Validation
 # Tests offlineΓåÆonline transitions, sync queue behavior, and network resilience
-# Run with: maestro test maestro/flows/day3-network-sync.yaml
+# Run with: maestro test flows/day3-network-sync.yaml
 # Prerequisites: Complete Day 1 and Day 2 tests first
 
-appId: com.stepstorecovery.app
+appId: com.recovery.stepstorecovery
 ---
 # Launch app (assumes user is logged in from Day 1/2)
 - launchApp:
