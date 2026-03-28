@@ -106,21 +106,22 @@ END $$;
 -- ---------------------------------------------------------------------------
 DO $$
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_policies
-    WHERE schemaname = 'public' AND tablename = 'sponsor_shared_entries'
-      AND policyname = 'Connected sponsors can view shared entries'
-  ) THEN
-    CREATE POLICY "Connected sponsors can view shared entries"
-      ON sponsor_shared_entries FOR SELECT
-      USING (
-        EXISTS (
-          SELECT 1
-          FROM sponsor_connections sc
-          WHERE sc.id = sponsor_shared_entries.connection_id
-            AND sc.user_id = auth.uid()
-            AND sc.status = 'connected'
-        )
-      );
-  END IF;
+  -- Recreate policy to ensure sponsor visibility is based on relationship linkage
+  -- (shared invite_code + connected status), not same-row connection ownership.
+  DROP POLICY IF EXISTS "Connected sponsors can view shared entries" ON sponsor_shared_entries;
+
+  CREATE POLICY "Connected sponsors can view shared entries"
+    ON sponsor_shared_entries FOR SELECT
+    USING (
+      EXISTS (
+        SELECT 1
+        FROM sponsor_connections source_connection
+        JOIN sponsor_connections viewer_connection
+          ON viewer_connection.invite_code = source_connection.invite_code
+        WHERE source_connection.id = sponsor_shared_entries.connection_id
+          AND source_connection.status = 'connected'
+          AND viewer_connection.user_id = auth.uid()
+          AND viewer_connection.status = 'connected'
+      )
+    );
 END $$;
